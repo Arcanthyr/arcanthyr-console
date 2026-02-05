@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arcanthyr Console</title>
+  <link rel="stylesheet" href="styles.css" />
+<div class="row">
+  <a class="btn ghost" href="index.html">Home</a>
+</div>
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <h1>The Arc Console</h1>
+      <p class="sub">Creating order from noise.</p>
+    </header>
+
+    <section class="card">
+      <label for="input" class="label">Input</label>
+      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task..."></textarea>
+
+      <div class="row">
+        <button id="processBtn" class="btn">Process</button>
+        <button id="saveBtn" class="btn ghost">Save</button>
+        <button id="clearBtn" class="btn danger">Clear All</button>
+      </div>
+
+      <div id="output" class="output" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">History</h2>
+        <button id="exportBtn" class="btn ghost small">Export JSON</button>
+      </div>
+      <ul id="history" class="history"></ul>
+    </section>
+
+    <footer class="footer">
+      <small>v0 — rule-based loop + local storage. Upgrade later to DB + optional AI.</small>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

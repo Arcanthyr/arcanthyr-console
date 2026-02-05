@@ -9,6 +9,30 @@ const exportBtn = document.getElementById("exportBtn");
 
 const STORAGE_KEY = "arcanthyr_console_entries_v0";
 
+async function apiLoadEntries() {
+  const r = await fetch("/api/entries", { method: "GET" });
+  if (!r.ok) throw new Error("Failed to load entries");
+  const data = await r.json();
+  // API returns newest-first; keep internal array oldest-first
+  return (data.entries || []).slice().reverse();
+}
+
+async function apiSaveEntry(entry) {
+  const r = await fetch("/api/entries", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry),
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+async function apiClearAll() {
+  const r = await fetch("/api/entries", { method: "DELETE" });
+  if (!r.ok) throw new Error("Failed to clear vault");
+}
+
+
+
 function nowIso() {
   return new Date().toISOString();
 }
@@ -128,8 +152,18 @@ function showOutput(msg) {
   outputEl.textContent = msg;
 }
 
-let entries = loadEntries();
-render(entries);
+let entries = [];
+
+(async () => {
+  try {
+    entries = await apiLoadEntries();
+    render(entries);
+    showOutput("Vault connected.");
+  } catch (e) {
+    render(entries);
+    showOutput("Vault not reachable yet.");
+  }
+})();
 
 processBtn.addEventListener("click", () => {
   const text = inputEl.value.trim();
@@ -139,9 +173,28 @@ processBtn.addEventListener("click", () => {
   showOutput(`Tag: ${p.tag}\nNext: ${p.next}\nQuestion: ${p.clarify}`);
 });
 
-saveBtn.addEventListener("click", () => {
+saveBtn.addEventListener("click", async () => {
   const text = inputEl.value.trim();
   if (!text) return showOutput("Nothing to save.");
+
+  const p = processText(text);
+  const entry = {
+    id: crypto.randomUUID(),
+    created_at: new Date().toISOString(),
+    text,
+    ...p,
+  };
+
+  try {
+    await apiSaveEntry(entry);
+    entries.push(entry);
+    render(entries);
+    showOutput("Saved to vault.");
+    inputEl.value = "";
+  } catch (e) {
+    showOutput(`Save failed: ${e.message}`);
+  }
+});
 
   const p = processText(text);
   const entry = {
@@ -158,11 +211,15 @@ saveBtn.addEventListener("click", () => {
   inputEl.value = "";
 });
 
-clearBtn.addEventListener("click", () => {
-  entries = [];
-  saveEntries(entries);
-  render(entries);
-  showOutput("Cleared.");
+clearBtn.addEventListener("click", async () => {
+  try {
+    await apiClearAll();
+    entries = [];
+    render(entries);
+    showOutput("Vault cleared.");
+  } catch (e) {
+    showOutput(`Clear failed: ${e.message}`);
+  }
 });
 
 exportBtn.addEventListener("click", () => {
