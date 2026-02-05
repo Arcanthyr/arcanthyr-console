@@ -7,11 +7,10 @@ const saveBtn = document.getElementById("saveBtn");
 const clearBtn = document.getElementById("clearBtn");
 const exportBtn = document.getElementById("exportBtn");
 
-const STORAGE_KEY = "arcanthyr_console_entries_v0";
-
+// ---------- Vault API ----------
 async function apiLoadEntries() {
   const r = await fetch("/api/entries", { method: "GET" });
-  if (!r.ok) throw new Error("Failed to load entries");
+  if (!r.ok) throw new Error(`Failed to load entries: ${r.status}`);
   const data = await r.json();
   // API returns newest-first; keep internal array oldest-first
   return (data.entries || []).slice().reverse();
@@ -28,31 +27,12 @@ async function apiSaveEntry(entry) {
 
 async function apiClearAll() {
   const r = await fetch("/api/entries", { method: "DELETE" });
-  if (!r.ok) throw new Error("Failed to clear vault");
+  if (!r.ok) throw new Error(`Failed to clear vault: ${r.status}`);
 }
 
-
-
-function nowIso() {
-  return new Date().toISOString();
-}
-
-function loadEntries() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveEntries(entries) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-}
-
+// ---------- Agent logic ----------
 function classify(text) {
   const t = text.trim().toLowerCase();
-
   const hasQuestionWord = /^(how|why|what|where|when|who)\b/.test(t) || t.includes("?");
   const decisionCue = /\b(should i|decide|choice|either|or)\b/.test(t);
   const taskCue = /\b(today|tomorrow|next week|by |due |call |email |book |schedule |pay )\b/.test(t);
@@ -65,43 +45,34 @@ function classify(text) {
   return "note";
 }
 
-function nextStep(tag, text) {
+function nextStep(tag) {
   switch (tag) {
-    case "task":
-      return "Define the smallest next action and a time: who/what/when.";
-    case "decision":
-      return "Write 2 options + the downside if wrong + one reversible test.";
-    case "question":
-      return "State what a good answer would let you do. Then list 2 constraints.";
-    case "idea":
-      return "Turn it into a 1-sentence pitch + first tiny prototype step.";
-    default:
-      return "Rewrite as one clear sentence. Then add one concrete next action.";
+    case "task": return "Define the smallest next action and a time: who/what/when.";
+    case "decision": return "Write 2 options + the downside if wrong + one reversible test.";
+    case "question": return "State what a good answer would let you do. Then list 2 constraints.";
+    case "idea": return "Turn it into a 1-sentence pitch + first tiny prototype step.";
+    default: return "Rewrite as one clear sentence. Then add one concrete next action.";
   }
 }
 
-function clarifyQuestion(tag, text) {
+function clarifyQuestion(tag) {
   switch (tag) {
-    case "task":
-      return "What’s the deadline, and what is ‘done’ in one sentence?";
-    case "decision":
-      return "What would change your mind most?";
-    case "question":
-      return "What context is missing that makes this hard to answer?";
-    case "idea":
-      return "Who is this for, and what pain does it remove?";
-    default:
-      return "Is this something you want to act on, or just capture?";
+    case "task": return "What’s the deadline, and what is ‘done’ in one sentence?";
+    case "decision": return "What would change your mind most?";
+    case "question": return "What context is missing that makes this hard to answer?";
+    case "idea": return "Who is this for, and what pain does it remove?";
+    default: return "Is this something you want to act on, or just capture?";
   }
 }
 
 function processText(text) {
   const tag = classify(text);
-  return {
-    tag,
-    next: nextStep(tag, text),
-    clarify: clarifyQuestion(tag, text),
-  };
+  return { tag, next: nextStep(tag), clarify: clarifyQuestion(tag) };
+}
+
+// ---------- UI ----------
+function showOutput(msg) {
+  outputEl.textContent = msg;
 }
 
 function render(entries) {
@@ -148,10 +119,7 @@ function render(entries) {
   }
 }
 
-function showOutput(msg) {
-  outputEl.textContent = msg;
-}
-
+// ---------- Boot ----------
 let entries = [];
 
 (async () => {
@@ -161,7 +129,7 @@ let entries = [];
     showOutput("Vault connected.");
   } catch (e) {
     render(entries);
-    showOutput("Vault not reachable yet.");
+    showOutput(`Vault not reachable: ${e.message}`);
   }
 })();
 
@@ -196,21 +164,6 @@ saveBtn.addEventListener("click", async () => {
   }
 });
 
-  const p = processText(text);
-  const entry = {
-    id: crypto.randomUUID(),
-    created_at: nowIso(),
-    text,
-    ...p,
-  };
-
-  entries.push(entry);
-  saveEntries(entries);
-  render(entries);
-  showOutput("Saved.");
-  inputEl.value = "";
-});
-
 clearBtn.addEventListener("click", async () => {
   try {
     await apiClearAll();
@@ -231,5 +184,3 @@ exportBtn.addEventListener("click", () => {
   a.click();
   URL.revokeObjectURL(url);
 });
-
-
