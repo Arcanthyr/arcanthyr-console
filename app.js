@@ -94,14 +94,14 @@ function showOutput(msg) {
 let _saveToastTimer = null;
 function showSaveFeedback() {
   const toast = document.getElementById("saveToast");
-  toast.classList.remove("toast-out");
-  toast.classList.add("toast-visible");
+  // Clear any in-flight timers so rapid saves don't stack
   if (_saveToastTimer) clearTimeout(_saveToastTimer);
+  toast.className = "save-toast toast-visible";
   _saveToastTimer = setTimeout(() => {
-    toast.classList.add("toast-out");
-    toast.addEventListener("animationend", () => {
-      toast.classList.remove("toast-visible", "toast-out");
-    }, { once: true });
+    toast.className = "save-toast toast-out";
+    _saveToastTimer = setTimeout(() => {
+      toast.className = "save-toast";
+    }, 400); // matches toast-fade duration
   }, 1500);
 }
 

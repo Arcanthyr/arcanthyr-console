@@ -282,15 +282,18 @@ button.small, .btn.small {
   font-size: 0.875rem;
   font-weight: 600;
   pointer-events: none;
+  display: none;
   opacity: 0;
   z-index: 999;
 }
 
 .save-toast.toast-visible {
+  display: block;
   animation: toast-in 0.2s ease forwards;
 }
 
 .save-toast.toast-out {
+  display: block;
   animation: toast-fade 0.4s ease forwards;
 }
 
@@ -300,8 +303,8 @@ button.small, .btn.small {
 }
 
 @keyframes toast-fade {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(4px); }
 }
 
 /* ---- Footer ---- */
