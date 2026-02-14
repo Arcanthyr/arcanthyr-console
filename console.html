@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arcanthyr – Console</title>
+  <title>Arcanthyr — Console</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -12,60 +12,27 @@
 
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
-      <!-- CORRECTED SIGIL: 4-pointed star, textured, 3 satellites -->
       <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true">
-
         <defs>
           <filter id="tex-sm">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
-
-        <!-- Outer dashed ring -->
         <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
           opacity="0.7" />
-
-        <!-- 4-pointed main star (thin cardinal spikes only) -->
-        <polygon points="140,108 136,162 140,158 144,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
-        <polygon points="140,232 136,178 140,182 144,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
-        <polygon points="202,170 148,166 154,170 148,174" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
-        <polygon points="78,170 132,166 126,170 132,174" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
-
-        <!-- Inner compass ring -->
+        <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="80,170 132,167 128,170 132,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <circle cx="140" cy="170" r="24" stroke="#a8b4c0" stroke-width="0.6" fill="none" opacity="0.6" />
-        <!-- Inner 8-pointed star detail -->
-        <polygon points="140,147 141.5,163 140,166 138.5,163" fill="#a8b4c0" opacity="0.5" />
-        <polygon points="140,193 141.5,177 140,174 138.5,177" fill="#a8b4c0" opacity="0.5" />
-        <polygon points="117,170 133,168.5 136,170 133,171.5" fill="#a8b4c0" opacity="0.5" />
-        <polygon points="163,170 147,168.5 144,170 147,171.5" fill="#a8b4c0" opacity="0.5" />
         <circle cx="140" cy="170" r="3" fill="#a8b4c0" opacity="0.6" />
-
-        <!-- TOP SATELLITE -->
-        <line x1="140" y1="6" x2="140" y2="20" stroke="#a8b4c0" stroke-width="0.7" />
-        <!-- small 4-pointed starburst above circle -->
-        <polygon points="140,6 138.5,12 140,10 141.5,12" fill="#a8b4c0" opacity="0.85" />
-        <line x1="133" y1="34" x2="127" y2="34" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
-        <line x1="147" y1="34" x2="153" y2="34" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
-        <circle cx="140" cy="34" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none" />
-        <circle cx="140" cy="34" r="3" stroke="#a8b4c0" stroke-width="0.45" fill="none" />
-        <line x1="140" y1="42" x2="140" y2="55" stroke="#a8b4c0" stroke-width="0.5" />
-        <!-- starburst below top satellite -->
-        <polygon points="140,55 138.5,61 140,59 141.5,61" fill="#a8b4c0" opacity="0.85" />
-        <line x1="140" y1="61" x2="140" y2="108" stroke="#a8b4c0" stroke-width="0.4" opacity="0.7" />
-
-        <!-- BOTTOM SATELLITE -->
-        <line x1="140" y1="232" x2="140" y2="252" stroke="#a8b4c0" stroke-width="0.4" opacity="0.7" />
-        <polygon points="140,252 138.5,258 140,256 141.5,258" fill="#a8b4c0" opacity="0.85" />
-        <circle cx="140" cy="268" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none" />
-        <circle cx="140" cy="268" r="3" stroke="#a8b4c0" stroke-width="0.45" fill="none" />
-        <line x1="140" y1="276" x2="140" y2="284" stroke="#a8b4c0" stroke-width="0.6" />
-        <line x1="130" y1="284" x2="150" y2="284" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
-
       </svg>
     </a>
     <a class="btn ghost small" href="index.html">Home</a>
+    <a class="btn ghost small" href="#legal-section">Legal</a>
+    <a class="btn ghost small" href="#email-section">Email</a>
   </nav>
 
   <main class="wrap">
@@ -87,6 +54,7 @@
         <button id="draftBtn" class="ghost">Draft</button>
         <button id="nextActionBtn" class="ghost">Next Actions</button>
         <button id="clarifyBtn" class="ghost ai-btn">Clarify</button>
+        <button id="emailEntryBtn" class="ghost small">Email This</button>
         <button id="clearInputBtn" class="ghost small">Clear</button>
       </div>
 
@@ -150,6 +118,126 @@
       <div id="relayOutput" class="review-output" style="display:none"></div>
     </section>
 
+    <!-- LEGAL RESEARCH SECTION -->
+    <section class="card" id="legal-section">
+      <div class="row space">
+        <h2 class="h2">Legal Research</h2>
+        <button id="legalSyncBtn" class="btn ghost small ai-btn">Check New Cases</button>
+      </div>
+      <p class="sub">Tasmanian criminal case law database. Auto-sync for new cases + manual upload for historical.</p>
+      
+      <div id="legalSyncStatus" class="filter-summary"></div>
+      
+      <!-- Upload case section -->
+      <div class="card" style="background:var(--surface-raise);margin-top:16px;">
+        <div class="row space">
+          <h3 style="font-size:0.875rem;color:var(--gold);margin:0;">Upload Historical Case</h3>
+          <button id="toggleUploadBtn" class="btn ghost small">Show Upload</button>
+        </div>
+        
+        <div id="uploadCaseForm" style="display:none;margin-top:16px;">
+          <label class="label">Citation (e.g. [2015] TASSC 42)</label>
+          <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
+          
+          <label class="label" style="margin-top:12px;">Case Name</label>
+          <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
+          
+          <label class="label" style="margin-top:12px;">Court</label>
+          <select id="uploadCourt" class="search-input">
+            <option value="supreme">Supreme Court</option>
+            <option value="magistrates">Magistrates Court</option>
+            <option value="cca">Court of Criminal Appeal</option>
+            <option value="fullcourt">Full Court</option>
+          </select>
+          
+          <label class="label" style="margin-top:12px;">Case Text (paste full decision text)</label>
+          <textarea id="uploadCaseText" class="textarea" style="min-height:200px;" 
+            placeholder="Paste the full case text here from AustLII or PDF..."></textarea>
+          
+          <div class="row" style="margin-top:12px;">
+            <button id="uploadCaseBtn" class="btn">Process & Save</button>
+            <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
+          </div>
+          <div id="uploadOutput" class="output" style="margin-top:12px;display:none;"></div>
+        </div>
+      </div>
+      
+      <!-- Legal search interface -->
+      <div class="search-row" style="margin-top:16px;">
+        <input type="text" id="legalSearchInput" class="search-input" 
+          placeholder="Search cases by keyword, statute, or offence…" />
+      </div>
+      
+      <div class="filter-row">
+        <span class="label">Court</span>
+        <div class="filter-chips" id="courtFilters">
+          <button class="chip active" data-court="all">All Courts</button>
+          <button class="chip" data-court="magistrates">Magistrates</button>
+          <button class="chip" data-court="supreme">Supreme</button>
+          <button class="chip" data-court="cca">CCA</button>
+          <button class="chip" data-court="fullcourt">Full Court</button>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span class="label">View</span>
+        <div class="filter-chips">
+          <button class="chip legal-view active" data-view="cases">Cases</button>
+          <button class="chip legal-view" data-view="principles">Principles</button>
+        </div>
+      </div>
+
+      <div id="legalResults" class="legal-results"></div>
+    </section>
+
+    <!-- EMAIL CENTER -->
+    <section class="card" id="email-section">
+      <div class="row space">
+        <h2 class="h2">Email Center</h2>
+        <button id="manageContactsBtn" class="btn ghost small">Contacts</button>
+      </div>
+      <p class="sub">Send entries, reports, or case summaries via email.</p>
+      
+      <div class="email-compose" style="display:none" id="emailCompose">
+        <label class="label">Recipients</label>
+        <div class="row">
+          <input type="text" id="emailRecipients" class="search-input" 
+            placeholder="email@example.com (comma separated)" style="flex:1" />
+          <button id="addFromContactsBtn" class="btn ghost small">From Contacts</button>
+        </div>
+
+        <label class="label" style="margin-top:12px">Subject</label>
+        <input type="text" id="emailSubject" class="search-input" placeholder="Email subject..." />
+
+        <label class="label" style="margin-top:12px">Message</label>
+        <textarea id="emailBody" class="textarea" placeholder="Compose message..."></textarea>
+
+        <div class="row" style="margin-top:12px">
+          <button id="sendEmailBtn" class="btn">Send Email</button>
+          <button id="cancelEmailBtn" class="btn ghost small">Cancel</button>
+        </div>
+        <div id="emailOutput" class="output" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- CONTACTS MODAL -->
+    <div id="contactsModal" class="modal" style="display:none">
+      <div class="modal-content">
+        <div class="row space">
+          <h2 class="h2">Saved Contacts</h2>
+          <button id="closeContactsBtn" class="btn ghost small">Close</button>
+        </div>
+        
+        <div class="row" style="margin-top:16px">
+          <input type="text" id="newContactName" class="search-input" placeholder="Name" style="flex:1" />
+          <input type="email" id="newContactEmail" class="search-input" placeholder="Email" style="flex:1" />
+          <button id="addContactBtn" class="btn small">Add</button>
+        </div>
+
+        <ul id="contactsList" class="contacts-list"></ul>
+      </div>
+    </div>
+
     <!-- HISTORY CARD -->
     <section class="card">
       <div class="row space">
@@ -165,13 +253,13 @@
     </section>
 
     <footer class="footer">
-      <small>v2 – AI-assisted loop. Private. Iterative.</small>
+      <small>v3 — Legal research + Email automation. Private. Iterative.</small>
     </footer>
   </main>
 
   <div id="saveToast" style="display:none" aria-live="polite"></div>
 
-  <script src="app.js?v=7"></script>
+  <script src="app.js?v=8"></script>
 </body>
 
 </html>

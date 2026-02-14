@@ -1,4 +1,4 @@
-console.log("APP v7 LOADED — Axiom Relay + Clarify Agent");
+console.log("APP v8 LOADED — Legal Research + Email Center + Axiom Relay");
 
 /* =============================================================
    SCHEMA VERSION
@@ -10,6 +10,8 @@ const SCHEMA_VERSION = 1;
    ============================================================= */
 const API_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/entries";
 const AI_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/ai";
+const EMAIL_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/email";
+const LEGAL_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/legal";
 
 /* =============================================================
    DOM refs
@@ -33,6 +35,29 @@ const searchInput = document.getElementById("searchInput");
 const tagFilters = document.getElementById("tagFilters");
 const filterSummary = document.getElementById("filterSummary");
 
+// Email elements
+const emailEntryBtn = document.getElementById("emailEntryBtn");
+const emailCompose = document.getElementById("emailCompose");
+const emailRecipients = document.getElementById("emailRecipients");
+const emailSubject = document.getElementById("emailSubject");
+const emailBody = document.getElementById("emailBody");
+const sendEmailBtn = document.getElementById("sendEmailBtn");
+const cancelEmailBtn = document.getElementById("cancelEmailBtn");
+const manageContactsBtn = document.getElementById("manageContactsBtn");
+const contactsModal = document.getElementById("contactsModal");
+const closeContactsBtn = document.getElementById("closeContactsBtn");
+const addContactBtn = document.getElementById("addContactBtn");
+const contactsList = document.getElementById("contactsList");
+const addFromContactsBtn = document.getElementById("addFromContactsBtn");
+const emailOutput = document.getElementById("emailOutput");
+
+// Legal research elements
+const legalSearchInput = document.getElementById("legalSearchInput");
+const courtFilters = document.getElementById("courtFilters");
+const legalResults = document.getElementById("legalResults");
+const legalSyncBtn = document.getElementById("legalSyncBtn");
+const legalSyncStatus = document.getElementById("legalSyncStatus");
+
 /* =============================================================
    RATE LIMITER (client-side)
    ============================================================= */
@@ -50,7 +75,7 @@ function checkRate(key, max = 3, windowMs = 5000) {
 }
 
 /* =============================================================
-   VAULT API
+   VAULT API (existing)
    ============================================================= */
 async function apiLoadEntries() {
   const r = await fetch(API_BASE, { method: "GET" });
@@ -84,7 +109,7 @@ async function apiRestoreAll() {
 }
 
 /* =============================================================
-   AI PROXY CALLS
+   AI PROXY CALLS (existing)
    ============================================================= */
 async function aiCall(action, body) {
   const r = await fetch(`${AI_BASE}/${action}`, {
@@ -113,19 +138,106 @@ async function weeklyReview(entries) {
   return aiCall("weekly-review", { entries: slim });
 }
 
-/* =============================================================
-   NEW: AXIOM RELAY — calls the 3-stage agent on the Worker
-   ============================================================= */
 async function axiomRelay(entries, focus = "") {
   const slim = entries.slice(-20).map(e => ({ tag: e.tag, text: e.text }));
   return aiCall("axiom-relay", { entries: slim, focus });
 }
 
-/* =============================================================
-   NEW: CLARIFY AGENT — one step of the conversational loop
-   ============================================================= */
 async function clarifyAgentStep(text, tag, history, userReply) {
   return aiCall("clarify-agent", { text, tag, history, userReply });
+}
+
+/* =============================================================
+   EMAIL API CALLS
+   ============================================================= */
+async function emailSend(to, subject, content) {
+  const r = await fetch(`${EMAIL_BASE}/send`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ to, subject, content }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Email send failed");
+  return data.result;
+}
+
+async function emailGetContacts() {
+  const r = await fetch(`${EMAIL_BASE}/contacts`, { method: "GET" });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Failed to load contacts");
+  return data.result;
+}
+
+async function emailAddContact(name, email) {
+  const r = await fetch(`${EMAIL_BASE}/contacts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Failed to add contact");
+  return data.result;
+}
+
+async function emailDeleteContact(contactId) {
+  const r = await fetch(`${EMAIL_BASE}/contacts/${contactId}`, { method: "DELETE" });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Failed to delete contact");
+  return data.result;
+}
+
+/* =============================================================
+   LEGAL RESEARCH API CALLS
+   ============================================================= */
+async function legalGetSyncProgress() {
+  const r = await fetch(`${LEGAL_BASE}/sync-progress`, { method: "GET" });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Failed to get sync progress");
+  return data.result;
+}
+
+async function legalSearchCases(query, court = "all") {
+  const r = await fetch(`${LEGAL_BASE}/search-cases`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, court }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Case search failed");
+  return data.result;
+}
+
+async function legalSearchPrinciples(query) {
+  const r = await fetch(`${LEGAL_BASE}/search-principles`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Principle search failed");
+  return data.result;
+}
+
+async function legalTriggerSync() {
+  const r = await fetch(`${LEGAL_BASE}/trigger-sync`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Sync trigger failed");
+  return data.result;
+}
+
+async function legalUploadCase(caseText, citation, caseName, court) {
+  const r = await fetch(`${LEGAL_BASE}/upload-case`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ case_text: caseText, citation, case_name: caseName, court }),
+  });
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || "Case upload failed");
+  return data.result;
 }
 
 /* =============================================================
@@ -187,6 +299,8 @@ function processText(text) {
 let activeTag = "all";
 let activeDateRange = "all";
 let searchKeyword = "";
+let activeCourt = "all";
+let activeLegalView = "cases";
 
 function getFilteredEntries(entries) {
   let result = [...entries];
@@ -224,368 +338,99 @@ function updateFilterSummary(filtered, total) {
 }
 
 /* =============================================================
-   UI HELPERS
+   STATE
    ============================================================= */
-function showOutput(msg, mode = "") {
-  outputEl.textContent = msg;
-  outputEl.className = "output" + (mode ? " " + mode : "");
-}
-
-function highlightKeyword(text, kw) {
-  if (!kw) return escapeHtml(text);
-  const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return escapeHtml(text).replace(
-    new RegExp(escaped, "gi"),
-    m => `<mark>${m}</mark>`
-  );
-}
-
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-let _saveToastTimer = null;
-function showSaveFeedback(msg = "✓ Entry saved") {
-  const toast = document.getElementById("saveToast");
-  if (_saveToastTimer) clearTimeout(_saveToastTimer);
-  toast.textContent = msg;
-  toast.className = "save-toast toast-visible";
-  toast.style.display = "block";
-  _saveToastTimer = setTimeout(() => {
-    toast.className = "save-toast toast-out";
-    _saveToastTimer = setTimeout(() => {
-      toast.style.display = "none";
-      toast.className = "save-toast";
-    }, 400);
-  }, 1500);
-}
+let entries = [];
+let contacts = [];
+let currentEmailContent = null;
 
 /* =============================================================
    RENDER
    ============================================================= */
-function render(entries) {
-  historyEl.innerHTML = "";
+function render(data) {
+  const filtered = getFilteredEntries(data);
+  updateFilterSummary(filtered, data.length);
 
-  const filtered = getFilteredEntries(entries);
-  updateFilterSummary(filtered, entries.length);
-
-  if (!filtered.length) {
-    const empty = document.createElement("li");
-    empty.className = "empty-state";
-    const title = entries.length === 0 ? "No entries yet." : "No entries match your filters.";
-    const sub = entries.length === 0
-      ? "Create your first record to begin."
-      : "Try adjusting your search or filters.";
-    empty.innerHTML = `<span class='empty-title'>${title}</span><span class='empty-sub'>${sub}</span>`;
-    historyEl.appendChild(empty);
+  if (filtered.length === 0) {
+    historyEl.innerHTML = `
+      <li class="empty-state">
+        <p class="empty-title">No entries found</p>
+        <p class="empty-sub">Adjust filters or create your first entry above.</p>
+      </li>`;
     return;
   }
 
-  const newestFirst = [...filtered].reverse();
-  const kw = searchKeyword.trim().toLowerCase();
+  historyEl.innerHTML = filtered
+    .map(entry => {
+      const date = new Date(entry.created_at).toLocaleDateString("en-AU", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+      const time = new Date(entry.created_at).toLocaleTimeString("en-AU", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-  for (const e of newestFirst) {
-    const li = document.createElement("li");
-    li.className = "item";
+      const highlightText = (text) => {
+        if (!searchKeyword.trim()) return text;
+        const kw = searchKeyword.trim();
+        const regex = new RegExp(`(${kw})`, "gi");
+        return text.replace(regex, "<mark>$1</mark>");
+      };
 
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    const tagEl = document.createElement("span");
-    tagEl.className = `tag tag-${e.tag}`;
-    tagEl.textContent = e.tag;
-    const timeEl = document.createElement("span");
-    timeEl.textContent = new Date(e.created_at).toLocaleString();
-    meta.appendChild(tagEl);
-    meta.appendChild(timeEl);
+      return `
+        <li class="item" data-id="${entry.id}">
+          <div class="meta">
+            <span class="tag tag-${entry.tag}">${entry.tag}</span>
+            <span>${date} · ${time}</span>
+          </div>
+          <p>${highlightText(entry.text)}</p>
+          ${entry.draft ? `<p style="margin-top:8px;color:var(--text-mid);font-style:italic;">Draft: ${highlightText(entry.draft)}</p>` : ""}
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn ghost small email-entry-btn" data-id="${entry.id}">Email</button>
+            <button class="btn ghost small delete-btn" data-id="${entry.id}">Delete</button>
+          </div>
+        </li>`;
+    })
+    .join("");
 
-    const textEl = document.createElement("div");
-    textEl.innerHTML = highlightKeyword(e.text, kw);
-
-    let draftEl = null;
-    if (e.draft) {
-      draftEl = document.createElement("div");
-      draftEl.style.cssText = "margin-top:8px;padding:10px 12px;background:var(--surface-raise);border-radius:6px;border-left:2px solid var(--blue);font-size:0.8125rem;color:var(--text-mid);line-height:1.75;";
-      draftEl.innerHTML = `<span style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);display:block;margin-bottom:4px;">Drafted</span>${highlightKeyword(e.draft, kw)}`;
-    }
-
-    const agentEl = document.createElement("div");
-    agentEl.style.cssText = "margin-top:8px;opacity:0.9;font-size:0.8rem;white-space:pre-wrap;";
-    agentEl.textContent = "Next: " + e.next + "\nQuestion: " + e.clarify;
-
-    const actions = document.createElement("div");
-    actions.className = "row";
-    actions.style.marginTop = "10px";
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "Delete";
-    deleteBtn.className = "btn ghost small";
-    deleteBtn.addEventListener("click", async () => {
-      if (!checkRate("delete_" + e.id, 2, 3000)) {
-        showOutput("Slow down — wait a moment before deleting again.");
-        return;
-      }
+  // Attach delete handlers
+  document.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.dataset.id;
+      if (!confirm("Delete this entry?")) return;
       try {
-        await apiDeleteEntry(e.id);
-        entries = entries.filter(x => x.id !== e.id);
+        await apiDeleteEntry(id);
+        entries = entries.filter(entry => entry.id !== id);
         render(entries);
-        showOutput("Entry deleted.");
+        showToast("Entry deleted");
       } catch (err) {
         showOutput("Delete failed: " + err.message);
       }
     });
-
-    actions.appendChild(deleteBtn);
-    li.appendChild(meta);
-    li.appendChild(textEl);
-    if (draftEl) li.appendChild(draftEl);
-    li.appendChild(agentEl);
-    li.appendChild(actions);
-    historyEl.appendChild(li);
-  }
-}
-
-/* =============================================================
-   CLARIFY AGENT UI — modal-style panel
-   ============================================================= */
-let clarifyState = {
-  active: false,
-  text: "",
-  tag: "",
-  history: [],
-};
-
-function buildClarifyPanel() {
-  const existing = document.getElementById("clarifyPanel");
-  if (existing) existing.remove();
-
-  const panel = document.createElement("div");
-  panel.id = "clarifyPanel";
-  panel.style.cssText = `
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border-light);
-    padding: 20px 24px;
-    z-index: 500;
-    max-width: 660px;
-    margin: 0 auto;
-    border-radius: 12px 12px 0 0;
-    box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
-    animation: slide-up 0.25s ease both;
-  `;
-
-  panel.innerHTML = `
-    <style>
-      @keyframes slide-up {
-        from { transform: translateY(100%); opacity: 0; }
-        to   { transform: translateY(0);    opacity: 1; }
-      }
-    </style>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <span style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--blue);">
-        Clarify Agent
-      </span>
-      <button id="clarifyClose" class="btn ghost small">✕ Close</button>
-    </div>
-    <div id="clarifyThread" style="
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 16px;
-      min-height: 60px;
-      max-height: 200px;
-      overflow-y: auto;
-      font-size: 0.8125rem;
-      line-height: 1.8;
-      color: var(--text-mid);
-      white-space: pre-wrap;
-      margin-bottom: 12px;
-    "></div>
-    <div style="display:flex;gap:10px;">
-      <input id="clarifyInput" type="text" placeholder="Your answer…" style="
-        flex: 1;
-        background: var(--bg);
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 14px;
-        font-family: 'DM Mono', monospace;
-        font-size: 0.8125rem;
-        outline: none;
-      " />
-      <button id="clarifyReply" class="btn small">Reply</button>
-    </div>
-    <div id="clarifyActions" style="margin-top:12px;display:none;"></div>
-  `;
-
-  document.body.appendChild(panel);
-
-  document.getElementById("clarifyClose").addEventListener("click", () => {
-    panel.remove();
-    clarifyState = { active: false, text: "", tag: "", history: [] };
   });
 
-  const replyBtn = document.getElementById("clarifyReply");
-  const clarifyInputEl = document.getElementById("clarifyInput");
-
-  const handleReply = async () => {
-    const reply = clarifyInputEl.value.trim();
-    if (!reply) return;
-
-    clarifyInputEl.value = "";
-    appendToThread("You", reply);
-    replyBtn.disabled = true;
-    clarifyInputEl.disabled = true;
-
-    try {
-      const result = await clarifyAgentStep(
-        clarifyState.text,
-        clarifyState.tag,
-        clarifyState.history,
-        reply
-      );
-
-      // Update history
-      clarifyState.history.push({ role: "user", content: reply });
-
-      if (result.done) {
-        appendToThread("Agent", "✓ Crystallised. Here is your refined entry:");
-        appendToThread("Draft", result.draft);
-        clarifyState.history.push({ role: "agent", content: result.draft });
-
-        // Show use + save buttons
-        const actionsEl = document.getElementById("clarifyActions");
-        actionsEl.style.display = "flex";
-        actionsEl.style.gap = "10px";
-        actionsEl.innerHTML = "";
-
-        const useBtn = document.createElement("button");
-        useBtn.textContent = "Load into Input";
-        useBtn.className = "btn small";
-        useBtn.addEventListener("click", () => {
-          inputEl.value = result.draft;
-          panel.remove();
-          clarifyState = { active: false, text: "", tag: "", history: [] };
-          showOutput("Crystallised entry loaded. Edit and save when ready.");
-        });
-
-        const saveDirectBtn = document.createElement("button");
-        saveDirectBtn.textContent = "Save Directly";
-        saveDirectBtn.className = "btn small";
-        saveDirectBtn.addEventListener("click", async () => {
-          const p = processText(result.draft);
-          const entry = {
-            id: crypto.randomUUID(),
-            created_at: new Date().toISOString(),
-            text: result.draft,
-            draft: clarifyState.text, // original as draft reference
-            _v: SCHEMA_VERSION,
-            ...p,
-          };
-          try {
-            await apiSaveEntry(entry);
-            entries.push(entry);
-            render(entries);
-            showSaveFeedback("✓ Crystallised entry saved");
-            panel.remove();
-            clarifyState = { active: false, text: "", tag: "", history: [] };
-          } catch (err) {
-            showOutput("Save failed: " + err.message);
-          }
-        });
-
-        actionsEl.appendChild(useBtn);
-        actionsEl.appendChild(saveDirectBtn);
-        clarifyInputEl.style.display = "none";
-        replyBtn.style.display = "none";
-      } else {
-        appendToThread("Agent", result.question);
-        clarifyState.history.push({ role: "agent", content: result.question });
-        replyBtn.disabled = false;
-        clarifyInputEl.disabled = false;
-        clarifyInputEl.focus();
+  // Attach email entry handlers
+  document.querySelectorAll(".email-entry-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const id = e.target.dataset.id;
+      const entry = entries.find(e => e.id === id);
+      if (entry) {
+        openEmailComposer(entry.text, `Arcanthyr Entry: ${entry.tag}`);
       }
-    } catch (err) {
-      appendToThread("Error", err.message);
-      replyBtn.disabled = false;
-      clarifyInputEl.disabled = false;
-    }
-  };
-
-  replyBtn.addEventListener("click", handleReply);
-  clarifyInputEl.addEventListener("keydown", e => {
-    if (e.key === "Enter") handleReply();
+    });
   });
 }
 
-function appendToThread(role, text) {
-  const thread = document.getElementById("clarifyThread");
-  if (!thread) return;
-  const line = document.createElement("div");
-  line.style.cssText = `margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;`;
-
-  const roleColors = {
-    Agent: "var(--blue)",
-    You: "var(--gold)",
-    Draft: "var(--green)",
-    Error: "#c85a5a",
-  };
-
-  line.innerHTML = `
-    <span style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:${roleColors[role] || "var(--text-dim)"};">${role}</span>
-    <div style="margin-top:4px;color:var(--text-mid);">${escapeHtml(text)}</div>
-  `;
-  thread.appendChild(line);
-  thread.scrollTop = thread.scrollHeight;
-}
-
-async function startClarifyAgent() {
-  const text = inputEl.value.trim();
-  if (!text) return showOutput("Type something first to clarify.");
-
-  if (!checkRate("clarify", 3, 15000)) {
-    showOutput("Rate limit: wait before starting another clarification.");
-    return;
-  }
-
-  const tag = classify(text);
-  clarifyState = { active: true, text, tag, history: [] };
-  buildClarifyPanel();
-
-  const thread = document.getElementById("clarifyThread");
-  thread.innerHTML = "";
-  appendToThread("Agent", "Loading first question…");
-
-  try {
-    const result = await clarifyAgentStep(text, tag, [], null);
-    thread.innerHTML = "";
-    appendToThread("Agent", result.question);
-    clarifyState.history.push({ role: "agent", content: result.question });
-    document.getElementById("clarifyInput").focus();
-  } catch (err) {
-    thread.innerHTML = "";
-    appendToThread("Error", "Could not start clarification: " + err.message);
-  }
-}
-
 /* =============================================================
-   AXIOM RELAY UI — panel in the relay card
+   RELAY REPORT RENDERER
    ============================================================= */
-function renderRelayReport(result) {
+function renderRelayReport(data) {
   const relayOutput = document.getElementById("relayOutput");
   if (!relayOutput) return;
 
-  if (result.error) {
-    relayOutput.textContent = result.error;
-    relayOutput.style.display = "block";
-    return;
-  }
-
-  const report = result.report || "";
-  const formatted = report
+  const formatted = data.report
     .replace(/^(SIGNAL)/m, '<div class="review-section-title">$1</div>')
     .replace(/^(LEVERAGE POINT)/m, '<div class="review-section-title">$1</div>')
     .replace(/^(RELAY ACTIONS)/m, '<div class="review-section-title">$1</div>')
@@ -596,55 +441,325 @@ function renderRelayReport(result) {
 }
 
 /* =============================================================
-   BOOT
+   CLARIFY AGENT (conversational loop)
    ============================================================= */
-let entries = [];
+let clarifyHistory = [];
+let clarifyOriginalText = "";
+let clarifyOriginalTag = "";
 
+async function startClarifyAgent() {
+  if (!checkRate("clarify", 3, 10000)) {
+    showOutput("Rate limit: wait before starting clarify again.");
+    return;
+  }
+
+  const text = inputEl.value.trim();
+  if (!text) return showOutput("Type something to clarify.");
+
+  const tag = classify(text);
+  clarifyOriginalText = text;
+  clarifyOriginalTag = tag;
+  clarifyHistory = [];
+
+  showOutput("Starting clarity loop…", "loading");
+
+  try {
+    const result = await clarifyAgentStep(text, tag, clarifyHistory, null);
+    if (result.question) {
+      showClarifyQuestion(result.question);
+    } else {
+      showOutput("Agent completed without question.");
+    }
+  } catch (err) {
+    showOutput("Clarify failed: " + err.message);
+  }
+}
+
+function showClarifyQuestion(question) {
+  clarifyHistory.push({ role: "agent", content: question });
+
+  outputEl.innerHTML = `
+    <div style="margin-bottom:12px;color:var(--blue);">Agent: ${question}</div>
+    <input type="text" id="clarifyReplyInput" class="search-input" placeholder="Your answer…" style="margin-bottom:8px;" />
+    <div style="display:flex;gap:8px;">
+      <button id="clarifyReplyBtn" class="btn small">Reply</button>
+      <button id="clarifySkipBtn" class="btn ghost small">Skip</button>
+    </div>
+  `;
+  outputEl.className = "output ai-output";
+
+  document.getElementById("clarifyReplyInput").focus();
+
+  document.getElementById("clarifyReplyBtn").addEventListener("click", async () => {
+    const replyInput = document.getElementById("clarifyReplyInput");
+    const reply = replyInput.value.trim();
+    if (!reply) return;
+
+    clarifyHistory.push({ role: "user", content: reply });
+    showOutput("Processing your reply…", "loading");
+
+    try {
+      const result = await clarifyAgentStep(
+        clarifyOriginalText,
+        clarifyOriginalTag,
+        clarifyHistory,
+        reply
+      );
+
+      if (result.done && result.draft) {
+        outputEl.innerHTML = `
+          <div style="margin-bottom:12px;color:var(--green);">Crystallised entry:</div>
+          <div style="white-space:pre-wrap;margin-bottom:12px;">${result.draft}</div>
+          <button id="useClarifiedBtn" class="btn small">Use This</button>
+        `;
+        outputEl.className = "output ai-output";
+
+        document.getElementById("useClarifiedBtn").addEventListener("click", () => {
+          inputEl.value = result.draft;
+          outputEl.textContent = "Clarified entry loaded into input. Edit and save when ready.";
+          outputEl.className = "output";
+          clarifyHistory = [];
+        });
+      } else if (result.question) {
+        showClarifyQuestion(result.question);
+      }
+    } catch (err) {
+      showOutput("Clarify continuation failed: " + err.message);
+    }
+  });
+
+  document.getElementById("clarifySkipBtn").addEventListener("click", () => {
+    outputEl.textContent = "Clarify loop cancelled.";
+    outputEl.className = "output";
+    clarifyHistory = [];
+  });
+
+  // Enter key to submit
+  document.getElementById("clarifyReplyInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      document.getElementById("clarifyReplyBtn").click();
+    }
+  });
+}
+
+/* =============================================================
+   EMAIL COMPOSER
+   ============================================================= */
+function openEmailComposer(content = "", subject = "") {
+  currentEmailContent = content;
+  emailCompose.style.display = "block";
+  emailBody.value = content;
+  emailSubject.value = subject;
+  emailRecipients.value = "";
+  emailOutput.textContent = "";
+  emailCompose.scrollIntoView({ behavior: "smooth" });
+}
+
+function closeEmailComposer() {
+  emailCompose.style.display = "none";
+  currentEmailContent = null;
+}
+
+/* =============================================================
+   CONTACTS MODAL
+   ============================================================= */
+async function loadContacts() {
+  try {
+    contacts = await emailGetContacts();
+    renderContactsList();
+  } catch (err) {
+    console.error("Failed to load contacts:", err);
+  }
+}
+
+function renderContactsList() {
+  if (!contactsList) return;
+
+  if (contacts.length === 0) {
+    contactsList.innerHTML = `
+      <li style="padding:20px;text-align:center;color:var(--text-dim);">
+        No contacts saved yet
+      </li>
+    `;
+    return;
+  }
+
+  contactsList.innerHTML = contacts.map(c => `
+    <li class="contact-item" data-id="${c.id}">
+      <div>
+        <strong>${c.name}</strong>
+        <span style="color:var(--text-mid);margin-left:8px;">${c.email}</span>
+      </div>
+      <button class="btn ghost small delete-contact-btn" data-id="${c.id}">Delete</button>
+    </li>
+  `).join("");
+
+  // Attach delete handlers
+  document.querySelectorAll(".delete-contact-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.dataset.id;
+      if (!confirm("Delete this contact?")) return;
+      try {
+        await emailDeleteContact(id);
+        contacts = contacts.filter(c => c.id !== id);
+        renderContactsList();
+        showToast("Contact deleted");
+      } catch (err) {
+        alert("Delete failed: " + err.message);
+      }
+    });
+  });
+
+  // Click contact to add to recipients
+  document.querySelectorAll(".contact-item").forEach(item => {
+    item.addEventListener("click", (e) => {
+      if (e.target.classList.contains("delete-contact-btn")) return;
+      const id = item.dataset.id;
+      const contact = contacts.find(c => c.id === id);
+      if (contact && emailRecipients) {
+        const current = emailRecipients.value.trim();
+        emailRecipients.value = current ? `${current}, ${contact.email}` : contact.email;
+        contactsModal.style.display = "none";
+      }
+    });
+  });
+}
+
+/* =============================================================
+   LEGAL RESEARCH RENDERING
+   ============================================================= */
+async function updateLegalSyncStatus() {
+  try {
+    const progress = await legalGetSyncProgress();
+    legalSyncStatus.textContent = `${progress.total_cases} cases | ${progress.total_principles} principles | Last sync: ${progress.last_sync === "Never" ? "Never" : new Date(progress.last_sync).toLocaleDateString()}`;
+  } catch (err) {
+    legalSyncStatus.textContent = "Sync status unavailable";
+  }
+}
+
+async function performLegalSearch() {
+  const query = legalSearchInput.value.trim();
+  
+  legalResults.innerHTML = `<div style="padding:20px;color:var(--text-dim);">Searching…</div>`;
+
+  try {
+    if (activeLegalView === "cases") {
+      const cases = await legalSearchCases(query, activeCourt);
+      renderCases(cases);
+    } else {
+      const principles = await legalSearchPrinciples(query);
+      renderPrinciples(principles);
+    }
+  } catch (err) {
+    legalResults.innerHTML = `<div style="padding:20px;color:var(--amber);">Search failed: ${err.message}</div>`;
+  }
+}
+
+function renderCases(cases) {
+  if (cases.length === 0) {
+    legalResults.innerHTML = `<div style="padding:20px;color:var(--text-dim);">No cases found</div>`;
+    return;
+  }
+
+  legalResults.innerHTML = cases.map(c => `
+    <div class="legal-item">
+      <div class="legal-item-header">
+        <strong>${c.case_name}</strong>
+        <span class="tag tag-${c.court}">${c.citation}</span>
+      </div>
+      <div class="legal-item-body">
+        <p><strong>Facts:</strong> ${c.facts}</p>
+        <p><strong>Issues:</strong> ${c.issues}</p>
+        <p><strong>Holding:</strong> ${c.holding}</p>
+        <a href="${c.url}" target="_blank" class="btn ghost small" style="margin-top:8px;">View on AustLII</a>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderPrinciples(principles) {
+  if (principles.length === 0) {
+    legalResults.innerHTML = `<div style="padding:20px;color:var(--text-dim);">No principles found</div>`;
+    return;
+  }
+
+  legalResults.innerHTML = principles.map(p => `
+    <div class="legal-item">
+      <div class="legal-item-body">
+        <p style="font-weight:500;margin-bottom:8px;">${p.principle_text}</p>
+        ${p.keywords.length > 0 ? `<div style="margin-bottom:4px;"><span style="color:var(--text-dim);font-size:0.75rem;">Keywords:</span> ${p.keywords.join(", ")}</div>` : ""}
+        ${p.statute_refs.length > 0 ? `<div style="margin-bottom:4px;"><span style="color:var(--text-dim);font-size:0.75rem;">Statutes:</span> ${p.statute_refs.join(", ")}</div>` : ""}
+        <div style="margin-top:8px;"><span style="color:var(--text-dim);font-size:0.75rem;">Citations:</span> ${p.case_citations.join(", ")}</div>
+        <div style="margin-top:4px;color:var(--gold);font-size:0.75rem;">Most recent: ${p.most_recent_citation}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* =============================================================
+   TOAST NOTIFICATIONS
+   ============================================================= */
+function showToast(msg) {
+  const toast = document.getElementById("saveToast");
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.style.display = "block";
+  toast.className = "save-toast toast-visible";
+  setTimeout(() => {
+    toast.className = "save-toast toast-out";
+    setTimeout(() => { toast.style.display = "none"; }, 400);
+  }, 2000);
+}
+
+function showOutput(msg, className = "") {
+  outputEl.textContent = msg;
+  outputEl.className = className ? `output ${className}` : "output";
+}
+
+/* =============================================================
+   INITIALIZATION
+   ============================================================= */
 (async () => {
   try {
     entries = await apiLoadEntries();
     render(entries);
-    showOutput("Vault connected.");
+    await loadContacts();
+    await updateLegalSyncStatus();
   } catch (e) {
-    render(entries);
-    showOutput("Vault not reachable: " + e.message);
+    showOutput("Failed to load vault: " + e.message);
   }
 })();
 
 /* =============================================================
-   EVENTS
+   EVENT HANDLERS — Main Input
    ============================================================= */
 processBtn.addEventListener("click", () => {
   const text = inputEl.value.trim();
-  if (!text) return showOutput("Type something first.");
+  if (!text) return showOutput("Type something to process.");
   const p = processText(text);
-  showOutput(`Tag: ${p.tag}\nNext: ${p.next}\nQuestion: ${p.clarify}`);
+  showOutput(`Tag: ${p.tag}\n\nNext: ${p.next}\n\nClarify: ${p.clarify}`);
 });
 
 saveBtn.addEventListener("click", async () => {
-  if (!checkRate("save", 5, 8000)) {
-    showOutput("Rate limit: wait a moment before saving again.");
-    return;
-  }
   const text = inputEl.value.trim();
-  if (!text) return showOutput("Nothing to save.");
+  if (!text) return showOutput("Type something to save.");
 
   const p = processText(text);
   const entry = {
-    id: crypto.randomUUID(),
+    id: `e-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     created_at: new Date().toISOString(),
     text,
-    draft: null,
-    _v: SCHEMA_VERSION,
     ...p,
   };
 
   try {
     await apiSaveEntry(entry);
-    entries.push(entry);
+    entries.unshift(entry);
     render(entries);
-    showSaveFeedback();
     inputEl.value = "";
+    outputEl.textContent = "";
+    outputEl.className = "output";
+    showToast("Entry saved");
   } catch (e) {
     showOutput("Save failed: " + e.message);
   }
@@ -652,7 +767,7 @@ saveBtn.addEventListener("click", async () => {
 
 draftBtn.addEventListener("click", async () => {
   if (!checkRate("draft", 3, 10000)) {
-    showOutput("Rate limit: wait before requesting another draft.");
+    showOutput("Rate limit: wait before drafting again.");
     return;
   }
   const text = inputEl.value.trim();
@@ -705,6 +820,24 @@ nextActionBtn.addEventListener("click", async () => {
   }
 });
 
+emailEntryBtn?.addEventListener("click", () => {
+  const text = inputEl.value.trim();
+  if (!text) {
+    showOutput("Type something to email.");
+    return;
+  }
+  openEmailComposer(text, "Arcanthyr Entry");
+});
+
+clearInputBtn.addEventListener("click", () => {
+  inputEl.value = "";
+  outputEl.textContent = "";
+  outputEl.className = "output";
+});
+
+/* =============================================================
+   EVENT HANDLERS — Reviews & Relay
+   ============================================================= */
 reviewBtn.addEventListener("click", async () => {
   if (!checkRate("review", 2, 30000)) {
     showOutput("Rate limit: wait 30 seconds before running another review.");
@@ -733,14 +866,12 @@ reviewBtn.addEventListener("click", async () => {
   }
 });
 
-// ── Clarify button (new — attached to "Clarify" button in HTML) ──
 document.addEventListener("click", e => {
   if (e.target && e.target.id === "clarifyBtn") {
     startClarifyAgent();
   }
 });
 
-// ── Axiom Relay ───────────────────────────────────────────────
 relayBtn.addEventListener("click", async () => {
   if (!checkRate("relay", 2, 30000)) {
     showOutput("Rate limit: wait 30 seconds before running Axiom Relay again.");
@@ -763,7 +894,6 @@ relayBtn.addEventListener("click", async () => {
   const focus = focusEl ? focusEl.value.trim() : "";
 
   try {
-    // Show stage progression
     const stages = [
       "Relay initialising — Stage 1: Decompose…",
       "Stage 2: Finding tensions…",
@@ -787,6 +917,9 @@ relayBtn.addEventListener("click", async () => {
   }
 });
 
+/* =============================================================
+   EVENT HANDLERS — Search & Filters
+   ============================================================= */
 let _searchDebounce = null;
 searchInput.addEventListener("input", () => {
   clearTimeout(_searchDebounce);
@@ -832,12 +965,195 @@ document.getElementById("clearFiltersBtn").addEventListener("click", () => {
   render(entries);
 });
 
-clearInputBtn.addEventListener("click", () => {
-  inputEl.value = "";
-  outputEl.textContent = "";
-  outputEl.className = "output";
+/* =============================================================
+   EVENT HANDLERS — Email
+   ============================================================= */
+sendEmailBtn?.addEventListener("click", async () => {
+  const to = emailRecipients.value.trim().split(",").map(e => e.trim()).filter(Boolean);
+  const subject = emailSubject.value.trim();
+  const body = emailBody.value.trim();
+
+  if (to.length === 0 || !subject || !body) {
+    emailOutput.textContent = "Please fill in all fields";
+    emailOutput.className = "output";
+    return;
+  }
+
+  emailOutput.textContent = "Sending email…";
+  emailOutput.className = "output loading";
+  sendEmailBtn.disabled = true;
+
+  try {
+    await emailSend(to, subject, body);
+    emailOutput.textContent = "Email sent successfully!";
+    emailOutput.className = "output";
+    showToast("Email sent");
+    setTimeout(closeEmailComposer, 2000);
+  } catch (err) {
+    emailOutput.textContent = "Send failed: " + err.message;
+    emailOutput.className = "output";
+  } finally {
+    sendEmailBtn.disabled = false;
+  }
 });
 
+cancelEmailBtn?.addEventListener("click", closeEmailComposer);
+
+manageContactsBtn?.addEventListener("click", () => {
+  contactsModal.style.display = "block";
+  renderContactsList();
+});
+
+closeContactsBtn?.addEventListener("click", () => {
+  contactsModal.style.display = "none";
+});
+
+addContactBtn?.addEventListener("click", async () => {
+  const name = document.getElementById("newContactName").value.trim();
+  const email = document.getElementById("newContactEmail").value.trim();
+
+  if (!name || !email) {
+    alert("Please enter both name and email");
+    return;
+  }
+
+  try {
+    const newContact = await emailAddContact(name, email);
+    contacts.push(newContact);
+    renderContactsList();
+    document.getElementById("newContactName").value = "";
+    document.getElementById("newContactEmail").value = "";
+    showToast("Contact added");
+  } catch (err) {
+    alert("Add contact failed: " + err.message);
+  }
+});
+
+addFromContactsBtn?.addEventListener("click", () => {
+  contactsModal.style.display = "block";
+  renderContactsList();
+});
+
+/* =============================================================
+   EVENT HANDLERS — Legal Research
+   ============================================================= */
+legalSyncBtn?.addEventListener("click", async () => {
+  if (!confirm("Check for new cases from AustLII? This will fetch recent Tasmanian criminal decisions.")) return;
+
+  legalSyncBtn.disabled = true;
+  legalSyncStatus.textContent = "Checking for new cases…";
+
+  try {
+    const result = await legalTriggerSync();
+    showToast(`Found ${result.cases_processed} new cases`);
+    await updateLegalSyncStatus();
+    if (result.cases_processed > 0) {
+      performLegalSearch(); // Refresh search results
+    }
+  } catch (err) {
+    legalSyncStatus.textContent = "Sync failed: " + err.message;
+  } finally {
+    legalSyncBtn.disabled = false;
+  }
+});
+
+// Upload case form toggle
+const toggleUploadBtn = document.getElementById("toggleUploadBtn");
+const uploadCaseForm = document.getElementById("uploadCaseForm");
+toggleUploadBtn?.addEventListener("click", () => {
+  const isVisible = uploadCaseForm.style.display !== "none";
+  uploadCaseForm.style.display = isVisible ? "none" : "block";
+  toggleUploadBtn.textContent = isVisible ? "Show Upload" : "Hide Upload";
+});
+
+// Cancel upload
+document.getElementById("cancelUploadBtn")?.addEventListener("click", () => {
+  uploadCaseForm.style.display = "none";
+  toggleUploadBtn.textContent = "Show Upload";
+  document.getElementById("uploadCitation").value = "";
+  document.getElementById("uploadCaseName").value = "";
+  document.getElementById("uploadCaseText").value = "";
+  document.getElementById("uploadOutput").style.display = "none";
+});
+
+// Upload case submit
+document.getElementById("uploadCaseBtn")?.addEventListener("click", async () => {
+  const citation = document.getElementById("uploadCitation").value.trim();
+  const caseName = document.getElementById("uploadCaseName").value.trim();
+  const court = document.getElementById("uploadCourt").value;
+  const caseText = document.getElementById("uploadCaseText").value.trim();
+  const uploadOutput = document.getElementById("uploadOutput");
+
+  if (!citation || !caseText) {
+    uploadOutput.textContent = "Please provide at least citation and case text";
+    uploadOutput.className = "output";
+    uploadOutput.style.display = "block";
+    return;
+  }
+
+  uploadOutput.textContent = "Processing case with AI (this may take 30-60 seconds)…";
+  uploadOutput.className = "output loading";
+  uploadOutput.style.display = "block";
+  document.getElementById("uploadCaseBtn").disabled = true;
+
+  try {
+    const result = await legalUploadCase(caseText, citation, caseName, court);
+    uploadOutput.textContent = `✓ Successfully processed: ${result.citation}\n\nExtracted ${result.summary.principles.length} legal principles.\n\nCase added to database and searchable now.`;
+    uploadOutput.className = "output";
+    
+    // Clear form
+    setTimeout(() => {
+      document.getElementById("uploadCitation").value = "";
+      document.getElementById("uploadCaseName").value = "";
+      document.getElementById("uploadCaseText").value = "";
+      uploadCaseForm.style.display = "none";
+      toggleUploadBtn.textContent = "Show Upload";
+    }, 3000);
+    
+    // Refresh search
+    await updateLegalSyncStatus();
+    performLegalSearch();
+    
+    showToast("Case uploaded and processed");
+  } catch (err) {
+    uploadOutput.textContent = "Upload failed: " + err.message;
+    uploadOutput.className = "output";
+  } finally {
+    document.getElementById("uploadCaseBtn").disabled = false;
+  }
+});
+
+let _legalSearchDebounce = null;
+legalSearchInput?.addEventListener("input", () => {
+  clearTimeout(_legalSearchDebounce);
+  _legalSearchDebounce = setTimeout(performLegalSearch, 400);
+});
+
+courtFilters?.addEventListener("click", e => {
+  const chip = e.target.closest(".chip");
+  if (!chip) return;
+  const court = chip.dataset.court;
+  if (!court) return;
+  activeCourt = court;
+  courtFilters.querySelectorAll(".chip").forEach(c =>
+    c.classList.toggle("active", c.dataset.court === court)
+  );
+  performLegalSearch();
+});
+
+document.querySelectorAll(".legal-view").forEach(chip => {
+  chip.addEventListener("click", () => {
+    activeLegalView = chip.dataset.view;
+    document.querySelectorAll(".legal-view").forEach(c =>
+      c.classList.toggle("active", c.dataset.view === activeLegalView)
+    );
+    performLegalSearch();
+  });
+});
+
+/* =============================================================
+   EVENT HANDLERS — History Management
+   ============================================================= */
 clearBtn.addEventListener("click", async () => {
   if (!checkRate("clearAll", 1, 15000)) {
     showOutput("Rate limit: wait before clearing again.");

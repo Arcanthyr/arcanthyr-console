@@ -1,0 +1,38 @@
+# Cloudflare secrets and cache
+.dev.vars
+.wrangler/
+wrangler.toml.backup
+
+# Environment variables
+.env
+.env.local
+
+# API keys and secrets (if you ever store locally)
+secrets.txt
+config.local.js
+
+# Node modules (if you use npm)
+node_modules/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build outputs (if any)
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Optional: Keep implementation docs private
+IMPLEMENTATION_SUMMARY.md
+
+# Optional: Local testing files
+test-data/
+scratch/
