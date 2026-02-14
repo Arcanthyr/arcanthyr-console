@@ -1,3 +1,4 @@
+console.log("APP LOADED");
 const inputEl = document.getElementById("input");
 const outputEl = document.getElementById("output");
 const historyEl = document.getElementById("history");
