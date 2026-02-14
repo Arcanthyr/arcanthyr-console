@@ -94,14 +94,17 @@ function showOutput(msg) {
 let _saveToastTimer = null;
 function showSaveFeedback() {
   const toast = document.getElementById("saveToast");
-  // Clear any in-flight timers so rapid saves don't stack
   if (_saveToastTimer) clearTimeout(_saveToastTimer);
+  // Set content and class, then force-show via inline style
+  toast.textContent = "✔ Entry saved";
   toast.className = "save-toast toast-visible";
+  toast.style.display = "block";
   _saveToastTimer = setTimeout(() => {
     toast.className = "save-toast toast-out";
     _saveToastTimer = setTimeout(() => {
+      toast.style.display = "none";
       toast.className = "save-toast";
-    }, 400); // matches toast-fade duration
+    }, 400);
   }, 1500);
 }
 
