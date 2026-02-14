@@ -7,13 +7,17 @@ const processBtn = document.getElementById("processBtn");
 const saveBtn = document.getElementById("saveBtn");
 const clearBtn = document.getElementById("clearBtn");
 const exportBtn = document.getElementById("exportBtn");
+const relayBtn = document.getElementById("relayBtn");
 
 const API_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/entries";
+
 // ---------- Vault API ----------
 async function apiLoadEntries() {
   const r = await fetch(API_BASE, { method: "GET" });
   if (!r.ok) throw new Error(`Failed to load entries: ${r.status}`);
   const data = await r.json();
+  // API returns newest-first (ORDER BY created_at DESC); reverse once so local
+  // array is oldest-first. render() then reverses again to display newest-first.
   return (data.entries || []).slice().reverse();
 }
 
@@ -48,21 +52,21 @@ function classify(text) {
 
 function nextStep(tag) {
   switch (tag) {
-    case "task": return "Define the smallest next action and a time: who/what/when.";
+    case "task":     return "Define the smallest next action and a time: who/what/when.";
     case "decision": return "Write 2 options + the downside if wrong + one reversible test.";
     case "question": return "State what a good answer would let you do. Then list 2 constraints.";
-    case "idea": return "Turn it into a 1-sentence pitch + first tiny prototype step.";
-    default: return "Rewrite as one clear sentence. Then add one concrete next action.";
+    case "idea":     return "Turn it into a 1-sentence pitch + first tiny prototype step.";
+    default:         return "Rewrite as one clear sentence. Then add one concrete next action.";
   }
 }
 
 function clarifyQuestion(tag) {
   switch (tag) {
-    case "task": return "What’s the deadline, and what is ‘done’ in one sentence?";
+    case "task":     return "What's the deadline, and what is 'done' in one sentence?";
     case "decision": return "What would change your mind most?";
     case "question": return "What context is missing that makes this hard to answer?";
-    case "idea": return "Who is this for, and what pain does it remove?";
-    default: return "Is this something you want to act on, or just capture?";
+    case "idea":     return "Who is this for, and what pain does it remove?";
+    default:         return "Is this something you want to act on, or just capture?";
   }
 }
 
@@ -87,6 +91,7 @@ function render(entries) {
     return;
   }
 
+  // entries is stored oldest-first internally; display newest-first
   const newestFirst = [...entries].reverse();
   for (const e of newestFirst) {
     const li = document.createElement("li");
@@ -111,7 +116,7 @@ function render(entries) {
     const agent = document.createElement("div");
     agent.style.marginTop = "8px";
     agent.style.opacity = "0.9";
-    agent.textContent = `Next: ${e.next}\nQuestion: ${e.clarify}`;
+    agent.textContent = "Next: " + e.next + "\nQuestion: " + e.clarify;
 
     li.appendChild(meta);
     li.appendChild(text);
@@ -130,7 +135,7 @@ let entries = [];
     showOutput("Vault connected.");
   } catch (e) {
     render(entries);
-    showOutput(`Vault not reachable: ${e.message}`);
+    showOutput("Vault not reachable: " + e.message);
   }
 })();
 
@@ -139,7 +144,7 @@ processBtn.addEventListener("click", () => {
   if (!text) return showOutput("Type something first.");
 
   const p = processText(text);
-  showOutput(`Tag: ${p.tag}\nNext: ${p.next}\nQuestion: ${p.clarify}`);
+  showOutput("Tag: " + p.tag + "\nNext: " + p.next + "\nQuestion: " + p.clarify);
 });
 
 saveBtn.addEventListener("click", async () => {
@@ -161,18 +166,19 @@ saveBtn.addEventListener("click", async () => {
     showOutput("Saved to vault.");
     inputEl.value = "";
   } catch (e) {
-    showOutput(`Save failed: ${e.message}`);
+    showOutput("Save failed: " + e.message);
   }
 });
 
 clearBtn.addEventListener("click", async () => {
+  if (!confirm("Clear all entries from the vault? This cannot be undone.")) return;
   try {
     await apiClearAll();
     entries = [];
     render(entries);
     showOutput("Vault cleared.");
   } catch (e) {
-    showOutput(`Clear failed: ${e.message}`);
+    showOutput("Clear failed: " + e.message);
   }
 });
 
@@ -184,4 +190,9 @@ exportBtn.addEventListener("click", () => {
   a.download = "arcanthyr_console_export.json";
   a.click();
   URL.revokeObjectURL(url);
+});
+
+// Axiom Relay - placeholder; wire up when ready
+relayBtn.addEventListener("click", () => {
+  showOutput("Axiom Relay: not yet implemented.");
 });
