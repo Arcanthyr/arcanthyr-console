@@ -1,5 +1,5 @@
-/* =============================================================
-   ARCANTHYR — styles.css
+css/* =============================================================
+   ARCANTHYR – styles.css  v1
    Aesthetic: Monumental Stoic. Stone hall. Calm authority.
    Palette: near-black charcoal, off-white stone, parchment gold
    Typography: Cormorant Garamond (display) + DM Mono (UI)
@@ -16,47 +16,35 @@
 
 /* --- Design Tokens ------------------------------------------ */
 :root {
-  /* Surfaces */
   --bg:           #111214;
   --surface:      #191a1c;
   --surface-raise:#202224;
   --border:       #2c2d30;
   --border-light: #3a3b3f;
-
-  /* Text */
   --text:         #f0f1f2;
   --text-mid:     #888c94;
   --text-dim:     #484b52;
-
-  /* Accent — cold steel, very restrained */
   --gold:         #a8b4c0;
   --gold-dim:     #1a1e22;
-
-  /* Feedback */
   --green:        #7a9e7e;
   --green-dim:    #141f15;
-
-  /* Structure */
+  --amber:        #c8a96e;
+  --amber-dim:    #1e1810;
+  --blue:         #6e92b4;
+  --blue-dim:     #0f1820;
   --radius:       8px;
   --pad:          24px;
   --gap:          16px;
   --btn-h:        42px;
-
-  /* Transitions */
   --t:            150ms ease;
 }
 
 /* --- Base --------------------------------------------------- */
-html {
-  height: 100%;
-  /* Subtle stone texture via noise — pure CSS, no image */
-  background-color: var(--bg);
-}
+html { height: 100%; background-color: var(--bg); }
 
 body {
   min-height: 100%;
   background-color: var(--bg);
-  /* Very faint grain overlay using SVG data URI */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   color: var(--text);
   font-family: 'DM Mono', monospace;
@@ -77,21 +65,17 @@ body {
   gap: 28px;
 }
 
-/* --- Sigil SVG (shared) ------------------------------------- */
-/* Rendered inline in HTML; these classes control sizing/placement */
-.sigil {
-  display: block;
-  margin: 0 auto;
-}
+/* --- Sigil SVG ---------------------------------------------- */
+.sigil { display: block; margin: 0 auto; }
 .sigil-lg {
-  width: min(360px, 90vw);
+  width: min(340px, 88vw);
   height: auto;
   margin-bottom: 32px;
   opacity: 0.92;
 }
 .sigil-sm {
   width: 28px;
-  height: 42px;
+  height: 39px;
   opacity: 0.6;
   flex-shrink: 0;
 }
@@ -107,10 +91,7 @@ nav.site-nav {
 }
 
 /* --- Header ------------------------------------------------- */
-.header {
-  text-align: center;
-  padding-bottom: 4px;
-}
+.header { text-align: center; padding-bottom: 4px; }
 
 .header h1 {
   font-family: 'Cormorant Garamond', serif;
@@ -122,7 +103,6 @@ nav.site-nav {
   line-height: 1.1;
 }
 
-/* Thin rule beneath title — architectural underline */
 .header h1::after {
   content: '';
   display: block;
@@ -154,7 +134,6 @@ nav.site-nav {
 /* --- Card --------------------------------------------------- */
 .card {
   background: var(--surface);
-  /* Top-edge highlight simulates carved stone catching light */
   box-shadow:
     0 1px 0 0 var(--border-light) inset,
     0 -1px 0 0 rgba(0,0,0,0.4) inset,
@@ -168,9 +147,7 @@ nav.site-nav {
   transition: border-color var(--t);
 }
 
-.card:hover {
-  border-color: var(--border-light);
-}
+.card:hover { border-color: var(--border-light); }
 
 /* --- Label -------------------------------------------------- */
 .label {
@@ -180,6 +157,7 @@ nav.site-nav {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-dim);
+  white-space: nowrap;
 }
 
 /* --- Textarea ----------------------------------------------- */
@@ -199,15 +177,88 @@ nav.site-nav {
   transition: border-color var(--t), box-shadow var(--t);
 }
 
-.textarea::placeholder {
-  color: var(--text-dim);
-  font-style: italic;
-}
+.textarea::placeholder { color: var(--text-dim); font-style: italic; }
 
 .textarea:focus {
   outline: none;
   border-color: var(--gold);
   box-shadow: 0 0 0 1px var(--gold-dim);
+}
+
+/* --- Search input ------------------------------------------- */
+.search-row { width: 100%; }
+
+.search-input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.5;
+  transition: border-color var(--t);
+}
+
+.search-input::placeholder { color: var(--text-dim); font-style: italic; }
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+/* --- Filter row -------------------------------------------- */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* --- Chips -------------------------------------------------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t), color var(--t);
+}
+
+.chip:hover {
+  border-color: var(--border-light);
+  color: var(--text-mid);
+}
+
+.chip.active {
+  background: var(--gold-dim);
+  border-color: rgba(168,180,192,0.3);
+  color: var(--gold);
+}
+
+/* --- Filter summary ---------------------------------------- */
+.filter-summary {
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  min-height: 1.2em;
 }
 
 /* --- Row ---------------------------------------------------- */
@@ -218,9 +269,7 @@ nav.site-nav {
   gap: 10px;
 }
 
-.row.space {
-  justify-content: space-between;
-}
+.row.space { justify-content: space-between; }
 
 /* --- Buttons ------------------------------------------------ */
 button, .btn {
@@ -257,7 +306,13 @@ button:active, .btn:active {
   box-shadow: none;
 }
 
-/* Ghost variant — secondary actions */
+button:disabled, .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Ghost variant */
 button.ghost, .btn.ghost {
   background: transparent;
   color: var(--text-dim);
@@ -279,6 +334,18 @@ button.small, .btn.small {
   font-size: 0.6875rem;
 }
 
+/* AI accent buttons */
+button.ai-btn {
+  border-color: rgba(110,146,180,0.35);
+  color: var(--blue);
+}
+
+button.ai-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-dim);
+}
+
 /* --- Output area -------------------------------------------- */
 .output {
   min-height: 52px;
@@ -294,6 +361,46 @@ button.small, .btn.small {
   line-height: 1.8;
   transition: border-color var(--t);
 }
+
+.output.loading {
+  color: var(--text-dim);
+  animation: pulse-dim 1.4s ease infinite;
+}
+
+@keyframes pulse-dim {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+.output.ai-output {
+  border-color: rgba(110,146,180,0.25);
+}
+
+/* --- Review output ----------------------------------------- */
+.review-output {
+  background: var(--bg);
+  border: 1px solid rgba(110,146,180,0.2);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 300;
+  color: var(--text-mid);
+  white-space: pre-wrap;
+  line-height: 1.9;
+}
+
+.review-section-title {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--blue);
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+
+.review-section-title:first-child { margin-top: 0; }
 
 /* --- H2 ---------------------------------------------------- */
 .h2 {
@@ -324,7 +431,6 @@ button.small, .btn.small {
   gap: 10px;
   font-size: 0.875rem;
   transition: border-color var(--t);
-  /* Left accent bar — gold, very subtle */
   border-left: 2px solid var(--gold-dim);
 }
 
@@ -333,7 +439,9 @@ button.small, .btn.small {
   border-left-color: var(--gold);
 }
 
-/* --- Meta row (tag + time) ---------------------------------- */
+.item.highlight { border-left-color: var(--amber); }
+
+/* --- Meta row ---------------------------------------------- */
 .meta {
   display: flex;
   align-items: center;
@@ -360,6 +468,20 @@ button.small, .btn.small {
   border: 1px solid rgba(184,168,130,0.15);
 }
 
+.tag.tag-task     { background: #141d1f; color: #6e9eb4; border-color: rgba(110,158,180,0.2); }
+.tag.tag-decision { background: #1e1810; color: #c8a96e; border-color: rgba(200,169,110,0.2); }
+.tag.tag-question { background: #0f1820; color: #6e92b4; border-color: rgba(110,146,180,0.2); }
+.tag.tag-idea     { background: #161220; color: #9e8ec8; border-color: rgba(158,142,200,0.2); }
+.tag.tag-note     { background: var(--gold-dim); color: var(--gold); border-color: rgba(168,180,192,0.15); }
+
+/* --- Keyword highlight ------------------------------------- */
+mark {
+  background: rgba(200,169,110,0.2);
+  color: var(--amber);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
 /* --- Empty state ------------------------------------------- */
 .empty-state {
   list-style: none;
@@ -370,8 +492,6 @@ button.small, .btn.small {
   gap: 8px;
   padding: 52px var(--pad);
   text-align: center;
-  /* Sigil watermark effect behind text */
-  position: relative;
 }
 
 .empty-title {
@@ -441,12 +561,11 @@ button.small, .btn.small {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.wrap > * {
-  animation: page-in 0.4s ease both;
-}
+.wrap > * { animation: page-in 0.4s ease both; }
 
 .wrap > *:nth-child(1) { animation-delay: 0ms; }
 .wrap > *:nth-child(2) { animation-delay: 60ms; }
 .wrap > *:nth-child(3) { animation-delay: 120ms; }
 .wrap > *:nth-child(4) { animation-delay: 180ms; }
 .wrap > *:nth-child(5) { animation-delay: 240ms; }
+.wrap > *:nth-child(6) { animation-delay: 300ms; }
