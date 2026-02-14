@@ -8,6 +8,7 @@ const saveBtn = document.getElementById("saveBtn");
 const clearBtn = document.getElementById("clearBtn");
 const exportBtn = document.getElementById("exportBtn");
 
+const API_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/entries";
 // ---------- Vault API ----------
 async function apiLoadEntries() {
   const r = await fetch(API_BASE, { method: "GET" });
