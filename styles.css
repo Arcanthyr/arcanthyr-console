@@ -1,126 +1,216 @@
-/* =====================================================
-   Arcanthyr — styles.css
-   Spacing system: 24px section padding, 16px element gaps
-   Radius: 8px everywhere
-   ===================================================== */
+/* =============================================================
+   ARCANTHYR — styles.css
+   Aesthetic: Monumental Stoic. Stone hall. Calm authority.
+   Palette: near-black charcoal, off-white stone, parchment gold
+   Typography: Cormorant Garamond (display) + DM Mono (UI)
+   ============================================================= */
 
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap');
+
+/* --- Reset -------------------------------------------------- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* --- Design Tokens ------------------------------------------ */
 :root {
-  --bg:          #0f0f11;
-  --surface:     #18181c;
-  --border:      #2a2a30;
-  --text:        #e8e8ec;
-  --text-muted:  #7a7a8a;
-  --accent:      #7c6af7;
-  --accent-dim:  #3d3470;
-  --green:       #3ecf6e;
-  --green-dim:   #1a4a30;
-  --red-dim:     #4a1a1a;
-  --radius:      8px;
-  --pad-section: 24px;
-  --gap:         16px;
-  --btn-height:  40px;
-  --font:        'Inter', system-ui, -apple-system, sans-serif;
+  /* Surfaces */
+  --bg:           #111214;
+  --surface:      #191a1c;
+  --surface-raise:#202224;
+  --border:       #2c2d30;
+  --border-light: #3a3b3f;
+
+  /* Text */
+  --text:         #f0f1f2;
+  --text-mid:     #888c94;
+  --text-dim:     #484b52;
+
+  /* Accent — cold steel, very restrained */
+  --gold:         #a8b4c0;
+  --gold-dim:     #1a1e22;
+
+  /* Feedback */
+  --green:        #7a9e7e;
+  --green-dim:    #141f15;
+
+  /* Structure */
+  --radius:       8px;
+  --pad:          24px;
+  --gap:          16px;
+  --btn-h:        42px;
+
+  /* Transitions */
+  --t:            150ms ease;
 }
 
-html, body {
+/* --- Base --------------------------------------------------- */
+html {
   height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  /* Subtle stone texture via noise — pure CSS, no image */
+  background-color: var(--bg);
 }
 
-/* ---- Layout ---- */
+body {
+  min-height: 100%;
+  background-color: var(--bg);
+  /* Very faint grain overlay using SVG data URI */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.01em;
+}
+
+/* --- Layout ------------------------------------------------- */
 .wrap {
-  max-width: 680px;
+  max-width: 660px;
   margin: 0 auto;
-  padding: 32px var(--pad-section) 64px;
+  padding: 48px var(--pad) 80px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
-/* ---- Header ---- */
+/* --- Sigil SVG (shared) ------------------------------------- */
+/* Rendered inline in HTML; these classes control sizing/placement */
+.sigil {
+  display: block;
+  margin: 0 auto;
+}
+.sigil-lg {
+  width: 120px;
+  height: 180px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+.sigil-sm {
+  width: 28px;
+  height: 42px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* --- Nav ---------------------------------------------------- */
+nav.site-nav {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 20px var(--pad) 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* --- Header ------------------------------------------------- */
 .header {
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
+  text-align: center;
+  padding-bottom: 4px;
 }
 
 .header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem;
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--text);
+  line-height: 1.1;
 }
 
-/* ---- Sub text ---- */
+/* Thin rule beneath title — architectural underline */
+.header h1::after {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+  margin: 12px auto 0;
+  opacity: 0.6;
+}
+
 .sub {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  margin-top: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--text-mid);
+  letter-spacing: 0.06em;
+  margin-top: 10px;
 }
 
-/* ---- Nav ---- */
-nav.row {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 16px var(--pad-section) 0;
+/* --- Divider ------------------------------------------------ */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-light), transparent);
+  border: none;
+  margin: 4px 0;
 }
 
-/* ---- Card ---- */
+/* --- Card --------------------------------------------------- */
 .card {
   background: var(--surface);
+  /* Top-edge highlight simulates carved stone catching light */
+  box-shadow:
+    0 1px 0 0 var(--border-light) inset,
+    0 -1px 0 0 rgba(0,0,0,0.4) inset,
+    0 4px 16px rgba(0,0,0,0.35);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: var(--pad-section);
+  padding: var(--pad);
   display: flex;
   flex-direction: column;
   gap: var(--gap);
+  transition: border-color var(--t);
 }
 
-/* ---- Label ---- */
+.card:hover {
+  border-color: var(--border-light);
+}
+
+/* --- Label -------------------------------------------------- */
 .label {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
 }
 
-/* ---- Textarea ---- */
+/* --- Textarea ----------------------------------------------- */
 .textarea {
   width: 100%;
-  min-height: 96px;
+  min-height: 100px;
   background: var(--bg);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 14px;
-  font-family: var(--font);
-  font-size: 0.9375rem;
-  line-height: 1.6;
+  padding: 14px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.75;
   resize: vertical;
-  transition: border-color 0.15s;
+  transition: border-color var(--t), box-shadow var(--t);
 }
 
 .textarea::placeholder {
-  color: var(--text-muted);
+  color: var(--text-dim);
+  font-style: italic;
 }
 
 .textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold-dim);
 }
 
-/* ---- Row ---- */
+/* --- Row ---------------------------------------------------- */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -132,75 +222,90 @@ nav.row {
   justify-content: space-between;
 }
 
-/* ---- Buttons ---- */
+/* --- Buttons ------------------------------------------------ */
 button, .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: var(--btn-height);
-  padding: 0 18px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
+  height: var(--btn-h);
+  padding: 0 20px;
+  background: var(--surface-raise);
+  color: var(--text);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius);
-  font-family: var(--font);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: opacity 0.15s, background 0.15s;
+  transition: background var(--t), border-color var(--t), color var(--t), transform var(--t), box-shadow var(--t);
 }
 
 button:hover, .btn:hover {
-  opacity: 0.85;
+  background: #222325;
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
 button:active, .btn:active {
-  opacity: 0.7;
+  transform: translateY(0);
+  box-shadow: none;
 }
 
-/* Ghost variant */
+/* Ghost variant — secondary actions */
 button.ghost, .btn.ghost {
   background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-color: var(--border);
 }
 
 button.ghost:hover, .btn.ghost:hover {
-  color: var(--text);
-  border-color: var(--text-muted);
-  opacity: 1;
+  background: transparent;
+  color: var(--text-mid);
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+  box-shadow: none;
 }
 
 /* Small variant */
 button.small, .btn.small {
   height: 32px;
   padding: 0 12px;
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
 }
 
-/* ---- Output area ---- */
+/* --- Output area -------------------------------------------- */
 .output {
-  min-height: 48px;
+  min-height: 52px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 14px;
-  font-size: 0.875rem;
-  color: var(--text-muted);
+  padding: 14px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8125rem;
+  font-weight: 300;
+  color: var(--text-mid);
   white-space: pre-wrap;
-  line-height: 1.7;
+  line-height: 1.8;
+  transition: border-color var(--t);
 }
 
-/* ---- H2 ---- */
+/* --- H2 ---------------------------------------------------- */
 .h2 {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
 }
 
-/* ---- History list ---- */
+/* --- History list ------------------------------------------ */
 .history {
   list-style: none;
   display: flex;
@@ -208,67 +313,82 @@ button.small, .btn.small {
   gap: var(--gap);
 }
 
-/* ---- History item ---- */
+/* --- History item ------------------------------------------ */
 .item {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: var(--pad-section);
+  padding: var(--pad);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
+  transition: border-color var(--t);
+  /* Left accent bar — gold, very subtle */
+  border-left: 2px solid var(--gold-dim);
 }
 
-/* ---- Meta row (tag + time) ---- */
+.item:hover {
+  border-color: var(--border-light);
+  border-left-color: var(--gold);
+}
+
+/* --- Meta row (tag + time) ---------------------------------- */
 .meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 0.8125rem;
-  color: var(--text-muted);
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
 }
 
-/* ---- Tag badge ---- */
+/* --- Tag badge --------------------------------------------- */
 .tag {
   display: inline-flex;
   align-items: center;
-  height: 22px;
+  height: 20px;
   padding: 0 8px;
-  background: var(--accent-dim);
-  color: var(--accent);
+  background: var(--gold-dim);
+  color: var(--gold);
   border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.625rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(184,168,130,0.15);
 }
 
-/* ---- Empty state ---- */
+/* --- Empty state ------------------------------------------- */
 .empty-state {
   list-style: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 48px var(--pad-section);
+  gap: 8px;
+  padding: 52px var(--pad);
   text-align: center;
+  /* Sigil watermark effect behind text */
+  position: relative;
 }
 
 .empty-title {
-  font-size: 0.9375rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--text-mid);
+  letter-spacing: 0.08em;
 }
 
 .empty-sub {
-  font-size: 0.8125rem;
-  color: #4a4a5a;
+  font-size: 0.6875rem;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
 }
 
-/* ---- Save toast ---- */
+/* --- Save toast -------------------------------------------- */
 .save-toast {
   position: fixed;
   bottom: 32px;
@@ -276,28 +396,28 @@ button.small, .btn.small {
   transform: translateX(-50%);
   background: var(--green-dim);
   color: var(--green);
-  border: 1px solid var(--green);
+  border: 1px solid rgba(122,158,126,0.3);
   border-radius: var(--radius);
   padding: 10px 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   pointer-events: none;
-  opacity: 0;
   z-index: 999;
+  white-space: nowrap;
 }
 
 .save-toast.toast-visible {
-  display: block;
   animation: toast-in 0.2s ease forwards;
 }
 
 .save-toast.toast-out {
-  display: block;
   animation: toast-fade 0.4s ease forwards;
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
@@ -306,10 +426,27 @@ button.small, .btn.small {
   to   { opacity: 0; transform: translateX(-50%) translateY(4px); }
 }
 
-/* ---- Footer ---- */
+/* --- Footer ------------------------------------------------- */
 .footer {
   text-align: center;
-  color: #3a3a4a;
-  font-size: 0.8125rem;
+  color: var(--text-dim);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
   padding-top: 8px;
 }
+
+/* --- Page entry animation ----------------------------------- */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.wrap > * {
+  animation: page-in 0.4s ease both;
+}
+
+.wrap > *:nth-child(1) { animation-delay: 0ms; }
+.wrap > *:nth-child(2) { animation-delay: 60ms; }
+.wrap > *:nth-child(3) { animation-delay: 120ms; }
+.wrap > *:nth-child(4) { animation-delay: 180ms; }
+.wrap > *:nth-child(5) { animation-delay: 240ms; }

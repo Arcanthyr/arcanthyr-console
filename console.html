@@ -1,32 +1,59 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arcanthyr Console</title>
+  <title>Arcanthyr — Console</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-  <nav class="row">
-    <a class="btn ghost" href="index.html">Home</a>
+
+  <!-- Nav: sigil acts as home anchor -->
+  <nav class="site-nav">
+    <a href="index.html" aria-label="Home">
+      <svg class="sigil sigil-sm" viewBox="0 0 100 160" fill="none"
+           xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <line x1="50" y1="4"  x2="50" y2="11" stroke="#a8b4c0" stroke-width="0.6"/>
+        <circle cx="50" cy="18" r="3.5" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
+        <line x1="50" y1="22" x2="50" y2="36" stroke="#a8b4c0" stroke-width="0.5"/>
+        <line x1="50" y1="36" x2="45" y2="42" stroke="#a8b4c0" stroke-width="0.6"/>
+        <line x1="50" y1="36" x2="50" y2="43" stroke="#a8b4c0" stroke-width="0.7"/>
+        <line x1="50" y1="36" x2="55" y2="42" stroke="#a8b4c0" stroke-width="0.6"/>
+        <circle cx="50" cy="72" r="22" stroke="#a8b4c0" stroke-width="0.7" fill="none" stroke-dasharray="1.2 2.4"/>
+        <circle cx="50" cy="72" r="13" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
+        <polygon points="50,45 47,65 50,62 53,65" fill="#a8b4c0" opacity="0.9"/>
+        <polygon points="50,99 47,79 50,82 53,79" fill="#a8b4c0" opacity="0.9"/>
+        <polygon points="77,72 57,69 60,72 57,75" fill="#a8b4c0" opacity="0.9"/>
+        <polygon points="23,72 43,69 40,72 43,75" fill="#a8b4c0" opacity="0.9"/>
+        <line x1="50" y1="94" x2="50" y2="110" stroke="#a8b4c0" stroke-width="0.5"/>
+        <line x1="50" y1="110" x2="45" y2="105" stroke="#a8b4c0" stroke-width="0.6"/>
+        <line x1="50" y1="110" x2="55" y2="105" stroke="#a8b4c0" stroke-width="0.6"/>
+        <line x1="50" y1="116" x2="50" y2="135" stroke="#a8b4c0" stroke-width="0.5"/>
+        <circle cx="50" cy="141" r="3.5" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
+        <line x1="50" y1="145" x2="50" y2="152" stroke="#a8b4c0" stroke-width="0.6"/>
+      </svg>
+    </a>
+    <a class="btn ghost small" href="index.html">Home</a>
   </nav>
+
   <main class="wrap">
     <header class="header">
       <h1>The Arc Console</h1>
       <p class="sub">Creating order from noise.</p>
     </header>
 
+    <hr class="divider" />
+
     <section class="card">
       <label for="input" class="label">Input</label>
-      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task..."></textarea>
+      <textarea id="input" class="textarea"
+        placeholder="Write a note, question, decision, or task..."></textarea>
 
       <div class="row">
         <button id="processBtn">Process</button>
         <button id="saveBtn">Save</button>
-        <button id="clearBtn">Clear</button>
-        <button id="exportBtn">Export</button>
+        <button id="clearBtn" class="ghost">Clear</button>
+        <button id="exportBtn" class="ghost">Export</button>
       </div>
 
       <div id="output" class="output" aria-live="polite"></div>
@@ -44,7 +71,7 @@
     </section>
 
     <footer class="footer">
-      <small>v0 — rule-based loop + local storage. Upgrade later to DB + optional AI.</small>
+      <small>v0 — rule-based loop. Private. Iterative.</small>
     </footer>
   </main>
 
@@ -52,5 +79,4 @@
 
   <script src="app.js?v=4"></script>
 </body>
-
 </html>
