@@ -91,14 +91,28 @@ function showOutput(msg) {
   outputEl.textContent = msg;
 }
 
+let _saveToastTimer = null;
+function showSaveFeedback() {
+  const toast = document.getElementById("saveToast");
+  toast.classList.remove("toast-out");
+  toast.classList.add("toast-visible");
+  if (_saveToastTimer) clearTimeout(_saveToastTimer);
+  _saveToastTimer = setTimeout(() => {
+    toast.classList.add("toast-out");
+    toast.addEventListener("animationend", () => {
+      toast.classList.remove("toast-visible", "toast-out");
+    }, { once: true });
+  }, 1500);
+}
+
 function render(entries) {
   historyEl.innerHTML = "";
 
   if (!entries.length) {
-    const li = document.createElement("li");
-    li.className = "item";
-    li.textContent = "No entries yet.";
-    historyEl.appendChild(li);
+    const empty = document.createElement("li");
+    empty.className = "empty-state";
+    empty.innerHTML = "<span class='empty-title'>No entries yet.</span><span class='empty-sub'>Create your first record to begin.</span>";
+    historyEl.appendChild(empty);
     return;
   }
 
@@ -190,7 +204,7 @@ saveBtn.addEventListener("click", async () => {
     await apiSaveEntry(entry);
     entries.push(entry);
     render(entries);
-    showOutput("Saved to vault.");
+    showSaveFeedback();
     inputEl.value = "";
   } catch (e) {
     showOutput("Save failed: " + e.message);
