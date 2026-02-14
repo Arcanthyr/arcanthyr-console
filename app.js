@@ -10,15 +10,14 @@ const exportBtn = document.getElementById("exportBtn");
 
 // ---------- Vault API ----------
 async function apiLoadEntries() {
-  const r = await fetch("https://arcanthyr-api.arcanthyr-api.virtual-wiseman-operations.workers.dev", { method: "GET" });
+  const r = await fetch(API_BASE, { method: "GET" });
   if (!r.ok) throw new Error(`Failed to load entries: ${r.status}`);
   const data = await r.json();
-  // API returns newest-first; keep internal array oldest-first
   return (data.entries || []).slice().reverse();
 }
 
 async function apiSaveEntry(entry) {
-  const r = await fetch("https://arcanthyr-api.arcanthyr-api.virtual-wiseman-operations.workers.dev", {
+  const r = await fetch(API_BASE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(entry),
@@ -27,7 +26,7 @@ async function apiSaveEntry(entry) {
 }
 
 async function apiClearAll() {
-  const r = await fetch("https://arcanthyr-api.arcanthyr-api.virtual-wiseman-operations.workers.dev", { method: "DELETE" });
+  const r = await fetch(API_BASE, { method: "DELETE" });
   if (!r.ok) throw new Error(`Failed to clear vault: ${r.status}`);
 }
 
