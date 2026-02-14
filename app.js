@@ -8,6 +8,7 @@ const saveBtn = document.getElementById("saveBtn");
 const clearBtn = document.getElementById("clearBtn");
 const exportBtn = document.getElementById("exportBtn");
 const relayBtn = document.getElementById("relayBtn");
+const restoreBtn = document.getElementById("restoreBtn");
 
 const API_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/entries";
 
@@ -33,6 +34,16 @@ async function apiSaveEntry(entry) {
 async function apiClearAll() {
   const r = await fetch(API_BASE, { method: "DELETE" });
   if (!r.ok) throw new Error(`Failed to clear vault: ${r.status}`);
+}
+
+async function apiDeleteEntry(id) {
+  const r = await fetch(API_BASE + "/" + id, { method: "DELETE" });
+  if (!r.ok) throw new Error(`Failed to delete entry: ${r.status}`);
+}
+
+async function apiRestoreAll() {
+  const r = await fetch(API_BASE, { method: "PATCH" });
+  if (!r.ok) throw new Error(`Failed to restore entries: ${r.status}`);
 }
 
 // ---------- Agent logic ----------
@@ -118,9 +129,25 @@ function render(entries) {
     agent.style.opacity = "0.9";
     agent.textContent = "Next: " + e.next + "\nQuestion: " + e.clarify;
 
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.className = "btn ghost small";
+    deleteBtn.style.marginTop = "10px";
+    deleteBtn.addEventListener("click", async () => {
+      try {
+        await apiDeleteEntry(e.id);
+        entries = entries.filter(x => x.id !== e.id);
+        render(entries);
+        showOutput("Entry deleted.");
+      } catch (err) {
+        showOutput("Delete failed: " + err.message);
+      }
+    });
+
     li.appendChild(meta);
     li.appendChild(text);
     li.appendChild(agent);
+    li.appendChild(deleteBtn);
     historyEl.appendChild(li);
   }
 }
@@ -195,4 +222,15 @@ exportBtn.addEventListener("click", () => {
 // Axiom Relay - placeholder; wire up when ready
 relayBtn.addEventListener("click", () => {
   showOutput("Axiom Relay: not yet implemented.");
+});
+
+restoreBtn.addEventListener("click", async () => {
+  try {
+    await apiRestoreAll();
+    entries = await apiLoadEntries();
+    render(entries);
+    showOutput("All entries restored.");
+  } catch (e) {
+    showOutput("Restore failed: " + e.message);
+  }
 });
