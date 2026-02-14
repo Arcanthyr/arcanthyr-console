@@ -1,148 +1,157 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arcanthyr</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <main class="wrap">
     <header class="header">
 
-      <svg class="sigil sigil-lg" viewBox="0 0 280 340" fill="none"
-           xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!--
+        CORRECTED SIGIL — matches reference image:
+        - 4 long thin cardinal spikes (NOT 8-pointed)
+        - Textured/distressed fill via SVG filter
+        - Dashed outer ring
+        - 3 satellites: top (large), right (medium), bottom (small)
+          No bottom-left satellite — asymmetric layout
+        - Each satellite has its own small 4-pointed starburst
+        - Horizontal crossbars on top + bottom satellites
+        - Small diamond terminator at bottom-right (signature mark)
+      -->
+      <svg class="sigil sigil-lg" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
 
-        <!-- ===== MAIN COMPASS ROSE (cx=140, cy=170) ===== -->
+        <defs>
+          <!-- Distress / texture filter -->
+          <filter id="tex" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" seed="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"
+              result="displaced" />
+            <feComposite in="displaced" in2="SourceGraphic" operator="in" />
+          </filter>
+          <!-- Lighter texture for secondary elements -->
+          <filter id="tex2" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
 
-        <!-- Outer dotted ring -->
-        <circle cx="140" cy="170" r="52" stroke="#a8b4c0" stroke-width="0.8" fill="none"
-                stroke-dasharray="1.5 3"/>
-        <!-- Inner ring -->
-        <circle cx="140" cy="170" r="22" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <!-- Centre dot -->
-        <circle cx="140" cy="170" r="3" stroke="#a8b4c0" stroke-width="0.6" fill="none"/>
+        <!-- ===== OUTER DASHED RING ============================= -->
+        <circle cx="140" cy="170" r="66" stroke="#a8b4c0" stroke-width="0.9" fill="none" stroke-dasharray="2.5 5"
+          opacity="0.65" />
 
-        <!-- 8-pointed inner star -->
-        <polygon points="140,150 142,163 140,167 138,163" fill="#a8b4c0" opacity="0.75"/>
-        <polygon points="140,190 142,177 140,173 138,177" fill="#a8b4c0" opacity="0.75"/>
-        <polygon points="118,170 131,168 135,170 131,172" fill="#a8b4c0" opacity="0.75"/>
-        <polygon points="162,170 149,168 145,170 149,172" fill="#a8b4c0" opacity="0.75"/>
-        <!-- Diagonal inner points -->
-        <polygon points="125,155 136,165 137,170 133,166" fill="#a8b4c0" opacity="0.4"/>
-        <polygon points="155,155 144,165 143,170 147,166" fill="#a8b4c0" opacity="0.4"/>
-        <polygon points="125,185 136,175 137,170 133,174" fill="#a8b4c0" opacity="0.4"/>
-        <polygon points="155,185 144,175 143,170 147,174" fill="#a8b4c0" opacity="0.4"/>
-
-        <!-- NORTH spike — very long, needle-thin -->
-        <polygon points="140,118 137.5,158 140,152 142.5,158" fill="#a8b4c0" opacity="0.95"/>
-        <!-- inner highlight -->
-        <polygon points="140,120 139.2,155 140,150 140.8,155" fill="#c8d4e0" opacity="0.3"/>
+        <!-- ===== MAIN 4-POINTED STAR =========================== -->
+        <!-- NORTH spike — very long, blade-thin -->
+        <polygon points="140,104 136.5,160 140,154 143.5,160" fill="#c8d4e0" opacity="0.92" filter="url(#tex)" />
+        <!-- inner highlight edge -->
+        <polygon points="140,106 138.8,157 140,152 141.2,157" fill="#e0e8f0" opacity="0.25" />
 
         <!-- SOUTH spike -->
-        <polygon points="140,222 137.5,182 140,188 142.5,182" fill="#a8b4c0" opacity="0.95"/>
-        <polygon points="140,220 139.2,185 140,190 140.8,185" fill="#c8d4e0" opacity="0.3"/>
+        <polygon points="140,236 136.5,180 140,186 143.5,180" fill="#c8d4e0" opacity="0.92" filter="url(#tex)" />
+        <polygon points="140,234 138.8,183 140,188 141.2,183" fill="#e0e8f0" opacity="0.25" />
 
-        <!-- EAST spike — very long -->
-        <polygon points="192,170 152,167 158,170 152,173" fill="#a8b4c0" opacity="0.95"/>
-        <polygon points="190,170 155,169.2 160,170 155,170.8" fill="#c8d4e0" opacity="0.3"/>
+        <!-- EAST spike -->
+        <polygon points="204,170 148,166.5 154,170 148,173.5" fill="#c8d4e0" opacity="0.92" filter="url(#tex)" />
+        <polygon points="202,170 151,169 156,170 151,171" fill="#e0e8f0" opacity="0.25" />
 
         <!-- WEST spike -->
-        <polygon points="88,170 128,167 122,170 128,173" fill="#a8b4c0" opacity="0.95"/>
-        <polygon points="90,170 125,169.2 120,170 125,170.8" fill="#c8d4e0" opacity="0.3"/>
+        <polygon points="76,170 132,166.5 126,170 132,173.5" fill="#c8d4e0" opacity="0.92" filter="url(#tex)" />
+        <polygon points="78,170 129,169 124,170 129,171" fill="#e0e8f0" opacity="0.25" />
+
+        <!-- ===== INNER COMPASS RING ============================ -->
+        <circle cx="140" cy="170" r="28" stroke="#a8b4c0" stroke-width="0.7" fill="none" opacity="0.7"
+          filter="url(#tex2)" />
+
+        <!-- Inner 8-pointed star (smaller, secondary) -->
+        <polygon points="140,143 141.8,161 140,164.5 138.2,161" fill="#a8b4c0" opacity="0.65" />
+        <polygon points="140,197 141.8,179 140,175.5 138.2,179" fill="#a8b4c0" opacity="0.65" />
+        <polygon points="113,170 131,168.2 134.5,170 131,171.8" fill="#a8b4c0" opacity="0.65" />
+        <polygon points="167,170 149,168.2 145.5,170 149,171.8" fill="#a8b4c0" opacity="0.65" />
+
+        <!-- Diagonal secondary points -->
+        <polygon points="120,151 133,163 135,169 130.5,164" fill="#a8b4c0" opacity="0.3" />
+        <polygon points="160,151 147,163 145,169 149.5,164" fill="#a8b4c0" opacity="0.3" />
+        <polygon points="120,189 133,177 135,171 130.5,176" fill="#a8b4c0" opacity="0.3" />
+        <polygon points="160,189 147,177 145,171 149.5,176" fill="#a8b4c0" opacity="0.3" />
+
+        <!-- Centre dot -->
+        <circle cx="140" cy="170" r="3.5" fill="#a8b4c0" opacity="0.75" />
+        <circle cx="140" cy="170" r="1.5" fill="#e0e8f0" opacity="0.5" />
 
         <!-- Cardinal ring ticks -->
-        <line x1="140" y1="117.5" x2="140" y2="113" stroke="#a8b4c0" stroke-width="0.7"/>
-        <line x1="192.5" y1="170" x2="197" y2="170" stroke="#a8b4c0" stroke-width="0.7"/>
-        <line x1="140" y1="222.5" x2="140" y2="227" stroke="#a8b4c0" stroke-width="0.7"/>
-        <line x1="87.5" y1="170" x2="83" y2="170" stroke="#a8b4c0" stroke-width="0.7"/>
-        <!-- Intercardinal ticks -->
-        <line x1="176.8" y1="133.2" x2="179.7" y2="130.3" stroke="#a8b4c0" stroke-width="0.5" opacity="0.55"/>
-        <line x1="176.8" y1="206.8" x2="179.7" y2="209.7" stroke="#a8b4c0" stroke-width="0.5" opacity="0.55"/>
-        <line x1="103.2" y1="206.8" x2="100.3" y2="209.7" stroke="#a8b4c0" stroke-width="0.5" opacity="0.55"/>
-        <line x1="103.2" y1="133.2" x2="100.3" y2="130.3" stroke="#a8b4c0" stroke-width="0.5" opacity="0.55"/>
+        <line x1="140" y1="103.5" x2="140" y2="98" stroke="#a8b4c0" stroke-width="0.8" opacity="0.7" />
+        <line x1="204.5" y1="170" x2="210" y2="170" stroke="#a8b4c0" stroke-width="0.8" opacity="0.7" />
+        <line x1="140" y1="236.5" x2="140" y2="242" stroke="#a8b4c0" stroke-width="0.8" opacity="0.7" />
+        <line x1="75.5" y1="170" x2="70" y2="170" stroke="#a8b4c0" stroke-width="0.8" opacity="0.7" />
 
-        <!-- ===== TOP SATELLITE (cx=140, cy=42) ===== -->
-        <!-- Top termination: upward starburst -->
-        <line x1="140" y1="6" x2="140" y2="26" stroke="#a8b4c0" stroke-width="0.6"/>
-        <polygon points="140,6 136,16 140,13 144,16" fill="#a8b4c0" opacity="0.9"/>
-        <!-- sub-feathers -->
-        <line x1="140" y1="6" x2="135" y2="12" stroke="#a8b4c0" stroke-width="0.5" opacity="0.5"/>
-        <line x1="140" y1="6" x2="145" y2="12" stroke="#a8b4c0" stroke-width="0.5" opacity="0.5"/>
-        <!-- Horizontal bars either side of top circle -->
-        <line x1="122" y1="42" x2="130" y2="42" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <line x1="150" y1="42" x2="158" y2="42" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
+        <!-- ===== TOP SATELLITE (large — cx=140, cy=38) ========= -->
+        <!-- Top termination: upward 4-pointed starburst -->
+        <line x1="140" y1="4" x2="140" y2="16" stroke="#a8b4c0" stroke-width="0.7" opacity="0.8" />
+        <polygon points="140,4 137.5,11 140,9 142.5,11" fill="#c8d4e0" opacity="0.9" />
+        <line x1="135" y1="4" x2="140" y2="9" stroke="#a8b4c0" stroke-width="0.5" opacity="0.4" />
+        <line x1="145" y1="4" x2="140" y2="9" stroke="#a8b4c0" stroke-width="0.5" opacity="0.4" />
+
+        <!-- Horizontal crossbars either side of top circle -->
+        <line x1="118" y1="38" x2="129" y2="38" stroke="#a8b4c0" stroke-width="0.65" opacity="0.65" />
+        <line x1="151" y1="38" x2="162" y2="38" stroke="#a8b4c0" stroke-width="0.65" opacity="0.65" />
+
         <!-- Top circle -->
-        <circle cx="140" cy="42" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
-        <circle cx="140" cy="42" r="3" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <!-- Connector: top circle → downward starburst → main rose -->
-        <line x1="140" y1="50" x2="140" y2="65" stroke="#a8b4c0" stroke-width="0.5"/>
-        <!-- Downward starburst below top circle -->
-        <polygon points="140,65 136,75 140,71 144,75" fill="#a8b4c0" opacity="0.9"/>
-        <line x1="140" y1="65" x2="134" y2="73" stroke="#a8b4c0" stroke-width="0.5" opacity="0.5"/>
-        <line x1="140" y1="65" x2="146" y2="73" stroke="#a8b4c0" stroke-width="0.5" opacity="0.5"/>
-        <!-- Connector: starburst → main rose north spike -->
-        <line x1="140" y1="75" x2="140" y2="118" stroke="#a8b4c0" stroke-width="0.45"/>
+        <circle cx="140" cy="38" r="11" stroke="#c8d4e0" stroke-width="0.9" fill="none" filter="url(#tex2)" />
+        <circle cx="140" cy="38" r="4.5" stroke="#a8b4c0" stroke-width="0.6" fill="none" opacity="0.7" />
 
-        <!-- ===== RIGHT SATELLITE (cx=210, cy=112) ===== -->
-        <!-- Top tick -->
-        <line x1="210" y1="94" x2="210" y2="101" stroke="#a8b4c0" stroke-width="0.55"/>
-        <!-- Small starburst above circle -->
-        <polygon points="210,94 208,100 210,98 212,100" fill="#a8b4c0" opacity="0.8"/>
+        <!-- Connector: top circle → starburst → main rose -->
+        <line x1="140" y1="16" x2="140" y2="27" stroke="#a8b4c0" stroke-width="0.6" opacity="0.7" />
+        <line x1="140" y1="49" x2="140" y2="64" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
+        <!-- downward starburst below top satellite -->
+        <polygon points="140,64 137.5,71 140,69 142.5,71" fill="#c8d4e0" opacity="0.85" />
+        <line x1="135" y1="64" x2="140" y2="69" stroke="#a8b4c0" stroke-width="0.5" opacity="0.4" />
+        <line x1="145" y1="64" x2="140" y2="69" stroke="#a8b4c0" stroke-width="0.5" opacity="0.4" />
+        <line x1="140" y1="71" x2="140" y2="104" stroke="#a8b4c0" stroke-width="0.45" opacity="0.65" />
+
+        <!-- ===== RIGHT SATELLITE (medium — cx=214, cy=108) ===== -->
+        <!-- Small 4-pointed starburst above circle -->
+        <line x1="214" y1="90" x2="214" y2="98" stroke="#a8b4c0" stroke-width="0.6" opacity="0.7" />
+        <polygon points="214,90 212,96 214,94 216,96" fill="#c8d4e0" opacity="0.85" />
+
         <!-- Circle -->
-        <circle cx="210" cy="112" r="9.5" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
-        <circle cx="210" cy="112" r="3.5" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <!-- Cardinal ticks -->
-        <line x1="210" y1="102" x2="210" y2="101" stroke="#a8b4c0" stroke-width="0.6"/>
-        <line x1="210" y1="122" x2="210" y2="129" stroke="#a8b4c0" stroke-width="0.6"/>
-        <line x1="200" y1="112" x2="193" y2="112" stroke="#a8b4c0" stroke-width="0.6"/>
-        <line x1="220" y1="112" x2="227" y2="112" stroke="#a8b4c0" stroke-width="0.6"/>
-        <!-- Diagonal ticks -->
-        <line x1="203.3" y1="105.3" x2="198.3" y2="100.3" stroke="#a8b4c0" stroke-width="0.4" opacity="0.45"/>
-        <line x1="216.7" y1="105.3" x2="221.7" y2="100.3" stroke="#a8b4c0" stroke-width="0.4" opacity="0.45"/>
-        <line x1="203.3" y1="118.7" x2="198.3" y2="123.7" stroke="#a8b4c0" stroke-width="0.4" opacity="0.45"/>
-        <line x1="216.7" y1="118.7" x2="221.7" y2="123.7" stroke="#a8b4c0" stroke-width="0.4" opacity="0.45"/>
-        <!-- Bottom tick + small starburst -->
-        <polygon points="210,129 208,135 210,133 212,135" fill="#a8b4c0" opacity="0.8"/>
-        <line x1="210" y1="135" x2="210" y2="142" stroke="#a8b4c0" stroke-width="0.55"/>
+        <circle cx="214" cy="112" r="10" stroke="#c8d4e0" stroke-width="0.8" fill="none" filter="url(#tex2)" />
+        <circle cx="214" cy="112" r="4" stroke="#a8b4c0" stroke-width="0.55" fill="none" opacity="0.65" />
 
-        <!-- ===== BOTTOM-LEFT SATELLITE (cx=82, cy=242) ===== -->
-        <!-- Top starburst above circle -->
-        <line x1="82" y1="218" x2="82" y2="230" stroke="#a8b4c0" stroke-width="0.5"/>
-        <polygon points="82,218 79,226 82,223 85,226" fill="#a8b4c0" opacity="0.85"/>
-        <line x1="82" y1="218" x2="77" y2="225" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5"/>
-        <line x1="82" y1="218" x2="87" y2="225" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5"/>
-        <!-- Horizontal bars -->
-        <line x1="65" y1="242" x2="73" y2="242" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <line x1="91" y1="242" x2="99" y2="242" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <!-- Circle -->
-        <circle cx="82" cy="242" r="9.5" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
-        <circle cx="82" cy="242" r="3.5" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <!-- Bottom starburst below circle -->
-        <line x1="82" y1="252" x2="82" y2="262" stroke="#a8b4c0" stroke-width="0.5"/>
-        <polygon points="82,262 79,270 82,268 85,270" fill="#a8b4c0" opacity="0.85"/>
-        <line x1="82" y1="262" x2="77" y2="269" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5"/>
-        <line x1="82" y1="262" x2="87" y2="269" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5"/>
-        <!-- Bottom crossbar termination -->
-        <line x1="82" y1="270" x2="82" y2="278" stroke="#a8b4c0" stroke-width="0.55"/>
-        <line x1="74" y1="278" x2="90" y2="278" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <!-- Small tick below crossbar -->
-        <line x1="82" y1="278" x2="82" y2="284" stroke="#a8b4c0" stroke-width="0.45" opacity="0.6"/>
+        <!-- Cardinal ticks on circle -->
+        <line x1="214" y1="101.5" x2="214" y2="98" stroke="#a8b4c0" stroke-width="0.6" opacity="0.6" />
+        <line x1="214" y1="122.5" x2="214" y2="127" stroke="#a8b4c0" stroke-width="0.6" opacity="0.6" />
+        <line x1="203.5" y1="112" x2="199" y2="112" stroke="#a8b4c0" stroke-width="0.6" opacity="0.6" />
+        <line x1="224.5" y1="112" x2="229" y2="112" stroke="#a8b4c0" stroke-width="0.6" opacity="0.6" />
 
-        <!-- ===== BOTTOM CENTRAL SATELLITE (cx=140, cy=268) ===== -->
+        <!-- Starburst below + connector line (not connected to main star) -->
+        <line x1="214" y1="127" x2="214" y2="135" stroke="#a8b4c0" stroke-width="0.55" opacity="0.65" />
+        <polygon points="214,135 212,141 214,139 216,141" fill="#c8d4e0" opacity="0.8" />
+        <line x1="214" y1="141" x2="214" y2="148" stroke="#a8b4c0" stroke-width="0.5" opacity="0.5" />
+
+        <!-- ===== BOTTOM SATELLITE (small — cx=140, cy=272) ===== -->
         <!-- Connector from main rose south spike -->
-        <line x1="140" y1="222" x2="140" y2="248" stroke="#a8b4c0" stroke-width="0.45"/>
-        <!-- Upward starburst above circle -->
-        <polygon points="140,248 136,256 140,253 144,256" fill="#a8b4c0" opacity="0.9"/>
-        <line x1="140" y1="248" x2="134" y2="255" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5"/>
-        <line x1="140" y1="248" x2="146" y2="255" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5"/>
+        <line x1="140" y1="242" x2="140" y2="258" stroke="#a8b4c0" stroke-width="0.5" opacity="0.65" />
+        <!-- upward starburst above circle -->
+        <polygon points="140,258 137.5,264 140,262 142.5,264" fill="#c8d4e0" opacity="0.85" />
+        <line x1="135" y1="258" x2="140" y2="263" stroke="#a8b4c0" stroke-width="0.45" opacity="0.4" />
+        <line x1="145" y1="258" x2="140" y2="263" stroke="#a8b4c0" stroke-width="0.45" opacity="0.4" />
+
         <!-- Circle -->
-        <circle cx="140" cy="268" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
-        <circle cx="140" cy="268" r="3" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <!-- Bottom termination: horizontal bar + tick -->
-        <line x1="140" y1="276" x2="140" y2="284" stroke="#a8b4c0" stroke-width="0.55"/>
-        <line x1="130" y1="284" x2="150" y2="284" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <line x1="140" y1="284" x2="140" y2="290" stroke="#a8b4c0" stroke-width="0.45" opacity="0.6"/>
+        <circle cx="140" cy="278" r="9" stroke="#c8d4e0" stroke-width="0.8" fill="none" filter="url(#tex2)" />
+        <circle cx="140" cy="278" r="3.5" stroke="#a8b4c0" stroke-width="0.55" fill="none" opacity="0.65" />
+
+        <!-- Bottom termination: horizontal bar -->
+        <line x1="140" y1="287" x2="140" y2="296" stroke="#a8b4c0" stroke-width="0.6" opacity="0.7" />
+        <line x1="128" y1="296" x2="152" y2="296" stroke="#a8b4c0" stroke-width="0.6" opacity="0.55" />
+        <line x1="140" y1="296" x2="140" y2="304" stroke="#a8b4c0" stroke-width="0.45" opacity="0.5" />
+
+        <!-- ===== SMALL DIAMOND SIGNATURE (bottom-right) ======== -->
+        <polygon points="256,330 260,334 256,338 252,334" fill="#c8d4e0" opacity="0.6" />
 
       </svg>
 
@@ -165,4 +174,5 @@
     </footer>
   </main>
 </body>
+
 </html>

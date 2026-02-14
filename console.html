@@ -1,51 +1,67 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arcanthyr – Console</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
-      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none"
-           xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- CORRECTED SIGIL: 4-pointed star, textured, 3 satellites -->
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
 
-        <!-- Main compass rose -->
-        <circle cx="140" cy="170" r="52" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="1.5 3"/>
-        <circle cx="140" cy="170" r="22" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <circle cx="140" cy="170" r="3" stroke="#a8b4c0" stroke-width="0.6" fill="none"/>
-        <!-- Cardinal spikes -->
-        <polygon points="140,118 137.5,158 140,152 142.5,158" fill="#a8b4c0" opacity="0.95"/>
-        <polygon points="140,222 137.5,182 140,188 142.5,182" fill="#a8b4c0" opacity="0.95"/>
-        <polygon points="192,170 152,167 158,170 152,173" fill="#a8b4c0" opacity="0.95"/>
-        <polygon points="88,170 128,167 122,170 128,173" fill="#a8b4c0" opacity="0.95"/>
-        <!-- 8-pointed inner star -->
-        <polygon points="140,150 142,163 140,167 138,163" fill="#a8b4c0" opacity="0.75"/>
-        <polygon points="140,190 142,177 140,173 138,177" fill="#a8b4c0" opacity="0.75"/>
-        <polygon points="118,170 131,168 135,170 131,172" fill="#a8b4c0" opacity="0.75"/>
-        <polygon points="162,170 149,168 145,170 149,172" fill="#a8b4c0" opacity="0.75"/>
+        <defs>
+          <filter id="tex-sm">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
 
-        <!-- Top satellite -->
-        <line x1="140" y1="6" x2="140" y2="26" stroke="#a8b4c0" stroke-width="0.6"/>
-        <polygon points="140,6 136,16 140,13 144,16" fill="#a8b4c0" opacity="0.9"/>
-        <circle cx="140" cy="42" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
-        <circle cx="140" cy="42" r="3" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <line x1="122" y1="42" x2="130" y2="42" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <line x1="150" y1="42" x2="158" y2="42" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
-        <line x1="140" y1="50" x2="140" y2="65" stroke="#a8b4c0" stroke-width="0.5"/>
-        <polygon points="140,65 136,75 140,71 144,75" fill="#a8b4c0" opacity="0.9"/>
-        <line x1="140" y1="75" x2="140" y2="118" stroke="#a8b4c0" stroke-width="0.45"/>
+        <!-- Outer dashed ring -->
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
+          opacity="0.7" />
 
-        <!-- Bottom central satellite -->
-        <line x1="140" y1="222" x2="140" y2="248" stroke="#a8b4c0" stroke-width="0.45"/>
-        <polygon points="140,248 136,256 140,253 144,256" fill="#a8b4c0" opacity="0.9"/>
-        <circle cx="140" cy="268" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none"/>
-        <circle cx="140" cy="268" r="3" stroke="#a8b4c0" stroke-width="0.5" fill="none"/>
-        <line x1="140" y1="276" x2="140" y2="284" stroke="#a8b4c0" stroke-width="0.55"/>
-        <line x1="130" y1="284" x2="150" y2="284" stroke="#a8b4c0" stroke-width="0.55" opacity="0.7"/>
+        <!-- 4-pointed main star (thin cardinal spikes only) -->
+        <polygon points="140,108 136,162 140,158 144,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="140,232 136,178 140,182 144,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="202,170 148,166 154,170 148,174" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="78,170 132,166 126,170 132,174" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+
+        <!-- Inner compass ring -->
+        <circle cx="140" cy="170" r="24" stroke="#a8b4c0" stroke-width="0.6" fill="none" opacity="0.6" />
+        <!-- Inner 8-pointed star detail -->
+        <polygon points="140,147 141.5,163 140,166 138.5,163" fill="#a8b4c0" opacity="0.5" />
+        <polygon points="140,193 141.5,177 140,174 138.5,177" fill="#a8b4c0" opacity="0.5" />
+        <polygon points="117,170 133,168.5 136,170 133,171.5" fill="#a8b4c0" opacity="0.5" />
+        <polygon points="163,170 147,168.5 144,170 147,171.5" fill="#a8b4c0" opacity="0.5" />
+        <circle cx="140" cy="170" r="3" fill="#a8b4c0" opacity="0.6" />
+
+        <!-- TOP SATELLITE -->
+        <line x1="140" y1="6" x2="140" y2="20" stroke="#a8b4c0" stroke-width="0.7" />
+        <!-- small 4-pointed starburst above circle -->
+        <polygon points="140,6 138.5,12 140,10 141.5,12" fill="#a8b4c0" opacity="0.85" />
+        <line x1="133" y1="34" x2="127" y2="34" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
+        <line x1="147" y1="34" x2="153" y2="34" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
+        <circle cx="140" cy="34" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none" />
+        <circle cx="140" cy="34" r="3" stroke="#a8b4c0" stroke-width="0.45" fill="none" />
+        <line x1="140" y1="42" x2="140" y2="55" stroke="#a8b4c0" stroke-width="0.5" />
+        <!-- starburst below top satellite -->
+        <polygon points="140,55 138.5,61 140,59 141.5,61" fill="#a8b4c0" opacity="0.85" />
+        <line x1="140" y1="61" x2="140" y2="108" stroke="#a8b4c0" stroke-width="0.4" opacity="0.7" />
+
+        <!-- BOTTOM SATELLITE -->
+        <line x1="140" y1="232" x2="140" y2="252" stroke="#a8b4c0" stroke-width="0.4" opacity="0.7" />
+        <polygon points="140,252 138.5,258 140,256 141.5,258" fill="#a8b4c0" opacity="0.85" />
+        <circle cx="140" cy="268" r="8" stroke="#a8b4c0" stroke-width="0.7" fill="none" />
+        <circle cx="140" cy="268" r="3" stroke="#a8b4c0" stroke-width="0.45" fill="none" />
+        <line x1="140" y1="276" x2="140" y2="284" stroke="#a8b4c0" stroke-width="0.6" />
+        <line x1="130" y1="284" x2="150" y2="284" stroke="#a8b4c0" stroke-width="0.55" opacity="0.6" />
 
       </svg>
     </a>
@@ -63,14 +79,14 @@
     <!-- INPUT CARD -->
     <section class="card">
       <label for="input" class="label">Input</label>
-      <textarea id="input" class="textarea"
-        placeholder="Write a note, question, decision, or task..."></textarea>
+      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task..."></textarea>
 
       <div class="row">
         <button id="processBtn">Process</button>
         <button id="saveBtn">Save</button>
         <button id="draftBtn" class="ghost">Draft</button>
         <button id="nextActionBtn" class="ghost">Next Actions</button>
+        <button id="clarifyBtn" class="ghost ai-btn">Clarify</button>
         <button id="clearInputBtn" class="ghost small">Clear</button>
       </div>
 
@@ -119,13 +135,27 @@
       <div id="reviewOutput" class="review-output" style="display:none"></div>
     </section>
 
+    <!-- AXIOM RELAY CARD -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Axiom Relay</h2>
+        <button id="relayBtn" class="btn ghost small ai-btn">Run Relay</button>
+      </div>
+      <p class="sub">Three-stage reasoning agent. Decomposes your entries, finds tensions, synthesises signal into
+        action.</p>
+      <div class="search-row">
+        <input type="text" id="relayFocus" class="search-input"
+          placeholder="Optional focus area — e.g. 'work projects' or 'financial decisions'…" />
+      </div>
+      <div id="relayOutput" class="review-output" style="display:none"></div>
+    </section>
+
     <!-- HISTORY CARD -->
     <section class="card">
       <div class="row space">
         <h2 class="h2">History</h2>
         <div class="row">
           <button id="restoreBtn" class="btn ghost small">Restore All</button>
-          <button id="relayBtn" class="btn ghost small">Axiom Relay</button>
           <button id="exportBtn" class="btn ghost small">Export</button>
           <button id="clearBtn" class="btn ghost small">Clear All</button>
         </div>
@@ -135,12 +165,13 @@
     </section>
 
     <footer class="footer">
-      <small>v1 — AI-assisted loop. Private. Iterative.</small>
+      <small>v2 – AI-assisted loop. Private. Iterative.</small>
     </footer>
   </main>
 
   <div id="saveToast" style="display:none" aria-live="polite"></div>
 
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
+
 </html>

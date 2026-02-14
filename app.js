@@ -1,4 +1,4 @@
-console.log("APP v6 LOADED");
+console.log("APP v7 LOADED — Axiom Relay + Clarify Agent");
 
 /* =============================================================
    SCHEMA VERSION
@@ -9,32 +9,32 @@ const SCHEMA_VERSION = 1;
    API BASES
    ============================================================= */
 const API_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/entries";
-const AI_BASE  = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/ai";
+const AI_BASE = "https://arcanthyr-api.virtual-wiseman-operations.workers.dev/api/ai";
 
 /* =============================================================
    DOM refs
    ============================================================= */
-const inputEl       = document.getElementById("input");
-const outputEl      = document.getElementById("output");
-const historyEl     = document.getElementById("history");
-const historyCount  = document.getElementById("historyCount");
-const processBtn    = document.getElementById("processBtn");
-const saveBtn       = document.getElementById("saveBtn");
-const draftBtn      = document.getElementById("draftBtn");
+const inputEl = document.getElementById("input");
+const outputEl = document.getElementById("output");
+const historyEl = document.getElementById("history");
+const historyCount = document.getElementById("historyCount");
+const processBtn = document.getElementById("processBtn");
+const saveBtn = document.getElementById("saveBtn");
+const draftBtn = document.getElementById("draftBtn");
 const nextActionBtn = document.getElementById("nextActionBtn");
 const clearInputBtn = document.getElementById("clearInputBtn");
-const clearBtn      = document.getElementById("clearBtn");
-const exportBtn     = document.getElementById("exportBtn");
-const relayBtn      = document.getElementById("relayBtn");
-const restoreBtn    = document.getElementById("restoreBtn");
-const reviewBtn     = document.getElementById("reviewBtn");
-const reviewOutput  = document.getElementById("reviewOutput");
-const searchInput   = document.getElementById("searchInput");
-const tagFilters    = document.getElementById("tagFilters");
+const clearBtn = document.getElementById("clearBtn");
+const exportBtn = document.getElementById("exportBtn");
+const relayBtn = document.getElementById("relayBtn");
+const restoreBtn = document.getElementById("restoreBtn");
+const reviewBtn = document.getElementById("reviewBtn");
+const reviewOutput = document.getElementById("reviewOutput");
+const searchInput = document.getElementById("searchInput");
+const tagFilters = document.getElementById("tagFilters");
 const filterSummary = document.getElementById("filterSummary");
 
 /* =============================================================
-   RATE LIMITER (client-side, prevents accidental spam)
+   RATE LIMITER (client-side)
    ============================================================= */
 const _rateLimits = {};
 
@@ -85,7 +85,6 @@ async function apiRestoreAll() {
 
 /* =============================================================
    AI PROXY CALLS
-   All AI requests go to your Worker — API key never in browser.
    ============================================================= */
 async function aiCall(action, body) {
   const r = await fetch(`${AI_BASE}/${action}`, {
@@ -112,6 +111,21 @@ async function weeklyReview(entries) {
   const sample = recent.length > 0 ? recent : entries.slice(-30);
   const slim = sample.map(e => ({ tag: e.tag, text: e.text }));
   return aiCall("weekly-review", { entries: slim });
+}
+
+/* =============================================================
+   NEW: AXIOM RELAY — calls the 3-stage agent on the Worker
+   ============================================================= */
+async function axiomRelay(entries, focus = "") {
+  const slim = entries.slice(-20).map(e => ({ tag: e.tag, text: e.text }));
+  return aiCall("axiom-relay", { entries: slim, focus });
+}
+
+/* =============================================================
+   NEW: CLARIFY AGENT — one step of the conversational loop
+   ============================================================= */
+async function clarifyAgentStep(text, tag, history, userReply) {
+  return aiCall("clarify-agent", { text, tag, history, userReply });
 }
 
 /* =============================================================
@@ -144,21 +158,21 @@ function classify(text) {
 
 function nextStep(tag) {
   switch (tag) {
-    case "task":     return "Define the smallest next action and a time: who/what/when.";
+    case "task": return "Define the smallest next action and a time: who/what/when.";
     case "decision": return "Write 2 options + the downside if wrong + one reversible test.";
     case "question": return "State what a good answer would let you do. Then list 2 constraints.";
-    case "idea":     return "Turn it into a 1-sentence pitch + first tiny prototype step.";
-    default:         return "Rewrite as one clear sentence. Then add one concrete next action.";
+    case "idea": return "Turn it into a 1-sentence pitch + first tiny prototype step.";
+    default: return "Rewrite as one clear sentence. Then add one concrete next action.";
   }
 }
 
 function clarifyQuestion(tag) {
   switch (tag) {
-    case "task":     return "What's the deadline, and what is 'done' in one sentence?";
+    case "task": return "What's the deadline, and what is 'done' in one sentence?";
     case "decision": return "What would change your mind most?";
     case "question": return "What context is missing that makes this hard to answer?";
-    case "idea":     return "Who is this for, and what pain does it remove?";
-    default:         return "Is this something you want to act on, or just capture?";
+    case "idea": return "Who is this for, and what pain does it remove?";
+    default: return "Is this something you want to act on, or just capture?";
   }
 }
 
@@ -176,32 +190,26 @@ let searchKeyword = "";
 
 function getFilteredEntries(entries) {
   let result = [...entries];
-
-  if (activeTag !== "all") {
-    result = result.filter(e => e.tag === activeTag);
-  }
-
+  if (activeTag !== "all") result = result.filter(e => e.tag === activeTag);
   if (activeDateRange !== "all") {
     const now = Date.now();
     const cutoffs = {
       today: now - 24 * 60 * 60 * 1000,
-      week:  now - 7  * 24 * 60 * 60 * 1000,
+      week: now - 7 * 24 * 60 * 60 * 1000,
       month: now - 30 * 24 * 60 * 60 * 1000,
     };
     const cutoff = cutoffs[activeDateRange];
     if (cutoff) result = result.filter(e => new Date(e.created_at).getTime() > cutoff);
   }
-
   if (searchKeyword.trim()) {
     const kw = searchKeyword.trim().toLowerCase();
     result = result.filter(e =>
       e.text.toLowerCase().includes(kw) ||
-      (e.next    || "").toLowerCase().includes(kw) ||
+      (e.next || "").toLowerCase().includes(kw) ||
       (e.clarify || "").toLowerCase().includes(kw) ||
-      (e.draft   || "").toLowerCase().includes(kw)
+      (e.draft || "").toLowerCase().includes(kw)
     );
   }
-
   return result;
 }
 
@@ -337,6 +345,254 @@ function render(entries) {
     li.appendChild(actions);
     historyEl.appendChild(li);
   }
+}
+
+/* =============================================================
+   CLARIFY AGENT UI — modal-style panel
+   ============================================================= */
+let clarifyState = {
+  active: false,
+  text: "",
+  tag: "",
+  history: [],
+};
+
+function buildClarifyPanel() {
+  const existing = document.getElementById("clarifyPanel");
+  if (existing) existing.remove();
+
+  const panel = document.createElement("div");
+  panel.id = "clarifyPanel";
+  panel.style.cssText = `
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border-light);
+    padding: 20px 24px;
+    z-index: 500;
+    max-width: 660px;
+    margin: 0 auto;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+    animation: slide-up 0.25s ease both;
+  `;
+
+  panel.innerHTML = `
+    <style>
+      @keyframes slide-up {
+        from { transform: translateY(100%); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+    </style>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <span style="font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--blue);">
+        Clarify Agent
+      </span>
+      <button id="clarifyClose" class="btn ghost small">✕ Close</button>
+    </div>
+    <div id="clarifyThread" style="
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      min-height: 60px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.8125rem;
+      line-height: 1.8;
+      color: var(--text-mid);
+      white-space: pre-wrap;
+      margin-bottom: 12px;
+    "></div>
+    <div style="display:flex;gap:10px;">
+      <input id="clarifyInput" type="text" placeholder="Your answer…" style="
+        flex: 1;
+        background: var(--bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: 'DM Mono', monospace;
+        font-size: 0.8125rem;
+        outline: none;
+      " />
+      <button id="clarifyReply" class="btn small">Reply</button>
+    </div>
+    <div id="clarifyActions" style="margin-top:12px;display:none;"></div>
+  `;
+
+  document.body.appendChild(panel);
+
+  document.getElementById("clarifyClose").addEventListener("click", () => {
+    panel.remove();
+    clarifyState = { active: false, text: "", tag: "", history: [] };
+  });
+
+  const replyBtn = document.getElementById("clarifyReply");
+  const clarifyInputEl = document.getElementById("clarifyInput");
+
+  const handleReply = async () => {
+    const reply = clarifyInputEl.value.trim();
+    if (!reply) return;
+
+    clarifyInputEl.value = "";
+    appendToThread("You", reply);
+    replyBtn.disabled = true;
+    clarifyInputEl.disabled = true;
+
+    try {
+      const result = await clarifyAgentStep(
+        clarifyState.text,
+        clarifyState.tag,
+        clarifyState.history,
+        reply
+      );
+
+      // Update history
+      clarifyState.history.push({ role: "user", content: reply });
+
+      if (result.done) {
+        appendToThread("Agent", "✓ Crystallised. Here is your refined entry:");
+        appendToThread("Draft", result.draft);
+        clarifyState.history.push({ role: "agent", content: result.draft });
+
+        // Show use + save buttons
+        const actionsEl = document.getElementById("clarifyActions");
+        actionsEl.style.display = "flex";
+        actionsEl.style.gap = "10px";
+        actionsEl.innerHTML = "";
+
+        const useBtn = document.createElement("button");
+        useBtn.textContent = "Load into Input";
+        useBtn.className = "btn small";
+        useBtn.addEventListener("click", () => {
+          inputEl.value = result.draft;
+          panel.remove();
+          clarifyState = { active: false, text: "", tag: "", history: [] };
+          showOutput("Crystallised entry loaded. Edit and save when ready.");
+        });
+
+        const saveDirectBtn = document.createElement("button");
+        saveDirectBtn.textContent = "Save Directly";
+        saveDirectBtn.className = "btn small";
+        saveDirectBtn.addEventListener("click", async () => {
+          const p = processText(result.draft);
+          const entry = {
+            id: crypto.randomUUID(),
+            created_at: new Date().toISOString(),
+            text: result.draft,
+            draft: clarifyState.text, // original as draft reference
+            _v: SCHEMA_VERSION,
+            ...p,
+          };
+          try {
+            await apiSaveEntry(entry);
+            entries.push(entry);
+            render(entries);
+            showSaveFeedback("✓ Crystallised entry saved");
+            panel.remove();
+            clarifyState = { active: false, text: "", tag: "", history: [] };
+          } catch (err) {
+            showOutput("Save failed: " + err.message);
+          }
+        });
+
+        actionsEl.appendChild(useBtn);
+        actionsEl.appendChild(saveDirectBtn);
+        clarifyInputEl.style.display = "none";
+        replyBtn.style.display = "none";
+      } else {
+        appendToThread("Agent", result.question);
+        clarifyState.history.push({ role: "agent", content: result.question });
+        replyBtn.disabled = false;
+        clarifyInputEl.disabled = false;
+        clarifyInputEl.focus();
+      }
+    } catch (err) {
+      appendToThread("Error", err.message);
+      replyBtn.disabled = false;
+      clarifyInputEl.disabled = false;
+    }
+  };
+
+  replyBtn.addEventListener("click", handleReply);
+  clarifyInputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter") handleReply();
+  });
+}
+
+function appendToThread(role, text) {
+  const thread = document.getElementById("clarifyThread");
+  if (!thread) return;
+  const line = document.createElement("div");
+  line.style.cssText = `margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px;`;
+
+  const roleColors = {
+    Agent: "var(--blue)",
+    You: "var(--gold)",
+    Draft: "var(--green)",
+    Error: "#c85a5a",
+  };
+
+  line.innerHTML = `
+    <span style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.12em;color:${roleColors[role] || "var(--text-dim)"};">${role}</span>
+    <div style="margin-top:4px;color:var(--text-mid);">${escapeHtml(text)}</div>
+  `;
+  thread.appendChild(line);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+async function startClarifyAgent() {
+  const text = inputEl.value.trim();
+  if (!text) return showOutput("Type something first to clarify.");
+
+  if (!checkRate("clarify", 3, 15000)) {
+    showOutput("Rate limit: wait before starting another clarification.");
+    return;
+  }
+
+  const tag = classify(text);
+  clarifyState = { active: true, text, tag, history: [] };
+  buildClarifyPanel();
+
+  const thread = document.getElementById("clarifyThread");
+  thread.innerHTML = "";
+  appendToThread("Agent", "Loading first question…");
+
+  try {
+    const result = await clarifyAgentStep(text, tag, [], null);
+    thread.innerHTML = "";
+    appendToThread("Agent", result.question);
+    clarifyState.history.push({ role: "agent", content: result.question });
+    document.getElementById("clarifyInput").focus();
+  } catch (err) {
+    thread.innerHTML = "";
+    appendToThread("Error", "Could not start clarification: " + err.message);
+  }
+}
+
+/* =============================================================
+   AXIOM RELAY UI — panel in the relay card
+   ============================================================= */
+function renderRelayReport(result) {
+  const relayOutput = document.getElementById("relayOutput");
+  if (!relayOutput) return;
+
+  if (result.error) {
+    relayOutput.textContent = result.error;
+    relayOutput.style.display = "block";
+    return;
+  }
+
+  const report = result.report || "";
+  const formatted = report
+    .replace(/^(SIGNAL)/m, '<div class="review-section-title">$1</div>')
+    .replace(/^(LEVERAGE POINT)/m, '<div class="review-section-title">$1</div>')
+    .replace(/^(RELAY ACTIONS)/m, '<div class="review-section-title">$1</div>')
+    .replace(/^(DEAD WEIGHT)/m, '<div class="review-section-title">$1</div>');
+
+  relayOutput.innerHTML = formatted;
+  relayOutput.style.display = "block";
 }
 
 /* =============================================================
@@ -477,6 +733,60 @@ reviewBtn.addEventListener("click", async () => {
   }
 });
 
+// ── Clarify button (new — attached to "Clarify" button in HTML) ──
+document.addEventListener("click", e => {
+  if (e.target && e.target.id === "clarifyBtn") {
+    startClarifyAgent();
+  }
+});
+
+// ── Axiom Relay ───────────────────────────────────────────────
+relayBtn.addEventListener("click", async () => {
+  if (!checkRate("relay", 2, 30000)) {
+    showOutput("Rate limit: wait 30 seconds before running Axiom Relay again.");
+    return;
+  }
+  if (entries.length === 0) {
+    const relayOutput = document.getElementById("relayOutput");
+    if (relayOutput) { relayOutput.textContent = "No entries to relay."; relayOutput.style.display = "block"; }
+    return;
+  }
+
+  relayBtn.disabled = true;
+  const relayOutput = document.getElementById("relayOutput");
+  if (relayOutput) {
+    relayOutput.textContent = "Relay initialising — Stage 1: Decompose…";
+    relayOutput.style.display = "block";
+  }
+
+  const focusEl = document.getElementById("relayFocus");
+  const focus = focusEl ? focusEl.value.trim() : "";
+
+  try {
+    // Show stage progression
+    const stages = [
+      "Relay initialising — Stage 1: Decompose…",
+      "Stage 2: Finding tensions…",
+      "Stage 3: Synthesising report…",
+    ];
+    let stageIdx = 0;
+    const stageTimer = setInterval(() => {
+      stageIdx++;
+      if (stageIdx < stages.length && relayOutput) {
+        relayOutput.textContent = stages[stageIdx];
+      }
+    }, 2500);
+
+    const result = await axiomRelay(entries, focus);
+    clearInterval(stageTimer);
+    renderRelayReport(result);
+  } catch (err) {
+    if (relayOutput) relayOutput.textContent = "Relay failed: " + err.message;
+  } finally {
+    relayBtn.disabled = false;
+  }
+});
+
 let _searchDebounce = null;
 searchInput.addEventListener("input", () => {
   clearTimeout(_searchDebounce);
@@ -552,10 +862,6 @@ exportBtn.addEventListener("click", () => {
   a.download = "arcanthyr_console_export.json";
   a.click();
   URL.revokeObjectURL(url);
-});
-
-relayBtn.addEventListener("click", () => {
-  showOutput("Axiom Relay: not yet implemented.");
 });
 
 restoreBtn.addEventListener("click", async () => {
