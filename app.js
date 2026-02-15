@@ -1194,7 +1194,8 @@ restoreBtn.addEventListener("click", async () => {
     showOutput("Restore failed: " + e.message);
   }
 });
-/* =============================================================
+/* 
+* =============================================================
    LEGAL CASE FILE UPLOAD (PDF)
    Add this code to the END of your existing app.js
    ============================================================= */
@@ -1203,3 +1204,132 @@ restoreBtn.addEventListener("click", async () => {
 const caseDropzone = document.getElementById('caseDropzone');
 const caseFileInput = document.getElementById('caseFileInput');
 const uploadCaseTextarea = document.getElementById('uploadCaseText');
+
+if (caseDropzone && caseFileInput) {
+  // Click to browse
+  caseDropzone.addEventListener('click', () => {
+    caseFileInput.click();
+  });
+  
+  // Drag and drop events
+  caseDropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    caseDropzone.classList.add('dragover');
+  });
+  
+  caseDropzone.addEventListener('dragleave', () => {
+    caseDropzone.classList.remove('dragover');
+  });
+  
+  caseDropzone.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    caseDropzone.classList.remove('dragover');
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      await handleCaseFile(files[0]);
+    }
+  });
+  
+  // File input change
+  caseFileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      await handleCaseFile(files[0]);
+    }
+    e.target.value = ''; // Reset
+  });
+}
+
+async function handleCaseFile(file) {
+  // Validate file type
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (!['pdf', 'txt'].includes(extension)) {
+    if (uploadCaseTextarea) {
+      uploadCaseTextarea.value = `Error: Unsupported file type. Please use PDF or TXT files.`;
+    }
+    return;
+  }
+  
+  // Show loading
+  if (uploadCaseTextarea) {
+    uploadCaseTextarea.value = 'Extracting text from file...';
+  }
+  
+  try {
+    let extractedText = '';
+    
+    if (extension === 'txt') {
+      extractedText = await file.text();
+    } else if (extension === 'pdf' && typeof pdfjsLib !== 'undefined') {
+      extractedText = await extractPdfTextForCase(file);
+    } else {
+      throw new Error('PDF.js library not loaded');
+    }
+    
+    // Auto-fill textarea
+    if (uploadCaseTextarea) {
+      uploadCaseTextarea.value = extractedText.trim();
+    }
+    
+    // Try to extract citation and case name from text
+    autoFillCaseMetadata(extractedText);
+    
+    // Show success in dropzone
+    if (caseDropzone) {
+      const originalText = caseDropzone.innerHTML;
+      caseDropzone.innerHTML = '<div class="dropzone-text" style="color:var(--green);">✓ Text extracted successfully</div>';
+      setTimeout(() => {
+        caseDropzone.innerHTML = originalText;
+      }, 3000);
+    }
+    
+  } catch (error) {
+    console.error('Error extracting text:', error);
+    if (uploadCaseTextarea) {
+      uploadCaseTextarea.value = `Error extracting text: ${error.message}\n\nPlease paste case text manually.`;
+    }
+  }
+}
+
+async function extractPdfTextForCase(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = '';
+  
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(item => item.str).join(' ');
+    fullText += pageText + '\n\n';
+  }
+  
+  return fullText;
+}
+
+function autoFillCaseMetadata(text) {
+  // Try to extract citation like [2024] TASSC 42
+  const citationMatch = text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/);
+  if (citationMatch && document.getElementById('uploadCitation')) {
+    document.getElementById('uploadCitation').value = citationMatch[0];
+  }
+  
+  // Try to extract case name (usually in first few lines)
+  // Look for patterns like "R v Smith" or "DPP v Jones"
+  const caseNameMatch = text.match(/((?:R|DPP|Director of Public Prosecutions)\s+v\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+  if (caseNameMatch && document.getElementById('uploadCaseName')) {
+    document.getElementById('uploadCaseName').value = caseNameMatch[1];
+  }
+  
+  // Try to detect court type
+  if (document.getElementById('uploadCourt')) {
+    if (text.includes('Court of Criminal Appeal') || text.includes('TASCCA')) {
+      document.getElementById('uploadCourt').value = 'cca';
+    } else if (text.includes('Supreme Court') || text.includes('TASSC')) {
+      document.getElementById('uploadCourt').value = 'supreme';
+    } else if (text.includes('Magistrates') || text.includes('TAMagC')) {
+      document.getElementById('uploadCourt').value = 'magistrates';
+    }
+  }
+}
+
