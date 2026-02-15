@@ -972,11 +972,11 @@ document.querySelectorAll(".date-chip").forEach(chip => {
   });
 });
 
-document.getElementById("clearFiltersBtn").addEventListener("click", () => {
+document.getElementById("clearFiltersBtn")?.addEventListener("click", () => {
   activeTag = "all";
   activeDateRange = "all";
   searchKeyword = "";
-  searchInput.value = "";
+  if (searchInput) searchInput.value = "";
   document.querySelectorAll(".chip[data-tag]").forEach(c =>
     c.classList.toggle("active", c.dataset.tag === "all")
   );
