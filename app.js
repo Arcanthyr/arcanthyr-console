@@ -328,6 +328,8 @@ function getFilteredEntries(entries) {
 }
 
 function updateFilterSummary(filtered, total) {
+  if (!filterSummary || !historyCount) return; // Exit if elements don't exist
+  
   if (filtered.length === total && !searchKeyword.trim() && activeTag === "all" && activeDateRange === "all") {
     filterSummary.textContent = "";
     historyCount.textContent = `${total} ${total === 1 ? "entry" : "entries"}`;
@@ -348,6 +350,8 @@ let currentEmailContent = null;
    RENDER
    ============================================================= */
 function render(data) {
+  if (!historyEl) return; // Exit if history element doesn't exist
+  
   const filtered = getFilteredEntries(data);
   updateFilterSummary(filtered, data.length);
 
@@ -712,6 +716,10 @@ function showToast(msg) {
 }
 
 function showOutput(msg, className = "") {
+  if (!outputEl) {
+    console.log("Output:", msg);
+    return;
+  }
   outputEl.textContent = msg;
   outputEl.className = className ? `output ${className}` : "output";
 }
@@ -723,24 +731,37 @@ function showOutput(msg, className = "") {
   try {
     entries = await apiLoadEntries();
     render(entries);
-    await loadContacts();
-    await updateLegalSyncStatus();
+    
+    // Only load contacts if email elements exist
+    if (document.getElementById('manageContactsBtn')) {
+      await loadContacts();
+    }
+    
+    // Only update legal status if legal elements exist
+    if (document.getElementById('legalSyncBtn')) {
+      await updateLegalSyncStatus();
+    }
   } catch (e) {
-    showOutput("Failed to load vault: " + e.message);
+    // Only show output if output element exists
+    if (outputEl) {
+      showOutput("Failed to load vault: " + e.message);
+    } else {
+      console.error("Failed to load vault:", e.message);
+    }
   }
 })();
 
 /* =============================================================
    EVENT HANDLERS — Main Input
    ============================================================= */
-processBtn.addEventListener("click", () => {
+processBtn?.addEventListener("click", () => {
   const text = inputEl.value.trim();
   if (!text) return showOutput("Type something to process.");
   const p = processText(text);
   showOutput(`Tag: ${p.tag}\n\nNext: ${p.next}\n\nClarify: ${p.clarify}`);
 });
 
-saveBtn.addEventListener("click", async () => {
+saveBtn?.addEventListener("click", async () => {
   const text = inputEl.value.trim();
   if (!text) return showOutput("Type something to save.");
 
@@ -765,7 +786,7 @@ saveBtn.addEventListener("click", async () => {
   }
 });
 
-draftBtn.addEventListener("click", async () => {
+draftBtn?.addEventListener("click", async () => {
   if (!checkRate("draft", 3, 10000)) {
     showOutput("Rate limit: wait before drafting again.");
     return;
@@ -798,7 +819,7 @@ draftBtn.addEventListener("click", async () => {
   }
 });
 
-nextActionBtn.addEventListener("click", async () => {
+nextActionBtn?.addEventListener("click", async () => {
   if (!checkRate("nextAction", 3, 10000)) {
     showOutput("Rate limit: wait before requesting next actions again.");
     return;
@@ -829,7 +850,7 @@ emailEntryBtn?.addEventListener("click", () => {
   openEmailComposer(text, "Arcanthyr Entry");
 });
 
-clearInputBtn.addEventListener("click", () => {
+clearInputBtn?.addEventListener("click", () => {
   inputEl.value = "";
   outputEl.textContent = "";
   outputEl.className = "output";
@@ -838,7 +859,7 @@ clearInputBtn.addEventListener("click", () => {
 /* =============================================================
    EVENT HANDLERS — Reviews & Relay
    ============================================================= */
-reviewBtn.addEventListener("click", async () => {
+reviewBtn?.addEventListener("click", async () => {
   if (!checkRate("review", 2, 30000)) {
     showOutput("Rate limit: wait 30 seconds before running another review.");
     return;
@@ -872,7 +893,7 @@ document.addEventListener("click", e => {
   }
 });
 
-relayBtn.addEventListener("click", async () => {
+relayBtn?.addEventListener("click", async () => {
   if (!checkRate("relay", 2, 30000)) {
     showOutput("Rate limit: wait 30 seconds before running Axiom Relay again.");
     return;
@@ -921,7 +942,7 @@ relayBtn.addEventListener("click", async () => {
    EVENT HANDLERS — Search & Filters
    ============================================================= */
 let _searchDebounce = null;
-searchInput.addEventListener("input", () => {
+searchInput?.addEventListener("input", () => {
   clearTimeout(_searchDebounce);
   _searchDebounce = setTimeout(() => {
     searchKeyword = searchInput.value;
@@ -929,7 +950,7 @@ searchInput.addEventListener("input", () => {
   }, 200);
 });
 
-tagFilters.addEventListener("click", e => {
+tagFilters?.addEventListener("click", e => {
   const chip = e.target.closest(".chip");
   if (!chip) return;
   const tag = chip.dataset.tag;
@@ -1154,7 +1175,7 @@ document.querySelectorAll(".legal-view").forEach(chip => {
 /* =============================================================
    EVENT HANDLERS — History Management
    ============================================================= */
-clearBtn.addEventListener("click", async () => {
+clearBtn?.addEventListener("click", async () => {
   if (!checkRate("clearAll", 1, 15000)) {
     showOutput("Rate limit: wait before clearing again.");
     return;
@@ -1170,7 +1191,7 @@ clearBtn.addEventListener("click", async () => {
   }
 });
 
-exportBtn.addEventListener("click", () => {
+exportBtn?.addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -1180,7 +1201,7 @@ exportBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-restoreBtn.addEventListener("click", async () => {
+restoreBtn?.addEventListener("click", async () => {
   if (!checkRate("restore", 2, 10000)) {
     showOutput("Rate limit: wait before restoring again.");
     return;
