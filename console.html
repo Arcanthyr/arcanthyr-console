@@ -6,89 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arcanthyr – Console</title>
   <link rel="stylesheet" href="styles.css" />
-  
-  <!-- PDF.js for PDF extraction -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  
-  <!-- Mammoth.js for DOCX extraction -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-  
-  <style>
-    /* File upload styles */
-    .dropzone {
-      border: 2px dashed var(--border-light);
-      border-radius: var(--radius);
-      padding: 32px;
-      text-align: center;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      margin-bottom: 16px;
-      background: var(--bg);
-    }
-    
-    .dropzone.dragover {
-      border-color: var(--gold);
-      background: var(--gold-dim);
-    }
-    
-    .dropzone-text {
-      color: var(--text-mid);
-      font-size: 0.875rem;
-      margin-bottom: 8px;
-    }
-    
-    .dropzone-hint {
-      color: var(--text-dim);
-      font-size: 0.75rem;
-      opacity: 0.7;
-    }
-    
-    .file-preview {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: var(--surface-raise);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 12px;
-    }
-    
-    .file-preview .file-icon {
-      font-size: 1.5rem;
-    }
-    
-    .file-preview .file-info {
-      flex: 1;
-    }
-    
-    .file-preview .file-name {
-      font-size: 0.875rem;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-    
-    .file-preview .file-size {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-    
-    .file-preview .file-status {
-      font-size: 0.75rem;
-      color: var(--green);
-    }
-    
-    .file-preview .remove-file {
-      color: var(--text-dim);
-      cursor: pointer;
-      padding: 4px 8px;
-      font-size: 1.2rem;
-    }
-    
-    .file-preview .remove-file:hover {
-      color: var(--amber);
-    }
-  </style>
 </head>
 
 <body>
@@ -127,21 +44,10 @@
 
     <hr class="divider" />
 
-    <!-- INPUT CARD WITH FILE UPLOAD -->
+    <!-- INPUT CARD -->
     <section class="card">
       <label for="input" class="label">Input</label>
-      
-      <!-- File Upload Dropzone -->
-      <div class="dropzone" id="dropzone">
-        <div class="dropzone-text">📎 Drag & drop documents here or click to browse</div>
-        <div class="dropzone-hint">Supports .docx, .pdf, .txt files (max 10MB each)</div>
-      </div>
-      <input type="file" id="fileInput" accept=".docx,.pdf,.txt" style="display:none" multiple />
-      
-      <!-- File Preview Area -->
-      <div id="filePreview"></div>
-      
-      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task... or upload a document above"></textarea>
+      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task..."></textarea>
 
       <div class="row">
         <button id="processBtn">Process</button>
@@ -240,14 +146,7 @@
 
   <div id="saveToast" style="display:none" aria-live="polite"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script> <script>
-   
- // Configure PDF.js worker
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  </script>
-
-<script src="app-console.js?v=1"></script>
+  <script src="app-console.js?v=1"></script>
 </body>
 
 </html>

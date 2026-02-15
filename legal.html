@@ -6,6 +6,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arcanthyr – Legal Research</title>
   <link rel="stylesheet" href="styles.css" />
+  
+  <!-- PDF.js for PDF extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <style>
+    /* File upload dropzone */
+    .case-dropzone {
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 16px;
+      background: var(--bg);
+    }
+    
+    .case-dropzone.dragover {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+    
+    .dropzone-text {
+      color: var(--text-mid);
+      font-size: 0.875rem;
+      margin-bottom: 6px;
+    }
+    
+    .dropzone-hint {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+  </style>
 </head>
 
 <body>
@@ -60,7 +94,14 @@
       <p class="sub">Paste case text from AustLII or PDF for AI analysis.</p>
       
       <div id="uploadCaseForm" style="display:none;margin-top:16px;">
-        <label class="label">Citation (e.g. [2015] TASSC 42)</label>
+        <!-- File Upload Dropzone -->
+        <div class="case-dropzone" id="caseDropzone">
+          <div class="dropzone-text">📎 Drag & drop PDF or click to browse</div>
+          <div class="dropzone-hint">Or paste case text below manually</div>
+        </div>
+        <input type="file" id="caseFileInput" accept=".pdf,.txt" style="display:none" />
+        
+        <label class="label" style="margin-top:16px;">Citation (e.g. [2015] TASSC 42)</label>
         <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
         
         <label class="label" style="margin-top:12px;">Case Name</label>
@@ -74,9 +115,9 @@
           <option value="fullcourt">Full Court</option>
         </select>
         
-        <label class="label" style="margin-top:12px;">Case Text (paste full decision text)</label>
+        <label class="label" style="margin-top:12px;">Case Text (auto-filled from PDF or paste manually)</label>
         <textarea id="uploadCaseText" class="textarea" style="min-height:200px;" 
-          placeholder="Paste the full case text here from AustLII or PDF..."></textarea>
+          placeholder="Drag PDF above or paste case text here..."></textarea>
         
         <div class="row" style="margin-top:12px;">
           <button id="uploadCaseBtn" class="btn">Process & Save</button>
@@ -124,6 +165,10 @@
     </footer>
   </main>
 
+  <script>
+    // Configure PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
   <script src="app.js?v=8"></script>
 </body>
 

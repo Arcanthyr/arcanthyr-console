@@ -1194,3 +1194,12 @@ restoreBtn.addEventListener("click", async () => {
     showOutput("Restore failed: " + e.message);
   }
 });
+/* =============================================================
+   LEGAL CASE FILE UPLOAD (PDF)
+   Add this code to the END of your existing app.js
+   ============================================================= */
+
+// File upload for legal cases
+const caseDropzone = document.getElementById('caseDropzone');
+const caseFileInput = document.getElementById('caseFileInput');
+const uploadCaseTextarea = document.getElementById('uploadCaseText');
