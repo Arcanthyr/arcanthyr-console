@@ -1,4 +1,4 @@
-console.log("APP v8 LOADED — Legal Research + Email Center + Axiom Relay");
+console.log("APP v9 FIXED — Multi-page compatible (Console + Search + Legal)");
 
 /* =============================================================
    SCHEMA VERSION
