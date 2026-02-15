@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arcanthyr – Legal Research</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <nav class="site-nav">
+    <a href="index.html" aria-label="Home">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
+        <defs>
+          <filter id="tex-sm">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
+          opacity="0.7" />
+        <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="80,170 132,167 128,170 132,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <circle cx="140" cy="170" r="24" stroke="#a8b4c0" stroke-width="0.6" fill="none" opacity="0.6" />
+        <circle cx="140" cy="170" r="3" fill="#a8b4c0" opacity="0.6" />
+      </svg>
+    </a>
+    <a class="btn ghost small" href="console.html">Console</a>
+    <a class="btn ghost small" href="search.html">Search</a>
+  </nav>
+
+  <main class="wrap">
+    <header class="header">
+      <h1>Legal Research</h1>
+      <p class="sub">Tasmanian criminal case law database.</p>
+    </header>
+
+    <hr class="divider" />
+
+    <!-- SYNC STATUS CARD -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Database Status</h2>
+        <button id="legalSyncBtn" class="btn ai-btn">Check New Cases</button>
+      </div>
+      <div id="legalSyncStatus" class="filter-summary" style="margin-top:16px;"></div>
+    </section>
+
+    <!-- UPLOAD CASE SECTION -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Upload Historical Case</h2>
+        <button id="toggleUploadBtn" class="btn ghost small">Toggle Form</button>
+      </div>
+      <p class="sub">Paste case text from AustLII or PDF for AI analysis.</p>
+      
+      <div id="uploadCaseForm" style="display:none;margin-top:16px;">
+        <label class="label">Citation (e.g. [2015] TASSC 42)</label>
+        <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
+        
+        <label class="label" style="margin-top:12px;">Case Name</label>
+        <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
+        
+        <label class="label" style="margin-top:12px;">Court</label>
+        <select id="uploadCourt" class="search-input">
+          <option value="supreme">Supreme Court</option>
+          <option value="magistrates">Magistrates Court</option>
+          <option value="cca">Court of Criminal Appeal</option>
+          <option value="fullcourt">Full Court</option>
+        </select>
+        
+        <label class="label" style="margin-top:12px;">Case Text (paste full decision text)</label>
+        <textarea id="uploadCaseText" class="textarea" style="min-height:200px;" 
+          placeholder="Paste the full case text here from AustLII or PDF..."></textarea>
+        
+        <div class="row" style="margin-top:12px;">
+          <button id="uploadCaseBtn" class="btn">Process & Save</button>
+          <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
+        </div>
+        <div id="uploadOutput" class="output" style="margin-top:12px;display:none;"></div>
+      </div>
+    </section>
+
+    <!-- SEARCH INTERFACE -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Search Cases & Principles</h2>
+      </div>
+      
+      <div class="search-row">
+        <input type="text" id="legalSearchInput" class="search-input" 
+          placeholder="Search by keyword, statute, or offence…" />
+      </div>
+      
+      <div class="filter-row">
+        <span class="label">Court</span>
+        <div class="filter-chips" id="courtFilters">
+          <button class="chip active" data-court="all">All Courts</button>
+          <button class="chip" data-court="magistrates">Magistrates</button>
+          <button class="chip" data-court="supreme">Supreme</button>
+          <button class="chip" data-court="cca">CCA</button>
+          <button class="chip" data-court="fullcourt">Full Court</button>
+        </div>
+      </div>
+
+      <div class="filter-row">
+        <span class="label">View</span>
+        <div class="filter-chips">
+          <button class="chip legal-view active" data-view="cases">Cases</button>
+          <button class="chip legal-view" data-view="principles">Principles</button>
+        </div>
+      </div>
+
+      <div id="legalResults" class="legal-results" style="margin-top:24px;"></div>
+    </section>
+
+    <footer class="footer">
+      <small>Auto-sync + manual upload for Tasmanian criminal law</small>
+    </footer>
+  </main>
+
+  <script src="app.js?v=8"></script>
+</body>
+
+</html>

@@ -4,8 +4,91 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arcanthyr — Console</title>
+  <title>Arcanthyr – Console</title>
   <link rel="stylesheet" href="styles.css" />
+  
+  <!-- PDF.js for PDF extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- Mammoth.js for DOCX extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  
+  <style>
+    /* File upload styles */
+    .dropzone {
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 16px;
+      background: var(--bg);
+    }
+    
+    .dropzone.dragover {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+    
+    .dropzone-text {
+      color: var(--text-mid);
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+    }
+    
+    .dropzone-hint {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
+    
+    .file-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--surface-raise);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+    }
+    
+    .file-preview .file-icon {
+      font-size: 1.5rem;
+    }
+    
+    .file-preview .file-info {
+      flex: 1;
+    }
+    
+    .file-preview .file-name {
+      font-size: 0.875rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .file-preview .file-size {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    
+    .file-preview .file-status {
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+    
+    .file-preview .remove-file {
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 1.2rem;
+    }
+    
+    .file-preview .remove-file:hover {
+      color: var(--amber);
+    }
+  </style>
 </head>
 
 <body>
@@ -31,7 +114,8 @@
       </svg>
     </a>
     <a class="btn ghost small" href="index.html">Home</a>
-    <a class="btn ghost small" href="#legal-section">Legal</a>
+    <a class="btn ghost small" href="search.html">Search</a>
+    <a class="btn ghost small" href="legal.html">Legal</a>
     <a class="btn ghost small" href="#email-section">Email</a>
   </nav>
 
@@ -43,10 +127,21 @@
 
     <hr class="divider" />
 
-    <!-- INPUT CARD -->
+    <!-- INPUT CARD WITH FILE UPLOAD -->
     <section class="card">
       <label for="input" class="label">Input</label>
-      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task..."></textarea>
+      
+      <!-- File Upload Dropzone -->
+      <div class="dropzone" id="dropzone">
+        <div class="dropzone-text">📎 Drag & drop documents here or click to browse</div>
+        <div class="dropzone-hint">Supports .docx, .pdf, .txt files (max 10MB each)</div>
+      </div>
+      <input type="file" id="fileInput" accept=".docx,.pdf,.txt" style="display:none" multiple />
+      
+      <!-- File Preview Area -->
+      <div id="filePreview"></div>
+      
+      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task... or upload a document above"></textarea>
 
       <div class="row">
         <button id="processBtn">Process</button>
@@ -61,48 +156,6 @@
       <div id="output" class="output" aria-live="polite"></div>
     </section>
 
-    <!-- SEARCH + FILTER CARD -->
-    <section class="card">
-      <div class="row space">
-        <h2 class="h2">Search & Filter</h2>
-        <button id="clearFiltersBtn" class="btn ghost small">Reset</button>
-      </div>
-      <div class="search-row">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by keyword…" />
-      </div>
-      <div class="filter-row">
-        <span class="label">Tag</span>
-        <div class="filter-chips" id="tagFilters">
-          <button class="chip active" data-tag="all">All</button>
-          <button class="chip" data-tag="task">Task</button>
-          <button class="chip" data-tag="decision">Decision</button>
-          <button class="chip" data-tag="question">Question</button>
-          <button class="chip" data-tag="idea">Idea</button>
-          <button class="chip" data-tag="note">Note</button>
-        </div>
-      </div>
-      <div class="filter-row">
-        <span class="label">Date</span>
-        <div class="filter-chips">
-          <button class="chip date-chip active" data-range="all">All Time</button>
-          <button class="chip date-chip" data-range="today">Today</button>
-          <button class="chip date-chip" data-range="week">This Week</button>
-          <button class="chip date-chip" data-range="month">This Month</button>
-        </div>
-      </div>
-      <div id="filterSummary" class="filter-summary"></div>
-    </section>
-
-    <!-- WEEKLY REVIEW CARD -->
-    <section class="card" id="weeklyReviewCard">
-      <div class="row space">
-        <h2 class="h2">Weekly Pattern Review</h2>
-        <button id="reviewBtn" class="btn ghost small">Analyse</button>
-      </div>
-      <p class="sub">Surface recurring themes, stuck loops, and pending decisions.</p>
-      <div id="reviewOutput" class="review-output" style="display:none"></div>
-    </section>
-
     <!-- AXIOM RELAY CARD -->
     <section class="card">
       <div class="row space">
@@ -113,81 +166,9 @@
         action.</p>
       <div class="search-row">
         <input type="text" id="relayFocus" class="search-input"
-          placeholder="Optional focus area — e.g. 'work projects' or 'financial decisions'…" />
+          placeholder="Optional focus area – e.g. 'work projects' or 'financial decisions'…" />
       </div>
       <div id="relayOutput" class="review-output" style="display:none"></div>
-    </section>
-
-    <!-- LEGAL RESEARCH SECTION -->
-    <section class="card" id="legal-section">
-      <div class="row space">
-        <h2 class="h2">Legal Research</h2>
-        <button id="legalSyncBtn" class="btn ghost small ai-btn">Check New Cases</button>
-      </div>
-      <p class="sub">Tasmanian criminal case law database. Auto-sync for new cases + manual upload for historical.</p>
-      
-      <div id="legalSyncStatus" class="filter-summary"></div>
-      
-      <!-- Upload case section -->
-      <div class="card" style="background:var(--surface-raise);margin-top:16px;">
-        <div class="row space">
-          <h3 style="font-size:0.875rem;color:var(--gold);margin:0;">Upload Historical Case</h3>
-          <button id="toggleUploadBtn" class="btn ghost small">Show Upload</button>
-        </div>
-        
-        <div id="uploadCaseForm" style="display:none;margin-top:16px;">
-          <label class="label">Citation (e.g. [2015] TASSC 42)</label>
-          <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
-          
-          <label class="label" style="margin-top:12px;">Case Name</label>
-          <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
-          
-          <label class="label" style="margin-top:12px;">Court</label>
-          <select id="uploadCourt" class="search-input">
-            <option value="supreme">Supreme Court</option>
-            <option value="magistrates">Magistrates Court</option>
-            <option value="cca">Court of Criminal Appeal</option>
-            <option value="fullcourt">Full Court</option>
-          </select>
-          
-          <label class="label" style="margin-top:12px;">Case Text (paste full decision text)</label>
-          <textarea id="uploadCaseText" class="textarea" style="min-height:200px;" 
-            placeholder="Paste the full case text here from AustLII or PDF..."></textarea>
-          
-          <div class="row" style="margin-top:12px;">
-            <button id="uploadCaseBtn" class="btn">Process & Save</button>
-            <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
-          </div>
-          <div id="uploadOutput" class="output" style="margin-top:12px;display:none;"></div>
-        </div>
-      </div>
-      
-      <!-- Legal search interface -->
-      <div class="search-row" style="margin-top:16px;">
-        <input type="text" id="legalSearchInput" class="search-input" 
-          placeholder="Search cases by keyword, statute, or offence…" />
-      </div>
-      
-      <div class="filter-row">
-        <span class="label">Court</span>
-        <div class="filter-chips" id="courtFilters">
-          <button class="chip active" data-court="all">All Courts</button>
-          <button class="chip" data-court="magistrates">Magistrates</button>
-          <button class="chip" data-court="supreme">Supreme</button>
-          <button class="chip" data-court="cca">CCA</button>
-          <button class="chip" data-court="fullcourt">Full Court</button>
-        </div>
-      </div>
-
-      <div class="filter-row">
-        <span class="label">View</span>
-        <div class="filter-chips">
-          <button class="chip legal-view active" data-view="cases">Cases</button>
-          <button class="chip legal-view" data-view="principles">Principles</button>
-        </div>
-      </div>
-
-      <div id="legalResults" class="legal-results"></div>
     </section>
 
     <!-- EMAIL CENTER -->
@@ -241,9 +222,9 @@
     <!-- HISTORY CARD -->
     <section class="card">
       <div class="row space">
-        <h2 class="h2">History</h2>
+        <h2 class="h2">Recent Entries</h2>
         <div class="row">
-          <button id="restoreBtn" class="btn ghost small">Restore All</button>
+          <a href="search.html" class="btn ghost small">View All & Search</a>
           <button id="exportBtn" class="btn ghost small">Export</button>
           <button id="clearBtn" class="btn ghost small">Clear All</button>
         </div>
@@ -253,13 +234,20 @@
     </section>
 
     <footer class="footer">
-      <small>v3 — Legal research + Email automation. Private. Iterative.</small>
+      <small>v3.2 – Document upload + Streamlined interface. Private. Iterative.</small>
     </footer>
   </main>
 
   <div id="saveToast" style="display:none" aria-live="polite"></div>
 
-  <script src="app.js?v=8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script> <script>
+   
+ // Configure PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
+
+<script src="app-console.js?v=1"></script>
 </body>
 
 </html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arcanthyr – Search & Filter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <nav class="site-nav">
+    <a href="index.html" aria-label="Home">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
+        <defs>
+          <filter id="tex-sm">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
+          opacity="0.7" />
+        <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="80,170 132,167 128,170 132,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <circle cx="140" cy="170" r="24" stroke="#a8b4c0" stroke-width="0.6" fill="none" opacity="0.6" />
+        <circle cx="140" cy="170" r="3" fill="#a8b4c0" opacity="0.6" />
+      </svg>
+    </a>
+    <a class="btn ghost small" href="console.html">Console</a>
+    <a class="btn ghost small" href="legal.html">Legal</a>
+  </nav>
+
+  <main class="wrap">
+    <header class="header">
+      <h1>Search & Filter</h1>
+      <p class="sub">Find and review your entries.</p>
+    </header>
+
+    <hr class="divider" />
+
+    <!-- SEARCH + FILTER CARD -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Search</h2>
+        <button id="clearFiltersBtn" class="btn ghost small">Reset</button>
+      </div>
+      <div class="search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by keyword…" />
+      </div>
+      <div class="filter-row">
+        <span class="label">Tag</span>
+        <div class="filter-chips" id="tagFilters">
+          <button class="chip active" data-tag="all">All</button>
+          <button class="chip" data-tag="task">Task</button>
+          <button class="chip" data-tag="decision">Decision</button>
+          <button class="chip" data-tag="question">Question</button>
+          <button class="chip" data-tag="idea">Idea</button>
+          <button class="chip" data-tag="note">Note</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <span class="label">Date</span>
+        <div class="filter-chips">
+          <button class="chip date-chip active" data-range="all">All Time</button>
+          <button class="chip date-chip" data-range="today">Today</button>
+          <button class="chip date-chip" data-range="week">This Week</button>
+          <button class="chip date-chip" data-range="month">This Month</button>
+        </div>
+      </div>
+      <div id="filterSummary" class="filter-summary"></div>
+    </section>
+
+    <!-- WEEKLY REVIEW CARD -->
+    <section class="card" id="weeklyReviewCard">
+      <div class="row space">
+        <h2 class="h2">Weekly Pattern Review</h2>
+        <button id="reviewBtn" class="btn ghost small">Analyse</button>
+      </div>
+      <p class="sub">Surface recurring themes, stuck loops, and pending decisions.</p>
+      <div id="reviewOutput" class="review-output" style="display:none"></div>
+    </section>
+
+    <!-- RESULTS CARD -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Results</h2>
+        <div class="row">
+          <button id="restoreBtn" class="btn ghost small">Restore All</button>
+          <button id="exportBtn" class="btn ghost small">Export</button>
+        </div>
+      </div>
+      <div id="historyCount" class="filter-summary"></div>
+      <ul id="history" class="history"></ul>
+    </section>
+
+    <footer class="footer">
+      <small>Search and filter your Arcanthyr entries</small>
+    </footer>
+  </main>
+
+  <div id="saveToast" style="display:none" aria-live="polite"></div>
+
+  <script src="app.js?v=8"></script> 
+</body>
+
+</html>
