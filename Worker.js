@@ -8,6 +8,7 @@
      - Scheduled daily sync (Cloudflare Cron)
      - Contact management
    ============================================================= */
+console.log('Worker loaded successfully');  // ← ADD THIS NEW LINE HERE
 
 const _ratemap = new Map();
 
@@ -83,16 +84,16 @@ const AUSTLII_SEARCH_URLS = {
 async function fetchRecentAustLIICases(env, limit = 50) {
   const currentYear = new Date().getFullYear();
   const allNewCases = [];
-  
+
   // Check all courts for current year only
   for (const court of ['magistrates', 'supreme', 'cca']) {
     const baseUrl = AUSTLII_SEARCH_URLS[court];
     if (!baseUrl) continue;
-    
+
     try {
       const url = `${baseUrl}${currentYear}/`;
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         console.log(`AustLII fetch failed for ${court} ${currentYear}: ${response.status}`);
         continue;
@@ -100,34 +101,34 @@ async function fetchRecentAustLIICases(env, limit = 50) {
 
       const html = await response.text();
       const cases = parseAustLIIHtml(html, court, currentYear);
-      
+
       // Filter out cases we already have
       for (const caseData of cases) {
         const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
           .bind(caseData.citation).first();
-        
+
         if (!exists) {
           allNewCases.push(caseData);
         }
       }
-      
+
       if (allNewCases.length >= limit) break;
-      
+
     } catch (error) {
       console.error(`Error fetching AustLII ${court} ${currentYear}:`, error);
     }
   }
-  
+
   return allNewCases.slice(0, limit);
 }
 
 function parseAustLIIHtml(html, court, year) {
   const cases = [];
-  
+
   // Look for case links in the format [YEAR] TASSC 123 or similar
   const casePattern = /\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/g;
   let match;
-  
+
   while ((match = casePattern.exec(html)) !== null && cases.length < 100) {
     cases.push({
       citation: match[0],
@@ -138,7 +139,7 @@ function parseAustLIIHtml(html, court, year) {
       court: court,
     });
   }
-  
+
   return cases;
 }
 
@@ -146,23 +147,23 @@ async function fetchCaseContent(url) {
   try {
     const response = await fetch(url);
     if (!response.ok) return null;
-    
+
     const html = await response.text();
-    
+
     // Extract case name from title or header
     const nameMatch = html.match(/<title>([^<]+)<\/title>/i);
     const caseName = nameMatch ? nameMatch[1].trim() : "Unknown Case";
-    
+
     // Extract main content (simplified - would need better parsing)
     const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
     const content = contentMatch ? contentMatch[1] : html;
-    
+
     // Remove HTML tags for text extraction
     const textContent = content.replace(/<[^>]+>/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
       .substring(0, 50000); // Limit content size
-    
+
     return {
       case_name: caseName,
       full_text: textContent,
@@ -182,14 +183,14 @@ async function extractTextFromPDF(pdfBase64) {
   // For production, would use a PDF parsing library
   // This is a placeholder - Cloudflare Workers can't easily parse PDFs
   // So we'll treat the base64 as-is and let the AI extract from it
-  
+
   // Decode base64
   const pdfBuffer = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
-  
+
   // For now, return placeholder - in production, you'd use a PDF library
   // or external service to extract text
   // Alternative: Have user paste text instead of upload PDF
-  
+
   return {
     success: false,
     error: "PDF parsing not yet implemented - please paste case text instead"
@@ -205,7 +206,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   // Check if case already exists
   const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
     .bind(citation).first();
-  
+
   if (exists) {
     throw new Error(`Case ${citation} already exists in database`);
   }
@@ -222,10 +223,26 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
 
   // Summarize with AI
   const summary = await summarizeCase(env, caseData);
-  
+
   // Save to database
   const id = await saveCaseToDb(env, caseData, summary);
-  
+
+  // ── Nexus vector storage ──────────────────────────────────────
+  try {
+    await fetch("http://31.220.86.192:18789/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        citation: caseData.citation,
+        source: "AustLII",
+        text: caseData.full_text
+      })
+    });
+  } catch (e) {
+    console.error("Nexus ingest failed:", e.message);
+  }
+  //
+
   return {
     id,
     citation,
@@ -256,19 +273,29 @@ Case text (excerpt):
 ${caseData.full_text.substring(0, 8000)}`;
 
   try {
-    const raw = await callWorkersAI(env, systemPrompt, userContent, 1200);
+    console.log(`Calling AI for ${caseData.citation}...`);
+    const raw = await callWorkersAI(env, systemPrompt, userContent, 1500); // Increased from 1200
+    console.log(`AI response length: ${raw?.length || 0} chars`);
+
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const summary = JSON.parse(cleaned);
-    
+
+    // Validate we got actual data
+    if (!summary.facts || !summary.holding) {
+      console.error(`AI returned incomplete summary for ${caseData.citation}`);
+      throw new Error("Incomplete AI response");
+    }
+
     return {
       facts: summary.facts || "Not extracted",
       issues: Array.isArray(summary.issues) ? summary.issues.join("; ") : "Not extracted",
       holding: summary.holding || "Not extracted",
       principles: Array.isArray(summary.principles) ? summary.principles : [],
-      summary_quality_score: 0.7, // Placeholder - could implement quality scoring
+      summary_quality_score: 0.7,
     };
   } catch (error) {
-    console.error("Case summarization failed:", error);
+    console.error(`Case summarization failed for ${caseData.citation}:`, error);
+    console.error(`AI raw response was:`, raw?.substring(0, 200));
     return {
       facts: "AI extraction failed",
       issues: "AI extraction failed",
@@ -285,7 +312,7 @@ ${caseData.full_text.substring(0, 8000)}`;
 
 async function saveCaseToDb(env, caseData, summary) {
   const id = `${caseData.citation.replace(/\s+/g, '-')}`;
-  
+
   await env.DB.prepare(`
     INSERT OR REPLACE INTO cases 
     (id, citation, court, case_date, case_name, url, facts, issues, holding, principles_extracted, processed_date, summary_quality_score)
@@ -317,7 +344,7 @@ async function savePrinciple(env, principle, citation) {
   const principleText = principle.principle || principle;
   const keywords = principle.keywords || [];
   const statuteRefs = principle.statute_refs || [];
-  
+
   // Check if principle already exists (fuzzy match would be better)
   const existing = await env.DB.prepare(
     "SELECT id FROM legal_principles WHERE principle_text = ?"
@@ -327,11 +354,11 @@ async function savePrinciple(env, principle, citation) {
     // Update existing principle with new citation
     const current = await env.DB.prepare("SELECT case_citations FROM legal_principles WHERE id = ?")
       .bind(existing.id).first();
-    
+
     const citations = JSON.parse(current.case_citations || "[]");
     if (!citations.includes(citation)) {
       citations.push(citation);
-      
+
       await env.DB.prepare(
         "UPDATE legal_principles SET case_citations = ?, most_recent_citation = ? WHERE id = ?"
       ).bind(JSON.stringify(citations), citation, existing.id).run();
@@ -339,7 +366,7 @@ async function savePrinciple(env, principle, citation) {
   } else {
     // Create new principle
     const id = `prin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     await env.DB.prepare(`
       INSERT INTO legal_principles 
       (id, principle_text, keywords, statute_refs, case_citations, most_recent_citation, date_added)
@@ -382,54 +409,113 @@ async function getSyncProgress(env) {
    ============================================================= */
 async function runDailySync(env) {
   console.log("Starting daily AustLII check for new cases...");
-  
+
   let casesProcessed = 0;
-  const dailyLimit = 50; // Check up to 50 new cases per day
-  
+  let casesFailed = 0;
+  const dailyLimit = 50;
+  const errors = [];
+
   // Only fetch recent cases (current year)
   const newCases = await fetchRecentAustLIICases(env, dailyLimit);
-  
+
   console.log(`Found ${newCases.length} new cases to process`);
-  
+
   for (const caseData of newCases) {
     if (casesProcessed >= dailyLimit) break;
-    
-    // Fetch full case content
-    const content = await fetchCaseContent(caseData.url);
-    if (!content) continue;
-    
-    // Merge case data
-    const fullCaseData = { ...caseData, ...content };
-    
-    // Summarize with AI
-    const summary = await summarizeCase(env, fullCaseData);
-    
-    // Save to database
-    await saveCaseToDb(env, fullCaseData, summary);
-    
-    casesProcessed++;
-    
-    // Rate limiting delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    try {
+      console.log(`Processing: ${caseData.citation}`);
+
+      // Fetch full case content with retry
+      let content = null;
+      let retries = 0;
+      while (!content && retries < 3) {
+        content = await fetchCaseContent(caseData.url);
+        if (!content) {
+          retries++;
+          console.log(`Fetch failed for ${caseData.citation}, retry ${retries}/3`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
+
+      if (!content) {
+        console.error(`Failed to fetch content for ${caseData.citation} after 3 attempts`);
+        errors.push(`${caseData.citation}: Content fetch failed`);
+        casesFailed++;
+        continue;
+      }
+
+      // Merge case data
+      const fullCaseData = { ...caseData, ...content };
+
+      // Validate we have text
+      if (!fullCaseData.full_text || fullCaseData.full_text.length < 100) {
+        console.error(`Insufficient text for ${caseData.citation} (${fullCaseData.full_text?.length || 0} chars)`);
+        errors.push(`${caseData.citation}: Insufficient text extracted`);
+        casesFailed++;
+        continue;
+      }
+
+      console.log(`Summarizing ${caseData.citation} (${fullCaseData.full_text.length} chars)`);
+
+      // Summarize with AI
+      const summary = await summarizeCase(env, fullCaseData);
+
+      // Check if AI extraction succeeded
+      if (summary.facts === "AI extraction failed") {
+        console.error(`AI extraction failed for ${caseData.citation}`);
+        errors.push(`${caseData.citation}: AI extraction failed`);
+        casesFailed++;
+        // Still save to database so we know we tried
+      }
+
+      // Save to database
+      await saveCaseToDb(env, fullCaseData, summary);
+
+      casesProcessed++;
+      console.log(`✓ Saved ${caseData.citation}`);
+
+      // Rate limiting delay (2 seconds between cases)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+    } catch (error) {
+      console.error(`Error processing ${caseData.citation}:`, error);
+      errors.push(`${caseData.citation}: ${error.message}`);
+      casesFailed++;
+    }
   }
 
-  console.log(`Daily sync complete. Processed ${casesProcessed} new cases.`);
-  
+  console.log(`Daily sync complete. Processed: ${casesProcessed}, Failed: ${casesFailed}`);
+
   // Send email notification if cases were found
-  if (casesProcessed > 0 && env.RESEND_API_KEY) {
+  if ((casesProcessed > 0 || casesFailed > 0) && env.RESEND_API_KEY) {
     try {
+      let emailBody = `<p>Daily sync found ${newCases.length} new cases:</p>`;
+      emailBody += `<p><strong>Successfully processed: ${casesProcessed}</strong></p>`;
+
+      if (casesProcessed > 0) {
+        emailBody += `<ul>${newCases.slice(0, casesProcessed).map(c => `<li>${c.citation} - ${c.case_name || 'Processing...'}</li>`).join('')}</ul>`;
+      }
+
+      if (casesFailed > 0) {
+        emailBody += `<p><strong>Failed: ${casesFailed}</strong></p>`;
+        emailBody += `<ul>${errors.map(err => `<li style="color:#c8a96e;">${err}</li>`).join('')}</ul>`;
+      }
+
+      emailBody += `<p>View in console: <a href="https://your-console-url.com/legal.html">Legal Research</a></p>`;
+
       await sendEmail(
         env,
         env.RESEND_FROM_EMAIL, // Send to yourself
-        `Arcanthyr: ${casesProcessed} new Tasmanian cases`,
-        `<p>Daily sync found ${casesProcessed} new cases:</p><ul>${newCases.slice(0, casesProcessed).map(c => `<li>${c.citation} - ${c.case_name || 'Loading...'}</li>`).join('')}</ul><p>View in console: <a href="https://your-console-url.com/console.html#legal-section">Legal Research</a></p>`
+        `Arcanthyr: ${casesProcessed} new cases, ${casesFailed} failed`,
+        emailBody
       );
     } catch (err) {
       console.error("Failed to send sync notification email:", err);
     }
   }
-  
-  return { success: true, cases_processed: casesProcessed };
+
+  return { success: true, cases_processed: casesProcessed, cases_failed: casesFailed, errors };
 }
 
 /* =============================================================
@@ -679,7 +765,7 @@ async function handleDeleteContact(contactId, env) {
 
 async function handleSearchCases(body, env) {
   const { query, court, limit = 50 } = body;
-  
+
   let sql = "SELECT * FROM cases WHERE 1=1";
   const params = [];
 
@@ -703,7 +789,7 @@ async function handleSearchCases(body, env) {
 
 async function handleSearchPrinciples(body, env) {
   const { query, limit = 50 } = body;
-  
+
   let sql = "SELECT * FROM legal_principles WHERE 1=1";
   const params = [];
 
@@ -717,7 +803,7 @@ async function handleSearchPrinciples(body, env) {
   params.push(limit);
 
   const { results } = await env.DB.prepare(sql).bind(...params).all();
-  
+
   // Parse JSON fields
   return (results || []).map(r => ({
     ...r,
@@ -729,14 +815,14 @@ async function handleSearchPrinciples(body, env) {
 
 async function handleUploadCase(body, env) {
   const { case_text, citation, case_name, court } = body;
-  
+
   if (!case_text || !citation) {
     throw new Error("Missing required fields: case_text and citation");
   }
 
   // Process the uploaded case
   const result = await processCaseUpload(env, case_text, citation, case_name, court);
-  
+
   return result;
 }
 
@@ -745,6 +831,7 @@ async function handleUploadCase(body, env) {
    ============================================================= */
 export default {
   async fetch(request, env) {
+    console.log('Request received:', request.url);
     const url = new URL(request.url);
     const origin = request.headers.get("Origin") || "";
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
