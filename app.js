@@ -8,10 +8,10 @@ const SCHEMA_VERSION = 1;
 /* =============================================================
    API BASES
    ============================================================= */
-const API_BASE = "http://127.0.0.1:8787/api/entries";
-const AI_BASE = "http://127.0.0.1:8787/api/ai";
-const EMAIL_BASE = "http://127.0.0.1:8787/api/email";
-const LEGAL_BASE = "http://127.0.0.1:8787/api/legal";
+const API_BASE = "https://arcanthyr.com/api/entries";
+const AI_BASE = "https://arcanthyr.com/api/ai";
+const EMAIL_BASE = "https://arcanthyr.com/api/email";
+const LEGAL_BASE = "https://arcanthyr.com/api/legal";
 /* =============================================================
    DOM refs
    ============================================================= */
