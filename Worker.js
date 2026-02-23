@@ -229,7 +229,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
 
   // ── Nexus vector storage ──────────────────────────────────────
   try {
-    await fetch("http://31.220.86.192:18789/ingest", {
+    await fetch("http://nexus. arcanthyr.com/ingest", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
