@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arcanthyr – Console</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <nav class="site-nav">
+    <a href="index.html" aria-label="Home">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
+        <defs>
+          <filter id="tex-sm">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
+          opacity="0.7" />
+        <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <polygon points="80,170 132,167 128,170 132,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
+        <circle cx="140" cy="170" r="24" stroke="#a8b4c0" stroke-width="0.6" fill="none" opacity="0.6" />
+        <circle cx="140" cy="170" r="3" fill="#a8b4c0" opacity="0.6" />
+      </svg>
+    </a>
+    <a class="btn ghost small" href="index.html">Home</a>
+    <a class="btn ghost small" href="search.html">Search</a>
+    <a class="btn ghost small" href="legal.html">Legal</a>
+    <a class="btn ghost small" href="#email-section">Email</a>
+  </nav>
+
+  <main class="wrap">
+    <header class="header">
+      <h1>The Arc Console</h1>
+      <p class="sub">Creating order from noise.</p>
+    </header>
+
+    <hr class="divider" />
+
+    <!-- INPUT CARD -->
+    <section class="card">
+      <label for="input" class="label">Input</label>
+      <textarea id="input" class="textarea" placeholder="Write a note, question, decision, or task..."></textarea>
+
+      <div class="row">
+        <button id="processBtn">Process</button>
+        <button id="saveBtn">Save</button>
+        <button id="draftBtn" class="ghost">Draft</button>
+        <button id="nextActionBtn" class="ghost">Next Actions</button>
+        <button id="clarifyBtn" class="ghost ai-btn">Clarify</button>
+        <button id="emailEntryBtn" class="ghost small">Email This</button>
+        <button id="clearInputBtn" class="ghost small">Clear</button>
+      </div>
+
+      <div id="output" class="output" aria-live="polite"></div>
+    </section>
+
+    <!-- AXIOM RELAY CARD -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Axiom Relay</h2>
+        <button id="relayBtn" class="btn ghost small ai-btn">Run Relay</button>
+      </div>
+      <p class="sub">Three-stage reasoning agent. Decomposes your entries, finds tensions, synthesises signal into
+        action.</p>
+      <div class="search-row">
+        <input type="text" id="relayFocus" class="search-input"
+          placeholder="Optional focus area – e.g. 'work projects' or 'financial decisions'…" />
+      </div>
+      <div id="relayOutput" class="review-output" style="display:none"></div>
+    </section>
+
+    <!-- EMAIL CENTER -->
+    <section class="card" id="email-section">
+      <div class="row space">
+        <h2 class="h2">Email Center</h2>
+        <button id="manageContactsBtn" class="btn ghost small">Contacts</button>
+      </div>
+      <p class="sub">Send entries, reports, or case summaries via email.</p>
+      
+      <div class="email-compose" style="display:none" id="emailCompose">
+        <label class="label">Recipients</label>
+        <div class="row">
+          <input type="text" id="emailRecipients" class="search-input" 
+            placeholder="email@example.com (comma separated)" style="flex:1" />
+          <button id="addFromContactsBtn" class="btn ghost small">From Contacts</button>
+        </div>
+
+        <label class="label" style="margin-top:12px">Subject</label>
+        <input type="text" id="emailSubject" class="search-input" placeholder="Email subject..." />
+
+        <label class="label" style="margin-top:12px">Message</label>
+        <textarea id="emailBody" class="textarea" placeholder="Compose message..."></textarea>
+
+        <div class="row" style="margin-top:12px">
+          <button id="sendEmailBtn" class="btn">Send Email</button>
+          <button id="cancelEmailBtn" class="btn ghost small">Cancel</button>
+        </div>
+        <div id="emailOutput" class="output" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- CONTACTS MODAL -->
+    <div id="contactsModal" class="modal" style="display:none">
+      <div class="modal-content">
+        <div class="row space">
+          <h2 class="h2">Saved Contacts</h2>
+          <button id="closeContactsBtn" class="btn ghost small">Close</button>
+        </div>
+        
+        <div class="row" style="margin-top:16px">
+          <input type="text" id="newContactName" class="search-input" placeholder="Name" style="flex:1" />
+          <input type="email" id="newContactEmail" class="search-input" placeholder="Email" style="flex:1" />
+          <button id="addContactBtn" class="btn small">Add</button>
+        </div>
+
+        <ul id="contactsList" class="contacts-list"></ul>
+      </div>
+    </div>
+
+    <!-- HISTORY CARD -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Recent Entries</h2>
+        <div class="row">
+          <a href="search.html" class="btn ghost small">View All & Search</a>
+          <button id="exportBtn" class="btn ghost small">Export</button>
+          <button id="clearBtn" class="btn ghost small">Clear All</button>
+        </div>
+      </div>
+      <div id="historyCount" class="filter-summary"></div>
+      <ul id="history" class="history"></ul>
+    </section>
+
+    <footer class="footer">
+      <small>v3.2 – Document upload + Streamlined interface. Private. Iterative.</small>
+    </footer>
+  </main>
+
+  <div id="saveToast" style="display:none" aria-live="polite"></div>
+
+  <script src="app.js?v=9"></script>
+</body>
+
+</html>
