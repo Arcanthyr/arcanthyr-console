@@ -231,7 +231,10 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   try {
     await fetch("http://31.220.86.192:18789/ingest", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Nexus-Key": env.NEXUS_SECRET_KEY
+      },
       body: JSON.stringify({
         citation: caseData.citation,
         source: "AustLII",
