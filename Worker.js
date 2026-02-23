@@ -229,7 +229,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
 
   // ── Nexus vector storage ──────────────────────────────────────
   try {
-    const nexusResponse = await fetch("https://nexus.arcanthyr.com/ingest", {
+    await fetch("https://nexus.arcanthyr.com/ingest", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -241,8 +241,6 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
         text: caseData.full_text
       })
     });
-    const nexusResult = await nexusResponse.text();
-    console.log("Nexus response:", nexusResponse.status, nexusResult);
   } catch (e) {
     console.error("Nexus ingest failed:", e.message);
   }
