@@ -1272,15 +1272,15 @@ async function handleCaseFile(file) {
   // Validate file type
   const extension = file.name.split('.').pop().toLowerCase();
   if (!['pdf', 'txt'].includes(extension)) {
-    if (uploadCaseTextarea) {
-      uploadCaseTextarea.value = `Error: Unsupported file type. Please use PDF or TXT files.`;
+    if (document.getElementById('uploadCaseText')) {
+      document.getElementById('uploadCaseText').value = `Error: Unsupported file type. Please use PDF or TXT files.`;
     }
     return;
   }
 
   // Show loading
-  if (uploadCaseTextarea) {
-    uploadCaseTextarea.value = 'Extracting text from file...';
+  if (document.getElementById('uploadCaseText')) {
+    document.getElementById('uploadCaseText').value = 'Extracting text from file...';
   }
 
   try {
@@ -1295,8 +1295,8 @@ async function handleCaseFile(file) {
     }
 
     // Auto-fill textarea
-    if (uploadCaseTextarea) {
-      uploadCaseTextarea.value = extractedText.trim();
+    if (document.getElementById('uploadCaseText')) {
+      document.getElementById('uploadCaseText').value = extractedText.trim();
     }
 
     // Try to extract citation and case name from text
@@ -1313,8 +1313,8 @@ async function handleCaseFile(file) {
 
   } catch (error) {
     console.error('Error extracting text:', error);
-    if (uploadCaseTextarea) {
-      uploadCaseTextarea.value = `Error extracting text: ${error.message}\n\nPlease paste case text manually.`;
+    if (document.getElementById('uploadCaseText')) {
+      document.getElementById('uploadCaseText').value = `Error extracting text: ${error.message}\n\nPlease paste case text manually.`;
     }
   }
 }
