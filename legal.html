@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arcanthyr – Legal Research</title>
   <link rel="stylesheet" href="styles.css" />
-  
+
   <!-- PDF.js for PDF extraction -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  
+
   <style>
     /* File upload dropzone */
     .case-dropzone {
@@ -22,18 +22,18 @@
       margin-bottom: 16px;
       background: var(--bg);
     }
-    
+
     .case-dropzone.dragover {
       border-color: var(--gold);
       background: var(--gold-dim);
     }
-    
+
     .dropzone-text {
       color: var(--text-mid);
       font-size: 0.875rem;
       margin-bottom: 6px;
     }
-    
+
     .dropzone-hint {
       color: var(--text-dim);
       font-size: 0.75rem;
@@ -92,7 +92,7 @@
         <button id="toggleUploadBtn" class="btn ghost small">Toggle Form</button>
       </div>
       <p class="sub">Paste case text from AustLII or PDF for AI analysis.</p>
-      
+
       <div id="uploadCaseForm" style="display:none;margin-top:16px;">
         <!-- File Upload Dropzone -->
         <div class="case-dropzone" id="caseDropzone">
@@ -100,13 +100,13 @@
           <div class="dropzone-hint">Or paste case text below manually</div>
         </div>
         <input type="file" id="caseFileInput" accept=".pdf,.txt" style="display:none" />
-        
+
         <label class="label" style="margin-top:16px;">Citation (e.g. [2015] TASSC 42)</label>
         <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
-        
+
         <label class="label" style="margin-top:12px;">Case Name</label>
         <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
-        
+
         <label class="label" style="margin-top:12px;">Court</label>
         <select id="uploadCourt" class="search-input">
           <option value="supreme">Supreme Court</option>
@@ -114,11 +114,11 @@
           <option value="cca">Court of Criminal Appeal</option>
           <option value="fullcourt">Full Court</option>
         </select>
-        
+
         <label class="label" style="margin-top:12px;">Case Text (auto-filled from PDF or paste manually)</label>
-        <textarea id="uploadCaseText" class="textarea" style="min-height:200px;" 
+        <textarea id="uploadCaseText" class="textarea" style="min-height:200px;"
           placeholder="Drag PDF above or paste case text here..."></textarea>
-        
+
         <div class="row" style="margin-top:12px;">
           <button id="uploadCaseBtn" class="btn">Process & Save</button>
           <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
@@ -132,12 +132,12 @@
       <div class="row space">
         <h2 class="h2">Search Cases & Principles</h2>
       </div>
-      
+
       <div class="search-row">
-        <input type="text" id="legalSearchInput" class="search-input" 
+        <input type="text" id="legalSearchInput" class="search-input"
           placeholder="Search by keyword, statute, or offence…" />
       </div>
-      
+
       <div class="filter-row">
         <span class="label">Court</span>
         <div class="filter-chips" id="courtFilters">
@@ -169,7 +169,7 @@
     // Configure PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
-    <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 
 </html>
