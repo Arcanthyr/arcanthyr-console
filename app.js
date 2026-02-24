@@ -1,4 +1,4 @@
-console.log("APP v9 FIXED — Multi-page compatible (Console + Search + Legal)");
+console.log("APP v10 — Dropzone fix + generic citation regex");
 
 /* =============================================================
    SCHEMA VERSION
