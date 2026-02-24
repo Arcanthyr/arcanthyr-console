@@ -238,9 +238,20 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
       body: JSON.stringify({
         citation: caseData.citation,
         source: "AustLII",
-        text: caseData.full_text
+        text: caseData.full_text,
+        // Pass Llama-extracted metadata so Nexus stores it in Qdrant
+        summary: summary.facts + " " + summary.holding,
+        category: "criminal",
+        jurisdiction: "Tasmania",
+        court: caseData.court || "unknown",
+        year: caseData.year || null,
+        outcome: summary.holding,
+        principles: summary.principles.map(p => p.principle || p),
+        legislation: summary.principles.flatMap(p => p.statute_refs || []),
+        offences: [],
       })
     });
+    console.log(`Nexus ingest ok for ${caseData.citation}`);
   } catch (e) {
     console.error("Nexus ingest failed:", e.message);
   }
