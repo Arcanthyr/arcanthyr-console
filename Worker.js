@@ -126,7 +126,7 @@ function parseAustLIIHtml(html, court, year) {
   const cases = [];
 
   // Look for case links in the format [YEAR] TASSC 123 or similar
-  const casePattern = /\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/g;
+  const casePattern = /\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/g;
   let match;
 
   while ((match = casePattern.exec(html)) !== null && cases.length < 100) {
