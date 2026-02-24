@@ -1328,20 +1328,24 @@ async function extractPdfTextForCase(file) {
 }
 
 function autoFillCaseMetadata(text) {
-  // Try to extract citation like [2024] TASSC 42
-  const citationMatch = text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/);
+  // Only look at the first 1500 chars — the judgment header
+  // Prevents picking up cited cases from deep in the body text
+  const header = text.substring(0, 1500);
+
+  // Citation: look in header first, fall back to full text
+  const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/) ||
+                        text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/);
   if (citationMatch && document.getElementById('uploadCitation')) {
     document.getElementById('uploadCitation').value = citationMatch[0];
   }
 
-  // Try to extract case name (usually in first few lines)
-  // Look for patterns like "R v Smith" or "DPP v Jones"
-  const caseNameMatch = text.match(/((?:R|DPP|Director of Public Prosecutions)\s+v\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+  // Case name: header only so we get the title, not a cited case
+  const caseNameMatch = header.match(/((?:R|DPP|Director of Public Prosecutions|[A-Z][a-z]+)\s+v\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
   if (caseNameMatch && document.getElementById('uploadCaseName')) {
     document.getElementById('uploadCaseName').value = caseNameMatch[1];
   }
 
-  // Try to detect court type
+  // Court type
   if (document.getElementById('uploadCourt')) {
     if (text.includes('Court of Criminal Appeal') || text.includes('TASCCA')) {
       document.getElementById('uploadCourt').value = 'cca';
