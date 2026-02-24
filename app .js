@@ -1084,6 +1084,8 @@ toggleUploadBtn?.addEventListener("click", () => {
   const isVisible = uploadCaseForm.style.display !== "none";
   uploadCaseForm.style.display = isVisible ? "none" : "block";
   toggleUploadBtn.textContent = isVisible ? "Show Upload" : "Hide Upload";
+  // Init dropzone listeners now that the form is visible
+  if (!isVisible) initDropzone();
 });
 
 // Cancel upload
@@ -1221,11 +1223,15 @@ restoreBtn?.addEventListener("click", async () => {
    ============================================================= */
 
 // File upload for legal cases
-const caseDropzone = document.getElementById('caseDropzone');
-const caseFileInput = document.getElementById('caseFileInput');
-const uploadCaseTextarea = document.getElementById('uploadCaseText');
+// NOTE: listeners are attached after Toggle Form is clicked,
+// because the elements are hidden on page load
+function initDropzone() {
+  const caseDropzone = document.getElementById('caseDropzone');
+  const caseFileInput = document.getElementById('caseFileInput');
 
-if (caseDropzone && caseFileInput) {
+  if (!caseDropzone || !caseFileInput || caseDropzone._init) return;
+  caseDropzone._init = true; // prevent double-binding
+
   // Click to browse
   caseDropzone.addEventListener('click', () => {
     caseFileInput.click();
@@ -1244,7 +1250,6 @@ if (caseDropzone && caseFileInput) {
   caseDropzone.addEventListener('drop', async (e) => {
     e.preventDefault();
     caseDropzone.classList.remove('dragover');
-
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       await handleCaseFile(files[0]);
@@ -1257,8 +1262,10 @@ if (caseDropzone && caseFileInput) {
     if (files.length > 0) {
       await handleCaseFile(files[0]);
     }
-    e.target.value = ''; // Reset
+    e.target.value = '';
   });
+
+  console.log('[Arcanthyr] Dropzone ready');
 }
 
 async function handleCaseFile(file) {
@@ -1328,19 +1335,19 @@ async function extractPdfTextForCase(file) {
 }
 
 function autoFillCaseMetadata(text) {
-  // Only look at the first 1500 chars — the judgment header
-  // Prevents picking up cited cases from deep in the body text
+  // Only search the first 1500 chars (the header) for case name and citation
+  // Prevents picking up cited cases from deep in the judgment body
   const header = text.substring(0, 1500);
 
-  // Citation: look in header first, fall back to full text
-  const citationMatch = header.match(/\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/) ||
-    text.match(/\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/);
+  // Citation: header first, fall back to full text
+  const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/) ||
+                        text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
   if (citationMatch && document.getElementById('uploadCitation')) {
     document.getElementById('uploadCitation').value = citationMatch[0];
   }
 
   // Case name: header only so we get the title, not a cited case
-  const caseNameMatch = header.match(/((?:R|DPP|Director of Public Prosecutions|[A-Z][a-z]+)\s+v\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+  const caseNameMatch = header.match(/((?:R|DPP|Director of Public Prosecutions|Police|[A-Z][a-z]+)\s+v\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
   if (caseNameMatch && document.getElementById('uploadCaseName')) {
     document.getElementById('uploadCaseName').value = caseNameMatch[1];
   }
@@ -1351,7 +1358,7 @@ function autoFillCaseMetadata(text) {
       document.getElementById('uploadCourt').value = 'cca';
     } else if (text.includes('Supreme Court') || text.includes('TASSC')) {
       document.getElementById('uploadCourt').value = 'supreme';
-    } else if (text.includes('Magistrates') || text.includes('TAMagC')) {
+    } else if (text.includes('Magistrates') || text.includes('TAMagC') || text.includes('TASMC')) {
       document.getElementById('uploadCourt').value = 'magistrates';
     }
   }
