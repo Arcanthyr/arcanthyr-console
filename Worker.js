@@ -77,7 +77,7 @@ const AUSTLII_SEARCH_URLS = {
   magistrates: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TAMagC/",
   supreme: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TASSC/",
   cca: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TASCCA/",
-  // Full Court decisions are also in TASSC
+  fullcourt: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TASFC/",
 };
 
 // Only check CURRENT year for new cases
@@ -129,7 +129,7 @@ function parseAustLIIHtml(html, court, year) {
   const casePattern = /\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/g;
   let match;
 
-  while ((match = casePattern.exec(html)) !== null && cases.length < 100) {
+  while ((match = casePattern.exec(html)) !== null) {
     cases.push({
       citation: match[0],
       year: match[1],
@@ -421,6 +421,81 @@ async function getSyncProgress(env) {
 /* =============================================================
    SCHEDULED SYNC (Daily Cron) - NEW CASES ONLY
    ============================================================= */
+
+// Backfill: fetch ALL cases for a specific year across all courts
+async function runYearBackfill(env, year) {
+  console.log(`Starting backfill for year ${year}...`);
+  let casesProcessed = 0;
+  let casesFailed = 0;
+  const errors = [];
+  const courts = ['magistrates', 'supreme', 'cca', 'fullcourt'];
+
+  for (const court of courts) {
+    const baseUrl = AUSTLII_SEARCH_URLS[court];
+    if (!baseUrl) continue;
+
+    try {
+      const url = `${baseUrl}${year}/`;
+      console.log(`Fetching index: ${url}`);
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.log(`AustLII fetch failed for ${court} ${year}: ${response.status}`);
+        continue;
+      }
+
+      const html = await response.text();
+      const cases = parseAustLIIHtml(html, court, year);
+      console.log(`Found ${cases.length} cases for ${court} ${year}`);
+
+      for (const caseData of cases) {
+        // Skip if already in DB
+        const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
+          .bind(caseData.citation).first();
+        if (exists) {
+          console.log(`Skipping existing: ${caseData.citation}`);
+          continue;
+        }
+
+        try {
+          let content = null;
+          let retries = 0;
+          while (!content && retries < 3) {
+            content = await fetchCaseContent(caseData.url);
+            if (!content) {
+              retries++;
+              await new Promise(r => setTimeout(r, 2000));
+            }
+          }
+
+          if (!content || !content.full_text || content.full_text.length < 100) {
+            casesFailed++;
+            errors.push(`${caseData.citation}: fetch/content failed`);
+            continue;
+          }
+
+          const fullCaseData = { ...caseData, ...content };
+          const summary = await summarizeCase(env, fullCaseData);
+          await saveCaseToDb(env, fullCaseData, summary);
+          casesProcessed++;
+          console.log(`✓ ${caseData.citation}`);
+
+          // Polite delay between cases
+          await new Promise(r => setTimeout(r, 2000));
+
+        } catch (err) {
+          casesFailed++;
+          errors.push(`${caseData.citation}: ${err.message}`);
+        }
+      }
+    } catch (err) {
+      console.error(`Error fetching ${court} ${year}:`, err);
+    }
+  }
+
+  console.log(`Backfill ${year} complete: ${casesProcessed} saved, ${casesFailed} failed`);
+  return { year, casesProcessed, casesFailed, errors };
+}
+
 async function runDailySync(env) {
   console.log("Starting daily AustLII check for new cases...");
 
@@ -981,6 +1056,10 @@ export default {
         } else if (action === "trigger-sync" && request.method === "POST") {
           // Manual trigger for sync (in addition to scheduled)
           result = await runDailySync(env);
+        } else if (action === "backfill-year" && request.method === "POST") {
+          // Backfill all cases for a specific year
+          const year = body.year || new Date().getFullYear() - 1;
+          result = await runYearBackfill(env, year);
         } else if (action === "upload-case" && request.method === "POST") {
           // NEW: Upload and process a case manually
           result = await handleUploadCase(body, env);
