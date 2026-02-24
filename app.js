@@ -1341,7 +1341,7 @@ function autoFillCaseMetadata(text) {
 
   // Citation: header first, fall back to full text
   const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/) ||
-    text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
+                        text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
   if (citationMatch && document.getElementById('uploadCitation')) {
     document.getElementById('uploadCitation').value = citationMatch[0];
   }
