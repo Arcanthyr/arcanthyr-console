@@ -83,6 +83,11 @@
         <button id="legalSyncBtn" class="btn ai-btn">Check New Cases</button>
       </div>
       <div id="legalSyncStatus" class="filter-summary" style="margin-top:16px;"></div>
+      <div class="row" style="margin-top:16px;gap:8px;">
+        <input type="number" id="backfillYear" class="search-input" value="2024" min="2000" max="2026" style="width:100px;" />
+        <button id="backfillYearBtn" class="btn ghost small">Scan Custom Year</button>
+      </div>
+      <div id="backfillStatus" class="filter-summary" style="margin-top:8px;"></div>
     </section>
 
     <!-- UPLOAD CASE SECTION -->
@@ -169,7 +174,7 @@
     // Configure PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 
 </html>

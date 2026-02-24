@@ -1,4 +1,4 @@
-console.log("APP v10 — Dropzone fix + generic citation regex");
+console.log("APP v11 — Scan Custom Year backfill");
 
 /* =============================================================
    SCHEMA VERSION
@@ -1068,12 +1068,46 @@ legalSyncBtn?.addEventListener("click", async () => {
     showToast(`Found ${result.cases_processed} new cases`);
     await updateLegalSyncStatus();
     if (result.cases_processed > 0) {
-      performLegalSearch(); // Refresh search results
+      performLegalSearch();
     }
   } catch (err) {
     legalSyncStatus.textContent = "Sync failed: " + err.message;
   } finally {
     legalSyncBtn.disabled = false;
+  }
+});
+
+document.getElementById("backfillYearBtn")?.addEventListener("click", async () => {
+  const year = parseInt(document.getElementById("backfillYear")?.value);
+  if (!year || year < 2000 || year > 2026) {
+    alert("Please enter a valid year between 2000 and 2026");
+    return;
+  }
+
+  if (!confirm(`Scan ALL Tasmanian criminal court cases from ${year}? This may take a while.`)) return;
+
+  const btn = document.getElementById("backfillYearBtn");
+  const status = document.getElementById("backfillStatus");
+  btn.disabled = true;
+  status.textContent = `Scanning ${year} — this may take several minutes…`;
+
+  try {
+    const r = await fetch(`${LEGAL_BASE}/backfill-year`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ year }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Backfill failed");
+    const res = data.result;
+    status.textContent = `✓ ${year} complete — ${res.casesProcessed} saved, ${res.casesFailed} failed`;
+    showToast(`Scanned ${year}: ${res.casesProcessed} cases saved`);
+    await updateLegalSyncStatus();
+    performLegalSearch();
+  } catch (err) {
+    status.textContent = "Scan failed: " + err.message;
+  } finally {
+    btn.disabled = false;
   }
 });
 
