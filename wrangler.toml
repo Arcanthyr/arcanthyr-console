@@ -12,10 +12,3 @@ database_id = "1b8ca95d-b8b3-421d-8c77-20f80432e1a0"
 
 [ai]
 binding = "AI"
-```
-
-Save it, then push:
-```
-git add .
-git commit -m "fix: add assets directory to wrangler.toml"
-git push
