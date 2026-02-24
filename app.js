@@ -1333,8 +1333,8 @@ function autoFillCaseMetadata(text) {
   const header = text.substring(0, 1500);
 
   // Citation: look in header first, fall back to full text
-  const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/) ||
-                        text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA)\s+(\d+)/);
+  const citationMatch = header.match(/\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/) ||
+    text.match(/\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/);
   if (citationMatch && document.getElementById('uploadCitation')) {
     document.getElementById('uploadCitation').value = citationMatch[0];
   }
