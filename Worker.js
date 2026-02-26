@@ -934,15 +934,14 @@ async function handleSearchPrinciples(body, env) {
 }
 
 async function handleUploadCase(body, env) {
-  const { case_text, citation, case_name, court } = body;
-
+  let { case_text, citation, case_name, court, encoding } = body;
   if (!case_text || !citation) {
     throw new Error("Missing required fields: case_text and citation");
   }
-
-  // Process the uploaded case
+  if (encoding === 'base64') {
+    case_text = atob(case_text);
+  }
   const result = await processCaseUpload(env, case_text, citation, case_name, court);
-
   return result;
 }
 
