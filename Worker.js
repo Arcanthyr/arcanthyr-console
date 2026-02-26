@@ -489,46 +489,46 @@ async function runYearBackfill(env, year) {
     console.log(`Found ${cases.length} cases for ${court} ${year}`);
 
     for (const caseData of cases) {
-        // Skip if already in DB
-        const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
-          .bind(caseData.citation).first();
-        if (exists) {
-          console.log(`Skipping existing: ${caseData.citation}`);
+      // Skip if already in DB
+      const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
+        .bind(caseData.citation).first();
+      if (exists) {
+        console.log(`Skipping existing: ${caseData.citation}`);
+        continue;
+      }
+
+      try {
+        let content = null;
+        if (caseData.html) {
+          content = await fetchCaseContent(null, caseData.html);
+        } else {
+          let retries = 0;
+          while (!content && retries < 3) {
+            content = await fetchCaseContent(caseData.url);
+            if (!content) { retries++; await new Promise(r => setTimeout(r, 2000)); }
+          }
+        }
+
+        if (!content || !content.full_text || content.full_text.length < 100) {
+          casesFailed++;
+          errors.push(`${caseData.citation}: fetch/content failed`);
           continue;
         }
 
-        try {
-          let content = null;
-          if (caseData.html) {
-            content = await fetchCaseContent(null, caseData.html);
-          } else {
-            let retries = 0;
-            while (!content && retries < 3) {
-              content = await fetchCaseContent(caseData.url);
-              if (!content) { retries++; await new Promise(r => setTimeout(r, 2000)); }
-            }
-        }
+        const fullCaseData = { ...caseData, ...content };
+        const summary = await summarizeCase(env, fullCaseData);
+        await saveCaseToDb(env, fullCaseData, summary);
+        casesProcessed++;
+        console.log(`✓ ${caseData.citation}`);
 
-          if (!content || !content.full_text || content.full_text.length < 100) {
-            casesFailed++;
-            errors.push(`${caseData.citation}: fetch/content failed`);
-            continue;
-          }
+        // Polite delay between cases
+        await new Promise(r => setTimeout(r, 2000));
 
-          const fullCaseData = { ...caseData, ...content };
-          const summary = await summarizeCase(env, fullCaseData);
-          await saveCaseToDb(env, fullCaseData, summary);
-          casesProcessed++;
-          console.log(`✓ ${caseData.citation}`);
+      } catch (err) {
+        casesFailed++;
+        errors.push(`${caseData.citation}: ${err.message}`);
+      }
 
-          // Polite delay between cases
-          await new Promise(r => setTimeout(r, 2000));
-
-        } catch (err) {
-          casesFailed++;
-          errors.push(`${caseData.citation}: ${err.message}`);
-        }
-      
     }
   }
 
