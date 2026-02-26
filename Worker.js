@@ -171,7 +171,12 @@ async function fetchCaseContent(url, preloadedHtml = null) {
     }
     // Extract case name from title or header
     const nameMatch = html.match(/<title>([^<]+)<\/title>/i);
-    const caseName = nameMatch ? nameMatch[1].trim() : "Unknown Case";
+    let caseName = nameMatch ? nameMatch[1].trim() : "Unknown Case";
+    // AustLII titles are often just the citation — try to find actual case name in body
+    const bodyNameMatch = html.match(/(?:BETWEEN|IN THE MATTER OF|R\s+v\s+[\w\s]+|[\w\s]+\s+v\s+[\w\s]+)(?=\s*<)/i);
+    if (bodyNameMatch && caseName.match(/^\[?\d{4}\]|^TASSC|^TASCCA|^TASFC|^TAMagC/)) {
+      caseName = bodyNameMatch[0].trim();
+    }
 
     // Extract main content (simplified - would need better parsing)
     const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
