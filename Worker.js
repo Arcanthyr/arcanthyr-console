@@ -73,11 +73,11 @@ async function sendEmail(env, to, subject, html) {
    ============================================================= */
 
 // AustLII search URL patterns for Tasmanian criminal courts
-const AUSTLII_SEARCH_URLS = {
-  magistrates: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TAMagC/",
-  supreme: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TASSC/",
-  cca: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TASCCA/",
-  fullcourt: "http://www.austlii.edu.au/cgi-bin/viewtoc/au/cases/tas/TASFC/",
+const AUSTLII_COURTS = {
+  magistrates: "TAMagC",
+  supreme: "TASSC",
+  cca: "TASCCA",
+  fullcourt: "TASFC",
 };
 
 // Only check CURRENT year for new cases
@@ -85,37 +85,51 @@ async function fetchRecentAustLIICases(env, limit = 50) {
   const currentYear = new Date().getFullYear();
   const allNewCases = [];
 
-  // Check all courts for current year only
-  for (const court of ['magistrates', 'supreme', 'cca']) {
-    const baseUrl = AUSTLII_SEARCH_URLS[court];
-    if (!baseUrl) continue;
+  for (const [courtName, courtAbbrev] of Object.entries(AUSTLII_COURTS)) {
+    let num = 1;
+    let consecutiveMisses = 0;
 
-    try {
-      const url = `${baseUrl}${currentYear}/`;
-      const response = await fetch(url);
+    while (consecutiveMisses < 5 && allNewCases.length < limit) {
+      const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${currentYear}/${num}.html`;
 
-      if (!response.ok) {
-        console.log(`AustLII fetch failed for ${court} ${currentYear}: ${response.status}`);
-        continue;
-      }
+      try {
+        const response = await fetch(url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
 
-      const html = await response.text();
-      const cases = parseAustLIIHtml(html, court, currentYear);
+        if (response.status === 404 || response.status === 410) {
+          consecutiveMisses++;
+          num++;
+          continue;
+        }
 
-      // Filter out cases we already have
-      for (const caseData of cases) {
+        if (!response.ok) { num++; continue; }
+
+        consecutiveMisses = 0;
+        const html = await response.text();
+        const citation = `[${currentYear}] ${courtAbbrev} ${num}`;
+
         const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
-          .bind(caseData.citation).first();
+          .bind(citation).first();
 
         if (!exists) {
-          allNewCases.push(caseData);
+          allNewCases.push({
+            citation,
+            year: String(currentYear),
+            court: courtName,
+            court_abbrev: courtAbbrev,
+            case_num: String(num),
+            url,
+            html,
+          });
         }
+
+      } catch (error) {
+        console.error(`Error fetching ${courtAbbrev}/${currentYear}/${num}:`, error);
       }
 
-      if (allNewCases.length >= limit) break;
-
-    } catch (error) {
-      console.error(`Error fetching AustLII ${court} ${currentYear}:`, error);
+      num++;
+      await new Promise(r => setTimeout(r, 1000));
     }
   }
 
@@ -143,13 +157,18 @@ function parseAustLIIHtml(html, court, year) {
   return cases;
 }
 
-async function fetchCaseContent(url) {
+async function fetchCaseContent(url, preloadedHtml = null) {
   try {
-    const response = await fetch(url);
-    if (!response.ok) return null;
-
-    const html = await response.text();
-
+    let html;
+    if (preloadedHtml) {
+      html = preloadedHtml;
+    } else {
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+      });
+      if (!response.ok) return null;
+      html = await response.text();
+    }
     // Extract case name from title or header
     const nameMatch = html.match(/<title>([^<]+)<\/title>/i);
     const caseName = nameMatch ? nameMatch[1].trim() : "Unknown Case";
@@ -431,23 +450,45 @@ async function runYearBackfill(env, year) {
   const courts = ['magistrates', 'supreme', 'cca', 'fullcourt'];
 
   for (const court of courts) {
-    const baseUrl = AUSTLII_SEARCH_URLS[court];
-    if (!baseUrl) continue;
+    const courtAbbrev = AUSTLII_COURTS[court];
+    if (!courtAbbrev) continue;
 
-    try {
-      const url = `${baseUrl}${year}/`;
-      console.log(`Fetching index: ${url}`);
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.log(`AustLII fetch failed for ${court} ${year}: ${response.status}`);
-        continue;
+    const cases = [];
+    let num = 1;
+    let consecutiveMisses = 0;
+
+    console.log(`Scanning ${courtAbbrev} ${year} sequentially...`);
+
+    while (consecutiveMisses < 5) {
+      const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${year}/${num}.html`;
+      try {
+        const response = await fetch(url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
+        if (response.status === 404 || response.status === 410) {
+          consecutiveMisses++;
+        } else if (response.ok) {
+          consecutiveMisses = 0;
+          const html = await response.text();
+          cases.push({
+            citation: `[${year}] ${courtAbbrev} ${num}`,
+            year: String(year),
+            court,
+            court_abbrev: courtAbbrev,
+            url,
+            html,
+          });
+        }
+      } catch (e) {
+        console.error(`Fetch error ${courtAbbrev}/${year}/${num}:`, e);
       }
+      num++;
+      await new Promise(r => setTimeout(r, 1000));
+    }
 
-      const html = await response.text();
-      const cases = parseAustLIIHtml(html, court, year);
-      console.log(`Found ${cases.length} cases for ${court} ${year}`);
+    console.log(`Found ${cases.length} cases for ${court} ${year}`);
 
-      for (const caseData of cases) {
+    for (const caseData of cases) {
         // Skip if already in DB
         const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
           .bind(caseData.citation).first();
@@ -458,14 +499,15 @@ async function runYearBackfill(env, year) {
 
         try {
           let content = null;
-          let retries = 0;
-          while (!content && retries < 3) {
-            content = await fetchCaseContent(caseData.url);
-            if (!content) {
-              retries++;
-              await new Promise(r => setTimeout(r, 2000));
+          if (caseData.html) {
+            content = await fetchCaseContent(null, caseData.html);
+          } else {
+            let retries = 0;
+            while (!content && retries < 3) {
+              content = await fetchCaseContent(caseData.url);
+              if (!content) { retries++; await new Promise(r => setTimeout(r, 2000)); }
             }
-          }
+        }
 
           if (!content || !content.full_text || content.full_text.length < 100) {
             casesFailed++;
@@ -486,9 +528,7 @@ async function runYearBackfill(env, year) {
           casesFailed++;
           errors.push(`${caseData.citation}: ${err.message}`);
         }
-      }
-    } catch (err) {
-      console.error(`Error fetching ${court} ${year}:`, err);
+      
     }
   }
 
@@ -516,19 +556,10 @@ async function runDailySync(env) {
       console.log(`Processing: ${caseData.citation}`);
 
       // Fetch full case content with retry
-      let content = null;
-      let retries = 0;
-      while (!content && retries < 3) {
-        content = await fetchCaseContent(caseData.url);
-        if (!content) {
-          retries++;
-          console.log(`Fetch failed for ${caseData.citation}, retry ${retries}/3`);
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-      }
+      const content = await fetchCaseContent(caseData.url, caseData.html || null);
 
       if (!content) {
-        console.error(`Failed to fetch content for ${caseData.citation} after 3 attempts`);
+        console.error(`Failed to fetch content for ${caseData.citation}`);
         errors.push(`${caseData.citation}: Content fetch failed`);
         casesFailed++;
         continue;
