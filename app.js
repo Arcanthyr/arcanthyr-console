@@ -1,4 +1,4 @@
-console.log("APP v11 — Scan Custom Year backfill");
+console.log("APP v12 — case_name from Llama, paginated case search");
 
 /* =============================================================
    SCHEMA VERSION
@@ -12,6 +12,7 @@ const API_BASE = "https://arcanthyr.com/api/entries";
 const AI_BASE = "https://arcanthyr.com/api/ai";
 const EMAIL_BASE = "https://arcanthyr.com/api/email";
 const LEGAL_BASE = "https://arcanthyr.com/api/legal";
+
 /* =============================================================
    DOM refs
    ============================================================= */
@@ -74,7 +75,7 @@ function checkRate(key, max = 3, windowMs = 5000) {
 }
 
 /* =============================================================
-   VAULT API (existing)
+   VAULT API
    ============================================================= */
 async function apiLoadEntries() {
   const r = await fetch(API_BASE, { method: "GET" });
@@ -108,7 +109,7 @@ async function apiRestoreAll() {
 }
 
 /* =============================================================
-   AI PROXY CALLS (existing)
+   AI PROXY CALLS
    ============================================================= */
 async function aiCall(action, body) {
   const r = await fetch(`${AI_BASE}/${action}`, {
@@ -121,25 +122,18 @@ async function aiCall(action, body) {
   return data.result;
 }
 
-async function draftEntry(text, tag) {
-  return aiCall("draft", { text, tag });
-}
-
-async function suggestNextActions(text, tag, next, clarify) {
-  return aiCall("next-actions", { text, tag, next, clarify });
-}
+async function draftEntry(text, tag) { return aiCall("draft", { text, tag }); }
+async function suggestNextActions(text, tag, next, clarify) { return aiCall("next-actions", { text, tag, next, clarify }); }
 
 async function weeklyReview(entries) {
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
   const recent = entries.filter(e => new Date(e.created_at).getTime() > sevenDaysAgo);
   const sample = recent.length > 0 ? recent : entries.slice(-30);
-  const slim = sample.map(e => ({ tag: e.tag, text: e.text }));
-  return aiCall("weekly-review", { entries: slim });
+  return aiCall("weekly-review", { entries: sample.map(e => ({ tag: e.tag, text: e.text })) });
 }
 
 async function axiomRelay(entries, focus = "") {
-  const slim = entries.slice(-20).map(e => ({ tag: e.tag, text: e.text }));
-  return aiCall("axiom-relay", { entries: slim, focus });
+  return aiCall("axiom-relay", { entries: entries.slice(-20).map(e => ({ tag: e.tag, text: e.text })), focus });
 }
 
 async function clarifyAgentStep(text, tag, history, userReply) {
@@ -195,11 +189,12 @@ async function legalGetSyncProgress() {
   return data.result;
 }
 
-async function legalSearchCases(query, court = "all") {
+async function legalSearchCases({ query = "", court = "all", year = "all", year_from = "", year_to = "", limit = 100, offset = 0 } = {}) {
+  // Returns { total, limit, offset, cases[] }
   const r = await fetch(`${LEGAL_BASE}/search-cases`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, court }),
+    body: JSON.stringify({ query, court, year, year_from, year_to, limit, offset }),
   });
   const data = await r.json();
   if (!r.ok) throw new Error(data.error || "Case search failed");
@@ -244,10 +239,7 @@ async function legalUploadCase(caseText, citation, caseName, court) {
    ============================================================= */
 function migrateEntry(e) {
   const v = e._v || 0;
-  if (v < 1) {
-    e.draft = e.draft || null;
-    e._v = 1;
-  }
+  if (v < 1) { e.draft = e.draft || null; e._v = 1; }
   return e;
 }
 
@@ -300,17 +292,16 @@ let activeDateRange = "all";
 let searchKeyword = "";
 let activeCourt = "all";
 let activeLegalView = "cases";
+let activeYear = "all";      // year filter for legal search
+let legalCurrentOffset = 0; // pagination state
+const LEGAL_PAGE_SIZE = 100;
 
 function getFilteredEntries(entries) {
   let result = [...entries];
   if (activeTag !== "all") result = result.filter(e => e.tag === activeTag);
   if (activeDateRange !== "all") {
     const now = Date.now();
-    const cutoffs = {
-      today: now - 24 * 60 * 60 * 1000,
-      week: now - 7 * 24 * 60 * 60 * 1000,
-      month: now - 30 * 24 * 60 * 60 * 1000,
-    };
+    const cutoffs = { today: now - 86400000, week: now - 604800000, month: now - 2592000000 };
     const cutoff = cutoffs[activeDateRange];
     if (cutoff) result = result.filter(e => new Date(e.created_at).getTime() > cutoff);
   }
@@ -327,8 +318,7 @@ function getFilteredEntries(entries) {
 }
 
 function updateFilterSummary(filtered, total) {
-  if (!filterSummary || !historyCount) return; // Exit if elements don't exist
-
+  if (!filterSummary || !historyCount) return;
   if (filtered.length === total && !searchKeyword.trim() && activeTag === "all" && activeDateRange === "all") {
     filterSummary.textContent = "";
     historyCount.textContent = `${total} ${total === 1 ? "entry" : "entries"}`;
@@ -346,10 +336,10 @@ let contacts = [];
 let currentEmailContent = null;
 
 /* =============================================================
-   RENDER
+   RENDER (vault entries)
    ============================================================= */
 function render(data) {
-  if (!historyEl) return; // Exit if history element doesn't exist
+  if (!historyEl) return;
 
   const filtered = getFilteredEntries(data);
   updateFilterSummary(filtered, data.length);
@@ -363,42 +353,31 @@ function render(data) {
     return;
   }
 
-  historyEl.innerHTML = filtered
-    .map(entry => {
-      const date = new Date(entry.created_at).toLocaleDateString("en-AU", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
-      const time = new Date(entry.created_at).toLocaleTimeString("en-AU", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+  historyEl.innerHTML = filtered.map(entry => {
+    const date = new Date(entry.created_at).toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" });
+    const time = new Date(entry.created_at).toLocaleTimeString("en-AU", { hour: "2-digit", minute: "2-digit" });
 
-      const highlightText = (text) => {
-        if (!searchKeyword.trim()) return text;
-        const kw = searchKeyword.trim();
-        const regex = new RegExp(`(${kw})`, "gi");
-        return text.replace(regex, "<mark>$1</mark>");
-      };
+    const highlightText = (text) => {
+      if (!searchKeyword.trim()) return text;
+      const regex = new RegExp(`(${searchKeyword.trim()})`, "gi");
+      return text.replace(regex, "<mark>$1</mark>");
+    };
 
-      return `
-        <li class="item" data-id="${entry.id}">
-          <div class="meta">
-            <span class="tag tag-${entry.tag}">${entry.tag}</span>
-            <span>${date} · ${time}</span>
-          </div>
-          <p>${highlightText(entry.text)}</p>
-          ${entry.draft ? `<p style="margin-top:8px;color:var(--text-mid);font-style:italic;">Draft: ${highlightText(entry.draft)}</p>` : ""}
-          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn ghost small email-entry-btn" data-id="${entry.id}">Email</button>
-            <button class="btn ghost small delete-btn" data-id="${entry.id}">Delete</button>
-          </div>
-        </li>`;
-    })
-    .join("");
+    return `
+      <li class="item" data-id="${entry.id}">
+        <div class="meta">
+          <span class="tag tag-${entry.tag}">${entry.tag}</span>
+          <span>${date} · ${time}</span>
+        </div>
+        <p>${highlightText(entry.text)}</p>
+        ${entry.draft ? `<p style="margin-top:8px;color:var(--text-mid);font-style:italic;">Draft: ${highlightText(entry.draft)}</p>` : ""}
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn ghost small email-entry-btn" data-id="${entry.id}">Email</button>
+          <button class="btn ghost small delete-btn" data-id="${entry.id}">Delete</button>
+        </div>
+      </li>`;
+  }).join("");
 
-  // Attach delete handlers
   document.querySelectorAll(".delete-btn").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.target.dataset.id;
@@ -408,20 +387,15 @@ function render(data) {
         entries = entries.filter(entry => entry.id !== id);
         render(entries);
         showToast("Entry deleted");
-      } catch (err) {
-        showOutput("Delete failed: " + err.message);
-      }
+      } catch (err) { showOutput("Delete failed: " + err.message); }
     });
   });
 
-  // Attach email entry handlers
   document.querySelectorAll(".email-entry-btn").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const id = e.target.dataset.id;
       const entry = entries.find(e => e.id === id);
-      if (entry) {
-        openEmailComposer(entry.text, `Arcanthyr Entry: ${entry.tag}`);
-      }
+      if (entry) openEmailComposer(entry.text, `Arcanthyr Entry: ${entry.tag}`);
     });
   });
 }
@@ -432,91 +406,64 @@ function render(data) {
 function renderRelayReport(data) {
   const relayOutput = document.getElementById("relayOutput");
   if (!relayOutput) return;
-
   const formatted = data.report
     .replace(/^(SIGNAL)/m, '<div class="review-section-title">$1</div>')
     .replace(/^(LEVERAGE POINT)/m, '<div class="review-section-title">$1</div>')
     .replace(/^(RELAY ACTIONS)/m, '<div class="review-section-title">$1</div>')
     .replace(/^(DEAD WEIGHT)/m, '<div class="review-section-title">$1</div>');
-
   relayOutput.innerHTML = formatted;
   relayOutput.style.display = "block";
 }
 
 /* =============================================================
-   CLARIFY AGENT (conversational loop)
+   CLARIFY AGENT
    ============================================================= */
 let clarifyHistory = [];
 let clarifyOriginalText = "";
 let clarifyOriginalTag = "";
 
 async function startClarifyAgent() {
-  if (!checkRate("clarify", 3, 10000)) {
-    showOutput("Rate limit: wait before starting clarify again.");
-    return;
-  }
-
+  if (!checkRate("clarify", 3, 10000)) { showOutput("Rate limit: wait before starting clarify again."); return; }
   const text = inputEl.value.trim();
   if (!text) return showOutput("Type something to clarify.");
 
-  const tag = classify(text);
   clarifyOriginalText = text;
-  clarifyOriginalTag = tag;
+  clarifyOriginalTag = classify(text);
   clarifyHistory = [];
 
   showOutput("Starting clarity loop…", "loading");
-
   try {
-    const result = await clarifyAgentStep(text, tag, clarifyHistory, null);
-    if (result.question) {
-      showClarifyQuestion(result.question);
-    } else {
-      showOutput("Agent completed without question.");
-    }
-  } catch (err) {
-    showOutput("Clarify failed: " + err.message);
-  }
+    const result = await clarifyAgentStep(text, clarifyOriginalTag, clarifyHistory, null);
+    if (result.question) showClarifyQuestion(result.question);
+    else showOutput("Agent completed without question.");
+  } catch (err) { showOutput("Clarify failed: " + err.message); }
 }
 
 function showClarifyQuestion(question) {
   clarifyHistory.push({ role: "agent", content: question });
-
   outputEl.innerHTML = `
     <div style="margin-bottom:12px;color:var(--blue);">Agent: ${question}</div>
     <input type="text" id="clarifyReplyInput" class="search-input" placeholder="Your answer…" style="margin-bottom:8px;" />
     <div style="display:flex;gap:8px;">
       <button id="clarifyReplyBtn" class="btn small">Reply</button>
       <button id="clarifySkipBtn" class="btn ghost small">Skip</button>
-    </div>
-  `;
+    </div>`;
   outputEl.className = "output ai-output";
-
   document.getElementById("clarifyReplyInput").focus();
 
   document.getElementById("clarifyReplyBtn").addEventListener("click", async () => {
-    const replyInput = document.getElementById("clarifyReplyInput");
-    const reply = replyInput.value.trim();
+    const reply = document.getElementById("clarifyReplyInput").value.trim();
     if (!reply) return;
-
     clarifyHistory.push({ role: "user", content: reply });
     showOutput("Processing your reply…", "loading");
-
     try {
-      const result = await clarifyAgentStep(
-        clarifyOriginalText,
-        clarifyOriginalTag,
-        clarifyHistory,
-        reply
-      );
-
+      const result = await clarifyAgentStep(clarifyOriginalText, clarifyOriginalTag, clarifyHistory, reply);
       if (result.done && result.draft) {
         outputEl.innerHTML = `
           <div style="margin-bottom:12px;color:var(--green);">Crystallised entry:</div>
           <div style="white-space:pre-wrap;margin-bottom:12px;">${result.draft}</div>
-          <button id="useClarifiedBtn" class="btn small">Use This</button>
-        `;
+          <button id="useClarifiedBtn" class="btn small">Use This</button>`;
         outputEl.className = "output ai-output";
-
         document.getElementById("useClarifiedBtn").addEventListener("click", () => {
           inputEl.value = result.draft;
           outputEl.textContent = "Clarified entry loaded into input. Edit and save when ready.";
@@ -526,9 +473,7 @@ function showClarifyQuestion(question) {
       } else if (result.question) {
         showClarifyQuestion(result.question);
       }
-    } catch (err) {
-      showOutput("Clarify continuation failed: " + err.message);
-    }
+    } catch (err) { showOutput("Clarify continuation failed: " + err.message); }
   });
 
   document.getElementById("clarifySkipBtn").addEventListener("click", () => {
@@ -537,11 +482,8 @@ function showClarifyQuestion(question) {
     clarifyHistory = [];
   });
 
-  // Enter key to submit
   document.getElementById("clarifyReplyInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      document.getElementById("clarifyReplyBtn").click();
-    }
+    if (e.key === "Enter") document.getElementById("clarifyReplyBtn").click();
   });
 }
 
@@ -570,34 +512,21 @@ async function loadContacts() {
   try {
     contacts = await emailGetContacts();
     renderContactsList();
-  } catch (err) {
-    console.error("Failed to load contacts:", err);
-  }
+  } catch (err) { console.error("Failed to load contacts:", err); }
 }
 
 function renderContactsList() {
   if (!contactsList) return;
-
   if (contacts.length === 0) {
-    contactsList.innerHTML = `
-      <li style="padding:20px;text-align:center;color:var(--text-dim);">
-        No contacts saved yet
-      </li>
-    `;
+    contactsList.innerHTML = `<li style="padding:20px;text-align:center;color:var(--text-dim);">No contacts saved yet</li>`;
     return;
   }
-
   contactsList.innerHTML = contacts.map(c => `
     <li class="contact-item" data-id="${c.id}">
-      <div>
-        <strong>${c.name}</strong>
-        <span style="color:var(--text-mid);margin-left:8px;">${c.email}</span>
-      </div>
+      <div><strong>${c.name}</strong><span style="color:var(--text-mid);margin-left:8px;">${c.email}</span></div>
       <button class="btn ghost small delete-contact-btn" data-id="${c.id}">Delete</button>
-    </li>
-  `).join("");
+    </li>`).join("");
 
-  // Attach delete handlers
   document.querySelectorAll(".delete-contact-btn").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.target.dataset.id;
@@ -607,18 +536,14 @@ function renderContactsList() {
         contacts = contacts.filter(c => c.id !== id);
         renderContactsList();
         showToast("Contact deleted");
-      } catch (err) {
-        alert("Delete failed: " + err.message);
-      }
+      } catch (err) { alert("Delete failed: " + err.message); }
     });
   });
 
-  // Click contact to add to recipients
   document.querySelectorAll(".contact-item").forEach(item => {
     item.addEventListener("click", (e) => {
       if (e.target.classList.contains("delete-contact-btn")) return;
-      const id = item.dataset.id;
-      const contact = contacts.find(c => c.id === id);
+      const contact = contacts.find(c => c.id === item.dataset.id);
       if (contact && emailRecipients) {
         const current = emailRecipients.value.trim();
         emailRecipients.value = current ? `${current}, ${contact.email}` : contact.email;
@@ -634,21 +559,27 @@ function renderContactsList() {
 async function updateLegalSyncStatus() {
   try {
     const progress = await legalGetSyncProgress();
-    legalSyncStatus.textContent = `${progress.total_cases} cases | ${progress.total_principles} principles | Last sync: ${progress.last_sync === "Never" ? "Never" : new Date(progress.last_sync).toLocaleDateString()}`;
-  } catch (err) {
-    legalSyncStatus.textContent = "Sync status unavailable";
-  }
+    legalSyncStatus.textContent = `${progress.total_cases.toLocaleString()} cases | ${progress.total_principles.toLocaleString()} principles | Last sync: ${progress.last_sync === "Never" ? "Never" : new Date(progress.last_sync).toLocaleDateString()}`;
+  } catch (err) { legalSyncStatus.textContent = "Sync status unavailable"; }
 }
 
-async function performLegalSearch() {
-  const query = legalSearchInput.value.trim();
+async function performLegalSearch(offset = 0) {
+  // Reset to first page on a new search (offset = 0), or use provided offset for pagination
+  legalCurrentOffset = offset;
+  const query = legalSearchInput ? legalSearchInput.value.trim() : "";
 
   legalResults.innerHTML = `<div style="padding:20px;color:var(--text-dim);">Searching…</div>`;
 
   try {
     if (activeLegalView === "cases") {
-      const cases = await legalSearchCases(query, activeCourt);
-      renderCases(cases);
+      const response = await legalSearchCases({
+        query,
+        court: activeCourt,
+        year: activeYear,
+        limit: LEGAL_PAGE_SIZE,
+        offset: legalCurrentOffset,
+      });
+      renderCases(response);
     } else {
       const principles = await legalSearchPrinciples(query);
       renderPrinciples(principles);
@@ -658,26 +589,85 @@ async function performLegalSearch() {
   }
 }
 
-function renderCases(cases) {
-  if (cases.length === 0) {
+function renderCases(response) {
+  // response: { total, limit, offset, cases[] }
+  // Handles both old (bare array) and new (object with cases[]) format for safety
+  let cases, total, offset, limit;
+  if (Array.isArray(response)) {
+    // Legacy format — shouldn't happen after Worker v6 deploys, but safe fallback
+    cases = response;
+    total = response.length;
+    offset = 0;
+    limit = response.length;
+  } else {
+    cases = response.cases || [];
+    total = response.total || 0;
+    offset = response.offset || 0;
+    limit = response.limit || LEGAL_PAGE_SIZE;
+  }
+
+  if (cases.length === 0 && total === 0) {
     legalResults.innerHTML = `<div style="padding:20px;color:var(--text-dim);">No cases found</div>`;
     return;
   }
 
-  legalResults.innerHTML = cases.map(c => `
-    <div class="legal-item">
-      <div class="legal-item-header">
-        <strong>${c.case_name}</strong>
-        <span class="tag tag-${c.court}">${c.citation}</span>
+  const pageStart = offset + 1;
+  const pageEnd = Math.min(offset + cases.length, total);
+  const hasMore = offset + cases.length < total;
+  const hasPrev = offset > 0;
+
+  const countBar = `
+    <div style="padding:12px 0 8px;color:var(--text-mid);font-size:0.82rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <span>Showing ${pageStart}–${pageEnd} of <strong style="color:var(--text-primary)">${total.toLocaleString()}</strong> cases</span>
+      <div style="display:flex;gap:8px;">
+        ${hasPrev ? `<button class="btn ghost small" id="casesPrevBtn">← Prev</button>` : ""}
+        ${hasMore ? `<button class="btn ghost small" id="casesNextBtn">Next →</button>` : ""}
       </div>
-      <div class="legal-item-body">
-        <p><strong>Facts:</strong> ${c.facts}</p>
-        <p><strong>Issues:</strong> ${c.issues}</p>
-        <p><strong>Holding:</strong> ${c.holding}</p>
-        <a href="${c.url}" target="_blank" class="btn ghost small" style="margin-top:8px;">View on AustLII</a>
-      </div>
-    </div>
-  `).join("");
+    </div>`;
+
+  const caseCards = cases.map(c => {
+    const year = c.case_date ? c.case_date.substring(0, 4) : "—";
+    const displayName = c.case_name && c.case_name !== c.citation ? c.case_name : c.citation;
+    const principles = (() => {
+      try {
+        const arr = JSON.parse(c.principles_extracted || "[]");
+        return arr.slice(0, 3); // show up to 3 inline
+      } catch { return []; }
+    })();
+
+    return `
+      <div class="legal-item">
+        <div class="legal-item-header">
+          <strong>${displayName}</strong>
+          <span class="tag tag-${c.court}">${c.citation}</span>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:6px;">${c.court} · ${year}</div>
+        <div class="legal-item-body">
+          ${c.facts && c.facts !== "AI extraction failed" ? `<p><strong>Facts:</strong> ${c.facts}</p>` : ""}
+          ${c.holding && c.holding !== "AI extraction failed" ? `<p><strong>Holding:</strong> ${c.holding}</p>` : ""}
+          ${principles.length > 0 ? `
+            <div style="margin-top:6px;">
+              <span style="color:var(--text-dim);font-size:0.75rem;">Principles:</span>
+              <ul style="margin:4px 0 0 16px;padding:0;font-size:0.8rem;color:var(--text-mid);">
+                ${principles.map(p => `<li>${p.principle || p}</li>`).join("")}
+              </ul>
+            </div>` : ""}
+          ${c.url ? `<a href="${c.url}" target="_blank" class="btn ghost small" style="margin-top:8px;">View on AustLII ↗</a>` : ""}
+        </div>
+      </div>`;
+  }).join("");
+
+  legalResults.innerHTML = countBar + caseCards + (hasMore || hasPrev ? countBar : "");
+
+  // Pagination button handlers
+  document.getElementById("casesNextBtn")?.addEventListener("click", () => {
+    performLegalSearch(offset + limit);
+    legalResults.scrollIntoView({ behavior: "smooth" });
+  });
+  document.getElementById("casesPrevBtn")?.addEventListener("click", () => {
+    performLegalSearch(Math.max(0, offset - limit));
+    legalResults.scrollIntoView({ behavior: "smooth" });
+  });
 }
 
 function renderPrinciples(principles) {
@@ -685,7 +675,6 @@ function renderPrinciples(principles) {
     legalResults.innerHTML = `<div style="padding:20px;color:var(--text-dim);">No principles found</div>`;
     return;
   }
-
   legalResults.innerHTML = principles.map(p => `
     <div class="legal-item">
       <div class="legal-item-body">
@@ -695,8 +684,7 @@ function renderPrinciples(principles) {
         <div style="margin-top:8px;"><span style="color:var(--text-dim);font-size:0.75rem;">Citations:</span> ${p.case_citations.join(", ")}</div>
         <div style="margin-top:4px;color:var(--gold);font-size:0.75rem;">Most recent: ${p.most_recent_citation}</div>
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
 }
 
 /* =============================================================
@@ -715,10 +703,7 @@ function showToast(msg) {
 }
 
 function showOutput(msg, className = "") {
-  if (!outputEl) {
-    console.log("Output:", msg);
-    return;
-  }
+  if (!outputEl) { console.log("Output:", msg); return; }
   outputEl.textContent = msg;
   outputEl.className = className ? `output ${className}` : "output";
 }
@@ -731,22 +716,11 @@ function showOutput(msg, className = "") {
     entries = await apiLoadEntries();
     render(entries);
 
-    // Only load contacts if email elements exist
-    if (document.getElementById('manageContactsBtn')) {
-      await loadContacts();
-    }
-
-    // Only update legal status if legal elements exist
-    if (document.getElementById('legalSyncBtn')) {
-      await updateLegalSyncStatus();
-    }
+    if (document.getElementById('manageContactsBtn')) await loadContacts();
+    if (document.getElementById('legalSyncBtn')) await updateLegalSyncStatus();
   } catch (e) {
-    // Only show output if output element exists
-    if (outputEl) {
-      showOutput("Failed to load vault: " + e.message);
-    } else {
-      console.error("Failed to load vault:", e.message);
-    }
+    if (outputEl) showOutput("Failed to load vault: " + e.message);
+    else console.error("Failed to load vault:", e.message);
   }
 })();
 
@@ -763,7 +737,6 @@ processBtn?.addEventListener("click", () => {
 saveBtn?.addEventListener("click", async () => {
   const text = inputEl.value.trim();
   if (!text) return showOutput("Type something to save.");
-
   const p = processText(text);
   const entry = {
     id: `e-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -771,7 +744,6 @@ saveBtn?.addEventListener("click", async () => {
     text,
     ...p,
   };
-
   try {
     await apiSaveEntry(entry);
     entries.unshift(entry);
@@ -780,23 +752,16 @@ saveBtn?.addEventListener("click", async () => {
     outputEl.textContent = "";
     outputEl.className = "output";
     showToast("Entry saved");
-  } catch (e) {
-    showOutput("Save failed: " + e.message);
-  }
+  } catch (e) { showOutput("Save failed: " + e.message); }
 });
 
 draftBtn?.addEventListener("click", async () => {
-  if (!checkRate("draft", 3, 10000)) {
-    showOutput("Rate limit: wait before drafting again.");
-    return;
-  }
+  if (!checkRate("draft", 3, 10000)) { showOutput("Rate limit: wait before drafting again."); return; }
   const text = inputEl.value.trim();
   if (!text) return showOutput("Type something to draft.");
-
   const tag = classify(text);
   showOutput("Drafting…", "loading");
   draftBtn.disabled = true;
-
   try {
     const drafted = await draftEntry(text, tag);
     showOutput(`Drafted version:\n\n${drafted}\n\n— Edit and save as normal.`, "ai-output");
@@ -811,41 +776,27 @@ draftBtn?.addEventListener("click", async () => {
     });
     outputEl.appendChild(document.createElement("br"));
     outputEl.appendChild(useBtn);
-  } catch (err) {
-    showOutput("Draft failed: " + err.message);
-  } finally {
-    draftBtn.disabled = false;
-  }
+  } catch (err) { showOutput("Draft failed: " + err.message); }
+  finally { draftBtn.disabled = false; }
 });
 
 nextActionBtn?.addEventListener("click", async () => {
-  if (!checkRate("nextAction", 3, 10000)) {
-    showOutput("Rate limit: wait before requesting next actions again.");
-    return;
-  }
+  if (!checkRate("nextAction", 3, 10000)) { showOutput("Rate limit: wait before requesting next actions again."); return; }
   const text = inputEl.value.trim();
   if (!text) return showOutput("Type something to get next actions for.");
-
   const p = processText(text);
   showOutput("Generating next actions…", "loading");
   nextActionBtn.disabled = true;
-
   try {
     const actions = await suggestNextActions(text, p.tag, p.next, p.clarify);
     showOutput(`Tag: ${p.tag}\n\nSuggested next actions:\n${actions}`, "ai-output");
-  } catch (err) {
-    showOutput("Next actions failed: " + err.message);
-  } finally {
-    nextActionBtn.disabled = false;
-  }
+  } catch (err) { showOutput("Next actions failed: " + err.message); }
+  finally { nextActionBtn.disabled = false; }
 });
 
 emailEntryBtn?.addEventListener("click", () => {
   const text = inputEl.value.trim();
-  if (!text) {
-    showOutput("Type something to email.");
-    return;
-  }
+  if (!text) { showOutput("Type something to email."); return; }
   openEmailComposer(text, "Arcanthyr Entry");
 });
 
@@ -859,94 +810,61 @@ clearInputBtn?.addEventListener("click", () => {
    EVENT HANDLERS — Reviews & Relay
    ============================================================= */
 reviewBtn?.addEventListener("click", async () => {
-  if (!checkRate("review", 2, 30000)) {
-    showOutput("Rate limit: wait 30 seconds before running another review.");
-    return;
-  }
-  if (entries.length === 0) {
-    reviewOutput.textContent = "No entries to review yet.";
-    reviewOutput.style.display = "block";
-    return;
-  }
-
+  if (!checkRate("review", 2, 30000)) { showOutput("Rate limit: wait 30 seconds before running another review."); return; }
+  if (entries.length === 0) { reviewOutput.textContent = "No entries to review yet."; reviewOutput.style.display = "block"; return; }
   reviewOutput.textContent = "Analysing patterns…";
   reviewOutput.style.display = "block";
   reviewBtn.disabled = true;
-
   try {
     const result = await weeklyReview(entries);
     reviewOutput.innerHTML = result
       .replace(/^(RECURRING THEMES)/m, '<div class="review-section-title">$1</div>')
       .replace(/^(STUCK LOOPS)/m, '<div class="review-section-title">$1</div>')
       .replace(/^(DECISIONS PENDING)/m, '<div class="review-section-title">$1</div>');
-  } catch (err) {
-    reviewOutput.textContent = "Review failed: " + err.message;
-  } finally {
-    reviewBtn.disabled = false;
-  }
+  } catch (err) { reviewOutput.textContent = "Review failed: " + err.message; }
+  finally { reviewBtn.disabled = false; }
 });
 
 document.addEventListener("click", e => {
-  if (e.target && e.target.id === "clarifyBtn") {
-    startClarifyAgent();
-  }
+  if (e.target && e.target.id === "clarifyBtn") startClarifyAgent();
 });
 
 relayBtn?.addEventListener("click", async () => {
-  if (!checkRate("relay", 2, 30000)) {
-    showOutput("Rate limit: wait 30 seconds before running Axiom Relay again.");
-    return;
-  }
+  if (!checkRate("relay", 2, 30000)) { showOutput("Rate limit: wait 30 seconds before running Axiom Relay again."); return; }
   if (entries.length === 0) {
     const relayOutput = document.getElementById("relayOutput");
     if (relayOutput) { relayOutput.textContent = "No entries to relay."; relayOutput.style.display = "block"; }
     return;
   }
-
   relayBtn.disabled = true;
   const relayOutput = document.getElementById("relayOutput");
-  if (relayOutput) {
-    relayOutput.textContent = "Relay initialising — Stage 1: Decompose…";
-    relayOutput.style.display = "block";
-  }
+  if (relayOutput) { relayOutput.textContent = "Relay initialising — Stage 1: Decompose…"; relayOutput.style.display = "block"; }
 
-  const focusEl = document.getElementById("relayFocus");
-  const focus = focusEl ? focusEl.value.trim() : "";
+  const focus = document.getElementById("relayFocus")?.value.trim() || "";
+  let stageIdx = 0;
+  const stages = ["Relay initialising — Stage 1: Decompose…", "Stage 2: Finding tensions…", "Stage 3: Synthesising report…"];
+  const stageTimer = setInterval(() => {
+    stageIdx++;
+    if (stageIdx < stages.length && relayOutput) relayOutput.textContent = stages[stageIdx];
+  }, 2500);
 
   try {
-    const stages = [
-      "Relay initialising — Stage 1: Decompose…",
-      "Stage 2: Finding tensions…",
-      "Stage 3: Synthesising report…",
-    ];
-    let stageIdx = 0;
-    const stageTimer = setInterval(() => {
-      stageIdx++;
-      if (stageIdx < stages.length && relayOutput) {
-        relayOutput.textContent = stages[stageIdx];
-      }
-    }, 2500);
-
     const result = await axiomRelay(entries, focus);
     clearInterval(stageTimer);
     renderRelayReport(result);
   } catch (err) {
+    clearInterval(stageTimer);
     if (relayOutput) relayOutput.textContent = "Relay failed: " + err.message;
-  } finally {
-    relayBtn.disabled = false;
-  }
+  } finally { relayBtn.disabled = false; }
 });
 
 /* =============================================================
-   EVENT HANDLERS — Search & Filters
+   EVENT HANDLERS — Search & Filters (vault)
    ============================================================= */
 let _searchDebounce = null;
 searchInput?.addEventListener("input", () => {
   clearTimeout(_searchDebounce);
-  _searchDebounce = setTimeout(() => {
-    searchKeyword = searchInput.value;
-    render(entries);
-  }, 200);
+  _searchDebounce = setTimeout(() => { searchKeyword = searchInput.value; render(entries); }, 200);
 });
 
 tagFilters?.addEventListener("click", e => {
@@ -955,18 +873,14 @@ tagFilters?.addEventListener("click", e => {
   const tag = chip.dataset.tag;
   if (!tag) return;
   activeTag = tag;
-  tagFilters.querySelectorAll(".chip").forEach(c =>
-    c.classList.toggle("active", c.dataset.tag === tag)
-  );
+  tagFilters.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.tag === tag));
   render(entries);
 });
 
 document.querySelectorAll(".date-chip").forEach(chip => {
   chip.addEventListener("click", () => {
     activeDateRange = chip.dataset.range;
-    document.querySelectorAll(".date-chip").forEach(c =>
-      c.classList.toggle("active", c.dataset.range === activeDateRange)
-    );
+    document.querySelectorAll(".date-chip").forEach(c => c.classList.toggle("active", c.dataset.range === activeDateRange));
     render(entries);
   });
 });
@@ -976,12 +890,8 @@ document.getElementById("clearFiltersBtn")?.addEventListener("click", () => {
   activeDateRange = "all";
   searchKeyword = "";
   if (searchInput) searchInput.value = "";
-  document.querySelectorAll(".chip[data-tag]").forEach(c =>
-    c.classList.toggle("active", c.dataset.tag === "all")
-  );
-  document.querySelectorAll(".date-chip").forEach(c =>
-    c.classList.toggle("active", c.dataset.range === "all")
-  );
+  document.querySelectorAll(".chip[data-tag]").forEach(c => c.classList.toggle("active", c.dataset.tag === "all"));
+  document.querySelectorAll(".date-chip").forEach(c => c.classList.toggle("active", c.dataset.range === "all"));
   render(entries);
 });
 
@@ -992,29 +902,19 @@ sendEmailBtn?.addEventListener("click", async () => {
   const to = emailRecipients.value.trim().split(",").map(e => e.trim()).filter(Boolean);
   const subject = emailSubject.value.trim();
   const body = emailBody.value.trim();
-
-  if (to.length === 0 || !subject || !body) {
-    emailOutput.textContent = "Please fill in all fields";
-    emailOutput.className = "output";
-    return;
-  }
+  if (to.length === 0 || !subject || !body) { emailOutput.textContent = "Please fill in all fields"; emailOutput.className = "output"; return; }
 
   emailOutput.textContent = "Sending email…";
   emailOutput.className = "output loading";
   sendEmailBtn.disabled = true;
-
   try {
     await emailSend(to, subject, body);
     emailOutput.textContent = "Email sent successfully!";
     emailOutput.className = "output";
     showToast("Email sent");
     setTimeout(closeEmailComposer, 2000);
-  } catch (err) {
-    emailOutput.textContent = "Send failed: " + err.message;
-    emailOutput.className = "output";
-  } finally {
-    sendEmailBtn.disabled = false;
-  }
+  } catch (err) { emailOutput.textContent = "Send failed: " + err.message; emailOutput.className = "output"; }
+  finally { sendEmailBtn.disabled = false; }
 });
 
 cancelEmailBtn?.addEventListener("click", closeEmailComposer);
@@ -1024,19 +924,12 @@ manageContactsBtn?.addEventListener("click", () => {
   renderContactsList();
 });
 
-closeContactsBtn?.addEventListener("click", () => {
-  contactsModal.style.display = "none";
-});
+closeContactsBtn?.addEventListener("click", () => { contactsModal.style.display = "none"; });
 
 addContactBtn?.addEventListener("click", async () => {
   const name = document.getElementById("newContactName").value.trim();
   const email = document.getElementById("newContactEmail").value.trim();
-
-  if (!name || !email) {
-    alert("Please enter both name and email");
-    return;
-  }
-
+  if (!name || !email) { alert("Please enter both name and email"); return; }
   try {
     const newContact = await emailAddContact(name, email);
     contacts.push(newContact);
@@ -1044,9 +937,7 @@ addContactBtn?.addEventListener("click", async () => {
     document.getElementById("newContactName").value = "";
     document.getElementById("newContactEmail").value = "";
     showToast("Contact added");
-  } catch (err) {
-    alert("Add contact failed: " + err.message);
-  }
+  } catch (err) { alert("Add contact failed: " + err.message); }
 });
 
 addFromContactsBtn?.addEventListener("click", () => {
@@ -1059,57 +950,21 @@ addFromContactsBtn?.addEventListener("click", () => {
    ============================================================= */
 legalSyncBtn?.addEventListener("click", async () => {
   if (!confirm("Check for new cases from AustLII? This will fetch recent Tasmanian criminal decisions.")) return;
-
   legalSyncBtn.disabled = true;
   legalSyncStatus.textContent = "Checking for new cases…";
-
   try {
     const result = await legalTriggerSync();
     showToast(`Found ${result.cases_processed} new cases`);
     await updateLegalSyncStatus();
-    if (result.cases_processed > 0) {
-      performLegalSearch();
-    }
-  } catch (err) {
-    legalSyncStatus.textContent = "Sync failed: " + err.message;
-  } finally {
-    legalSyncBtn.disabled = false;
-  }
+    if (result.cases_processed > 0) performLegalSearch();
+  } catch (err) { legalSyncStatus.textContent = "Sync failed: " + err.message; }
+  finally { legalSyncBtn.disabled = false; }
 });
 
-document.getElementById("backfillYearBtn")?.addEventListener("click", async () => {
-  const year = parseInt(document.getElementById("backfillYear")?.value);
-  if (!year || year < 2000 || year > 2026) {
-    alert("Please enter a valid year between 2000 and 2026");
-    return;
-  }
-
-  if (!confirm(`Scan ALL Tasmanian criminal court cases from ${year}? This may take a while.`)) return;
-
-  const btn = document.getElementById("backfillYearBtn");
-  const status = document.getElementById("backfillStatus");
-  btn.disabled = true;
-  status.textContent = `Scanning ${year} — this may take several minutes…`;
-
-  try {
-    const r = await fetch(`${LEGAL_BASE}/backfill-year`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year }),
-    });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error || "Backfill failed");
-    const res = data.result;
-    status.textContent = `✓ ${year} complete — ${res.casesProcessed} saved, ${res.casesFailed} failed`;
-    showToast(`Scanned ${year}: ${res.casesProcessed} cases saved`);
-    await updateLegalSyncStatus();
-    performLegalSearch();
-  } catch (err) {
-    status.textContent = "Scan failed: " + err.message;
-  } finally {
-    btn.disabled = false;
-  }
-});
+// NOTE: backfillYearBtn handler intentionally removed.
+// The Python scraper (austlii_scraper.py) on the VPS handles all backfill.
+// The Worker-side backfill hits CPU time limits on large years and is not reliable.
+// The button can be removed from legal.html in the next HTML pass.
 
 // Upload case form toggle
 const toggleUploadBtn = document.getElementById("toggleUploadBtn");
@@ -1118,11 +973,9 @@ toggleUploadBtn?.addEventListener("click", () => {
   const isVisible = uploadCaseForm.style.display !== "none";
   uploadCaseForm.style.display = isVisible ? "none" : "block";
   toggleUploadBtn.textContent = isVisible ? "Show Upload" : "Hide Upload";
-  // Init dropzone listeners now that the form is visible
   if (!isVisible) initDropzone();
 });
 
-// Cancel upload
 document.getElementById("cancelUploadBtn")?.addEventListener("click", () => {
   uploadCaseForm.style.display = "none";
   toggleUploadBtn.textContent = "Show Upload";
@@ -1132,7 +985,6 @@ document.getElementById("cancelUploadBtn")?.addEventListener("click", () => {
   document.getElementById("uploadOutput").style.display = "none";
 });
 
-// Upload case submit
 document.getElementById("uploadCaseBtn")?.addEventListener("click", async () => {
   const citation = document.getElementById("uploadCitation").value.trim();
   const caseName = document.getElementById("uploadCaseName").value.trim();
@@ -1154,35 +1006,29 @@ document.getElementById("uploadCaseBtn")?.addEventListener("click", async () => 
 
   try {
     const result = await legalUploadCase(caseText, citation, caseName, court);
-    uploadOutput.textContent = `✓ Successfully processed: ${result.citation}\n\nExtracted ${result.summary.principles.length} legal principles.\n\nCase added to database and searchable now.`;
+    // result.case_name now comes from Llama extraction
+    uploadOutput.textContent = `✓ Successfully processed: ${result.citation}\nCase name: ${result.case_name}\n\nExtracted ${result.summary.principles.length} legal principles.\n\nCase added to database and searchable now.`;
     uploadOutput.className = "output";
-
-    // Clear form
     setTimeout(() => {
       document.getElementById("uploadCitation").value = "";
       document.getElementById("uploadCaseName").value = "";
       document.getElementById("uploadCaseText").value = "";
       uploadCaseForm.style.display = "none";
       toggleUploadBtn.textContent = "Show Upload";
-    }, 3000);
-
-    // Refresh search
+    }, 4000);
     await updateLegalSyncStatus();
     performLegalSearch();
-
     showToast("Case uploaded and processed");
   } catch (err) {
     uploadOutput.textContent = "Upload failed: " + err.message;
     uploadOutput.className = "output";
-  } finally {
-    document.getElementById("uploadCaseBtn").disabled = false;
-  }
+  } finally { document.getElementById("uploadCaseBtn").disabled = false; }
 });
 
 let _legalSearchDebounce = null;
 legalSearchInput?.addEventListener("input", () => {
   clearTimeout(_legalSearchDebounce);
-  _legalSearchDebounce = setTimeout(performLegalSearch, 400);
+  _legalSearchDebounce = setTimeout(() => performLegalSearch(0), 400);
 });
 
 courtFilters?.addEventListener("click", e => {
@@ -1191,19 +1037,24 @@ courtFilters?.addEventListener("click", e => {
   const court = chip.dataset.court;
   if (!court) return;
   activeCourt = court;
-  courtFilters.querySelectorAll(".chip").forEach(c =>
-    c.classList.toggle("active", c.dataset.court === court)
-  );
-  performLegalSearch();
+  courtFilters.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.court === court));
+  performLegalSearch(0);
+});
+
+// Year filter chips — expects chips with data-year attribute in legal.html
+document.querySelectorAll(".year-chip")?.forEach(chip => {
+  chip.addEventListener("click", () => {
+    activeYear = chip.dataset.year || "all";
+    document.querySelectorAll(".year-chip").forEach(c => c.classList.toggle("active", c.dataset.year === activeYear));
+    performLegalSearch(0);
+  });
 });
 
 document.querySelectorAll(".legal-view").forEach(chip => {
   chip.addEventListener("click", () => {
     activeLegalView = chip.dataset.view;
-    document.querySelectorAll(".legal-view").forEach(c =>
-      c.classList.toggle("active", c.dataset.view === activeLegalView)
-    );
-    performLegalSearch();
+    document.querySelectorAll(".legal-view").forEach(c => c.classList.toggle("active", c.dataset.view === activeLegalView));
+    performLegalSearch(0);
   });
 });
 
@@ -1211,19 +1062,14 @@ document.querySelectorAll(".legal-view").forEach(chip => {
    EVENT HANDLERS — History Management
    ============================================================= */
 clearBtn?.addEventListener("click", async () => {
-  if (!checkRate("clearAll", 1, 15000)) {
-    showOutput("Rate limit: wait before clearing again.");
-    return;
-  }
+  if (!checkRate("clearAll", 1, 15000)) { showOutput("Rate limit: wait before clearing again."); return; }
   if (!confirm("Clear all entries from the vault? This cannot be undone.")) return;
   try {
     await apiClearAll();
     entries = [];
     render(entries);
     showOutput("Vault cleared.");
-  } catch (e) {
-    showOutput("Clear failed: " + e.message);
-  }
+  } catch (e) { showOutput("Clear failed: " + e.message); }
 });
 
 exportBtn?.addEventListener("click", () => {
@@ -1237,65 +1083,36 @@ exportBtn?.addEventListener("click", () => {
 });
 
 restoreBtn?.addEventListener("click", async () => {
-  if (!checkRate("restore", 2, 10000)) {
-    showOutput("Rate limit: wait before restoring again.");
-    return;
-  }
+  if (!checkRate("restore", 2, 10000)) { showOutput("Rate limit: wait before restoring again."); return; }
   try {
     await apiRestoreAll();
     entries = await apiLoadEntries();
     render(entries);
     showOutput("All entries restored.");
-  } catch (e) {
-    showOutput("Restore failed: " + e.message);
-  }
+  } catch (e) { showOutput("Restore failed: " + e.message); }
 });
-/* 
-* =============================================================
-   LEGAL CASE FILE UPLOAD (PDF)
-   Add this code to the END of your existing app.js
-   ============================================================= */
 
-// File upload for legal cases
-// NOTE: listeners are attached after Toggle Form is clicked,
-// because the elements are hidden on page load
+/* =============================================================
+   LEGAL CASE FILE UPLOAD (PDF / TXT)
+   ============================================================= */
 function initDropzone() {
   const caseDropzone = document.getElementById('caseDropzone');
   const caseFileInput = document.getElementById('caseFileInput');
-
   if (!caseDropzone || !caseFileInput || caseDropzone._init) return;
-  caseDropzone._init = true; // prevent double-binding
+  caseDropzone._init = true;
 
-  // Click to browse
-  caseDropzone.addEventListener('click', () => {
-    caseFileInput.click();
-  });
-
-  // Drag and drop events
-  caseDropzone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    caseDropzone.classList.add('dragover');
-  });
-
-  caseDropzone.addEventListener('dragleave', () => {
-    caseDropzone.classList.remove('dragover');
-  });
-
+  caseDropzone.addEventListener('click', () => caseFileInput.click());
+  caseDropzone.addEventListener('dragover', (e) => { e.preventDefault(); caseDropzone.classList.add('dragover'); });
+  caseDropzone.addEventListener('dragleave', () => caseDropzone.classList.remove('dragover'));
   caseDropzone.addEventListener('drop', async (e) => {
     e.preventDefault();
     caseDropzone.classList.remove('dragover');
     const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      await handleCaseFile(files[0]);
-    }
+    if (files.length > 0) await handleCaseFile(files[0]);
   });
-
-  // File input change
   caseFileInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 0) {
-      await handleCaseFile(files[0]);
-    }
+    if (files.length > 0) await handleCaseFile(files[0]);
     e.target.value = '';
   });
 
@@ -1303,23 +1120,14 @@ function initDropzone() {
 }
 
 async function handleCaseFile(file) {
-  // Validate file type
   const extension = file.name.split('.').pop().toLowerCase();
   if (!['pdf', 'txt'].includes(extension)) {
-    if (document.getElementById('uploadCaseText')) {
-      document.getElementById('uploadCaseText').value = `Error: Unsupported file type. Please use PDF or TXT files.`;
-    }
+    document.getElementById('uploadCaseText').value = `Error: Unsupported file type. Please use PDF or TXT.`;
     return;
   }
-
-  // Show loading
-  if (document.getElementById('uploadCaseText')) {
-    document.getElementById('uploadCaseText').value = 'Extracting text from file...';
-  }
-
+  document.getElementById('uploadCaseText').value = 'Extracting text from file...';
   try {
     let extractedText = '';
-
     if (extension === 'txt') {
       extractedText = await file.text();
     } else if (extension === 'pdf' && typeof pdfjsLib !== 'undefined') {
@@ -1327,29 +1135,17 @@ async function handleCaseFile(file) {
     } else {
       throw new Error('PDF.js library not loaded');
     }
-
-    // Auto-fill textarea
-    if (document.getElementById('uploadCaseText')) {
-      document.getElementById('uploadCaseText').value = extractedText.trim();
-    }
-
-    // Try to extract citation and case name from text
+    document.getElementById('uploadCaseText').value = extractedText.trim();
     autoFillCaseMetadata(extractedText);
-
-    // Show success in dropzone
+    const caseDropzone = document.getElementById('caseDropzone');
     if (caseDropzone) {
-      const originalText = caseDropzone.innerHTML;
+      const orig = caseDropzone.innerHTML;
       caseDropzone.innerHTML = '<div class="dropzone-text" style="color:var(--green);">✓ Text extracted successfully</div>';
-      setTimeout(() => {
-        caseDropzone.innerHTML = originalText;
-      }, 3000);
+      setTimeout(() => { caseDropzone.innerHTML = orig; }, 3000);
     }
-
   } catch (error) {
     console.error('Error extracting text:', error);
-    if (document.getElementById('uploadCaseText')) {
-      document.getElementById('uploadCaseText').value = `Error extracting text: ${error.message}\n\nPlease paste case text manually.`;
-    }
+    document.getElementById('uploadCaseText').value = `Error extracting text: ${error.message}\n\nPlease paste case text manually.`;
   }
 }
 
@@ -1357,44 +1153,37 @@ async function extractPdfTextForCase(file) {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   let fullText = '';
-
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const pageText = content.items.map(item => item.str).join(' ');
-    fullText += pageText + '\n\n';
+    fullText += content.items.map(item => item.str).join(' ') + '\n\n';
   }
-
   return fullText;
 }
 
 function autoFillCaseMetadata(text) {
-  // Only search the first 1500 chars (the header) for case name and citation
-  // Prevents picking up cited cases from deep in the judgment body
+  // Only search the first 1500 chars (header) to avoid picking up cited cases
   const header = text.substring(0, 1500);
 
-  // Citation: header first, fall back to full text
   const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/) ||
                         text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
-  if (citationMatch && document.getElementById('uploadCitation')) {
-    document.getElementById('uploadCitation').value = citationMatch[0];
+  if (citationMatch) {
+    const el = document.getElementById('uploadCitation');
+    if (el) el.value = citationMatch[0];
   }
 
-  // Case name: header only so we get the title, not a cited case
+  // Note: case name from the form is just a hint — Llama will extract the real name.
+  // autoFillCaseMetadata still fills it as a convenience, but Worker will override it.
   const caseNameMatch = header.match(/((?:R|DPP|Director of Public Prosecutions|Police|[A-Z][a-z]+)\s+v\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
-  if (caseNameMatch && document.getElementById('uploadCaseName')) {
-    document.getElementById('uploadCaseName').value = caseNameMatch[1];
+  if (caseNameMatch) {
+    const el = document.getElementById('uploadCaseName');
+    if (el) el.value = caseNameMatch[1];
   }
 
-  // Court type
-  if (document.getElementById('uploadCourt')) {
-    if (text.includes('Court of Criminal Appeal') || text.includes('TASCCA')) {
-      document.getElementById('uploadCourt').value = 'cca';
-    } else if (text.includes('Supreme Court') || text.includes('TASSC')) {
-      document.getElementById('uploadCourt').value = 'supreme';
-    } else if (text.includes('Magistrates') || text.includes('TAMagC') || text.includes('TASMC')) {
-      document.getElementById('uploadCourt').value = 'magistrates';
-    }
+  const courtEl = document.getElementById('uploadCourt');
+  if (courtEl) {
+    if (text.includes('Court of Criminal Appeal') || text.includes('TASCCA')) courtEl.value = 'cca';
+    else if (text.includes('Supreme Court') || text.includes('TASSC')) courtEl.value = 'supreme';
+    else if (text.includes('Magistrates') || text.includes('TAMagC') || text.includes('TASMC')) courtEl.value = 'magistrates';
   }
 }
-

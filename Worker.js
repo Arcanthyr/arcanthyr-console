@@ -1,14 +1,13 @@
 /* =============================================================
-   ARCANTHYR — Cloudflare Worker  v5
-   NEW FEATURES:
-     - Email sending via Resend API
-     - AustLII case scraper (Tasmanian criminal law)
-     - Legal principles database
-     - Case summarization AI
-     - Scheduled daily sync (Cloudflare Cron)
-     - Contact management
+   ARCANTHYR — Cloudflare Worker  v6
+   CHANGES FROM v5:
+     - case_name extracted by Llama in summarizeCase() — regex removed
+     - handleSearchCases: pagination (offset/limit), year/year_range filter,
+       returns { total, limit, offset, cases[] } instead of bare array
+     - fetchCaseContent: case_name extraction removed (Llama owns this now)
+     - runDailySync / runYearBackfill: use Llama-extracted case_name
    ============================================================= */
-console.log('Worker loaded successfully');  // ← ADD THIS NEW LINE HERE
+console.log('Worker loaded successfully');
 
 const _ratemap = new Map();
 
@@ -42,9 +41,7 @@ async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 600) {
    EMAIL FUNCTIONS (Resend API)
    ============================================================= */
 async function sendEmail(env, to, subject, html) {
-  if (!env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY not configured");
-  }
+  if (!env.RESEND_API_KEY) throw new Error("RESEND_API_KEY not configured");
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -60,19 +57,13 @@ async function sendEmail(env, to, subject, html) {
     }),
   });
 
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Resend API error: ${error}`);
-  }
-
+  if (!response.ok) throw new Error(`Resend API error: ${await response.text()}`);
   return await response.json();
 }
 
 /* =============================================================
-   AUSTLII SCRAPER FUNCTIONS (NEW CASES ONLY)
+   AUSTLII SCRAPER FUNCTIONS
    ============================================================= */
-
-// AustLII search URL patterns for Tasmanian criminal courts
 const AUSTLII_COURTS = {
   magistrates: "TAMagC",
   supreme: "TASSC",
@@ -80,7 +71,6 @@ const AUSTLII_COURTS = {
   fullcourt: "TASFC",
 };
 
-// Only check CURRENT year for new cases
 async function fetchRecentAustLIICases(env, limit = 50) {
   const currentYear = new Date().getFullYear();
   const allNewCases = [];
@@ -91,43 +81,25 @@ async function fetchRecentAustLIICases(env, limit = 50) {
 
     while (consecutiveMisses < 5 && allNewCases.length < limit) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${currentYear}/${num}.html`;
-
       try {
         const response = await fetch(url, {
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
         });
 
-        if (response.status === 404 || response.status === 410) {
-          consecutiveMisses++;
-          num++;
-          continue;
-        }
-
+        if (response.status === 404 || response.status === 410) { consecutiveMisses++; num++; continue; }
         if (!response.ok) { num++; continue; }
 
         consecutiveMisses = 0;
         const html = await response.text();
         const citation = `[${currentYear}] ${courtAbbrev} ${num}`;
 
-        const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
-          .bind(citation).first();
-
+        const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(citation).first();
         if (!exists) {
-          allNewCases.push({
-            citation,
-            year: String(currentYear),
-            court: courtName,
-            court_abbrev: courtAbbrev,
-            case_num: String(num),
-            url,
-            html,
-          });
+          allNewCases.push({ citation, year: String(currentYear), court: courtName, court_abbrev: courtAbbrev, case_num: String(num), url, html });
         }
-
       } catch (error) {
         console.error(`Error fetching ${courtAbbrev}/${currentYear}/${num}:`, error);
       }
-
       num++;
       await new Promise(r => setTimeout(r, 1000));
     }
@@ -136,28 +108,9 @@ async function fetchRecentAustLIICases(env, limit = 50) {
   return allNewCases.slice(0, limit);
 }
 
-function parseAustLIIHtml(html, court, year) {
-  const cases = [];
-
-  // Look for case links in the format [YEAR] TASSC 123 or similar
-  const casePattern = /\[(\d{4})\]\s+([A-Z]{2,10})\s+(\d+)/g;
-  let match;
-
-  while ((match = casePattern.exec(html)) !== null) {
-    cases.push({
-      citation: match[0],
-      year: match[1],
-      court_abbrev: match[2],
-      case_num: match[3],
-      url: `http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${match[2]}/${match[1]}/${match[3]}.html`,
-      court: court,
-    });
-  }
-
-  return cases;
-}
-
 async function fetchCaseContent(url, preloadedHtml = null) {
+  // NOTE: case_name is NOT extracted here. Llama extracts it in summarizeCase().
+  // This function only strips HTML and returns the plain text for AI processing.
   try {
     let html;
     if (preloadedHtml) {
@@ -169,29 +122,17 @@ async function fetchCaseContent(url, preloadedHtml = null) {
       if (!response.ok) return null;
       html = await response.text();
     }
-    // Extract case name from title or header
-    const nameMatch = html.match(/<title>([^<]+)<\/title>/i);
-    let caseName = nameMatch ? nameMatch[1].trim() : "Unknown Case";
-    // AustLII titles are often just the citation — try to find actual case name in body
-    const bodyNameMatch = html.match(/(?:BETWEEN|IN THE MATTER OF|R\s+v\s+[\w\s]+|[\w\s]+\s+v\s+[\w\s]+)(?=\s*<)/i);
-    if (bodyNameMatch && caseName.match(/^\[?\d{4}\]|^TASSC|^TASCCA|^TASFC|^TAMagC/)) {
-      caseName = bodyNameMatch[0].trim();
-    }
 
-    // Extract main content (simplified - would need better parsing)
     const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
     const content = contentMatch ? contentMatch[1] : html;
 
-    // Remove HTML tags for text extraction
-    const textContent = content.replace(/<[^>]+>/g, ' ')
+    const textContent = content
+      .replace(/<[^>]+>/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
-      .substring(0, 50000); // Limit content size
+      .substring(0, 50000);
 
-    return {
-      case_name: caseName,
-      full_text: textContent,
-    };
+    return { full_text: textContent };
   } catch (error) {
     console.error(`Error fetching case content from ${url}:`, error);
     return null;
@@ -199,142 +140,114 @@ async function fetchCaseContent(url, preloadedHtml = null) {
 }
 
 /* =============================================================
-   PDF UPLOAD & PROCESSING
+   CASE PROCESSING
    ============================================================= */
-
-async function extractTextFromPDF(pdfBase64) {
-  // Simple PDF text extraction
-  // For production, would use a PDF parsing library
-  // This is a placeholder - Cloudflare Workers can't easily parse PDFs
-  // So we'll treat the base64 as-is and let the AI extract from it
-
-  // Decode base64
-  const pdfBuffer = Uint8Array.from(atob(pdfBase64), c => c.charCodeAt(0));
-
-  // For now, return placeholder - in production, you'd use a PDF library
-  // or external service to extract text
-  // Alternative: Have user paste text instead of upload PDF
-
-  return {
-    success: false,
-    error: "PDF parsing not yet implemented - please paste case text instead"
-  };
-}
-
 async function processCaseUpload(env, caseText, citation, caseName, court) {
-  // Validate inputs
-  if (!caseText || !citation) {
-    throw new Error("Missing required fields: caseText and citation");
-  }
+  if (!caseText || !citation) throw new Error("Missing required fields: caseText and citation");
 
-  // Check if case already exists
-  const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
-    .bind(citation).first();
+  const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(citation).first();
+  if (exists) throw new Error(`Case ${citation} already exists in database`);
 
-  if (exists) {
-    throw new Error(`Case ${citation} already exists in database`);
-  }
-
-  // Prepare case data for AI summarization
   const caseData = {
     citation,
-    case_name: caseName || "Unknown Case",
+    case_name: caseName || citation, // hint only — Llama will override
     court: court || "unknown",
     year: citation.match(/\[(\d{4})\]/)?.[1] || new Date().getFullYear().toString(),
     full_text: caseText,
-    url: "", // User upload has no URL
+    url: "",
   };
 
-  // Summarize with AI
   const summary = await summarizeCase(env, caseData);
 
-  // Save to database
-  const id = await saveCaseToDb(env, caseData, summary);
+  // Llama-extracted name wins; fall back to form hint; then citation
+  const finalCaseName = summary.case_name || caseData.case_name;
+  const finalCaseData = { ...caseData, case_name: finalCaseName };
 
-  // ── Nexus vector storage ──────────────────────────────────────
+  const id = await saveCaseToDb(env, finalCaseData, summary);
+
   try {
     await fetch("https://nexus.arcanthyr.com/ingest", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Nexus-Key": env.NEXUS_SECRET_KEY
-      },
+      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
       body: JSON.stringify({
-        citation: caseData.citation,
+        citation: finalCaseData.citation,
+        case_name: finalCaseData.case_name,
         source: "AustLII",
-        text: caseData.full_text,
-        // Pass Llama-extracted metadata so Nexus stores it in Qdrant
+        text: finalCaseData.full_text,
         summary: summary.facts + " " + summary.holding,
         category: "criminal",
         jurisdiction: "Tasmania",
-        court: caseData.court || "unknown",
-        year: caseData.year || null,
+        court: finalCaseData.court,
+        year: finalCaseData.year,
         outcome: summary.holding,
         principles: summary.principles.map(p => p.principle || p),
         legislation: summary.principles.flatMap(p => p.statute_refs || []),
         offences: [],
       })
     });
-    console.log(`Nexus ingest ok for ${caseData.citation}`);
+    console.log(`Nexus ingest ok for ${finalCaseData.citation}`);
   } catch (e) {
     console.error("Nexus ingest failed:", e.message);
   }
-  //
 
-  return {
-    id,
-    citation,
-    case_name: caseData.case_name,
-    summary,
-  };
+  return { id, citation, case_name: finalCaseName, summary };
 }
 
 async function summarizeCase(env, caseData) {
+  // ─── ARCHITECTURE NOTE ────────────────────────────────────────────────────
+  // case_name is extracted HERE by Llama from the case text.
+  // fetchCaseContent intentionally does NOT extract case names — that approach
+  // was fragile (regex on raw HTML, missed most cases, produced garbage on
+  // edge cases). Llama already reads the full text for facts/holding/principles;
+  // case_name is simply one more field in the same JSON extraction pass.
+  // ─────────────────────────────────────────────────────────────────────────
   const systemPrompt = `You are a legal research assistant analyzing Australian criminal case law.
-Extract and structure the following information from the case:
+Extract and structure the following information from the case as JSON.
 
-1. FACTS: Brief factual background (2-3 sentences)
-2. ISSUES: Legal issues considered (bullet points, max 3)
-3. HOLDING: Court's decision and reasoning (2-3 sentences)
-4. PRINCIPLES: Key legal principles established or applied (bullet points, max 5)
+Fields required:
+- case_name: the case title. Look in the first 500 words — it is usually in the heading or opening paragraph. Common patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown", "Re Application of White". Use the citation string as a fallback if no name is clearly present.
+- facts: brief factual background (2-3 sentences)
+- issues: legal issues considered (string, up to 3 points separated by semicolons)
+- holding: the court's decision and reasoning (2-3 sentences)
+- principles: key legal principles established or applied (array, max 5 items)
 
-Format your response as JSON with keys: facts, issues, holding, principles
-Principles should be array of objects: { principle: "text", statute_refs: ["Act s.123"], keywords: ["sentencing", "assault"] }
+Principles format — array of objects: { "principle": "text", "statute_refs": ["Act s.123"], "keywords": ["sentencing"] }
 
-Output ONLY valid JSON. No markdown fences.`;
+Output ONLY valid JSON. No markdown fences. No commentary.`;
 
-  const userContent = `Case: ${caseData.case_name}
-Citation: ${caseData.citation}
+  const userContent = `Citation: ${caseData.citation}
 Court: ${caseData.court}
 
 Case text (excerpt):
 ${caseData.full_text.substring(0, 8000)}`;
 
+  let raw;
   try {
     console.log(`Calling AI for ${caseData.citation}...`);
-    const raw = await callWorkersAI(env, systemPrompt, userContent, 1500); // Increased from 1200
+    raw = await callWorkersAI(env, systemPrompt, userContent, 1500);
     console.log(`AI response length: ${raw?.length || 0} chars`);
 
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const summary = JSON.parse(cleaned);
 
-    // Validate we got actual data
     if (!summary.facts || !summary.holding) {
-      console.error(`AI returned incomplete summary for ${caseData.citation}`);
+      console.error(`Incomplete AI summary for ${caseData.citation}`);
       throw new Error("Incomplete AI response");
     }
 
     return {
+      case_name: (summary.case_name || "").trim() || null,
       facts: summary.facts || "Not extracted",
-      issues: Array.isArray(summary.issues) ? summary.issues.join("; ") : "Not extracted",
+      issues: Array.isArray(summary.issues) ? summary.issues.join("; ") : (summary.issues || "Not extracted"),
       holding: summary.holding || "Not extracted",
       principles: Array.isArray(summary.principles) ? summary.principles : [],
       summary_quality_score: 0.7,
     };
   } catch (error) {
     console.error(`Case summarization failed for ${caseData.citation}:`, error);
-    console.error(`AI raw response was:`, raw?.substring(0, 200));
+    console.error(`AI raw response:`, raw?.substring(0, 200));
     return {
+      case_name: null,
       facts: "AI extraction failed",
       issues: "AI extraction failed",
       holding: "AI extraction failed",
@@ -347,9 +260,8 @@ ${caseData.full_text.substring(0, 8000)}`;
 /* =============================================================
    DATABASE FUNCTIONS
    ============================================================= */
-
 async function saveCaseToDb(env, caseData, summary) {
-  const id = `${caseData.citation.replace(/\s+/g, '-')}`;
+  const id = caseData.citation.replace(/\s+/g, '-');
 
   await env.DB.prepare(`
     INSERT OR REPLACE INTO cases 
@@ -359,9 +271,9 @@ async function saveCaseToDb(env, caseData, summary) {
     id,
     caseData.citation,
     caseData.court,
-    `${caseData.year}-01-01`, // Approximate - would extract actual date from case
+    `${caseData.year}-01-01`,
     caseData.case_name,
-    caseData.url,
+    caseData.url || "",
     summary.facts,
     summary.issues,
     summary.holding,
@@ -370,7 +282,6 @@ async function saveCaseToDb(env, caseData, summary) {
     summary.summary_quality_score
   ).run();
 
-  // Save principles to separate table
   for (const principle of summary.principles) {
     await savePrinciple(env, principle, caseData.citation);
   }
@@ -383,54 +294,35 @@ async function savePrinciple(env, principle, citation) {
   const keywords = principle.keywords || [];
   const statuteRefs = principle.statute_refs || [];
 
-  // Check if principle already exists (fuzzy match would be better)
-  const existing = await env.DB.prepare(
-    "SELECT id FROM legal_principles WHERE principle_text = ?"
-  ).bind(principleText).first();
+  const existing = await env.DB.prepare("SELECT id FROM legal_principles WHERE principle_text = ?")
+    .bind(principleText).first();
 
   if (existing) {
-    // Update existing principle with new citation
     const current = await env.DB.prepare("SELECT case_citations FROM legal_principles WHERE id = ?")
       .bind(existing.id).first();
-
     const citations = JSON.parse(current.case_citations || "[]");
     if (!citations.includes(citation)) {
       citations.push(citation);
-
-      await env.DB.prepare(
-        "UPDATE legal_principles SET case_citations = ?, most_recent_citation = ? WHERE id = ?"
-      ).bind(JSON.stringify(citations), citation, existing.id).run();
+      await env.DB.prepare("UPDATE legal_principles SET case_citations = ?, most_recent_citation = ? WHERE id = ?")
+        .bind(JSON.stringify(citations), citation, existing.id).run();
     }
   } else {
-    // Create new principle
     const id = `prin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
     await env.DB.prepare(`
       INSERT INTO legal_principles 
       (id, principle_text, keywords, statute_refs, case_citations, most_recent_citation, date_added)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      id,
-      principleText,
-      JSON.stringify(keywords),
-      JSON.stringify(statuteRefs),
-      JSON.stringify([citation]),
-      citation,
-      new Date().toISOString()
-    ).run();
+    `).bind(id, principleText, JSON.stringify(keywords), JSON.stringify(statuteRefs),
+      JSON.stringify([citation]), citation, new Date().toISOString()).run();
   }
 }
 
 async function getSyncProgress(env) {
   const stats = await env.DB.prepare(`
-    SELECT 
-      COUNT(*) as total_cases,
-      MIN(case_date) as earliest_case,
-      MAX(case_date) as latest_case,
-      MAX(processed_date) as last_sync
+    SELECT COUNT(*) as total_cases, MIN(case_date) as earliest_case,
+           MAX(case_date) as latest_case, MAX(processed_date) as last_sync
     FROM cases
   `).first();
-
   const principleCount = await env.DB.prepare("SELECT COUNT(*) as count FROM legal_principles").first();
 
   return {
@@ -443,26 +335,21 @@ async function getSyncProgress(env) {
 }
 
 /* =============================================================
-   SCHEDULED SYNC (Daily Cron) - NEW CASES ONLY
+   SCHEDULED SYNC
    ============================================================= */
-
-// Backfill: fetch ALL cases for a specific year across all courts
 async function runYearBackfill(env, year) {
+  // NOTE: This Worker-side backfill hits Cloudflare CPU time limits on large
+  // years. Use the Python scraper (austlii_scraper.py) for bulk backfill.
+  // This endpoint is kept for small/targeted use only.
   console.log(`Starting backfill for year ${year}...`);
   let casesProcessed = 0;
   let casesFailed = 0;
   const errors = [];
-  const courts = ['magistrates', 'supreme', 'cca', 'fullcourt'];
 
-  for (const court of courts) {
-    const courtAbbrev = AUSTLII_COURTS[court];
-    if (!courtAbbrev) continue;
-
+  for (const [court, courtAbbrev] of Object.entries(AUSTLII_COURTS)) {
     const cases = [];
     let num = 1;
     let consecutiveMisses = 0;
-
-    console.log(`Scanning ${courtAbbrev} ${year} sequentially...`);
 
     while (consecutiveMisses < 5) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${year}/${num}.html`;
@@ -470,141 +357,65 @@ async function runYearBackfill(env, year) {
         const response = await fetch(url, {
           headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
         });
-        if (response.status === 404 || response.status === 410) {
-          consecutiveMisses++;
-        } else if (response.ok) {
+        if (response.status === 404 || response.status === 410) { consecutiveMisses++; }
+        else if (response.ok) {
           consecutiveMisses = 0;
           const html = await response.text();
-          cases.push({
-            citation: `[${year}] ${courtAbbrev} ${num}`,
-            year: String(year),
-            court,
-            court_abbrev: courtAbbrev,
-            url,
-            html,
-          });
+          cases.push({ citation: `[${year}] ${courtAbbrev} ${num}`, year: String(year), court, url, html });
         }
-      } catch (e) {
-        console.error(`Fetch error ${courtAbbrev}/${year}/${num}:`, e);
-      }
+      } catch (e) { console.error(`Fetch error:`, e); }
       num++;
       await new Promise(r => setTimeout(r, 1000));
     }
 
-    console.log(`Found ${cases.length} cases for ${court} ${year}`);
-
     for (const caseData of cases) {
-      // Skip if already in DB
-      const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?")
-        .bind(caseData.citation).first();
-      if (exists) {
-        console.log(`Skipping existing: ${caseData.citation}`);
-        continue;
-      }
-
+      const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(caseData.citation).first();
+      if (exists) continue;
       try {
-        let content = null;
-        if (caseData.html) {
-          content = await fetchCaseContent(null, caseData.html);
-        } else {
-          let retries = 0;
-          while (!content && retries < 3) {
-            content = await fetchCaseContent(caseData.url);
-            if (!content) { retries++; await new Promise(r => setTimeout(r, 2000)); }
-          }
-        }
-
-        if (!content || !content.full_text || content.full_text.length < 100) {
-          casesFailed++;
-          errors.push(`${caseData.citation}: fetch/content failed`);
-          continue;
-        }
-
+        const content = caseData.html ? await fetchCaseContent(null, caseData.html) : await fetchCaseContent(caseData.url);
+        if (!content?.full_text || content.full_text.length < 100) { casesFailed++; continue; }
         const fullCaseData = { ...caseData, ...content };
         const summary = await summarizeCase(env, fullCaseData);
-        await saveCaseToDb(env, fullCaseData, summary);
+        const finalCaseData = { ...fullCaseData, case_name: summary.case_name || caseData.citation };
+        await saveCaseToDb(env, finalCaseData, summary);
         casesProcessed++;
-        console.log(`✓ ${caseData.citation}`);
-
-        // Polite delay between cases
         await new Promise(r => setTimeout(r, 2000));
-
       } catch (err) {
         casesFailed++;
         errors.push(`${caseData.citation}: ${err.message}`);
       }
-
     }
   }
 
-  console.log(`Backfill ${year} complete: ${casesProcessed} saved, ${casesFailed} failed`);
   return { year, casesProcessed, casesFailed, errors };
 }
 
 async function runDailySync(env) {
-  console.log("Starting daily AustLII check for new cases...");
-
-  let casesProcessed = 0;
-  let casesFailed = 0;
+  console.log("Starting daily AustLII check...");
+  let casesProcessed = 0, casesFailed = 0;
   const dailyLimit = 50;
   const errors = [];
 
-  // Only fetch recent cases (current year)
   const newCases = await fetchRecentAustLIICases(env, dailyLimit);
-
   console.log(`Found ${newCases.length} new cases to process`);
 
   for (const caseData of newCases) {
     if (casesProcessed >= dailyLimit) break;
-
     try {
-      console.log(`Processing: ${caseData.citation}`);
-
-      // Fetch full case content with retry
       const content = await fetchCaseContent(caseData.url, caseData.html || null);
-
-      if (!content) {
-        console.error(`Failed to fetch content for ${caseData.citation}`);
-        errors.push(`${caseData.citation}: Content fetch failed`);
+      if (!content?.full_text || content.full_text.length < 100) {
+        errors.push(`${caseData.citation}: Insufficient text`);
         casesFailed++;
         continue;
       }
-
-      // Merge case data
       const fullCaseData = { ...caseData, ...content };
-
-      // Validate we have text
-      if (!fullCaseData.full_text || fullCaseData.full_text.length < 100) {
-        console.error(`Insufficient text for ${caseData.citation} (${fullCaseData.full_text?.length || 0} chars)`);
-        errors.push(`${caseData.citation}: Insufficient text extracted`);
-        casesFailed++;
-        continue;
-      }
-
-      console.log(`Summarizing ${caseData.citation} (${fullCaseData.full_text.length} chars)`);
-
-      // Summarize with AI
       const summary = await summarizeCase(env, fullCaseData);
-
-      // Check if AI extraction succeeded
-      if (summary.facts === "AI extraction failed") {
-        console.error(`AI extraction failed for ${caseData.citation}`);
-        errors.push(`${caseData.citation}: AI extraction failed`);
-        casesFailed++;
-        // Still save to database so we know we tried
-      }
-
-      // Save to database
-      await saveCaseToDb(env, fullCaseData, summary);
-
+      const finalCaseData = { ...fullCaseData, case_name: summary.case_name || caseData.citation };
+      await saveCaseToDb(env, finalCaseData, summary);
       casesProcessed++;
-      console.log(`✓ Saved ${caseData.citation}`);
-
-      // Rate limiting delay (2 seconds between cases)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
+      console.log(`✓ ${caseData.citation} — "${finalCaseData.case_name}"`);
+      await new Promise(r => setTimeout(r, 2000));
     } catch (error) {
-      console.error(`Error processing ${caseData.citation}:`, error);
       errors.push(`${caseData.citation}: ${error.message}`);
       casesFailed++;
     }
@@ -612,44 +423,24 @@ async function runDailySync(env) {
 
   console.log(`Daily sync complete. Processed: ${casesProcessed}, Failed: ${casesFailed}`);
 
-  // Send email notification if cases were found
   if ((casesProcessed > 0 || casesFailed > 0) && env.RESEND_API_KEY) {
     try {
-      let emailBody = `<p>Daily sync found ${newCases.length} new cases:</p>`;
-      emailBody += `<p><strong>Successfully processed: ${casesProcessed}</strong></p>`;
-
-      if (casesProcessed > 0) {
-        emailBody += `<ul>${newCases.slice(0, casesProcessed).map(c => `<li>${c.citation} - ${c.case_name || 'Processing...'}</li>`).join('')}</ul>`;
-      }
-
-      if (casesFailed > 0) {
-        emailBody += `<p><strong>Failed: ${casesFailed}</strong></p>`;
-        emailBody += `<ul>${errors.map(err => `<li style="color:#c8a96e;">${err}</li>`).join('')}</ul>`;
-      }
-
-      emailBody += `<p>View in console: <a href="https://your-console-url.com/legal.html">Legal Research</a></p>`;
-
-      await sendEmail(
-        env,
-        env.RESEND_FROM_EMAIL, // Send to yourself
-        `Arcanthyr: ${casesProcessed} new cases, ${casesFailed} failed`,
-        emailBody
-      );
-    } catch (err) {
-      console.error("Failed to send sync notification email:", err);
-    }
+      let emailBody = `<p>Daily sync: ${newCases.length} new cases found</p>`;
+      emailBody += `<p><strong>Saved: ${casesProcessed}</strong></p>`;
+      if (casesFailed > 0) emailBody += `<p><strong>Failed: ${casesFailed}</strong></p><ul>${errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
+      await sendEmail(env, env.RESEND_FROM_EMAIL, `Arcanthyr: ${casesProcessed} new cases`, emailBody);
+    } catch (err) { console.error("Failed to send sync email:", err); }
   }
 
   return { success: true, cases_processed: casesProcessed, cases_failed: casesFailed, errors };
 }
 
 /* =============================================================
-   ORIGINAL AI ACTION HANDLERS (from v4)
+   ORIGINAL AI ACTION HANDLERS
    ============================================================= */
 async function handleDraft(body, env) {
   const { text, tag } = body;
   if (!text || !tag) throw new Error("Missing text or tag");
-
   const system = `You are a precise clarity engine inside a productivity console called Arcanthyr.
 Rewrite the user's raw input as a clean, structured entry.
 Rules:
@@ -660,14 +451,12 @@ Rules:
 - No bullet lists. No markdown. Plain prose only.
 - Entry type: ${tag}
 - Output ONLY the rewritten entry. No preamble, no sign-off.`;
-
   return callWorkersAI(env, system, text, 300);
 }
 
 async function handleNextActions(body, env) {
   const { text, tag, next, clarify } = body;
   if (!text || !tag) throw new Error("Missing text or tag");
-
   const system = `You are a strategic action engine inside Arcanthyr, a personal clarity console.
 Propose exactly 3 concrete next actions. Each must be:
 - Physically doable (not vague like "think about it")
@@ -678,20 +467,13 @@ Respond EXACTLY like this with no other text:
 1. [action]
 2. [action]
 3. [action]`;
-
-  const userMsg = `Entry type: ${tag}
-Raw text: ${text}
-Rule-based guidance: ${next || ""}
-Clarifying question: ${clarify || ""}`;
-
-  return callWorkersAI(env, system, userMsg, 300);
+  return callWorkersAI(env, system, `Entry type: ${tag}\nRaw text: ${text}\nGuidance: ${next || ""}\nClarify: ${clarify || ""}`, 300);
 }
 
 async function handleWeeklyReview(body, env) {
   const { entries } = body;
   if (!entries || !entries.length) return "No entries to review.";
-
-  const system = `You are a pattern recognition engine inside Arcanthyr, a personal clarity console.
+  const system = `You are a pattern recognition engine inside Arcanthyr.
 Analyse the entries and produce a concise weekly review.
 Respond with EXACTLY these three sections and no other text:
 
@@ -705,12 +487,7 @@ DECISIONS PENDING
 [1-2 sentences on unresolved decisions in the data]
 
 If a section has nothing to report, write: None identified.`;
-
-  const entrySummary = entries
-    .map(e => `[${(e.tag || "note").toUpperCase()}] ${e.text}`)
-    .join("\n");
-
-  return callWorkersAI(env, system, `Entries:\n${entrySummary}`, 700);
+  return callWorkersAI(env, system, `Entries:\n${entries.map(e => `[${(e.tag || "note").toUpperCase()}] ${e.text}`).join("\n")}`, 700);
 }
 
 async function handleAxiomRelay(body, env) {
@@ -719,53 +496,36 @@ async function handleAxiomRelay(body, env) {
 
   const stage1System = `You are Stage 1 of a multi-step reasoning agent called Axiom Relay inside Arcanthyr.
 Decompose each entry into its components.
-For each entry identify:
-- surface: what they literally said (very short)
-- intent: what they actually need underneath
-- constraint: a hidden assumption or blocker
-Respond as a JSON array only. Each item: { "id": number, "surface": "...", "intent": "...", "constraint": "..." }
-Output ONLY valid JSON. No markdown fences, no explanation.`;
-
-  const entryText = entries
-    .slice(-20)
-    .map((e, i) => `${i}: [${e.tag}] ${e.text}`)
-    .join("\n");
+For each entry identify surface (what they said), intent (what they need), constraint (hidden blocker).
+Respond as a JSON array: [{ "id": number, "surface": "...", "intent": "...", "constraint": "..." }]
+Output ONLY valid JSON. No markdown fences.`;
 
   let decomposed;
   try {
-    const raw1 = await callWorkersAI(env, stage1System, entryText, 800);
-    const cleaned = raw1.replace(/```json|```/g, "").trim();
-    decomposed = JSON.parse(cleaned);
+    const raw1 = await callWorkersAI(env, stage1System, entries.slice(-20).map((e, i) => `${i}: [${e.tag}] ${e.text}`).join("\n"), 800);
+    decomposed = JSON.parse(raw1.replace(/```json|```/g, "").trim());
   } catch {
-    decomposed = entries.map((e, i) => ({
-      id: i, surface: e.text, intent: e.text, constraint: ""
-    }));
+    decomposed = entries.map((e, i) => ({ id: i, surface: e.text, intent: e.text, constraint: "" }));
   }
 
-  const stage2System = `You are Stage 2 of Axiom Relay.
-Identify the 3 most important tensions, risks, or opportunities ACROSS the entries.
-Each point must reference specific content (not generic advice) and be under 20 words.
+  const stage2Raw = await callWorkersAI(env,
+    `You are Stage 2 of Axiom Relay. Identify the 3 most important tensions ACROSS the entries. Each under 20 words, referencing specific content.
 Output EXACTLY:
 TENSION_1: [text]
 TENSION_2: [text]
 TENSION_3: [text]
-No other text.`;
+No other text.`,
+    `Focus: ${focus || "none"}\n${decomposed.map(d => `[${d.id}] ${d.surface} | ${d.intent} | ${d.constraint}`).join("\n")}`,
+    400);
 
-  const stage2Input = `Focus area: ${focus || "none"}
-Decomposed:\n${decomposed.map(d =>
-    `[${d.id}] Surface: ${d.surface} | Intent: ${d.intent} | Constraint: ${d.constraint}`
-  ).join("\n")}`;
-
-  const stage2Raw = await callWorkersAI(env, stage2System, stage2Input, 400);
-
-  const stage3System = `You are Stage 3 of Axiom Relay — final synthesis.
-Produce an actionable relay report using EXACTLY these sections:
+  const finalReport = await callWorkersAI(env,
+    `You are Stage 3 of Axiom Relay — final synthesis. Produce an actionable report:
 
 SIGNAL
-[1-2 sentences: the single most important insight]
+[1-2 sentences: single most important insight]
 
 LEVERAGE POINT
-[1 sentence: the one action that unlocks the most]
+[1 sentence: one action that unlocks the most]
 
 RELAY ACTIONS
 1. [specific action, under 12 words]
@@ -773,21 +533,13 @@ RELAY ACTIONS
 3. [specific action, under 12 words]
 
 DEAD WEIGHT
-[1 sentence: what to stop doing or deprioritise]
+[1 sentence: what to stop or deprioritise]
 
-Output only these sections. No preamble, no sign-off.`;
-
-  const finalReport = await callWorkersAI(
-    env,
-    stage3System,
+Output only these sections.`,
     `${stage2Raw}\n\nFocus: ${focus || "none"}`,
-    500
-  );
+    500);
 
-  return {
-    stages: { decomposed, tensions: stage2Raw },
-    report: finalReport,
-  };
+  return { stages: { decomposed, tensions: stage2Raw }, report: finalReport };
 }
 
 async function handleClarifyAgent(body, env) {
@@ -795,91 +547,52 @@ async function handleClarifyAgent(body, env) {
   if (!text || !tag) throw new Error("Missing text or tag");
 
   const historyContext = history.length > 0
-    ? `\nConversation so far:\n${history.map(h =>
-      `${h.role === "agent" ? "Agent" : "User"}: ${h.content}`
-    ).join("\n")}`
+    ? `\nConversation so far:\n${history.map(h => `${h.role === "agent" ? "Agent" : "User"}: ${h.content}`).join("\n")}`
     : "";
-
   const userExchanges = history.filter(h => h.role === "user").length;
 
   if (userExchanges >= 2 && userReply) {
-    const synthSystem = `You are a clarity synthesis engine inside Arcanthyr.
-You've had a clarifying conversation with a user about their entry.
-Produce a final crystallised version that incorporates everything you've learned.
-Rules:
-- 2-3 sentences max
-- Plain prose, no bullets, no markdown
-- Capture their full intent, not just the literal words
-- Output ONLY the crystallised entry. Nothing else.`;
-
-    const synthInput = `Original entry (${tag}): ${text}${historyContext}\nUser final reply: ${userReply}`;
-    const crystallised = await callWorkersAI(env, synthSystem, synthInput, 300);
+    const crystallised = await callWorkersAI(env,
+      `You are a clarity synthesis engine inside Arcanthyr. Produce a final crystallised entry (2-3 sentences, plain prose). Output ONLY the crystallised entry.`,
+      `Original entry (${tag}): ${text}${historyContext}\nUser final reply: ${userReply}`, 300);
     return { done: true, draft: crystallised, question: null };
   }
 
-  const questionSystem = `You are a conversational clarity agent inside Arcanthyr.
-Ask ONE precise question to help the user think more clearly about their entry.
-Rules:
-- One question only. Never two.
-- Specific to THEIR content — not generic coaching
-- Each question should dig deeper than the last
-- Under 20 words
-- No preamble, no "Great!" or "Interesting!" — just the question
-- Output ONLY the question.`;
-
-  const questionInput = `Entry type: ${tag}
-Entry: ${text}${historyContext}${userReply ? `\nUser just replied: ${userReply}` : ""}
-${userExchanges === 0 ? "First question — find the most important gap in this entry." : "Go deeper on what they revealed."}`;
-
-  const question = await callWorkersAI(env, questionSystem, questionInput, 120);
+  const question = await callWorkersAI(env,
+    `You are a conversational clarity agent inside Arcanthyr. Ask ONE precise question (under 20 words) specific to THEIR content. No preamble. Output ONLY the question.`,
+    `Entry type: ${tag}\nEntry: ${text}${historyContext}${userReply ? `\nUser replied: ${userReply}` : ""}\n${userExchanges === 0 ? "First question." : "Go deeper."}`,
+    120);
   return { done: false, question, draft: null };
 }
 
 /* =============================================================
-   NEW API HANDLERS
+   API HANDLERS
    ============================================================= */
-
 async function handleSendEmail(body, env) {
-  const { to, subject, content, type } = body;
-  if (!to || !subject || !content) {
-    throw new Error("Missing required fields: to, subject, content");
-  }
-
-  // Format content as HTML
-  let html = `
-    <div style="font-family: 'DM Mono', monospace; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <div style="border-bottom: 1px solid #3a3b3f; padding-bottom: 12px; margin-bottom: 20px;">
-        <h2 style="color: #a8b4c0; font-family: 'Cormorant Garamond', serif; letter-spacing: 0.12em;">ARCANTHYR</h2>
-      </div>
-      <div style="white-space: pre-wrap; line-height: 1.7; color: #f0f1f2;">
-        ${content}
-      </div>
-      <div style="border-top: 1px solid #3a3b3f; margin-top: 20px; padding-top: 12px; font-size: 12px; color: #888c94;">
-        Sent from Arcanthyr Console
-      </div>
+  const { to, subject, content } = body;
+  if (!to || !subject || !content) throw new Error("Missing required fields");
+  const html = `<div style="font-family:'DM Mono',monospace;max-width:600px;margin:0 auto;padding:20px;">
+    <div style="border-bottom:1px solid #3a3b3f;padding-bottom:12px;margin-bottom:20px;">
+      <h2 style="color:#a8b4c0;font-family:'Cormorant Garamond',serif;letter-spacing:0.12em;">ARCANTHYR</h2>
     </div>
-  `;
-
+    <div style="white-space:pre-wrap;line-height:1.7;color:#f0f1f2;">${content}</div>
+    <div style="border-top:1px solid #3a3b3f;margin-top:20px;padding-top:12px;font-size:12px;color:#888c94;">Sent from Arcanthyr Console</div>
+  </div>`;
   const result = await sendEmail(env, to, subject, html);
   return { success: true, message_id: result.id };
 }
 
 async function handleGetContacts(env) {
-  const { results } = await env.DB.prepare(
-    "SELECT * FROM email_contacts ORDER BY name ASC"
-  ).all();
+  const { results } = await env.DB.prepare("SELECT * FROM email_contacts ORDER BY name ASC").all();
   return results || [];
 }
 
 async function handleAddContact(body, env) {
   const { name, email } = body;
   if (!name || !email) throw new Error("Missing name or email");
-
   const id = `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  await env.DB.prepare(
-    "INSERT INTO email_contacts (id, name, email, created_at) VALUES (?, ?, ?, ?)"
-  ).bind(id, name, email, new Date().toISOString()).run();
-
+  await env.DB.prepare("INSERT INTO email_contacts (id, name, email, created_at) VALUES (?, ?, ?, ?)")
+    .bind(id, name, email, new Date().toISOString()).run();
   return { id, name, email };
 }
 
@@ -889,47 +602,80 @@ async function handleDeleteContact(contactId, env) {
 }
 
 async function handleSearchCases(body, env) {
-  const { query, court, limit = 50 } = body;
+  // Params:
+  //   query      – keyword search across case_name, facts, issues, holding, citation
+  //   court      – "all" | "supreme" | "magistrates" | "cca" | "fullcourt"
+  //   year       – exact year string "2024" (takes precedence over range)
+  //   year_from  – start of range "2020"
+  //   year_to    – end of range "2024"
+  //   limit      – page size (default 100, max 500)
+  //   offset     – pagination offset (default 0)
+  //
+  // Returns: { total, limit, offset, cases[] }
+  const {
+    query,
+    court,
+    year,
+    year_from,
+    year_to,
+    limit: rawLimit = 100,
+    offset: rawOffset = 0,
+  } = body;
 
-  let sql = "SELECT * FROM cases WHERE 1=1";
+  const limit = Math.min(Number(rawLimit) || 100, 500);
+  const offset = Number(rawOffset) || 0;
+
+  const conditions = ["1=1"];
   const params = [];
 
   if (query && query.trim()) {
-    sql += " AND (case_name LIKE ? OR facts LIKE ? OR issues LIKE ? OR holding LIKE ?)";
-    const searchTerm = `%${query}%`;
-    params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    conditions.push("(case_name LIKE ? OR facts LIKE ? OR issues LIKE ? OR holding LIKE ? OR citation LIKE ?)");
+    const t = `%${query.trim()}%`;
+    params.push(t, t, t, t, t);
   }
 
   if (court && court !== "all") {
-    sql += " AND court = ?";
+    conditions.push("court = ?");
     params.push(court);
   }
 
-  sql += " ORDER BY case_date DESC LIMIT ?";
-  params.push(limit);
+  if (year && year !== "all") {
+    conditions.push("strftime('%Y', case_date) = ?");
+    params.push(String(year));
+  } else {
+    if (year_from) { conditions.push("strftime('%Y', case_date) >= ?"); params.push(String(year_from)); }
+    if (year_to)   { conditions.push("strftime('%Y', case_date) <= ?"); params.push(String(year_to)); }
+  }
 
-  const { results } = await env.DB.prepare(sql).bind(...params).all();
-  return results || [];
+  const where = conditions.join(" AND ");
+
+  const countRow = await env.DB.prepare(`SELECT COUNT(*) as total FROM cases WHERE ${where}`)
+    .bind(...params).first();
+  const total = countRow?.total || 0;
+
+  const { results } = await env.DB.prepare(`
+    SELECT id, citation, court, case_date, case_name, url, facts, issues, holding,
+           principles_extracted, summary_quality_score
+    FROM cases WHERE ${where}
+    ORDER BY case_date DESC, citation DESC
+    LIMIT ? OFFSET ?
+  `).bind(...params, limit, offset).all();
+
+  return { total, limit, offset, cases: results || [] };
 }
 
 async function handleSearchPrinciples(body, env) {
   const { query, limit = 50 } = body;
-
   let sql = "SELECT * FROM legal_principles WHERE 1=1";
   const params = [];
-
   if (query && query.trim()) {
     sql += " AND (principle_text LIKE ? OR keywords LIKE ? OR statute_refs LIKE ?)";
-    const searchTerm = `%${query}%`;
-    params.push(searchTerm, searchTerm, searchTerm);
+    const t = `%${query}%`;
+    params.push(t, t, t);
   }
-
   sql += " ORDER BY date_added DESC LIMIT ?";
   params.push(limit);
-
   const { results } = await env.DB.prepare(sql).bind(...params).all();
-
-  // Parse JSON fields
   return (results || []).map(r => ({
     ...r,
     keywords: JSON.parse(r.keywords || "[]"),
@@ -940,14 +686,9 @@ async function handleSearchPrinciples(body, env) {
 
 async function handleUploadCase(body, env) {
   let { case_text, citation, case_name, court, encoding } = body;
-  if (!case_text || !citation) {
-    throw new Error("Missing required fields: case_text and citation");
-  }
-  if (encoding === 'base64') {
-    case_text = atob(case_text);
-  }
-  const result = await processCaseUpload(env, case_text, citation, case_name, court);
-  return result;
+  if (!case_text || !citation) throw new Error("Missing required fields: case_text and citation");
+  if (encoding === 'base64') case_text = atob(case_text);
+  return processCaseUpload(env, case_text, citation, case_name, court);
 }
 
 /* =============================================================
@@ -960,49 +701,27 @@ export default {
     const origin = request.headers.get("Origin") || "";
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
 
-    const corsOrigin = origin || "*";
     const corsHeaders = {
-      "Access-Control-Allow-Origin": corsOrigin,
+      "Access-Control-Allow-Origin": origin || "*",
       "Access-Control-Allow-Methods": "GET,POST,DELETE,PATCH,OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders });
-    }
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
+
+    const json = (data, status = 200) => new Response(JSON.stringify(data), {
+      status, headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
 
     /* ── AI PROXY ROUTES ─────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ai/")) {
-      if (!rateLimit(`${ip}:ai`, 15, 60_000)) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Wait a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "60" } }
-        );
-      }
-
-      if (!env.AI) {
-        return new Response(
-          JSON.stringify({ error: "AI binding not configured." }),
-          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      if (request.method !== "POST") {
-        return new Response(
-          JSON.stringify({ error: "AI routes accept POST only." }),
-          { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      if (!rateLimit(`${ip}:ai`, 15, 60_000)) return json({ error: "Rate limit exceeded. Wait a moment." }, 429);
+      if (!env.AI) return json({ error: "AI binding not configured." }, 503);
+      if (request.method !== "POST") return json({ error: "AI routes accept POST only." }, 405);
 
       const action = url.pathname.replace("/api/ai/", "");
       let body;
-      try { body = await request.json(); }
-      catch {
-        return new Response(
-          JSON.stringify({ error: "Invalid JSON body." }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      try { body = await request.json(); } catch { return json({ error: "Invalid JSON body." }, 400); }
 
       try {
         let result;
@@ -1011,112 +730,46 @@ export default {
         else if (action === "weekly-review") result = await handleWeeklyReview(body, env);
         else if (action === "axiom-relay") result = await handleAxiomRelay(body, env);
         else if (action === "clarify-agent") result = await handleClarifyAgent(body, env);
-        else return new Response(
-          JSON.stringify({ error: `Unknown AI action: ${action}` }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-
-        return new Response(JSON.stringify({ result }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      } catch (err) {
-        return new Response(
-          JSON.stringify({ error: err.message }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+        else return json({ error: `Unknown AI action: ${action}` }, 404);
+        return json({ result });
+      } catch (err) { return json({ error: err.message }, 500); }
     }
 
     /* ── EMAIL ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/email/")) {
-      if (!rateLimit(`${ip}:email`, 10, 60_000)) {
-        return new Response(
-          JSON.stringify({ error: "Email rate limit exceeded." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
+      if (!rateLimit(`${ip}:email`, 10, 60_000)) return json({ error: "Email rate limit exceeded." }, 429);
       const action = url.pathname.replace("/api/email/", "");
       const body = request.method === "POST" ? await request.json() : null;
-
       try {
         let result;
-        if (action === "send" && request.method === "POST") {
-          result = await handleSendEmail(body, env);
-        } else if (action === "contacts" && request.method === "GET") {
-          result = await handleGetContacts(env);
-        } else if (action === "contacts" && request.method === "POST") {
-          result = await handleAddContact(body, env);
-        } else if (action.startsWith("contacts/") && request.method === "DELETE") {
-          const contactId = action.replace("contacts/", "");
-          result = await handleDeleteContact(contactId, env);
-        } else {
-          return new Response(
-            JSON.stringify({ error: "Invalid email endpoint" }),
-            { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
-        return new Response(JSON.stringify({ result }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      } catch (err) {
-        return new Response(
-          JSON.stringify({ error: err.message }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+        if (action === "send" && request.method === "POST") result = await handleSendEmail(body, env);
+        else if (action === "contacts" && request.method === "GET") result = await handleGetContacts(env);
+        else if (action === "contacts" && request.method === "POST") result = await handleAddContact(body, env);
+        else if (action.startsWith("contacts/") && request.method === "DELETE") result = await handleDeleteContact(action.replace("contacts/", ""), env);
+        else return json({ error: "Invalid email endpoint" }, 404);
+        return json({ result });
+      } catch (err) { return json({ error: err.message }, 500); }
     }
 
     /* ── LEGAL RESEARCH ROUTES ───────────────────────────────── */
     if (url.pathname.startsWith("/api/legal/")) {
-      if (!rateLimit(`${ip}:legal`, 30, 60_000)) {
-        return new Response(
-          JSON.stringify({ error: "Legal API rate limit exceeded." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
+      if (!rateLimit(`${ip}:legal`, 30, 60_000)) return json({ error: "Legal API rate limit exceeded." }, 429);
       const action = url.pathname.replace("/api/legal/", "");
       const body = request.method === "POST" ? await request.json() : null;
-
       try {
         let result;
-        if (action === "sync-progress") {
-          result = await getSyncProgress(env);
-        } else if (action === "search-cases" && request.method === "POST") {
-          result = await handleSearchCases(body, env);
-        } else if (action === "search-principles" && request.method === "POST") {
-          result = await handleSearchPrinciples(body, env);
-        } else if (action === "trigger-sync" && request.method === "POST") {
-          // Manual trigger for sync (in addition to scheduled)
-          result = await runDailySync(env);
-        } else if (action === "backfill-year" && request.method === "POST") {
-          // Backfill all cases for a specific year
-          const year = body.year || new Date().getFullYear() - 1;
-          result = await runYearBackfill(env, year);
-        } else if (action === "upload-case" && request.method === "POST") {
-          // NEW: Upload and process a case manually
-          result = await handleUploadCase(body, env);
-        } else {
-          return new Response(
-            JSON.stringify({ error: "Invalid legal endpoint" }),
-            { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
-        return new Response(JSON.stringify({ result }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      } catch (err) {
-        return new Response(
-          JSON.stringify({ error: err.message }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+        if (action === "sync-progress") result = await getSyncProgress(env);
+        else if (action === "search-cases" && request.method === "POST") result = await handleSearchCases(body, env);
+        else if (action === "search-principles" && request.method === "POST") result = await handleSearchPrinciples(body, env);
+        else if (action === "trigger-sync" && request.method === "POST") result = await runDailySync(env);
+        else if (action === "backfill-year" && request.method === "POST") result = await runYearBackfill(env, body.year || new Date().getFullYear() - 1);
+        else if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
+        else return json({ error: "Invalid legal endpoint" }, 404);
+        return json({ result });
+      } catch (err) { return json({ error: err.message }, 500); }
     }
 
-    /* ── ENTRIES ROUTES (existing) ────────────────────────────── */
+    /* ── ENTRIES ROUTES ───────────────────────────────────────── */
     if (url.pathname.startsWith("/api/entries")) {
       const limits = {
         GET: { max: 60, windowMs: 60_000 },
@@ -1124,67 +777,39 @@ export default {
         DELETE: { max: 10, windowMs: 60_000 },
         PATCH: { max: 10, windowMs: 60_000 },
       };
-      const limit = limits[request.method];
-      if (limit && !rateLimit(`${ip}:${request.method}`, limit.max, limit.windowMs)) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "60" } }
-        );
-      }
+      const lim = limits[request.method];
+      if (lim && !rateLimit(`${ip}:${request.method}`, lim.max, lim.windowMs))
+        return json({ error: "Rate limit exceeded." }, 429);
 
       if (request.method === "GET") {
         const { results } = await env.DB
-          .prepare("SELECT * FROM entries WHERE deleted = 0 ORDER BY created_at DESC LIMIT 200")
-          .all();
-        return new Response(JSON.stringify({ entries: results }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+          .prepare("SELECT * FROM entries WHERE deleted = 0 ORDER BY created_at DESC LIMIT 200").all();
+        return json({ entries: results });
       }
-
       if (request.method === "POST") {
         const body = await request.json();
         for (const k of ["id", "created_at", "text", "tag", "next", "clarify"]) {
-          if (body?.[k] === undefined || body?.[k] === null) {
-            return new Response(
-              JSON.stringify({ error: `Missing required field: ${k}` }),
-              { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
-          }
+          if (body?.[k] === undefined || body?.[k] === null) return json({ error: `Missing required field: ${k}` }, 400);
         }
-        await env.DB
-          .prepare(`INSERT INTO entries (id, created_at, text, tag, next, clarify, draft, _v, deleted)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`)
-          .bind(
-            body.id, body.created_at, body.text, body.tag,
-            body.next, body.clarify, body.draft ?? null, body._v ?? 0
-          )
-          .run();
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        await env.DB.prepare(`INSERT INTO entries (id, created_at, text, tag, next, clarify, draft, _v, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`)
+          .bind(body.id, body.created_at, body.text, body.tag, body.next, body.clarify, body.draft ?? null, body._v ?? 0).run();
+        return json({ ok: true });
       }
-
       if (request.method === "DELETE") {
         const id = url.pathname.replace("/api/entries", "").replace(/^\//, "");
         if (id) await env.DB.prepare("UPDATE entries SET deleted = 1 WHERE id = ?").bind(id).run();
         else await env.DB.prepare("UPDATE entries SET deleted = 1 WHERE deleted = 0").run();
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return json({ ok: true });
       }
-
       if (request.method === "PATCH") {
         await env.DB.prepare("UPDATE entries SET deleted = 0 WHERE deleted = 1").run();
-        return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return json({ ok: true });
       }
     }
 
     return new Response("Not found", { status: 404, headers: corsHeaders });
   },
 
-  /* ── SCHEDULED HANDLER (Cron Trigger) ───────────────────────── */
   async scheduled(event, env, ctx) {
     ctx.waitUntil(runDailySync(env));
   },

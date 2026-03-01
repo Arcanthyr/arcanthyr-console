@@ -11,7 +11,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
-    /* File upload dropzone */
     .case-dropzone {
       border: 2px dashed var(--border-light);
       border-radius: var(--radius);
@@ -22,18 +21,15 @@
       margin-bottom: 16px;
       background: var(--bg);
     }
-
     .case-dropzone.dragover {
       border-color: var(--gold);
       background: var(--gold-dim);
     }
-
     .dropzone-text {
       color: var(--text-mid);
       font-size: 0.875rem;
       margin-bottom: 6px;
     }
-
     .dropzone-hint {
       color: var(--text-dim);
       font-size: 0.75rem;
@@ -46,16 +42,14 @@
 
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
-      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <filter id="tex-sm">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
-        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
-          opacity="0.7" />
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4" opacity="0.7" />
         <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
@@ -83,11 +77,7 @@
         <button id="legalSyncBtn" class="btn ai-btn">Check New Cases</button>
       </div>
       <div id="legalSyncStatus" class="filter-summary" style="margin-top:16px;"></div>
-      <div class="row" style="margin-top:16px;gap:8px;">
-        <input type="number" id="backfillYear" class="search-input" value="2024" min="2000" max="2026" style="width:100px;" />
-        <button id="backfillYearBtn" class="btn ghost small">Scan Custom Year</button>
-      </div>
-      <div id="backfillStatus" class="filter-summary" style="margin-top:8px;"></div>
+      <!-- Backfill removed — use austlii_scraper.py on VPS for bulk year ingestion -->
     </section>
 
     <!-- UPLOAD CASE SECTION -->
@@ -96,20 +86,22 @@
         <h2 class="h2">Upload Historical Case</h2>
         <button id="toggleUploadBtn" class="btn ghost small">Toggle Form</button>
       </div>
-      <p class="sub">Paste case text from AustLII or PDF for AI analysis.</p>
+      <p class="sub">Paste case text from AustLII or upload a PDF for AI analysis.</p>
 
       <div id="uploadCaseForm" style="display:none;margin-top:16px;">
-        <!-- File Upload Dropzone -->
         <div class="case-dropzone" id="caseDropzone">
           <div class="dropzone-text">📎 Drag & drop PDF or click to browse</div>
           <div class="dropzone-hint">Or paste case text below manually</div>
         </div>
-        <input type="file" id="caseFileInput" accept=".pdf,.txt" />
+        <input type="file" id="caseFileInput" accept=".pdf,.txt" style="display:none;" />
 
         <label class="label" style="margin-top:16px;">Citation (e.g. [2015] TASSC 42)</label>
         <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
 
-        <label class="label" style="margin-top:12px;">Case Name</label>
+        <label class="label" style="margin-top:12px;">
+          Case Name
+          <span style="color:var(--text-dim);font-weight:normal;"> — hint only, AI extracts the real name</span>
+        </label>
         <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
 
         <label class="label" style="margin-top:12px;">Court</label>
@@ -120,7 +112,7 @@
           <option value="fullcourt">Full Court</option>
         </select>
 
-        <label class="label" style="margin-top:12px;">Case Text (auto-filled from PDF or paste manually)</label>
+        <label class="label" style="margin-top:12px;">Case Text</label>
         <textarea id="uploadCaseText" class="textarea" style="min-height:200px;"
           placeholder="Drag PDF above or paste case text here..."></textarea>
 
@@ -144,6 +136,14 @@
       </div>
 
       <div class="filter-row">
+        <span class="label">View</span>
+        <div class="filter-chips">
+          <button class="chip legal-view active" data-view="cases">Cases</button>
+          <button class="chip legal-view" data-view="principles">Principles</button>
+        </div>
+      </div>
+
+      <div class="filter-row">
         <span class="label">Court</span>
         <div class="filter-chips" id="courtFilters">
           <button class="chip active" data-court="all">All Courts</button>
@@ -155,10 +155,16 @@
       </div>
 
       <div class="filter-row">
-        <span class="label">View</span>
+        <span class="label">Year</span>
         <div class="filter-chips">
-          <button class="chip legal-view active" data-view="cases">Cases</button>
-          <button class="chip legal-view" data-view="principles">Principles</button>
+          <button class="chip year-chip active" data-year="all">All Years</button>
+          <button class="chip year-chip" data-year="2026">2026</button>
+          <button class="chip year-chip" data-year="2025">2025</button>
+          <button class="chip year-chip" data-year="2024">2024</button>
+          <button class="chip year-chip" data-year="2023">2023</button>
+          <button class="chip year-chip" data-year="2022">2022</button>
+          <button class="chip year-chip" data-year="2021">2021</button>
+          <button class="chip year-chip" data-year="2020">2020</button>
         </div>
       </div>
 
@@ -171,10 +177,9 @@
   </main>
 
   <script>
-    // Configure PDF.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 
 </html>
