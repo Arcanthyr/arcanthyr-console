@@ -271,7 +271,7 @@ async function saveCaseToDb(env, caseData, summary) {
     id,
     caseData.citation,
     caseData.court,
-    `${caseData.year}-01-01`,
+    `${(caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1]}-01-01`,
     caseData.case_name,
     caseData.url || "",
     summary.facts,
@@ -644,7 +644,7 @@ async function handleSearchCases(body, env) {
     params.push(String(year));
   } else {
     if (year_from) { conditions.push("strftime('%Y', case_date) >= ?"); params.push(String(year_from)); }
-    if (year_to)   { conditions.push("strftime('%Y', case_date) <= ?"); params.push(String(year_to)); }
+    if (year_to) { conditions.push("strftime('%Y', case_date) <= ?"); params.push(String(year_to)); }
   }
 
   const where = conditions.join(" AND ");
