@@ -685,8 +685,9 @@ async function handleSearchPrinciples(body, env) {
 }
 
 async function handleUploadCase(body, env) {
-  let { case_text, citation, case_name, court, encoding } = body;
-  if (!case_text || !citation) throw new Error("Missing required fields: case_text and citation");
+  let { case_text, citation, case_name, court, court_hint, encoding } = body;
+  const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
+  court = court || courtMap[court_hint] || 'supreme';
   if (encoding === 'base64') case_text = atob(case_text);
   return processCaseUpload(env, case_text, citation, case_name, court);
 }
