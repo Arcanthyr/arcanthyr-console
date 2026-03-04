@@ -717,7 +717,10 @@ function showOutput(msg, className = "") {
     render(entries);
 
     if (document.getElementById('manageContactsBtn')) await loadContacts();
-    if (document.getElementById('legalSyncBtn')) await updateLegalSyncStatus();
+    if (document.getElementById('legalSyncBtn')) {
+      await updateLegalSyncStatus();
+      performLegalSearch(0); // load cases on page init so filters work immediately
+    }
   } catch (e) {
     if (outputEl) showOutput("Failed to load vault: " + e.message);
     else console.error("Failed to load vault:", e.message);
@@ -1166,7 +1169,7 @@ function autoFillCaseMetadata(text) {
   const header = text.substring(0, 1500);
 
   const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/) ||
-                        text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
+    text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
   if (citationMatch) {
     const el = document.getElementById('uploadCitation');
     if (el) el.value = citationMatch[0];
