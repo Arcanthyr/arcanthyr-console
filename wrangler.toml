@@ -1,9 +1,9 @@
-name = "arcanthyr"
+name = "arcanthyr-api"
 main = "Worker.js"
 compatibility_date = "2024-01-01"
 
 [assets]
-directory = "."
+directory = "public"
 
 [[d1_databases]]
 binding = "DB"

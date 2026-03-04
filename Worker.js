@@ -83,15 +83,15 @@ async function fetchRecentAustLIICases(env, limit = 50) {
     while (consecutiveMisses < 5 && allNewCases.length < limit) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${currentYear}/${num}.html`;
       try {
-        const response = await fetch(url, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-        });
+        // ── Route through fetch-page proxy (Cloudflare edge IPs) ──────────
+        // Direct fetch risks IP-based blocks from AustLII. handleFetchPage
+        // uses the same headers and routing as the VPS scraper proxy endpoint.
+        const { html, status } = await handleFetchPage({ url });
 
-        if (response.status === 404 || response.status === 410) { consecutiveMisses++; num++; continue; }
-        if (!response.ok) { num++; continue; }
+        if (status === 404 || status === 410) { consecutiveMisses++; num++; continue; }
+        if (status !== 200) { num++; continue; }
 
         consecutiveMisses = 0;
-        const html = await response.text();
         const citation = `[${currentYear}] ${courtAbbrev} ${num}`;
 
         const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(citation).first();
@@ -117,11 +117,10 @@ async function fetchCaseContent(url, preloadedHtml = null) {
     if (preloadedHtml) {
       html = preloadedHtml;
     } else {
-      const response = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-      });
-      if (!response.ok) return null;
-      html = await response.text();
+      // ── Route through fetch-page proxy (Cloudflare edge IPs) ────────────
+      const { html: fetchedHtml, status } = await handleFetchPage({ url });
+      if (status !== 200) return null;
+      html = fetchedHtml;
     }
 
     const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
@@ -356,13 +355,11 @@ async function runYearBackfill(env, year) {
     while (consecutiveMisses < 5) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${year}/${num}.html`;
       try {
-        const response = await fetch(url, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-        });
-        if (response.status === 404 || response.status === 410) { consecutiveMisses++; }
-        else if (response.ok) {
+        // ── Route through fetch-page proxy (Cloudflare edge IPs) ────────────
+        const { html, status } = await handleFetchPage({ url });
+        if (status === 404 || status === 410) { consecutiveMisses++; }
+        else if (status === 200) {
           consecutiveMisses = 0;
-          const html = await response.text();
           cases.push({ citation: `[${year}] ${courtAbbrev} ${num}`, year: String(year), court, url, html });
         }
       } catch (e) { console.error(`Fetch error:`, e); }
