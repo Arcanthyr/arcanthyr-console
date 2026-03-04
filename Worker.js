@@ -1,13 +1,14 @@
 /* =============================================================
-   ARCANTHYR — Cloudflare Worker  v6
-   CHANGES FROM v5:
-     - case_name extracted by Llama in summarizeCase() — regex removed
-     - handleSearchCases: pagination (offset/limit), year/year_range filter,
-       returns { total, limit, offset, cases[] } instead of bare array
-     - fetchCaseContent: case_name extraction removed (Llama owns this now)
-     - runDailySync / runYearBackfill: use Llama-extracted case_name
+   ARCANTHYR — Cloudflare Worker  v7
+   CHANGES FROM v6:
+     - raw_text column: full scraped text now stored permanently in D1
+       so summaries can be regenerated without re-scraping
+     - fetch-page proxy endpoint: routes AustLII requests through
+       Cloudflare edge IPs, allowing VPS scraper to bypass IP block
+     - saveCaseToDb: saves raw_text alongside extracted fields
+     - processCaseUpload: passes raw text through to DB
    ============================================================= */
-console.log('Worker loaded successfully');
+console.log('Worker v7 loaded successfully');
 
 const _ratemap = new Map();
 
@@ -265,8 +266,8 @@ async function saveCaseToDb(env, caseData, summary) {
 
   await env.DB.prepare(`
     INSERT OR REPLACE INTO cases 
-    (id, citation, court, case_date, case_name, url, facts, issues, holding, principles_extracted, processed_date, summary_quality_score)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (id, citation, court, case_date, case_name, url, raw_text, facts, issues, holding, principles_extracted, processed_date, summary_quality_score)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     caseData.citation,
@@ -274,6 +275,7 @@ async function saveCaseToDb(env, caseData, summary) {
     `${(caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1]}-01-01`,
     caseData.case_name,
     caseData.url || "",
+    caseData.full_text || "",
     summary.facts,
     summary.issues,
     summary.holding,
@@ -693,6 +695,28 @@ async function handleUploadCase(body, env) {
 }
 
 /* =============================================================
+   FETCH-PAGE PROXY
+   Routes AustLII requests through Cloudflare edge IPs.
+   Used by VPS scraper when its IP is blocked by AustLII.
+   Only allows requests to austlii.edu.au for safety.
+   ============================================================= */
+async function handleFetchPage(body) {
+  const { url } = body;
+  if (!url || !url.includes('austlii.edu.au')) {
+    throw new Error('Invalid or disallowed URL — only austlii.edu.au is permitted');
+  }
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'en-AU,en;q=0.9',
+    }
+  });
+  const html = await response.text();
+  return { html, status: response.status };
+}
+
+/* =============================================================
    MAIN FETCH HANDLER
    ============================================================= */
 export default {
@@ -765,6 +789,7 @@ export default {
         else if (action === "trigger-sync" && request.method === "POST") result = await runDailySync(env);
         else if (action === "backfill-year" && request.method === "POST") result = await runYearBackfill(env, body.year || new Date().getFullYear() - 1);
         else if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
+        else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });
       } catch (err) { return json({ error: err.message }, 500); }
