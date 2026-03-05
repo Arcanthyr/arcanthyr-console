@@ -209,6 +209,30 @@ async function summarizeCase(env, caseData) {
   const PASS2_END = 28000;       // reasoning section end
 
   // ── Shared prompt fragments ───────────────────────────────────────────────
+
+  // Jurisdiction context injected into every prompt.
+  // court is mapped to a human-readable label and jurisdiction suffix.
+  const courtJurisdiction = {
+    supreme: "Tasmanian Supreme Court",
+    cca: "Tasmanian Court of Criminal Appeal",
+    fullcourt: "Tasmanian Full Court",
+    magistrates: "Tasmanian Magistrates Court",
+  };
+  const courtLabel = courtJurisdiction[caseData.court] || "Tasmanian court";
+
+  // Fix 2: jurisdiction context block — injected at top of every prompt
+  const JURISDICTION_CONTEXT = `JURISDICTION: This judgment is from the ${courtLabel}. Primary jurisdiction: Tasmania (Tas).
+Tasmanian Acts are cited with suffix (Tas). Commonwealth Acts use (Cth). Other states use their abbreviation.`;
+
+  // Fix 1: verbatim legislation rule — injected into every prompt
+  const LEGISLATION_RULE = `LEGISLATION EXTRACTION RULES — critical:
+- Extract Act names and section numbers EXACTLY as they appear in the case text.
+- Do NOT recall, guess, or "correct" legislation names from your training knowledge.
+- If the text says "Evidence Act 2001 (Tas)" write that exactly — not "Evidence Act 2000" or any variant.
+- Always include the jurisdiction suffix in parentheses: (Tas), (Cth), (Vic), (NSW) etc.
+- If the text omits the jurisdiction suffix, append (Tas) for Tasmanian courts or (Cth) for Commonwealth Acts.
+- If you are not certain of the exact name as it appears in the text, omit it rather than guessing.`;
+
   const PRINCIPLES_SPEC = `
 PRINCIPLES — extract per issue: 1 primary + up to 2 supporting (only if genuinely distinct).
 Maximum 8 principles total across the whole judgment.
@@ -220,36 +244,40 @@ It must NOT be a label, heading, sentencing factor name, procedural outcome, or 
 BAD: "General deterrence" — label only, not a principle.
 BAD: "The appeal is dismissed" — outcome, not a principle.
 GOOD: "IF an offender commits a violent offence in a domestic or trust relationship, THEN general deterrence is a primary sentencing consideration and may warrant actual imprisonment even for a first offender."
-GOOD: "IF weed eradication works are necessary and intrinsic to a development AND render the land suitable for construction, THEN they constitute substantial commencement of a development permit under s 53(5) of the Land Use Planning and Approvals Act 1993."
+GOOD: "IF weed eradication works are necessary and intrinsic to a development AND render the land suitable for construction, THEN they constitute substantial commencement of a development permit under s 53(5) of the Land Use Planning and Approvals Act 1993 (Tas)."
 
 Each principle object:
 {
   "principle": "IF/WHEN ... THEN ... (complete proposition, 1-2 sentences)",
   "type": "ratio" | "obiter" | "procedural",
   "source_mode": "stated" | "adopted_from_authority" | "implicit_applied",
-  "statute_refs": ["Act (Jurisdiction) s.X"],
+  "statute_refs": ["Act (Jurisdiction) s.X — verbatim from text"],
   "keywords": ["topic1", "topic2", "topic3"]
 }
 Mark source_mode "implicit_applied" if the court applied but did not explicitly state the rule.`;
 
   // ── Single-pass prompt (short judgments) ─────────────────────────────────
-  const singlePassPrompt = `You are extracting verified legal information from an Australian court judgment for a practitioner database.
+  const singlePassPrompt = `You are extracting verified legal information from a Tasmanian court judgment for a practitioner database.
+${JURISDICTION_CONTEXT}
 Do not guess or invent rules. If something is not clearly present in the text, use null.
 Output ONLY valid JSON. No markdown fences. No commentary.
+
+${LEGISLATION_RULE}
 
 Extract these fields:
 - case_name: from the heading or opening lines. Patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown". Fallback to citation.
 - facts: factual background (3-4 concrete sentences: parties, charges or dispute, key events and outcome at first instance if appeal).
 - issues: array of 1-5 legal questions the court answered (each a short question string).
 - holdings: array matching issues order — the court's direct answer to each issue (1 sentence each).
-- legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
+- legislation: array of strings — Acts and sections materially relied on, extracted verbatim from the text. E.g. ["Sentencing Act 1997 (Tas) s 11", "Criminal Code Act 1924 (Tas) s 389"].
 - key_authorities: cases cited and how treated. Array of objects: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
 ${PRINCIPLES_SPEC}
 
 Output JSON with keys: case_name, facts, issues, holdings, principles, legislation, key_authorities`;
 
   // ── Pass 1 prompt (long judgments — metadata/facts/issues) ───────────────
-  const pass1Prompt = `You are extracting metadata and facts from the opening section of an Australian court judgment.
+  const pass1Prompt = `You are extracting metadata and facts from the opening section of a Tasmanian court judgment.
+${JURISDICTION_CONTEXT}
 Output ONLY valid JSON. No markdown fences. No commentary.
 
 Extract:
@@ -260,14 +288,17 @@ Extract:
 Output JSON with keys: case_name, facts, issues`;
 
   // ── Pass 2 prompt (long judgments — reasoning section) ───────────────────
-  const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of an Australian court judgment.
+  const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of a Tasmanian court judgment.
+${JURISDICTION_CONTEXT}
 Output ONLY valid JSON. No markdown fences. No commentary.
 
 The issues already identified for this case are provided below. Extract holdings and principles keyed to those issues.
 
+${LEGISLATION_RULE}
+
 Extract:
 - holdings: array matching the issues order — the court's direct answer to each issue (1 sentence each).
-- legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
+- legislation: array of strings — Acts and sections materially relied on, extracted verbatim from the text. E.g. ["Sentencing Act 1997 (Tas) s 11", "Criminal Code Act 1924 (Tas) s 389"].
 - key_authorities: cases cited and how treated. Array of: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
 ${PRINCIPLES_SPEC}
 
@@ -289,7 +320,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       const summary = JSON.parse(cleaned);
       if (!summary.facts || !summary.holdings) throw new Error("Incomplete AI response");
 
-      return _buildSummary(summary, null, caseData.citation);
+      return _buildSummary(summary, null, caseData.citation, caseData.court);
 
     } else {
       // ── Two-pass ───────────────────────────────────────────────────────
@@ -308,7 +339,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       console.log(`Pass 2 response: ${raw2?.length || 0} chars`);
       const pass2 = JSON.parse(raw2.replace(/```json|```/g, "").trim());
 
-      return _buildSummary(pass1, pass2, caseData.citation);
+      return _buildSummary(pass1, pass2, caseData.citation, caseData.court);
     }
 
   } catch (error) {
@@ -329,7 +360,29 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
   }
 }
 
-function _buildSummary(primary, secondary, citation) {
+// Fix 3: sanitise legislation refs extracted by Llama.
+// Normalises jurisdiction suffixes, deduplicates, and applies Cth heuristics.
+// defaultJurisdiction is derived from the court context so we never guess.
+function _sanitiseLegislation(refs, defaultJurisdiction = "Tas") {
+  if (!Array.isArray(refs)) return [];
+  const KNOWN_SUFFIXES = /\((Tas|Cth|Vic|NSW|Qld|SA|WA|NT|ACT|NZ|UK)\)/i;
+  const CTH_PATTERNS = /\b(Migration|Corporations|Income Tax|Trade Practices|Competition|Consumer Law|Bankruptcy|Family Law|Federal Court|High Court|Customs|Crimes Act 1914|Criminal Code Act 1995)\b/i;
+
+  return refs
+    .filter(r => typeof r === "string" && r.trim().length > 3)
+    .map(r => {
+      r = r.trim();
+      if (!KNOWN_SUFFIXES.test(r)) {
+        const isCth = CTH_PATTERNS.test(r);
+        r = r + ` (${isCth ? "Cth" : defaultJurisdiction})`;
+      }
+      return r;
+    })
+    // Deduplicate — case-insensitive
+    .filter((r, i, arr) => arr.findIndex(x => x.toLowerCase() === r.toLowerCase()) === i);
+}
+
+function _buildSummary(primary, secondary, citation, court = "supreme") {
   // Merge single-pass or two-pass results into a normalised summary object.
   // primary = single-pass result OR pass1 result
   // secondary = null (single-pass) OR pass2 result
@@ -359,20 +412,29 @@ function _buildSummary(primary, secondary, citation) {
   const holdingStr = holdings.length > 0 ? holdings.join(" ") : asString(src.holding, "Not extracted");
 
   const principles = Array.isArray(src.principles) ? src.principles : [];
-  const legislation = Array.isArray(src.legislation) ? src.legislation : [];
   const keyAuthorities = Array.isArray(src.key_authorities) ? src.key_authorities : [];
 
+  // Fix 3: sanitise legislation — normalise jurisdiction suffixes, deduplicate.
+  // Also sanitise statute_refs inside each principle.
+  const courtToJurisdiction = { supreme: "Tas", cca: "Tas", fullcourt: "Tas", magistrates: "Tas" };
+  const defaultJurisdiction = courtToJurisdiction[court] || "Tas";
+  const legislation = _sanitiseLegislation(src.legislation || [], defaultJurisdiction);
+  const sanitisedPrinciples = principles.map(p => ({
+    ...p,
+    statute_refs: _sanitiseLegislation(p.statute_refs || [], defaultJurisdiction),
+  }));
+
   // Score: more fields populated = higher score
-  const score = [src.facts, holdingStr, issues.length > 0, principles.length > 0, legislation.length > 0]
+  const score = [src.facts, holdingStr, issues.length > 0, sanitisedPrinciples.length > 0, legislation.length > 0]
     .filter(Boolean).length / 5;
 
   return {
     case_name: (asString(src.case_name, "")).trim() || null,
     facts: asString(src.facts),
     issues: issues.map(i => asString(i)).join("; ") || "Not extracted",
-    holdings: holdings.map(h => asString(h)),  // array — stored in new holdings column
-    holding: holdingStr,                        // string — backward compat with existing holding column
-    principles: principles,
+    holdings: holdings.map(h => asString(h)),
+    holding: holdingStr,
+    principles: sanitisedPrinciples,
     legislation: legislation,
     key_authorities: keyAuthorities,
     summary_quality_score: Math.round(score * 10) / 10,
