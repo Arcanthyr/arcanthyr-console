@@ -926,7 +926,7 @@ async function handleUploadLegislation(body, env) {
     });
   }
 
-  // Store legislation record
+  // Store legislation record (raw_text omitted — full content is in legislation_sections)
   await env.DB.prepare(`
     INSERT INTO legislation (id, title, jurisdiction, year, current_as_at, summary,
       defined_terms, offence_elements, source_url, raw_text, processed_date)
@@ -935,7 +935,7 @@ async function handleUploadLegislation(body, env) {
     id, title, jurisdiction, year ? parseInt(year) : null,
     new Date().toISOString().split('T')[0],
     null, '[]', '[]',
-    source_url || '', doc_text,
+    source_url || '', '',
     new Date().toISOString()
   ).run();
 
@@ -995,7 +995,7 @@ async function handleUploadSecondarySource(body, env) {
   const caseCitationPattern = /[(d{4})]s+[A-Z]{2,8}s+d+/g;
   const actPattern = /[A-Z][a-zA-Zs]+Acts+d{4}/g;
   const relatedCases = [...new Set([...doc_text.matchAll(caseCitationPattern)].map(m => m[0].trim()))].slice(0, 20);
-  const relatedActs  = [...new Set([...doc_text.matchAll(actPattern)].map(m => m[0].trim()))].slice(0, 20);
+  const relatedActs = [...new Set([...doc_text.matchAll(actPattern)].map(m => m[0].trim()))].slice(0, 20);
 
   await env.DB.prepare(`
     INSERT INTO secondary_sources
@@ -1073,13 +1073,13 @@ async function handleLibraryList(env) {
   ]);
 
   return {
-    cases:       cases.results       || [],
+    cases: cases.results || [],
     legislation: legislation.results || [],
-    secondary:   sources.results     || [],
+    secondary: sources.results || [],
     totals: {
-      cases:       (cases.results       || []).length,
+      cases: (cases.results || []).length,
       legislation: (legislation.results || []).length,
-      secondary:   (sources.results     || []).length,
+      secondary: (sources.results || []).length,
     }
   };
 }
