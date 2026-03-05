@@ -869,15 +869,24 @@ async function handleUploadLegislation(body, env) {
   let match;
   const seenSections = new Set();
 
-  // Strip page noise: form feeds, page numbers, repeated Act title headers
-  // These appear as "\x0cEvidence Act 2001 \nAct No. 76 of 2001" between sections
+  // Strip page noise from pdfminer output.
+  // Pages contain headers like:
+  //   "Evidence Act 2001 \nAct No. 76 of 2001 \nPart 1 – Witnesses \ns. 38 \n"
+  // and footers with lone page numbers. Strip all of these.
   const cleanText = doc_text
     .replace(/\x0c/g, '\n')
-    .replace(/^[A-Z][^\n]{5,50}\nAct No\. \d+ of \d{4}\n/gm, '')
-    .replace(/^\s*\d+\s*$/gm, '');  // lone page numbers
+    // Act title + Act No line (may have trailing spaces)
+    .replace(/^.{3,60}\nAct No\.\s+\d+\s+of\s+\d{4}\s*\n/gm, '')
+    // Part/Division/Chapter header lines e.g. "Part 1 – Witnesses"
+    .replace(/^(Part|Division|Chapter)\s+\d+[A-Z]?\s*[–-].+$/gm, '')
+    // Section cross-reference lines e.g. "s. 38" or "s.  38" alone on a line
+    .replace(/^s\.\s+\d+[A-Z]?\s*$/gm, '')
+    // Lone page numbers
+    .replace(/^\s*\d{1,4}\s*$/gm, '')
+    // Collapse 3+ blank lines to 2
+    .replace(/\n{3,}/g, '\n\n');
 
-  // Skip the table of contents — find the first real section body text
-  // by looking for "1.  " followed by content (not just a TOC entry)
+  // Skip the table of contents — find where actual section bodies start
   const contentStart = cleanText.search(/\n1\.\s{2,}[A-Z]/);
   const searchText = contentStart > 0 ? cleanText.substring(contentStart) : cleanText;
 
@@ -885,24 +894,25 @@ async function handleUploadLegislation(body, env) {
     const sectionNum = match[1].trim();
     const headingOrText = match[2].trim();
 
-    // Skip if heading looks like a page artifact or Part/Division label
+    // Skip Part/Division/Chapter/Schedule labels
     if (/^(Part|Division|Chapter|Schedule)\s/i.test(headingOrText)) continue;
-    // Skip very short "headings" that are likely mid-section references
+    // Skip very short fragments
     if (headingOrText.length < 3) continue;
-    // Skip headings that don't start with a capital — likely cross-reference fragments
+    // Skip headings that don't start with a capital — mid-section reference fragments
     if (!/^[A-Z"(]/.test(headingOrText)) continue;
-    // Skip if heading looks like just a section number (TOC artifact: "2A.")
+    // Skip bare section number artifacts from TOC (e.g. "2A.")
     if (/^\d+[A-Z]?\.$/.test(headingOrText)) continue;
 
     if (seenSections.has(sectionNum)) continue;
     seenSections.add(sectionNum);
 
-    // Grab text from this section to the next (up to 3000 chars)
+    // Grab text from this section to the next — no hard char limit,
+    // but cap at 8000 chars to keep D1 rows reasonable
     const sectionStart = match.index;
     const nextMatchPos = sectionPattern.lastIndex;
-    const remaining = cleanText.substring(nextMatchPos);
+    const remaining = searchText.substring(nextMatchPos);
     const nextSection = remaining.search(/^\d+[A-Z]?\.?\s{2,}/m);
-    const sectionEnd = nextMatchPos + (nextSection > 0 ? nextSection : Math.min(remaining.length, 3000));
+    const sectionEnd = nextMatchPos + (nextSection > 0 ? nextSection : Math.min(remaining.length, 8000));
     const sectionText = searchText.substring(sectionStart, sectionEnd)
       .replace(/\s+/g, ' ').trim();
 
@@ -910,8 +920,8 @@ async function handleUploadLegislation(body, env) {
       id: `${id}-s${sectionNum.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
       legislation_id: id,
       section_number: sectionNum,
-      heading: headingOrText.length < 100 ? headingOrText : headingOrText.substring(0, 100),
-      text: sectionText.substring(0, 3000),
+      heading: headingOrText.length < 120 ? headingOrText : headingOrText.substring(0, 120),
+      text: sectionText.substring(0, 8000),
       part: null,
     });
   }
