@@ -17,6 +17,7 @@
       border-bottom: 1px solid var(--border);
       padding-bottom: 0;
     }
+
     .page-tab {
       background: none;
       border: none;
@@ -31,13 +32,23 @@
       transition: all var(--t);
       margin-bottom: -1px;
     }
-    .page-tab:hover { color: var(--text); }
+
+    .page-tab:hover {
+      color: var(--text);
+    }
+
     .page-tab.active {
       border-bottom-color: var(--gold);
       color: var(--text);
     }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
 
     /* ── Dropzones ─────────────────────────────────────────────── */
     .case-dropzone {
@@ -50,15 +61,31 @@
       margin-bottom: 16px;
       background: var(--bg);
     }
+
     .case-dropzone.dragover {
       border-color: var(--gold);
       background: var(--gold-dim);
     }
-    .dropzone-text { color: var(--text-mid); font-size: 0.875rem; margin-bottom: 6px; }
-    .dropzone-hint { color: var(--text-dim); font-size: 0.75rem; opacity: 0.7; }
+
+    .dropzone-text {
+      color: var(--text-mid);
+      font-size: 0.875rem;
+      margin-bottom: 6px;
+    }
+
+    .dropzone-hint {
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      opacity: 0.7;
+    }
 
     /* ── Library table ─────────────────────────────────────────── */
-    .library-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .library-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
     .library-table th {
       text-align: left;
       color: var(--text-dim);
@@ -68,6 +95,7 @@
       padding: 8px 12px;
       border-bottom: 1px solid var(--border);
     }
+
     .library-table td {
       padding: 10px 12px;
       border-bottom: 1px solid var(--border);
@@ -75,8 +103,16 @@
       color: var(--text-mid);
       vertical-align: top;
     }
-    .library-table tr:hover td { background: var(--surface-raise); }
-    .library-table .doc-title { color: var(--text); font-size: 0.85rem; }
+
+    .library-table tr:hover td {
+      background: var(--surface-raise);
+    }
+
+    .library-table .doc-title {
+      color: var(--text);
+      font-size: 0.85rem;
+    }
+
     .doc-type-badge {
       display: inline-block;
       padding: 2px 8px;
@@ -85,9 +121,22 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
-    .badge-case       { background: var(--blue-dim);  color: var(--blue); }
-    .badge-legislation{ background: var(--green-dim); color: var(--green); }
-    .badge-secondary  { background: var(--amber-dim); color: var(--amber); }
+
+    .badge-case {
+      background: var(--blue-dim);
+      color: var(--blue);
+    }
+
+    .badge-legislation {
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .badge-secondary {
+      background: var(--amber-dim);
+      color: var(--amber);
+    }
+
     .delete-btn {
       background: none;
       border: 1px solid var(--border);
@@ -98,11 +147,22 @@
       padding: 3px 8px;
       transition: all var(--t);
     }
-    .delete-btn:hover { border-color: #c0392b; color: #c0392b; }
+
+    .delete-btn:hover {
+      border-color: #c0392b;
+      color: #c0392b;
+    }
 
     /* ── Upload toggle rows ────────────────────────────────────── */
-    .upload-panel { margin-top: 16px; }
-    .char-count { color: var(--text-dim); font-size: 0.72rem; margin-top: 4px; }
+    .upload-panel {
+      margin-top: 16px;
+    }
+
+    .char-count {
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      margin-top: 4px;
+    }
 
     /* ── Section lookup result ─────────────────────────────────── */
     .section-result {
@@ -115,21 +175,28 @@
       line-height: 1.8;
       white-space: pre-wrap;
     }
-    .section-meta { color: var(--text-dim); font-size: 0.72rem; margin-bottom: 8px; }
+
+    .section-meta {
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      margin-bottom: 8px;
+    }
   </style>
 </head>
 
 <body>
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
-      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
         <defs>
           <filter id="tex-sm">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
-        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4" opacity="0.7" />
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
+          opacity="0.7" />
         <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
@@ -275,7 +342,8 @@
           <h2 class="h2">Upload Legislation</h2>
           <button class="btn ghost small" id="toggleLegislationUploadBtn">Toggle Form</button>
         </div>
-        <p class="sub">Upload an Act. Sections are parsed and stored for direct lookup. No AI extraction on upload — analysis happens at query time.</p>
+        <p class="sub">Upload an Act. Sections are parsed and stored for direct lookup. No AI extraction on upload —
+          analysis happens at query time.</p>
 
         <div id="uploadLegislationForm" style="display:none;" class="upload-panel">
           <div class="case-dropzone" id="legDropzone">
@@ -304,7 +372,8 @@
           <input type="text" id="legYear" class="search-input" placeholder="1924" style="max-width:120px;" />
 
           <label class="label" style="margin-top:12px;">Source URL (optional)</label>
-          <input type="text" id="legSourceUrl" class="search-input" placeholder="https://www.legislation.tas.gov.au/..." />
+          <input type="text" id="legSourceUrl" class="search-input"
+            placeholder="https://www.legislation.tas.gov.au/..." />
 
           <label class="label" style="margin-top:12px;">Legislation Text</label>
           <textarea id="legText" class="textarea" style="min-height:200px;"
@@ -324,7 +393,8 @@
         <h2 class="h2" style="margin-bottom:12px;">Section Lookup</h2>
         <p class="sub">Look up a specific provision from an uploaded Act.</p>
         <div class="row" style="margin-top:16px;gap:8px;flex-wrap:wrap;">
-          <input type="text" id="sectionLookupTitle" class="search-input" placeholder="Criminal Code Act 1924" style="flex:2;min-width:200px;" />
+          <input type="text" id="sectionLookupTitle" class="search-input" placeholder="Criminal Code Act 1924"
+            style="flex:2;min-width:200px;" />
           <select id="sectionLookupJurisdiction" class="search-input" style="flex:0 0 140px;">
             <option value="Tas">Tas</option>
             <option value="Cth">Cth</option>
@@ -336,7 +406,8 @@
             <option value="NT">NT</option>
             <option value="ACT">ACT</option>
           </select>
-          <input type="text" id="sectionLookupNumber" class="search-input" placeholder="s 389" style="flex:0 0 100px;" />
+          <input type="text" id="sectionLookupNumber" class="search-input" placeholder="s 389"
+            style="flex:0 0 100px;" />
           <button id="sectionLookupBtn" class="btn">Look Up</button>
         </div>
         <div id="sectionLookupResult" style="display:none;"></div>
@@ -354,7 +425,8 @@
           <h2 class="h2">Upload Secondary Source</h2>
           <button class="btn ghost small" id="toggleSecondaryUploadBtn">Toggle Form</button>
         </div>
-        <p class="sub">Notes, journal articles, commentary, textbooks. Stored as reference context — no structured extraction. Models use this material during analysis and queries.</p>
+        <p class="sub">Notes, journal articles, commentary, textbooks. Stored as reference context — no structured
+          extraction. Models use this material during analysis and queries.</p>
 
         <div id="uploadSecondaryForm" style="display:none;" class="upload-panel">
           <div class="case-dropzone" id="secDropzone">
@@ -364,7 +436,8 @@
           <input type="file" id="secFileInput" accept=".pdf,.txt" style="display:none;" />
 
           <label class="label" style="margin-top:16px;">Title</label>
-          <input type="text" id="secTitle" class="search-input" placeholder="e.g. Sentencing in Tasmania — Annotated Guide" />
+          <input type="text" id="secTitle" class="search-input"
+            placeholder="e.g. Sentencing in Tasmania — Annotated Guide" />
 
           <label class="label" style="margin-top:12px;">Type</label>
           <select id="secSourceType" class="search-input">
@@ -401,7 +474,9 @@
       <section class="card">
         <h2 class="h2" style="margin-bottom:4px;">Indexed Sources</h2>
         <p class="sub" style="margin-bottom:16px;">All secondary sources currently in the database.</p>
-        <div id="secondaryList"><p class="sub">Loading...</p></div>
+        <div id="secondaryList">
+          <p class="sub">Loading...</p>
+        </div>
       </section>
 
     </div>
@@ -428,7 +503,9 @@
         </div>
 
         <div id="libraryStats" style="margin-top:12px;color:var(--text-dim);font-size:0.78rem;"></div>
-        <div id="libraryContent" style="margin-top:16px;"><p class="sub">Loading...</p></div>
+        <div id="libraryContent" style="margin-top:16px;">
+          <p class="sub">Loading...</p>
+        </div>
       </section>
     </div>
 
@@ -462,7 +539,7 @@
       });
     }
     toggleForm('toggleLegislationUploadBtn', 'uploadLegislationForm');
-    toggleForm('toggleSecondaryUploadBtn',   'uploadSecondaryForm');
+    toggleForm('toggleSecondaryUploadBtn', 'uploadSecondaryForm');
     document.getElementById('cancelLegislationBtn').addEventListener('click', () => {
       document.getElementById('uploadLegislationForm').style.display = 'none';
     });
@@ -496,10 +573,10 @@
 
     /* ── Generic dropzone setup ────────────────────────────────── */
     function setupDropzone(dropzoneId, fileInputId, textareaId, counterId) {
-      const dz  = document.getElementById(dropzoneId);
-      const fi  = document.getElementById(fileInputId);
-      const ta  = document.getElementById(textareaId);
-      const ct  = counterId ? document.getElementById(counterId) : null;
+      const dz = document.getElementById(dropzoneId);
+      const fi = document.getElementById(fileInputId);
+      const ta = document.getElementById(textareaId);
+      const ct = counterId ? document.getElementById(counterId) : null;
 
       dz.addEventListener('click', () => fi.click());
       dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
@@ -531,17 +608,60 @@
       }
     }
 
-    setupDropzone('legDropzone', 'legFileInput', 'legText', 'legCharCount');
+    // Legislation dropzone uses server-side PDF extraction via Worker proxy → nexus/pdfminer
+    // because browser PDF.js collapses whitespace and breaks the section parser.
+    const legDz = document.getElementById('legDropzone');
+    const legFi = document.getElementById('legFileInput');
+    const legTa = document.getElementById('legText');
+    const legCt = document.getElementById('legCharCount');
+
+    async function loadLegislationFile(file) {
+      legDz.querySelector('.dropzone-text').textContent = `⏳ Reading ${file.name}...`;
+      try {
+        let text = '';
+        if (file.type === 'application/pdf') {
+          legDz.querySelector('.dropzone-text').textContent = `⏳ Extracting ${file.name} via server (may take 10-20s)...`;
+          const ab = await file.arrayBuffer();
+          const bytes = new Uint8Array(ab);
+          let binary = '';
+          for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+          const b64 = btoa(binary);
+          const r = await fetch('/api/legal/extract-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pdf_base64: b64 })
+          });
+          if (!r.ok) throw new Error(`Server error: ${r.status}`);
+          const data = await r.json();
+          if (data.error) throw new Error(data.error);
+          text = (data.result || data).text;
+        } else {
+          text = await file.text();
+        }
+        legTa.value = text;
+        legCt.textContent = text.length.toLocaleString() + ' characters';
+        legDz.querySelector('.dropzone-text').textContent = `✓ Loaded: ${file.name} (${text.length.toLocaleString()} chars)`;
+      } catch (err) {
+        legDz.querySelector('.dropzone-text').textContent = `✗ Error: ${err.message}`;
+      }
+    }
+
+    legDz.addEventListener('click', () => legFi.click());
+    legDz.addEventListener('dragover', e => { e.preventDefault(); legDz.classList.add('dragover'); });
+    legDz.addEventListener('dragleave', () => legDz.classList.remove('dragover'));
+    legDz.addEventListener('drop', async e => { e.preventDefault(); legDz.classList.remove('dragover'); if (e.dataTransfer.files[0]) await loadLegislationFile(e.dataTransfer.files[0]); });
+    legFi.addEventListener('change', async () => { if (legFi.files[0]) await loadLegislationFile(legFi.files[0]); });
+
     setupDropzone('secDropzone', 'secFileInput', 'secText', 'secCharCount');
 
     /* ── Upload legislation ────────────────────────────────────── */
     document.getElementById('uploadLegislationBtn').addEventListener('click', async () => {
-      const title  = document.getElementById('legTitle').value.trim();
-      const jur    = document.getElementById('legJurisdiction').value;
-      const year   = document.getElementById('legYear').value.trim();
-      const url    = document.getElementById('legSourceUrl').value.trim();
-      const text   = document.getElementById('legText').value.trim();
-      const out    = document.getElementById('legUploadOutput');
+      const title = document.getElementById('legTitle').value.trim();
+      const jur = document.getElementById('legJurisdiction').value;
+      const year = document.getElementById('legYear').value.trim();
+      const url = document.getElementById('legSourceUrl').value.trim();
+      const text = document.getElementById('legText').value.trim();
+      const out = document.getElementById('legUploadOutput');
 
       if (!title || !text) {
         out.style.display = 'block';
@@ -574,13 +694,13 @@
 
     /* ── Upload secondary source ───────────────────────────────── */
     document.getElementById('uploadSecondaryBtn').addEventListener('click', async () => {
-      const title   = document.getElementById('secTitle').value.trim();
-      const type    = document.getElementById('secSourceType').value;
-      const author  = document.getElementById('secAuthor').value.trim();
-      const date    = document.getElementById('secDatePublished').value.trim();
+      const title = document.getElementById('secTitle').value.trim();
+      const type = document.getElementById('secSourceType').value;
+      const author = document.getElementById('secAuthor').value.trim();
+      const date = document.getElementById('secDatePublished').value.trim();
       const tagsRaw = document.getElementById('secTags').value.trim();
-      const text    = document.getElementById('secText').value.trim();
-      const out     = document.getElementById('secUploadOutput');
+      const text = document.getElementById('secText').value.trim();
+      const out = document.getElementById('secUploadOutput');
 
       if (!title || !text) {
         out.style.display = 'block';
@@ -615,10 +735,10 @@
 
     /* ── Section lookup ────────────────────────────────────────── */
     document.getElementById('sectionLookupBtn').addEventListener('click', async () => {
-      const title   = document.getElementById('sectionLookupTitle').value.trim();
-      const jur     = document.getElementById('sectionLookupJurisdiction').value;
+      const title = document.getElementById('sectionLookupTitle').value.trim();
+      const jur = document.getElementById('sectionLookupJurisdiction').value;
       const section = document.getElementById('sectionLookupNumber').value.trim().replace(/^s\s*/i, '');
-      const out     = document.getElementById('sectionLookupResult');
+      const out = document.getElementById('sectionLookupResult');
 
       if (!title || !section) return;
       out.style.display = 'block';
@@ -684,7 +804,7 @@
       }
 
       const fmt = d => d ? new Date(d).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
-      const kb  = b => b ? Math.round(b / 1024) + ' KB' : '—';
+      const kb = b => b ? Math.round(b / 1024) + ' KB' : '—';
       const badgeClass = t => ({ case: 'badge-case', legislation: 'badge-legislation', secondary: 'badge-secondary' }[t] || '');
       const badgeLabel = t => ({ case: 'Case', legislation: 'Legislation', secondary: 'Secondary' }[t] || t);
 
@@ -735,7 +855,7 @@
 
     async function deleteDocument(btn) {
       const docType = btn.dataset.type;
-      const id      = btn.dataset.id;
+      const id = btn.dataset.id;
       if (!confirm(`Delete "${id}"?\n\nThis cannot be undone.`)) return;
       btn.textContent = '...';
       try {
@@ -765,7 +885,7 @@
           <div style="padding:12px 0;border-bottom:1px solid var(--border);">
             <div style="color:var(--text);font-size:0.85rem;">${s.title}</div>
             <div style="color:var(--text-dim);font-size:0.75rem;margin-top:4px;">
-              ${s.court || 'other'} · ${s.raw_size ? Math.round(s.raw_size/1024) + ' KB' : '—'} · added ${s.date ? new Date(s.date).toLocaleDateString('en-AU') : '—'}
+              ${s.court || 'other'} · ${s.raw_size ? Math.round(s.raw_size / 1024) + ' KB' : '—'} · added ${s.date ? new Date(s.date).toLocaleDateString('en-AU') : '—'}
             </div>
           </div>`).join('');
       } catch (err) {
@@ -774,4 +894,5 @@
     }
   </script>
 </body>
+
 </html>

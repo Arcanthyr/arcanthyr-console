@@ -820,6 +820,28 @@ async function handleUploadCase(body, env) {
 
 
 /* =============================================================
+   PDF EXTRACTION PROXY
+   Proxies base64 PDF to nexus/extract-pdf endpoint for
+   server-side pdfminer extraction. Keeps nexus key off browser.
+   ============================================================= */
+async function handleExtractPdf(body, env) {
+  const { pdf_base64 } = body;
+  if (!pdf_base64) throw new Error("Missing pdf_base64 field");
+  const r = await fetch("https://nexus.arcanthyr.com/extract-pdf", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Nexus-Key": env.NEXUS_SECRET_KEY,
+    },
+    body: JSON.stringify({ pdf_base64 }),
+  });
+  if (!r.ok) throw new Error(`Nexus extraction failed: ${r.status}`);
+  const data = await r.json();
+  if (data.error) throw new Error(data.error);
+  return { text: data.text, chars: data.chars };
+}
+
+/* =============================================================
    LEGISLATION UPLOAD
    Parses sections deterministically, stores in legislation +
    legislation_sections tables. No Llama extraction on upload —
@@ -963,7 +985,7 @@ async function handleUploadSecondarySource(body, env) {
   const caseCitationPattern = /[(d{4})]s+[A-Z]{2,8}s+d+/g;
   const actPattern = /[A-Z][a-zA-Zs]+Acts+d{4}/g;
   const relatedCases = [...new Set([...doc_text.matchAll(caseCitationPattern)].map(m => m[0].trim()))].slice(0, 20);
-  const relatedActs = [...new Set([...doc_text.matchAll(actPattern)].map(m => m[0].trim()))].slice(0, 20);
+  const relatedActs  = [...new Set([...doc_text.matchAll(actPattern)].map(m => m[0].trim()))].slice(0, 20);
 
   await env.DB.prepare(`
     INSERT INTO secondary_sources
@@ -1041,13 +1063,13 @@ async function handleLibraryList(env) {
   ]);
 
   return {
-    cases: cases.results || [],
+    cases:       cases.results       || [],
     legislation: legislation.results || [],
-    secondary: sources.results || [],
+    secondary:   sources.results     || [],
     totals: {
-      cases: (cases.results || []).length,
+      cases:       (cases.results       || []).length,
       legislation: (legislation.results || []).length,
-      secondary: (sources.results || []).length,
+      secondary:   (sources.results     || []).length,
     }
   };
 }
@@ -1181,6 +1203,7 @@ export default {
         else if (action === "trigger-sync" && request.method === "POST") result = await runDailySync(env);
         else if (action === "backfill-year" && request.method === "POST") result = await runYearBackfill(env, body.year || new Date().getFullYear() - 1);
         else if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
+        else if (action === "extract-pdf" && request.method === "POST") result = await handleExtractPdf(body, env);
         else if (action === "upload-legislation" && request.method === "POST") result = await handleUploadLegislation(body, env);
         else if (action === "upload-secondary" && request.method === "POST") result = await handleUploadSecondarySource(body, env);
         else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
