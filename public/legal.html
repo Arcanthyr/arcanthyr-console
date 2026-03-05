@@ -6,11 +6,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Arcanthyr – Legal Research</title>
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- PDF.js for PDF extraction -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
+    /* ── Page tabs ─────────────────────────────────────────────── */
+    .page-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+    .page-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-mid);
+      cursor: pointer;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      padding: 10px 18px;
+      text-transform: uppercase;
+      transition: all var(--t);
+      margin-bottom: -1px;
+    }
+    .page-tab:hover { color: var(--text); }
+    .page-tab.active {
+      border-bottom-color: var(--gold);
+      color: var(--text);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Dropzones ─────────────────────────────────────────────── */
     .case-dropzone {
       border: 2px dashed var(--border-light);
       border-radius: var(--radius);
@@ -25,21 +54,72 @@
       border-color: var(--gold);
       background: var(--gold-dim);
     }
-    .dropzone-text {
-      color: var(--text-mid);
-      font-size: 0.875rem;
-      margin-bottom: 6px;
-    }
-    .dropzone-hint {
+    .dropzone-text { color: var(--text-mid); font-size: 0.875rem; margin-bottom: 6px; }
+    .dropzone-hint { color: var(--text-dim); font-size: 0.75rem; opacity: 0.7; }
+
+    /* ── Library table ─────────────────────────────────────────── */
+    .library-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .library-table th {
+      text-align: left;
       color: var(--text-dim);
-      font-size: 0.75rem;
-      opacity: 0.7;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
     }
+    .library-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-mid);
+      vertical-align: top;
+    }
+    .library-table tr:hover td { background: var(--surface-raise); }
+    .library-table .doc-title { color: var(--text); font-size: 0.85rem; }
+    .doc-type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-case       { background: var(--blue-dim);  color: var(--blue); }
+    .badge-legislation{ background: var(--green-dim); color: var(--green); }
+    .badge-secondary  { background: var(--amber-dim); color: var(--amber); }
+    .delete-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      transition: all var(--t);
+    }
+    .delete-btn:hover { border-color: #c0392b; color: #c0392b; }
+
+    /* ── Upload toggle rows ────────────────────────────────────── */
+    .upload-panel { margin-top: 16px; }
+    .char-count { color: var(--text-dim); font-size: 0.72rem; margin-top: 4px; }
+
+    /* ── Section lookup result ─────────────────────────────────── */
+    .section-result {
+      background: var(--surface-raise);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 12px;
+      font-size: 0.82rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+    .section-meta { color: var(--text-dim); font-size: 0.72rem; margin-bottom: 8px; }
   </style>
 </head>
 
 <body>
-
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
       <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -65,114 +145,295 @@
   <main class="wrap">
     <header class="header">
       <h1>Legal Research</h1>
-      <p class="sub">Tasmanian criminal case law database.</p>
+      <p class="sub">Tasmanian criminal law database — cases, legislation, secondary sources.</p>
     </header>
 
     <hr class="divider" />
 
-    <!-- SYNC STATUS CARD -->
+    <!-- DATABASE STATUS -->
     <section class="card">
       <div class="row space">
         <h2 class="h2">Database Status</h2>
         <button id="legalSyncBtn" class="btn ai-btn">Check New Cases</button>
       </div>
       <div id="legalSyncStatus" class="filter-summary" style="margin-top:16px;"></div>
-      <!-- Backfill removed — use austlii_scraper.py on VPS for bulk year ingestion -->
     </section>
 
-    <!-- UPLOAD CASE SECTION -->
-    <section class="card">
-      <div class="row space">
-        <h2 class="h2">Upload Historical Case</h2>
-        <button id="toggleUploadBtn" class="btn ghost small">Toggle Form</button>
-      </div>
-      <p class="sub">Paste case text from AustLII or upload a PDF for AI analysis.</p>
+    <!-- PAGE TABS -->
+    <div class="page-tabs">
+      <button class="page-tab active" data-panel="cases">Cases</button>
+      <button class="page-tab" data-panel="legislation">Legislation</button>
+      <button class="page-tab" data-panel="secondary">Secondary Sources</button>
+      <button class="page-tab" data-panel="library">Library</button>
+    </div>
 
-      <div id="uploadCaseForm" style="display:none;margin-top:16px;">
-        <div class="case-dropzone" id="caseDropzone">
-          <div class="dropzone-text">📎 Drag & drop PDF or click to browse</div>
-          <div class="dropzone-hint">Or paste case text below manually</div>
+    <!-- ══════════════════════════════════════════════════════════
+         TAB: CASES
+         ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel active" id="panel-cases">
+
+      <!-- Upload case -->
+      <section class="card">
+        <div class="row space">
+          <h2 class="h2">Upload Case</h2>
+          <button id="toggleUploadBtn" class="btn ghost small">Toggle Form</button>
         </div>
-        <input type="file" id="caseFileInput" accept=".pdf,.txt" style="display:none;" />
+        <p class="sub">Paste case text from AustLII or upload a PDF for AI extraction.</p>
 
-        <label class="label" style="margin-top:16px;">Citation (e.g. [2015] TASSC 42)</label>
-        <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
+        <div id="uploadCaseForm" style="display:none;" class="upload-panel">
+          <div class="case-dropzone" id="caseDropzone">
+            <div class="dropzone-text">📎 Drag & drop PDF or click to browse</div>
+            <div class="dropzone-hint">Or paste case text below manually</div>
+          </div>
+          <input type="file" id="caseFileInput" accept=".pdf,.txt" style="display:none;" />
 
-        <label class="label" style="margin-top:12px;">
-          Case Name
-          <span style="color:var(--text-dim);font-weight:normal;"> — hint only, AI extracts the real name</span>
-        </label>
-        <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
+          <label class="label" style="margin-top:16px;">Citation (e.g. [2015] TASSC 42)</label>
+          <input type="text" id="uploadCitation" class="search-input" placeholder="[YYYY] TASSC 123" />
 
-        <label class="label" style="margin-top:12px;">Court</label>
-        <select id="uploadCourt" class="search-input">
-          <option value="supreme">Supreme Court</option>
-          <option value="magistrates">Magistrates Court</option>
-          <option value="cca">Court of Criminal Appeal</option>
-          <option value="fullcourt">Full Court</option>
-        </select>
+          <label class="label" style="margin-top:12px;">
+            Case Name
+            <span style="color:var(--text-dim);font-weight:normal;"> — hint only, AI extracts the real name</span>
+          </label>
+          <input type="text" id="uploadCaseName" class="search-input" placeholder="R v Smith" />
 
-        <label class="label" style="margin-top:12px;">Case Text</label>
-        <textarea id="uploadCaseText" class="textarea" style="min-height:200px;"
-          placeholder="Drag PDF above or paste case text here..."></textarea>
+          <label class="label" style="margin-top:12px;">Court</label>
+          <select id="uploadCourt" class="search-input">
+            <option value="supreme">Supreme Court</option>
+            <option value="magistrates">Magistrates Court</option>
+            <option value="cca">Court of Criminal Appeal</option>
+            <option value="fullcourt">Full Court</option>
+          </select>
 
-        <div class="row" style="margin-top:12px;">
-          <button id="uploadCaseBtn" class="btn">Process & Save</button>
-          <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
+          <label class="label" style="margin-top:12px;">Case Text</label>
+          <textarea id="uploadCaseText" class="textarea" style="min-height:200px;"
+            placeholder="Drag PDF above or paste case text here..."></textarea>
+
+          <div class="row" style="margin-top:12px;">
+            <button id="uploadCaseBtn" class="btn">Process & Save</button>
+            <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
+          </div>
+          <div id="uploadOutput" class="output" style="margin-top:12px;display:none;"></div>
         </div>
-        <div id="uploadOutput" class="output" style="margin-top:12px;display:none;"></div>
-      </div>
-    </section>
+      </section>
 
-    <!-- SEARCH INTERFACE -->
-    <section class="card">
-      <div class="row space">
-        <h2 class="h2">Search Cases & Principles</h2>
-      </div>
-
-      <div class="search-row">
-        <input type="text" id="legalSearchInput" class="search-input"
-          placeholder="Search by keyword, statute, or offence…" />
-      </div>
-
-      <div class="filter-row">
-        <span class="label">View</span>
-        <div class="filter-chips">
-          <button class="chip legal-view active" data-view="cases">Cases</button>
-          <button class="chip legal-view" data-view="principles">Principles</button>
+      <!-- Search cases -->
+      <section class="card">
+        <div class="row space">
+          <h2 class="h2">Search Cases & Principles</h2>
         </div>
-      </div>
 
-      <div class="filter-row">
-        <span class="label">Court</span>
-        <div class="filter-chips" id="courtFilters">
-          <button class="chip active" data-court="all">All Courts</button>
-          <button class="chip" data-court="magistrates">Magistrates</button>
-          <button class="chip" data-court="supreme">Supreme</button>
-          <button class="chip" data-court="cca">CCA</button>
-          <button class="chip" data-court="fullcourt">Full Court</button>
+        <div class="search-row">
+          <input type="text" id="legalSearchInput" class="search-input"
+            placeholder="Search by keyword, statute, or offence…" />
         </div>
-      </div>
 
-      <div class="filter-row">
-        <span class="label">Year</span>
-        <div class="filter-chips">
-          <button class="chip year-chip active" data-year="all">All Years</button>
-          <button class="chip year-chip" data-year="2026">2026</button>
-          <button class="chip year-chip" data-year="2025">2025</button>
-          <button class="chip year-chip" data-year="2024">2024</button>
-          <button class="chip year-chip" data-year="2023">2023</button>
-          <button class="chip year-chip" data-year="2022">2022</button>
-          <button class="chip year-chip" data-year="2021">2021</button>
-          <button class="chip year-chip" data-year="2020">2020</button>
+        <div class="filter-row">
+          <span class="label">View</span>
+          <div class="filter-chips">
+            <button class="chip legal-view active" data-view="cases">Cases</button>
+            <button class="chip legal-view" data-view="principles">Principles</button>
+          </div>
         </div>
-      </div>
 
-      <div id="legalResults" class="legal-results" style="margin-top:24px;"></div>
-    </section>
+        <div class="filter-row">
+          <span class="label">Court</span>
+          <div class="filter-chips" id="courtFilters">
+            <button class="chip active" data-court="all">All Courts</button>
+            <button class="chip" data-court="magistrates">Magistrates</button>
+            <button class="chip" data-court="supreme">Supreme</button>
+            <button class="chip" data-court="cca">CCA</button>
+            <button class="chip" data-court="fullcourt">Full Court</button>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <span class="label">Year</span>
+          <div class="filter-chips">
+            <button class="chip year-chip active" data-year="all">All Years</button>
+            <button class="chip year-chip" data-year="2026">2026</button>
+            <button class="chip year-chip" data-year="2025">2025</button>
+            <button class="chip year-chip" data-year="2024">2024</button>
+            <button class="chip year-chip" data-year="2023">2023</button>
+            <button class="chip year-chip" data-year="2022">2022</button>
+            <button class="chip year-chip" data-year="2021">2021</button>
+            <button class="chip year-chip" data-year="2020">2020</button>
+          </div>
+        </div>
+
+        <div id="legalResults" class="legal-results" style="margin-top:24px;"></div>
+      </section>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         TAB: LEGISLATION
+         ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-legislation">
+
+      <!-- Upload legislation -->
+      <section class="card">
+        <div class="row space">
+          <h2 class="h2">Upload Legislation</h2>
+          <button class="btn ghost small" id="toggleLegislationUploadBtn">Toggle Form</button>
+        </div>
+        <p class="sub">Upload an Act. Sections are parsed and stored for direct lookup. No AI extraction on upload — analysis happens at query time.</p>
+
+        <div id="uploadLegislationForm" style="display:none;" class="upload-panel">
+          <div class="case-dropzone" id="legDropzone">
+            <div class="dropzone-text">📎 Drag & drop PDF or click to browse</div>
+            <div class="dropzone-hint">Or paste legislation text below</div>
+          </div>
+          <input type="file" id="legFileInput" accept=".pdf,.txt" style="display:none;" />
+
+          <label class="label" style="margin-top:16px;">Act Title</label>
+          <input type="text" id="legTitle" class="search-input" placeholder="Criminal Code Act 1924" />
+
+          <label class="label" style="margin-top:12px;">Jurisdiction</label>
+          <select id="legJurisdiction" class="search-input">
+            <option value="Tas">Tasmania (Tas)</option>
+            <option value="Cth">Commonwealth (Cth)</option>
+            <option value="Vic">Victoria (Vic)</option>
+            <option value="NSW">New South Wales (NSW)</option>
+            <option value="Qld">Queensland (Qld)</option>
+            <option value="SA">South Australia (SA)</option>
+            <option value="WA">Western Australia (WA)</option>
+            <option value="NT">Northern Territory (NT)</option>
+            <option value="ACT">ACT</option>
+          </select>
+
+          <label class="label" style="margin-top:12px;">Year</label>
+          <input type="text" id="legYear" class="search-input" placeholder="1924" style="max-width:120px;" />
+
+          <label class="label" style="margin-top:12px;">Source URL (optional)</label>
+          <input type="text" id="legSourceUrl" class="search-input" placeholder="https://www.legislation.tas.gov.au/..." />
+
+          <label class="label" style="margin-top:12px;">Legislation Text</label>
+          <textarea id="legText" class="textarea" style="min-height:200px;"
+            placeholder="Paste full Act text here or drag PDF above..."></textarea>
+          <div class="char-count" id="legCharCount">0 characters</div>
+
+          <div class="row" style="margin-top:12px;">
+            <button id="uploadLegislationBtn" class="btn">Upload & Parse</button>
+            <button id="cancelLegislationBtn" class="btn ghost small">Cancel</button>
+          </div>
+          <div id="legUploadOutput" class="output" style="margin-top:12px;display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Section lookup -->
+      <section class="card">
+        <h2 class="h2" style="margin-bottom:12px;">Section Lookup</h2>
+        <p class="sub">Look up a specific provision from an uploaded Act.</p>
+        <div class="row" style="margin-top:16px;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="sectionLookupTitle" class="search-input" placeholder="Criminal Code Act 1924" style="flex:2;min-width:200px;" />
+          <select id="sectionLookupJurisdiction" class="search-input" style="flex:0 0 140px;">
+            <option value="Tas">Tas</option>
+            <option value="Cth">Cth</option>
+            <option value="Vic">Vic</option>
+            <option value="NSW">NSW</option>
+            <option value="Qld">Qld</option>
+            <option value="SA">SA</option>
+            <option value="WA">WA</option>
+            <option value="NT">NT</option>
+            <option value="ACT">ACT</option>
+          </select>
+          <input type="text" id="sectionLookupNumber" class="search-input" placeholder="s 389" style="flex:0 0 100px;" />
+          <button id="sectionLookupBtn" class="btn">Look Up</button>
+        </div>
+        <div id="sectionLookupResult" style="display:none;"></div>
+      </section>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         TAB: SECONDARY SOURCES
+         ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-secondary">
+
+      <section class="card">
+        <div class="row space">
+          <h2 class="h2">Upload Secondary Source</h2>
+          <button class="btn ghost small" id="toggleSecondaryUploadBtn">Toggle Form</button>
+        </div>
+        <p class="sub">Notes, journal articles, commentary, textbooks. Stored as reference context — no structured extraction. Models use this material during analysis and queries.</p>
+
+        <div id="uploadSecondaryForm" style="display:none;" class="upload-panel">
+          <div class="case-dropzone" id="secDropzone">
+            <div class="dropzone-text">📎 Drag & drop PDF or click to browse</div>
+            <div class="dropzone-hint">Or paste text below</div>
+          </div>
+          <input type="file" id="secFileInput" accept=".pdf,.txt" style="display:none;" />
+
+          <label class="label" style="margin-top:16px;">Title</label>
+          <input type="text" id="secTitle" class="search-input" placeholder="e.g. Sentencing in Tasmania — Annotated Guide" />
+
+          <label class="label" style="margin-top:12px;">Type</label>
+          <select id="secSourceType" class="search-input">
+            <option value="note">Personal Note</option>
+            <option value="article">Journal Article</option>
+            <option value="commentary">Commentary</option>
+            <option value="textbook">Textbook</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label class="label" style="margin-top:12px;">Author (optional)</label>
+          <input type="text" id="secAuthor" class="search-input" placeholder="Author name" />
+
+          <label class="label" style="margin-top:12px;">Date Published (optional)</label>
+          <input type="text" id="secDatePublished" class="search-input" placeholder="2023" style="max-width:120px;" />
+
+          <label class="label" style="margin-top:12px;">Tags (comma separated)</label>
+          <input type="text" id="secTags" class="search-input" placeholder="sentencing, bail, evidence" />
+
+          <label class="label" style="margin-top:12px;">Content</label>
+          <textarea id="secText" class="textarea" style="min-height:200px;"
+            placeholder="Paste content here or drag PDF above..."></textarea>
+          <div class="char-count" id="secCharCount">0 characters</div>
+
+          <div class="row" style="margin-top:12px;">
+            <button id="uploadSecondaryBtn" class="btn">Upload & Index</button>
+            <button id="cancelSecondaryBtn" class="btn ghost small">Cancel</button>
+          </div>
+          <div id="secUploadOutput" class="output" style="margin-top:12px;display:none;"></div>
+        </div>
+      </section>
+
+      <!-- Secondary sources list -->
+      <section class="card">
+        <h2 class="h2" style="margin-bottom:4px;">Indexed Sources</h2>
+        <p class="sub" style="margin-bottom:16px;">All secondary sources currently in the database.</p>
+        <div id="secondaryList"><p class="sub">Loading...</p></div>
+      </section>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         TAB: LIBRARY
+         ══════════════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-library">
+      <section class="card">
+        <div class="row space">
+          <h2 class="h2">Document Library</h2>
+          <button id="refreshLibraryBtn" class="btn ghost small">Refresh</button>
+        </div>
+        <p class="sub">All uploaded documents across cases, legislation, and secondary sources.</p>
+
+        <div class="filter-row" style="margin-top:16px;">
+          <span class="label">Filter</span>
+          <div class="filter-chips">
+            <button class="chip library-filter active" data-filter="all">All</button>
+            <button class="chip library-filter" data-filter="case">Cases</button>
+            <button class="chip library-filter" data-filter="legislation">Legislation</button>
+            <button class="chip library-filter" data-filter="secondary">Secondary</button>
+          </div>
+        </div>
+
+        <div id="libraryStats" style="margin-top:12px;color:var(--text-dim);font-size:0.78rem;"></div>
+        <div id="libraryContent" style="margin-top:16px;"><p class="sub">Loading...</p></div>
+      </section>
+    </div>
 
     <footer class="footer">
-      <small>Auto-sync + manual upload for Tasmanian criminal law</small>
+      <small>Arcanthyr — Tasmanian criminal law research</small>
     </footer>
   </main>
 
@@ -180,6 +441,337 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
   <script src="app.js?v=12"></script>
-</body>
+  <script>
+    /* ── Page tab switching ────────────────────────────────────── */
+    document.querySelectorAll('.page-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+        if (tab.dataset.panel === 'library') loadLibrary();
+        if (tab.dataset.panel === 'secondary') loadSecondaryList();
+      });
+    });
 
+    /* ── Toggle forms ──────────────────────────────────────────── */
+    function toggleForm(btnId, formId) {
+      document.getElementById(btnId).addEventListener('click', () => {
+        const f = document.getElementById(formId);
+        f.style.display = f.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+    toggleForm('toggleLegislationUploadBtn', 'uploadLegislationForm');
+    toggleForm('toggleSecondaryUploadBtn',   'uploadSecondaryForm');
+    document.getElementById('cancelLegislationBtn').addEventListener('click', () => {
+      document.getElementById('uploadLegislationForm').style.display = 'none';
+    });
+    document.getElementById('cancelSecondaryBtn').addEventListener('click', () => {
+      document.getElementById('uploadSecondaryForm').style.display = 'none';
+    });
+
+    /* ── Character counters ────────────────────────────────────── */
+    function attachCharCount(textareaId, counterId) {
+      const ta = document.getElementById(textareaId);
+      const ct = document.getElementById(counterId);
+      ta.addEventListener('input', () => {
+        ct.textContent = ta.value.length.toLocaleString() + ' characters';
+      });
+    }
+    attachCharCount('legText', 'legCharCount');
+    attachCharCount('secText', 'secCharCount');
+
+    /* ── PDF extraction helper ─────────────────────────────────── */
+    async function extractPdfText(file) {
+      const ab = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+      let text = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map(item => item.str).join(' ') + '\n';
+      }
+      return text;
+    }
+
+    /* ── Generic dropzone setup ────────────────────────────────── */
+    function setupDropzone(dropzoneId, fileInputId, textareaId, counterId) {
+      const dz  = document.getElementById(dropzoneId);
+      const fi  = document.getElementById(fileInputId);
+      const ta  = document.getElementById(textareaId);
+      const ct  = counterId ? document.getElementById(counterId) : null;
+
+      dz.addEventListener('click', () => fi.click());
+      dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+      dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+      dz.addEventListener('drop', async e => {
+        e.preventDefault(); dz.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) await loadFile(file, ta, ct, dz);
+      });
+      fi.addEventListener('change', async () => {
+        if (fi.files[0]) await loadFile(fi.files[0], ta, ct, dz);
+      });
+    }
+
+    async function loadFile(file, ta, ct, dz) {
+      dz.querySelector('.dropzone-text').textContent = `⏳ Reading ${file.name}...`;
+      try {
+        let text = '';
+        if (file.type === 'application/pdf') {
+          text = await extractPdfText(file);
+        } else {
+          text = await file.text();
+        }
+        ta.value = text;
+        if (ct) ct.textContent = text.length.toLocaleString() + ' characters';
+        dz.querySelector('.dropzone-text').textContent = `✓ Loaded: ${file.name} (${text.length.toLocaleString()} chars)`;
+      } catch (err) {
+        dz.querySelector('.dropzone-text').textContent = `✗ Error reading file: ${err.message}`;
+      }
+    }
+
+    setupDropzone('legDropzone', 'legFileInput', 'legText', 'legCharCount');
+    setupDropzone('secDropzone', 'secFileInput', 'secText', 'secCharCount');
+
+    /* ── Upload legislation ────────────────────────────────────── */
+    document.getElementById('uploadLegislationBtn').addEventListener('click', async () => {
+      const title  = document.getElementById('legTitle').value.trim();
+      const jur    = document.getElementById('legJurisdiction').value;
+      const year   = document.getElementById('legYear').value.trim();
+      const url    = document.getElementById('legSourceUrl').value.trim();
+      const text   = document.getElementById('legText').value.trim();
+      const out    = document.getElementById('legUploadOutput');
+
+      if (!title || !text) {
+        out.style.display = 'block';
+        out.textContent = 'Title and legislation text are required.';
+        return;
+      }
+
+      out.style.display = 'block';
+      out.textContent = 'Uploading and parsing sections...';
+
+      try {
+        const r = await fetch('/api/legal/upload-legislation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            doc_text: text, title, jurisdiction: jur,
+            year: year || null, source_url: url || null,
+          })
+        });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        const res = data.result;
+        out.textContent = `✓ ${res.title} (${jur}) uploaded. ${res.sections_parsed} sections parsed.`;
+        document.getElementById('uploadLegislationForm').style.display = 'none';
+        loadLibrary();
+      } catch (err) {
+        out.textContent = `✗ Upload failed: ${err.message}`;
+      }
+    });
+
+    /* ── Upload secondary source ───────────────────────────────── */
+    document.getElementById('uploadSecondaryBtn').addEventListener('click', async () => {
+      const title   = document.getElementById('secTitle').value.trim();
+      const type    = document.getElementById('secSourceType').value;
+      const author  = document.getElementById('secAuthor').value.trim();
+      const date    = document.getElementById('secDatePublished').value.trim();
+      const tagsRaw = document.getElementById('secTags').value.trim();
+      const text    = document.getElementById('secText').value.trim();
+      const out     = document.getElementById('secUploadOutput');
+
+      if (!title || !text) {
+        out.style.display = 'block';
+        out.textContent = 'Title and content are required.';
+        return;
+      }
+
+      const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+      out.style.display = 'block';
+      out.textContent = 'Uploading and indexing into Qdrant...';
+
+      try {
+        const r = await fetch('/api/legal/upload-secondary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            doc_text: text, title, source_type: type,
+            author: author || null, date_published: date || null, tags,
+          })
+        });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        const res = data.result;
+        out.textContent = `✓ "${res.title}" uploaded. ${res.chunks_stored} chunks indexed in Qdrant. Found ${res.related_cases_found} case refs and ${res.related_acts_found} Act refs in text.`;
+        document.getElementById('uploadSecondaryForm').style.display = 'none';
+        loadSecondaryList();
+      } catch (err) {
+        out.textContent = `✗ Upload failed: ${err.message}`;
+      }
+    });
+
+    /* ── Section lookup ────────────────────────────────────────── */
+    document.getElementById('sectionLookupBtn').addEventListener('click', async () => {
+      const title   = document.getElementById('sectionLookupTitle').value.trim();
+      const jur     = document.getElementById('sectionLookupJurisdiction').value;
+      const section = document.getElementById('sectionLookupNumber').value.trim().replace(/^s\s*/i, '');
+      const out     = document.getElementById('sectionLookupResult');
+
+      if (!title || !section) return;
+      out.style.display = 'block';
+      out.innerHTML = '<p class="sub">Looking up...</p>';
+
+      try {
+        const r = await fetch('/api/legal/section-lookup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, jurisdiction: jur, section })
+        });
+        const data = await r.json();
+        const res = data.result || data;
+
+        if (!res.found) {
+          out.innerHTML = `<p class="sub">${res.message}</p>`;
+          return;
+        }
+        out.innerHTML = `
+          <div class="section-result">
+            <div class="section-meta">${res.title} (${res.jurisdiction}) ${res.year || ''} — s ${res.section_number}</div>
+            <strong>${res.heading || ''}</strong>
+            ${res.part ? `<span style="color:var(--text-dim);margin-left:8px;">${res.part}</span>` : ''}
+            <div style="margin-top:8px;">${res.text || ''}</div>
+          </div>`;
+      } catch (err) {
+        out.innerHTML = `<p class="sub">Error: ${err.message}</p>`;
+      }
+    });
+
+    /* ── Library ───────────────────────────────────────────────── */
+    let libraryData = { cases: [], legislation: [], secondary: [] };
+    let activeFilter = 'all';
+
+    async function loadLibrary() {
+      document.getElementById('libraryContent').innerHTML = '<p class="sub">Loading...</p>';
+      try {
+        const r = await fetch('/api/legal/library');
+        const data = await r.json();
+        libraryData = data.result || data;
+        renderLibrary();
+      } catch (err) {
+        document.getElementById('libraryContent').innerHTML = `<p class="sub">Error: ${err.message}</p>`;
+      }
+    }
+
+    function renderLibrary() {
+      const { cases, legislation, secondary, totals } = libraryData;
+      document.getElementById('libraryStats').textContent =
+        `${totals.cases} cases · ${totals.legislation} legislation · ${totals.secondary} secondary sources`;
+
+      let rows = [
+        ...cases.map(d => ({ ...d, doc_type: 'case' })),
+        ...legislation.map(d => ({ ...d, doc_type: 'legislation' })),
+        ...secondary.map(d => ({ ...d, doc_type: 'secondary' })),
+      ];
+
+      if (activeFilter !== 'all') rows = rows.filter(r => r.doc_type === activeFilter);
+
+      if (rows.length === 0) {
+        document.getElementById('libraryContent').innerHTML = '<p class="sub">No documents found.</p>';
+        return;
+      }
+
+      const fmt = d => d ? new Date(d).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+      const kb  = b => b ? Math.round(b / 1024) + ' KB' : '—';
+      const badgeClass = t => ({ case: 'badge-case', legislation: 'badge-legislation', secondary: 'badge-secondary' }[t] || '');
+      const badgeLabel = t => ({ case: 'Case', legislation: 'Legislation', secondary: 'Secondary' }[t] || t);
+
+      const html = `
+        <table class="library-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Court / Jurisdiction</th>
+              <th>Date</th>
+              <th>Size</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `
+              <tr>
+                <td class="doc-title">${row.title || row.ref || row.id}</td>
+                <td><span class="doc-type-badge ${badgeClass(row.doc_type)}">${badgeLabel(row.doc_type)}</span></td>
+                <td>${row.court || '—'}</td>
+                <td>${fmt(row.date || row.processed_date)}</td>
+                <td>${kb(row.raw_size)}</td>
+                <td>
+                  <button class="delete-btn"
+                    data-type="${row.doc_type}"
+                    data-id="${row.id}"
+                    onclick="deleteDocument(this)">Delete</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`;
+
+      document.getElementById('libraryContent').innerHTML = html;
+    }
+
+    document.querySelectorAll('.library-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.library-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderLibrary();
+      });
+    });
+
+    document.getElementById('refreshLibraryBtn').addEventListener('click', loadLibrary);
+
+    async function deleteDocument(btn) {
+      const docType = btn.dataset.type;
+      const id      = btn.dataset.id;
+      if (!confirm(`Delete "${id}"?\n\nThis cannot be undone.`)) return;
+      btn.textContent = '...';
+      try {
+        const r = await fetch(`/api/legal/library/delete/${docType}/${encodeURIComponent(id)}`, { method: 'DELETE' });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        loadLibrary();
+      } catch (err) {
+        btn.textContent = 'Error';
+        console.error('Delete failed:', err);
+      }
+    }
+
+    /* ── Secondary sources list ────────────────────────────────── */
+    async function loadSecondaryList() {
+      const el = document.getElementById('secondaryList');
+      el.innerHTML = '<p class="sub">Loading...</p>';
+      try {
+        const r = await fetch('/api/legal/library');
+        const data = await r.json();
+        const sources = (data.result || data).secondary || [];
+        if (sources.length === 0) {
+          el.innerHTML = '<p class="sub">No secondary sources uploaded yet.</p>';
+          return;
+        }
+        el.innerHTML = sources.map(s => `
+          <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+            <div style="color:var(--text);font-size:0.85rem;">${s.title}</div>
+            <div style="color:var(--text-dim);font-size:0.75rem;margin-top:4px;">
+              ${s.court || 'other'} · ${s.raw_size ? Math.round(s.raw_size/1024) + ' KB' : '—'} · added ${s.date ? new Date(s.date).toLocaleDateString('en-AU') : '—'}
+            </div>
+          </div>`).join('');
+      } catch (err) {
+        el.innerHTML = `<p class="sub">Error: ${err.message}</p>`;
+      }
+    }
+  </script>
+</body>
 </html>
