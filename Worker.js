@@ -338,16 +338,25 @@ function _buildSummary(primary, secondary, citation) {
     ? { ...primary, ...secondary }   // two-pass: merge, pass2 wins on overlap
     : primary;                        // single-pass: use as-is
 
+  // Helper: coerce any value to a plain string for D1 text columns.
+  // Llama occasionally returns arrays instead of strings — this handles that gracefully.
+  const asString = (val, fallback = "Not extracted") => {
+    if (!val) return fallback;
+    if (Array.isArray(val)) return val.join(" ");
+    if (typeof val === "object") return JSON.stringify(val);
+    return String(val);
+  };
+
   const issues = Array.isArray(src.issues)
     ? src.issues
-    : (src.issues ? [src.issues] : []);
+    : (src.issues ? [asString(src.issues)] : []);
 
   const holdings = Array.isArray(src.holdings)
     ? src.holdings
-    : (src.holdings ? [src.holdings] : []);
+    : (src.holdings ? [asString(src.holdings)] : []);
 
   // Legacy single holding string for backward compat with existing DB column
-  const holdingStr = holdings.length > 0 ? holdings.join(" ") : (src.holding || "Not extracted");
+  const holdingStr = holdings.length > 0 ? holdings.join(" ") : asString(src.holding, "Not extracted");
 
   const principles = Array.isArray(src.principles) ? src.principles : [];
   const legislation = Array.isArray(src.legislation) ? src.legislation : [];
@@ -358,11 +367,11 @@ function _buildSummary(primary, secondary, citation) {
     .filter(Boolean).length / 5;
 
   return {
-    case_name: (src.case_name || "").trim() || null,
-    facts: src.facts || "Not extracted",
-    issues: issues.join("; ") || "Not extracted",
-    holdings: holdings,       // array — stored in new holdings column
-    holding: holdingStr,      // string — backward compat with existing holding column
+    case_name: (asString(src.case_name, "")).trim() || null,
+    facts: asString(src.facts),
+    issues: issues.map(i => asString(i)).join("; ") || "Not extracted",
+    holdings: holdings.map(h => asString(h)),  // array — stored in new holdings column
+    holding: holdingStr,                        // string — backward compat with existing holding column
     principles: principles,
     legislation: legislation,
     key_authorities: keyAuthorities,
