@@ -631,9 +631,20 @@ function renderCases(response) {
     const principles = (() => {
       try {
         const arr = JSON.parse(c.principles_extracted || "[]");
-        return arr.slice(0, 3); // show up to 3 inline
+        return arr.slice(0, 3);
       } catch { return []; }
     })();
+    const legislation = (() => {
+      try { return JSON.parse(c.legislation_extracted || "[]"); }
+      catch { return []; }
+    })();
+    const legChips = legislation.length > 0 ? `
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
+        ${legislation.map(ref => `<button class="leg-ref-chip"
+          data-ref="${encodeURIComponent(ref)}"
+          style="background:var(--green-dim);border:1px solid var(--green);border-radius:4px;color:var(--green);cursor:pointer;font-family:'DM Mono',monospace;font-size:0.7rem;padding:3px 8px;"
+          onclick="lookupLegislationRef(decodeURIComponent(this.dataset.ref))">${ref}</button>`).join("")}
+      </div>` : "";
 
     return `
       <div class="legal-item">
@@ -652,6 +663,7 @@ function renderCases(response) {
                 ${principles.map(p => `<li>${p.principle || p}</li>`).join("")}
               </ul>
             </div>` : ""}
+          ${legChips}
           ${c.url ? `<a href="${c.url}" target="_blank" class="btn ghost small" style="margin-top:8px;">View on AustLII ↗</a>` : ""}
         </div>
       </div>`;
@@ -1189,4 +1201,80 @@ function autoFillCaseMetadata(text) {
     else if (text.includes('Supreme Court') || text.includes('TASSC')) courtEl.value = 'supreme';
     else if (text.includes('Magistrates') || text.includes('TAMagC') || text.includes('TASMC')) courtEl.value = 'magistrates';
   }
+}
+
+/* ── Legislation click-through ─────────────────────────────────────────────
+   Called when a user clicks a legislation chip on a case card.
+   Parses "Criminal Code Act 1924 (Tas) s 389" into title/jurisdiction/section,
+   calls the section-lookup endpoint, and displays the result in a modal.
+   ──────────────────────────────────────────────────────────────────────── */
+async function lookupLegislationRef(ref) {
+  // Parse ref: "Criminal Code Act 1924 (Tas) s 389" or "Evidence Act 2001 s 38"
+  // Extract jurisdiction from parentheses if present
+  const jurMatch = ref.match(/\(([A-Za-z]{2,4})\)/);
+  const jurisdiction = jurMatch ? jurMatch[1] : 'Tas';
+
+  // Extract section number — everything after " s " or " s. "
+  const secMatch = ref.match(/\bs\.?\s+(\S+)/i);
+  if (!secMatch) { showLegModal(ref, null, 'Could not parse section number from: ' + ref); return; }
+  const section = secMatch[1];
+
+  // Title is everything before "(Jurisdiction)" or before " s "
+  let title = ref
+    .replace(/\s*\([A-Za-z]{2,4}\)/, '')   // strip (Tas)
+    .replace(/\s+s\.?\s+\S+.*$/, '')         // strip s 389 onwards
+    .trim();
+
+  showLegModal(ref, null, 'Looking up ' + ref + '…');
+
+  try {
+    const r = await fetch('/api/legal/section-lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, jurisdiction, section })
+    });
+    const data = await r.json();
+    const res = data.result || data;
+    if (!res.found) {
+      showLegModal(ref, null, res.message || 'Section not found. Upload the Act first.');
+      return;
+    }
+    showLegModal(ref, res, null);
+  } catch (err) {
+    showLegModal(ref, null, 'Lookup error: ' + err.message);
+  }
+}
+
+function showLegModal(ref, section, errorMsg) {
+  // Remove any existing modal
+  document.getElementById('legModal')?.remove();
+
+  const content = errorMsg
+    ? `<p style="color:var(--amber);font-size:0.85rem;">${errorMsg}</p>`
+    : `<div style="color:var(--text-dim);font-size:0.72rem;margin-bottom:8px;">
+         ${section.title} (${section.jurisdiction}) ${section.year || ''} — s ${section.section_number}
+       </div>
+       <div style="color:var(--text);font-size:0.9rem;font-weight:500;margin-bottom:12px;">
+         ${section.heading || ''}
+       </div>
+       <div style="color:var(--text-mid);font-size:0.82rem;line-height:1.8;white-space:pre-wrap;">${section.text || ''}</div>`;
+
+  const modal = document.createElement('div');
+  modal.id = 'legModal';
+  modal.innerHTML = `
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);max-width:680px;width:100%;max-height:80vh;overflow-y:auto;padding:24px;position:relative;">
+        <button onclick="document.getElementById('legModal').remove()"
+          style="position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1.2rem;line-height:1;">✕</button>
+        <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px;">${ref}</div>
+        ${content}
+      </div>
+    </div>`;
+
+  // Close on backdrop click
+  modal.querySelector('div').addEventListener('click', e => {
+    if (e.target === modal.querySelector('div')) modal.remove();
+  });
+
+  document.body.appendChild(modal);
 }
