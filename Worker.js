@@ -195,66 +195,179 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
 
 async function summarizeCase(env, caseData) {
   // ─── ARCHITECTURE NOTE ────────────────────────────────────────────────────
-  // case_name is extracted HERE by Llama from the case text.
-  // fetchCaseContent intentionally does NOT extract case names — that approach
-  // was fragile (regex on raw HTML, missed most cases, produced garbage on
-  // edge cases). Llama already reads the full text for facts/holding/principles;
-  // case_name is simply one more field in the same JSON extraction pass.
+  // Extraction uses a two-pass strategy for long judgments:
+  //   Pass 1 (first 12,000 chars): metadata, facts, issues, case_name
+  //   Pass 2 (chars 8,000–22,000): principles, holdings, legislation, authorities
+  // For shorter judgments (<= 22,000 chars) a single pass covers everything.
+  // The text sent to Llama has already been boilerplate-stripped and whitespace-
+  // compressed by austlii_scraper.py before upload, maximising signal per char.
   // ─────────────────────────────────────────────────────────────────────────
-  const systemPrompt = `You are a legal research assistant analyzing Australian criminal case law.
-Extract and structure the following information from the case as JSON.
 
-Fields required:
-- case_name: the case title. Look in the first 500 words — it is usually in the heading or opening paragraph. Common patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown", "Re Application of White". Use the citation string as a fallback if no name is clearly present.
-- facts: brief factual background (2-3 sentences)
-- issues: legal issues considered (string, up to 3 points separated by semicolons)
-- holding: the court's decision and reasoning (2-3 sentences)
-- principles: key legal principles established or applied (array, max 5 items)
+  const CHUNK_THRESHOLD = 22000; // single-pass up to this length
+  const PASS1_CHARS = 12000;     // metadata/facts window
+  const PASS2_START = 8000;      // reasoning section start (overlap intentional)
+  const PASS2_END = 28000;       // reasoning section end
 
-Principles format — array of objects: { "principle": "text", "statute_refs": ["Act s.123"], "keywords": ["sentencing"] }
+  // ── Shared prompt fragments ───────────────────────────────────────────────
+  const PRINCIPLES_SPEC = `
+PRINCIPLES — extract per issue: 1 primary + up to 2 supporting (only if genuinely distinct).
+Maximum 8 principles total across the whole judgment.
 
-Output ONLY valid JSON. No markdown fences. No commentary.`;
+A legal principle MUST be a complete proposition: IF/WHEN [conditions] THEN [legal consequence or rule].
+It must be usable on future facts without knowing the parties' names.
+It must NOT be a label, heading, sentencing factor name, procedural outcome, or fact restatement.
 
-  const userContent = `Citation: ${caseData.citation}
-Court: ${caseData.court}
+BAD: "General deterrence" — label only, not a principle.
+BAD: "The appeal is dismissed" — outcome, not a principle.
+GOOD: "IF an offender commits a violent offence in a domestic or trust relationship, THEN general deterrence is a primary sentencing consideration and may warrant actual imprisonment even for a first offender."
+GOOD: "IF weed eradication works are necessary and intrinsic to a development AND render the land suitable for construction, THEN they constitute substantial commencement of a development permit under s 53(5) of the Land Use Planning and Approvals Act 1993."
 
-Case text (excerpt):
-${caseData.full_text.substring(0, 8000)}`;
+Each principle object:
+{
+  "principle": "IF/WHEN ... THEN ... (complete proposition, 1-2 sentences)",
+  "type": "ratio" | "obiter" | "procedural",
+  "source_mode": "stated" | "adopted_from_authority" | "implicit_applied",
+  "statute_refs": ["Act (Jurisdiction) s.X"],
+  "keywords": ["topic1", "topic2", "topic3"]
+}
+Mark source_mode "implicit_applied" if the court applied but did not explicitly state the rule.`;
 
-  let raw;
+  // ── Single-pass prompt (short judgments) ─────────────────────────────────
+  const singlePassPrompt = `You are extracting verified legal information from an Australian court judgment for a practitioner database.
+Do not guess or invent rules. If something is not clearly present in the text, use null.
+Output ONLY valid JSON. No markdown fences. No commentary.
+
+Extract these fields:
+- case_name: from the heading or opening lines. Patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown". Fallback to citation.
+- facts: factual background (3-4 concrete sentences: parties, charges or dispute, key events and outcome at first instance if appeal).
+- issues: array of 1-5 legal questions the court answered (each a short question string).
+- holdings: array matching issues order — the court's direct answer to each issue (1 sentence each).
+- legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
+- key_authorities: cases cited and how treated. Array of objects: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
+${PRINCIPLES_SPEC}
+
+Output JSON with keys: case_name, facts, issues, holdings, principles, legislation, key_authorities`;
+
+  // ── Pass 1 prompt (long judgments — metadata/facts/issues) ───────────────
+  const pass1Prompt = `You are extracting metadata and facts from the opening section of an Australian court judgment.
+Output ONLY valid JSON. No markdown fences. No commentary.
+
+Extract:
+- case_name: from heading or opening lines. Fallback to citation.
+- facts: factual background (3-4 concrete sentences).
+- issues: array of 1-5 legal questions this judgment answers.
+
+Output JSON with keys: case_name, facts, issues`;
+
+  // ── Pass 2 prompt (long judgments — reasoning section) ───────────────────
+  const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of an Australian court judgment.
+Output ONLY valid JSON. No markdown fences. No commentary.
+
+The issues already identified for this case are provided below. Extract holdings and principles keyed to those issues.
+
+Extract:
+- holdings: array matching the issues order — the court's direct answer to each issue (1 sentence each).
+- legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
+- key_authorities: cases cited and how treated. Array of: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
+${PRINCIPLES_SPEC}
+
+Output JSON with keys: holdings, principles, legislation, key_authorities`;
+
+  const fullText = caseData.full_text || "";
+  const isLong = fullText.length > CHUNK_THRESHOLD;
+
+  let raw, raw2;
   try {
-    console.log(`Calling AI for ${caseData.citation}...`);
-    raw = await callWorkersAI(env, systemPrompt, userContent, 1500);
-    console.log(`AI response length: ${raw?.length || 0} chars`);
+    if (!isLong) {
+      // ── Single pass ────────────────────────────────────────────────────
+      console.log(`Summarising ${caseData.citation} (single pass, ${fullText.length} chars)`);
+      const userContent = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nCase text:\n${fullText.substring(0, CHUNK_THRESHOLD)}`;
+      raw = await callWorkersAI(env, singlePassPrompt, userContent, 2000);
+      console.log(`AI response: ${raw?.length || 0} chars`);
 
-    const cleaned = raw.replace(/```json|```/g, "").trim();
-    const summary = JSON.parse(cleaned);
+      const cleaned = raw.replace(/```json|```/g, "").trim();
+      const summary = JSON.parse(cleaned);
+      if (!summary.facts || !summary.holdings) throw new Error("Incomplete AI response");
 
-    if (!summary.facts || !summary.holding) {
-      console.error(`Incomplete AI summary for ${caseData.citation}`);
-      throw new Error("Incomplete AI response");
+      return _buildSummary(summary, null, caseData.citation);
+
+    } else {
+      // ── Two-pass ───────────────────────────────────────────────────────
+      console.log(`Summarising ${caseData.citation} (two-pass, ${fullText.length} chars)`);
+
+      // Pass 1: opening section → facts, issues, case_name
+      const p1Content = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nCase text (opening section):\n${fullText.substring(0, PASS1_CHARS)}`;
+      raw = await callWorkersAI(env, pass1Prompt, p1Content, 800);
+      console.log(`Pass 1 response: ${raw?.length || 0} chars`);
+      const pass1 = JSON.parse(raw.replace(/```json|```/g, "").trim());
+
+      // Pass 2: reasoning section → principles, holdings, legislation, authorities
+      const issuesList = Array.isArray(pass1.issues) ? pass1.issues.join("\n") : (pass1.issues || "");
+      const p2Content = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nIssues identified:\n${issuesList}\n\nReasoning section:\n${fullText.substring(PASS2_START, PASS2_END)}`;
+      raw2 = await callWorkersAI(env, pass2Prompt, p2Content, 2000);
+      console.log(`Pass 2 response: ${raw2?.length || 0} chars`);
+      const pass2 = JSON.parse(raw2.replace(/```json|```/g, "").trim());
+
+      return _buildSummary(pass1, pass2, caseData.citation);
     }
 
-    return {
-      case_name: (summary.case_name || "").trim() || null,
-      facts: summary.facts || "Not extracted",
-      issues: Array.isArray(summary.issues) ? summary.issues.join("; ") : (summary.issues || "Not extracted"),
-      holding: summary.holding || "Not extracted",
-      principles: Array.isArray(summary.principles) ? summary.principles : [],
-      summary_quality_score: 0.7,
-    };
   } catch (error) {
     console.error(`Case summarization failed for ${caseData.citation}:`, error);
-    console.error(`AI raw response:`, raw?.substring(0, 200));
+    console.error(`Pass 1 raw:`, raw?.substring(0, 300));
+    if (raw2) console.error(`Pass 2 raw:`, raw2?.substring(0, 300));
     return {
       case_name: null,
       facts: "AI extraction failed",
       issues: "AI extraction failed",
+      holdings: "AI extraction failed",
       holding: "AI extraction failed",
       principles: [],
+      legislation: [],
+      key_authorities: [],
       summary_quality_score: 0.0,
     };
   }
+}
+
+function _buildSummary(primary, secondary, citation) {
+  // Merge single-pass or two-pass results into a normalised summary object.
+  // primary = single-pass result OR pass1 result
+  // secondary = null (single-pass) OR pass2 result
+
+  const src = secondary
+    ? { ...primary, ...secondary }   // two-pass: merge, pass2 wins on overlap
+    : primary;                        // single-pass: use as-is
+
+  const issues = Array.isArray(src.issues)
+    ? src.issues
+    : (src.issues ? [src.issues] : []);
+
+  const holdings = Array.isArray(src.holdings)
+    ? src.holdings
+    : (src.holdings ? [src.holdings] : []);
+
+  // Legacy single holding string for backward compat with existing DB column
+  const holdingStr = holdings.length > 0 ? holdings.join(" ") : (src.holding || "Not extracted");
+
+  const principles = Array.isArray(src.principles) ? src.principles : [];
+  const legislation = Array.isArray(src.legislation) ? src.legislation : [];
+  const keyAuthorities = Array.isArray(src.key_authorities) ? src.key_authorities : [];
+
+  // Score: more fields populated = higher score
+  const score = [src.facts, holdingStr, issues.length > 0, principles.length > 0, legislation.length > 0]
+    .filter(Boolean).length / 5;
+
+  return {
+    case_name: (src.case_name || "").trim() || null,
+    facts: src.facts || "Not extracted",
+    issues: issues.join("; ") || "Not extracted",
+    holdings: holdings,       // array — stored in new holdings column
+    holding: holdingStr,      // string — backward compat with existing holding column
+    principles: principles,
+    legislation: legislation,
+    key_authorities: keyAuthorities,
+    summary_quality_score: Math.round(score * 10) / 10,
+  };
 }
 
 /* =============================================================
@@ -265,8 +378,10 @@ async function saveCaseToDb(env, caseData, summary) {
 
   await env.DB.prepare(`
     INSERT OR REPLACE INTO cases 
-    (id, citation, court, case_date, case_name, url, raw_text, facts, issues, holding, principles_extracted, processed_date, summary_quality_score)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (id, citation, court, case_date, case_name, url, raw_text, facts, issues, holding,
+     holdings_extracted, principles_extracted, legislation_extracted, authorities_extracted,
+     processed_date, summary_quality_score)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     caseData.citation,
@@ -278,7 +393,10 @@ async function saveCaseToDb(env, caseData, summary) {
     summary.facts,
     summary.issues,
     summary.holding,
+    JSON.stringify(summary.holdings || []),
     JSON.stringify(summary.principles),
+    JSON.stringify(summary.legislation || []),
+    JSON.stringify(summary.key_authorities || []),
     new Date().toISOString(),
     summary.summary_quality_score
   ).run();
