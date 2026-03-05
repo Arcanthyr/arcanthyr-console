@@ -209,30 +209,6 @@ async function summarizeCase(env, caseData) {
   const PASS2_END = 28000;       // reasoning section end
 
   // ── Shared prompt fragments ───────────────────────────────────────────────
-
-  // Jurisdiction context injected into every prompt.
-  // court is mapped to a human-readable label and jurisdiction suffix.
-  const courtJurisdiction = {
-    supreme: "Tasmanian Supreme Court",
-    cca: "Tasmanian Court of Criminal Appeal",
-    fullcourt: "Tasmanian Full Court",
-    magistrates: "Tasmanian Magistrates Court",
-  };
-  const courtLabel = courtJurisdiction[caseData.court] || "Tasmanian court";
-
-  // Fix 2: jurisdiction context block — injected at top of every prompt
-  const JURISDICTION_CONTEXT = `JURISDICTION: This judgment is from the ${courtLabel}. Primary jurisdiction: Tasmania (Tas).
-Tasmanian Acts are cited with suffix (Tas). Commonwealth Acts use (Cth). Other states use their abbreviation.`;
-
-  // Fix 1: verbatim legislation rule — injected into every prompt
-  const LEGISLATION_RULE = `LEGISLATION EXTRACTION RULES — critical:
-- Extract Act names and section numbers EXACTLY as they appear in the case text.
-- Do NOT recall, guess, or "correct" legislation names from your training knowledge.
-- If the text says "Evidence Act 2001 (Tas)" write that exactly — not "Evidence Act 2000" or any variant.
-- Always include the jurisdiction suffix in parentheses: (Tas), (Cth), (Vic), (NSW) etc.
-- If the text omits the jurisdiction suffix, append (Tas) for Tasmanian courts or (Cth) for Commonwealth Acts.
-- If you are not certain of the exact name as it appears in the text, omit it rather than guessing.`;
-
   const PRINCIPLES_SPEC = `
 PRINCIPLES — extract per issue: 1 primary + up to 2 supporting (only if genuinely distinct).
 Maximum 8 principles total across the whole judgment.
@@ -244,40 +220,36 @@ It must NOT be a label, heading, sentencing factor name, procedural outcome, or 
 BAD: "General deterrence" — label only, not a principle.
 BAD: "The appeal is dismissed" — outcome, not a principle.
 GOOD: "IF an offender commits a violent offence in a domestic or trust relationship, THEN general deterrence is a primary sentencing consideration and may warrant actual imprisonment even for a first offender."
-GOOD: "IF weed eradication works are necessary and intrinsic to a development AND render the land suitable for construction, THEN they constitute substantial commencement of a development permit under s 53(5) of the Land Use Planning and Approvals Act 1993 (Tas)."
+GOOD: "IF weed eradication works are necessary and intrinsic to a development AND render the land suitable for construction, THEN they constitute substantial commencement of a development permit under s 53(5) of the Land Use Planning and Approvals Act 1993."
 
 Each principle object:
 {
   "principle": "IF/WHEN ... THEN ... (complete proposition, 1-2 sentences)",
   "type": "ratio" | "obiter" | "procedural",
   "source_mode": "stated" | "adopted_from_authority" | "implicit_applied",
-  "statute_refs": ["Act (Jurisdiction) s.X — verbatim from text"],
+  "statute_refs": ["Act (Jurisdiction) s.X"],
   "keywords": ["topic1", "topic2", "topic3"]
 }
 Mark source_mode "implicit_applied" if the court applied but did not explicitly state the rule.`;
 
   // ── Single-pass prompt (short judgments) ─────────────────────────────────
-  const singlePassPrompt = `You are extracting verified legal information from a Tasmanian court judgment for a practitioner database.
-${JURISDICTION_CONTEXT}
+  const singlePassPrompt = `You are extracting verified legal information from an Australian court judgment for a practitioner database.
 Do not guess or invent rules. If something is not clearly present in the text, use null.
 Output ONLY valid JSON. No markdown fences. No commentary.
-
-${LEGISLATION_RULE}
 
 Extract these fields:
 - case_name: from the heading or opening lines. Patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown". Fallback to citation.
 - facts: factual background (3-4 concrete sentences: parties, charges or dispute, key events and outcome at first instance if appeal).
 - issues: array of 1-5 legal questions the court answered (each a short question string).
 - holdings: array matching issues order — the court's direct answer to each issue (1 sentence each).
-- legislation: array of strings — Acts and sections materially relied on, extracted verbatim from the text. E.g. ["Sentencing Act 1997 (Tas) s 11", "Criminal Code Act 1924 (Tas) s 389"].
+- legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
 - key_authorities: cases cited and how treated. Array of objects: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
 ${PRINCIPLES_SPEC}
 
 Output JSON with keys: case_name, facts, issues, holdings, principles, legislation, key_authorities`;
 
   // ── Pass 1 prompt (long judgments — metadata/facts/issues) ───────────────
-  const pass1Prompt = `You are extracting metadata and facts from the opening section of a Tasmanian court judgment.
-${JURISDICTION_CONTEXT}
+  const pass1Prompt = `You are extracting metadata and facts from the opening section of an Australian court judgment.
 Output ONLY valid JSON. No markdown fences. No commentary.
 
 Extract:
@@ -288,17 +260,14 @@ Extract:
 Output JSON with keys: case_name, facts, issues`;
 
   // ── Pass 2 prompt (long judgments — reasoning section) ───────────────────
-  const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of a Tasmanian court judgment.
-${JURISDICTION_CONTEXT}
+  const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of an Australian court judgment.
 Output ONLY valid JSON. No markdown fences. No commentary.
 
 The issues already identified for this case are provided below. Extract holdings and principles keyed to those issues.
 
-${LEGISLATION_RULE}
-
 Extract:
 - holdings: array matching the issues order — the court's direct answer to each issue (1 sentence each).
-- legislation: array of strings — Acts and sections materially relied on, extracted verbatim from the text. E.g. ["Sentencing Act 1997 (Tas) s 11", "Criminal Code Act 1924 (Tas) s 389"].
+- legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
 - key_authorities: cases cited and how treated. Array of: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
 ${PRINCIPLES_SPEC}
 
@@ -320,7 +289,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       const summary = JSON.parse(cleaned);
       if (!summary.facts || !summary.holdings) throw new Error("Incomplete AI response");
 
-      return _buildSummary(summary, null, caseData.citation, caseData.court);
+      return _buildSummary(summary, null, caseData.citation);
 
     } else {
       // ── Two-pass ───────────────────────────────────────────────────────
@@ -339,7 +308,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       console.log(`Pass 2 response: ${raw2?.length || 0} chars`);
       const pass2 = JSON.parse(raw2.replace(/```json|```/g, "").trim());
 
-      return _buildSummary(pass1, pass2, caseData.citation, caseData.court);
+      return _buildSummary(pass1, pass2, caseData.citation);
     }
 
   } catch (error) {
@@ -360,29 +329,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
   }
 }
 
-// Fix 3: sanitise legislation refs extracted by Llama.
-// Normalises jurisdiction suffixes, deduplicates, and applies Cth heuristics.
-// defaultJurisdiction is derived from the court context so we never guess.
-function _sanitiseLegislation(refs, defaultJurisdiction = "Tas") {
-  if (!Array.isArray(refs)) return [];
-  const KNOWN_SUFFIXES = /\((Tas|Cth|Vic|NSW|Qld|SA|WA|NT|ACT|NZ|UK)\)/i;
-  const CTH_PATTERNS = /\b(Migration|Corporations|Income Tax|Trade Practices|Competition|Consumer Law|Bankruptcy|Family Law|Federal Court|High Court|Customs|Crimes Act 1914|Criminal Code Act 1995)\b/i;
-
-  return refs
-    .filter(r => typeof r === "string" && r.trim().length > 3)
-    .map(r => {
-      r = r.trim();
-      if (!KNOWN_SUFFIXES.test(r)) {
-        const isCth = CTH_PATTERNS.test(r);
-        r = r + ` (${isCth ? "Cth" : defaultJurisdiction})`;
-      }
-      return r;
-    })
-    // Deduplicate — case-insensitive
-    .filter((r, i, arr) => arr.findIndex(x => x.toLowerCase() === r.toLowerCase()) === i);
-}
-
-function _buildSummary(primary, secondary, citation, court = "supreme") {
+function _buildSummary(primary, secondary, citation) {
   // Merge single-pass or two-pass results into a normalised summary object.
   // primary = single-pass result OR pass1 result
   // secondary = null (single-pass) OR pass2 result
@@ -412,29 +359,20 @@ function _buildSummary(primary, secondary, citation, court = "supreme") {
   const holdingStr = holdings.length > 0 ? holdings.join(" ") : asString(src.holding, "Not extracted");
 
   const principles = Array.isArray(src.principles) ? src.principles : [];
+  const legislation = Array.isArray(src.legislation) ? src.legislation : [];
   const keyAuthorities = Array.isArray(src.key_authorities) ? src.key_authorities : [];
 
-  // Fix 3: sanitise legislation — normalise jurisdiction suffixes, deduplicate.
-  // Also sanitise statute_refs inside each principle.
-  const courtToJurisdiction = { supreme: "Tas", cca: "Tas", fullcourt: "Tas", magistrates: "Tas" };
-  const defaultJurisdiction = courtToJurisdiction[court] || "Tas";
-  const legislation = _sanitiseLegislation(src.legislation || [], defaultJurisdiction);
-  const sanitisedPrinciples = principles.map(p => ({
-    ...p,
-    statute_refs: _sanitiseLegislation(p.statute_refs || [], defaultJurisdiction),
-  }));
-
   // Score: more fields populated = higher score
-  const score = [src.facts, holdingStr, issues.length > 0, sanitisedPrinciples.length > 0, legislation.length > 0]
+  const score = [src.facts, holdingStr, issues.length > 0, principles.length > 0, legislation.length > 0]
     .filter(Boolean).length / 5;
 
   return {
     case_name: (asString(src.case_name, "")).trim() || null,
     facts: asString(src.facts),
     issues: issues.map(i => asString(i)).join("; ") || "Not extracted",
-    holdings: holdings.map(h => asString(h)),
-    holding: holdingStr,
-    principles: sanitisedPrinciples,
+    holdings: holdings.map(h => asString(h)),  // array — stored in new holdings column
+    holding: holdingStr,                        // string — backward compat with existing holding column
+    principles: principles,
     legislation: legislation,
     key_authorities: keyAuthorities,
     summary_quality_score: Math.round(score * 10) / 10,
@@ -880,6 +818,250 @@ async function handleUploadCase(body, env) {
   return processCaseUpload(env, case_text, citation, case_name, court);
 }
 
+
+/* =============================================================
+   LEGISLATION UPLOAD
+   Parses sections deterministically, stores in legislation +
+   legislation_sections tables. No Llama extraction on upload —
+   AI analysis happens at query time.
+   ============================================================= */
+async function handleUploadLegislation(body, env) {
+  let { doc_text, title, jurisdiction, year, source_url, encoding } = body;
+  if (!doc_text || !title) throw new Error("Missing required fields: doc_text and title");
+  if (encoding === 'base64') doc_text = atob(doc_text);
+
+  // Normalise jurisdiction
+  jurisdiction = (jurisdiction || "Tas").toUpperCase().replace(/[^A-Z]/g, '');
+  const id = (title + '-' + jurisdiction).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+
+  const existing = await env.DB.prepare("SELECT id FROM legislation WHERE id = ?").bind(id).first();
+  if (existing) throw new Error(`Legislation '${title} (${jurisdiction})' already exists. Delete it first to re-upload.`);
+
+  // ── Section parser ────────────────────────────────────────────────────────
+  // Matches patterns like:  1   Heading    or   1.   Heading   or   s 1   Heading
+  // Handles subsections like 1(1), 1A, 389(1)(a)
+  const sectionPattern = /^(?:s(?:ection)?s*)?(d+[A-Z]?(?:(d+))*(?:([a-z]))*)s{2,}(.+)$/gm;
+  const sections = [];
+  let match;
+  const seenSections = new Set();
+
+  while ((match = sectionPattern.exec(doc_text)) !== null) {
+    const sectionNum = match[1].trim();
+    const headingOrText = match[2].trim();
+    if (seenSections.has(sectionNum)) continue;
+    seenSections.add(sectionNum);
+
+    // Grab text from this section start to next section start (up to 3000 chars)
+    const sectionStart = match.index;
+    const nextMatchPos = sectionPattern.lastIndex;
+    // Look ahead for next section
+    const remaining = doc_text.substring(nextMatchPos);
+    const nextSection = remaining.search(/^(?:s(?:ection)?s*)?d+[A-Z]?s{2,}/m);
+    const sectionEnd = nextMatchPos + (nextSection > 0 ? nextSection : Math.min(remaining.length, 3000));
+    const sectionText = doc_text.substring(sectionStart, sectionEnd).trim();
+
+    sections.push({
+      id: `${id}-s${sectionNum.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
+      legislation_id: id,
+      section_number: sectionNum,
+      heading: headingOrText.length < 100 ? headingOrText : headingOrText.substring(0, 100),
+      text: sectionText.substring(0, 3000),
+      part: null,
+    });
+  }
+
+  // Store legislation record
+  await env.DB.prepare(`
+    INSERT INTO legislation (id, title, jurisdiction, year, current_as_at, summary,
+      defined_terms, offence_elements, source_url, raw_text, processed_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    id, title, jurisdiction, year ? parseInt(year) : null,
+    new Date().toISOString().split('T')[0],
+    null, '[]', '[]',
+    source_url || '', doc_text,
+    new Date().toISOString()
+  ).run();
+
+  // Store sections
+  for (const section of sections) {
+    await env.DB.prepare(`
+      INSERT OR IGNORE INTO legislation_sections (id, legislation_id, section_number, heading, text, part)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(section.id, section.legislation_id, section.section_number,
+      section.heading, section.text, section.part).run();
+  }
+
+  // Ingest into Qdrant for semantic search (full text chunked)
+  try {
+    await fetch("https://nexus.arcanthyr.com/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+      body: JSON.stringify({
+        citation: id,
+        case_name: `${title} (${jurisdiction})`,
+        source: "legislation",
+        text: doc_text,
+        summary: `${title} (${jurisdiction})${year ? ' ' + year : ''}`,
+        category: "legislation",
+        jurisdiction,
+      })
+    });
+  } catch (e) {
+    console.error("Nexus ingest failed for legislation:", e.message);
+  }
+
+  return {
+    id,
+    title,
+    jurisdiction,
+    year: year || null,
+    sections_parsed: sections.length,
+    message: `Legislation stored with ${sections.length} sections parsed.`,
+  };
+}
+
+/* =============================================================
+   SECONDARY SOURCE UPLOAD
+   No AI extraction — store raw text, tag, chunk into Qdrant.
+   The model uses these as reference context at query time.
+   ============================================================= */
+async function handleUploadSecondarySource(body, env) {
+  let { doc_text, title, source_type, author, date_published, tags, encoding } = body;
+  if (!doc_text || !title) throw new Error("Missing required fields: doc_text and title");
+  if (encoding === 'base64') doc_text = atob(doc_text);
+
+  const id = `src-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const tagsArr = Array.isArray(tags) ? tags : (tags ? [tags] : []);
+  source_type = source_type || "other";
+
+  // Lightweight: extract any case citations and Act references mentioned in the text
+  const caseCitationPattern = /[(d{4})]s+[A-Z]{2,8}s+d+/g;
+  const actPattern = /[A-Z][a-zA-Zs]+Acts+d{4}/g;
+  const relatedCases = [...new Set([...doc_text.matchAll(caseCitationPattern)].map(m => m[0].trim()))].slice(0, 20);
+  const relatedActs  = [...new Set([...doc_text.matchAll(actPattern)].map(m => m[0].trim()))].slice(0, 20);
+
+  await env.DB.prepare(`
+    INSERT INTO secondary_sources
+    (id, title, source_type, author, date_published, tags, related_cases, related_acts,
+     raw_text, chunk_count, date_added)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    id, title, source_type, author || null, date_published || null,
+    JSON.stringify(tagsArr),
+    JSON.stringify(relatedCases),
+    JSON.stringify(relatedActs),
+    doc_text, 0,
+    new Date().toISOString()
+  ).run();
+
+  // Ingest into Qdrant — this is where secondary sources become useful
+  let chunksStored = 0;
+  try {
+    const r = await fetch("https://nexus.arcanthyr.com/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+      body: JSON.stringify({
+        citation: id,
+        case_name: title,
+        source: "secondary",
+        text: doc_text,
+        summary: `${source_type}: ${title}${author ? ' by ' + author : ''}`,
+        category: "secondary",
+        tags: tagsArr,
+      })
+    });
+    const result = await r.json();
+    chunksStored = result.chunks_stored || 0;
+    // Update chunk count in D1
+    await env.DB.prepare("UPDATE secondary_sources SET chunk_count = ? WHERE id = ?")
+      .bind(chunksStored, id).run();
+  } catch (e) {
+    console.error("Nexus ingest failed for secondary source:", e.message);
+  }
+
+  return {
+    id,
+    title,
+    source_type,
+    related_cases_found: relatedCases.length,
+    related_acts_found: relatedActs.length,
+    chunks_stored: chunksStored,
+    message: `Secondary source stored and indexed (${chunksStored} chunks in Qdrant).`,
+  };
+}
+
+/* =============================================================
+   LIBRARY — list and delete documents across all types
+   ============================================================= */
+async function handleLibraryList(env) {
+  const [cases, legislation, sources] = await Promise.all([
+    env.DB.prepare(`
+      SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
+             processed_date, summary_quality_score, 'case' AS doc_type,
+             LENGTH(raw_text) AS raw_size
+      FROM cases ORDER BY processed_date DESC
+    `).all(),
+    env.DB.prepare(`
+      SELECT id, id AS ref, title, jurisdiction AS court, current_as_at AS date,
+             processed_date, NULL AS summary_quality_score, 'legislation' AS doc_type,
+             LENGTH(raw_text) AS raw_size
+      FROM legislation ORDER BY processed_date DESC
+    `).all(),
+    env.DB.prepare(`
+      SELECT id, id AS ref, title, source_type AS court, date_added AS date,
+             date_added AS processed_date, NULL AS summary_quality_score,
+             'secondary' AS doc_type, LENGTH(raw_text) AS raw_size
+      FROM secondary_sources ORDER BY date_added DESC
+    `).all(),
+  ]);
+
+  return {
+    cases:       cases.results       || [],
+    legislation: legislation.results || [],
+    secondary:   sources.results     || [],
+    totals: {
+      cases:       (cases.results       || []).length,
+      legislation: (legislation.results || []).length,
+      secondary:   (sources.results     || []).length,
+    }
+  };
+}
+
+async function handleLibraryDelete(docType, id, env) {
+  if (!id || !docType) throw new Error("Missing doc_type or id");
+  const tableMap = { case: 'cases', legislation: 'legislation', secondary: 'secondary_sources' };
+  const table = tableMap[docType];
+  if (!table) throw new Error(`Unknown doc_type: ${docType}`);
+  await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
+  // If it's a legislation delete, also remove its sections
+  if (docType === 'legislation') {
+    await env.DB.prepare("DELETE FROM legislation_sections WHERE legislation_id = ?").bind(id).run();
+  }
+  return { ok: true, deleted: id };
+}
+
+async function handleSectionLookup(body, env) {
+  // Look up a specific section from a legislation title + section number
+  // Used for click-through from case legislation_extracted field
+  const { title, jurisdiction, section } = body;
+  if (!title || !section) throw new Error("Missing title or section");
+
+  // Find the legislation record
+  const jur = (jurisdiction || "Tas").toUpperCase().replace(/[^A-Z]/g, '');
+  const legId = (title + '-' + jur).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+
+  const row = await env.DB.prepare(`
+    SELECT s.section_number, s.heading, s.text, s.part, l.title, l.jurisdiction, l.year
+    FROM legislation_sections s
+    JOIN legislation l ON s.legislation_id = l.id
+    WHERE s.legislation_id = ? AND s.section_number = ?
+  `).bind(legId, String(section)).first();
+
+  if (!row) return { found: false, message: `Section ${section} of ${title} (${jur}) not found. Has the Act been uploaded?` };
+  return { found: true, ...row };
+}
+
 /* =============================================================
    FETCH-PAGE PROXY
    Routes AustLII requests through Cloudflare edge IPs.
@@ -975,6 +1157,17 @@ export default {
         else if (action === "trigger-sync" && request.method === "POST") result = await runDailySync(env);
         else if (action === "backfill-year" && request.method === "POST") result = await runYearBackfill(env, body.year || new Date().getFullYear() - 1);
         else if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
+        else if (action === "upload-legislation" && request.method === "POST") result = await handleUploadLegislation(body, env);
+        else if (action === "upload-secondary" && request.method === "POST") result = await handleUploadSecondarySource(body, env);
+        else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
+        else if (action.startsWith("library/delete/") && request.method === "DELETE") {
+          // URL pattern: /api/legal/library/delete/{docType}/{id}
+          const parts = action.replace("library/delete/", "").split("/");
+          const docType = parts[0];
+          const docId = parts.slice(1).join("/");
+          result = await handleLibraryDelete(docType, docId, env);
+        }
+        else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });

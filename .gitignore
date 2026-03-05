@@ -1,3 +1,4 @@
 ﻿.env
 .wrangler
 touch .gitignore
+Local Scraper/.env
