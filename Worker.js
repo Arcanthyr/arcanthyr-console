@@ -1119,6 +1119,100 @@ async function handleSectionLookup(body, env) {
 }
 
 /* =============================================================
+   LEGAL QUERY — Phase 5 conversational interface
+   Flow: embed query → Qdrant semantic search (nexus /search)
+         → re-ranked chunks → Claude API with context
+         → grounded answer with source citations
+   ============================================================= */
+async function handleLegalQuery(body, env) {
+  const { query, top_k, score_threshold } = body;
+  if (!query || !query.trim()) throw new Error("query field required");
+
+  // ── Step 1: Retrieve relevant chunks from Qdrant via nexus ──
+  const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Nexus-Key": env.NEXUS_SECRET_KEY,
+    },
+    body: JSON.stringify({
+      query_text: query.trim(),
+      top_k:           top_k || 6,
+      score_threshold: score_threshold || 0.72,
+    }),
+  });
+
+  if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
+  const nexusData = await nexusRes.json();
+  const chunks = nexusData.chunks || [];
+
+  // ── Step 2: Build context from retrieved chunks ──────────────
+  if (chunks.length === 0) {
+    return {
+      answer: "No sufficiently relevant cases were found in the database for that query. Try rephrasing, or the relevant cases may not yet be ingested.",
+      sources: [],
+      chunk_count: 0,
+    };
+  }
+
+  const contextBlocks = chunks.map((c, i) => {
+    const principles = Array.isArray(c.principles) && c.principles.length > 0
+      ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
+      : "";
+    return `[${i + 1}] ${c.citation} (${c.court?.toUpperCase() || "Unknown court"}, ${c.year || "?"})
+${c.text}${principles}`;
+  }).join("\n\n---\n\n");
+
+  const systemPrompt = `You are a Tasmanian criminal law research assistant. You answer questions using only the provided case excerpts. Be precise and cite the specific cases that support each point. If the excerpts do not contain enough information to answer fully, say so clearly rather than speculating. Format your answer in plain prose — no markdown headers, no bullet points unless listing cases.`;
+
+  const userPrompt = `Question: ${query.trim()}
+
+Relevant case excerpts:
+
+${contextBlocks}
+
+Answer the question based on these excerpts. Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
+
+  // ── Step 3: Call Claude API ──────────────────────────────────
+  const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": env.ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
+    }),
+  });
+
+  if (!claudeRes.ok) {
+    const errText = await claudeRes.text();
+    throw new Error(`Claude API error: ${claudeRes.status} — ${errText}`);
+  }
+
+  const claudeData = await claudeRes.json();
+  const answer = claudeData.content?.[0]?.text || "No response from model.";
+
+  // ── Step 4: Return answer + deduplicated source list ─────────
+  const seen = new Set();
+  const sources = chunks
+    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
+    .map(c => ({
+      citation: c.citation,
+      court:    c.court,
+      year:     c.year,
+      score:    c.score,
+      summary:  c.summary || "",
+    }));
+
+  return { answer, sources, chunk_count: chunks.length };
+}
+
+/* =============================================================
    FETCH-PAGE PROXY
    Routes AustLII requests through Cloudflare edge IPs.
    Used by VPS scraper when its IP is blocked by AustLII.
@@ -1225,6 +1319,7 @@ export default {
           result = await handleLibraryDelete(docType, docId, env);
         }
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
+        else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });

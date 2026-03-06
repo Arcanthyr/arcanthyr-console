@@ -1,27 +1,169 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arcanthyr – Search & Filter</title>
+  <title>Arcanthyr – Legal Query</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── Query-specific styles ─────────────────────────────────── */
+    .query-input {
+      width: 100%;
+      min-height: 80px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.75;
+      resize: vertical;
+      transition: border-color var(--t), box-shadow var(--t);
+    }
+    .query-input::placeholder { color: var(--text-dim); font-style: italic; }
+    .query-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-dim); }
+
+    .answer-block {
+      background: var(--bg);
+      border: 1px solid rgba(110, 146, 180, 0.25);
+      border-radius: var(--radius);
+      padding: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    .answer-block.loading {
+      color: var(--text-dim);
+      animation: pulse-dim 1.4s ease infinite;
+    }
+
+    .sources-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .source-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--blue-dim);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-left-color var(--t);
+    }
+    .source-item:hover { border-left-color: var(--blue); }
+
+    .source-citation {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--gold);
+    }
+
+    .source-meta {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    .source-summary {
+      font-size: 0.75rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      margin-top: 2px;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 6px;
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-radius: 3px;
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      border: 1px solid rgba(110, 146, 180, 0.2);
+    }
+
+    .court-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 6px;
+      background: var(--gold-dim);
+      color: var(--gold);
+      border-radius: 3px;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(168, 180, 192, 0.15);
+    }
+
+    .court-badge.cca,
+    .court-badge.fullcourt {
+      background: rgba(200, 169, 110, 0.1);
+      color: var(--amber);
+      border-color: rgba(200, 169, 110, 0.25);
+    }
+
+    .threshold-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .threshold-row label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .threshold-row input[type="range"] {
+      flex: 1;
+      min-width: 120px;
+      accent-color: var(--gold);
+    }
+
+    .threshold-val {
+      font-size: 0.72rem;
+      color: var(--text-mid);
+      font-family: 'DM Mono', monospace;
+      min-width: 36px;
+    }
+
+    .chunk-count {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+    }
+
+    #queryBtn { min-width: 120px; }
+    #queryBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
 </head>
 
 <body>
-
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
-      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <defs>
           <filter id="tex-sm">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
-        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
-          opacity="0.7" />
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4" opacity="0.7" />
         <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
@@ -36,75 +178,165 @@
 
   <main class="wrap">
     <header class="header">
-      <h1>Search & Filter</h1>
-      <p class="sub">Find and review your entries.</p>
+      <h1>Legal Query</h1>
+      <p class="sub">Ask a question. Retrieve from case law.</p>
     </header>
 
     <hr class="divider" />
 
-    <!-- SEARCH + FILTER CARD -->
+    <!-- QUERY CARD -->
     <section class="card">
       <div class="row space">
-        <h2 class="h2">Search</h2>
-        <button id="clearFiltersBtn" class="btn ghost small">Reset</button>
+        <span class="label">Query</span>
+        <span class="chunk-count" id="chunkCount"></span>
       </div>
-      <div class="search-row">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by keyword…" />
+
+      <textarea
+        id="queryInput"
+        class="query-input"
+        placeholder="Ask a legal question — e.g. What is the standard for appellate intervention in sentencing?"
+        rows="3"
+      ></textarea>
+
+      <!-- Retrieval threshold control -->
+      <div class="threshold-row">
+        <label for="thresholdSlider">Relevance threshold</label>
+        <input type="range" id="thresholdSlider" min="0.3" max="0.9" step="0.01" value="0.72" />
+        <span class="threshold-val" id="thresholdVal">0.72</span>
+        <span style="font-size:0.67rem;color:var(--text-dim);">(lower = broader, higher = stricter)</span>
       </div>
-      <div class="filter-row">
-        <span class="label">Tag</span>
-        <div class="filter-chips" id="tagFilters">
-          <button class="chip active" data-tag="all">All</button>
-          <button class="chip" data-tag="task">Task</button>
-          <button class="chip" data-tag="decision">Decision</button>
-          <button class="chip" data-tag="question">Question</button>
-          <button class="chip" data-tag="idea">Idea</button>
-          <button class="chip" data-tag="note">Note</button>
-        </div>
+
+      <div class="row">
+        <button id="queryBtn">Ask</button>
+        <button id="clearBtn" class="ghost small">Clear</button>
       </div>
-      <div class="filter-row">
-        <span class="label">Date</span>
-        <div class="filter-chips">
-          <button class="chip date-chip active" data-range="all">All Time</button>
-          <button class="chip date-chip" data-range="today">Today</button>
-          <button class="chip date-chip" data-range="week">This Week</button>
-          <button class="chip date-chip" data-range="month">This Month</button>
-        </div>
-      </div>
-      <div id="filterSummary" class="filter-summary"></div>
     </section>
 
-    <!-- WEEKLY REVIEW CARD -->
-    <section class="card" id="weeklyReviewCard">
+    <!-- ANSWER CARD -->
+    <section class="card" id="answerCard" style="display:none">
       <div class="row space">
-        <h2 class="h2">Weekly Pattern Review</h2>
-        <button id="reviewBtn" class="btn ghost small">Analyse</button>
+        <span class="label">Answer</span>
+        <span class="chunk-count" id="answerMeta"></span>
       </div>
-      <p class="sub">Surface recurring themes, stuck loops, and pending decisions.</p>
-      <div id="reviewOutput" class="review-output" style="display:none"></div>
+      <div id="answerBlock" class="answer-block"></div>
     </section>
 
-    <!-- RESULTS CARD -->
-    <section class="card">
-      <div class="row space">
-        <h2 class="h2">Results</h2>
-        <div class="row">
-          <button id="restoreBtn" class="btn ghost small">Restore All</button>
-          <button id="exportBtn" class="btn ghost small">Export</button>
-        </div>
-      </div>
-      <div id="historyCount" class="filter-summary"></div>
-      <ul id="history" class="history"></ul>
+    <!-- SOURCES CARD -->
+    <section class="card" id="sourcesCard" style="display:none">
+      <span class="label">Sources Retrieved</span>
+      <div id="sourcesList" class="sources-list"></div>
     </section>
 
     <footer class="footer">
-      <small>Search and filter your Arcanthyr entries</small>
+      <small>Arcanthyr Legal Query — Tasmanian Criminal Law — Phase 5</small>
     </footer>
   </main>
 
-  <div id="saveToast" style="display:none" aria-live="polite"></div>
+  <script>
+    const queryInput   = document.getElementById('queryInput');
+    const queryBtn     = document.getElementById('queryBtn');
+    const clearBtn     = document.getElementById('clearBtn');
+    const answerCard   = document.getElementById('answerCard');
+    const answerBlock  = document.getElementById('answerBlock');
+    const answerMeta   = document.getElementById('answerMeta');
+    const sourcesCard  = document.getElementById('sourcesCard');
+    const sourcesList  = document.getElementById('sourcesList');
+    const chunkCount   = document.getElementById('chunkCount');
+    const thresholdSlider = document.getElementById('thresholdSlider');
+    const thresholdVal    = document.getElementById('thresholdVal');
 
-  <script src="app.js?v=9"></script>
+    // Threshold slider live update
+    thresholdSlider.addEventListener('input', () => {
+      thresholdVal.textContent = parseFloat(thresholdSlider.value).toFixed(2);
+    });
+
+    // Submit on Ctrl+Enter
+    queryInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) runQuery();
+    });
+
+    queryBtn.addEventListener('click', runQuery);
+    clearBtn.addEventListener('click', () => {
+      queryInput.value = '';
+      answerCard.style.display = 'none';
+      sourcesCard.style.display = 'none';
+      chunkCount.textContent = '';
+      queryInput.focus();
+    });
+
+    async function runQuery() {
+      const query = queryInput.value.trim();
+      if (!query) { queryInput.focus(); return; }
+
+      const threshold = parseFloat(thresholdSlider.value);
+
+      // Show loading state
+      queryBtn.disabled = true;
+      queryBtn.textContent = 'Searching…';
+      answerCard.style.display = 'block';
+      answerBlock.className = 'answer-block loading';
+      answerBlock.textContent = 'Retrieving relevant cases and generating answer…';
+      sourcesCard.style.display = 'none';
+      chunkCount.textContent = '';
+
+      try {
+        const res = await fetch('/api/legal/legal-query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, score_threshold: threshold })
+        });
+
+        const data = await res.json();
+        const result = data.result || data;
+
+        if (result.error) throw new Error(result.error);
+
+        // Render answer
+        answerBlock.className = 'answer-block';
+        answerBlock.textContent = result.answer || 'No answer returned.';
+        answerMeta.textContent = `${result.chunk_count || 0} chunk${result.chunk_count !== 1 ? 's' : ''} retrieved`;
+
+        // Render sources
+        const sources = result.sources || [];
+        if (sources.length > 0) {
+          sourcesCard.style.display = 'block';
+          sourcesList.innerHTML = sources.map(s => {
+            const courtClass = s.court || 'unknown';
+            const courtLabel = s.court
+              ? s.court === 'cca' ? 'CCA'
+              : s.court === 'fullcourt' ? 'Full Court'
+              : s.court === 'supreme' ? 'Supreme'
+              : s.court === 'magistrates' ? 'Magistrates'
+              : s.court.toUpperCase()
+              : 'Unknown';
+            return `
+              <div class="source-item">
+                <div class="row" style="gap:6px;flex-wrap:wrap;">
+                  <span class="source-citation">${s.citation}</span>
+                  <span class="court-badge ${courtClass}">${courtLabel}</span>
+                  <span class="score-badge">score ${s.score}</span>
+                </div>
+                <div class="source-meta">${s.year || '—'}</div>
+                ${s.summary ? `<div class="source-summary">${s.summary.substring(0, 200)}${s.summary.length > 200 ? '…' : ''}</div>` : ''}
+              </div>`;
+          }).join('');
+        } else {
+          sourcesCard.style.display = 'none';
+        }
+
+        chunkCount.textContent = sources.length > 0
+          ? `${sources.length} case${sources.length !== 1 ? 's' : ''} cited`
+          : '';
+
+      } catch (err) {
+        answerBlock.className = 'answer-block';
+        answerBlock.textContent = `Error: ${err.message}`;
+        answerMeta.textContent = '';
+      } finally {
+        queryBtn.disabled = false;
+        queryBtn.textContent = 'Ask';
+      }
+    }
+  </script>
 </body>
-
 </html>
