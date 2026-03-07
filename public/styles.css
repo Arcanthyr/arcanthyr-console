@@ -18,22 +18,22 @@
 
 /* --- Design Tokens ------------------------------------------ */
 :root {
-  --bg:            #f5f3ee;
-  --surface:       #edeae3;
-  --surface-raise: #e4e0d7;
-  --border:        #ccc8be;
-  --border-light:  #b8b3a8;
-  --text:          #1c1a16;
-  --text-mid:      #52504a;
-  --text-dim:      #9a968c;
-  --gold:          #3a3630;
-  --gold-dim:      #e8e4dc;
-  --green:         #4a7a4e;
-  --green-dim:     #e4efe4;
-  --amber:         #7a5a18;
-  --amber-dim:     #f5ece0;
-  --blue:          #3a6a9a;
-  --blue-dim:      #e4eef8;
+  --bg: #ffffff;
+  --surface: #f2f0eb;
+  --surface-raise: #e8e4dc;
+  --border: #ccc8be;
+  --border-light: #b8b3a8;
+  --text: #1c1a16;
+  --text-mid: #52504a;
+  --text-dim: #9a968c;
+  --gold: #3a3630;
+  --gold-dim: #e8e4dc;
+  --green: #4a7a4e;
+  --green-dim: #e4efe4;
+  --amber: #7a5a18;
+  --amber-dim: #f5ece0;
+  --blue: #3a6a9a;
+  --blue-dim: #e4eef8;
   --radius: 8px;
   --pad: 24px;
   --gap: 16px;
@@ -79,13 +79,15 @@ body {
   width: min(340px, 88vw);
   height: auto;
   margin-bottom: 32px;
-  opacity: 0.75;
+  opacity: 0.85;
+  filter: invert(1) brightness(0.15);
 }
 
 .sigil-sm {
   width: 28px;
   height: 39px;
-  opacity: 0.45;
+  opacity: 0.7;
+  filter: invert(1) brightness(0.15);
   flex-shrink: 0;
 }
 
@@ -147,9 +149,9 @@ nav.site-nav {
 .card {
   background: var(--surface);
   box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.7) inset,
-    0 -1px 0 0 rgba(0,0,0,0.06) inset,
-    0 2px 8px rgba(0,0,0,0.08);
+    0 1px 0 0 rgba(255, 255, 255, 0.7) inset,
+    0 -1px 0 0 rgba(0, 0, 0, 0.06) inset,
+    0 2px 8px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--pad);
@@ -324,7 +326,7 @@ button:hover,
   border-color: var(--blue);
   color: var(--blue);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 button:active,
@@ -399,8 +401,15 @@ button.ai-btn:hover {
 }
 
 @keyframes pulse-dim {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 0.9; }
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
 }
 
 .output.ai-output {
@@ -596,13 +605,27 @@ mark {
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 @keyframes toast-fade {
-  from { opacity: 1; transform: translateX(-50%) translateY(0); }
-  to   { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
 }
 
 /* --- Footer ------------------------------------------------- */
@@ -616,14 +639,41 @@ mark {
 
 /* --- Page entry animation ----------------------------------- */
 @keyframes page-in {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.wrap > * { animation: page-in 0.4s ease both; }
-.wrap > *:nth-child(1) { animation-delay: 0ms; }
-.wrap > *:nth-child(2) { animation-delay: 60ms; }
-.wrap > *:nth-child(3) { animation-delay: 120ms; }
-.wrap > *:nth-child(4) { animation-delay: 180ms; }
-.wrap > *:nth-child(5) { animation-delay: 240ms; }
-.wrap > *:nth-child(6) { animation-delay: 300ms; }
+.wrap>* {
+  animation: page-in 0.4s ease both;
+}
+
+.wrap>*:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.wrap>*:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.wrap>*:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.wrap>*:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.wrap>*:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.wrap>*:nth-child(6) {
+  animation-delay: 300ms;
+}
