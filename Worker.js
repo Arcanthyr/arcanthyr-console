@@ -1,14 +1,17 @@
 /* =============================================================
-   ARCANTHYR — Cloudflare Worker  v7
-   CHANGES FROM v6:
-     - raw_text column: full scraped text now stored permanently in D1
-       so summaries can be regenerated without re-scraping
-     - fetch-page proxy endpoint: routes AustLII requests through
-       Cloudflare edge IPs, allowing VPS scraper to bypass IP block
-     - saveCaseToDb: saves raw_text alongside extracted fields
-     - processCaseUpload: passes raw text through to DB
+   ARCANTHYR — Cloudflare Worker  v8
+   CHANGES FROM v7:
+     - handleLegalQueryWorkersAI: new query handler using Cloudflare
+       Workers AI (Llama 3.2 3b on Cloudflare GPU) — free tier,
+       ~1000 queries/day, fast. Use for routine queries.
+     - handleLegalQueryQwen: retained but inactive — routes to VPS
+       nexus /query. Not viable until VPS gets a GPU.
+     - handleLegalQuery (Claude): retained for complex queries.
+     - score_threshold default lowered to 0.65 across all query
+       handlers (0.72 was clipping valid results in baseline tests).
+     - model field added to all query responses for UI toggle use.
    ============================================================= */
-console.log('Worker v7 loaded successfully');
+console.log('Worker v8 loaded successfully');
 
 const _ratemap = new Map();
 
@@ -1137,8 +1140,8 @@ async function handleLegalQuery(body, env) {
     },
     body: JSON.stringify({
       query_text: query.trim(),
-      top_k:           top_k || 6,
-      score_threshold: score_threshold || 0.72,
+      top_k: top_k || 6,
+      score_threshold: score_threshold || 0.65,
     }),
   });
 
@@ -1152,6 +1155,7 @@ async function handleLegalQuery(body, env) {
       answer: "No sufficiently relevant cases were found in the database for that query. Try rephrasing, or the relevant cases may not yet be ingested.",
       sources: [],
       chunk_count: 0,
+      model: "claude",
     };
   }
 
@@ -1203,13 +1207,142 @@ Answer the question based on these excerpts. Cite the case citation (e.g. [2024]
     .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
     .map(c => ({
       citation: c.citation,
+      court: c.court,
+      year: c.year,
+      score: c.score,
+      summary: c.summary || "",
+    }));
+
+  return { answer, sources, chunk_count: chunks.length, model: "claude" };
+}
+
+/* =============================================================
+   LEGAL QUERY — Qwen3 via nexus /query
+   Mirrors handleLegalQuery but routes to nexus for local inference.
+   ============================================================= */
+async function handleLegalQueryQwen(body, env) {
+  const { query, top_k, score_threshold } = body;
+  if (!query || !query.trim()) throw new Error("query field required");
+
+  const nexusRes = await fetch("https://nexus.arcanthyr.com/query", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Nexus-Key": env.NEXUS_SECRET_KEY,
+    },
+    body: JSON.stringify({
+      query_text: query.trim(),
+      top_k: top_k || 6,
+      score_threshold: score_threshold || 0.65,
+    }),
+  });
+
+  if (!nexusRes.ok) throw new Error(`Nexus query failed: ${nexusRes.status}`);
+  const nexusData = await nexusRes.json();
+
+  if (!nexusData.ok) throw new Error(nexusData.error || "Nexus query error");
+
+  const chunks = nexusData.chunks || [];
+  const answer = nexusData.answer || "No response from model.";
+
+  // Deduplicated source list — same shape as handleLegalQuery
+  const seen = new Set();
+  const sources = chunks
+    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
+    .map(c => ({
+      citation: c.citation,
+      court: c.court,
+      year: c.year,
+      score: c.score,
+      summary: c.summary || "",
+    }));
+
+  return { answer, sources, chunk_count: chunks.length, model: "qwen" };
+}
+
+/* =============================================================
+   LEGAL QUERY — Workers AI (Llama 3.2 3b via Cloudflare GPU)
+   Free tier: ~1000 queries/day at no cost. Fast (~2-5s).
+   Use for routine queries. Route complex queries to legal-query
+   (Claude) instead.
+   ============================================================= */
+async function handleLegalQueryWorkersAI(body, env) {
+  const { query, top_k, score_threshold } = body;
+  if (!query || !query.trim()) throw new Error("query field required");
+
+  if (!env.AI) throw new Error("Workers AI binding not configured");
+
+  // ── Step 1: Retrieve chunks from Qdrant via nexus ────────────
+  const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Nexus-Key": env.NEXUS_SECRET_KEY,
+    },
+    body: JSON.stringify({
+      query_text:      query.trim(),
+      top_k:           top_k || 6,
+      score_threshold: score_threshold || 0.65,
+    }),
+  });
+
+  if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
+  const nexusData = await nexusRes.json();
+  const chunks = nexusData.chunks || [];
+
+  // ── Step 2: Handle no results ────────────────────────────────
+  if (chunks.length === 0) {
+    return {
+      answer: "No sufficiently relevant cases were found in the database for that query. Try rephrasing, or the relevant cases may not yet be ingested.",
+      sources: [],
+      chunk_count: 0,
+      model: "workers-ai",
+    };
+  }
+
+  // ── Step 3: Build context blocks ─────────────────────────────
+  const contextBlocks = chunks.map((c, i) => {
+    const principles = Array.isArray(c.principles) && c.principles.length > 0
+      ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
+      : "";
+    return `[${i + 1}] ${c.citation} (${c.court?.toUpperCase() || "Unknown court"}, ${c.year || "?"})
+${c.text}${principles}`;
+  }).join("\n\n---\n\n");
+
+  const systemPrompt = `You are a Tasmanian criminal law research assistant. Answer questions using only the provided case excerpts. Be precise and cite the specific cases that support each point. If the excerpts do not contain enough information to answer fully, say so clearly rather than speculating. Format your answer in plain prose — no markdown headers, no bullet points unless listing cases.`;
+
+  const userPrompt = `Question: ${query.trim()}
+
+Relevant case excerpts:
+
+${contextBlocks}
+
+Answer the question based on these excerpts. Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
+
+  // ── Step 4: Call Workers AI (Llama 3.2 3b — Cloudflare GPU) ──
+  const response = await env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
+    max_tokens: 1024,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user",   content: userPrompt },
+    ],
+  });
+
+  const answer = (response.response || "No response from model.").trim();
+
+  // ── Step 5: Return answer + deduplicated source list ─────────
+  const seen = new Set();
+  const sources = chunks
+    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
+    .map(c => ({
+      citation: c.citation,
       court:    c.court,
       year:     c.year,
       score:    c.score,
       summary:  c.summary || "",
     }));
 
-  return { answer, sources, chunk_count: chunks.length };
+  return { answer, sources, chunk_count: chunks.length, model: "workers-ai" };
 }
 
 /* =============================================================
@@ -1320,6 +1453,8 @@ export default {
         }
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
+        else if (action === "legal-query-qwen" && request.method === "POST") result = await handleLegalQueryQwen(body, env);
+        else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });
