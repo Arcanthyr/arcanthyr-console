@@ -1089,11 +1089,11 @@ async function handleLibraryDelete(docType, id, env) {
   const tableMap = { case: 'cases', legislation: 'legislation', secondary: 'secondary_sources' };
   const table = tableMap[docType];
   if (!table) throw new Error(`Unknown doc_type: ${docType}`);
-  await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
-  // If it's a legislation delete, also remove its sections
+  // Delete child records first to avoid foreign key constraint failures
   if (docType === 'legislation') {
     await env.DB.prepare("DELETE FROM legislation_sections WHERE legislation_id = ?").bind(id).run();
   }
+  await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
   return { ok: true, deleted: id };
 }
 
