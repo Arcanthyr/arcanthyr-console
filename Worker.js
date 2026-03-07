@@ -864,7 +864,7 @@ async function handleUploadLegislation(body, env) {
   // Section number and heading are on the same line, separated by 2+ spaces.
   // Also handles plain format without dot: "1  Short title"
   // Strips page headers/footers (Act name + "Act No.") which appear mid-text.
-  const sectionPattern = /^(\d+[A-Z]?)\.?\s{2,}(.+)$/gm;
+  const sectionPattern = /^(\d+[A-Z]?)\.?\s+(.+)$/gm;
   const sections = [];
   let match;
   const seenSections = new Set();
@@ -887,7 +887,7 @@ async function handleUploadLegislation(body, env) {
     .replace(/\n{3,}/g, '\n\n');
 
   // Skip the table of contents — find where actual section bodies start
-  const contentStart = cleanText.search(/\n1\.\s{2,}[A-Z]/);
+  const contentStart = cleanText.search(/\n1\.\s+[A-Z]/);
   const searchText = contentStart > 0 ? cleanText.substring(contentStart) : cleanText;
 
   while ((match = sectionPattern.exec(searchText)) !== null) {
@@ -911,7 +911,7 @@ async function handleUploadLegislation(body, env) {
     const sectionStart = match.index;
     const nextMatchPos = sectionPattern.lastIndex;
     const remaining = searchText.substring(nextMatchPos);
-    const nextSection = remaining.search(/^\d+[A-Z]?\.?\s{2,}/m);
+    const nextSection = remaining.search(/^\d+[A-Z]?\.?\s+/m);
     const sectionEnd = nextMatchPos + (nextSection > 0 ? nextSection : Math.min(remaining.length, 8000));
     const sectionText = searchText.substring(sectionStart, sectionEnd)
       .replace(/\s+/g, ' ').trim();
@@ -1281,8 +1281,8 @@ ${c.text}${principles}`;
   const systemPrompt = (sectionContext && hasCases)
     ? `You are a Tasmanian criminal law research assistant. The section text has been provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Format in plain prose - no markdown headers.`
     : (sectionContext && !hasCases)
-      ? `You are a Tasmanian criminal law research assistant. The section text has been provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Format in plain prose - no markdown headers.`
-      : `You are a Tasmanian criminal law research assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. If the excerpts do not contain enough information, say so clearly. Format in plain prose - no markdown headers.`;
+    ? `You are a Tasmanian criminal law research assistant. The section text has been provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Format in plain prose - no markdown headers.`
+    : `You are a Tasmanian criminal law research assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. If the excerpts do not contain enough information, say so clearly. Format in plain prose - no markdown headers.`;
 
   const answерNote = sectionContext
     ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`
@@ -1458,14 +1458,14 @@ ${c.text}`;
   const systemPrompt = (sectionContext && hasCases)
     ? `You are a Tasmanian criminal law assistant. The section text is provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Plain prose only.`
     : (sectionContext && !hasCases)
-      ? `You are a Tasmanian criminal law assistant. The section text is provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Plain prose only.`
-      : `You are a Tasmanian criminal law assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. Plain prose only.`;
+    ? `You are a Tasmanian criminal law assistant. The section text is provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Plain prose only.`
+    : `You are a Tasmanian criminal law assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. Plain prose only.`;
 
   const answerNote = (sectionContext && hasCases)
     ? `Quote ${sectionContext.label} in your answer, then discuss how the cases have applied or interpreted it.`
     : (sectionContext && !hasCases)
-      ? `Explain ${sectionContext.label} clearly. Do not invent case law - note that no cases interpreting this section have been ingested yet.`
-      : `Cite the case citation when relying on a specific case.`;
+    ? `Explain ${sectionContext.label} clearly. Do not invent case law - note that no cases interpreting this section have been ingested yet.`
+    : `Cite the case citation when relying on a specific case.`;
 
   // ── Step 3: Workers AI inference ─────────────────────────────
   const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
