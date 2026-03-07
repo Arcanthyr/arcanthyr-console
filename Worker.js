@@ -886,8 +886,15 @@ async function handleUploadLegislation(body, env) {
     // Collapse 3+ blank lines to 2
     .replace(/\n{3,}/g, '\n\n');
 
-  // Skip the table of contents — find where actual section bodies start
-  const contentStart = cleanText.search(/\n1\.\s+[A-Z]/);
+  // Skip the table of contents — find where actual section bodies start.
+  // The TOC contains lines like "38. Unfavourable witness" with no body.
+  // The actual body starts where a section number line is followed by substantive text
+  // (not immediately another section number line).
+  // Strategy: find the LAST occurrence of "1." heading — that's the real section 1 body.
+  const tocPattern = /\n1\.\s+[A-Z]/g;
+  let tocMatch, lastTocMatch;
+  while ((tocMatch = tocPattern.exec(cleanText)) !== null) lastTocMatch = tocMatch;
+  const contentStart = lastTocMatch ? lastTocMatch.index : cleanText.search(/\n1\.\s+[A-Z]/);
   const searchText = contentStart > 0 ? cleanText.substring(contentStart) : cleanText;
 
   while ((match = sectionPattern.exec(searchText)) !== null) {
