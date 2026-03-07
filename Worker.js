@@ -1089,11 +1089,26 @@ async function handleLibraryDelete(docType, id, env) {
   const tableMap = { case: 'cases', legislation: 'legislation', secondary: 'secondary_sources' };
   const table = tableMap[docType];
   if (!table) throw new Error(`Unknown doc_type: ${docType}`);
-  // Delete child records first to avoid foreign key constraint failures
+
+  // ── Step 1: Delete child records first (FK constraint) ───────
   if (docType === 'legislation') {
     await env.DB.prepare("DELETE FROM legislation_sections WHERE legislation_id = ?").bind(id).run();
   }
+
+  // ── Step 2: Delete from D1 ───────────────────────────────────
   await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
+
+  // ── Step 3: Delete all Qdrant vectors for this citation ──────
+  try {
+    await fetch("https://nexus.arcanthyr.com/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+      body: JSON.stringify({ citation: id }),
+    });
+  } catch (e) {
+    console.error("Nexus delete failed (non-fatal):", e.message);
+  }
+
   return { ok: true, deleted: id };
 }
 
@@ -1232,7 +1247,7 @@ async function handleLegalQuery(body, env) {
 
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
-  const chunks = (nexusData.chunks || []).filter(c => c.category !== 'legislation' && c.source !== 'legislation');
+  const chunks = (nexusData.chunks || []).filter(c => !(c.court === null && c.year === null && typeof c.citation === 'string' && !c.citation.match(/^\[\d{4}\]/)));
   const hasCases = chunks.length > 0;
 
   // ── Step 1b: Section query detection — prepend legislation text ─
@@ -1411,7 +1426,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   });
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
-  const chunks = (nexusData.chunks || []).filter(c => c.category !== 'legislation' && c.source !== 'legislation');
+  const chunks = (nexusData.chunks || []).filter(c => !(c.court === null && c.year === null && typeof c.citation === 'string' && !c.citation.match(/^\[\d{4}\]/)));
   const hasCases = chunks.length > 0;
 
   // ── Step 1b: Section query detection ─────────────────────────
