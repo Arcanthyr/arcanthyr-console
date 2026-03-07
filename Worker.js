@@ -1226,9 +1226,11 @@ ${c.text}${principles}`;
     ? `${sectionContext.block}\n\n---\n\n${caseBlocks}`
     : caseBlocks;
 
-  const systemPrompt = sectionContext
-    ? `You are a Tasmanian criminal law research assistant. The section text has been provided directly from the legislation. Quote and explain it, then discuss how cases have applied or interpreted it. Be precise. Format in plain prose — no markdown headers.`
-    : `You are a Tasmanian criminal law research assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. If the excerpts do not contain enough information, say so clearly. Format in plain prose — no markdown headers.`;
+  const systemPrompt = (sectionContext && hasCases)
+    ? `You are a Tasmanian criminal law research assistant. The section text has been provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Format in plain prose - no markdown headers.`
+    : (sectionContext && !hasCases)
+      ? `You are a Tasmanian criminal law research assistant. The section text has been provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Format in plain prose - no markdown headers.`
+      : `You are a Tasmanian criminal law research assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. If the excerpts do not contain enough information, say so clearly. Format in plain prose - no markdown headers.`;
 
   const answерNote = sectionContext
     ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`
@@ -1399,13 +1401,18 @@ ${c.text}`;
     ? `${sectionContext.block}\n\n---\n\n${caseBlocks}`
     : caseBlocks;
 
-  const systemPrompt = sectionContext
-    ? `You are a Tasmanian criminal law assistant. The section text is provided. Quote and explain it, then discuss how cases have applied it. Be concise and precise. Plain prose only.`
-    : `You are a Tasmanian criminal law assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. Plain prose only.`;
+  const hasCases = chunks.length > 0;
+  const systemPrompt = (sectionContext && hasCases)
+    ? `You are a Tasmanian criminal law assistant. The section text is provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Plain prose only.`
+    : (sectionContext && !hasCases)
+      ? `You are a Tasmanian criminal law assistant. The section text is provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Plain prose only.`
+      : `You are a Tasmanian criminal law assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. Plain prose only.`;
 
-  const answerNote = sectionContext
-    ? `Quote ${sectionContext.label} in your answer, then discuss relevant cases.`
-    : `Cite the case citation when relying on a specific case.`;
+  const answerNote = (sectionContext && hasCases)
+    ? `Quote ${sectionContext.label} in your answer, then discuss how the cases have applied or interpreted it.`
+    : (sectionContext && !hasCases)
+      ? `Explain ${sectionContext.label} clearly. Do not invent case law - note that no cases interpreting this section have been ingested yet.`
+      : `Cite the case citation when relying on a specific case.`;
 
   // ── Step 3: Workers AI inference ─────────────────────────────
   const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
