@@ -957,7 +957,7 @@ async function handleUploadLegislation(body, env) {
         citation: id,
         case_name: `${title} (${jurisdiction})`,
         source: "legislation",
-        text: doc_text,
+        text: sections.map(s => `${s.section_number}. ${s.heading}\n${s.text}`).join('\n\n'),
         summary: `${title} (${jurisdiction})${year ? ' ' + year : ''}`,
         category: "legislation",
         jurisdiction,
@@ -1145,7 +1145,20 @@ function parseSectionQuery(query) {
 function resolveActTitle(actName) {
   const name = actName.toLowerCase();
   if (name.includes('evidence')) return 'Evidence Act 2001';
-  if (name.includes('criminal code')) return 'Criminal Code Act 1924';
+  if (name.includes('criminal code')) {
+    // Criminal Code is uploaded in parts — try to match part from query
+    if (name.includes('part i') || name.includes('part 1') || name.includes('introductory')) return 'Criminal Code Act 1924 - Part I';
+    if (name.includes('part ii') || name.includes('part 2') || name.includes('public order')) return 'Criminal Code Act 1924 - Part II';
+    if (name.includes('part iii') || name.includes('part 3') || name.includes('admin')) return 'Criminal Code Act 1924 - Part III';
+    if (name.includes('part iv') || name.includes('part 4') || name.includes('public general')) return 'Criminal Code Act 1924 - Part IV';
+    if (name.includes('part v') || name.includes('part 5') || name.includes('person')) return 'Criminal Code Act 1924 - Part V';
+    if (name.includes('part vi') || name.includes('part 6') || name.includes('property')) return 'Criminal Code Act 1924 - Part VI';
+    if (name.includes('part vii') || name.includes('part 7') || name.includes('fraud')) return 'Criminal Code Act 1924 - Part VII';
+    if (name.includes('part viii') || name.includes('part 8') || name.includes('conspirac')) return 'Criminal Code Act 1924 - Part VIII';
+    if (name.includes('part ix') || name.includes('part 9') || name.includes('procedure')) return 'Criminal Code Act 1924 - Part IX';
+    // No part specified — try each part sequentially via D1 at query time
+    return 'Criminal Code Act 1924 - Part V'; // default to Part V (crimes against person — most queried)
+  }
   if (name.includes('sentencing')) return 'Sentencing Act 1997';
   if (name.includes('bail')) return 'Bail Act 1994';
   if (name.includes('justices')) return 'Justices Act 1959';
@@ -1156,18 +1169,41 @@ function resolveActTitle(actName) {
   return actName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 }
 
-/* Fetch a section from D1 and format as context block. Returns null if not found. */
+/* Fetch a section from D1 and format as context block. Returns null if not found.
+   For Criminal Code queries without a part specified, tries all parts sequentially. */
 async function fetchSectionContext(sectionNum, actName, env) {
   const resolvedTitle = resolveActTitle(actName);
-  const row = await handleSectionLookup({ title: resolvedTitle, jurisdiction: 'Tas', section: sectionNum }, env).catch(() => null);
-  if (!row || !row.found) return null;
-  return {
-    block: `[LEGISLATION] ${row.title} s ${row.section_number} — ${row.heading}\n${row.text}`,
-    label: `${row.title} s ${row.section_number}`,
-    title: row.title,
-    section: row.section_number,
-    heading: row.heading,
-  };
+
+  // If Criminal Code with no specific part, search all parts
+  const crimCodeParts = [
+    'Criminal Code Act 1924 - Part I',
+    'Criminal Code Act 1924 - Part II',
+    'Criminal Code Act 1924 - Part III',
+    'Criminal Code Act 1924 - Part IV',
+    'Criminal Code Act 1924 - Part V',
+    'Criminal Code Act 1924 - Part VI',
+    'Criminal Code Act 1924 - Part VII',
+    'Criminal Code Act 1924 - Part VIII',
+    'Criminal Code Act 1924 - Part IX',
+  ];
+  const isCrimCodeGeneric = actName.toLowerCase().includes('criminal code') &&
+    !actName.toLowerCase().match(/part (i|v|x|\d)/i);
+
+  const titlesToTry = isCrimCodeGeneric ? crimCodeParts : [resolvedTitle];
+
+  for (const title of titlesToTry) {
+    const row = await handleSectionLookup({ title, jurisdiction: 'Tas', section: sectionNum }, env).catch(() => null);
+    if (row && row.found) {
+      return {
+        block: `[LEGISLATION] ${row.title} s ${row.section_number} — ${row.heading}\n${row.text}`,
+        label: `${row.title} s ${row.section_number}`,
+        title: row.title,
+        section: row.section_number,
+        heading: row.heading,
+      };
+    }
+  }
+  return null;
 }
 
 /* =============================================================
@@ -1196,7 +1232,7 @@ async function handleLegalQuery(body, env) {
 
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
-  const chunks = nexusData.chunks || [];
+  const chunks = (nexusData.chunks || []).filter(c => c.category !== 'legislation' && c.source !== 'legislation');
   const hasCases = chunks.length > 0;
 
   // ── Step 1b: Section query detection — prepend legislation text ─
@@ -1305,7 +1341,7 @@ async function handleLegalQueryQwen(body, env) {
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,
-      score_threshold: score_threshold || 0.72,
+      score_threshold: score_threshold || 0.65,
     }),
   });
 
@@ -1375,7 +1411,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   });
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
-  const chunks = nexusData.chunks || [];
+  const chunks = (nexusData.chunks || []).filter(c => c.category !== 'legislation' && c.source !== 'legislation');
   const hasCases = chunks.length > 0;
 
   // ── Step 1b: Section query detection ─────────────────────────
