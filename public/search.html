@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,19 +23,30 @@
       resize: vertical;
       transition: border-color var(--t), box-shadow var(--t);
     }
-    .query-input::placeholder { color: var(--text-dim); font-style: italic; }
-    .query-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-dim); }
 
+    .query-input::placeholder {
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    .query-input:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px var(--gold-dim);
+    }
+
+    /* Answer block — deeper bg, brighter text, left accent */
     .answer-block {
-      background: var(--bg);
-      border: 1px solid rgba(110, 146, 180, 0.25);
+      background: #0c0d0f;
+      border: 1px solid rgba(110, 146, 180, 0.2);
+      border-left: 2px solid rgba(110, 146, 180, 0.45);
       border-radius: var(--radius);
-      padding: 20px;
+      padding: 20px 22px;
       font-family: 'DM Mono', monospace;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       font-weight: 300;
-      color: var(--text-mid);
-      line-height: 1.9;
+      color: #c8cdd4;
+      line-height: 2;
       white-space: pre-wrap;
     }
 
@@ -58,28 +70,52 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-      transition: border-left-color var(--t);
+      transition: border-left-color var(--t), border-color var(--t);
     }
-    .source-item:hover { border-left-color: var(--blue); }
+
+    .source-item:hover {
+      border-left-color: var(--blue);
+      border-color: var(--border-light);
+    }
+
+    .source-item.has-link:hover {
+      border-left-color: var(--gold);
+    }
+
+    .source-item.legislation {
+      border-left-color: rgba(122, 158, 126, 0.4);
+    }
+
+    .source-item.legislation:hover {
+      border-left-color: var(--green);
+    }
 
     .source-citation {
       font-family: 'DM Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.825rem;
       font-weight: 500;
       color: var(--gold);
+      letter-spacing: 0.02em;
     }
 
     .source-meta {
       font-size: 0.7rem;
       color: var(--text-dim);
       letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .source-summary {
-      font-size: 0.75rem;
+      font-size: 0.775rem;
       color: var(--text-mid);
-      line-height: 1.6;
-      margin-top: 2px;
+      line-height: 1.65;
+      margin-top: 4px;
+    }
+
+    .source-actions {
+      margin-top: 6px;
     }
 
     .score-badge {
@@ -116,6 +152,28 @@
       border-color: rgba(200, 169, 110, 0.25);
     }
 
+    .court-badge.legislation {
+      background: rgba(122, 158, 126, 0.1);
+      color: var(--green);
+      border-color: rgba(122, 158, 126, 0.25);
+      text-transform: none;
+      letter-spacing: 0.04em;
+    }
+
+    .model-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 16px;
+      padding: 0 6px;
+      background: rgba(110, 146, 180, 0.08);
+      color: var(--blue);
+      border-radius: 3px;
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(110, 146, 180, 0.15);
+    }
+
     .threshold-row {
       display: flex;
       align-items: center;
@@ -148,22 +206,52 @@
       letter-spacing: 0.04em;
     }
 
-    #queryBtn { min-width: 120px; }
-    #queryBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+    /* Expand/collapse toggle — inherits button base but stripped back */
+    .expand-toggle {
+      height: auto;
+      padding: 2px 0;
+      background: none;
+      border: none;
+      color: var(--blue);
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .expand-toggle:hover {
+      background: none;
+      border: none;
+      color: var(--blue);
+      opacity: 1;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #queryBtn {
+      min-width: 120px;
+    }
+
+    #queryBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
 <body>
   <nav class="site-nav">
     <a href="index.html" aria-label="Home">
-      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="sigil sigil-sm" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true">
         <defs>
           <filter id="tex-sm">
             <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
           </filter>
         </defs>
-        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4" opacity="0.7" />
+        <circle cx="140" cy="170" r="60" stroke="#a8b4c0" stroke-width="0.8" fill="none" stroke-dasharray="2 4"
+          opacity="0.7" />
         <polygon points="140,110 137,162 140,158 143,162" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="140,230 137,178 140,182 143,178" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
         <polygon points="200,170 148,167 152,170 148,173" fill="#a8b4c0" opacity="0.9" filter="url(#tex-sm)" />
@@ -191,18 +279,15 @@
         <span class="chunk-count" id="chunkCount"></span>
       </div>
 
-      <textarea
-        id="queryInput"
-        class="query-input"
+      <textarea id="queryInput" class="query-input"
         placeholder="Ask a legal question — e.g. What is the standard for appellate intervention in sentencing?"
-        rows="3"
-      ></textarea>
+        rows="3"></textarea>
 
-      <!-- Retrieval threshold control -->
+      <!-- Retrieval threshold -->
       <div class="threshold-row">
         <label for="thresholdSlider">Relevance threshold</label>
-        <input type="range" id="thresholdSlider" min="0.3" max="0.9" step="0.01" value="0.72" />
-        <span class="threshold-val" id="thresholdVal">0.72</span>
+        <input type="range" id="thresholdSlider" min="0.3" max="0.9" step="0.01" value="0.65" />
+        <span class="threshold-val" id="thresholdVal">0.65</span>
         <span style="font-size:0.67rem;color:var(--text-dim);">(lower = broader, higher = stricter)</span>
       </div>
 
@@ -216,7 +301,10 @@
     <section class="card" id="answerCard" style="display:none">
       <div class="row space">
         <span class="label">Answer</span>
-        <span class="chunk-count" id="answerMeta"></span>
+        <div class="row" style="gap:8px;">
+          <span class="model-badge" id="modelBadge" style="display:none"></span>
+          <span class="chunk-count" id="answerMeta"></span>
+        </div>
       </div>
       <div id="answerBlock" class="answer-block"></div>
     </section>
@@ -233,24 +321,23 @@
   </main>
 
   <script>
-    const queryInput   = document.getElementById('queryInput');
-    const queryBtn     = document.getElementById('queryBtn');
-    const clearBtn     = document.getElementById('clearBtn');
-    const answerCard   = document.getElementById('answerCard');
-    const answerBlock  = document.getElementById('answerBlock');
-    const answerMeta   = document.getElementById('answerMeta');
-    const sourcesCard  = document.getElementById('sourcesCard');
-    const sourcesList  = document.getElementById('sourcesList');
-    const chunkCount   = document.getElementById('chunkCount');
+    const queryInput = document.getElementById('queryInput');
+    const queryBtn = document.getElementById('queryBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const answerCard = document.getElementById('answerCard');
+    const answerBlock = document.getElementById('answerBlock');
+    const answerMeta = document.getElementById('answerMeta');
+    const modelBadge = document.getElementById('modelBadge');
+    const sourcesCard = document.getElementById('sourcesCard');
+    const sourcesList = document.getElementById('sourcesList');
+    const chunkCount = document.getElementById('chunkCount');
     const thresholdSlider = document.getElementById('thresholdSlider');
-    const thresholdVal    = document.getElementById('thresholdVal');
+    const thresholdVal = document.getElementById('thresholdVal');
 
-    // Threshold slider live update
     thresholdSlider.addEventListener('input', () => {
       thresholdVal.textContent = parseFloat(thresholdSlider.value).toFixed(2);
     });
 
-    // Submit on Ctrl+Enter
     queryInput.addEventListener('keydown', e => {
       if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) runQuery();
     });
@@ -264,18 +351,81 @@
       queryInput.focus();
     });
 
+    /* Light markdown renderer — **bold**, *italic* only */
+    function renderMarkdown(text) {
+      return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    }
+
+    function courtLabel(court) {
+      const map = {
+        cca: 'CCA', fullcourt: 'Full Court', supreme: 'Supreme',
+        magistrates: 'Magistrates', legislation: 'Legislation'
+      };
+      return map[court] || (court ? court.toUpperCase() : 'Unknown');
+    }
+
+    function renderSource(s) {
+      const isLeg = s.court === 'legislation';
+      const cClass = s.court || 'unknown';
+      const score = (s.score != null && s.score < 1)
+        ? `<span class="score-badge">score ${Number(s.score).toFixed(3)}</span>` : '';
+
+      // Summary with expand/collapse at 600 chars
+      let summaryHtml = '';
+      if (s.summary) {
+        const SHORT = 600;
+        if (s.summary.length <= SHORT) {
+          summaryHtml = `<div class="source-summary">${s.summary}</div>`;
+        } else {
+          summaryHtml = `<div class="source-summary">
+            <span class="s-preview">${s.summary.substring(0, SHORT)}</span><span class="s-ellipsis">…</span><span class="s-rest" style="display:none">${s.summary.substring(SHORT)}</span>
+            <button class="expand-toggle" onclick="toggleSummary(this)">Show more</button>
+          </div>`;
+        }
+      }
+
+      const viewBtn = !isLeg
+        ? `<div class="source-actions">
+             <a class="btn ghost small" href="legal.html#citation=${encodeURIComponent(s.citation)}" target="_blank">View Case</a>
+           </div>` : '';
+
+      return `<div class="source-item ${isLeg ? 'legislation' : 'has-link'}">
+        <div class="row" style="gap:6px;flex-wrap:wrap;">
+          <span class="source-citation">${s.citation}</span>
+          <span class="court-badge ${cClass}">${courtLabel(s.court)}</span>
+          ${score}
+        </div>
+        <div class="source-meta">${s.year ? `<span>${s.year}</span>` : ''}</div>
+        ${summaryHtml}
+        ${viewBtn}
+      </div>`;
+    }
+
+    function toggleSummary(btn) {
+      const wrap = btn.closest('.source-summary');
+      const rest = wrap.querySelector('.s-rest');
+      const ell = wrap.querySelector('.s-ellipsis');
+      const open = rest.style.display !== 'none';
+      rest.style.display = open ? 'none' : 'inline';
+      ell.style.display = open ? 'inline' : 'none';
+      btn.textContent = open ? 'Show more' : 'Show less';
+    }
+
     async function runQuery() {
       const query = queryInput.value.trim();
       if (!query) { queryInput.focus(); return; }
 
       const threshold = parseFloat(thresholdSlider.value);
 
-      // Show loading state
       queryBtn.disabled = true;
       queryBtn.textContent = 'Searching…';
       answerCard.style.display = 'block';
       answerBlock.className = 'answer-block loading';
       answerBlock.textContent = 'Retrieving relevant cases and generating answer…';
+      modelBadge.style.display = 'none';
       sourcesCard.style.display = 'none';
       chunkCount.textContent = '';
 
@@ -288,50 +438,33 @@
 
         const data = await res.json();
         const result = data.result || data;
-
         if (result.error) throw new Error(result.error);
 
-        // Render answer
+        // Answer
         answerBlock.className = 'answer-block';
-        answerBlock.textContent = result.answer || 'No answer returned.';
+        answerBlock.innerHTML = renderMarkdown(result.answer || 'No answer returned.');
         answerMeta.textContent = `${result.chunk_count || 0} chunk${result.chunk_count !== 1 ? 's' : ''} retrieved`;
 
-        // Render sources
-        const sources = result.sources || [];
-        if (sources.length > 0) {
-          sourcesCard.style.display = 'block';
-          sourcesList.innerHTML = sources.map(s => {
-            const courtClass = s.court || 'unknown';
-            const courtLabel = s.court
-              ? s.court === 'cca' ? 'CCA'
-              : s.court === 'fullcourt' ? 'Full Court'
-              : s.court === 'supreme' ? 'Supreme'
-              : s.court === 'magistrates' ? 'Magistrates'
-              : s.court.toUpperCase()
-              : 'Unknown';
-            return `
-              <div class="source-item">
-                <div class="row" style="gap:6px;flex-wrap:wrap;">
-                  <span class="source-citation">${s.citation}</span>
-                  <span class="court-badge ${courtClass}">${courtLabel}</span>
-                  <span class="score-badge">score ${s.score}</span>
-                </div>
-                <div class="source-meta">${s.year || '—'}</div>
-                ${s.summary ? `<div class="source-summary">${s.summary.substring(0, 200)}${s.summary.length > 200 ? '…' : ''}</div>` : ''}
-              </div>`;
-          }).join('');
-        } else {
-          sourcesCard.style.display = 'none';
+        // Model badge
+        if (result.model) {
+          const labels = { claude: 'Claude', 'workers-ai': 'Workers AI', qwen: 'Qwen' };
+          modelBadge.textContent = labels[result.model] || result.model;
+          modelBadge.style.display = 'inline-flex';
         }
 
+        // Sources
+        const sources = result.sources || [];
+        sourcesCard.style.display = sources.length > 0 ? 'block' : 'none';
+        if (sources.length > 0) sourcesList.innerHTML = sources.map(renderSource).join('');
+
         chunkCount.textContent = sources.length > 0
-          ? `${sources.length} case${sources.length !== 1 ? 's' : ''} cited`
-          : '';
+          ? `${sources.length} source${sources.length !== 1 ? 's' : ''} cited` : '';
 
       } catch (err) {
         answerBlock.className = 'answer-block';
         answerBlock.textContent = `Error: ${err.message}`;
         answerMeta.textContent = '';
+        modelBadge.style.display = 'none';
       } finally {
         queryBtn.disabled = false;
         queryBtn.textContent = 'Ask';
@@ -339,4 +472,5 @@
     }
   </script>
 </body>
+
 </html>
