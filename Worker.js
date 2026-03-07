@@ -1197,6 +1197,7 @@ async function handleLegalQuery(body, env) {
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
   const chunks = nexusData.chunks || [];
+  const hasCases = chunks.length > 0;
 
   // ── Step 1b: Section query detection — prepend legislation text ─
   let sectionContext = null;
@@ -1314,6 +1315,7 @@ async function handleLegalQueryQwen(body, env) {
   if (!nexusData.ok) throw new Error(nexusData.error || "Nexus query error");
 
   const chunks = nexusData.chunks || [];
+  const hasCases = chunks.length > 0;
   const answer = nexusData.answer || "No response from model.";
 
   // Deduplicated source list — same shape as handleLegalQuery
@@ -1374,6 +1376,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
   const chunks = nexusData.chunks || [];
+  const hasCases = chunks.length > 0;
 
   // ── Step 1b: Section query detection ─────────────────────────
   let sectionContext = null;
@@ -1401,7 +1404,6 @@ ${c.text}`;
     ? `${sectionContext.block}\n\n---\n\n${caseBlocks}`
     : caseBlocks;
 
-  const hasCases = chunks.length > 0;
   const systemPrompt = (sectionContext && hasCases)
     ? `You are a Tasmanian criminal law assistant. The section text is provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Plain prose only.`
     : (sectionContext && !hasCases)
