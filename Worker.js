@@ -1,17 +1,14 @@
 /* =============================================================
-   ARCANTHYR — Cloudflare Worker  v8
-   CHANGES FROM v7:
-     - handleLegalQueryWorkersAI: new query handler using Cloudflare
-       Workers AI (Llama 3.2 3b on Cloudflare GPU) — free tier,
-       ~1000 queries/day, fast. Use for routine queries.
-     - handleLegalQueryQwen: retained but inactive — routes to VPS
-       nexus /query. Not viable until VPS gets a GPU.
-     - handleLegalQuery (Claude): retained for complex queries.
-     - score_threshold default lowered to 0.65 across all query
-       handlers (0.72 was clipping valid results in baseline tests).
-     - model field added to all query responses for UI toggle use.
+   ARCANTHYR — Cloudflare Worker  v7
+   CHANGES FROM v6:
+     - raw_text column: full scraped text now stored permanently in D1
+       so summaries can be regenerated without re-scraping
+     - fetch-page proxy endpoint: routes AustLII requests through
+       Cloudflare edge IPs, allowing VPS scraper to bypass IP block
+     - saveCaseToDb: saves raw_text alongside extracted fields
+     - processCaseUpload: passes raw text through to DB
    ============================================================= */
-console.log('Worker v8 loaded successfully');
+console.log('Worker v7 loaded successfully');
 
 const _ratemap = new Map();
 
@@ -1122,6 +1119,58 @@ async function handleSectionLookup(body, env) {
 }
 
 /* =============================================================
+   SECTION QUERY DETECTION
+   Detects patterns like "s 38 evidence act", "section 38(2) Evidence Act 2001",
+   "Evidence Act s.38" and returns { sectionNum, actName } or null.
+   ============================================================= */
+function parseSectionQuery(query) {
+  const q = query.trim();
+
+  // Pattern A: "s[.] 38[A][(2)] <Act Name>" — section first
+  const patA = /^s(?:ection)?\.?\s*(\d+[A-Z]?(?:\(\d+\))?)\s+(.{4,60}?)(?:\s+\d{4})?$/i;
+  // Pattern B: "<Act Name> s[.] 38[A][(2)]" — act first
+  const patB = /^(.{4,60}?)\s+s(?:ection)?\.?\s*(\d+[A-Z]?(?:\(\d+\))?)(?:\s+\d{4})?$/i;
+
+  let m;
+  if ((m = patA.exec(q))) {
+    return { sectionNum: m[1].replace(/\(\d+\)/, '').trim(), actName: m[2].trim() };
+  }
+  if ((m = patB.exec(q))) {
+    return { sectionNum: m[2].replace(/\(\d+\)/, '').trim(), actName: m[1].trim() };
+  }
+  return null;
+}
+
+/* Resolve act name to legislation id prefix — fuzzy match against known acts */
+function resolveActTitle(actName) {
+  const name = actName.toLowerCase();
+  if (name.includes('evidence')) return 'Evidence Act 2001';
+  if (name.includes('criminal code')) return 'Criminal Code Act 1924';
+  if (name.includes('sentencing')) return 'Sentencing Act 1997';
+  if (name.includes('bail')) return 'Bail Act 1994';
+  if (name.includes('justices')) return 'Justices Act 1959';
+  if (name.includes('youth justice') || name.includes('youth')) return 'Youth Justice Act 1997';
+  if (name.includes('corrections')) return 'Corrections Act 1997';
+  if (name.includes('police')) return 'Police Offences Act 1935';
+  // Fall back to title-cased input
+  return actName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
+/* Fetch a section from D1 and format as context block. Returns null if not found. */
+async function fetchSectionContext(sectionNum, actName, env) {
+  const resolvedTitle = resolveActTitle(actName);
+  const row = await handleSectionLookup({ title: resolvedTitle, jurisdiction: 'Tas', section: sectionNum }, env).catch(() => null);
+  if (!row || !row.found) return null;
+  return {
+    block: `[LEGISLATION] ${row.title} s ${row.section_number} — ${row.heading}\n${row.text}`,
+    label: `${row.title} s ${row.section_number}`,
+    title: row.title,
+    section: row.section_number,
+    heading: row.heading,
+  };
+}
+
+/* =============================================================
    LEGAL QUERY — Phase 5 conversational interface
    Flow: embed query → Qdrant semantic search (nexus /search)
          → re-ranked chunks → Claude API with context
@@ -1149,17 +1198,23 @@ async function handleLegalQuery(body, env) {
   const nexusData = await nexusRes.json();
   const chunks = nexusData.chunks || [];
 
-  // ── Step 2: Build context from retrieved chunks ──────────────
-  if (chunks.length === 0) {
+  // ── Step 1b: Section query detection — prepend legislation text ─
+  let sectionContext = null;
+  const parsed = parseSectionQuery(query.trim());
+  if (parsed) {
+    sectionContext = await fetchSectionContext(parsed.sectionNum, parsed.actName, env);
+  }
+
+  // ── Step 2: Build context ────────────────────────────────────
+  if (chunks.length === 0 && !sectionContext) {
     return {
-      answer: "No sufficiently relevant cases were found in the database for that query. Try rephrasing, or the relevant cases may not yet be ingested.",
+      answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
       sources: [],
       chunk_count: 0,
-      model: "claude",
     };
   }
 
-  const contextBlocks = chunks.map((c, i) => {
+  const caseBlocks = chunks.map((c, i) => {
     const principles = Array.isArray(c.principles) && c.principles.length > 0
       ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
       : "";
@@ -1167,15 +1222,25 @@ async function handleLegalQuery(body, env) {
 ${c.text}${principles}`;
   }).join("\n\n---\n\n");
 
-  const systemPrompt = `You are a Tasmanian criminal law research assistant. You answer questions using only the provided case excerpts. Be precise and cite the specific cases that support each point. If the excerpts do not contain enough information to answer fully, say so clearly rather than speculating. Format your answer in plain prose — no markdown headers, no bullet points unless listing cases.`;
+  const contextBlocks = sectionContext
+    ? `${sectionContext.block}\n\n---\n\n${caseBlocks}`
+    : caseBlocks;
+
+  const systemPrompt = sectionContext
+    ? `You are a Tasmanian criminal law research assistant. The section text has been provided directly from the legislation. Quote and explain it, then discuss how cases have applied or interpreted it. Be precise. Format in plain prose — no markdown headers.`
+    : `You are a Tasmanian criminal law research assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. If the excerpts do not contain enough information, say so clearly. Format in plain prose — no markdown headers.`;
+
+  const answерNote = sectionContext
+    ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`
+    : `Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
 
   const userPrompt = `Question: ${query.trim()}
 
-Relevant case excerpts:
+Relevant material:
 
 ${contextBlocks}
 
-Answer the question based on these excerpts. Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
+${answерNote}`;
 
   // ── Step 3: Call Claude API ──────────────────────────────────
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1203,7 +1268,7 @@ Answer the question based on these excerpts. Cite the case citation (e.g. [2024]
 
   // ── Step 4: Return answer + deduplicated source list ─────────
   const seen = new Set();
-  const sources = chunks
+  const caseSources = chunks
     .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
     .map(c => ({
       citation: c.citation,
@@ -1212,6 +1277,10 @@ Answer the question based on these excerpts. Cite the case citation (e.g. [2024]
       score: c.score,
       summary: c.summary || "",
     }));
+
+  const sources = sectionContext
+    ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
+    : caseSources;
 
   return { answer, sources, chunk_count: chunks.length, model: "claude" };
 }
@@ -1233,7 +1302,7 @@ async function handleLegalQueryQwen(body, env) {
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,
-      score_threshold: score_threshold || 0.65,
+      score_threshold: score_threshold || 0.72,
     }),
   });
 
@@ -1257,92 +1326,7 @@ async function handleLegalQueryQwen(body, env) {
       summary: c.summary || "",
     }));
 
-  return { answer, sources, chunk_count: chunks.length, model: "qwen" };
-}
-
-/* =============================================================
-   LEGAL QUERY — Workers AI (Llama 3.2 3b via Cloudflare GPU)
-   Free tier: ~1000 queries/day at no cost. Fast (~2-5s).
-   Use for routine queries. Route complex queries to legal-query
-   (Claude) instead.
-   ============================================================= */
-async function handleLegalQueryWorkersAI(body, env) {
-  const { query, top_k, score_threshold } = body;
-  if (!query || !query.trim()) throw new Error("query field required");
-
-  if (!env.AI) throw new Error("Workers AI binding not configured");
-
-  // ── Step 1: Retrieve chunks from Qdrant via nexus ────────────
-  const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Nexus-Key": env.NEXUS_SECRET_KEY,
-    },
-    body: JSON.stringify({
-      query_text:      query.trim(),
-      top_k:           top_k || 6,
-      score_threshold: score_threshold || 0.65,
-    }),
-  });
-
-  if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
-  const nexusData = await nexusRes.json();
-  const chunks = nexusData.chunks || [];
-
-  // ── Step 2: Handle no results ────────────────────────────────
-  if (chunks.length === 0) {
-    return {
-      answer: "No sufficiently relevant cases were found in the database for that query. Try rephrasing, or the relevant cases may not yet be ingested.",
-      sources: [],
-      chunk_count: 0,
-      model: "workers-ai",
-    };
-  }
-
-  // ── Step 3: Build context blocks ─────────────────────────────
-  const contextBlocks = chunks.map((c, i) => {
-    const principles = Array.isArray(c.principles) && c.principles.length > 0
-      ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
-      : "";
-    return `[${i + 1}] ${c.citation} (${c.court?.toUpperCase() || "Unknown court"}, ${c.year || "?"})
-${c.text}${principles}`;
-  }).join("\n\n---\n\n");
-
-  const systemPrompt = `You are a Tasmanian criminal law research assistant. Answer questions using only the provided case excerpts. Be precise and cite the specific cases that support each point. If the excerpts do not contain enough information to answer fully, say so clearly rather than speculating. Format your answer in plain prose — no markdown headers, no bullet points unless listing cases.`;
-
-  const userPrompt = `Question: ${query.trim()}
-
-Relevant case excerpts:
-
-${contextBlocks}
-
-Answer the question based on these excerpts. Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
-
-  // ── Step 4: Call Workers AI (Llama 3.2 3b — Cloudflare GPU) ──
-  const response = await env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
-    max_tokens: 1024,
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user",   content: userPrompt },
-    ],
-  });
-
-  const answer = (response.response || "No response from model.").trim();
-
-  // ── Step 5: Return answer + deduplicated source list ─────────
-  const seen = new Set();
-  const sources = chunks
-    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
-    .map(c => ({
-      citation: c.citation,
-      court:    c.court,
-      year:     c.year,
-      score:    c.score,
-      summary:  c.summary || "",
-    }));
-
-  return { answer, sources, chunk_count: chunks.length, model: "workers-ai" };
+  return { answer, sources, chunk_count: chunks.length };
 }
 
 /* =============================================================
@@ -1365,6 +1349,86 @@ async function handleFetchPage(body) {
   });
   const html = await response.text();
   return { html, status: response.status };
+}
+
+/* =============================================================
+   LEGAL QUERY — Workers AI (Llama 3.1 8b via Cloudflare GPU)
+   Fast, free tier ~1000 queries/day. Section detection included.
+   ============================================================= */
+async function handleLegalQueryWorkersAI(body, env) {
+  const { query, top_k, score_threshold } = body;
+  if (!query || !query.trim()) throw new Error("query field required");
+
+  // ── Step 1: Qdrant search via nexus ──────────────────────────
+  const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+    body: JSON.stringify({
+      query_text: query.trim(),
+      top_k: top_k || 6,
+      score_threshold: score_threshold || 0.65,
+    }),
+  });
+  if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
+  const nexusData = await nexusRes.json();
+  const chunks = nexusData.chunks || [];
+
+  // ── Step 1b: Section query detection ─────────────────────────
+  let sectionContext = null;
+  const parsed = parseSectionQuery(query.trim());
+  if (parsed) {
+    sectionContext = await fetchSectionContext(parsed.sectionNum, parsed.actName, env);
+  }
+
+  // ── Step 2: Build context ────────────────────────────────────
+  if (chunks.length === 0 && !sectionContext) {
+    return {
+      answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
+      sources: [],
+      chunk_count: 0,
+      model: "workers-ai",
+    };
+  }
+
+  const caseBlocks = chunks.map((c, i) => {
+    return `[${i + 1}] ${c.citation} (${c.court?.toUpperCase() || "Unknown"}, ${c.year || "?"})
+${c.text}`;
+  }).join("\n\n---\n\n");
+
+  const contextBlocks = sectionContext
+    ? `${sectionContext.block}\n\n---\n\n${caseBlocks}`
+    : caseBlocks;
+
+  const systemPrompt = sectionContext
+    ? `You are a Tasmanian criminal law assistant. The section text is provided. Quote and explain it, then discuss how cases have applied it. Be concise and precise. Plain prose only.`
+    : `You are a Tasmanian criminal law assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. Plain prose only.`;
+
+  const answerNote = sectionContext
+    ? `Quote ${sectionContext.label} in your answer, then discuss relevant cases.`
+    : `Cite the case citation when relying on a specific case.`;
+
+  // ── Step 3: Workers AI inference ─────────────────────────────
+  const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\n${answerNote}` },
+    ],
+    max_tokens: 800,
+  });
+
+  const answer = response?.response || "No response from model.";
+
+  // ── Step 4: Return ───────────────────────────────────────────
+  const seen = new Set();
+  const caseSources = chunks
+    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
+    .map(c => ({ citation: c.citation, court: c.court, year: c.year, score: c.score, summary: c.summary || "" }));
+
+  const sources = sectionContext
+    ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
+    : caseSources;
+
+  return { answer, sources, chunk_count: chunks.length, model: "workers-ai" };
 }
 
 /* =============================================================
