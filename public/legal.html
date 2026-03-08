@@ -158,8 +158,8 @@
       border-radius: 4px;
       color: var(--text-dim);
       cursor: pointer;
-      font-size: 0.72rem;
-      padding: 3px 8px;
+      font-size: 0.65rem;
+      padding: 2px 6px;
       transition: all var(--t);
     }
 
@@ -887,9 +887,8 @@
             <tr>
               <th>Title</th>
               <th>Type</th>
-              <th>Court / Jurisdiction</th>
-              <th>Date</th>
               <th>Uploaded</th>
+              <th>Jurisdiction</th>
               <th></th>
             </tr>
           </thead>
@@ -898,9 +897,8 @@
               <tr>
                 <td class="doc-title">${row.title || row.ref || row.id}</td>
                 <td><span class="doc-type-badge ${badgeClass(row.doc_type)}">${badgeLabel(row.doc_type)}</span></td>
-                <td>${row.court || '—'}</td>
-                <td>${fmt(row.date || row.processed_date)}</td>
                 <td>${fmtDateTime(row.processed_date)}</td>
+                <td>${row.court || '—'}</td>
                 <td>
                   <button class="delete-btn"
                     data-type="${row.doc_type}"
