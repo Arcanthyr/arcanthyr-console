@@ -54,13 +54,15 @@
       display: block;
     }
 
-    #panel-library {
-      width: 100vw;
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 0 24px;
-      box-sizing: border-box;
+    #panel-library .library-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    #panel-library .library-table td.doc-title {
+      white-space: normal;
+      min-width: 140px;
     }
 
     /* ── Dropzones ─────────────────────────────────────────────── */
@@ -290,6 +292,7 @@
 
           <div class="row" style="margin-top:12px;">
             <button id="uploadCaseBtn" class="btn">Process & Save</button>
+            <button id="clearCaseFormBtn" class="btn ghost small">Clear Form</button>
             <button id="cancelUploadBtn" class="btn ghost small">Cancel</button>
           </div>
           <div id="uploadOutput" class="output" style="margin-top:12px;display:none;"></div>
@@ -394,6 +397,7 @@
 
           <div class="row" style="margin-top:12px;">
             <button id="uploadLegislationBtn" class="btn">Upload & Parse</button>
+            <button id="clearLegislationFormBtn" class="btn ghost small">Clear Form</button>
             <button id="cancelLegislationBtn" class="btn ghost small">Cancel</button>
           </div>
         </div>
@@ -586,6 +590,27 @@
     document.getElementById('cancelLegislationBtn').addEventListener('click', () => {
       document.getElementById('uploadLegislationForm').style.display = 'none';
     });
+
+    document.getElementById('clearCaseFormBtn').addEventListener('click', () => {
+      document.getElementById('uploadCitation').value = '';
+      document.getElementById('uploadCaseName').value = '';
+      document.getElementById('uploadCaseText').value = '';
+      document.getElementById('uploadOutput').style.display = 'none';
+      const dz = document.getElementById('caseDropzone');
+      if (dz) dz.querySelector('.dropzone-text').textContent = '📎 Drag & drop PDF or click to browse';
+    });
+
+    document.getElementById('clearLegislationFormBtn').addEventListener('click', () => {
+      document.getElementById('legTitle').value = '';
+      document.getElementById('legJurisdiction').selectedIndex = 0;
+      document.getElementById('legSourceUrl').value = '';
+      document.getElementById('legText').value = '';
+      document.getElementById('legCharCount').textContent = '0 characters';
+      document.getElementById('legUploadOutput').style.display = 'none';
+      const dz = document.getElementById('legDropzone');
+      if (dz) dz.querySelector('.dropzone-text').textContent = '📎 Drag & drop PDF or click to browse';
+    });
+
     document.getElementById('cancelSecondaryBtn').addEventListener('click', () => {
       document.getElementById('uploadSecondaryForm').style.display = 'none';
     });
