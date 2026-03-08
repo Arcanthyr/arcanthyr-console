@@ -723,6 +723,49 @@
     setupDropzone('secDropzone', 'secFileInput', 'secText', 'secCharCount');
 
     /* ── Upload legislation ────────────────────────────────────── */
+    /* ── Split text at clean section boundary ──────────────────── */
+    function splitAtSectionBoundary(text, targetSize) {
+      const parts = [];
+      let remaining = text;
+      while (remaining.length > targetSize) {
+        let splitPos = targetSize;
+        // Walk back from targetSize to find a clean section boundary
+        const searchWindow = remaining.substring(0, targetSize);
+        const boundaryRegex = /\n(?=\d+[A-Z]?\.?\s+[A-Z])/g;
+        let lastBoundary = -1;
+        let m;
+        while ((m = boundaryRegex.exec(searchWindow)) !== null) {
+          if (m.index > targetSize * 0.5) lastBoundary = m.index;
+        }
+        splitPos = lastBoundary > 0 ? lastBoundary : targetSize;
+        parts.push(remaining.substring(0, splitPos).trim());
+        remaining = remaining.substring(splitPos).trim();
+      }
+      if (remaining.length > 0) parts.push(remaining);
+      return parts;
+    }
+
+    /* ── Upload a single legislation part ─────────────────────── */
+    async function uploadLegislationPart(text, title, jur, url, partNumber, totalParts, out) {
+      const label = totalParts > 1 ? ` (Part ${partNumber} of ${totalParts})` : '';
+      out.textContent = `Uploading and parsing${label}… this may take up to 2 minutes`;
+      const r = await fetch('/api/legal/upload-legislation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          doc_text: text,
+          title,
+          jurisdiction: jur,
+          source_url: url || null,
+          part_number: totalParts > 1 ? partNumber : null,
+        })
+      });
+      const data = await r.json();
+      if (data.error) throw new Error(`Part ${partNumber}: ${data.error}`);
+      return data.result;
+    }
+
+    /* ── Upload legislation button handler ────────────────────── */
     document.getElementById('uploadLegislationBtn').addEventListener('click', async () => {
       const title = document.getElementById('legTitle').value.trim();
       const jur = document.getElementById('legJurisdiction').value;
@@ -736,28 +779,32 @@
         return;
       }
 
+      const SPLIT_THRESHOLD = 80000;
+      const CHUNK_TARGET = 70000;
+
       out.style.display = 'block';
-      out.textContent = 'Uploading and parsing… this may take up to 2 minutes';
 
       try {
-        const r = await fetch('/api/legal/upload-legislation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            doc_text: text, title, jurisdiction: jur,
-            source_url: url || null,
-          })
-        });
-        const data = await r.json();
-        if (data.error) throw new Error(data.error);
-        const res = data.result;
-        out.textContent = `✓ ${res.title} (${jur}) uploaded. ${res.sections_parsed} sections parsed.`;
+        const parts = text.length > SPLIT_THRESHOLD
+          ? splitAtSectionBoundary(text, CHUNK_TARGET)
+          : [text];
+
+        let totalSections = 0;
+        for (let i = 0; i < parts.length; i++) {
+          const res = await uploadLegislationPart(parts[i], title, jur, url, i + 1, parts.length, out);
+          totalSections += res.sections_parsed || 0;
+        }
+
+        const partLabel = parts.length > 1 ? ` in ${parts.length} parts` : '';
+        out.textContent = `✓ ${title} (${jur}) uploaded${partLabel}. ${totalSections} sections parsed.`;
+
         document.getElementById('uploadLegislationForm').style.display = 'none';
         document.getElementById('legTitle').value = '';
         document.getElementById('legJurisdiction').selectedIndex = 0;
         document.getElementById('legSourceUrl').value = '';
         document.getElementById('legText').value = '';
         document.getElementById('legFileInput').value = '';
+        document.getElementById('legCharCount').textContent = '0 characters';
         loadLibrary();
       } catch (err) {
         out.textContent = `✗ Upload failed: ${err.message}`;
@@ -876,7 +923,9 @@
       }
 
       const fmt = d => d ? new Date(d).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
-      const fmtDateTime = d => d ? new Date(d).toLocaleString('en-AU', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '—';
+      const fmtTime = d => d ? new Date(d).toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false }) : '—';
+      const fmtDate = d => d ? new Date(d).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+      const courtAbbrev = c => ({ supreme: 'TASSC', magistrates: 'TASMC', cca: 'TASCCA', fullcourt: 'TASFC' }[c] || (c ? c.toUpperCase() : '—'));
       const kb = b => b ? Math.round(b / 1024) + ' KB' : '—';
       const badgeClass = t => ({ case: 'badge-case', legislation: 'badge-legislation', secondary: 'badge-secondary' }[t] || '');
       const badgeLabel = t => ({ case: 'Case', legislation: 'Legislation', secondary: 'Secondary' }[t] || t);
@@ -897,8 +946,8 @@
               <tr>
                 <td class="doc-title">${row.title || row.ref || row.id}</td>
                 <td><span class="doc-type-badge ${badgeClass(row.doc_type)}">${badgeLabel(row.doc_type)}</span></td>
-                <td>${fmtDateTime(row.processed_date)}</td>
-                <td>${row.court || '—'}</td>
+                <td style="white-space:nowrap;"><span style="display:block;">${fmtTime(row.processed_date)}</span><span style="display:block;color:var(--text-dim);font-size:0.72rem;">${fmtDate(row.processed_date)}</span></td>
+                <td>${courtAbbrev(row.court)}</td>
                 <td>
                   <button class="delete-btn"
                     data-type="${row.doc_type}"
