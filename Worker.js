@@ -939,7 +939,7 @@ async function handleUploadLegislation(body, env) {
       defined_terms, offence_elements, source_url, raw_text, processed_date)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
-    id, title, jurisdiction, year ? parseInt(year) : null,
+    id, part_number ? `${title} (Part ${part_number})` : title, jurisdiction, year ? parseInt(year) : null,
     new Date().toISOString().split('T')[0],
     null, '[]', '[]',
     source_url || '', '',

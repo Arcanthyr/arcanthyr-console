@@ -703,6 +703,15 @@
           const data = await r.json();
           if (data.error) throw new Error(data.error);
           text = (data.result || data).text;
+          // Scanned PDF detection — warn if text yield is suspiciously low
+          const fileSizeMB = file.size / (1024 * 1024);
+          const charsPerMB = text.length / fileSizeMB;
+          if (charsPerMB < 500) {
+            legDz.querySelector('.dropzone-text').textContent = `⚠ Possible scanned PDF — only ${text.length.toLocaleString()} chars extracted from ${fileSizeMB.toFixed(1)} MB file. Use the AustLII plain-text (.txt) version for best results.`;
+            legTa.value = text;
+            legCt.textContent = text.length.toLocaleString() + ' characters';
+            return;
+          }
         } else {
           text = await file.text();
         }
