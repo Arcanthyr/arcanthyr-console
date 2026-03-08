@@ -737,7 +737,7 @@
       }
 
       out.style.display = 'block';
-      out.textContent = 'Uploading and parsing sections...';
+      out.textContent = 'Uploading and parsing… this may take up to 2 minutes';
 
       try {
         const r = await fetch('/api/legal/upload-legislation', {
@@ -783,7 +783,7 @@
       const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
 
       out.style.display = 'block';
-      out.textContent = 'Uploading and indexing into Qdrant...';
+      out.textContent = 'Uploading and indexing… this may take a moment';
 
       try {
         const r = await fetch('/api/legal/upload-secondary', {

@@ -1014,7 +1014,7 @@ document.getElementById("uploadCaseBtn")?.addEventListener("click", async () => 
     return;
   }
 
-  uploadOutput.textContent = "Processing case with AI (this may take 30-60 seconds)…";
+  uploadOutput.textContent = "Processing case with AI… this may take up to 60 seconds";
   uploadOutput.className = "output loading";
   uploadOutput.style.display = "block";
   document.getElementById("uploadCaseBtn").disabled = true;
