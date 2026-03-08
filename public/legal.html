@@ -531,6 +531,37 @@
       });
     });
 
+    /* ── Hash param auto-load ──────────────────────────────────── */
+    window.addEventListener('load', () => setTimeout(() => {
+      const hash = window.location.hash;
+      if (!hash.startsWith('#citation=')) return;
+      const citation = decodeURIComponent(hash.slice('#citation='.length));
+      if (!citation) return;
+
+      document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('.page-tab[data-panel="cases"]')?.classList.add('active');
+      document.getElementById('panel-cases')?.classList.add('active');
+
+      const input = document.getElementById('legalSearchInput');
+      if (input) { input.value = citation; performLegalSearch(0); }
+    }, 500));
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash;
+      if (!hash.startsWith('#citation=')) return;
+      const citation = decodeURIComponent(hash.slice('#citation='.length));
+      if (!citation) return;
+
+      document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelector('.page-tab[data-panel="cases"]')?.classList.add('active');
+      document.getElementById('panel-cases')?.classList.add('active');
+
+      const input = document.getElementById('legalSearchInput');
+      if (input) { input.value = citation; performLegalSearch(0); }
+    });
+
     /* ── Toggle forms ──────────────────────────────────────────── */
     function toggleForm(btnId, formId) {
       document.getElementById(btnId).addEventListener('click', () => {
