@@ -848,13 +848,14 @@ async function handleExtractPdf(body, env) {
    AI analysis happens at query time.
    ============================================================= */
 async function handleUploadLegislation(body, env) {
-  let { doc_text, title, jurisdiction, year, source_url, encoding } = body;
+  let { doc_text, title, jurisdiction, source_url, encoding } = body;
   if (!doc_text || !title) throw new Error("Missing required fields: doc_text and title");
   if (encoding === 'base64') doc_text = atob(doc_text);
 
   // Normalise jurisdiction
   jurisdiction = (jurisdiction || "Tas").toUpperCase().replace(/[^A-Z]/g, '');
   const id = (title + '-' + jurisdiction).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+  const year = (title.match(/\b(\d{4})\b/g) || []).slice(-1)[0] || null;
 
   const existing = await env.DB.prepare("SELECT id FROM legislation WHERE id = ?").bind(id).first();
   if (existing) throw new Error(`Legislation '${title} (${jurisdiction})' already exists. Delete it first to re-upload.`);

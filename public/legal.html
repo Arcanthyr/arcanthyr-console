@@ -353,8 +353,8 @@
           <input type="file" id="legFileInput" accept=".pdf,.txt" style="display:none;" />
 
           <label class="label" style="margin-top:16px;">Act Title</label>
-          <input type="text" id="legTitle" class="search-input" placeholder="Evidence Act" />
-          <small style="color:#888;font-size:0.78em;margin-top:4px;display:block;">Title only — do not include jurisdiction or year. Use the fields below for those.</small>
+          <input type="text" id="legTitle" class="search-input" placeholder="Justices Act 1959" />
+          <small style="color:#888;font-size:0.78em;margin-top:4px;display:block;">Include the year in the title as it appears in legislation.</small>
 
           <label class="label" style="margin-top:12px;">Jurisdiction</label>
           <select id="legJurisdiction" class="search-input">
@@ -369,8 +369,6 @@
             <option value="ACT">ACT</option>
           </select>
 
-          <label class="label" style="margin-top:12px;">Year</label>
-          <input type="text" id="legYear" class="search-input" placeholder="1924" style="max-width:120px;" />
 
           <label class="label" style="margin-top:12px;">Source URL (optional)</label>
           <input type="text" id="legSourceUrl" class="search-input"
@@ -659,7 +657,6 @@
     document.getElementById('uploadLegislationBtn').addEventListener('click', async () => {
       const title = document.getElementById('legTitle').value.trim();
       const jur = document.getElementById('legJurisdiction').value;
-      const year = document.getElementById('legYear').value.trim();
       const url = document.getElementById('legSourceUrl').value.trim();
       const text = document.getElementById('legText').value.trim();
       const out = document.getElementById('legUploadOutput');
@@ -679,7 +676,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             doc_text: text, title, jurisdiction: jur,
-            year: year || null, source_url: url || null,
+            source_url: url || null,
           })
         });
         const data = await r.json();
@@ -817,6 +814,7 @@
               <th>Type</th>
               <th>Court / Jurisdiction</th>
               <th>Date</th>
+              <th>Uploaded</th>
               <th>Size</th>
               <th></th>
             </tr>
@@ -828,6 +826,7 @@
                 <td><span class="doc-type-badge ${badgeClass(row.doc_type)}">${badgeLabel(row.doc_type)}</span></td>
                 <td>${row.court || '—'}</td>
                 <td>${fmt(row.date || row.processed_date)}</td>
+                <td>${fmt(row.processed_date)}</td>
                 <td>${kb(row.raw_size)}</td>
                 <td>
                   <button class="delete-btn"
