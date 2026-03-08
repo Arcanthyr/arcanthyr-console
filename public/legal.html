@@ -853,7 +853,7 @@
               <th>Court / Jurisdiction</th>
               <th>Date</th>
               <th>Uploaded</th>
-              <th>Size</th>
+              <th>Sections</th>
               <th></th>
             </tr>
           </thead>
@@ -865,7 +865,7 @@
                 <td>${row.court || '—'}</td>
                 <td>${fmt(row.date || row.processed_date)}</td>
                 <td>${fmtDateTime(row.processed_date)}</td>
-                <td>${kb(row.raw_size)}</td>
+                <td>${row.sections_parsed != null ? row.sections_parsed : '—'}</td>
                 <td>
                   <button class="delete-btn"
                     data-type="${row.doc_type}"
