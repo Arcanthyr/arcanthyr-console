@@ -383,8 +383,8 @@
             <button id="uploadLegislationBtn" class="btn">Upload & Parse</button>
             <button id="cancelLegislationBtn" class="btn ghost small">Cancel</button>
           </div>
-          <div id="legUploadOutput" class="output" style="margin-top:12px;display:none;"></div>
         </div>
+        <div id="legUploadOutput" class="output" style="margin-top:12px;display:none;"></div>
       </section>
 
       <!-- Section lookup -->
@@ -684,6 +684,11 @@
         const res = data.result;
         out.textContent = `✓ ${res.title} (${jur}) uploaded. ${res.sections_parsed} sections parsed.`;
         document.getElementById('uploadLegislationForm').style.display = 'none';
+        document.getElementById('legTitle').value = '';
+        document.getElementById('legJurisdiction').selectedIndex = 0;
+        document.getElementById('legSourceUrl').value = '';
+        document.getElementById('legText').value = '';
+        document.getElementById('legFileInput').value = '';
         loadLibrary();
       } catch (err) {
         out.textContent = `✗ Upload failed: ${err.message}`;
@@ -802,6 +807,7 @@
       }
 
       const fmt = d => d ? new Date(d).toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+      const fmtDateTime = d => d ? new Date(d).toLocaleString('en-AU', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }) : '—';
       const kb = b => b ? Math.round(b / 1024) + ' KB' : '—';
       const badgeClass = t => ({ case: 'badge-case', legislation: 'badge-legislation', secondary: 'badge-secondary' }[t] || '');
       const badgeLabel = t => ({ case: 'Case', legislation: 'Legislation', secondary: 'Secondary' }[t] || t);
@@ -826,7 +832,7 @@
                 <td><span class="doc-type-badge ${badgeClass(row.doc_type)}">${badgeLabel(row.doc_type)}</span></td>
                 <td>${row.court || '—'}</td>
                 <td>${fmt(row.date || row.processed_date)}</td>
-                <td>${fmt(row.processed_date)}</td>
+                <td>${fmtDateTime(row.processed_date)}</td>
                 <td>${kb(row.raw_size)}</td>
                 <td>
                   <button class="delete-btn"
