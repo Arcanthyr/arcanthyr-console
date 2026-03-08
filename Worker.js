@@ -827,7 +827,7 @@ async function handleUploadCase(body, env) {
 async function handleExtractPdf(body, env) {
   const { pdf_base64 } = body;
   if (!pdf_base64) throw new Error("Missing pdf_base64 field");
-  const r = await fetch("https://nexus.arcanthyr.com/extract-pdf", {
+  const r = await fetch("https://nexus.arcanthyr.com/extract-pdf-ocr", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
