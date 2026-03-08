@@ -4,17 +4,29 @@
 ---
 
 ## How to Use This Document
-This file serves as both the Claude Code session briefing and the 
-handover document for new Claude.ai conversations. When starting a 
-new Claude.ai session, paste this file and begin from the Open Items 
+This file serves as both the Claude Code session briefing and the
+handover document for new Claude.ai conversations. When starting a
+new Claude.ai session, paste this file and begin from the Open Items
 section — current priorities are listed there in order.
 
 ---
 
-## Project Overview
-Arcanthyr is a private legal research platform focused on Tasmanian criminal law.
-Built and maintained solo by Tom, Legal Officer at Western Prosecution Services.
-This is an independent side project, not affiliated with his employer.
+## Claude.ai Session Management
+- At the start of each session, paste this file and confirm understanding before proceeding
+- Claude.ai should prompt Tom to update CLAUDE.md and start a fresh conversation window when:
+  - The conversation exceeds ~40 messages
+  - Responses begin to feel repetitive or context is clearly degrading
+  - A major milestone is completed (e.g. a full Priority item closed)
+- To update CLAUDE.md: ask Claude.ai to generate a full updated file, download it, and replace the local copy at `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\CLAUDE.md`
+
+---
+
+## Claude Code (CC) Conventions
+- **Before applying any multi-file or multi-edit change**: ask CC to summarise ALL proposed diffs across ALL files in one message, so they can be copied to Claude.ai for review before any individual change is accepted
+- Use this prompt: *"Show me all diffs across all files in one summary before applying any of them"*
+- CC will then list every before/after block — copy the full output to Claude.ai, get approval, then tell CC to apply
+- **NEVER chain PowerShell commands with `&&`** — run each separately
+- If execution policy errors appear: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
 
 ---
 
@@ -32,9 +44,12 @@ This is an independent side project, not affiliated with his employer.
 |---|---|
 | arcanthyr.com | Live — Cloudflare Worker custom domain |
 | nexus.arcanthyr.com | Live — VPS Docker container (port 18789) |
-| Qdrant collection | general-docs · ~5100 pts · 768-dim cosine |
+| Qdrant collection | general-docs · ~5500+ pts · 768-dim cosine |
 | D1 database | cases + legislation + legislation_sections populated |
-| Evidence Act 2001 | 249 sections in D1 (clean) · Qdrant vectors STALE — needs re-ingest |
+| Evidence Act 2001 | 249 sections in D1 · 98 Qdrant chunks ✅ |
+| Justices Act 1959 | 147 sections in D1 · 81 Qdrant chunks ✅ |
+| Police Offences Act 1935 | 145 sections in D1 · 78 Qdrant chunks ✅ |
+| Misuse of Drugs Act 2001 | 284 sections in D1 · 29 Qdrant chunks ✅ (Schedule-heavy) |
 | Worker.js | v7 — deployed and committed |
 | server.py | Volume-mounted at ~/ai-stack/agent-general/src/server.py |
 | Scraper | PAUSED — resume after Criminal Code resolved |
@@ -130,11 +145,12 @@ All on port 18789. All POST routes require `X-Nexus-Key` header.
 - `Worker.js` — Cloudflare Worker (v7)
 - `wrangler.toml` — Worker config, D1 binding, AI binding, cron
 - `public/` — static assets served by Worker
+- `public/styles.css` — design system (monumental stoic palette — parchment/charcoal/blue/amber/burgundy-red)
 - `schema.sql` — D1 schema reference
 - `scraper_progress.json` — scraper state (excluded from Wrangler deploy)
 - `.env` — secrets (excluded from both Wrangler and git)
 - `.wranglerignore` — excludes .env, .git, .wrangler, *.py, *.log, *.docx, scraper_progress.json
-- `.gitignore` — excludes .env, .wrangler, Local Scraper/.env
+- `.gitignore` — excludes .env, .wrangler, Local Scraper/.env, arcanthyr-nexus/
 
 ### VPS File Locations
 - `server.py`: `~/ai-stack/agent-general/src/server.py` (volume-mounted)
@@ -143,7 +159,6 @@ All on port 18789. All POST routes require `X-Nexus-Key` header.
 
 ### Other
 - Criminal Code split files: local at `CrimCode_Part_*.txt` (9 parts, ready but not yet uploaded)
-- Test 1.pdf: `/home/tom/ai-stack/agent-general/` — scanned/image PDF, pdfminer hangs on it. **Ignore.**
 
 ## .claudeignore
 Both repos have a `.claudeignore`. Claude Code must never read, edit, or act on these files.
@@ -170,21 +185,28 @@ If either `.claudeignore` is missing, create it before doing anything else.
 
 ## Open Items — Next Session
 
-### Priority 1 — Must Do First
+### Priority 1 — COMPLETE ✅
+~~Re-ingest Evidence Act into Qdrant~~ — Done. 249 sections in D1, 98 chunks in Qdrant, spot-check passed.
 
-**Re-ingest Evidence Act into Qdrant**
-D1 has 249 clean sections but Qdrant vectors are from a mid-session ingest (garbled text, wrong chunk count — was 115, then 94, then 8, now unknown). Must delete and re-upload cleanly.
-- Library → Evidence Act 2001 → Delete
-- Re-upload Tas_evidence_act_pdf.pdf
-- Verify section text in Qdrant matches D1
-- Note: /delete endpoint added this session but NOT yet tested end-to-end — exercise carefully
-
-**Success criteria:** Qdrant chunk count should be broadly proportional to 249 sections (expect 200–300+ chunks). Spot-check s.38 body text in Qdrant matches D1 — if garbled or missing, re-ingest has not resolved the issue. Do not mark complete until spot-check passes.
+### Priority 2 — Must Do Next
 
 **Wire legal.html to handle #citation= hash param**
 The View Case button on search.html opens `legal.html#citation=[encoded]` but legal.html doesn't yet read the hash param to auto-load the case. Front-end only change — add hashchange listener and fetch on load. No Worker changes required.
 
-### Priority 2 — Queued
+**Library table — replace Size with Sections Parsed**
+- `handleLibraryList` in Worker.js needs to return section count for legislation entries: `COUNT(*)` on `legislation_sections WHERE legislation_id = id`
+- Update library table in legal.html to show Sections Parsed column instead of Size
+- Cases return null for this field
+
+**UI styling changes (in progress)**
+- Headings bold burgundy-red (`#8B1A1A`) — styles.css updated, pending deploy
+- Active buttons blue — styles.css updated, pending deploy
+- Page tabs bold red — legal.html updated, pending deploy
+- Green replaced with blue throughout — done
+- Clear Form button on case and legislation upload forms
+- Upload progress message: "Uploading and parsing… this may take up to 2 minutes"
+
+### Priority 3 — Queued
 
 **Criminal Code upload via Cloudflare Queues**
 CF Worker 30s timeout blocks direct upload of the full Criminal Code. Cloudflare Queues (Scenario 2) is the solution.
@@ -199,7 +221,7 @@ Paused pending Criminal Code upload and pipeline data quality review.
 - Review errors before resuming bulk ingest
 - ~20 cases with court=unknown — re-extract from raw_text when scraper resumes
 
-### Priority 3 — Backlog
+### Priority 4 — Backlog
 - Fix case name extraction via Llama summarisation prompt (not regex)
 - Evaluate pplx-embed-context-v1 as embedding model replacement
 - Qwen3 inference (needs GPU — deferred)
@@ -210,17 +232,24 @@ Paused pending Criminal Code upload and pipeline data quality review.
 
 | # | Issue | Notes |
 |---|---|---|
-| 1 | Evidence Act column garbling | pdfminer can't fully reconstruct two-column layout. s.38(b) and s.38(4) still garbled. AustLII HTML source would fix permanently. The word order scramble is in the source text box itself — not a sorting issue. |
-| 2 | ~20 cases court=unknown | Pre-upgrade extraction. Re-extract from raw_text when scraper resumes. |
-| 3 | Llama 3b confabulates case law | Invents citations when no real cases available. Claude holds the instruction reliably. WorkersAI suitable only for genuine case retrieval. |
-| 4 | Duplicate citation formats in Qdrant | Both 'TASSC 2024 24' and '[2024] TASSC 24' present for same cases. |
-| 5 | ~52 Evidence Act sections missing | Schedule + sections >8000 chars truncated at D1 row limit. |
-| 6 | legislation_extracted duplicates | Same section appearing 5x — Llama extraction quality issue. |
-| 7 | Qwen3 inference too slow | Needs GPU. Deferred. |
+| 1 | Evidence Act column garbling | pdfminer can't fully reconstruct two-column layout. AustLII HTML source would fix permanently. |
+| 2 | Misuse of Drugs Act low chunk count | 29 chunks from 284 sections — Schedule (drug names table) doesn't parse as semantic chunks. Acceptable. |
+| 3 | ~20 cases court=unknown | Pre-upgrade extraction. Re-extract from raw_text when scraper resumes. |
+| 4 | Llama 3b confabulates case law | Invents citations when no real cases available. Claude holds the instruction reliably. WorkersAI suitable only for genuine case retrieval. |
+| 5 | Duplicate citation formats in Qdrant | Both 'TASSC 2024 24' and '[2024] TASSC 24' present for same cases. |
+| 6 | ~52 Evidence Act sections missing | Schedule + sections >8000 chars truncated at D1 row limit. |
+| 7 | legislation_extracted duplicates | Same section appearing 5x — Llama extraction quality issue. |
+| 8 | Qwen3 inference too slow | Needs GPU. Deferred. |
 
 ---
 
 ## Parser / Pipeline Notes (Important for Future Uploads)
+
+**Legislation upload — title convention**
+Always use the full Act name including year: `Evidence Act 2001`, `Justices Act 1959` etc.
+Year is extracted automatically from the title by the Worker (`title.match(/\b(\d{4})\b/g)`).
+Do NOT put year in the Year field (field has been removed from the form).
+Jurisdiction is a separate dropdown — do not include in title.
 
 **bodyStartMatch logic**
 Looks for `\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n\(` — section line followed immediately by `(` on next line. Works for Evidence Act because subsections start with (1). May fail for Acts where the first section has no subsections (body starts with plain prose). Monitor on next legislation upload.
@@ -234,8 +263,14 @@ Changed from `\s{2,}` to `\s+` — single-space matches now valid section starts
 - AustLII plain-text (.txt) versions are cleaner than PDFs — use .txt where available
 - Scanned/image PDFs will hang or return nothing
 
-**Qdrant chunk anomaly (Evidence Act)**
-Was ingesting as 115 chunks → 94 → 8 (TOC-only) → unknown post-fix. Current vectors are stale. Priority 1 is clean delete + re-upload.
+**Legislation ingest batching**
+Sections are sent to nexus `/ingest` in batches of 20 to avoid payload size limits and Worker timeout. Each batch is a separate sequential fetch call. This supports Acts up to ~300 sections within the 30s Worker timeout. The Criminal Code requires Cloudflare Queues.
+
+**Qdrant delete behaviour**
+- `/delete` endpoint in server.py confirmed working end-to-end
+- `handleLibraryDelete` in Worker.js confirmed working — calls nexus `/delete` with citation ID
+- Always delete before re-ingest — upsert adds new vectors alongside old ones
+- Verify deletion with Qdrant count check before re-uploading
 
 ---
 
@@ -285,6 +320,13 @@ curl -s -X POST http://localhost:18789/search \
   -d '{"query_text": "your query", "top_k": 3, "score_threshold": 0.5}' | python3 -m json.tool
 ```
 
+### Checking Qdrant Count for a Citation
+```
+curl -s http://localhost:6334/collections/general-docs/points/count \
+  -H "Content-Type: application/json" \
+  -d '{"filter": {"must": [{"key": "citation", "match": {"value": "evidence-act-2001-tas"}}]}}' | python3 -m json.tool
+```
+
 ### Checking Section Text in D1
 ```
 curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
@@ -299,7 +341,7 @@ curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
 - `citation` field in payload is the key for delete-by-filter
 - Chunk payloads don't include category/source fields — filter by (court==null AND year==null) to exclude legislation from case search
 - score_threshold default: 0.65 across all handlers
-- /delete endpoint: uses Filter + FieldCondition + MatchValue on citation field — added this session, not yet tested end-to-end
+- /delete endpoint: confirmed working end-to-end as of 8 March 2026
 
 ---
 
@@ -371,8 +413,6 @@ Before every `npx wrangler deploy`:
 - Correct any stale values (thresholds, ports, flags, file paths)
 
 CLAUDE.md is the source of truth. If it's wrong, the next session starts blind.
-
----
 
 ---
 

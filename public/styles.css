@@ -34,6 +34,8 @@
   --amber-dim: #f5ece0;
   --blue: #3a6a9a;
   --blue-dim: #e4eef8;
+  --red: #8B1A1A;
+  --red-dim: #f5e8e8;
   --radius: 8px;
   --pad: 24px;
   --gap: 16px;
@@ -333,6 +335,13 @@ button:active,
   box-shadow: none;
 }
 
+button.active,
+.btn.active {
+  background: var(--blue-dim);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
 button:disabled,
 .btn:disabled {
   opacity: 0.4;
@@ -446,10 +455,17 @@ button.ai-btn:hover {
 .h2 {
   font-family: 'Times New Roman', Times, serif;
   font-size: 1.1rem;
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text);
+  color: var(--red);
+}
+
+/* --- Card headings ----------------------------------------- */
+.card h2,
+.card h3 {
+  color: var(--red);
+  font-weight: 700;
 }
 
 /* --- History list ------------------------------------------ */
@@ -580,9 +596,9 @@ mark {
   bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--green-dim);
-  color: var(--green);
-  border: 1px solid rgba(74, 122, 78, 0.3);
+  background: var(--blue-dim);
+  color: var(--blue);
+  border: 1px solid rgba(58, 106, 154, 0.3);
   border-radius: var(--radius);
   padding: 10px 20px;
   font-family: 'DM Mono', monospace;
