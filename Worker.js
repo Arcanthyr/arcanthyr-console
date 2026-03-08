@@ -953,23 +953,31 @@ async function handleUploadLegislation(body, env) {
       section.heading, section.text, section.part).run();
   }
 
-  // Ingest into Qdrant for semantic search (full text chunked)
-  try {
-    await fetch("https://nexus.arcanthyr.com/ingest", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
-      body: JSON.stringify({
-        citation: id,
-        case_name: `${title} (${jurisdiction})`,
-        source: "legislation",
-        text: sections.map(s => `${s.section_number}. ${s.heading}\n${s.text}`).join('\n\n'),
-        summary: `${title} (${jurisdiction})${year ? ' ' + year : ''}`,
-        category: "legislation",
-        jurisdiction,
-      })
-    });
-  } catch (e) {
-    console.error("Nexus ingest failed for legislation:", e.message);
+  // Ingest into Qdrant for semantic search — batched in groups of 20 to avoid payload limits
+  const BATCH_SIZE = 20;
+  for (let i = 0; i < sections.length; i += BATCH_SIZE) {
+    const batch = sections.slice(i, i + BATCH_SIZE);
+    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+    const totalBatches = Math.ceil(sections.length / BATCH_SIZE);
+    try {
+      const r = await fetch("https://nexus.arcanthyr.com/ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+        body: JSON.stringify({
+          citation: id,
+          case_name: `${title} (${jurisdiction})`,
+          source: "legislation",
+          text: batch.map(s => `${s.section_number}. ${s.heading}\n${s.text}`).join('\n\n'),
+          summary: `${title} (${jurisdiction})${year ? ' ' + year : ''}`,
+          category: "legislation",
+          jurisdiction,
+        })
+      });
+      const result = await r.json().catch(() => ({}));
+      console.log(`Nexus ingest batch ${batchNum}/${totalBatches} (sections ${i + 1}–${i + batch.length}): chunks_stored=${result.chunks_stored ?? 'unknown'}, status=${r.status}`);
+    } catch (e) {
+      console.error(`Nexus ingest failed for batch ${batchNum}/${totalBatches} (sections ${i + 1}–${i + batch.length}):`, e.message);
+    }
   }
 
   return {
