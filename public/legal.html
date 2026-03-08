@@ -22,14 +22,14 @@
       background: none;
       border: none;
       border-bottom: 2px solid transparent;
-      color: var(--red);
+      color: var(--text);
       cursor: pointer;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.8rem;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 0.9rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.04em;
       padding: 10px 18px;
-      text-transform: uppercase;
+      text-transform: none;
       transition: all var(--t);
       margin-bottom: -1px;
     }
@@ -853,7 +853,6 @@
               <th>Court / Jurisdiction</th>
               <th>Date</th>
               <th>Uploaded</th>
-              <th>Sections</th>
               <th></th>
             </tr>
           </thead>
@@ -865,7 +864,6 @@
                 <td>${row.court || '—'}</td>
                 <td>${fmt(row.date || row.processed_date)}</td>
                 <td>${fmtDateTime(row.processed_date)}</td>
-                <td>${row.sections_parsed != null ? row.sections_parsed : '—'}</td>
                 <td>
                   <button class="delete-btn"
                     data-type="${row.doc_type}"

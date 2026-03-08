@@ -1073,13 +1073,10 @@ async function handleLibraryList(env) {
       FROM cases ORDER BY processed_date DESC
     `).all(),
     env.DB.prepare(`
-      SELECT l.id, l.id AS ref, l.title, l.jurisdiction AS court, l.current_as_at AS date,
-             l.processed_date, NULL AS summary_quality_score, 'legislation' AS doc_type,
-             NULL AS raw_size,
-             COUNT(ls.id) AS sections_parsed
-      FROM legislation l
-      LEFT JOIN legislation_sections ls ON ls.legislation_id = l.id
-      GROUP BY l.id ORDER BY l.processed_date DESC
+      SELECT id, id AS ref, title, jurisdiction AS court, current_as_at AS date,
+             processed_date, NULL AS summary_quality_score, 'legislation' AS doc_type,
+             LENGTH(raw_text) AS raw_size
+      FROM legislation ORDER BY processed_date DESC
     `).all(),
     env.DB.prepare(`
       SELECT id, id AS ref, title, source_type AS court, date_added AS date,
