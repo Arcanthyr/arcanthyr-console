@@ -166,7 +166,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   const id = await saveCaseToDb(env, finalCaseData, summary);
 
   try {
-    await fetch("https://nexus.arcanthyr.com/ingest", {
+    fetch("https://nexus.arcanthyr.com/ingest", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
       body: JSON.stringify({

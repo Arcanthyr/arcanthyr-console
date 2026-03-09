@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh tom@31.220.86.192 \"curl -s -X POST https://arcanthyr.com/api/legal/search-cases -H ''Content-Type: application/json'' -d ''{\"\"query\"\":\"\"[2025] TASCCA 12\"\",\"\"limit\"\":1}''\")",
+      "Bash(ssh tom@31.220.86.192 \"curl -s http://localhost:6334/collections/general-docs/points/count -H ''Content-Type: application/json'' -d ''{\"\"filter\"\":{\"\"must\"\":[{\"\"key\"\":\"\"citation\"\",\"\"match\"\":{\"\"value\"\":\"\"[2025] TASCCA 12\"\"}}]}}''\")",
+      "Bash(npx wrangler deploy)"
+    ]
+  }
+}
