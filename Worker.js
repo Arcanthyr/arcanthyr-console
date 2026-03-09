@@ -877,23 +877,18 @@ async function handleUploadLegislation(body, env) {
   // and footers with lone page numbers. Strip all of these.
   const cleanText = doc_text
     .replace(/\x0c/g, '\n')
-    // Act title + Act No line (may have trailing spaces)
-    .replace(/^.{3,60}\nAct No\.\s+\d+\s+of\s+\d{4}\s*\n/gm, '')
-    // Part/Division/Chapter header lines e.g. "Part 1 – Witnesses"
-    .replace(/^(Part|Division|Chapter)\s+\d+[A-Z]?\s*[–-].+$/gm, '')
-    // Section cross-reference lines e.g. "s. 38" or "s.  38" alone on a line
-    .replace(/^s\.\s+\d+[A-Z]?\s*$/gm, '')
-    // Lone page numbers
+    .replace(/^.{3,60}\n(Act\s+)?No\.\s+\d+\s+of\s+\d{4}\s*\n/gm, '')
+    .replace(/^(Part|Division|Chapter)\s+\d+[A-Z]?\s*[–-].+$/gim, '')
+    .replace(/^s\.?\s+\d+[A-Z]?\s*$/gm, '')
     .replace(/^\s*\d{1,4}\s*$/gm, '')
-    // Collapse 3+ blank lines to 2
     .replace(/\n{3,}/g, '\n\n');
 
   // Skip the table of contents — find where actual section bodies start.
-  // TOC entries have the section number and heading on SEPARATE lines ("38.\nUnfavourable witness\n").
-  // Body entries have them on the SAME line ("38. Unfavourable witness\n(1) A party...").
-  // Find the first section line (number + heading on same line) followed by body text
-  // starting with "(" (subsection marker) — that's definitively in the body, not the TOC.
-  const bodyStartMatch = cleanText.match(/\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n\(/);
+  // Try progressively looser anchors: subsection "(", capital prose, or blank line after heading.
+  const bodyStartMatch =
+    cleanText.match(/\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n\(/) ||
+    cleanText.match(/\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n[A-Z]/) ||
+    cleanText.match(/\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n\n/);
   const contentStart = bodyStartMatch ? cleanText.indexOf(bodyStartMatch[0]) : -1;
   const searchText = contentStart > 0 ? cleanText.substring(contentStart) : cleanText;
 

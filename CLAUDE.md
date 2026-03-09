@@ -1,71 +1,132 @@
-# Arcanthyr — Claude Code Briefing
-*Last updated: 8 March 2026*
+# Arcanthyr — AI Session Brief
+*Last updated: 9 March 2026*
 
 ---
 
-## How to Use This Document
-This file serves as both the Claude Code session briefing and the
-handover document for new Claude.ai conversations. When starting a
-new Claude.ai session, paste this file and begin from the Open Items
-section — current priorities are listed there in order.
+## 1. How to Use This File
+AI session briefing + CC operational rules for Arcanthyr console stack.
+Fresh Claude.ai session: upload this file, summarise system state in 5 lines, identify top priority, wait for instruction.
 
 ---
 
-## Claude.ai Session Management
-- At the start of each session, paste this file and confirm understanding before proceeding
-- Claude.ai should prompt Tom to update CLAUDE.md and start a fresh conversation window when:
-  - The conversation exceeds ~40 messages
-  - Responses begin to feel repetitive or context is clearly degrading
-  - A major milestone is completed (e.g. a full Priority item closed)
-- To update CLAUDE.md: ask Claude.ai to generate a full updated file, download it, and replace the local copy at `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\CLAUDE.md`
+## 2. Session Rules
+
+**Token discipline — CRITICAL:**
+- Never upload whole code files to Claude.ai — CC reads from disk
+- Never paste the same file twice in one session
+- Paste only targeted findings (10-50 lines), not whole files
+- Reset conversation after each Priority item closes
+
+**CC ↔ Claude.ai collaboration pattern (DEFAULT WORKFLOW):**
+1. Claude.ai writes a targeted investigation prompt
+2. You give it to CC — CC reads files from disk, returns findings only
+3. You paste findings (small) back to Claude.ai
+4. Claude.ai verifies, diagnoses, writes fix instruction
+5. You give fix instruction to CC
+6. CC applies fix and confirms locally BEFORE any deploy or commit
+7. Claude.ai reviews confirmation — then and only then: deploy + commit
+
+This pattern replaces file uploads in almost all cases.
+
+**CC autonomy rules:**
+- Act autonomously: targeted single-file bug fix with clear evidence, one-line changes, token renames
+- Return findings only (no fix): multi-file changes, architectural impact, anything unclear
+- Always escalate to Claude.ai: architectural decisions, new patterns, anything that touches 3+ files
+
+**CC — never do without instruction:**
+- Deploy (`npx wrangler deploy`)
+- Commit + push to GitHub
+- `docker compose build`
+- Modify `.claudeignore`, `.gitignore`, `.wranglerignore`, `.env`
+
+**CC — confirm locally before deploy:**
+- For Worker.js: verify route logic, check handler exists, confirm no syntax errors
+- For server.py: restart container, curl `/health`, curl affected endpoint
+- Report confirmation result before deploy is authorised
 
 ---
 
-## Claude Code (CC) Conventions
-- **Before applying any multi-file or multi-edit change**: ask CC to summarise ALL proposed diffs across ALL files in one message, so they can be copied to Claude.ai for review before any individual change is accepted
-- Use this prompt: *"Show me all diffs across all files in one summary before applying any of them"*
-- CC will then list every before/after block — copy the full output to Claude.ai, get approval, then tell CC to apply
-- **NEVER chain PowerShell commands with `&&`** — run each separately
-- If execution policy errors appear: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
+## 3. Command Structure
+- Claude.ai = architecture, diagnosis, prompt crafting, verification
+- CC = file reads, edits, terminal, local confirmation
+- When uncertain mid-session: stop and flag, do not decide unilaterally
+- Do not generate speculative code blocks — wait for targeted instruction
 
 ---
 
-## Command and Control Structure
-- Claude.ai is the command and control layer — architecture, analysis, diagnosis, and prompt crafting happen there
-- Claude Code (VS Code) is the execution layer only — file edits, terminal commands, deploys
-- When uncertain about approach or architecture mid-session, stop and flag it rather than deciding unilaterally
-- Do not generate large code blocks speculatively — wait for a targeted instruction
+## 4. Critical Terminal Rules
+
+**PowerShell:**
+- NEVER chain with `&&` — run each command separately
+- Execution policy fix: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
+- `curl` in PowerShell = Invoke-WebRequest — run curl commands on VPS instead
+- `scp` must run from local PowerShell, NOT inside SSH session
 
 ---
 
-## Current System State
+## 5. Current System State
 
 | Component | Status |
 |---|---|
-| arcanthyr.com | Live — Cloudflare Worker custom domain |
-| nexus.arcanthyr.com | Live — VPS Docker container (port 18789) |
-| Qdrant collection | general-docs · ~5500+ pts · 768-dim cosine |
-| D1 database | cases + legislation + legislation_sections populated |
-| Evidence Act 2001 | 249 sections in D1 · 98 Qdrant chunks ✅ |
-| Justices Act 1959 | 147 sections in D1 · 81 Qdrant chunks ✅ |
-| Police Offences Act 1935 | 145 sections in D1 · 78 Qdrant chunks ✅ |
-| Misuse of Drugs Act 2001 | 284 sections in D1 · 29 Qdrant chunks ✅ (Schedule-heavy) |
-| Worker.js | v7 — deployed and committed |
-| server.py | Volume-mounted at ~/ai-stack/agent-general/src/server.py |
+| arcanthyr.com | Live — Cloudflare Worker |
+| nexus.arcanthyr.com | Live — VPS Docker (port 18789) |
+| Qdrant | general-docs · ~5500+ pts · 768-dim cosine |
+| D1 | cases + legislation + legislation_sections populated |
+| Evidence Act 2001 | 249 sections D1 · 98 Qdrant chunks ✅ |
+| Justices Act 1959 | 170 sections D1 · 81 Qdrant chunks ✅ |
+| Police Offences Act 1935 | 145 sections D1 · 78 Qdrant chunks ✅ |
+| Misuse of Drugs Act 2001 | 284 sections D1 · 29 Qdrant chunks ✅ |
+| Criminal Code Act 1924 | NOT YET UPLOADED — awaiting OCR test |
+| Worker.js | v7 — deployed + committed |
+| server.py | v2 — OCR fallback live (/extract-pdf-ocr) |
+| app.js | v12 |
 | Scraper | PAUSED — resume after Criminal Code resolved |
-| Git | All changes committed to master |
+| Git | master up to date |
 
 ---
 
-## Infrastructure
+## 6. Open Items
 
-### VPS (OVH)
-- IP: 31.220.86.192
-- User: tom
-- Stack directory: ~/ai-stack/
-- docker-compose.yml lives here
+### Priority 3 — In Progress
+**Criminal Code upload**
+- OCR pipeline live — test by dragging full PDF into legislation upload form
+- Auto-split logic in legal.html — splits at section boundaries, uploads sequentially
+- Part IDs: `criminal-code-act-1924-tas-part-1` etc
+- Next action: OCR test → confirm extraction quality → ingest
 
-### Services (docker-compose)
+**Resume scraper** — blocked by Criminal Code
+- ~20 scraper errors unreviewed
+- ~20 cases court=unknown — re-extract from raw_text on resume
+
+### Priority 4 — Backlog
+- Fix case name extraction via Llama (replace regex)
+- Evaluate pplx-embed-context-v1 as embedding replacement
+- Fix deploy.ps1 encoding (UTF-8 without BOM)
+- Qwen3 inference (needs GPU — deferred)
+
+---
+
+## 7. Known Issues
+
+| # | Issue | Notes |
+|---|---|---|
+| 1 | Evidence Act column garbling | pdfminer can't reconstruct two-column layout |
+| 2 | Misuse of Drugs low chunk count | Schedule tables don't parse as semantic chunks |
+| 3 | ~20 cases court=unknown | Re-extract from raw_text when scraper resumes |
+| 4 | Llama 3b confabulates | Invents citations — WorkersAI for genuine retrieval only |
+| 5 | Duplicate citation formats | Both 'TASSC 2024 24' and '[2024] TASSC 24' present |
+| 6 | ~52 Evidence Act sections missing | Schedule + >8000 char sections truncated at D1 limit |
+| 7 | legislation_extracted duplicates | Same section 5x — Llama extraction quality |
+| 8 | Qwen3 too slow | Needs GPU — deferred |
+| 9 | deploy.ps1 encoding broken | Run scp + ssh manually as workaround |
+
+---
+
+## 8. Infrastructure
+
+**VPS:** IP `31.220.86.192` · user `tom` · stack `~/ai-stack/`
+
+**Services:**
 | Service | Port |
 |---|---|
 | agent-general | 18789 |
@@ -74,244 +135,133 @@ section — current priorities are listed there in order.
 | n8n | 5678 |
 | open-webui | 3000 |
 
-### Ollama Models
-- nomic-embed-text (active)
-- qwen3:8b (inactive)
-- qwen3:4b (inactive)
-- qwen2.5:1.5b (slow)
+**Ollama models:** nomic-embed-text (active) · qwen3:8b · qwen3:4b · qwen2.5:1.5b (slow)
 
-### Cloudflare
-- Worker name: `arcanthyr-api`
-- Main file: `Worker.js`
-- Assets directory: `public/` (Wrangler deploys only this folder — keep sensitive files out)
-- D1 binding: `DB` → database `arcanthyr` (id: `1b8ca95d-b8b3-421d-8c77-20f80432e1a0`)
-- AI binding: `AI` (WorkersAI)
-- Cron trigger: daily at 02:00 UTC → runDailySync
-- Deploy via: `npx wrangler deploy`
+**Cloudflare Worker:** name `arcanthyr-api` · file `Worker.js` · assets `public/` only
+D1 binding: `DB` → `arcanthyr` (id: `1b8ca95d-b8b3-421d-8c77-20f80432e1a0`)
+AI binding: `AI` (WorkersAI) · Cron: 02:00 UTC → runDailySync
 
-### Nexus Authentication
-- All `/search` and `/delete` requests to the VPS require header: `X-Nexus-Key`
-- Key stored in `~/ai-stack/.env` as `NEXUS_SECRET_KEY`
-- Retrieve on VPS with: `KEY=$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)`
-
-### Nexus (server.py) Endpoints
-All on port 18789. All POST routes require `X-Nexus-Key` header.
-
-| Method | Endpoint | Purpose | Required fields |
-|---|---|---|---|
-| GET | `/health` | Health check | — |
-| POST | `/ingest` | Embed + store text chunks in Qdrant | `text`, `citation` |
-| POST | `/search` | Semantic search — returns re-ranked chunks | `query_text` |
-| POST | `/query` | Search + Qwen3 inference in one call | `query_text` |
-| POST | `/extract-pdf` | Extract text from PDF bytes | `pdf_base64` |
-| POST | `/delete` | Delete all Qdrant vectors for a citation | `citation` |
-
-**Search/ingest defaults:** `top_k=6` (max 8), `score_threshold=0.65`, `chunk_size=500`, `chunk_overlap=50`
-
-**Chunk payload fields:** `text`, `source`, `citation`, `chunk`, `total_chunks`, `summary`, `category`, `jurisdiction`, `court`, `year`, `outcome`, `principles`, `legislation`, `offences`
-
-**Note:** `court` and `year` are null for legislation chunks — use this to filter legislation out of case searches.
+**Nexus auth:** all POST endpoints require `X-Nexus-Key` header
+Retrieve: `KEY=$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)`
 
 ---
 
-## Architecture
-- **Frontend/API layer**: Cloudflare Worker — live at arcanthyr.com
-- **Database**: Cloudflare D1 (SQLite) — cases + legislation + legislation_sections
-- **Vector search**: Qdrant (self-hosted on VPS via Docker) — collection: general-docs
-- **LLM inference**: VPS Docker — agent-general container (server.py)
-- **Scraper**: AustLII scraper pipeline — PAUSED
-- **Embeddings**: nomic-embed-text (active) — pplx-embed-context-v1 under evaluation as replacement
+## 9. Nexus Endpoints (port 18789)
 
----
-
-## Phase 5 Design (Locked)
-- Qdrant: top 6 chunks, min score 0.72, max 8 results
-- Re-rank by court hierarchy within 0.05 score band: CCA/FullCourt > Supreme > Magistrates
-- Full metadata per chunk (including court, year, citation)
-- LLM routing: Claude API first, fallback to Qwen3 local (deferred — GPU needed)
-- API key: `npx wrangler secret put ANTHROPIC_API_KEY`
-
----
-
-## Key File Locations
-
-### Local Repos
-| Repo | Local Path | GitHub |
+| Method | Endpoint | Fields |
 |---|---|---|
-| Main (Worker) | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4` | github.com/Arcanthyr/arcanthyr-console |
-| Nexus (server.py) | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\arcanthyr-nexus` | github.com/Arcanthyr/arcanthyr-nexus |
+| GET | /health | — |
+| POST | /ingest | text, citation |
+| POST | /search | query_text |
+| POST | /query | query_text |
+| POST | /extract-pdf | pdf_base64 |
+| POST | /extract-pdf-ocr | pdf_base64 |
+| POST | /delete | citation |
 
-### Main Repo Contents (Arc v 4)
-- `Worker.js` — Cloudflare Worker (v7)
-- `wrangler.toml` — Worker config, D1 binding, AI binding, cron
-- `public/` — static assets served by Worker
-- `public/styles.css` — design system (monumental stoic palette — parchment/charcoal/blue/amber/burgundy-red)
-- `schema.sql` — D1 schema reference
-- `scraper_progress.json` — scraper state (excluded from Wrangler deploy)
-- `.env` — secrets (excluded from both Wrangler and git)
-- `.wranglerignore` — excludes .env, .git, .wrangler, *.py, *.log, *.docx, scraper_progress.json
-- `.gitignore` — excludes .env, .wrangler, Local Scraper/.env, arcanthyr-nexus/
+Worker.js routes all PDF extraction through `/extract-pdf-ocr` — not `/extract-pdf`.
+Defaults: `top_k=6` (max 8) · `score_threshold=0.65` · `chunk_size=500` · `chunk_overlap=50`
+Chunk fields: `text, source, citation, chunk, total_chunks, summary, category, jurisdiction, court, year, outcome, principles, legislation, offences`
+Legislation filter: `court=null AND year=null`
 
-### VPS File Locations
-- `server.py`: `~/ai-stack/agent-general/src/server.py` (volume-mounted)
-- `docker-compose.yml`: `~/ai-stack/docker-compose.yml`
-- `.env` (VPS secrets): `~/ai-stack/.env`
+---
 
-### Other
-- Criminal Code split files: local at `CrimCode_Part_*.txt` (9 parts, ready but not yet uploaded)
+## 10. Worker.js Endpoint Map (v7)
+*Do not invent, rename, or duplicate.*
 
-## .claudeignore
-Both repos have a `.claudeignore`. Claude Code must never read, edit, or act on these files.
+| Method | Endpoint | Handler |
+|---|---|---|
+| POST | /api/ai/draft | handleDraft |
+| POST | /api/ai/next-actions | handleNextActions |
+| POST | /api/ai/weekly-review | handleWeeklyReview |
+| POST | /api/ai/axiom-relay | handleAxiomRelay |
+| POST | /api/ai/clarify-agent | handleClarifyAgent |
+| POST | /api/email/send | handleSendEmail |
+| GET | /api/email/contacts | handleGetContacts |
+| POST | /api/email/contacts | handleAddContact |
+| DELETE | /api/email/contacts/{id} | handleDeleteContact |
+| GET | /api/legal/sync-progress | getSyncProgress |
+| POST | /api/legal/search-cases | handleSearchCases |
+| POST | /api/legal/search-principles | handleSearchPrinciples |
+| POST | /api/legal/trigger-sync | runDailySync |
+| POST | /api/legal/backfill-year | runYearBackfill |
+| POST | /api/legal/upload-case | handleUploadCase |
+| POST | /api/legal/extract-pdf | handleExtractPdf → /extract-pdf-ocr |
+| POST | /api/legal/upload-legislation | handleUploadLegislation (accepts part_number) |
+| POST | /api/legal/upload-secondary | handleUploadSecondarySource |
+| GET | /api/legal/library | handleLibraryList |
+| DELETE | /api/legal/library/delete/{docType}/{id} | handleLibraryDelete → nexus /delete |
+| POST | /api/legal/section-lookup | handleSectionLookup |
+| POST | /api/legal/legal-query | handleLegalQuery (Claude API — Phase 5) |
+| POST | /api/legal/legal-query-qwen | handleLegalQueryQwen (deferred) |
+| POST | /api/legal/legal-query-workers-ai | handleLegalQueryWorkersAI (Llama) |
+| POST | /api/legal/fetch-page | handleFetchPage (AustLII proxy) |
+| GET | /api/entries | all non-deleted, newest first, limit 200 |
+| POST | /api/entries | create — id, created_at, text, tag, next, clarify |
+| DELETE | /api/entries/{id} | soft-delete single |
+| DELETE | /api/entries | soft-delete all |
+| PATCH | /api/entries | restore all |
+
+---
+
+## 11. Key File Locations
+
+**Local repos:**
+- Main: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4`
+- Nexus: `...\Arc v 4\arcanthyr-nexus`
+- GitHub: github.com/Arcanthyr/arcanthyr-console · github.com/Arcanthyr/arcanthyr-nexus
 
 **Main repo (Arc v 4):**
-```
-.env
-*.pdf
-CrimCode_Part_*.txt
-node_modules/
-.wrangler/
-```
+`Worker.js` · `wrangler.toml` · `public/` · `public/styles.css` · `public/legal.html` · `public/app.js` · `schema.sql`
+`.env` — excluded from Wrangler + git
+`.wranglerignore` — excludes .env, .git, .wrangler, *.py, *.log, *.docx, scraper_progress.json
+`.gitignore` — excludes .env, .wrangler, Local Scraper/.env, arcanthyr-nexus/
 
-**Nexus repo (arcanthyr-nexus):**
-```
-.env
-*.log
-*.pdf
-deploy.ps1
-```
-If either `.claudeignore` is missing, create it before doing anything else.
+**VPS:**
+- server.py: `~/ai-stack/agent-general/src/server.py` (volume-mounted)
+- docker-compose: `~/ai-stack/docker-compose.yml`
+- secrets: `~/ai-stack/.env`
+
+**Criminal Code split files:** local `CrimCode_Part_*.txt` (9 parts — prefer single PDF via OCR now)
 
 ---
 
-## Open Items — Next Session
+## 12. .claudeignore
+Both repos have `.claudeignore`. CC must never read, edit, or act on these files. Recreate if missing.
 
-### Priority 1 — COMPLETE ✅
-~~Re-ingest Evidence Act into Qdrant~~ — Done. 249 sections in D1, 98 chunks in Qdrant, spot-check passed.
-
-### Priority 2 — Must Do Next
-
-**Wire legal.html to handle #citation= hash param**
-The View Case button on search.html opens `legal.html#citation=[encoded]` but legal.html doesn't yet read the hash param to auto-load the case. Front-end only change — add hashchange listener and fetch on load. No Worker changes required.
-
-**Library table — replace Size with Sections Parsed**
-- `handleLibraryList` in Worker.js needs to return section count for legislation entries: `COUNT(*)` on `legislation_sections WHERE legislation_id = id`
-- Update library table in legal.html to show Sections Parsed column instead of Size
-- Cases return null for this field
-
-**UI styling changes (in progress)**
-- Headings bold burgundy-red (`#8B1A1A`) — styles.css updated, pending deploy
-- Active buttons blue — styles.css updated, pending deploy
-- Page tabs bold red — legal.html updated, pending deploy
-- Green replaced with blue throughout — done
-- Clear Form button on case and legislation upload forms
-- Upload progress message: "Uploading and parsing… this may take up to 2 minutes"
-
-### Priority 3 — Queued
-
-**Criminal Code upload via Cloudflare Queues**
-CF Worker 30s timeout blocks direct upload of the full Criminal Code. Cloudflare Queues (Scenario 2) is the solution.
-- 9-part split files ready at local `CrimCode_Part_*.txt`
-- Upload script written but not yet run
-- Duplicate-title issue in handleUploadLegislation needs resolving first
-- resolveActTitle now searches all 9 parts sequentially via fetchSectionContext — already in Worker v7
-
-**Resume scraper**
-Paused pending Criminal Code upload and pipeline data quality review.
-- ~20 scraper errors noted pre-pause, not yet reviewed
-- Review errors before resuming bulk ingest
-- ~20 cases with court=unknown — re-extract from raw_text when scraper resumes
-
-### Priority 4 — Backlog
-- Fix case name extraction via Llama summarisation prompt (not regex)
-- Evaluate pplx-embed-context-v1 as embedding model replacement
-- Qwen3 inference (needs GPU — deferred)
+**Main repo:** `.env · *.pdf · node_modules/ · .wrangler/`
+**Nexus repo:** `.env · *.log · *.pdf · deploy.ps1`
 
 ---
 
-## Known Issues (Persistent)
+## 13. Deployment Procedures
 
-| # | Issue | Notes |
-|---|---|---|
-| 1 | Evidence Act column garbling | pdfminer can't fully reconstruct two-column layout. AustLII HTML source would fix permanently. |
-| 2 | Misuse of Drugs Act low chunk count | 29 chunks from 284 sections — Schedule (drug names table) doesn't parse as semantic chunks. Acceptable. |
-| 3 | ~20 cases court=unknown | Pre-upgrade extraction. Re-extract from raw_text when scraper resumes. |
-| 4 | Llama 3b confabulates case law | Invents citations when no real cases available. Claude holds the instruction reliably. WorkersAI suitable only for genuine case retrieval. |
-| 5 | Duplicate citation formats in Qdrant | Both 'TASSC 2024 24' and '[2024] TASSC 24' present for same cases. |
-| 6 | ~52 Evidence Act sections missing | Schedule + sections >8000 chars truncated at D1 row limit. |
-| 7 | legislation_extracted duplicates | Same section appearing 5x — Llama extraction quality issue. |
-| 8 | Qwen3 inference too slow | Needs GPU. Deferred. |
-
----
-
-## Parser / Pipeline Notes (Important for Future Uploads)
-
-**Legislation upload — title convention**
-Always use the full Act name including year: `Evidence Act 2001`, `Justices Act 1959` etc.
-Year is extracted automatically from the title by the Worker (`title.match(/\b(\d{4})\b/g)`).
-Do NOT put year in the Year field (field has been removed from the form).
-Jurisdiction is a separate dropdown — do not include in title.
-
-**bodyStartMatch logic**
-Looks for `\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n\(` — section line followed immediately by `(` on next line. Works for Evidence Act because subsections start with (1). May fail for Acts where the first section has no subsections (body starts with plain prose). Monitor on next legislation upload.
-
-**sectionPattern relaxation risk**
-Changed from `\s{2,}` to `\s+` — single-space matches now valid section starts. Could produce false positives on inline references like "section 38 applies". Mitigated by seenSections dedup and capital-letter heading check. Watch for spurious sections in future uploads.
-
-**PDF extraction behaviour**
-- pdfminer with `LAParams(boxes_flow=None)` sorts top-to-bottom — better than default (0.5) which tries to detect columns and often fails
-- Two-column PDFs still have partial garbling despite the fix
-- AustLII plain-text (.txt) versions are cleaner than PDFs — use .txt where available
-- Scanned/image PDFs will hang or return nothing
-
-**Legislation ingest batching**
-Sections are sent to nexus `/ingest` in batches of 20 to avoid payload size limits and Worker timeout. Each batch is a separate sequential fetch call. This supports Acts up to ~300 sections within the 30s Worker timeout. The Criminal Code requires Cloudflare Queues.
-
-**Qdrant delete behaviour**
-- `/delete` endpoint in server.py confirmed working end-to-end
-- `handleLibraryDelete` in Worker.js confirmed working — calls nexus `/delete` with citation ID
-- Always delete before re-ingest — upsert adds new vectors alongside old ones
-- Verify deletion with Qdrant count check before re-uploading
-
----
-
-## docker-compose.yml — Critical Notes
-- `python -u src/server.py` confirmed present for BOTH agent-sensitive and agent-general — `-u` flag is in the repo file ✓
-- `src/` volume mount confirmed: `./agent-general/src:/app/src` — edits to server.py on VPS take effect on container restart, no rebuild needed
-- `agent-general` also mounts `./agent-general:/app/docs` — PDF uploads land here
-- `ANTHROPIC_API_KEY`, `NEXUS_SECRET_KEY`, `OLLAMA_PORT`, `QDRANT_GENERAL_PORT`, `AGENT_GENERAL_PORT` all sourced from `~/ai-stack/.env`
-- `qdrant-general` is on `general-net` (outbound internet allowed) — `qdrant-sensitive` is on `sensitive-net` (no internet, ever)
-- n8n live at `n8n.arcanthyr.com` (port 5678, internal only)
-- **Do NOT run `docker compose build` unless the Dockerfile itself has changed**
-
----
-
-## Deployment Procedures
-
-### Worker.js Changes
-Run each command separately in PowerShell:
+**Worker.js — run each separately in PowerShell:**
 ```
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 npx wrangler deploy
 git add -A
-git commit -m "your message"
+git commit -m "message"
 git push origin master
 ```
-Note: ignore 'master is not recognized' error on second push line — push succeeds regardless.
+Before deploy: verify upload list shows ONLY `public/` files. If `.env` or `.git` appear — STOP.
+After deploy: git push is mandatory — GitHub drifts if skipped.
 
-### server.py Changes (arcanthyr-nexus repo)
-`server.py` has its own local repo at:
-`C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\arcanthyr-nexus`
-
-Open that folder in VS Code, edit `server.py`, then deploy with one command:
+**server.py — deploy.ps1 broken (issue #9). Use manually:**
 ```
-.\deploy.ps1 -Message "describe your change"
+scp server.py tom@31.220.86.192:~/server.py
+ssh tom@31.220.86.192 "cp ~/server.py ~/ai-stack/agent-general/src/server.py && cd ~/ai-stack && docker compose restart agent-general"
+ssh tom@31.220.86.192 "curl -s http://localhost:18789/health"
+git add -A
+git commit -m "message"
+git push origin master
 ```
-This script: SCPs the file to VPS → copies to volume mount → restarts agent-general → health checks → commits and pushes to GitHub.
+Do NOT run `docker compose build` unless Dockerfile changed.
 
-**Do NOT run `docker compose build` unless the Dockerfile itself has changed.**
+---
 
-### Verifying Qdrant Content
-Run on VPS:
+## 14. Verification Commands
+
+**Qdrant search test (VPS):**
 ```
 KEY=$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)
 curl -s -X POST http://localhost:18789/search \
@@ -320,14 +270,14 @@ curl -s -X POST http://localhost:18789/search \
   -d '{"query_text": "your query", "top_k": 3, "score_threshold": 0.5}' | python3 -m json.tool
 ```
 
-### Checking Qdrant Count for a Citation
+**Qdrant count by citation (VPS):**
 ```
 curl -s http://localhost:6334/collections/general-docs/points/count \
   -H "Content-Type: application/json" \
   -d '{"filter": {"must": [{"key": "citation", "match": {"value": "evidence-act-2001-tas"}}]}}' | python3 -m json.tool
 ```
 
-### Checking Section Text in D1
+**D1 section lookup:**
 ```
 curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
   -H "Content-Type: application/json" \
@@ -336,139 +286,51 @@ curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
 
 ---
 
-## Qdrant / Nexus Rules
-- **Always delete before re-ingest** — upsert adds new vectors alongside old ones, it does not replace
-- `citation` field in payload is the key for delete-by-filter
-- Chunk payloads don't include category/source fields — filter by (court==null AND year==null) to exclude legislation from case search
-- score_threshold default: 0.65 across all handlers
-- /delete endpoint: confirmed working end-to-end as of 8 March 2026
+## 15. Qdrant / Ingest Rules
+- Always delete before re-ingest — upsert adds alongside, does not replace
+- citation field is the delete key
+- /delete confirmed working end-to-end
+- handleLibraryDelete in Worker.js calls nexus /delete automatically
+- Verify deletion with count check before re-uploading
 
 ---
 
-## PowerShell Conventions (CRITICAL)
-- **NEVER chain commands with `&&`** — PowerShell does not support this
-- Run each command separately, one at a time
-- If execution policy errors appear, run first:
-  `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
-- `curl` in PowerShell is Invoke-WebRequest — use `$()` syntax or run curl commands on VPS instead
-- `scp` must be run from local PowerShell, NOT from inside the VPS SSH session
+## 16. Docker Rules
+- All docker compose commands from `~/ai-stack/`
+- Volume mount confirmed: `./agent-general/src:/app/src` — server.py changes need restart only
+- `python -u` flag confirmed in docker-compose.yml for both agent containers
+- No sudo needed for cp on this machine
+- Tesseract + poppler-utils + pdf2image already in Dockerfile.agent — no rebuild needed
 
 ---
 
-## Wrangler Deploy Checklist (CRITICAL)
-Before every `npx wrangler deploy`:
-1. Verify the upload list shows ONLY files from `public/`
-2. If `.env`, `.git`, or any sensitive file appears — **STOP IMMEDIATELY**
-3. After deploy: `git add -A` → `git commit` → `git push origin master`
-4. GitHub drifts if the push is skipped after deploy
+## 17. Phase 5 Design (Locked)
+- Qdrant: top 6 chunks · min score 0.72 · max 8
+- Re-rank by court hierarchy within 0.05 band: CCA/FullCourt > Supreme > Magistrates
+- LLM routing: Claude API first → Qwen3 local fallback (deferred — GPU needed)
+- API key: `npx wrangler secret put ANTHROPIC_API_KEY`
 
 ---
 
-## Docker / VPS Rules
-- docker compose commands must be run from `~/ai-stack/` directory
-- docker compose logs only visible with `python -u` flag (set in docker-compose.yml on VPS)
-- No sudo needed on this machine — regular cp works for volume-mounted files
-- VPS IP: 31.220.86.192 (verify on VPS with: `curl -s ifconfig.me`)
+## 18. Design Tokens (styles.css)
+- `--ink`: #2a2a2a · `--ink-dim`: #f0f0f0 · `--border-heavy`: #b8b3a8
+- `--red`: #8B1A1A (headings) · `--blue`: #3a6a9a (active/AI) · `--border`: #ccc8be
 
 ---
 
-## Workflow Rules
-
-### 1. Plan Before Acting
-- For ANY task with 3+ steps or architectural impact: write a plan first and confirm before touching files
-- If something goes sideways mid-task: STOP and re-plan — do not keep pushing
-- For simple, obvious single-file fixes: just do it
-
-### 2. Verification Before Done
-- Never mark a task complete without proving it works
-- Run tests, check logs, demonstrate correctness
-- For deploys: confirm Worker is live and responding before calling it done
-
-### 3. Minimal Impact
-- Changes should touch only what is necessary
-- Avoid introducing new dependencies without flagging it
-- If a fix feels hacky, pause and find the cleaner solution
-
-### 4. Autonomous Bug Fixing
-- When given a bug report with logs or terminal output: just fix it
-- Point at the evidence (logs, errors, stack traces) and resolve it
-- Do not ask for hand-holding on straightforward debugging
-
-### 5. Capture Lessons
-- After any correction from Tom: note the pattern in a `tasks/lessons.md` file
-- Write rules that prevent the same mistake recurring
-
-### 6. Keep CLAUDE.md Current
-**During session** — update immediately after any of the following:
-- New endpoint added or removed
-- Architectural decision made or changed
-- Known issue resolved or discovered
-- Naming convention or behaviour change
-- Any Open Items status change
-
-**End of session** — full pass before closing:
-- Update Open Items to reflect current state
-- Remove anything resolved
-- Add anything discovered this session
-- Correct any stale values (thresholds, ports, flags, file paths)
-
-CLAUDE.md is the source of truth. If it's wrong, the next session starts blind.
+## 19. Pipeline Notes (legislation uploads only)
+- Title must include year: `Evidence Act 2001` — year extracted by regex, do not put in Year field
+- Auto-split threshold: 80,000 chars · target 70,000 chars/part
+- OCR fallback: pdfminer first → Tesseract if <300 chars/page · expect minutes for large Acts
+- Batching: 20 sections/request · supports ~300 sections within 30s Worker timeout
+- bodyStartMatch: `\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n(` — may fail if first section has no subsections
+- Use AustLII .txt versions over PDFs where available — cleaner extraction
 
 ---
 
-## Worker.js Endpoint Map (v7)
-*Do not invent, rename, or duplicate these. All routes are in Worker.js.*
+## 20. Operational Rules
+**Never:** expose secrets in Worker assets · ingest duplicates · modify Docker stack without reviewing compose · run ingestion without citation IDs · deploy without local confirmation first
 
-### /api/ai/
-| Method | Endpoint | Handler |
-|---|---|---|
-| POST | `/api/ai/draft` | handleDraft |
-| POST | `/api/ai/next-actions` | handleNextActions |
-| POST | `/api/ai/weekly-review` | handleWeeklyReview |
-| POST | `/api/ai/axiom-relay` | handleAxiomRelay |
-| POST | `/api/ai/clarify-agent` | handleClarifyAgent |
+**Always:** delete before re-ingest · confirm ingestion counts · validate search after schema changes · CC confirms fix locally before deploy authorised · git push after every deploy
 
-### /api/email/
-| Method | Endpoint | Handler |
-|---|---|---|
-| POST | `/api/email/send` | handleSendEmail |
-| GET | `/api/email/contacts` | handleGetContacts |
-| POST | `/api/email/contacts` | handleAddContact |
-| DELETE | `/api/email/contacts/{id}` | handleDeleteContact |
-
-### /api/legal/
-| Method | Endpoint | Handler |
-|---|---|---|
-| GET | `/api/legal/sync-progress` | getSyncProgress |
-| POST | `/api/legal/search-cases` | handleSearchCases |
-| POST | `/api/legal/search-principles` | handleSearchPrinciples |
-| POST | `/api/legal/trigger-sync` | runDailySync |
-| POST | `/api/legal/backfill-year` | runYearBackfill |
-| POST | `/api/legal/upload-case` | handleUploadCase |
-| POST | `/api/legal/extract-pdf` | handleExtractPdf |
-| POST | `/api/legal/upload-legislation` | handleUploadLegislation |
-| POST | `/api/legal/upload-secondary` | handleUploadSecondarySource |
-| GET | `/api/legal/library` | handleLibraryList |
-| DELETE | `/api/legal/library/delete/{docType}/{id}` | handleLibraryDelete — also purges Qdrant via nexus /delete |
-| POST | `/api/legal/section-lookup` | handleSectionLookup |
-| POST | `/api/legal/legal-query` | handleLegalQuery (Claude API — Phase 5 primary) |
-| POST | `/api/legal/legal-query-qwen` | handleLegalQueryQwen (local Qwen via nexus — deferred) |
-| POST | `/api/legal/legal-query-workers-ai` | handleLegalQueryWorkersAI (WorkersAI — Llama) |
-| POST | `/api/legal/fetch-page` | handleFetchPage (AustLII proxy) |
-
-### /api/entries/
-| Method | Endpoint | Notes |
-|---|---|---|
-| GET | `/api/entries` | All non-deleted entries, newest first, limit 200 |
-| POST | `/api/entries` | Create — required: id, created_at, text, tag, next, clarify |
-| DELETE | `/api/entries/{id}` | Soft-delete single entry |
-| DELETE | `/api/entries` | Soft-delete all entries |
-| PATCH | `/api/entries` | Restore all soft-deleted entries |
-
----
-
-## Core Principles
-- **Simplicity first**: Make every change as simple as possible
-- **No laziness**: Find root causes — no temporary fixes
-- **Senior standard**: Would a careful senior developer approve this change?
-- **Legal platform caution**: This platform handles legal research — accuracy and stability matter
+**Core principles:** simplicity first · no temporary fixes · senior developer standard · legal platform — accuracy matters
