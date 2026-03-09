@@ -928,13 +928,14 @@ async function handleUploadLegislation(body, env) {
     });
   }
 
-  // Store legislation record (raw_text omitted — full content is in legislation_sections)
+  // Store legislation record — use baseid so all parts share one parent row.
+  // INSERT OR IGNORE so Parts 2-8 skip silently without error.
   await env.DB.prepare(`
-    INSERT INTO legislation (id, title, jurisdiction, year, current_as_at, summary,
+    INSERT OR IGNORE INTO legislation (id, title, jurisdiction, year, current_as_at, summary,
       defined_terms, offence_elements, source_url, raw_text, processed_date)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
-    id, part_number ? `${title} (Part ${part_number})` : title, jurisdiction, year ? parseInt(year) : null,
+    baseid, title, jurisdiction, year ? parseInt(year) : null,
     new Date().toISOString().split('T')[0],
     null, '[]', '[]',
     source_url || '', '',
