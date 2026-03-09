@@ -919,8 +919,8 @@ async function handleUploadLegislation(body, env) {
       .replace(/\s+/g, ' ').trim();
 
     sections.push({
-      id: `${id}-s${sectionNum.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
-      legislation_id: id,
+      id: `${baseid}-s${sectionNum.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`,
+      legislation_id: baseid,
       section_number: sectionNum,
       heading: headingOrText.length < 120 ? headingOrText : headingOrText.substring(0, 120),
       text: sectionText.substring(0, 8000),
