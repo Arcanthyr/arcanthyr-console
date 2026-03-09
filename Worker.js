@@ -962,7 +962,7 @@ async function handleUploadLegislation(body, env) {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
         body: JSON.stringify({
-          citation: id,
+          citation: baseid,
           case_name: `${title} (${jurisdiction})`,
           source: "legislation",
           text: batch.map(s => `${s.section_number}. ${s.heading}\n${s.text}`).join('\n\n'),
