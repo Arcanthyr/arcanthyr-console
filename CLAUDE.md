@@ -70,37 +70,34 @@ This pattern replaces file uploads in almost all cases.
 |---|---|
 | arcanthyr.com | Live — Cloudflare Worker |
 | nexus.arcanthyr.com | Live — VPS Docker (port 18789) |
-| Qdrant | general-docs · ~5500+ pts · 768-dim cosine |
+| Qdrant | general-docs · ~5700+ pts · 768-dim cosine |
 | D1 | cases + legislation + legislation_sections populated |
 | Evidence Act 2001 | 249 sections D1 · 98 Qdrant chunks ✅ |
 | Justices Act 1959 | 170 sections D1 · 81 Qdrant chunks ✅ |
 | Police Offences Act 1935 | 145 sections D1 · 78 Qdrant chunks ✅ |
 | Misuse of Drugs Act 2001 | 284 sections D1 · 29 Qdrant chunks ✅ |
-| Criminal Code Act 1924 | NOT YET UPLOADED — awaiting OCR test |
-| Worker.js | v7 — deployed + committed |
+| Criminal Code Act 1924 | 509 sections D1 · 169 Qdrant chunks ✅ |
+| Worker.js | v8 — deployed + committed |
 | server.py | v2 — OCR fallback live (/extract-pdf-ocr) |
 | app.js | v12 |
-| Scraper | PAUSED — resume after Criminal Code resolved |
+| Scraper | PAUSED — Criminal Code resolved, ready to resume |
 | Git | master up to date |
 
 ---
 
 ## 6. Open Items
 
-### Priority 3 — In Progress
-**Criminal Code upload**
-- OCR pipeline live — test by dragging full PDF into legislation upload form
-- Auto-split logic in legal.html — splits at section boundaries, uploads sequentially
-- Part IDs: `criminal-code-act-1924-tas-part-1` etc
-- Next action: OCR test → confirm extraction quality → ingest
-
-**Resume scraper** — blocked by Criminal Code
-- ~20 scraper errors unreviewed
+### Priority 3 — Next
+**Resume scraper**
+- ~20 scraper errors unreviewed — check error log before resuming
 - ~20 cases court=unknown — re-extract from raw_text on resume
+- Scraper runs via local Python on Windows, proxied through arcanthyr.com/api/legal/fetch-page
+- 6–12 second random delays · 150-case session limit · no auto-restart
 
 ### Priority 4 — Backlog
-- Fix case name extraction via Llama (replace regex)
-- Evaluate pplx-embed-context-v1 as embedding replacement
+- Secondary source upload — RAG workflow doc produced (see separate file)
+- Fix case name extraction via Llama (replace fragile regex)
+- Evaluate pplx-embed-context-v1 as embedding replacement (do before DB grows further)
 - Fix deploy.ps1 encoding (UTF-8 without BOM)
 - Qwen3 inference (needs GPU — deferred)
 
@@ -165,7 +162,7 @@ Legislation filter: `court=null AND year=null`
 
 ---
 
-## 10. Worker.js Endpoint Map (v7)
+## 10. Worker.js Endpoint Map (v8)
 *Do not invent, rename, or duplicate.*
 
 | Method | Endpoint | Handler |
@@ -220,8 +217,6 @@ Legislation filter: `court=null AND year=null`
 - server.py: `~/ai-stack/agent-general/src/server.py` (volume-mounted)
 - docker-compose: `~/ai-stack/docker-compose.yml`
 - secrets: `~/ai-stack/.env`
-
-**Criminal Code split files:** local `CrimCode_Part_*.txt` (9 parts — prefer single PDF via OCR now)
 
 ---
 
@@ -323,12 +318,24 @@ curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
 - Auto-split threshold: 80,000 chars · target 70,000 chars/part
 - OCR fallback: pdfminer first → Tesseract if <300 chars/page · expect minutes for large Acts
 - Batching: 20 sections/request · supports ~300 sections within 30s Worker timeout
-- bodyStartMatch: `\n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n(` — may fail if first section has no subsections
+- bodyStartMatch uses 3-stage fallback: `\n(` first, then `\nCapital letter`, then `\n\n`
+- All parts store sections under baseid (not part-suffixed ID) — FK integrity across multi-part uploads
 - Use AustLII .txt versions over PDFs where available — cleaner extraction
 
 ---
 
-## 20. Operational Rules
+## 20. handleUploadLegislation — Key Architecture (v8)
+Fixed this session. Important for future work:
+- `baseid` = legislation ID without part suffix e.g. `criminal-code-act-1924-tas`
+- `id` = part-suffixed ID e.g. `criminal-code-act-1924-tas-part-1` (library display only)
+- `legislation` table INSERT uses `baseid` with `INSERT OR IGNORE` — Parts 2–N skip silently
+- `legislation_sections` rows use `legislation_id = baseid` — all parts share one parent
+- Qdrant chunks use `citation = baseid` — consistent with D1 and section-lookup queries
+- `handleSectionLookup` queries on `baseid` — three-way alignment confirmed working
+
+---
+
+## 21. Operational Rules
 **Never:** expose secrets in Worker assets · ingest duplicates · modify Docker stack without reviewing compose · run ingestion without citation IDs · deploy without local confirmation first
 
 **Always:** delete before re-ingest · confirm ingestion counts · validate search after schema changes · CC confirms fix locally before deploy authorised · git push after every deploy

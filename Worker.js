@@ -1059,6 +1059,36 @@ async function handleUploadSecondarySource(body, env) {
 }
 
 /* =============================================================
+   CORPUS CHUNK UPLOAD
+   Accepts pre-chunked text with explicit citation and metadata.
+   No re-chunking, no auto-generation — sends directly to nexus /ingest.
+   Also records a row in secondary_sources for library visibility.
+   ============================================================= */
+async function handleUploadCorpus(body, env) {
+  const { text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences } = body;
+  if (!text || !citation) throw new Error("Missing required fields: text and citation");
+
+  // Send to nexus exactly as received — nexus does chunking, we trust our pre-split sizes
+  let chunksStored = 0;
+  const r = await fetch("https://nexus.arcanthyr.com/ingest", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+    body: JSON.stringify({ text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences }),
+  });
+  const result = await r.json().catch(() => ({}));
+  chunksStored = result.chunks_stored || 0;
+
+  // Record in D1 secondary_sources — INSERT OR IGNORE skips duplicate citations silently
+  await env.DB.prepare(`
+    INSERT OR IGNORE INTO secondary_sources
+    (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added)
+    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?)
+  `).bind(citation, source || citation, category || null, text, new Date().toISOString()).run();
+
+  return { citation, chunks_stored: chunksStored, message: `Corpus chunk ingested (${chunksStored} chunks in Qdrant).` };
+}
+
+/* =============================================================
    LIBRARY — list and delete documents across all types
    ============================================================= */
 async function handleLibraryList(env) {
@@ -1578,6 +1608,7 @@ export default {
         else if (action === "extract-pdf" && request.method === "POST") result = await handleExtractPdf(body, env);
         else if (action === "upload-legislation" && request.method === "POST") result = await handleUploadLegislation(body, env);
         else if (action === "upload-secondary" && request.method === "POST") result = await handleUploadSecondarySource(body, env);
+        else if (action === "upload-corpus" && request.method === "POST") result = await handleUploadCorpus(body, env);
         else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
         else if (action.startsWith("library/delete/") && request.method === "DELETE") {
           // URL pattern: /api/legal/library/delete/{docType}/{id}
