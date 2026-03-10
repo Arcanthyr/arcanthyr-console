@@ -3,7 +3,20 @@
     "allow": [
       "Bash(ssh tom@31.220.86.192 \"curl -s -X POST https://arcanthyr.com/api/legal/search-cases -H ''Content-Type: application/json'' -d ''{\"\"query\"\":\"\"[2025] TASCCA 12\"\",\"\"limit\"\":1}''\")",
       "Bash(ssh tom@31.220.86.192 \"curl -s http://localhost:6334/collections/general-docs/points/count -H ''Content-Type: application/json'' -d ''{\"\"filter\"\":{\"\"must\"\":[{\"\"key\"\":\"\"citation\"\",\"\"match\"\":{\"\"value\"\":\"\"[2025] TASCCA 12\"\"}}]}}''\")",
-      "Bash(npx wrangler deploy)"
+      "Bash(npx wrangler deploy)",
+      "Bash(ssh tom@31.220.86.192 \"curl -s -X POST https://arcanthyr.com/api/legal/search-cases -H ''Content-Type: application/json'' -d ''{\"\"query\"\":\"\"trespass\"\",\"\"court\"\":\"\"unknown\"\",\"\"limit\"\":5}''\")",
+      "Bash(ssh tom@31.220.86.192 \"curl -s -X POST https://arcanthyr.com/api/legal/search-cases -H ''Content-Type: application/json'' -d ''{\"\"court\"\":\"\"unknown\"\",\"\"limit\"\":5}''\")",
+      "Bash(ssh tom@31.220.86.192 \"docker exec ollama ollama pull argus-ai/pplx-embed-context-v1-0.6b:fp32\")",
+      "Bash(ssh tom@31.220.86.192 \"ls ~/ai-stack/ollama-data/models/ 2>/dev/null || echo ''empty or missing''\")",
+      "Bash(ssh tom@31.220.86.192 \"cp /usr/share/ollama/.ollama/models/blobs/sha256-f356b089ada0aaa81058bf53f5ab6fe5ab98a08b73e92b75e81302ec0d1862cb ~/ai-stack/ollama-data/models/blobs/\")",
+      "Bash(ssh tom@31.220.86.192 \"docker exec ollama ollama list\")",
+      "Bash(ssh tom@31.220.86.192 \"cd ~/ai-stack && git add -A && git commit -m ''Switch embedding model to pplx-embed-context-v1-0.6b, collection to general-docs-v2'' && git push origin master\")",
+      "Bash(ssh tom@31.220.86.192 'curl -s -X POST https://arcanthyr.com/api/legal/section-lookup -H \"\"Content-Type: application/json\"\" -d \"\"{\\\\\"\"title\\\\\"\":\\\\\"\"Criminal Code Act 1924\\\\\"\",\\\\\"\"jurisdiction\\\\\"\":\\\\\"\"Tas\\\\\"\",\\\\\"\"section\\\\\"\":\\\\\"\"1\\\\\"\"}\"\" | python3 -m json.tool')",
+      "Bash(ssh tom@31.220.86.192 'curl -s \"\"https://arcanthyr.com/api/legal/sync-progress\"\" | python3 -m json.tool')",
+      "Bash(npx wrangler d1 execute arcanthyr --command \"SELECT legislation_id, COUNT\\(*\\) as count FROM legislation_sections GROUP BY legislation_id ORDER BY legislation_id\")",
+      "Bash(ssh tom@31.220.86.192 \"curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool\")",
+      "Bash(ssh tom@31.220.86.192 'curl -s -X POST http://localhost:6334/collections/general-docs-v2/points/scroll -H \"\"Content-Type: application/json\"\" -d \"\"{\\\\\"\"limit\\\\\"\": 5, \\\\\"\"with_payload\\\\\"\": true, \\\\\"\"with_vector\\\\\"\": false}\"\" | python3 -m json.tool | grep -E \"\"citation|source|category\"\" | sort | uniq -c | sort -rn')",
+      "Bash(ssh tom@31.220.86.192 \"cd ~/ai-stack && docker compose restart agent-general\")"
     ]
   }
 }

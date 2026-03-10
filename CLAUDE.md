@@ -1,5 +1,5 @@
 # Arcanthyr — AI Session Brief
-*Last updated: 9 March 2026*
+*Last updated: 10 March 2026*
 
 ---
 
@@ -25,8 +25,6 @@ Fresh Claude.ai session: upload this file, summarise system state in 5 lines, id
 5. You give fix instruction to CC
 6. CC applies fix and confirms locally BEFORE any deploy or commit
 7. Claude.ai reviews confirmation — then and only then: deploy + commit
-
-This pattern replaces file uploads in almost all cases.
 
 **CC autonomy rules:**
 - Act autonomously: targeted single-file bug fix with clear evidence, one-line changes, token renames
@@ -70,36 +68,52 @@ This pattern replaces file uploads in almost all cases.
 |---|---|
 | arcanthyr.com | Live — Cloudflare Worker |
 | nexus.arcanthyr.com | Live — VPS Docker (port 18789) |
-| Qdrant | general-docs · ~5700+ pts · 768-dim cosine |
-| D1 | cases + legislation + legislation_sections populated |
-| Evidence Act 2001 | 249 sections D1 · 98 Qdrant chunks ✅ |
-| Justices Act 1959 | 170 sections D1 · 81 Qdrant chunks ✅ |
-| Police Offences Act 1935 | 145 sections D1 · 78 Qdrant chunks ✅ |
-| Misuse of Drugs Act 2001 | 284 sections D1 · 29 Qdrant chunks ✅ |
-| Criminal Code Act 1924 | 509 sections D1 · 169 Qdrant chunks ✅ |
+| Qdrant | general-docs-v2 · 458 pts (legislation) · 1024-dim cosine |
+| D1 | legislation + legislation_sections populated |
+| Evidence Act 2001 | 250 sections D1 · 99 Qdrant chunks ✅ |
+| Justices Act 1959 | 198 sections D1 · 82 Qdrant chunks ✅ |
+| Police Offences Act 1935 | 152 sections D1 · 79 Qdrant chunks ✅ |
+| Misuse of Drugs Act 2001 | 268 sections D1 · 29 Qdrant chunks ✅ |
+| Criminal Code Act 1924 | 468 sections D1 · 169 Qdrant chunks ✅ |
+| D1 cases | 0 rows — wiped, scraper will rebuild |
+| D1 legal_principles | 0 rows — wiped, scraper will rebuild |
 | Worker.js | v8 — deployed + committed |
 | server.py | v2 — OCR fallback live (/extract-pdf-ocr) |
 | app.js | v12 |
-| Scraper | PAUSED — Criminal Code resolved, ready to resume |
+| Scraper | PAUSED — resume after corpus ingest complete |
 | Git | master up to date |
 
 ---
 
 ## 6. Open Items
 
-### Priority 3 — Next
-**Resume scraper**
-- ~20 scraper errors unreviewed — check error log before resuming
-- ~20 cases court=unknown — re-extract from raw_text on resume
-- Scraper runs via local Python on Windows, proxied through arcanthyr.com/api/legal/fetch-page
-- 6–12 second random delays · 150-case session limit · no auto-restart
+### Priority 3 — In Progress
+**Secondary source corpus ingest — Hogan on Crime (420 pages)**
+- Pandoc conversion done: `hogan_on_crime.md` produced
+- Splitter run: 32 blocks in `rag_blocks/` (updated script — see RAG workflow doc)
+- All 32 blocks complete — `master_corpus.md` assembled
+- Crowley v Murphy citation fixed (`[MISSING]` → `(1981) 34 ALR 496`)
+- Sammak and Reid and Swan citations still `[REVIEW]` flagged — resolve when AustLII access available
+- `ingest_corpus.py` ready and pointed at `/api/legal/upload-corpus`
+- `handleUploadCorpus` deployed (Worker.js v8) — accepts pre-formatted chunks with full metadata
+- Ready for ingest next session — run single chunk test first, then full pipeline
 
-### Priority 4 — Backlog
-- Secondary source upload — RAG workflow doc produced (see separate file)
+### Priority 4 — Next
+**Resume scraper**
+- D1 cases + legal_principles wiped — clean slate for full re-scrape
+- Year range updated: 2025 down to 2005 inclusive, all 4 courts (TASSC, TASCCA, TASFC, TAMagC)
+- scraper_progress.json deleted — scraper will start from 2025
+- Worker timeout fix deployed: nexus ingest is now fire-and-forget (no more 30s limit breaches)
+- Scraper runs via local Python on Windows, proxied through arcanthyr.com/api/legal/fetch-page
+- 10–20 second random delays · 100-case session limit · no auto-restart
+
+### Priority 5 — Backlog
 - Fix case name extraction via Llama (replace fragile regex)
-- Evaluate pplx-embed-context-v1 as embedding replacement (do before DB grows further)
+- pplx-embed-context-v1 deployed — general-docs-v2 active, threshold 0.45 ✅
 - Fix deploy.ps1 encoding (UTF-8 without BOM)
 - Qwen3 inference (needs GPU — deferred)
+- Console UI: manual metadata fields at upload time (backstop for docs not using RAG workflow)
+- VPS /preprocess endpoint for pandoc + split pipeline (migrate off local terminal)
 
 ---
 
@@ -109,13 +123,13 @@ This pattern replaces file uploads in almost all cases.
 |---|---|---|
 | 1 | Evidence Act column garbling | pdfminer can't reconstruct two-column layout |
 | 2 | Misuse of Drugs low chunk count | Schedule tables don't parse as semantic chunks |
-| 3 | ~20 cases court=unknown | Re-extract from raw_text when scraper resumes |
-| 4 | Llama 3b confabulates | Invents citations — WorkersAI for genuine retrieval only |
-| 5 | Duplicate citation formats | Both 'TASSC 2024 24' and '[2024] TASSC 24' present |
-| 6 | ~52 Evidence Act sections missing | Schedule + >8000 char sections truncated at D1 limit |
-| 7 | legislation_extracted duplicates | Same section 5x — Llama extraction quality |
-| 8 | Qwen3 too slow | Needs GPU — deferred |
-| 9 | deploy.ps1 encoding broken | Run scp + ssh manually as workaround |
+| 3 | Llama 3b confabulates | Invents citations — WorkersAI for genuine retrieval only |
+| 4 | Duplicate citation formats | Both 'TASSC 2024 24' and '[2024] TASSC 24' present |
+| 5 | ~52 Evidence Act sections missing | Schedule + >8000 char sections truncated at D1 limit |
+| 6 | legislation_extracted duplicates | Same section 5x — Llama extraction quality |
+| 7 | Qwen3 too slow | Needs GPU — deferred |
+| 8 | deploy.ps1 encoding broken | Run scp + ssh manually as workaround |
+| 9 | general-docs-v2 naming | Collection name has -v2 suffix — cosmetic only, no functional impact, rename on next migration |
 
 ---
 
@@ -132,7 +146,7 @@ This pattern replaces file uploads in almost all cases.
 | n8n | 5678 |
 | open-webui | 3000 |
 
-**Ollama models:** nomic-embed-text (active) · qwen3:8b · qwen3:4b · qwen2.5:1.5b (slow)
+**Ollama models:** nomic-embed-text (retired) · argus-ai/pplx-embed-context-v1-0.6b:fp32 (active) · qwen3:8b · qwen3:4b · qwen2.5:1.5b (slow)
 
 **Cloudflare Worker:** name `arcanthyr-api` · file `Worker.js` · assets `public/` only
 D1 binding: `DB` → `arcanthyr` (id: `1b8ca95d-b8b3-421d-8c77-20f80432e1a0`)
@@ -156,7 +170,7 @@ Retrieve: `KEY=$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)`
 | POST | /delete | citation |
 
 Worker.js routes all PDF extraction through `/extract-pdf-ocr` — not `/extract-pdf`.
-Defaults: `top_k=6` (max 8) · `score_threshold=0.65` · `chunk_size=500` · `chunk_overlap=50`
+Defaults: `top_k=6` (max 8) · `score_threshold=0.45` · `chunk_size=500` · `chunk_overlap=50`
 Chunk fields: `text, source, citation, chunk, total_chunks, summary, category, jurisdiction, court, year, outcome, principles, legislation, offences`
 Legislation filter: `court=null AND year=null`
 
@@ -184,7 +198,8 @@ Legislation filter: `court=null AND year=null`
 | POST | /api/legal/upload-case | handleUploadCase |
 | POST | /api/legal/extract-pdf | handleExtractPdf → /extract-pdf-ocr |
 | POST | /api/legal/upload-legislation | handleUploadLegislation (accepts part_number) |
-| POST | /api/legal/upload-secondary | handleUploadSecondarySource |
+| POST | /api/legal/upload-secondary | handleUploadSecondarySource (raw doc upload) |
+| POST | /api/legal/upload-corpus | handleUploadCorpus (pre-formatted chunks — NEW) |
 | GET | /api/legal/library | handleLibraryList |
 | DELETE | /api/legal/library/delete/{docType}/{id} | handleLibraryDelete → nexus /delete |
 | POST | /api/legal/section-lookup | handleSectionLookup |
@@ -212,6 +227,13 @@ Legislation filter: `court=null AND year=null`
 `.env` — excluded from Wrangler + git
 `.wranglerignore` — excludes .env, .git, .wrangler, *.py, *.log, *.docx, scraper_progress.json
 `.gitignore` — excludes .env, .wrangler, Local Scraper/.env, arcanthyr-nexus/
+
+**Secondary source pipeline (local):**
+- `hogan_on_crime.md` — pandoc conversion of Hogan on Crime.docx
+- `split_legal_doc.py` — updated splitter (handles Word-converted Markdown, encoding artefacts, junk line removal)
+- `rag_blocks/` — 32 blocks ready for ChatGPT formatting sessions
+- `ingest_corpus.py` — parser script, POSTs to /api/legal/upload-corpus
+- `master_corpus.md` — target assembly file (not yet complete)
 
 **VPS:**
 - server.py: `~/ai-stack/agent-general/src/server.py` (volume-mounted)
@@ -241,7 +263,7 @@ git push origin master
 Before deploy: verify upload list shows ONLY `public/` files. If `.env` or `.git` appear — STOP.
 After deploy: git push is mandatory — GitHub drifts if skipped.
 
-**server.py — deploy.ps1 broken (issue #9). Use manually:**
+**server.py — deploy.ps1 broken (issue #8). Use manually:**
 ```
 scp server.py tom@31.220.86.192:~/server.py
 ssh tom@31.220.86.192 "cp ~/server.py ~/ai-stack/agent-general/src/server.py && cd ~/ai-stack && docker compose restart agent-general"
@@ -300,7 +322,7 @@ curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
 ---
 
 ## 17. Phase 5 Design (Locked)
-- Qdrant: top 6 chunks · min score 0.72 · max 8
+- Qdrant: top 6 chunks · min score 0.45 · max 8
 - Re-rank by court hierarchy within 0.05 band: CCA/FullCourt > Supreme > Magistrates
 - LLM routing: Claude API first → Qwen3 local fallback (deferred — GPU needed)
 - API key: `npx wrangler secret put ANTHROPIC_API_KEY`
@@ -325,7 +347,6 @@ curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
 ---
 
 ## 20. handleUploadLegislation — Key Architecture (v8)
-Fixed this session. Important for future work:
 - `baseid` = legislation ID without part suffix e.g. `criminal-code-act-1924-tas`
 - `id` = part-suffixed ID e.g. `criminal-code-act-1924-tas-part-1` (library display only)
 - `legislation` table INSERT uses `baseid` with `INSERT OR IGNORE` — Parts 2–N skip silently
@@ -335,7 +356,46 @@ Fixed this session. Important for future work:
 
 ---
 
-## 21. Operational Rules
+## 21. Secondary Source Pipeline — Key Architecture
+
+**RAG workflow doc:** `RAG_Workflow_Arcanthyr_v1.docx` (updated splitter script inside)
+
+**Field mapping — RAG metadata → Qdrant/D1:**
+
+| RAG marker | Qdrant field | Notes |
+|---|---|---|
+| [TYPE:] | category | Direct map |
+| [ACT:] | legislation | Direct map |
+| [CITATION:] | citation | Delete key — must be unique slug |
+| [CASE:] | court | Case citation if chunk is case authority |
+| [TOPIC:] | summary | Direct map |
+| [DOMAIN:] | jurisdiction | e.g. Tasmanian Criminal Law |
+| [CONCEPTS:] | prepended to text | Prefixed as 'Concepts: ...' before embedding |
+| Heading text | source | Direct map |
+
+**handleUploadCorpus (Worker.js v8, lines 1067–1097):**
+- Accepts pre-formatted single chunk — no re-chunking
+- Calls nexus /ingest directly with all fields as received
+- D1 INSERT OR IGNORE into secondary_sources using citation as id
+- No auth required on this endpoint
+
+**ingest_corpus.py:**
+- Reads `master_corpus.md`, splits at `##` / `###` headings
+- Extracts all `[FIELD: value]` markers per chunk
+- Prepends `Concepts: ...` to text before sending
+- Auto-generates citation slug if `[CITATION:]` absent: `secondary-{heading-slug}`
+- 1 second delay between requests
+- Reports OK / FAIL per chunk + final summary
+
+**Corpus assembly rules:**
+- Copy ONLY `## FORMATTED CHUNKS` from each ChatGPT session output
+- Append sequentially into `master_corpus.md`
+- Run Validation Prompt across full `master_corpus.md` before ingest
+- Test single chunk POST before running full pipeline
+
+---
+
+## 22. Operational Rules
 **Never:** expose secrets in Worker assets · ingest duplicates · modify Docker stack without reviewing compose · run ingestion without citation IDs · deploy without local confirmation first
 
 **Always:** delete before re-ingest · confirm ingestion counts · validate search after schema changes · CC confirms fix locally before deploy authorised · git push after every deploy
