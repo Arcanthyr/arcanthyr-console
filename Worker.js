@@ -1068,16 +1068,6 @@ async function handleUploadCorpus(body, env) {
   const { text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences } = body;
   if (!text || !citation) throw new Error("Missing required fields: text and citation");
 
-  // Send to nexus exactly as received — nexus does chunking, we trust our pre-split sizes
-  let chunksStored = 0;
-  const r = await fetch("https://nexus.arcanthyr.com/ingest", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
-    body: JSON.stringify({ text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences }),
-  });
-  const result = await r.json().catch(() => ({}));
-  chunksStored = result.chunks_stored || 0;
-
   // Record in D1 secondary_sources — INSERT OR IGNORE skips duplicate citations silently
   await env.DB.prepare(`
     INSERT OR IGNORE INTO secondary_sources
@@ -1085,7 +1075,16 @@ async function handleUploadCorpus(body, env) {
     VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?)
   `).bind(citation, source || citation, category || null, text, new Date().toISOString()).run();
 
-  return { citation, chunks_stored: chunksStored, message: `Corpus chunk ingested (${chunksStored} chunks in Qdrant).` };
+  // Fire-and-forget nexus ingest — embedding takes >30s, do not await or Worker times out
+  try {
+    fetch("https://nexus.arcanthyr.com/ingest", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+      body: JSON.stringify({ text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences }),
+    });
+  } catch (_) {}
+
+  return { citation, chunks_stored: 0, message: "Corpus chunk queued for embedding." };
 }
 
 /* =============================================================
