@@ -503,7 +503,7 @@ def verify_qdrant_point(chunk_id: str) -> bool:
     """
     point_id = str(uuid.uuid5(uuid.NAMESPACE_URL, chunk_id))
     try:
-        time.sleep(0.5)
+        time.sleep(2)
         resp = requests.get(
             f'{QDRANT_URL}/collections/{COLLECTION}/points/{point_id}',
             timeout=10
@@ -707,19 +707,19 @@ def run_embedding_pass(batch: int) -> dict:
             vector = get_embedding(embed_text)
             upsert_qdrant(chunk_id, vector, metadata)
 
-            # Verify the point actually landed — retry up to 3 times with 1s between
+            # Verify the point actually landed — retry up to 5 times with 1s between
             verified = False
-            for attempt in range(1, 4):
+            for attempt in range(1, 6):
                 if verify_qdrant_point(chunk_id):
                     verified = True
                     break
-                if attempt < 3:
+                if attempt < 5:
                     time.sleep(1)
             if verified:
                 ok_ids.append(chunk_id)
                 log.info(f'[EMBED]   ✓ Embedded and verified')
             else:
-                log.warning(f'[EMBED]   ⚠ Point not found after 3 verify attempts — leaving embedded=0 for retry')
+                log.warning(f'[EMBED]   ⚠ Point not found after 5 verify attempts — leaving embedded=0 for retry')
                 errors += 1
         except Exception as e:
             log.error(f'[EMBED]   ✗ Error: {e}')
