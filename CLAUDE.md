@@ -1,403 +1,273 @@
-# Arcanthyr — AI Session Brief
-*Last updated: 10 March 2026*
+# CLAUDE.md — Arcanthyr Session Handover
+*Updated: 11 March 2026*
 
 ---
 
-## 1. How to Use This File
-AI session briefing + CC operational rules for Arcanthyr console stack.
-Fresh Claude.ai session: upload this file, summarise system state in 5 lines, identify top priority, wait for instruction.
+## SESSION RULES
+- Open every session by reading this file first.
+- Diagnose from actual output before recommending fixes.
+- Run `git add -A`, `git commit`, `git push origin master` separately after every `npx wrangler deploy` — PowerShell does not support `&&`.
+- Before every deploy: verify upload list shows only files from `public/` — if `.env` or `.git` appear, stop immediately.
+- Suggest context window restart proactively when conversation grows long.
+- **Claude Code (CC) is available in VS Code** — use it for all file edits, script runs, and terminal work. Hand off to CC with explicit instructions rather than describing changes for Tom to make manually. CC cannot establish SSH connections (needs credentials) — Tom opens SSH tunnels, CC handles everything else.
 
 ---
 
-## 2. Session Rules
-
-**Token discipline — CRITICAL:**
-- Never upload whole code files to Claude.ai — CC reads from disk
-- Never paste the same file twice in one session
-- Paste only targeted findings (10-50 lines), not whole files
-- Reset conversation after each Priority item closes
-
-**CC ↔ Claude.ai collaboration pattern (DEFAULT WORKFLOW):**
-1. Claude.ai writes a targeted investigation prompt
-2. You give it to CC — CC reads files from disk, returns findings only
-3. You paste findings (small) back to Claude.ai
-4. Claude.ai verifies, diagnoses, writes fix instruction
-5. You give fix instruction to CC
-6. CC applies fix and confirms locally BEFORE any deploy or commit
-7. Claude.ai reviews confirmation — then and only then: deploy + commit
-
-**CC autonomy rules:**
-- Act autonomously: targeted single-file bug fix with clear evidence, one-line changes, token renames
-- Return findings only (no fix): multi-file changes, architectural impact, anything unclear
-- Always escalate to Claude.ai: architectural decisions, new patterns, anything that touches 3+ files
-
-**CC — never do without instruction:**
-- Deploy (`npx wrangler deploy`)
-- Commit + push to GitHub
-- `docker compose build`
-- Modify `.claudeignore`, `.gitignore`, `.wranglerignore`, `.env`
-
-**CC — confirm locally before deploy:**
-- For Worker.js: verify route logic, check handler exists, confirm no syntax errors
-- For server.py: restart container, curl `/health`, curl affected endpoint
-- Report confirmation result before deploy is authorised
+## TOOLING
+- **Claude.ai (chat)** — architecture decisions, planning, debugging from output, writing CLAUDE.md, reviewing code before deploy
+- **Claude Code (VS Code)** — file edits, running scripts, terminal commands, git operations, wrangler deploys
+- **PowerShell (local)** — SSH tunnels, anything CC can't do
 
 ---
 
-## 3. Command Structure
-- Claude.ai = architecture, diagnosis, prompt crafting, verification
-- CC = file reads, edits, terminal, local confirmation
-- When uncertain mid-session: stop and flag, do not decide unilaterally
-- Do not generate speculative code blocks — wait for targeted instruction
-
----
-
-## 4. Critical Terminal Rules
-
-**PowerShell:**
-- NEVER chain with `&&` — run each command separately
-- Execution policy fix: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
-- `curl` in PowerShell = Invoke-WebRequest — run curl commands on VPS instead
-- `scp` must run from local PowerShell, NOT inside SSH session
-
----
-
-## 5. Current System State
+## SYSTEM STATE (as of 11 Mar 2026)
 
 | Component | Status |
 |---|---|
-| arcanthyr.com | Live — Cloudflare Worker |
-| nexus.arcanthyr.com | Live — VPS Docker (port 18789) |
-| Qdrant | general-docs-v2 · 458 pts (legislation) · 1024-dim cosine |
-| D1 | legislation + legislation_sections populated |
-| Evidence Act 2001 | 250 sections D1 · 99 Qdrant chunks ✅ |
-| Justices Act 1959 | 198 sections D1 · 82 Qdrant chunks ✅ |
-| Police Offences Act 1935 | 152 sections D1 · 79 Qdrant chunks ✅ |
-| Misuse of Drugs Act 2001 | 268 sections D1 · 29 Qdrant chunks ✅ |
-| Criminal Code Act 1924 | 468 sections D1 · 169 Qdrant chunks ✅ |
-| D1 cases | 0 rows — wiped, scraper will rebuild |
-| D1 legal_principles | 0 rows — wiped, scraper will rebuild |
-| Worker.js | v8 — deployed + committed |
-| server.py | v2 — OCR fallback live (/extract-pdf-ocr) |
-| app.js | v12 |
-| Scraper | PAUSED — resume after corpus ingest complete |
-| Git | master up to date |
+| Qdrant collection | `general-docs-v2` · 459 pts · 1024-dim cosine |
+| Embedding model | `argus-ai/pplx-embed-context-v1-0.6b:fp32` (Ollama, VPS Docker) |
+| Score threshold | 0.45 (empirically validated) |
+| D1 `cases` | 0 rows — wiped clean slate |
+| D1 `legal_principles` | 0 rows — wiped clean slate |
+| D1 `secondary_sources` | 657 rows ✅ |
+| Qdrant corpus vectors | ❌ NOT embedded — 459 pts = legislation only |
+| Legislation (5 Acts) | Re-ingested into general-docs-v2 ✅ (458 pts) |
+| Scraper | PAUSED — clean slate, ready |
+| Worker.js | v8 deployed — fire-and-forget corpus upload |
+| server.py | pplx-embed + general-docs-v2 + threshold 0.45 |
+| ingest_corpus.py | Fixed (splitter, metadata regex, endpoint) — committed |
+| master_corpus.md | 725 chunks — D1 ingest complete, Qdrant ingest RUNNING via SSH tunnel + dual-call script |
 
 ---
 
-## 6. Open Items
+## ARCHITECTURE
 
-### Priority 3 — In Progress
-**Secondary source corpus ingest — Hogan on Crime (420 pages)**
-- Pandoc conversion done: `hogan_on_crime.md` produced
-- Splitter run: 32 blocks in `rag_blocks/` (updated script — see RAG workflow doc)
-- All 32 blocks complete — `master_corpus.md` assembled
-- Crowley v Murphy citation fixed (`[MISSING]` → `(1981) 34 ALR 496`)
-- Sammak and Reid and Swan citations still `[REVIEW]` flagged — resolve when AustLII access available
-- `ingest_corpus.py` ready and pointed at `/api/legal/upload-corpus`
-- `handleUploadCorpus` deployed (Worker.js v8) — accepts pre-formatted chunks with full metadata
-- Ready for ingest next session — run single chunk test first, then full pipeline
+**Stack:** Cloudflare Worker (`arcanthyr-api`) + D1 (`arcanthyr`) + Qdrant (`general-docs-v2`, port 6334) + Ollama/pplx-embed (Docker) + nexus `server.py` (Docker `agent-general`)
 
-### Priority 4 — Next
-**Resume scraper**
-- D1 cases + legal_principles wiped — clean slate for full re-scrape
-- Year range updated: 2025 down to 2005 inclusive, all 4 courts (TASSC, TASCCA, TASFC, TAMagC)
-- scraper_progress.json deleted — scraper will start from 2025
-- Worker timeout fix deployed: nexus ingest is now fire-and-forget (no more 30s limit breaches)
-- Scraper runs via local Python on Windows, proxied through arcanthyr.com/api/legal/fetch-page
-- 10–20 second random delays · 100-case session limit · no auto-restart
+**VPS:** Contabo, `31.220.86.192`, Ubuntu 24.04, 23GB RAM, 6 vCPU
+**Live site:** `arcanthyr.com` (Cloudflare Worker custom domain)
+**GitHub:** `https://github.com/Arcanthyr/arcanthyr-console`
 
-### Priority 5 — Backlog
-- Fix case name extraction via Llama (replace fragile regex)
-- pplx-embed-context-v1 deployed — general-docs-v2 active, threshold 0.45 ✅
-- Fix deploy.ps1 encoding (UTF-8 without BOM)
-- Qwen3 inference (needs GPU — deferred)
-- Console UI: manual metadata fields at upload time (backstop for docs not using RAG workflow)
-- VPS /preprocess endpoint for pandoc + split pipeline (migrate off local terminal)
+**D1 vs Qdrant:**
+- D1 = source of truth / relational. Library UI reads from D1. Text and metadata live here permanently.
+- Qdrant = semantic search index. Holds vectors + reference IDs pointing back to D1 rows. Rebuilt from D1 if needed.
+- Library delete wipes Qdrant chunks but NOT D1 rows.
+- Full reset: separate `wrangler d1 execute DELETE` on relevant table + Qdrant collection delete.
+
+**Data flow (current):**
+```
+Console upload → Worker → D1 (text stored)
+                       → fire-and-forget → Cloudflare Tunnel → nexus → pplx-embed → Qdrant
+```
+The tunnel leg is unreliable at volume (see KNOWN PROBLEM below).
+
+**server.py (nexus):**
+- Lives in `agent-general/src/` — volume-mounted (`./agent-general/src:/app/src`)
+- Update: edit locally → `sudo cp` to `~/ai-stack/agent-general/src/server.py` → `docker compose restart agent-general` → curl health check
+- No rebuild needed unless Dockerfile changes
+
+**Cloudflare Tunnel:**
+- Runs as root systemd at `/usr/bin/cloudflared`, config at `/etc/cloudflared/config.yml`
+- Routes `nexus.arcanthyr.com/ingest` → `agent-general` (port 18789)
+- Fine for low-volume requests (scraper, legislation). Unreliable for bulk corpus ingest (657+ sequential calls).
+
+**Ollama Docker isolation:**
+- Models pulled on VPS host go to `/usr/share/ollama/.ollama/` — NOT visible to container
+- Must pull inside container: `docker exec ollama ollama pull <model>`
+- Or copy blobs + manifest from host to `~/ai-stack/ollama-data/models/`
+
+**pplx-embed-context-v1:**
+- Model: `argus-ai/pplx-embed-context-v1-0.6b:fp32` (2.4GB, MIT licence)
+- Produces 1024-dim embeddings. CPU inference — slow but free.
+- No instruction prefixes required.
+- Score calibration: strong match 0.485–0.525 | noise 0.359–0.404 | threshold 0.45
+
+**Phase 5 design (locked):**
+- Qdrant top 6 chunks, min score 0.45, max 8 results
+- Re-rank by court hierarchy (CCA/FullCourt > Supreme > Magistrates) within 0.05 score band
+- Full metadata per chunk
+- Claude API for responses (Anthropic API key: `npx wrangler secret put ANTHROPIC_API_KEY`)
 
 ---
 
-## 7. Known Issues
+## KNOWN PROBLEM — TUNNEL UNRELIABLE AT VOLUME
 
-| # | Issue | Notes |
-|---|---|---|
-| 1 | Evidence Act column garbling | pdfminer can't reconstruct two-column layout |
-| 2 | Misuse of Drugs low chunk count | Schedule tables don't parse as semantic chunks |
-| 3 | Llama 3b confabulates | Invents citations — WorkersAI for genuine retrieval only |
-| 4 | Duplicate citation formats | Both 'TASSC 2024 24' and '[2024] TASSC 24' present |
-| 5 | ~52 Evidence Act sections missing | Schedule + >8000 char sections truncated at D1 limit |
-| 6 | legislation_extracted duplicates | Same section 5x — Llama extraction quality |
-| 7 | Qwen3 too slow | Needs GPU — deferred |
-| 8 | deploy.ps1 encoding broken | Run scp + ssh manually as workaround |
-| 9 | general-docs-v2 naming | Collection name has -v2 suffix — cosmetic only, no functional impact, rename on next migration |
+The Cloudflare Tunnel cannot sustain hundreds of rapid sequential embed calls fired through it from an external origin. At corpus scale (657 chunks) D1 receives all rows but Qdrant receives almost none — the tunnel silently drops requests.
+
+**Immediate workaround (in progress):**
+SSH tunnel bypasses Cloudflare entirely for the embed call.
+
+**Important — architecture clarification confirmed by CC:**
+The nexus URL is NOT in `ingest_corpus.py`. It lives in `Worker.js` at line 1080. The script only calls the Cloudflare Worker (`ENDPOINT`). The Worker fire-and-forgets to nexus server-side — that's where the tunnel drops calls at volume. There is no single-line fix in the script.
+
+**Correct fix — dual-call modification to `ingest_corpus.py`:**
+1. Tom opens SSH tunnel in a separate PowerShell window (keep open during run):
+```powershell
+ssh -L 18789:localhost:18789 tom@31.220.86.192
+```
+2. CC modifies `ingest_corpus.py` to make TWO calls per chunk:
+   - Call 1: existing Worker call (`ENDPOINT`) — handles D1 write as normal
+   - Call 2: new direct nexus call to `http://localhost:18789/ingest` — handles embedding, bypasses tunnel entirely
+3. The Worker's fire-and-forget to nexus will still fire but can be ignored — it will fail silently as before, but the direct call handles embedding correctly.
+
+**Auth requirement:**
+The direct nexus call requires `X-Nexus-Key` header (the `NEXUS_SECRET_KEY` Wrangler secret). To retrieve it:
+- Check VPS: `grep -i "nexus" ~/ai-stack/docker-compose.yml` and `grep -r "NEXUS_SECRET_KEY" ~/ai-stack/agent-general/src/server.py`
+- Or temporarily comment out auth check in `server.py` for the duration of the local tunnel run (safe — tunnel is localhost only), then restore after.
+
+Run `ingest_corpus.py` after modification — expect ~1115 pts total when complete (458 legislation + 657 corpus).
+After run: revert dual-call modification before committing — production should stay single-call via Worker.
+
+**Long-term fix (planned — see PIPELINE REBUILD below):**
+Decouple D1 write from embedding entirely using `enriched` and `embedded` flags on D1 rows.
 
 ---
 
-## 8. Infrastructure
+## PIPELINE REBUILD (planned next major work)
 
-**VPS:** IP `31.220.86.192` · user `tom` · stack `~/ai-stack/`
+### The problem with the current pipeline
+The current pipeline is tightly coupled — upload triggers embed immediately via the tunnel. This breaks at scale and means the console only works reliably for small uploads. The enrichment/formatting pass (splitting + metadata tagging) is currently manual (human feeds blocks to Claude/ChatGPT in fresh sessions).
 
-**Services:**
-| Service | Port |
+### Target architecture
+Console drag-and-drop → fully automated split → enrich → embed → searchable. No manual steps.
+
+```
+Console drop (any format: PDF, DOCX, TXT, MD)
+        ↓
+Worker receives file → writes raw to D1 (enriched=0, embedded=0)
+        ↓
+VPS background poller (cron, every few minutes)
+        ↓
+    [Step 1 — Split]
+    Python splitter runs on raw text if >6500 words
+    Produces chunks of 5000 words targeting section boundaries
+        ↓
+    [Step 2 — Enrich]
+    Claude API called independently per chunk (fresh context each time)
+    Adds: [DOMAIN] [TYPE] [ACT] [SECTION] [CITATION] [TOPIC] [CONCEPTS]
+    Validates output — retries if metadata incomplete
+    Writes enriched chunks back to D1 (enriched=1)
+        ↓
+    [Step 3 — Embed]
+    pplx-embed runs locally on VPS (no tunnel needed — Qdrant is co-located)
+    Vectors stored in Qdrant with D1 row reference
+    D1 row updated: embedded=1
+        ↓
+Searchable in console
+```
+
+### Why Claude API for enrichment
+- Enrichment requires genuine legal reasoning — correct TYPE classification, CONCEPTS field quality, rule isolation, case authority detection
+- Quality of enrichment determines quality of every search result permanently
+- Cost is negligible (~$2-5 per major secondary source at current API pricing)
+- Smaller models (Llama, Qwen on CPU) produce inconsistent metadata at this task complexity
+- Each chunk sent as independent API call = no context drift, same quality as manual fresh-session approach
+
+### D1 schema additions needed
+Add to `secondary_sources` table (and future `cases`, `legislation` tables):
+```sql
+ALTER TABLE secondary_sources ADD COLUMN enriched INTEGER DEFAULT 0;
+ALTER TABLE secondary_sources ADD COLUMN embedded INTEGER DEFAULT 0;
+ALTER TABLE secondary_sources ADD COLUMN raw_text TEXT;
+```
+
+### Tunnel role in new architecture
+Tunnel only carries lightweight poll requests (fetch 10 unembedded rows, mark rows complete) — not bulk text payload. Heavy work stays inside VPS. Tunnel load: one small JSON request every few minutes instead of 657 sequential calls.
+
+---
+
+## PRIORITIES — NEXT SESSION
+
+### Priority 1 — Verify corpus Qdrant embedding completed
+Ingest run was started at end of session 11 Mar 2026 via SSH tunnel + dual-call script modification. Check completion:
+```bash
+curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool
+```
+Expect ~1115 pts (458 legislation + 657 corpus). If lower, note how many landed and consider re-run from offset.
+
+**After confirming — CC must revert `ingest_corpus.py`:**
+Remove the dual-call modification (direct nexus call + NEXUS_KEY env var read). Restore to single Worker call only. Commit the revert. Do not leave the dual-call version in the repo.
+
+**Key facts about the dual-call fix (learned this session):**
+- Nexus URL is in `Worker.js` line 1080, NOT in `ingest_corpus.py`
+- `ingest_corpus.py` only calls the Cloudflare Worker (`ENDPOINT`)
+- Fix added a second direct POST to `http://localhost:18789/ingest` from the script
+- Auth header `X-Nexus-Key` reads from `os.environ.get('NEXUS_KEY', '')`
+- NEXUS_KEY was read from local `.env` file (on .gitignore — never committed)
+- Worker `INSERT OR IGNORE` means D1 re-runs are safe — no duplicates
+- Nexus timeout set to 120s per chunk for slow CPU inference
+- Expected output per chunk: `D1 [chunk-id] OK  |  NEXUS OK`
+
+### Priority 2 — Validate corpus search quality
+Test Phase 5 conversational interface against corpus. Run representative legal queries via Claude API. Confirm reasonable answers are returned before investing in pipeline rebuild. This is the proof-of-value check.
+
+### Priority 3 — Resume scraper
+Clean slate confirmed. Run during business hours from `Local Scraper/` directory:
+```powershell
+python austlii_scraper.py
+```
+Check first 10–15 lines of `scraper.log` to confirm cases ingesting.
+
+### Priority 4 — Pipeline rebuild
+Once corpus validated, rebuild ingest pipeline with decoupled architecture above. This is the major next development phase.
+
+### Priority 5 — Corpus quality (backlog)
+- Remove Commonwealth Criminal Code chunk (`Criminal Code Act 1995 (Cth) Chapter 2` — wrong jurisdiction)
+- Sammak, Reid, Swan citations still `[REVIEW]` flagged — find via AustLII (pre-2005 TASCCA)
+- George v Rockett / MacLeod duplicates — acceptable for now
+
+---
+
+## KEY FILE LOCATIONS
+
+| File | Path |
 |---|---|
-| agent-general | 18789 |
-| qdrant-general | 6334 |
-| ollama | 11434 |
-| n8n | 5678 |
-| open-webui | 3000 |
-
-**Ollama models:** nomic-embed-text (retired) · argus-ai/pplx-embed-context-v1-0.6b:fp32 (active) · qwen3:8b · qwen3:4b · qwen2.5:1.5b (slow)
-
-**Cloudflare Worker:** name `arcanthyr-api` · file `Worker.js` · assets `public/` only
-D1 binding: `DB` → `arcanthyr` (id: `1b8ca95d-b8b3-421d-8c77-20f80432e1a0`)
-AI binding: `AI` (WorkersAI) · Cron: 02:00 UTC → runDailySync
-
-**Nexus auth:** all POST endpoints require `X-Nexus-Key` header
-Retrieve: `KEY=$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)`
+| ingest_corpus.py | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\ingest_corpus.py` |
+| master_corpus.md | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\master_corpus.md` |
+| Worker.js | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\Worker.js` |
+| CLAUDE.md | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\CLAUDE.md` |
+| server.py (nexus) | `~/ai-stack/agent-general/src/server.py` (VPS) |
+| austlii_scraper.py | `Local Scraper/` (not in git) |
+| docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
+| RAG_Workflow_Arcanthyr_v1.docx | `C:\Users\Hogan\OneDrive\Arcanthyr\` — secondary source formatting workflow |
+| split_legal_doc.py | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\` — document splitter |
 
 ---
 
-## 9. Nexus Endpoints (port 18789)
-
-| Method | Endpoint | Fields |
-|---|---|---|
-| GET | /health | — |
-| POST | /ingest | text, citation |
-| POST | /search | query_text |
-| POST | /query | query_text |
-| POST | /extract-pdf | pdf_base64 |
-| POST | /extract-pdf-ocr | pdf_base64 |
-| POST | /delete | citation |
-
-Worker.js routes all PDF extraction through `/extract-pdf-ocr` — not `/extract-pdf`.
-Defaults: `top_k=6` (max 8) · `score_threshold=0.45` · `chunk_size=500` · `chunk_overlap=50`
-Chunk fields: `text, source, citation, chunk, total_chunks, summary, category, jurisdiction, court, year, outcome, principles, legislation, offences`
-Legislation filter: `court=null AND year=null`
+## SCRAPER CONFIG (file is authoritative)
+- Courts: TASSC, TASCCA, TASFC, TAMagC
+- Years: `range(2025, 2004, -1)` — 2025 to 2005 inclusive
+- `MAX_CASES_PER_SESSION`: 100
+- Delays: 10–20s random
+- Business hours: 08:00–18:00 AEST
+- Proxy: `arcanthyr.com/api/legal/fetch-page` — routes fetches via Cloudflare edge (VPS IP 31.220.86.192 is blocked by AustLII — run scraper locally only)
+- Progress file: `scraper_progress.json` — deleted for clean slate
+- Previously ingested: TASSC 2025 (1–17), TASCCA 2025 (1–16), partial TASFC 2025
 
 ---
 
-## 10. Worker.js Endpoint Map (v8)
-*Do not invent, rename, or duplicate.*
+## MIGRATION HISTORY (recent)
 
-| Method | Endpoint | Handler |
-|---|---|---|
-| POST | /api/ai/draft | handleDraft |
-| POST | /api/ai/next-actions | handleNextActions |
-| POST | /api/ai/weekly-review | handleWeeklyReview |
-| POST | /api/ai/axiom-relay | handleAxiomRelay |
-| POST | /api/ai/clarify-agent | handleClarifyAgent |
-| POST | /api/email/send | handleSendEmail |
-| GET | /api/email/contacts | handleGetContacts |
-| POST | /api/email/contacts | handleAddContact |
-| DELETE | /api/email/contacts/{id} | handleDeleteContact |
-| GET | /api/legal/sync-progress | getSyncProgress |
-| POST | /api/legal/search-cases | handleSearchCases |
-| POST | /api/legal/search-principles | handleSearchPrinciples |
-| POST | /api/legal/trigger-sync | runDailySync |
-| POST | /api/legal/backfill-year | runYearBackfill |
-| POST | /api/legal/upload-case | handleUploadCase |
-| POST | /api/legal/extract-pdf | handleExtractPdf → /extract-pdf-ocr |
-| POST | /api/legal/upload-legislation | handleUploadLegislation (accepts part_number) |
-| POST | /api/legal/upload-secondary | handleUploadSecondarySource (raw doc upload) |
-| POST | /api/legal/upload-corpus | handleUploadCorpus (pre-formatted chunks — NEW) |
-| GET | /api/legal/library | handleLibraryList |
-| DELETE | /api/legal/library/delete/{docType}/{id} | handleLibraryDelete → nexus /delete |
-| POST | /api/legal/section-lookup | handleSectionLookup |
-| POST | /api/legal/legal-query | handleLegalQuery (Claude API — Phase 5) |
-| POST | /api/legal/legal-query-qwen | handleLegalQueryQwen (deferred) |
-| POST | /api/legal/legal-query-workers-ai | handleLegalQueryWorkersAI (Llama) |
-| POST | /api/legal/fetch-page | handleFetchPage (AustLII proxy) |
-| GET | /api/entries | all non-deleted, newest first, limit 200 |
-| POST | /api/entries | create — id, created_at, text, tag, next, clarify |
-| DELETE | /api/entries/{id} | soft-delete single |
-| DELETE | /api/entries | soft-delete all |
-| PATCH | /api/entries | restore all |
+- **Embedding:** `nomic-embed-text` (768-dim) → `argus-ai/pplx-embed-context-v1-0.6b:fp32` (1024-dim, MIT)
+- **Qdrant:** `general-docs` deleted → `general-docs-v2` (1024-dim cosine)
+- **D1 wipe:** `cases` (109 rows) + `legal_principles` (492 rows) deleted
+- **5 Acts re-ingested:** Criminal Code 1924, Evidence Act 2001, Justices Act 1959, Police Offences Act 1935, Misuse of Drugs Act 2001 → 458 Qdrant pts
+- **Security incident resolved:** `.env` exposed via Wrangler static upload. Fixed: frontend → `public/`, `wrangler.toml` → `directory = "public"`, `.wranglerignore` added, 2 API keys rotated.
+- **Worker.js v8:** handleUploadCorpus → fire-and-forget nexus call
+- **ingest_corpus.py:** endpoint, splitter regex, metadata regex all fixed and committed
+- **Corpus:** 725 chunks processed via manual RAG workflow (RAG_Workflow_Arcanthyr_v1.docx), 657 rows in D1, Qdrant embedding in progress via SSH tunnel workaround
 
 ---
 
-## 11. Key File Locations
+## FUTURE ROADMAP
 
-**Local repos:**
-- Main: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4`
-- Nexus: `...\Arc v 4\arcanthyr-nexus`
-- GitHub: github.com/Arcanthyr/arcanthyr-console · github.com/Arcanthyr/arcanthyr-nexus
-
-**Main repo (Arc v 4):**
-`Worker.js` · `wrangler.toml` · `public/` · `public/styles.css` · `public/legal.html` · `public/app.js` · `schema.sql`
-`.env` — excluded from Wrangler + git
-`.wranglerignore` — excludes .env, .git, .wrangler, *.py, *.log, *.docx, scraper_progress.json
-`.gitignore` — excludes .env, .wrangler, Local Scraper/.env, arcanthyr-nexus/
-
-**Secondary source pipeline (local):**
-- `hogan_on_crime.md` — pandoc conversion of Hogan on Crime.docx
-- `split_legal_doc.py` — updated splitter (handles Word-converted Markdown, encoding artefacts, junk line removal)
-- `rag_blocks/` — 32 blocks ready for ChatGPT formatting sessions
-- `ingest_corpus.py` — parser script, POSTs to /api/legal/upload-corpus
-- `master_corpus.md` — target assembly file (not yet complete)
-
-**VPS:**
-- server.py: `~/ai-stack/agent-general/src/server.py` (volume-mounted)
-- docker-compose: `~/ai-stack/docker-compose.yml`
-- secrets: `~/ai-stack/.env`
-
----
-
-## 12. .claudeignore
-Both repos have `.claudeignore`. CC must never read, edit, or act on these files. Recreate if missing.
-
-**Main repo:** `.env · *.pdf · node_modules/ · .wrangler/`
-**Nexus repo:** `.env · *.log · *.pdf · deploy.ps1`
-
----
-
-## 13. Deployment Procedures
-
-**Worker.js — run each separately in PowerShell:**
-```
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-npx wrangler deploy
-git add -A
-git commit -m "message"
-git push origin master
-```
-Before deploy: verify upload list shows ONLY `public/` files. If `.env` or `.git` appear — STOP.
-After deploy: git push is mandatory — GitHub drifts if skipped.
-
-**server.py — deploy.ps1 broken (issue #8). Use manually:**
-```
-scp server.py tom@31.220.86.192:~/server.py
-ssh tom@31.220.86.192 "cp ~/server.py ~/ai-stack/agent-general/src/server.py && cd ~/ai-stack && docker compose restart agent-general"
-ssh tom@31.220.86.192 "curl -s http://localhost:18789/health"
-git add -A
-git commit -m "message"
-git push origin master
-```
-Do NOT run `docker compose build` unless Dockerfile changed.
-
----
-
-## 14. Verification Commands
-
-**Qdrant search test (VPS):**
-```
-KEY=$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)
-curl -s -X POST http://localhost:18789/search \
-  -H "Content-Type: application/json" \
-  -H "X-Nexus-Key: $KEY" \
-  -d '{"query_text": "your query", "top_k": 3, "score_threshold": 0.5}' | python3 -m json.tool
-```
-
-**Qdrant count by citation (VPS):**
-```
-curl -s http://localhost:6334/collections/general-docs/points/count \
-  -H "Content-Type: application/json" \
-  -d '{"filter": {"must": [{"key": "citation", "match": {"value": "evidence-act-2001-tas"}}]}}' | python3 -m json.tool
-```
-
-**D1 section lookup:**
-```
-curl -s -X POST https://arcanthyr.com/api/legal/section-lookup \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Evidence Act 2001","jurisdiction":"Tas","section":"38"}' | python3 -m json.tool
-```
-
----
-
-## 15. Qdrant / Ingest Rules
-- Always delete before re-ingest — upsert adds alongside, does not replace
-- citation field is the delete key
-- /delete confirmed working end-to-end
-- handleLibraryDelete in Worker.js calls nexus /delete automatically
-- Verify deletion with count check before re-uploading
-
----
-
-## 16. Docker Rules
-- All docker compose commands from `~/ai-stack/`
-- Volume mount confirmed: `./agent-general/src:/app/src` — server.py changes need restart only
-- `python -u` flag confirmed in docker-compose.yml for both agent containers
-- No sudo needed for cp on this machine
-- Tesseract + poppler-utils + pdf2image already in Dockerfile.agent — no rebuild needed
-
----
-
-## 17. Phase 5 Design (Locked)
-- Qdrant: top 6 chunks · min score 0.45 · max 8
-- Re-rank by court hierarchy within 0.05 band: CCA/FullCourt > Supreme > Magistrates
-- LLM routing: Claude API first → Qwen3 local fallback (deferred — GPU needed)
-- API key: `npx wrangler secret put ANTHROPIC_API_KEY`
-
----
-
-## 18. Design Tokens (styles.css)
-- `--ink`: #2a2a2a · `--ink-dim`: #f0f0f0 · `--border-heavy`: #b8b3a8
-- `--red`: #8B1A1A (headings) · `--blue`: #3a6a9a (active/AI) · `--border`: #ccc8be
-
----
-
-## 19. Pipeline Notes (legislation uploads only)
-- Title must include year: `Evidence Act 2001` — year extracted by regex, do not put in Year field
-- Auto-split threshold: 80,000 chars · target 70,000 chars/part
-- OCR fallback: pdfminer first → Tesseract if <300 chars/page · expect minutes for large Acts
-- Batching: 20 sections/request · supports ~300 sections within 30s Worker timeout
-- bodyStartMatch uses 3-stage fallback: `\n(` first, then `\nCapital letter`, then `\n\n`
-- All parts store sections under baseid (not part-suffixed ID) — FK integrity across multi-part uploads
-- Use AustLII .txt versions over PDFs where available — cleaner extraction
-
----
-
-## 20. handleUploadLegislation — Key Architecture (v8)
-- `baseid` = legislation ID without part suffix e.g. `criminal-code-act-1924-tas`
-- `id` = part-suffixed ID e.g. `criminal-code-act-1924-tas-part-1` (library display only)
-- `legislation` table INSERT uses `baseid` with `INSERT OR IGNORE` — Parts 2–N skip silently
-- `legislation_sections` rows use `legislation_id = baseid` — all parts share one parent
-- Qdrant chunks use `citation = baseid` — consistent with D1 and section-lookup queries
-- `handleSectionLookup` queries on `baseid` — three-way alignment confirmed working
-
----
-
-## 21. Secondary Source Pipeline — Key Architecture
-
-**RAG workflow doc:** `RAG_Workflow_Arcanthyr_v1.docx` (updated splitter script inside)
-
-**Field mapping — RAG metadata → Qdrant/D1:**
-
-| RAG marker | Qdrant field | Notes |
-|---|---|---|
-| [TYPE:] | category | Direct map |
-| [ACT:] | legislation | Direct map |
-| [CITATION:] | citation | Delete key — must be unique slug |
-| [CASE:] | court | Case citation if chunk is case authority |
-| [TOPIC:] | summary | Direct map |
-| [DOMAIN:] | jurisdiction | e.g. Tasmanian Criminal Law |
-| [CONCEPTS:] | prepended to text | Prefixed as 'Concepts: ...' before embedding |
-| Heading text | source | Direct map |
-
-**handleUploadCorpus (Worker.js v8, lines 1067–1097):**
-- Accepts pre-formatted single chunk — no re-chunking
-- Calls nexus /ingest directly with all fields as received
-- D1 INSERT OR IGNORE into secondary_sources using citation as id
-- No auth required on this endpoint
-
-**ingest_corpus.py:**
-- Reads `master_corpus.md`, splits at `##` / `###` headings
-- Extracts all `[FIELD: value]` markers per chunk
-- Prepends `Concepts: ...` to text before sending
-- Auto-generates citation slug if `[CITATION:]` absent: `secondary-{heading-slug}`
-- 1 second delay between requests
-- Reports OK / FAIL per chunk + final summary
-
-**Corpus assembly rules:**
-- Copy ONLY `## FORMATTED CHUNKS` from each ChatGPT session output
-- Append sequentially into `master_corpus.md`
-- Run Validation Prompt across full `master_corpus.md` before ingest
-- Test single chunk POST before running full pipeline
-
----
-
-## 22. Operational Rules
-**Never:** expose secrets in Worker assets · ingest duplicates · modify Docker stack without reviewing compose · run ingestion without citation IDs · deploy without local confirmation first
-
-**Always:** delete before re-ingest · confirm ingestion counts · validate search after schema changes · CC confirms fix locally before deploy authorised · git push after every deploy
-
-**Core principles:** simplicity first · no temporary fixes · senior developer standard · legal platform — accuracy matters
+- **Pipeline rebuild** — decouple upload/enrich/embed (see PIPELINE REBUILD above) — NEXT MAJOR PHASE
+- **Automated enrichment agent** — Claude API called per chunk inside VPS background poller, replaces manual RAG workflow sessions
+- **Console status indicator** — show enriched/embedded progress per document after upload
+- **`embedded` + `enriched` flags** on all D1 tables — enable retry, rebuild, pipeline visibility
+- **Scraper completion** — once AustLII scrape is done, Cloudflare Worker's main remaining value (edge proxy for AustLII) diminishes; long-term consider consolidating to VPS-only architecture
+- **BM25 pre-retrieval** — hybrid keyword + semantic search for statute reference matching
+- **Cross-reference builder** — nightly cron, citation graph in D1
+- **Auto-populate legislation metadata** on UI drag-and-drop (prevent typo slugs)
+- **Phase 5 conversational interface** — Claude API responses with court hierarchy re-ranking (design locked above)
+- **Performance evaluation** — Claude API vs Qwen3 on VPS for query responses once corpus validated

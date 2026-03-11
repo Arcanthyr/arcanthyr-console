@@ -16,7 +16,10 @@
       "Bash(npx wrangler d1 execute arcanthyr --command \"SELECT legislation_id, COUNT\\(*\\) as count FROM legislation_sections GROUP BY legislation_id ORDER BY legislation_id\")",
       "Bash(ssh tom@31.220.86.192 \"curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool\")",
       "Bash(ssh tom@31.220.86.192 'curl -s -X POST http://localhost:6334/collections/general-docs-v2/points/scroll -H \"\"Content-Type: application/json\"\" -d \"\"{\\\\\"\"limit\\\\\"\": 5, \\\\\"\"with_payload\\\\\"\": true, \\\\\"\"with_vector\\\\\"\": false}\"\" | python3 -m json.tool | grep -E \"\"citation|source|category\"\" | sort | uniq -c | sort -rn')",
-      "Bash(ssh tom@31.220.86.192 \"cd ~/ai-stack && docker compose restart agent-general\")"
+      "Bash(ssh tom@31.220.86.192 \"cd ~/ai-stack && docker compose restart agent-general\")",
+      "Bash(python ingest_corpus.py)",
+      "Bash(F=\"$LOCALAPPDATA/Temp/claude/c--Users-Hogan-OneDrive-Arcanthyr-arcanthyr-console-Arc-v-4/tasks/bofh1yawj.output\")",
+      "Read(//c/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/**)"
     ]
   }
 }

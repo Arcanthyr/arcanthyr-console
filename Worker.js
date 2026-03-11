@@ -1065,26 +1065,17 @@ async function handleUploadSecondarySource(body, env) {
    Also records a row in secondary_sources for library visibility.
    ============================================================= */
 async function handleUploadCorpus(body, env) {
-  const { text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences } = body;
+  const { text, citation, source, category } = body;
   if (!text || !citation) throw new Error("Missing required fields: text and citation");
 
   // Record in D1 secondary_sources — INSERT OR IGNORE skips duplicate citations silently
   await env.DB.prepare(`
     INSERT OR IGNORE INTO secondary_sources
-    (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added)
-    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?)
+    (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded)
+    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 0, 0)
   `).bind(citation, source || citation, category || null, text, new Date().toISOString()).run();
 
-  // Fire-and-forget nexus ingest — embedding takes >30s, do not await or Worker times out
-  try {
-    fetch("https://nexus.arcanthyr.com/ingest", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
-      body: JSON.stringify({ text, citation, source, summary, category, legislation, jurisdiction, court, year, outcome, principles, offences }),
-    });
-  } catch (_) {}
-
-  return { citation, chunks_stored: 0, message: "Corpus chunk queued for embedding." };
+  return { citation, chunks_stored: 0, message: "Corpus chunk recorded in D1." };
 }
 
 /* =============================================================
@@ -1532,6 +1523,76 @@ ${c.text}`;
 }
 
 /* =============================================================
+   PIPELINE STATUS / ENRICHMENT / EMBEDDING ROUTES
+   ============================================================= */
+async function handlePipelineStatus(_request, env, corsHeaders) {
+  try {
+    const result = await env.DB.prepare(`SELECT COUNT(*) as total, SUM(CASE WHEN enriched=1 THEN 1 ELSE 0 END) as enriched, SUM(CASE WHEN embedded=1 THEN 1 ELSE 0 END) as embedded, SUM(CASE WHEN enrichment_error IS NOT NULL THEN 1 ELSE 0 END) as errored FROM secondary_sources`).first();
+    return new Response(JSON.stringify({ ok: true, ...result }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleWriteEnriched(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const body = await request.json();
+    const { chunk_id } = body;
+    if (!chunk_id) return new Response(JSON.stringify({ ok: false, error: 'chunk_id required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    if (body.error) {
+      await env.DB.prepare(`UPDATE secondary_sources SET enrichment_error = ? WHERE id = ?`).bind(body.error, chunk_id).run();
+    } else {
+      await env.DB.prepare(`UPDATE secondary_sources SET enriched_text = ?, enriched = 1, enrichment_error = NULL WHERE id = ?`).bind(body.enriched_text, chunk_id).run();
+    }
+    return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleMarkEmbedded(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { chunk_ids } = await request.json();
+    if (!Array.isArray(chunk_ids) || chunk_ids.length === 0) return new Response(JSON.stringify({ ok: false, error: 'chunk_ids required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const placeholders = chunk_ids.map(() => '?').join(',');
+    await env.DB.prepare(`UPDATE secondary_sources SET embedded = 1 WHERE id IN (${placeholders})`).bind(...chunk_ids).run();
+    return new Response(JSON.stringify({ ok: true, updated: chunk_ids.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleFetchUnenriched(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const urlObj = new URL(request.url);
+    const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
+    const result = await env.DB.prepare(`SELECT id, source_id, chunk_index, text, raw_text FROM secondary_sources WHERE enriched = 0 AND (enrichment_error IS NULL OR enrichment_error = '') ORDER BY source_id, chunk_index LIMIT ?`).bind(batch).all();
+    return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleFetchForEmbedding(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const urlObj = new URL(request.url);
+    const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
+    const result = await env.DB.prepare(`SELECT id, source_id, chunk_index, text, enriched_text FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY source_id, chunk_index LIMIT ?`).bind(batch).all();
+    return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+/* =============================================================
    MAIN FETCH HANDLER
    ============================================================= */
 export default {
@@ -1626,6 +1687,13 @@ export default {
       } catch (err) { return json({ error: err.message }, 500); }
     }
 
+    /* ── PIPELINE ROUTES ─────────────────────────────────────── */
+    if (url.pathname === '/api/pipeline/status' && request.method === 'GET') return handlePipelineStatus(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/write-enriched' && request.method === 'POST') return handleWriteEnriched(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/mark-embedded' && request.method === 'POST') return handleMarkEmbedded(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-unenriched' && request.method === 'GET') return handleFetchUnenriched(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-for-embedding' && request.method === 'GET') return handleFetchForEmbedding(request, env, corsHeaders);
+
     /* ── ENTRIES ROUTES ───────────────────────────────────────── */
     if (url.pathname.startsWith("/api/entries")) {
       const limits = {
@@ -1667,7 +1735,7 @@ export default {
     return new Response("Not found", { status: 404, headers: corsHeaders });
   },
 
-  async scheduled(event, env, ctx) {
+  async scheduled(_event, env, ctx) {
     ctx.waitUntil(runDailySync(env));
   },
 };
