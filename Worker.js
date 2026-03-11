@@ -1531,9 +1531,15 @@ async function handleMarkEmbedded(request, env, corsHeaders) {
   try {
     const { chunk_ids } = await request.json();
     if (!Array.isArray(chunk_ids) || chunk_ids.length === 0) return new Response(JSON.stringify({ ok: false, error: 'chunk_ids required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-    const placeholders = chunk_ids.map(() => '?').join(',');
-    await env.DB.prepare(`UPDATE secondary_sources SET embedded = 1 WHERE id IN (${placeholders})`).bind(...chunk_ids).run();
-    return new Response(JSON.stringify({ ok: true, updated: chunk_ids.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const BATCH = 99;
+    let total = 0;
+    for (let i = 0; i < chunk_ids.length; i += BATCH) {
+      const slice = chunk_ids.slice(i, i + BATCH);
+      const placeholders = slice.map(() => '?').join(',');
+      await env.DB.prepare(`UPDATE secondary_sources SET embedded = 1 WHERE id IN (${placeholders})`).bind(...slice).run();
+      total += slice.length;
+    }
+    return new Response(JSON.stringify({ ok: true, updated: total }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   }
@@ -1582,9 +1588,15 @@ async function handleResetEmbedded(request, env, corsHeaders) {
   try {
     const { chunk_ids } = await request.json();
     if (!Array.isArray(chunk_ids) || chunk_ids.length === 0) return new Response(JSON.stringify({ ok: false, error: 'chunk_ids required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-    const placeholders = chunk_ids.map(() => '?').join(',');
-    await env.DB.prepare(`UPDATE secondary_sources SET embedded = 0 WHERE id IN (${placeholders})`).bind(...chunk_ids).run();
-    return new Response(JSON.stringify({ ok: true, reset: chunk_ids.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const BATCH = 99;
+    let total = 0;
+    for (let i = 0; i < chunk_ids.length; i += BATCH) {
+      const slice = chunk_ids.slice(i, i + BATCH);
+      const placeholders = slice.map(() => '?').join(',');
+      await env.DB.prepare(`UPDATE secondary_sources SET embedded = 0 WHERE id IN (${placeholders})`).bind(...slice).run();
+      total += slice.length;
+    }
+    return new Response(JSON.stringify({ ok: true, reset: total }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   }
@@ -1623,9 +1635,15 @@ async function handleMarkLegislationEmbedded(request, env, corsHeaders) {
   try {
     const { leg_ids } = await request.json();
     if (!leg_ids?.length) return new Response(JSON.stringify({ updated: 0 }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
-    const placeholders = leg_ids.map(() => '?').join(',');
-    await env.DB.prepare(`UPDATE legislation SET embedded=1 WHERE id IN (${placeholders})`).bind(...leg_ids).run();
-    return new Response(JSON.stringify({ ok: true, updated: leg_ids.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const BATCH = 99;
+    let total = 0;
+    for (let i = 0; i < leg_ids.length; i += BATCH) {
+      const slice = leg_ids.slice(i, i + BATCH);
+      const placeholders = slice.map(() => '?').join(',');
+      await env.DB.prepare(`UPDATE legislation SET embedded=1 WHERE id IN (${placeholders})`).bind(...slice).run();
+      total += slice.length;
+    }
+    return new Response(JSON.stringify({ ok: true, updated: total }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   }
