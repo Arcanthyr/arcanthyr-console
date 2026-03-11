@@ -1602,6 +1602,30 @@ async function handleResetEmbedded(request, env, corsHeaders) {
   }
 }
 
+async function handleFetchSectionsByReference(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { references } = await request.json();
+    if (!Array.isArray(references) || !references.length) return new Response(JSON.stringify({ sections: [] }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const results = [];
+    for (const ref of references.slice(0, 20)) {
+      const rows = await env.DB.prepare(`
+        SELECT ls.id, ls.section_number, ls.heading, ls.text, l.title as leg_title
+        FROM legislation_sections ls
+        JOIN legislation l ON ls.legislation_id = l.id
+        WHERE ls.section_number = ?
+      `).bind(ref.section_number).all();
+      for (const row of rows.results) {
+        results.push(row);
+      }
+    }
+    return new Response(JSON.stringify({ sections: results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 async function handleFetchLegislationForEmbedding(request, env, corsHeaders) {
   const key = request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -1753,6 +1777,7 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-embedded' && request.method === 'GET') return handleFetchEmbedded(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/reset-embedded' && request.method === 'POST') return handleResetEmbedded(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-legislation-for-embedding' && request.method === 'GET') return handleFetchLegislationForEmbedding(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-sections-by-reference' && request.method === 'POST') return handleFetchSectionsByReference(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/mark-legislation-embedded' && request.method === 'POST') return handleMarkLegislationEmbedded(request, env, corsHeaders);
 
     /* ── ENTRIES ROUTES ───────────────────────────────────────── */
