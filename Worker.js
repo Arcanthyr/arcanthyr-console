@@ -1609,6 +1609,7 @@ async function handleFetchSectionsByReference(request, env, corsHeaders) {
     const { references } = await request.json();
     if (!Array.isArray(references) || !references.length) return new Response(JSON.stringify({ sections: [] }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     const results = [];
+    const seen = new Set();
     for (const ref of references.slice(0, 20)) {
       const rows = await env.DB.prepare(`
         SELECT ls.id, ls.section_number, ls.heading, ls.text, l.title as leg_title
@@ -1617,7 +1618,16 @@ async function handleFetchSectionsByReference(request, env, corsHeaders) {
         WHERE ls.section_number = ?
       `).bind(ref.section_number).all();
       for (const row of rows.results) {
-        results.push(row);
+        if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
+      }
+      const corpusRows = await env.DB.prepare(`
+        SELECT id, COALESCE(enriched_text, raw_text) as text, NULL as section_number, NULL as heading, NULL as leg_title
+        FROM secondary_sources
+        WHERE id LIKE '%' || ? || '%'
+        LIMIT 5
+      `).bind(ref.section_number).all();
+      for (const row of corpusRows.results) {
+        if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
       }
     }
     return new Response(JSON.stringify({ sections: results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
