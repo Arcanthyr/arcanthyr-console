@@ -1245,7 +1245,7 @@ async function handleLegalQuery(body, env) {
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,
-      score_threshold: score_threshold || 0.65,
+      score_threshold: score_threshold || 0.45,
     }),
   });
 
@@ -1360,7 +1360,7 @@ async function handleLegalQueryQwen(body, env) {
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,
-      score_threshold: score_threshold || 0.65,
+      score_threshold: score_threshold || 0.45,
     }),
   });
 
@@ -1425,7 +1425,7 @@ async function handleLegalQueryWorkersAI(body, env) {
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,
-      score_threshold: score_threshold || 0.65,
+      score_threshold: score_threshold || 0.45,
     }),
   });
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
