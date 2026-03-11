@@ -1572,7 +1572,7 @@ async function handleFetchUnenriched(request, env, corsHeaders) {
   try {
     const urlObj = new URL(request.url);
     const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
-    const result = await env.DB.prepare(`SELECT id, source_id, chunk_index, text, raw_text FROM secondary_sources WHERE enriched = 0 AND (enrichment_error IS NULL OR enrichment_error = '') ORDER BY source_id, chunk_index LIMIT ?`).bind(batch).all();
+    const result = await env.DB.prepare(`SELECT id, title, raw_text FROM secondary_sources WHERE enriched = 0 AND (enrichment_error IS NULL OR enrichment_error = '') ORDER BY id LIMIT ?`).bind(batch).all();
     return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -1585,7 +1585,7 @@ async function handleFetchForEmbedding(request, env, corsHeaders) {
   try {
     const urlObj = new URL(request.url);
     const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
-    const result = await env.DB.prepare(`SELECT id, source_id, chunk_index, text, enriched_text FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY source_id, chunk_index LIMIT ?`).bind(batch).all();
+    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY id LIMIT ?`).bind(batch).all();
     return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
