@@ -734,6 +734,62 @@ def run_embedding_pass(batch: int) -> dict:
     return {'processed': len(chunks), 'ok': len(ok_ids), 'errors': errors}
 
 
+def run_legislation_embedding_pass(batch: int = 5) -> dict:
+    """Embed legislation sections. Fetches by Act, embeds each section, marks Act embedded when done."""
+    url = f"{WORKER_URL}/api/pipeline/fetch-legislation-for-embedding?batch={batch}"
+    resp = requests.get(url, headers={'X-Nexus-Key': NEXUS_SECRET_KEY}, timeout=30)
+    resp.raise_for_status()
+    sections = resp.json().get('sections', [])
+    if not sections:
+        log.info('[LEG] No legislation sections to embed.')
+        return {'embedded': 0, 'acts_completed': 0}
+
+    from collections import defaultdict
+    by_act = defaultdict(list)
+    for s in sections:
+        by_act[s['leg_id']].append(s)
+
+    total_embedded = 0
+    completed_acts = []
+
+    for leg_id, act_sections in by_act.items():
+        leg_title = act_sections[0]['leg_title']
+        log.info(f'[LEG] Embedding {len(act_sections)} sections for: {leg_title}')
+        ok = True
+        for s in act_sections:
+            embed_text = s['text']
+            if not embed_text.strip():
+                continue
+            metadata = {
+                'leg_id':         leg_id,
+                'leg_title':      leg_title,
+                'section_id':     s['section_id'],
+                'section_number': s['section_number'],
+                'heading':        s['heading'],
+                'text':           embed_text[:1000],
+                'type':           'legislation'
+            }
+            try:
+                vector = get_embedding(embed_text)
+                upsert_qdrant(s['section_id'], vector, metadata)
+                total_embedded += 1
+            except Exception as e:
+                log.error(f'[LEG] ERROR on section {s["section_number"]}: {e}')
+                ok = False
+                break
+        if ok:
+            completed_acts.append(leg_id)
+
+    if completed_acts:
+        mark_url = f'{WORKER_URL}/api/pipeline/mark-legislation-embedded'
+        requests.post(mark_url, json={'leg_ids': completed_acts},
+                      headers={'X-Nexus-Key': NEXUS_SECRET_KEY}, timeout=15).raise_for_status()
+        log.info(f'[LEG] Marked {len(completed_acts)} Act(s) as embedded=1')
+
+    log.info(f'[LEG] Pass complete: {total_embedded} sections embedded, {len(completed_acts)} Acts completed')
+    return {'embedded': total_embedded, 'acts_completed': len(completed_acts)}
+
+
 # ── CLI ─────────────────────────────────────────────────────────
 
 def main():
@@ -767,6 +823,7 @@ def main():
             run_enrichment_pass(args.batch)
         if args.mode in ('embed', 'both'):
             run_embedding_pass(args.batch)
+            run_legislation_embedding_pass(batch=args.batch)
 
     if args.loop:
         log.info('[POLLER] Loop mode — Ctrl+C to stop')

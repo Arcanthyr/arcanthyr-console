@@ -932,8 +932,8 @@ async function handleUploadLegislation(body, env) {
   // INSERT OR IGNORE so Parts 2-8 skip silently without error.
   await env.DB.prepare(`
     INSERT OR IGNORE INTO legislation (id, title, jurisdiction, year, current_as_at, summary,
-      defined_terms, offence_elements, source_url, raw_text, processed_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      defined_terms, offence_elements, source_url, raw_text, processed_date, embedded)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
   `).bind(
     baseid, title, jurisdiction, year ? parseInt(year) : null,
     new Date().toISOString().split('T')[0],
@@ -949,33 +949,6 @@ async function handleUploadLegislation(body, env) {
       VALUES (?, ?, ?, ?, ?, ?)
     `).bind(section.id, section.legislation_id, section.section_number,
       section.heading, section.text, section.part).run();
-  }
-
-  // Ingest into Qdrant for semantic search — batched in groups of 20 to avoid payload limits
-  const BATCH_SIZE = 20;
-  for (let i = 0; i < sections.length; i += BATCH_SIZE) {
-    const batch = sections.slice(i, i + BATCH_SIZE);
-    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-    const totalBatches = Math.ceil(sections.length / BATCH_SIZE);
-    try {
-      const r = await fetch("https://nexus.arcanthyr.com/ingest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
-        body: JSON.stringify({
-          citation: baseid,
-          case_name: `${title} (${jurisdiction})`,
-          source: "legislation",
-          text: batch.map(s => `${s.section_number}. ${s.heading}\n${s.text}`).join('\n\n'),
-          summary: `${title} (${jurisdiction})${year ? ' ' + year : ''}`,
-          category: "legislation",
-          jurisdiction,
-        })
-      });
-      const result = await r.json().catch(() => ({}));
-      console.log(`Nexus ingest batch ${batchNum}/${totalBatches} (sections ${i + 1}–${i + batch.length}): chunks_stored=${result.chunks_stored ?? 'unknown'}, status=${r.status}`);
-    } catch (e) {
-      console.error(`Nexus ingest failed for batch ${batchNum}/${totalBatches} (sections ${i + 1}–${i + batch.length}):`, e.message);
-    }
   }
 
   return {
@@ -1617,6 +1590,47 @@ async function handleResetEmbedded(request, env, corsHeaders) {
   }
 }
 
+async function handleFetchLegislationForEmbedding(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  const url = new URL(request.url);
+  const batch = parseInt(url.searchParams.get('batch') || '5');
+  const acts = await env.DB.prepare(`SELECT id, title FROM legislation WHERE embedded=0 LIMIT ?`).bind(batch).all();
+  if (!acts.results.length) return new Response(JSON.stringify({ sections: [] }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  const result = [];
+  for (const act of acts.results) {
+    const sections = await env.DB.prepare(`
+      SELECT id, legislation_id, section_number, heading, text
+      FROM legislation_sections WHERE legislation_id=?
+    `).bind(act.id).all();
+    for (const s of sections.results) {
+      result.push({
+        leg_id:         act.id,
+        leg_title:      act.title,
+        section_id:     s.id,
+        section_number: s.section_number,
+        heading:        s.heading || '',
+        text:           s.text || ''
+      });
+    }
+  }
+  return new Response(JSON.stringify({ sections: result }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+}
+
+async function handleMarkLegislationEmbedded(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { leg_ids } = await request.json();
+    if (!leg_ids?.length) return new Response(JSON.stringify({ updated: 0 }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const placeholders = leg_ids.map(() => '?').join(',');
+    await env.DB.prepare(`UPDATE legislation SET embedded=1 WHERE id IN (${placeholders})`).bind(...leg_ids).run();
+    return new Response(JSON.stringify({ ok: true, updated: leg_ids.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 /* =============================================================
    MAIN FETCH HANDLER
    ============================================================= */
@@ -1720,6 +1734,8 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-for-embedding' && request.method === 'GET') return handleFetchForEmbedding(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-embedded' && request.method === 'GET') return handleFetchEmbedded(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/reset-embedded' && request.method === 'POST') return handleResetEmbedded(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-legislation-for-embedding' && request.method === 'GET') return handleFetchLegislationForEmbedding(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/mark-legislation-embedded' && request.method === 'POST') return handleMarkLegislationEmbedded(request, env, corsHeaders);
 
     /* ── ENTRIES ROUTES ───────────────────────────────────────── */
     if (url.pathname.startsWith("/api/entries")) {
