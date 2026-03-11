@@ -1592,6 +1592,31 @@ async function handleFetchForEmbedding(request, env, corsHeaders) {
   }
 }
 
+async function handleFetchEmbedded(_request, env, corsHeaders) {
+  const key = _request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const result = await env.DB.prepare(`SELECT id FROM secondary_sources WHERE embedded = 1`).all();
+    return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleResetEmbedded(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { chunk_ids } = await request.json();
+    if (!Array.isArray(chunk_ids) || chunk_ids.length === 0) return new Response(JSON.stringify({ ok: false, error: 'chunk_ids required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const placeholders = chunk_ids.map(() => '?').join(',');
+    await env.DB.prepare(`UPDATE secondary_sources SET embedded = 0 WHERE id IN (${placeholders})`).bind(...chunk_ids).run();
+    return new Response(JSON.stringify({ ok: true, reset: chunk_ids.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 /* =============================================================
    MAIN FETCH HANDLER
    ============================================================= */
@@ -1693,6 +1718,8 @@ export default {
     if (url.pathname === '/api/pipeline/mark-embedded' && request.method === 'POST') return handleMarkEmbedded(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-unenriched' && request.method === 'GET') return handleFetchUnenriched(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-for-embedding' && request.method === 'GET') return handleFetchForEmbedding(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-embedded' && request.method === 'GET') return handleFetchEmbedded(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/reset-embedded' && request.method === 'POST') return handleResetEmbedded(request, env, corsHeaders);
 
     /* ── ENTRIES ROUTES ───────────────────────────────────────── */
     if (url.pathname.startsWith("/api/entries")) {

@@ -19,7 +19,9 @@
       "Bash(ssh tom@31.220.86.192 \"cd ~/ai-stack && docker compose restart agent-general\")",
       "Bash(python ingest_corpus.py)",
       "Bash(F=\"$LOCALAPPDATA/Temp/claude/c--Users-Hogan-OneDrive-Arcanthyr-arcanthyr-console-Arc-v-4/tasks/bofh1yawj.output\")",
-      "Read(//c/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/**)"
+      "Read(//c/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/**)",
+      "Bash(python3 -c \":*)",
+      "Bash(ssh tom@31.220.86.192 'python3 -c \"\"import requests; r = requests.get\\(\\\\\"\"http://localhost:6334/collections/general-docs-v2\\\\\"\"\\); print\\(r.json\\(\\)[\\\\\"\"result\\\\\"\"][\\\\\"\"points_count\\\\\"\"]\\)\"\"')"
     ]
   }
 }
