@@ -1038,15 +1038,15 @@ async function handleUploadSecondarySource(body, env) {
    Also records a row in secondary_sources for library visibility.
    ============================================================= */
 async function handleUploadCorpus(body, env) {
-  const { text, citation, source, category } = body;
+  const { text, citation, source, category, doc_type } = body;
   if (!text || !citation) throw new Error("Missing required fields: text and citation");
 
   // Record in D1 secondary_sources — INSERT OR IGNORE skips duplicate citations silently
   await env.DB.prepare(`
     INSERT OR IGNORE INTO secondary_sources
-    (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded)
-    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 0, 0)
-  `).bind(citation, source || citation, category || null, text, new Date().toISOString()).run();
+    (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
+    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 0, 0, ?)
+  `).bind(citation, source || citation, doc_type || null, text, new Date().toISOString(), category ?? 'doctrine').run();
 
   return { citation, chunks_stored: 0, message: "Corpus chunk recorded in D1." };
 }
@@ -1564,7 +1564,7 @@ async function handleFetchForEmbedding(request, env, corsHeaders) {
   try {
     const urlObj = new URL(request.url);
     const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
-    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY id LIMIT ?`).bind(batch).all();
+    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text, category FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY id LIMIT ?`).bind(batch).all();
     return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });

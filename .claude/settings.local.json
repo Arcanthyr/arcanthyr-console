@@ -25,7 +25,10 @@
       "Bash(ssh tom@31.220.86.192 \"curl -s ''https://arcanthyr.com/api/pipeline/fetch-for-embedding?batch=2''   -H ''X-Nexus-Key: 6a32e075805a368598aef3685e10a22b5b2eee41a213550442de54b9312a39f5'' | python3 -c \"\"import sys,json; d=json.load\\(sys.stdin\\); print\\(''ok:'', d.get\\(''ok''\\)\\); print\\(''chunks returned:'', len\\(d.get\\(''chunks'',[]\\)\\)\\)\"\"\")",
       "Bash(ssh tom@31.220.86.192 \"curl -s ''https://arcanthyr.com/api/pipeline/fetch-unenriched?batch=2''   -H ''X-Nexus-Key: 6a32e075805a368598aef3685e10a22b5b2eee41a213550442de54b9312a39f5'' | python3 -c \"\"import sys,json; d=json.load\\(sys.stdin\\); print\\(''ok:'', d.get\\(''ok''\\)\\); print\\(''chunks returned:'', len\\(d.get\\(''chunks'',[]\\)\\)\\)\"\"\")",
       "Bash(done)",
-      "Bash(awk 'NR>=27985 && NR<=27992' \"c:/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/master_corpus.md\")"
+      "Bash(awk 'NR>=27985 && NR<=27992' \"c:/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/master_corpus.md\")",
+      "Bash(python3:*)",
+      "Bash(grep -n \"block\\\\\\\\\\\\_026\" \"c:/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/master_corpus.md\")",
+      "Bash(npx wrangler:*)"
     ]
   }
 }

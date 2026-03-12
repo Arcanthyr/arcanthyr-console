@@ -698,7 +698,8 @@ def run_embedding_pass(batch: int) -> dict:
             'source_id':   chunk.get('source_id', ''),
             'chunk_index': chunk.get('chunk_index', 0),
             'text':        embed_text[:1000],  # truncated preview in Qdrant payload
-            'type':        'secondary_source'
+            'type':        'secondary_source',
+            'category':    chunk.get('category', 'doctrine')
         }
 
         log.info(f'[EMBED] {i}/{len(chunks)} chunk_id={chunk_id}')
