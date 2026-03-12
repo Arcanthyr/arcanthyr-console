@@ -8,7 +8,8 @@ Acts Interpretation Act 1931 (Tas) s 8B — Ordinary Meaning Rule
 
 \[SECTION: s 8B]
 
-\[CITATION: Acts Interpretation Act 1931 (Tas)]
+\[CITATION: Acts Interpretation Act 1931 (Tas) — Ordinary Meaning Rule]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -108,7 +109,8 @@ Acts Interpretation Act 1931 (Tas) s 29 — Reckoning of Time
 
 \[SECTION: s 29]
 
-\[CITATION: Acts Interpretation Act 1931 (Tas)]
+\[CITATION: Acts Interpretation Act 1931 (Tas) — Calculation of Statutory Time Periods]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -213,6 +215,7 @@ Oaths Act 2001 (Tas) s 13 — Commissioners for Declarations
 \[SECTION: s 13]
 
 \[CITATION: Oaths Act 2001 (Tas)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -260,7 +263,8 @@ Police Offences Act 1935 (Tas) s 55A — Failure to Provide Name and Address
 
 \[SECTION: s 55A]
 
-\[CITATION: Police Offences Act 1935 (Tas)]
+\[CITATION: Police Offences Act 1935 (Tas) — Failure to Identify to Police]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -320,7 +324,8 @@ Criminal Code Act 1924 (Tas) s 301 — Execution of Arrest Warrants
 
 \[SECTION: s 301]
 
-\[CITATION: Criminal Code Act 1924 (Tas)]
+\[CITATION: Criminal Code Act 1924 (Tas) — Arrest Warrant Execution]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -414,7 +419,8 @@ Criminal Code Act 1924 (Tas) s 301(2) — Duty to Give Reasons for Arrest
 
 \[SECTION: s 301(2)]
 
-\[CITATION: Criminal Code Act 1924 (Tas)]
+\[CITATION: Criminal Code Act 1924 (Tas) — Duty to Inform on Arrest]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -626,7 +632,8 @@ Police Offences Act 1935 (Tas) — “Found Offending” and Committing an Offen
 
 \[ACT: Police Offences Act 1935 (Tas)]
 
-\[CITATION: Police Offences Act 1935 (Tas)]
+\[CITATION: Police Offences Act 1935 (Tas) — Meaning of Found Offending]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -706,7 +713,8 @@ Criminal Law (Detention and Interrogation) Act 1995 (Tas) s 3 — Meaning of “
 
 \[SECTION: s 3]
 
-\[CITATION: Criminal Law (Detention and Interrogation) Act 1995 (Tas)]
+\[CITATION: Criminal Law (Detention and Interrogation) Act 1995 (Tas) — Definition of In Custody]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -762,7 +770,8 @@ Criminal Code Act 1924 (Tas) s 106 — Lawful Custody
 
 \[SECTION: s 106]
 
-\[CITATION: Criminal Code Act 1924 (Tas)]
+\[CITATION: Criminal Code Act 1924 (Tas) — Meaning of Lawful Custody]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -804,7 +813,8 @@ Criminal Law (Detention and Interrogation) Act 1995 (Tas) — Protections for Ar
 
 \[ACT: Criminal Law (Detention and Interrogation) Act 1995 (Tas)]
 
-\[CITATION: Criminal Law (Detention and Interrogation) Act 1995 (Tas)]
+\[CITATION: Criminal Law (Detention and Interrogation) Act 1995 (Tas) — Protections for Persons in Custody]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -1014,7 +1024,8 @@ Criminal Code Act 1924 (Tas) s 26A — Power to Enter Premises to Effect Arrest
 
 \[SECTION: s 26A]
 
-\[CITATION: Criminal Code Act 1924 (Tas)]
+\[CITATION: Criminal Code Act 1924 (Tas) — Entry to Premises to Effect Arrest]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -1266,7 +1277,8 @@ Search Warrants Act 1997 (Tas) s 16 — Search of a Conveyance Without Warrant
 
 \[SECTION: s 16]
 
-\[CITATION: Search Warrants Act 1997 (Tas)]
+\[CITATION: Search Warrants Act 1997 (Tas) — Warrantless Search of Conveyance]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -1302,7 +1314,8 @@ Police Offences Act 1935 (Tas) s 58B — Search of Person in Lawful Custody
 
 \[SECTION: s 58B]
 
-\[CITATION: Police Offences Act 1935 (Tas)]
+\[CITATION: Police Offences Act 1935 (Tas) — Non-Invasive Search in Custody]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -1422,7 +1435,8 @@ Search Warrants Act 1997 (Tas) s 6 — Seizure of Evidential Material Found Duri
 
 \[SECTION: s 6]
 
-\[CITATION: Search Warrants Act 1997 (Tas)]
+\[CITATION: Search Warrants Act 1997 (Tas) — Seizure of Unanticipated Evidential Material]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -2206,7 +2220,8 @@ Search Warrants Act 1997 (Tas) s 5 — When a Search Warrant May Be Issued
 
 \[SECTION: s 5]
 
-\[CITATION: Search Warrants Act 1997 (Tas) s 5]
+\[CITATION: Search Warrants Act 1997 (Tas) s 5 — Grounds: Reasonable Belief Test]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -2474,7 +2489,8 @@ Search Warrants Act 1997 (Tas) s 5 — When Search Warrants May Be Issued
 
 \[SECTION: s 5]
 
-\[CITATION: Search Warrants Act 1997 (Tas) s 5]
+\[CITATION: Search Warrants Act 1997 (Tas) s 5 — Statutory Conditions Overview]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -2591,6 +2607,7 @@ Australian Postal Corporation Act 1989 (Cth) s 90N — Police Receipt of Postal 
 \[ACT: Australian Postal Corporation Act 1989 (Cth)]
 
 \[CITATION: Australian Postal Corporation Act 1989 (Cth) s 90N]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -2704,7 +2721,8 @@ Search Warrants Act 1997 (Tas) — Purpose and Function of a Search Warrant
 
 \[ACT: Search Warrants Act 1997 (Tas)]
 
-\[CITATION: Search Warrants Act 1997 (Tas)]
+\[CITATION: Search Warrants Act 1997 (Tas) — Constitutional Function of Search Warrants]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -2833,6 +2851,7 @@ Evidence Act 2001 (Tas) s 85A — Video Recording of Admissions
 \[ACT: Evidence Act 2001 (Tas)]
 
 \[CITATION: Evidence Act 2001 (Tas) s 85A]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -3049,6 +3068,7 @@ Criminal Law (Detention and Interrogation) Act 1995 (Tas) s 5 — Provision of I
 \[ACT: Criminal Law (Detention and Interrogation) Act 1995 (Tas)]
 
 \[CITATION: Criminal Law (Detention and Interrogation) Act 1995 (Tas) s 5]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -3177,6 +3197,7 @@ Police Offences Act 1935 (Tas) s 58B — Search of Persons in Custody
 \[ACT: Police Offences Act 1935 (Tas)]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 58B]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -3229,6 +3250,7 @@ Misuse of Drugs Act 2001 (Tas) s 32 — Power to Pursue Suspect onto Private Pro
 \[ACT: Misuse of Drugs Act 2001 (Tas)]
 
 \[CITATION: Misuse of Drugs Act 2001 (Tas) s 32]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -3353,6 +3375,7 @@ Service and Execution of Process Act 1992 (Cth) s 83 — Remand of Person Arrest
 \[SECTION: s 83]
 
 \[CITATION: Service and Execution of Process Act 1992 (Cth) s 83]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -3392,7 +3415,8 @@ Service and Execution of Process Act 1992 (Cth) s 3 — Definition of “Magistr
 
 \[SECTION: s 3]
 
-\[CITATION: Service and Execution of Process Act 1992 (Cth) s 3]
+\[CITATION: Service and Execution of Process Act 1992 (Cth) s 3 — Definition of Magistrate]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -3436,7 +3460,8 @@ Service and Execution of Process Act 1992 (Cth) s 3 — Definition of “Person 
 
 \[SECTION: s 3]
 
-\[CITATION: Service and Execution of Process Act 1992 (Cth) s 3]
+\[CITATION: Service and Execution of Process Act 1992 (Cth) s 3 — Definition of Person Under Restraint]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -3515,6 +3540,7 @@ Justices Act 1959 (Tas) s 38 — Representation of Parties
 \[SECTION: s 38]
 
 \[CITATION: Justices Act 1959 (Tas) s 38]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -3575,6 +3601,7 @@ Justices Act 1959 (Tas) s 38(4) — Police Prosecutors
 \[SECTION: s 38]
 
 \[CITATION: Justices Act 1959 (Tas) s 38(4)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -3743,6 +3770,7 @@ Costs in Criminal Cases Act 1976 (Tas) s 4 — Costs of Successful Defendant
 \[SECTION: s 4]
 
 \[CITATION: Costs in Criminal Cases Act 1976 (Tas) s 4]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -3831,6 +3859,7 @@ Costs in Criminal Cases Act 1976 (Tas) s 5 — Costs of Convicted Defendant
 \[SECTION: s 5]
 
 \[CITATION: Costs in Criminal Cases Act 1976 (Tas) s 5]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -4020,7 +4049,8 @@ Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8 — Unfitness to Stand T
 
 \[SECTION: s 8]
 
-\[CITATION: Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8]
+\[CITATION: Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8 — Fitness to Stand Trial: Test]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -4089,6 +4119,7 @@ Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8(2) — Memory Loss and F
 \[SECTION: s 8(2)]
 
 \[CITATION: Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8(2)]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -4331,6 +4362,7 @@ Justices Act 1959 (Tas) s 31(4) — Variance Between Complaint and Evidence
 \[SECTION: s 31(4)]
 
 \[CITATION: Justices Act 1959 (Tas) s 31(4)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -4388,7 +4420,8 @@ Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8 — Presumption, Thresho
 
 \[SECTION: s 8]
 
-\[CITATION: Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8]
+\[CITATION: Criminal Justice (Mental Impairment) Act 1999 (Tas) s 8 — Fitness Investigation: Procedure]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -4441,6 +4474,7 @@ Criminal Justice (Mental Impairment) Act 1999 (Tas) ss 15–16 — Special Heari
 \[SECTION: ss 15–16]
 
 \[CITATION: Criminal Justice (Mental Impairment) Act 1999 (Tas) ss 15–16]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -4681,6 +4715,7 @@ Justices Act 1959 (Tas) s 32(b)(iii) and Justices Rules 2003 (Tas) r 15 — Comp
 \[SECTION: s 32(b)(iii); r 15]
 
 \[CITATION: Justices Act 1959 (Tas) s 32(b)(iii); Justices Rules 2003 (Tas) r 15]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -4729,6 +4764,7 @@ Criminal Law (Territorial Application) Act 1995 (Tas) — Territorial Nexus and 
 \[ACT: Criminal Law (Territorial Application) Act 1995 (Tas)]
 
 \[CITATION: Criminal Law (Territorial Application) Act 1995 (Tas)]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -4827,6 +4863,7 @@ Counter-Principle — No Late Amendment Causing Incurable Unfairness
 \[SECTION: s 31]
 
 \[CITATION: Justices Act 1959 (Tas) s 31]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -5067,6 +5104,7 @@ Justices Act 1959 (Tas) s 27 and Justices Rules 2003 (Tas) regs 6, 17 — Oral C
 \[SECTION: s 27; reg 6; reg 17]
 
 \[CITATION: Justices Act 1959 (Tas) s 27; Justices Rules 2003 (Tas) reg 6; Justices Rules 2003 (Tas) reg 17]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -5165,6 +5203,7 @@ Criminal Code Act 1924 (Tas) s 311 — Joinder of Multiple Crimes in One Indictm
 \[SECTION: s 311]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 311]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -5217,6 +5256,7 @@ Joint Trial of Multiple Accused — Prima Facie Rule and Fair Trial Qualificatio
 \[SECTION: s 363]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 363]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -5247,6 +5287,7 @@ Justices Act 1959 (Tas) s 72B — Alternative Convictions Where Indictable Code 
 \[SECTION: s 72B]
 
 \[CITATION: Justices Act 1959 (Tas) s 72B]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -5319,6 +5360,7 @@ Reasonable Prospect of Conviction Test
 \[ACT: Criminal Code Act 1924 (Tas)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 310(4)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -7131,6 +7173,7 @@ Listening Devices Act 1991 (Tas) — Prohibition on Recording Conversations
 \[ACT: Listening Devices Act 1991 (Tas)]
 
 \[CITATION: Listening Devices Act 1991 (Tas) s 5(1)(b)]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -7161,6 +7204,7 @@ Lawful Interests Exception to Recording Prohibition
 \[ACT: Listening Devices Act 1991 (Tas)]
 
 \[CITATION: Listening Devices Act 1991 (Tas) s 5(3)(b)(i)]
+\[CATEGORY: doctrine]
 
 \[TYPE: defence]
 
@@ -7290,7 +7334,8 @@ Evidence Act 2001 (Tas) s 106 — Rebuttal Evidence Affecting Witness Credibilit
 
 \[SECTION: s 106]
 
-\[CITATION: Evidence Act 2001 (Tas) s 106]
+\[CITATION: Evidence Act 2001 (Tas) s 106 — Credibility Rebuttal Evidence]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -7397,6 +7442,7 @@ Police Body-Worn Cameras — Statutory Authorisation
 \[ACT: Police Powers (Surveillance Devices) Act 2006 (Tas)]
 
 \[CITATION: Police Powers (Surveillance Devices) Act 2006 (Tas)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -7441,6 +7487,7 @@ Evidence Act 2001 (Tas) s 69 — Admissibility of Emergency Call Recordings as B
 \[SECTION: s 69]
 
 \[CITATION: Evidence Act 2001 (Tas) s 69]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -7691,6 +7738,7 @@ Evidence Act 2001 (Tas) ss 166–167 — Production for Forensic Examination
 \[SECTION: ss 166–167]
 
 \[CITATION: Evidence Act 2001 (Tas) ss 166–167]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -7731,6 +7779,7 @@ Evidence Act 2001 (Tas) s 88 — Admissions Threshold
 \[SECTION: s 88]
 
 \[CITATION: Evidence Act 2001 (Tas) s 88]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -7925,6 +7974,7 @@ Evidence Act 2001 (Tas) ss 170–172 — Bank Record Affidavits
 \[SECTION: ss 170–172]
 
 \[CITATION: Evidence Act 2001 (Tas) ss 170–172]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -8367,6 +8417,7 @@ Evidence Act 2001 (Tas) s 142 — Burden and Standard on Voir Dire
 \[SECTION: s 142]
 
 \[CITATION: Evidence Act 2001 (Tas) s 142]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -8496,7 +8547,8 @@ Evidence Act 2001 (Tas) s 137 — Unfair Prejudice
 
 \[SECTION: s 137]
 
-\[CITATION: Evidence Act 2001 (Tas) s 137]
+\[CITATION: Evidence Act 2001 (Tas) s 137 — General Rule]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -8577,6 +8629,7 @@ Evidence Act 2001 (Tas) ss 97–101 — Tendency and Coincidence Evidence
 \[SECTION: ss 97–101]
 
 \[CITATION: Evidence Act 2001 (Tas) ss 97–101]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -8633,6 +8686,7 @@ Evidence Act 2001 (Tas) s 90 — Unfair Use of Admissions
 \[SECTION: s 90]
 
 \[CITATION: Evidence Act 2001 (Tas) s 90]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -8668,7 +8722,8 @@ Evidence Act 2001 (Tas) s 138 — Improperly or Illegally Obtained Evidence
 
 \[SECTION: s 138]
 
-\[CITATION: Evidence Act 2001 (Tas) s 138]
+\[CITATION: Evidence Act 2001 (Tas) s 138 — Exclusion Rule: Probative vs Impropriety]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -8716,7 +8771,8 @@ Evidence Act 2001 (Tas) s 138 — Burden of Proof for Improperly Obtained Eviden
 
 \[SECTION: s 138]
 
-\[CITATION: Evidence Act 2001 (Tas) s 138]
+\[CITATION: Evidence Act 2001 (Tas) s 138 — Burden of Proof for Exclusion]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -8823,6 +8879,7 @@ Evidence Act 2001 (Tas) s 66 — First-Hand Hearsay and Freshness of Memory
 \[SECTION: s 66]
 
 \[CITATION: Evidence Act 2001 (Tas) s 66]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -9017,6 +9074,7 @@ Criminal Code Act 1924 (Tas) s 18 — Presumption of Doli Incapax
 \[SECTION: s 18]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 18]
+\[CATEGORY: doctrine]
 
 \[TYPE: defence]
 
@@ -9188,7 +9246,8 @@ Evidence Act 2001 (Tas) s 138 — Discretion to Exclude Improperly or Illegally 
 
 \[SECTION: s 138]
 
-\[CITATION: Evidence Act 2001 (Tas) s 138]
+\[CITATION: Evidence Act 2001 (Tas) s 138 — Discretionary Exclusion: Overview]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -9551,6 +9610,7 @@ Criminal Code Act 1924 (Tas) s 16 — Insanity Defence: Mental Disease Alone Is 
 \[SECTION: s 16]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 16]
+\[CATEGORY: doctrine]
 
 \[TYPE: defence]
 
@@ -9603,6 +9663,7 @@ Criminal Justice (Mental Impairment) Act — Procedure Following Finding of Not 
 \[ACT: Criminal Justice (Mental Impairment) Act]
 
 \[CITATION: Criminal Justice (Mental Impairment) Act]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -10181,6 +10242,7 @@ Criminal Code Act 1924 (Tas) s 20 — Duress (Compulsion) Defence
 \[SECTION: s 20]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 20]
+\[CATEGORY: doctrine]
 
 \[TYPE: defence]
 
@@ -10325,6 +10387,7 @@ Criminal Code Act 1924 (Tas) s 3 — Parties to Crimes Deemed Principals
 \[SECTION: s 3]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 3]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -10377,6 +10440,7 @@ Justices Act 1959 (Tas) s 73 — Accessories to Simple Offences
 \[SECTION: s 73]
 
 \[CITATION: Justices Act 1959 (Tas) s 73]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -10490,7 +10554,8 @@ Criminal Code Act 1924 (Tas) s 4 — Crimes Committed in Prosecution of Common P
 
 \[SECTION: s 4]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 4]
+\[CITATION: Criminal Code Act 1924 (Tas) s 4 — Common Purpose Liability: General]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -10604,7 +10669,8 @@ Authority — Elements of Aiding Under Criminal Code Act 1924 (Tas) s 3(1)(b)
 
 \[SECTION: s 3(1)(b)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 3(1)(b)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 3(1)(b) — Arnol: Intention Required for Aiding]
+\[CATEGORY: doctrine]
 
 \[TYPE: case authority]
 
@@ -10927,6 +10993,7 @@ Criminal Code Act 1924 (Tas) s 3(1)(c) — Meaning of “Abets”
 \[ACT: Criminal Code Act 1924 (Tas)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 3(1)(c)]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -10978,7 +11045,8 @@ Criminal Code Act 1924 (Tas) s 3(1)(b) — Aiding Another to Commit a Crime
 
 \[ACT: Criminal Code Act 1924 (Tas)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 3(1)(b)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 3(1)(b) — Aiding: General Doctrine]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -11016,7 +11084,8 @@ Criminal Code Act 1924 (Tas) s 4 — Criminal Responsibility for Common Unlawful
 
 \[ACT: Criminal Code Act 1924 (Tas)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 4]
+\[CITATION: Criminal Code Act 1924 (Tas) s 4 — Common Purpose: Shaw v Tasmania]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -11073,6 +11142,7 @@ Criminal Code Act 1924 (Tas) s 50 — Domestic Discipline
 \[ACT: Criminal Code Act 1924 (Tas)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 50]
+\[CATEGORY: doctrine]
 
 \[TYPE: defence]
 
@@ -11125,6 +11195,7 @@ Acts Interpretation Act 1931 (Tas) s 34 — Attempt to Commit an Offence
 \[SECTION: 34]
 
 \[CITATION: Acts Interpretation Act 1931 (Tas) s 34]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -11165,6 +11236,7 @@ Criminal Code Act 1924 (Tas) s 299 — Attempts to Commit Crimes
 \[SECTION: 299]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 299]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -11271,6 +11343,7 @@ Evidence Act 2001 (Tas) s 75 — Hearsay in Bail Hearings
 \[SECTION: 75]
 
 \[CITATION: Evidence Act 2001 (Tas) s 75]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -11341,6 +11414,7 @@ Criminal Code Act 1924 (Tas) s 3(1)(a) — Principal Liability Does Not Reproduc
 \[SECTION: 3(1)(a)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 3(1)(a)]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -11378,7 +11452,8 @@ Criminal Code Act 1924 (Tas) s 4 — Objective “Probable Consequence” Test
 
 \[SECTION: 4]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 4]
+\[CITATION: Criminal Code Act 1924 (Tas) s 4 — Objective Probable Consequence Test]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -11431,6 +11506,7 @@ Criminal Code Act 1924 (Tas) ss 3 and 4 — Overlap in Attribution of Criminal R
 \[ACT: Criminal Code Act 1924 (Tas)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) ss 3 and 4]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -11676,7 +11752,8 @@ Criminal Code Act 1924 (Tas) s 4 — Alternative Basis to Aiding and Abetting
 
 \[SECTION: 4]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 4]
+\[CITATION: Criminal Code Act 1924 (Tas) s 4 — Common Intention as Alternative to Aiding]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -11745,6 +11822,7 @@ Alternative Convictions for Attempts — Simple Offences
 \[SECTION: 74]
 
 \[CITATION: Justices Act 1959 (Tas) s 74]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -11781,6 +11859,7 @@ Alternative Convictions for Attempts — Indictable Crimes
 \[SECTION: 342]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 342]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -12034,7 +12113,8 @@ Evidence Act 2001 (Tas) s 4 — Evidence Act Applies to Bail Hearings
 
 \[SECTION: 4]
 
-\[CITATION: Evidence Act 2001 (Tas) s 4]
+\[CITATION: Evidence Act 2001 (Tas) s 4 — Application to Bail Hearings]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -12102,7 +12182,8 @@ Evidence Act 2001 (Tas) s 94 — Tendency Rules Do Not Apply to Bail Hearings
 
 \[SECTION: 94]
 
-\[CITATION: Evidence Act 2001 (Tas) s 94]
+\[CITATION: Evidence Act 2001 (Tas) s 94 — Tendency Rules Inapplicable to Bail]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -12265,6 +12346,7 @@ Family Violence Act s 12 — Presumption Against Bail and Reversed Onus
 \[SECTION: 12]
 
 \[CITATION: Family Violence Act s 12]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -12399,6 +12481,7 @@ Family Violence Act s 12(2)(b) — Demeanour as a Legislative Consideration
 \[SECTION: 12(2)(b)]
 
 \[CITATION: Family Violence Act s 12(2)(b)]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -12467,6 +12550,7 @@ Family Violence Act s 12(d) — Suitable Accommodation Is a Mandatory Considerat
 \[SECTION: 12(d)]
 
 \[CITATION: Family Violence Act s 12(d)]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -12561,6 +12645,7 @@ Bail Act 1994 (Tas) — Role and Supervision Function of Bail Sureties
 \[ACT: Bail Act 1994 (Tas)]
 
 \[CITATION: Bail Act 1994 (Tas)]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -12681,6 +12766,7 @@ Bail Act 1994 (Tas) s 20 — Estreatment of Surety Recognizances
 \[SECTION: s 20]
 
 \[CITATION: Bail Act 1994 (Tas) s 20]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -12792,7 +12878,8 @@ Evidence Act 2001 (Tas) s 97 — The Tendency Rule
 
 \[SECTION: s 97]
 
-\[CITATION: Evidence Act 2001 (Tas) s 97]
+\[CITATION: Evidence Act 2001 (Tas) s 97 — Tendency Rule: General]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -12848,7 +12935,8 @@ Evidence Act 2001 (Tas) s 98 — The Coincidence Rule
 
 \[SECTION: s 98]
 
-\[CITATION: Evidence Act 2001 (Tas) s 98]
+\[CITATION: Evidence Act 2001 (Tas) s 98 — Coincidence Rule: General]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -12901,6 +12989,7 @@ Mental Health Act 2013 (Tas) s 17 — Police Power to Take Person into Protectiv
 \[SECTION: s 17]
 
 \[CITATION: Mental Health Act 2013 (Tas) s 17]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13003,6 +13092,7 @@ Bail Act 1994 (Tas) s 25 — Revocation of Bail by the Court on Its Own Motion
 \[SECTION: s 25]
 
 \[CITATION: Bail Act 1994 (Tas) s 25]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13047,6 +13137,7 @@ Bail Act 1994 (Tas) s 24 — Applications to Revoke Bail Must Be Made in the Pre
 \[SECTION: s 24]
 
 \[CITATION: Bail Act 1994 (Tas) s 24]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13091,6 +13182,7 @@ Bail Act 1994 (Tas) s 23 — Application to Vary Bail Conditions
 \[SECTION: s 23]
 
 \[CITATION: Bail Act 1994 (Tas) s 23]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13201,6 +13293,7 @@ Justices Rules 2003 r 62 and r 34 — Procedural Response Where Defendant Does N
 \[ACT: Justices Rules 2003]
 
 \[CITATION: Justices Rules 2003 rr 34, 62]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13279,6 +13372,7 @@ Justices Rules 2003 r 31 — Ex Parte Hearing Where Defendant Does Not Appear
 \[ACT: Justices Rules 2003]
 
 \[CITATION: Justices Rules 2003 r 31]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13357,6 +13451,7 @@ Justices Rules 2003 r 32 — Personal Service Order or Warrant Following Non-App
 \[ACT: Justices Rules 2003]
 
 \[CITATION: Justices Rules 2003 r 32]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13413,6 +13508,7 @@ Justices Act 1959 (Tas) s 72D — Ex Parte Determination of Prescribed Complaint
 \[SECTION: s 72D]
 
 \[CITATION: Justices Act 1959 (Tas) s 72D]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13463,6 +13559,7 @@ Justices Rules 2003 Schedule 2 — Prescribed Offences for s 72D Procedure
 \[ACT: Justices Rules 2003]
 
 \[CITATION: Justices Rules 2003 Sch 2]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13671,6 +13768,7 @@ Justices Rules 2003 r 38 — Setting Aside Ex Parte Convictions and Orders
 \[ACT: Justices Rules 2003]
 
 \[CITATION: Justices Rules 2003 r 38]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -13880,7 +13978,8 @@ Evidence Act 2001 (Tas) — Definition of “Criminal Proceeding”
 
 \[ACT: Evidence Act 2001 (Tas)]
 
-\[CITATION: Evidence Act 2001 (Tas)]
+\[CITATION: Evidence Act 2001 (Tas) — Definition of Criminal Proceeding]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -13928,7 +14027,8 @@ Evidence Act 2001 (Tas) s 4 — Proceedings to Which the Act Applies
 
 \[SECTION: s 4]
 
-\[CITATION: Evidence Act 2001 (Tas) s 4]
+\[CITATION: Evidence Act 2001 (Tas) s 4 — Scope of Proceedings]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -13988,7 +14088,8 @@ Evidence Act 2001 (Tas) s 94 — Part 6 Does Not Apply to Bail or Sentencing Pro
 
 \[SECTION: s 94]
 
-\[CITATION: Evidence Act 2001 (Tas) s 94]
+\[CITATION: Evidence Act 2001 (Tas) s 94 — Part 6 Non-Application to Bail and Sentencing]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -14041,6 +14142,7 @@ Evidence Act 2001 (Tas) s 95 — Evidence Inadmissible for One Purpose Cannot Be
 \[SECTION: s 95]
 
 \[CITATION: Evidence Act 2001 (Tas) s 95]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -14089,6 +14191,7 @@ Evidence Act 2001 (Tas) s 96 — Failure to Act Is Included Within Reference to 
 \[SECTION: s 96]
 
 \[CITATION: Evidence Act 2001 (Tas) s 96]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -14129,6 +14232,7 @@ Evidence Act 2001 (Tas) s 99 — Notice Requirements for Tendency and Coincidenc
 \[SECTION: s 99]
 
 \[CITATION: Evidence Act 2001 (Tas) s 99]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -14169,6 +14273,7 @@ Evidence Act 2001 (Tas) s 100 — Court May Dispense With Notice Requirements
 \[SECTION: s 100]
 
 \[CITATION: Evidence Act 2001 (Tas) s 100]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -14224,7 +14329,8 @@ Evidence Act 2001 (Tas) s 101 — Additional Restriction on Prosecution Tendency
 
 \[SECTION: s 101]
 
-\[CITATION: Evidence Act 2001 (Tas) s 101]
+\[CITATION: Evidence Act 2001 (Tas) s 101 — Prosecution: Substantially Outweigh Test]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -14273,6 +14379,7 @@ Mental Health Act 2013 (Tas) Sch 2 — Powers of Custodians and Escorts
 \[ACT: Mental Health Act 2013 (Tas)]
 
 \[CITATION: Mental Health Act 2013 (Tas) Sch 2]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -14343,6 +14450,7 @@ Justices Act 1959 (Tas) s 25 — Contempt in the Face of the Court May Include C
 \[SECTION: s 25]
 
 \[CITATION: Justices Act 1959 (Tas) s 25]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -14454,7 +14562,8 @@ Liquor Licensing Act — Extended Meaning of “Sell”
 
 \[ACT: Liquor Licensing Act]
 
-\[CITATION: Liquor Licensing Act]
+\[CITATION: Liquor Licensing Act — Extended Definition of Sell]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -14496,7 +14605,8 @@ Liquor Licensing Act — Evidentiary Provisions Relating to Licence Status and E
 
 \[ACT: Liquor Licensing Act]
 
-\[CITATION: Liquor Licensing Act]
+\[CITATION: Liquor Licensing Act — Averments and Evidence of Sale]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -14540,7 +14650,8 @@ Vehicle and Traffic Act 1999 (Tas) s 18 — Restricted Driver Licences
 
 \[SECTION: s 18]
 
-\[CITATION: Vehicle and Traffic Act 1999 (Tas) s 18]
+\[CITATION: Vehicle and Traffic Act 1999 (Tas) s 18 — Restricted Driver Licence]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -14608,7 +14719,8 @@ Vehicle and Traffic Act 1999 (Tas) s 18 — Severe Hardship Requirement
 
 \[SECTION: s 18]
 
-\[CITATION: Vehicle and Traffic Act 1999 (Tas) s 18]
+\[CITATION: Vehicle and Traffic Act 1999 (Tas) s 18 — Severe Hardship Threshold]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -14681,6 +14793,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 19 — Public Interest Limitati
 \[SECTION: s 19]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 19]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -14833,6 +14946,7 @@ Misuse of Drugs Act 2001 (Tas) s 29 — Search Powers Based on Prescribed Belief
 \[SECTION: s 29]
 
 \[CITATION: Misuse of Drugs Act 2001 (Tas) s 29]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -14966,7 +15080,8 @@ Misuse of Drugs Act 2001 (Tas) — Possession Quantity Requirement
 
 \[ACT: Misuse of Drugs Act 2001 (Tas)]
 
-\[CITATION: Misuse of Drugs Act 2001 (Tas)]
+\[CITATION: Misuse of Drugs Act 2001 (Tas) — Minimum Quantity for Possession]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -15016,7 +15131,8 @@ Youth Justice Act 1997 (Tas) — Criminal Responsibility Thresholds
 
 \[ACT: Youth Justice Act 1997 (Tas)]
 
-\[CITATION: Youth Justice Act 1997 (Tas)]
+\[CITATION: Youth Justice Act 1997 (Tas) — Age Thresholds for Criminal Responsibility]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -15057,6 +15173,7 @@ Youth Justice Act 1997 (Tas) ss 27–28 — Limitations on Joint Charges
 \[SECTION: ss 27–28]
 
 \[CITATION: Youth Justice Act 1997 (Tas) ss 27–28]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15101,6 +15218,7 @@ Criminal Code Act 1924 (Tas) s 170B — Strangulation
 \[SECTION: s 170B]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 170B]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -15169,6 +15287,7 @@ Evidence Act 2001 (Tas) s 177A — Analysis Certificates in Drug Proceedings
 \[SECTION: s 177A]
 
 \[CITATION: Evidence Act 2001 (Tas) s 177A]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -15205,6 +15324,7 @@ Poisons Act 1971 (Tas) s 86C — Definition of “Ice Pipe”
 \[SECTION: s 86C]
 
 \[CITATION: Poisons Act 1971 (Tas) s 86C]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -15250,7 +15370,8 @@ Misuse of Drugs Act 2001 (Tas) — Detection Times for Oral Fluid Drug Testing
 
 \[ACT: Misuse of Drugs Act 2001 (Tas)]
 
-\[CITATION: Misuse of Drugs Act 2001 (Tas)]
+\[CITATION: Misuse of Drugs Act 2001 (Tas) — Drug Detection Times in Oral Fluid]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -15315,6 +15436,7 @@ Misuse of Drugs Act 2001 (Tas) s 23 — Meaning of “Designed to Be Used”
 \[SECTION: s 23]
 
 \[CITATION: Misuse of Drugs Act 2001 (Tas) s 23]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -15435,6 +15557,7 @@ Youth Justice Act 1997 (Tas) s 3 — Responsible Adult
 \[SECTION: s 3]
 
 \[CITATION: Youth Justice Act 1997 (Tas) s 3]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -15488,7 +15611,8 @@ Youth Justice Act 1997 (Tas) — Pre-Court Diversion Framework
 
 \[ACT: Youth Justice Act 1997 (Tas)]
 
-\[CITATION: Youth Justice Act 1997 (Tas)]
+\[CITATION: Youth Justice Act 1997 (Tas) — Pre-Court Diversion Options]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15546,7 +15670,8 @@ Youth Justice Act 1997 (Tas) — Diversion Patterns and Program Structure
 
 \[ACT: Youth Justice Act 1997 (Tas)]
 
-\[CITATION: Youth Justice Act 1997 (Tas)]
+\[CITATION: Youth Justice Act 1997 (Tas) — Diversion Patterns in Practice]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15603,6 +15728,7 @@ Justices Rules — Rule 5 Procedure Where Rules Are Silent
 \[SECTION: r 5]
 
 \[CITATION: Justices Rules r 5]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15643,6 +15769,7 @@ Criminal Rules 2006 — Rule 41A Applications under the Evidence (Children and S
 \[SECTION: r 41A]
 
 \[CITATION: Criminal Rules 2006 (Tas) r 41A]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15703,6 +15830,7 @@ Evidence (Children and Special Witnesses) Act 2001 — Section 8 Test for Specia
 \[SECTION: s 8]
 
 \[CITATION: Evidence (Children and Special Witnesses) Act 2001 (Tas) s 8]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -15843,6 +15971,7 @@ Criminal Code Act 1924 — Section 301(2) Duty to Inform Person of Reason for Ar
 \[SECTION: s 301(2)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 301(2)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15907,6 +16036,7 @@ Evidence (Children and Special Witnesses) Act 2001 — Section 4 Support Persons
 \[SECTION: s 4]
 
 \[CITATION: Evidence (Children and Special Witnesses) Act 2001 (Tas) s 4]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -15959,6 +16089,7 @@ Evidence (Children and Special Witnesses) Act 2001 — Section 5 Admission of Pr
 \[SECTION: s 5]
 
 \[CITATION: Evidence (Children and Special Witnesses) Act 2001 (Tas) s 5]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -16031,6 +16162,7 @@ Evidence (Children and Special Witnesses) Act 2001 — Section 5A Audio-Visual S
 \[SECTION: s 5A]
 
 \[CITATION: Evidence (Children and Special Witnesses) Act 2001 (Tas) s 5A]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -16107,6 +16239,7 @@ Evidence (Children and Special Witnesses) Act 2001 — Section 6B Remote Evidenc
 \[SECTION: s 6B]
 
 \[CITATION: Evidence (Children and Special Witnesses) Act 2001 (Tas) s 6B]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -16463,6 +16596,7 @@ Family Law Act 1975 (Cth) s 68T — Duration of Interim Variations
 \[ACT: Family Law Act 1975 (Cth)]
 
 \[CITATION: Family Law Act 1975 (Cth) s 68T]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -16521,6 +16655,7 @@ Family Violence Act 2004 (Tas) s 9 — Course of Conduct Requirement
 \[ACT: Family Violence Act 2004 (Tas)]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 9]
+\[CATEGORY: doctrine]
 
 \[TYPE: element of offence]
 
@@ -16615,6 +16750,7 @@ Family Violence Act 2004 (Tas) s 10 — Police Powers in Family Violence Circums
 \[ACT: Family Violence Act 2004 (Tas)]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 10]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -16669,6 +16805,7 @@ Family Violence Act 2004 (Tas) s 10(b) — Forensic Examination Powers
 \[ACT: Family Violence Act 2004 (Tas)]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 10(b)]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -16719,6 +16856,7 @@ Family Violence Act 2004 (Tas) ss 11–12 — Arrest and Detention Framework
 \[ACT: Family Violence Act 2004 (Tas)]
 
 \[CITATION: Family Violence Act 2004 (Tas) ss 11–12]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -17279,6 +17417,7 @@ Family Violence Orders — Statutory Test for Making an FVO
 \[SECTION: s 16]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 16]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -17343,6 +17482,7 @@ Interim Family Violence Orders — Power to Issue During Proceedings
 \[SECTION: s 23]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 23]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -17395,6 +17535,7 @@ Revocation or Variation of FVO — Substantial Change Requirement
 \[SECTION: s 20]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 20]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -17483,6 +17624,7 @@ Ex Parte Final Orders
 \[SECTION: s 31(7)]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 31(7)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -17555,6 +17697,7 @@ Service of Family Violence Orders
 \[SECTION: s 25]
 
 \[CITATION: Family Violence Act 2004 (Tas) s 25]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -18588,7 +18731,8 @@ Sentencing Act 1997 (Tas) s 81A — Court May Receive Victim Impact Statement
 
 \[SECTION: s 81A]
 
-\[CITATION: Sentencing Act 1997 (Tas) s 81A]
+\[CITATION: Sentencing Act 1997 (Tas) s 81A — Furnishing Victim Impact Statement]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -18636,7 +18780,8 @@ Sentencing Act 1997 (Tas) s 81A — Right to Read Victim Impact Statement
 
 \[SECTION: s 81A]
 
-\[CITATION: Sentencing Act 1997 (Tas) s 81A]
+\[CITATION: Sentencing Act 1997 (Tas) s 81A — Reading Victim Impact Statement in Court]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -18687,6 +18832,7 @@ Justices Rules 2003 (Tas) reg 54B — Provision of Victim Impact Statement to Pa
 \[SECTION: reg 54B]
 
 \[CITATION: Justices Rules 2003 (Tas) reg 54B]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -18725,6 +18871,7 @@ Criminal Code Act 1924 (Tas) s 168 — Choking, Suffocation or Rendering Person 
 \[SECTION: s 168]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 168]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -18867,6 +19014,7 @@ Traffic Act 1925 (Tas) — Definition of Public Street
 \[ACT: Traffic Act 1925 (Tas)]
 
 \[CITATION: Traffic Act 1925 (Tas)]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -19978,7 +20126,8 @@ Police Powers (Vehicle Interception) Act 2000 — Evading Police
 
 \[SECTION: s 11A(1)]
 
-\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A]
+\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A — Evade Police: General Offence]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -20026,7 +20175,8 @@ Elements of the Offence
 
 \[SECTION: s 11A(1)]
 
-\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A]
+\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A — Elements of Evade Police]
+\[CATEGORY: doctrine]
 
 \[TYPE: element of offence]
 
@@ -20073,6 +20223,7 @@ Meaning of “Driver”
 \[ACT: Police Powers (Vehicle Interception) Act 2000]
 
 \[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas)]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -20104,7 +20255,8 @@ Nature of the “Action” Required
 
 \[SECTION: s 11A(1)]
 
-\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A]
+\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A — Evasive Action Requirement]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -20148,7 +20300,8 @@ Requirement that Police Officer Be Acting Under Law
 
 \[SECTION: s 11A(1)]
 
-\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A]
+\[CITATION: Police Powers (Vehicle Interception) Act 2000 (Tas) s 11A — Police Exercising Powers Requirement]
+\[CATEGORY: doctrine]
 
 \[TYPE: element of offence]
 
@@ -20465,6 +20618,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) — Police Entry Powers
 \[SECTION: 7AA]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 7AA]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -20537,6 +20691,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) — Presumption of Drugs Within 6
 \[SECTION: 23A]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 23A]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -20613,6 +20768,7 @@ Traffic Act 1925 (Tas) — Facilitation of Proof by Averment
 \[SECTION: 51]
 
 \[CITATION: Traffic Act 1925 (Tas) s 51]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -20649,6 +20805,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 7B — Liability to Submit to O
 \[SECTION: 7B]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 7B]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -20761,6 +20918,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 8A — Liability Arising from R
 \[SECTION: 8A]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 8A]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -20801,6 +20959,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 10 — Power to Direct Suspect 
 \[SECTION: 10]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 10]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -20841,6 +21000,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 13C — Requirements for Taking
 \[SECTION: 13C]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 13C]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -20881,6 +21041,7 @@ Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 29 — Service of Evidentiary C
 \[SECTION: 29]
 
 \[CITATION: Road Safety (Alcohol and Drugs) Act 1970 (Tas) s 29]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -21021,6 +21182,7 @@ Police Offences Act 1935 (Tas) — Dangerous Article Definition
 \[ACT: Police Offences Act 1935 (Tas)]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 3]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -21147,6 +21309,7 @@ Police Offences Act 1935 (Tas) s 37B — Motor Vehicle Stealing
 \[ACT: Police Offences Act 1935 (Tas)]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37B]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -21247,6 +21410,7 @@ Criminal Code Act 1924 (Tas) s 226 — Definition of Stealing
 \[SECTION: 226]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 226]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -21361,6 +21525,7 @@ Police Offences Act 1935 (Tas) s 37N — Power to Clamp or Confiscate Vehicles
 \[SECTION: 37N]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37N]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -21409,6 +21574,7 @@ Police Offences Act 1935 (Tas) s 37MA — Mandatory Special Penalty for Clamped 
 \[SECTION: 37MA]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37MA]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -21443,6 +21609,7 @@ Police Offences Regulations 2014 (Tas) reg 7 — Amount of Special Penalty
 \[ACT: Police Offences Regulations 2014 (Tas)]
 
 \[CITATION: Police Offences Regulations 2014 (Tas) reg 7]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -21491,6 +21658,7 @@ Police Offences Act 1935 (Tas) s 37Y — Motor Vehicle Forfeiture Applications
 \[SECTION: 37Y]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37Y]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -21587,6 +21755,7 @@ Police Offences Act 1935 (Tas) s 37J — Excessive Noise, Smoke or Emissions fro
 \[SECTION: 37J]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37J]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -21675,6 +21844,7 @@ Police Offences Act 1935 (Tas) s 37GA — Driver Demand Notices
 \[SECTION: 37GA]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37GA]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -21763,6 +21933,7 @@ Police Offences Act 1935 (Tas) s 39 — Possession of Property Reasonably Believ
 \[SECTION: s 39]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 39]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -22013,6 +22184,7 @@ Criminal Code Act 1924 (Tas) s 273 — Unlawful Injury to Property
 \[SECTION: s 273]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 273]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -22069,6 +22241,7 @@ Criminal Code Act 1924 (Tas) s 267 — General Principles Governing Injury to Pr
 \[SECTION: s 267]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 267]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -22149,6 +22322,7 @@ Police Offences Act 1935 (Tas) s 37 — Destroying or Injuring Property
 \[SECTION: s 37]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 37]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -22340,7 +22514,8 @@ Criminal Code Act 1924 (Tas) s 182(4) — When Consent Does Not Negate Assault
 
 \[SECTION: s 182(4)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 182(4)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 182(4) — Ineffective Consent: General Doctrine]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -22465,6 +22640,7 @@ Criminal Code Act 1924 (Tas) s 182(3) — Ordinary Social Contact
 \[SECTION: s 182(3)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 182(3)]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -22682,7 +22858,8 @@ Criminal Code Act 1924 (Tas) s 182(4) — Otherwise Unlawful
 
 \[SECTION: s 182(4)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 182(4)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 182(4) — Meaning of Otherwise Unlawful]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -22714,7 +22891,8 @@ Criminal Code Act 1924 (Tas) s 182(4) — Injurious to the Public
 
 \[SECTION: s 182(4)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 182(4)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 182(4) — Meaning of Injurious to the Public]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -22746,7 +22924,8 @@ Criminal Code Act 1924 (Tas) s 182(4) — Injurious to the Person Assaulted
 
 \[SECTION: s 182(4)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 182(4)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 182(4) — Harm Threshold: Injurious to Person]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -22778,7 +22957,8 @@ Criminal Code Act 1924 (Tas) s 182(4) — Breach of the Peace
 
 \[SECTION: s 182(4)]
 
-\[CITATION: Criminal Code Act 1924 (Tas) s 182(4)]
+\[CITATION: Criminal Code Act 1924 (Tas) s 182(4) — Breach of Peace Negating Consent]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -22897,6 +23077,7 @@ Criminal Code Act 1924 (Tas) ss 51 and 127 — Express Statutory Limits on Conse
 \[SECTION: ss 51, 127]
 
 \[CITATION: Criminal Code Act 1924 (Tas) ss 51, 127]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -22929,6 +23110,7 @@ Criminal Code Act 1924 (Tas) ss 54–55 — Married Persons and Property Offence
 \[SECTION: ss 54–55]
 
 \[CITATION: Criminal Code Act 1924 (Tas) ss 54–55]
+\[CATEGORY: doctrine]
 
 \[TYPE: defence]
 
@@ -23039,6 +23221,7 @@ Indecent Assault — Elements of the Offence
 \[SECTION: ss 182 and 127]
 
 \[CITATION: Criminal Code Act 1924 (Tas) ss 182, 127]
+\[CATEGORY: doctrine]
 
 \[TYPE: element of offence]
 
@@ -23123,6 +23306,7 @@ Assault — Definition
 \[SECTION: s 182]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s 182]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -23315,6 +23499,7 @@ Assault Police Officer — Elements
 \[SECTION: s 34B]
 
 \[CITATION: Police Offences Act 1935 (Tas) s 34B]
+\[CATEGORY: doctrine]
 
 \[TYPE: element of offence]
 
@@ -23537,6 +23722,7 @@ Firearms Act 1996 (Tas) s 88 — Seizure of Firearms Where Storage Requirements 
 \[SECTION: s 88]
 
 \[CITATION: Firearms Act 1996 (Tas) s 88]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -23593,6 +23779,7 @@ Firearms Act 1996 (Tas) s 149 — Disposal of Surrendered or Seized Firearms
 \[SECTION: s 149]
 
 \[CITATION: Firearms Act 1996 (Tas) s 149]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -23653,6 +23840,7 @@ Firearms Act 1996 (Tas) s 149(2A) — Grounds for Forfeiture to the Crown
 \[SECTION: s 149(2A)]
 
 \[CITATION: Firearms Act 1996 (Tas) s 149(2A)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -23705,6 +23893,7 @@ Firearms Act 1996 (Tas) s 149(2B) — Mandatory Forfeiture on Conviction
 \[SECTION: s 149(2B)]
 
 \[CITATION: Firearms Act 1996 (Tas) s 149(2B)]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -23920,7 +24109,8 @@ Evidence Act — Exclusion of Unfairly Prejudicial Evidence
 
 \[SECTION: s 137]
 
-\[CITATION: Evidence Act 2001 (Tas) s 137]
+\[CITATION: Evidence Act 2001 (Tas) s 137 — Prejudicial Evidence Overview]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -23965,6 +24155,7 @@ Firearms Act 1996 (Tas) s 3 — Definition of Police Officer
 \[SECTION: s 3]
 
 \[CITATION: Firearms Act 1996 (Tas) s 3]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -23997,6 +24188,7 @@ Police Service Act 2003 (Tas) s 4 — Establishment of the Police Service
 \[SECTION: s 4]
 
 \[CITATION: Police Service Act 2003 (Tas) s 4]
+\[CATEGORY: doctrine]
 
 \[TYPE: statutory definition]
 
@@ -24077,6 +24269,7 @@ Firearms Act 1996 (Tas) s 129 — Firearms Amnesty
 \[SECTION: s 129]
 
 \[CITATION: Firearms Act 1996 (Tas) s 129]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
@@ -24369,6 +24562,7 @@ Evidence Act 2001 (Tas) s 67 — Notice Requirement for Unavailable Witness Hear
 \[SECTION: s 67]
 
 \[CITATION: Evidence Act 2001 (Tas) s 67]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -24401,6 +24595,7 @@ Evidence Act 2001 (Tas) s 18 — Non-Compellable Witnesses and Unavailability
 \[SECTION: s 18]
 
 \[CITATION: Evidence Act 2001 (Tas) s 18]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -24445,6 +24640,7 @@ Evidence Act 2001 (Tas) s 65(2)(b) — Previous Representation Made Shortly Afte
 \[SECTION: s 65(2)(b)]
 
 \[CITATION: Evidence Act 2001 (Tas) s 65(2)(b)]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -24497,6 +24693,7 @@ Evidence Act 2001 (Tas) s 65(2)(c) — Highly Probable Reliability
 \[SECTION: s 65(2)(c)]
 
 \[CITATION: Evidence Act 2001 (Tas) s 65(2)(c)]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -24524,7 +24721,8 @@ Evidence Act 2001 (Tas) s 65 — Structured Admissibility Process
 
 \[SECTION: s 65]
 
-\[CITATION: Evidence Act 2001 (Tas) s 65]
+\[CITATION: Evidence Act 2001 (Tas) s 65 — Representation-by-Representation Admissibility]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -24568,7 +24766,8 @@ Evidence Act 2001 (Tas) s 65 — Meaning of “Circumstances”
 
 \[SECTION: s 65]
 
-\[CITATION: Evidence Act 2001 (Tas) s 65]
+\[CITATION: Evidence Act 2001 (Tas) s 65 — Meaning of Circumstances in Hearsay Assessment]
+\[CATEGORY: doctrine]
 
 \[TYPE: interpretive principle]
 
@@ -24616,7 +24815,8 @@ Evidence Act 2001 (Tas) s 137 — Unfair Prejudice Distinguished from Mere Preju
 
 \[SECTION: s 137]
 
-\[CITATION: Evidence Act 2001 (Tas) s 137]
+\[CITATION: Evidence Act 2001 (Tas) s 137 — Prejudicial vs Unfairly Prejudicial]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -24660,7 +24860,8 @@ Evidence Act 2001 (Tas) s 137 — Examples of Alleged Unfair Prejudice
 
 \[SECTION: s 137]
 
-\[CITATION: Evidence Act 2001 (Tas) s 137]
+\[CITATION: Evidence Act 2001 (Tas) s 137 — Unfair Prejudice: Unavailable Complainant Hearsay]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -25398,7 +25599,8 @@ Evidence Act 2001 (Tas) — Tendency and Coincidence Evidence Framework
 
 \[ACT: Evidence Act 2001 (Tas)]
 
-\[CITATION: Evidence Act 2001 (Tas)]
+\[CITATION: Evidence Act 2001 (Tas) — Tendency/Coincidence: Statutory Framework]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -25438,7 +25640,8 @@ Evidence Act 2001 (Tas) s 97 — Admissibility of Tendency Evidence
 
 \[SECTION: s 97]
 
-\[CITATION: Evidence Act 2001 (Tas) s 97]
+\[CITATION: Evidence Act 2001 (Tas) s 97 — Tendency Evidence: Admissibility Test]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -25482,7 +25685,8 @@ Evidence Act 2001 (Tas) s 98 — Admissibility of Coincidence Evidence
 
 \[SECTION: s 98]
 
-\[CITATION: Evidence Act 2001 (Tas) s 98]
+\[CITATION: Evidence Act 2001 (Tas) s 98 — Coincidence Evidence: Similar Events]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -25616,7 +25820,8 @@ Evidence Act 2001 (Tas) s 101 — Probative Value Must Substantially Outweigh Pr
 
 \[SECTION: s 101]
 
-\[CITATION: Evidence Act 2001 (Tas) s 101]
+\[CITATION: Evidence Act 2001 (Tas) s 101 — Balancing Probative Value vs Prejudice]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -25654,7 +25859,8 @@ Non-Tendency Use of Evidence
 
 \[ACT: Evidence Act 2001 (Tas)]
 
-\[CITATION: Evidence Act 2001 (Tas)]
+\[CITATION: Evidence Act 2001 (Tas) — Admissibility for Non-Tendency Purposes]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -26364,7 +26570,8 @@ Evidence Act 2001 (Tas) s 137 — Exclusion of Unfairly Prejudicial Evidence
 
 \[SECTION: s 137]
 
-\[CITATION: Evidence Act 2001 (Tas) s 137]
+\[CITATION: Evidence Act 2001 (Tas) s 137 — Balancing Test: Mandatory Exclusion]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -26472,7 +26679,8 @@ Evidence Act 2001 (Tas) s 97 — Tendency Evidence
 
 \[SECTION: s 97]
 
-\[CITATION: Evidence Act 2001 (Tas) s 97]
+\[CITATION: Evidence Act 2001 (Tas) s 97 — Tendency Evidence: Definition]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -26569,6 +26777,7 @@ Evidence Act 2001 (Tas) s 79 — Expert Opinion Evidence
 \[SECTION: s 79]
 
 \[CITATION: Evidence Act 2001 (Tas) s 79]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -27502,14 +27711,6 @@ The authority is relevant because it supports the admissibility of specialised c
 
 
 
-block\_026
-
-
-
-\[REVIEW]
-
-
-
 Procedure for Identifying Documents Over Video Link
 
 
@@ -27758,14 +27959,6 @@ The authority is relevant as an illustration of rebuttal material directed to cr
 
 
 
-block\_026
-
-
-
-\[REVIEW]
-
-
-
 Authority — Diary-Assisted Recollection, Prior Representation, and Rebuttal Evidence
 
 
@@ -28004,7 +28197,8 @@ Evidence Act 2001 (Tas) s 38 — Cross-Examination of Unfavourable Witnesses
 
 \[SECTION: s 38]
 
-\[CITATION: Evidence Act 2001 (Tas) s 38]
+\[CITATION: Evidence Act 2001 (Tas) s 38 — Cross-Examination of Unfavourable Witness]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28073,6 +28267,7 @@ Credit Examination Under Evidence Act 2001 (Tas) s 38(3)
 \[SECTION: s 38(3)]
 
 \[CITATION: Evidence Act 2001 (Tas) s 38(3)]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28125,6 +28320,7 @@ Notice and Procedural Requirements Under Evidence Act 2001 (Tas) s 38(6)
 \[SECTION: s 38(6)]
 
 \[CITATION: Evidence Act 2001 (Tas) s 38(6)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -28173,6 +28369,7 @@ Evidence Act 2001 (Tas) s 192 — Discretion to Grant Leave, Permission, or Dire
 \[SECTION: s 192]
 
 \[CITATION: Evidence Act 2001 (Tas) s 192]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28229,6 +28426,7 @@ Evidence Act 2001 (Tas) s 43 — Proof of Prior Inconsistent Statements
 \[SECTION: s 43]
 
 \[CITATION: Evidence Act 2001 (Tas) s 43]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28321,6 +28519,7 @@ Evidence Act 2001 (Tas) s 32 — Refreshing a Witness’s Memory
 \[SECTION: s 32]
 
 \[CITATION: Evidence Act 2001 (Tas) s 32]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28373,6 +28572,7 @@ Evidence Act 2001 (Tas) s 66(3) — Representations Made in Contemplation of Lit
 \[SECTION: s 66(3)]
 
 \[CITATION: Evidence Act 2001 (Tas) s 66(3)]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28488,7 +28688,8 @@ Evidence Act 2001 (Tas) s 106 — Counter-Credibility Evidence After Denial of P
 
 \[SECTION: s 106]
 
-\[CITATION: Evidence Act 2001 (Tas) s 106]
+\[CITATION: Evidence Act 2001 (Tas) s 106 — Proof of Prior Inconsistent Statement]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28549,6 +28750,7 @@ Evidence Act 2001 (Tas) s 60 — Credibility Evidence Becoming Proof of the Fact
 \[SECTION: s 60]
 
 \[CITATION: Evidence Act 2001 (Tas) s 60]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28600,7 +28802,8 @@ Evidence Act 2001 (Tas) s 137 — Exclusion of Unfairly Prejudicial Prosecution 
 
 \[SECTION: s 137]
 
-\[CITATION: Evidence Act 2001 (Tas) s 137]
+\[CITATION: Evidence Act 2001 (Tas) s 137 — Memory Loss Witness]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -28653,6 +28856,7 @@ Evidence Act 2001 (Tas) s 42 — Leading Questions Where Witness Is Effectively 
 \[SECTION: s 42]
 
 \[CITATION: Evidence Act 2001 (Tas) s 42]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -28768,7 +28972,8 @@ Evidence Act 2001 (Tas) s 38 — Procedural Sequence for Prior Inconsistent Stat
 
 \[SECTION: s 38]
 
-\[CITATION: Evidence Act 2001 (Tas) s 38]
+\[CITATION: Evidence Act 2001 (Tas) s 38 — Practical Workflow for PIS Application]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -28833,6 +29038,7 @@ Evidence Act 2001 (Tas) s 38 and s 43 — Voir Dire Procedure Where Witness Deni
 \[SECTION: ss 38, 43]
 
 \[CITATION: Evidence Act 2001 (Tas) ss 38, 43]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -29187,6 +29393,7 @@ Criminal Code — Evidence Relating to Intent to Deceive or Defraud
 \[SECTION: s255A]
 
 \[CITATION: Criminal Code Act 1924 (Tas) s255A]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -30005,6 +30212,7 @@ Criminal Code Act 1924 (Tas) ss 249–250 — False Pretence Offences
 \[ACT: Criminal Code Act 1924 (Tas)]
 
 \[CITATION: Criminal Code Act 1924 (Tas) ss 249–250]
+\[CATEGORY: doctrine]
 
 \[TYPE: offence]
 
@@ -30243,6 +30451,7 @@ Sentencing Act 1997 (Tas) s 68 — Power to Make Compensation Orders
 \[ACT: Sentencing Act 1997 (Tas)]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 68]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -30293,6 +30502,7 @@ Sentencing Act 1997 (Tas) s 94 — Requirement for an Actual Sentence
 \[ACT: Sentencing Act 1997 (Tas)]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 94]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -30327,6 +30537,7 @@ Sentencing Act 1997 (Tas) — Evidence of Facts for Sentencing
 \[ACT: Sentencing Act 1997 (Tas)]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 81]
+\[CATEGORY: doctrine]
 
 \[TYPE: evidentiary rule]
 
@@ -30627,6 +30838,7 @@ Sentencing Act 1997 (Tas) s 11C — Voluntary Intoxication and Sentencing
 \[ACT: Sentencing Act 1997 (Tas)]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 11C]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -30812,7 +31024,8 @@ Sentencing Act 1997 (Tas) s 42AC — Home Detention Orders
 
 \[SECTION: s 42AC]
 
-\[CITATION: Sentencing Act 1997 (Tas) s 42AC]
+\[CITATION: Sentencing Act 1997 (Tas) s 42AC — Power to Impose Home Detention Order]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -30853,6 +31066,7 @@ Sentencing Act 1997 (Tas) s 42AF — Duration of Home Detention Orders
 \[SECTION: s 42AF]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AF]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -30885,6 +31099,7 @@ Sentencing Act 1997 (Tas) s 42AD — Core Conditions of Home Detention Orders
 \[SECTION: s 42AD]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AD]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31100,7 +31315,8 @@ Sentencing Act 1997 (Tas) s 42AC — Preconditions for Home Detention Orders
 
 \[SECTION: s 42AC]
 
-\[CITATION: Sentencing Act 1997 (Tas) s 42AC]
+\[CITATION: Sentencing Act 1997 (Tas) s 42AC — Preconditions for Home Detention Order]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31161,6 +31377,7 @@ Sentencing Act 1997 (Tas) s 42AE — Special Conditions of Home Detention Orders
 \[SECTION: s 42AE]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AE]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31201,6 +31418,7 @@ Sentencing Act 1997 (Tas) s 42AH — Variation or Cancellation of Home Detention
 \[SECTION: s 42AH]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AH]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31253,6 +31471,7 @@ Sentencing Act 1997 (Tas) s 42AI — Breach of Home Detention Orders
 \[SECTION: s 42AI]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AI]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31305,6 +31524,7 @@ Sentencing Act 1997 (Tas) s 42AN — Community Correction Orders
 \[SECTION: s 42AN]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AN]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -31341,6 +31561,7 @@ Sentencing Act 1997 (Tas) s 42AO — Core Conditions of Community Correction Ord
 \[SECTION: s 42AO]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 42AO]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31393,6 +31614,7 @@ Sentencing Act 1997 (Tas) s 27A — Drug Treatment Orders
 \[SECTION: s 27A]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 27A]
+\[CATEGORY: doctrine]
 
 \[TYPE: sentencing principle]
 
@@ -31429,6 +31651,7 @@ Sentencing Act 1997 (Tas) s 27Q — Cancellation of Drug Treatment Orders
 \[SECTION: s 27Q]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 27Q]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31523,6 +31746,7 @@ Sentencing Act 1997 (Tas) s 27 — Breach of Suspended Sentence
 \[SECTION: s 27]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 27]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31563,6 +31787,7 @@ Sentencing Act 1997 (Tas) s 27(4B) — Mandatory Activation After New Offence
 \[SECTION: s 27(4B)]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 27(4B)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31607,6 +31832,7 @@ Sentencing Act 1997 (Tas) s 27(4C) — Alternatives Where Activation Would Be Un
 \[SECTION: s 27(4C)]
 
 \[CITATION: Sentencing Act 1997 (Tas) s 27(4C)]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31751,6 +31977,7 @@ Judiciary Act 1903 (Cth) s 68 — Federal Jurisdiction of State Courts
 \[SECTION: s 68]
 
 \[CITATION: Judiciary Act 1903 (Cth) s 68]
+\[CATEGORY: doctrine]
 
 \[TYPE: procedural rule]
 
@@ -31789,6 +32016,7 @@ Criminal Code Act 1995 (Cth) — Physical and Fault Elements
 \[ACT: Criminal Code Act 1995 (Cth)]
 
 \[CITATION: Criminal Code Act 1995 (Cth) Chapter 2]
+\[CATEGORY: doctrine]
 
 \[TYPE: legal doctrine]
 
