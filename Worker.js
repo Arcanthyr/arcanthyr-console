@@ -1616,15 +1616,16 @@ async function handleFetchSectionsByReference(request, env, corsHeaders) {
         FROM legislation_sections ls
         JOIN legislation l ON ls.legislation_id = l.id
         WHERE ls.section_number = ?
+        LIMIT 10
       `).bind(ref.section_number).all();
       for (const row of rows.results) {
         if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
       }
       const corpusRows = await env.DB.prepare(`
-        SELECT id, COALESCE(enriched_text, raw_text) as text, NULL as section_number, NULL as heading, NULL as leg_title
+        SELECT id, id as chunk_id, COALESCE(enriched_text, raw_text) as text, NULL as section_number, NULL as heading, NULL as leg_title
         FROM secondary_sources
         WHERE id LIKE '%' || ? || '%'
-        LIMIT 5
+        LIMIT 10
       `).bind(ref.section_number).all();
       for (const row of corpusRows.results) {
         if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
