@@ -26,8 +26,9 @@ foreach ($Citation in $Cases) {
             -Method POST `
             -Headers @{ "X-Nexus-Key" = $NexusKey; "Content-Type" = "application/json" } `
             -Body $Body
-        Write-Host "  judge:   $($Response.judge)" -ForegroundColor Green
-        Write-Host "  parties: $($Response.parties)" -ForegroundColor Green
+        $Data = $Response.result
+        Write-Host "  judge:   $($Data.judge)" -ForegroundColor Green
+        Write-Host "  parties: $($Data.parties)" -ForegroundColor Green
     } catch {
         Write-Host "  ERROR: $_" -ForegroundColor Red
     }
