@@ -239,6 +239,8 @@ Output ONLY valid JSON. No markdown fences. No commentary.
 
 Extract these fields:
 - case_name: from the heading or opening lines. Patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown". Fallback to citation.
+- judge: the presiding judge(s). Extract the full name and title as it appears in the judgment heading or opening (e.g. "Blow CJ", "Brett J", "Wood J"). If multiple judges, return as a comma-separated string.
+- parties: the party names as they appear in the case title (e.g. "R v Smith", "DPP v Jones"). Extract verbatim from the heading.
 - facts: factual background (3-4 concrete sentences: parties, charges or dispute, key events and outcome at first instance if appeal).
 - issues: array of 1-5 legal questions the court answered (each a short question string).
 - holdings: array matching issues order — the court's direct answer to each issue (1 sentence each).
@@ -246,7 +248,7 @@ Extract these fields:
 - key_authorities: cases cited and how treated. Array of objects: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
 ${PRINCIPLES_SPEC}
 
-Output JSON with keys: case_name, facts, issues, holdings, principles, legislation, key_authorities`;
+Output JSON with keys: case_name, judge, parties, facts, issues, holdings, principles, legislation, key_authorities`;
 
   // ── Pass 1 prompt (long judgments — metadata/facts/issues) ───────────────
   const pass1Prompt = `You are extracting metadata and facts from the opening section of an Australian court judgment.
@@ -254,10 +256,12 @@ Output ONLY valid JSON. No markdown fences. No commentary.
 
 Extract:
 - case_name: from heading or opening lines. Fallback to citation.
+- judge: the presiding judge(s). Extract full name and title from the heading or opening (e.g. "Blow CJ", "Brett J"). If multiple judges, comma-separated string.
+- parties: party names verbatim from the case title in the heading (e.g. "R v Smith").
 - facts: factual background (3-4 concrete sentences).
 - issues: array of 1-5 legal questions this judgment answers.
 
-Output JSON with keys: case_name, facts, issues`;
+Output JSON with keys: case_name, judge, parties, facts, issues`;
 
   // ── Pass 2 prompt (long judgments — reasoning section) ───────────────────
   const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of an Australian court judgment.
@@ -368,6 +372,8 @@ function _buildSummary(primary, secondary, citation) {
 
   return {
     case_name: (asString(src.case_name, "")).trim() || null,
+    judge: (asString(src.judge, "")).trim() || null,
+    parties: (asString(src.parties, "")).trim() || null,
     facts: asString(src.facts),
     issues: issues.map(i => asString(i)).join("; ") || "Not extracted",
     holdings: holdings.map(h => asString(h)),  // array — stored in new holdings column
@@ -386,17 +392,19 @@ async function saveCaseToDb(env, caseData, summary) {
   const id = caseData.citation.replace(/\s+/g, '-');
 
   await env.DB.prepare(`
-    INSERT OR REPLACE INTO cases 
-    (id, citation, court, case_date, case_name, url, raw_text, facts, issues, holding,
+    INSERT OR REPLACE INTO cases
+    (id, citation, court, case_date, case_name, judge, parties, url, raw_text, facts, issues, holding,
      holdings_extracted, principles_extracted, legislation_extracted, authorities_extracted,
      processed_date, summary_quality_score)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     caseData.citation,
     caseData.court,
     `${(caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1]}-01-01`,
     caseData.case_name,
+    summary.judge,
+    summary.parties,
     caseData.url || "",
     caseData.full_text || "",
     summary.facts,
