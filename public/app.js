@@ -547,7 +547,7 @@ function renderContactsList() {
       if (contact && emailRecipients) {
         const current = emailRecipients.value.trim();
         emailRecipients.value = current ? `${current}, ${contact.email}` : contact.email;
-        contactsModal.style.display = "none";
+        if (contactsModal) contactsModal.style.display = "none";
       }
     });
   });
@@ -618,7 +618,7 @@ function renderCases(response) {
 
   const countBar = `
     <div style="padding:12px 0 8px;color:var(--text-mid);font-size:0.82rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-      <span>Showing ${pageStart}–${pageEnd} of <strong style="color:var(--text-primary)">${total.toLocaleString()}</strong> cases</span>
+      <span>Showing ${pageStart}–${pageEnd} of <strong style="color:var(--text)">${total.toLocaleString()}</strong> cases</span>
       <div style="display:flex;gap:8px;">
         ${hasPrev ? `<button class="btn ghost small" id="casesPrevBtn">← Prev</button>` : ""}
         ${hasMore ? `<button class="btn ghost small" id="casesNextBtn">Next →</button>` : ""}

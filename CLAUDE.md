@@ -1,5 +1,5 @@
 # CLAUDE.md — Arcanthyr Session Handover
-*Updated: 12 March 2026 (morning session)*
+*Updated: 14 March 2026*
 
 ---
 
@@ -9,7 +9,7 @@
 - Run `git add -A`, `git commit`, `git push origin master` separately after every `npx wrangler deploy` — PowerShell does not support `&&`.
 - Before every deploy: verify upload list shows only files from `public/` — if `.env` or `.git` appear, stop immediately.
 - Suggest context window restart proactively when conversation grows long.
-- **Claude Code (CC) is available in VS Code** — use it for all file edits, script runs, and terminal work. Hand off to CC with explicit instructions rather than describing changes for Tom to make manually. CC cannot establish SSH connections (needs credentials) — Tom opens SSH tunnels, CC handles everything else.
+- **Claude Code (CC) is available in VS Code** — use it for all file edits, script runs, and terminal work. Hand off to CC with explicit instructions rather than describing changes for Tom to make manually. CC cannot establish SSH connections — Tom opens SSH tunnels, CC handles everything else.
 - **wrangler d1 execute must be run from `Arc v 4/` directory** where `wrangler.toml` lives — not from repo root. Always add `--remote` flag for live D1.
 - **PowerShell execution policy** — if npx is blocked: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
 - **grep does not exist in PowerShell** — use `Select-String` instead, or run grep on VPS SSH terminal.
@@ -23,23 +23,24 @@
 
 ---
 
-## SYSTEM STATE (as of 12 Mar 2026 morning)
+## SYSTEM STATE (as of 14 Mar 2026)
 
 | Component | Status |
 |---|---|
-| Qdrant collection | `general-docs-v2` · 1935 points · 1024-dim cosine |
+| Qdrant collection | `general-docs-v2` · ~1984 points (embed pass in progress) · 1024-dim cosine |
 | Embedding model | `argus-ai/pplx-embed-context-v1-0.6b:fp32` (Ollama, VPS Docker) |
 | Score threshold | 0.45 (empirically validated) |
 | D1 `cases` | 0 rows — clean slate |
-| D1 `secondary_sources` | 662 rows · enriched=1, embedded=1, enriched_text=NULL (raw_text IS the embedded content — pre-enriched manually) |
+| D1 `secondary_sources` | 711 rows · enriched=1, embedded=in progress · category column added |
 | D1 `legislation` | 5 Acts · embedded=1 · 1272 sections in Qdrant |
-| Qdrant corpus vectors | 662 valid secondary_source vectors (re-embedded from raw_text this session) |
-| Qdrant legislation vectors | 1272 valid legislation section vectors (embedded this session via poller) |
-| Worker.js | v11 deployed |
-| enrichment_poller.py | In repo at `Arc v 4/enrichment_poller.py`, on VPS at `~/ai-stack/agent-general/src/` |
+| Qdrant corpus vectors | 711 secondary_source vectors being embedded (was 662, now 711 after collision fix) |
+| Qdrant legislation vectors | 1272 valid legislation section vectors |
+| Worker.js | v12 deployed (1c2ec9a7) |
+| enrichment_poller.py | In repo + VPS · now includes category in Qdrant payload |
 | server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 pre-retrieval LIVE |
 | Phase 5 | VALIDATED — Workers AI and Claude API both returning results via console search page |
-| BM25 pre-retrieval | LIVE — query text section refs extracted, fetched from legislation_sections + secondary_sources |
+| BM25 pre-retrieval | LIVE |
+| ingest_corpus.py | Updated — reads `[CATEGORY:]` → writes to category column in D1 |
 
 ---
 
@@ -81,7 +82,10 @@ VPS enrichment_poller.py (manual or cron):
 | Legislation | None — raw statutory text embedded directly | |
 | Future secondary source uploads (small volume) | Claude API via poller | Acceptable for low volume |
 
-The VPS poller's Claude API enrichment path is for small-volume secondary source uploads ONLY. Scraped cases are enriched by Workers AI (Llama 3.1 8B) inside the Worker at ingest time — never through the poller.
+**Secondary sources corpus — IMPORTANT:**
+- 711 rows, all enriched=1 (set manually — raw_text is the content, no Claude API enrichment needed)
+- enriched_text is NULL across all rows — this is correct, poller falls back to raw_text
+- Do NOT run `--mode enrich` on these rows
 
 **BM25 pre-retrieval (LIVE):**
 ```
@@ -99,13 +103,10 @@ Step 4 — Merge, deduplicate, append with bm25:true and score:0.0
 Response generator (Workers AI / Claude API)
 ```
 
-Note: BM25 extracts refs from QUERY TEXT ONLY — not from returned chunks — to avoid cascade noise.
-
 **server.py (nexus):**
-- Lives in `agent-general/src/` — volume-mounted (`./agent-general/src:/app/src`)
-- Local copy for editing: `Arc v 4/arcanthyr-nexus/server.py` (gitignored directory)
-- Update: edit locally → SCP to `~/ai-stack/agent-general/src/server.py` → `docker compose restart agent-general` → test
-- No rebuild needed unless Dockerfile changes
+- Lives in `agent-general/src/` — volume-mounted
+- Local copy: `Arc v 4/arcanthyr-nexus/server.py` (gitignored)
+- Update: edit locally → SCP → `docker compose restart agent-general` → test
 
 **SCP commands:**
 ```powershell
@@ -116,49 +117,27 @@ scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\enrichment_poll
 scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\arcanthyr-nexus\server.py" tom@31.220.86.192:~/ai-stack/agent-general/src/server.py
 ```
 
-**Cloudflare Tunnel:**
-- Runs as root systemd at `/usr/bin/cloudflared`, config at `/etc/cloudflared/config.yml`
-- Routes `nexus.arcanthyr.com/ingest` → `agent-general` (port 18789)
-
-**Ollama Docker isolation:**
-- Models pulled on VPS host go to `/usr/share/ollama/.ollama/` — NOT visible to container
-- Must pull inside container: `docker exec ollama ollama pull <model>`
-
-**pplx-embed-context-v1:**
-- Model: `argus-ai/pplx-embed-context-v1-0.6b:fp32` (2.4GB, MIT licence)
-- Produces 1024-dim embeddings. CPU inference — slow but free.
-- Score calibration: strong match 0.485–0.525 | noise 0.359–0.404 | threshold 0.45
-
-**Phase 5 design (locked):**
-- Qdrant top 6 chunks, min score 0.45, max 8 results
-- Re-rank by court hierarchy (CCA/FullCourt > Supreme > Magistrates) within 0.05 score band
-- Full metadata per chunk
-- Console toggle: Workers AI (default) / Claude API
-- Claude API: `claude-sonnet-4-20250514` via Anthropic API key (wrangler secret)
-- Workers AI: `@cf/meta/llama-3.1-8b-instruct` via Cloudflare
-
 ---
 
 ## D1 SCHEMA (current)
 
-**secondary_sources:** id, title, raw_text, enriched_text (NULL for corpus — raw_text is embedded), enriched (1), embedded (0/1), enrichment_error
+**secondary_sources:** id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched_text, enriched, embedded, enrichment_error, category ← new
 **cases:** id, enriched (0/1), embedded (0/1), enrichment_error
-**legislation:** id, title, jurisdiction, year, embedded (0/1)
-**legislation_sections:** id, legislation_id, section_number, heading, text, part
-
-⚠️ KNOWN ISSUE — Chunk ID collision: `Evidence Act 2001 (Tas) s 38` exists as TWO distinct chunks in master_corpus.md (L27997 general doctrine, L28761 procedural sequence). D1 only has ONE — whichever was inserted second. Scope of ID collisions across full corpus unknown — audit required before next ingest.
+**legislation:** id, title, jurisdiction, act_type, embedded (0/1)
+**legislation_sections:** id, leg_id, section_number, section_title, content, section_reference
 
 ---
 
-## PIPELINE ROUTES (Worker v11)
+## WORKER ROUTES
 
 All routes require `X-Nexus-Key` header:
 
 | Route | Method | Purpose |
 |---|---|---|
-| `/api/pipeline/status` | GET | Counts: total, enriched, embedded, errored |
+| `/api/legal/upload-corpus` | POST | Ingest secondary source chunk |
+| `/api/legal/upload-case` | POST | Ingest case (Workers AI enrichment inline) |
 | `/api/pipeline/fetch-unenriched` | GET | Returns enriched=0 rows |
-| `/api/pipeline/fetch-for-embedding` | GET | Returns enriched=1, embedded=0 rows |
+| `/api/pipeline/fetch-for-embedding` | GET | Returns enriched=1, embedded=0 rows — now includes category |
 | `/api/pipeline/fetch-embedded` | GET | Returns all embedded=1 IDs |
 | `/api/pipeline/fetch-legislation-for-embedding` | GET | Returns legislation sections where legislation.embedded=0 |
 | `/api/pipeline/fetch-sections-by-reference` | POST | BM25: fetches legislation_sections + secondary_sources by section_number |
@@ -171,113 +150,143 @@ All routes require `X-Nexus-Key` header:
 
 ## ENRICHMENT POLLER — OPERATION
 
-**Location:** `Arc v 4/enrichment_poller.py` (repo) + `~/ai-stack/agent-general/src/enrichment_poller.py` (VPS)
+**Location:** `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS)
 
-**Environment (source from `~/ai-stack/.env`):**
+**Environment:**
 ```bash
 set -a && source ~/ai-stack/.env && set +a
 ```
 
 **Run commands:**
 ```bash
-# Check status
+# Status
 python3 enrichment_poller.py --status
 
-# Embed pass (corpus + legislation)
+# Embed pass
 python3 enrichment_poller.py --mode embed --batch 100
 
 # Background loop
 nohup python3 enrichment_poller.py --mode embed --batch 100 --loop > embed.log 2>&1 &
 
-# Reconcile (diff D1 vs Qdrant, reset missing to embedded=0)
+# Reconcile
 python3 enrichment_poller.py --mode reconcile
 
 # Check Qdrant point count
 curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool | grep points_count
 ```
 
-**Poller embed fallback logic:** Uses `enriched_text` if present, falls back to `raw_text`. For the 662 corpus chunks, `enriched_text` is NULL so `raw_text` is used — this is correct and intentional.
+---
+
+## CORPUS STATE
+
+**secondary_sources (711 chunks):**
+- Pre-enriched via ChatGPT Master Prompt before upload — raw_text IS the content
+- enriched_text NULL across all rows — correct, do NOT run `--mode enrich`
+- All 244 original CITATION IDs were unique after collision fix (was 196 unique, 48 dropped)
+- 711 rows after re-ingest (splitter produces more granular chunks than citation count suggests)
+- category column populated: all current rows = doctrine
+- Embed pass in progress as of 14 Mar 2026 — expected final Qdrant count: ~1984
+
+**Corpus files:**
+- `master_corpus.md` — lives in `Arc v 4/` (not repo root)
+- `block_*.txt` — source blocks in repo root
+- `ingest_corpus.py` — in repo root, must be run from `Arc v 4/` directory
 
 ---
 
-## CORPUS STATE & KNOWN ISSUES
+## CORPUS INTEGRITY (resolved this session)
 
-**secondary_sources corpus (662 chunks):**
-- Pre-enriched manually via ChatGPT before upload — raw_text IS the enriched content
-- enriched_text is NULL across all 662 rows — this is correct, do NOT run `--mode enrich` on these
-- Vectors rebuilt from raw_text this session — all 662 are now valid
-- Source: `master_corpus.md` + `block_*.txt` files in repo root
+- ✅ Chunk ID collision audit complete — 29 duplicate groups resolved, 48 IDs disambiguated
+- ✅ `[CATEGORY: doctrine]` added to all 244 citation blocks
+- ✅ category column added to D1, Worker.js, ingest_corpus.py, enrichment_poller.py
+- ✅ 2 orphan placeholder chunks (block_026 + [REVIEW]) deleted
+- ✅ Full re-ingest from clean corpus — 711 rows in D1
+- ✅ Qdrant secondary_source vectors wiped and rebuilding from clean corpus
 
-**Known corpus integrity issues:**
-1. **Chunk ID collision** — `Evidence Act 2001 (Tas) s 38` is duplicated. Scope unknown — full audit needed.
-2. **Practical/procedural content stripped** — the enrichment process that produced master_corpus.md sanitised informal practitioner notes into formal doctrine chunks. Lost content includes:
-   - block_027: "Quick soldiers 5 on PIS s. 38" workflow, scripted examination question templates
-   - block_020: NOTE -- annotations, Quick differences tables, 1 scripted question
-   - block_008, block_024: NOTE -- annotations
-   - block_021: GAV NOTE: annotation
-   - block_007: Quick links section
-3. **No `type: procedure` chunk category** — practitioner workflow content needs different treatment from doctrine. Not yet implemented.
+---
+
+## RAG WORKFLOW — PROMPT DEVELOPMENT
+
+**Document:** `RAG_Workflow_Arcanthyr_v1.docx` (manually updated this session)
+
+Two prompts now available:
+
+| Prompt | Use for | Output TYPE values |
+|---|---|---|
+| Master Prompt (Section 6) | Doctrinal content — legislation, cases, legal rules | legal doctrine, evidentiary rule, case authority, etc. |
+| Procedure Prompt (Section 6A) | Practitioner content — workflows, scripts, checklists, annotations | procedure, script, checklist, annotation |
+
+**Selection rule:**
+- Default to Master Prompt
+- Switch to Procedure Prompt for blocks containing scripted questions, numbered workflows, bold/italic practitioner notes, or in-court step sequences
+- When in doubt: run Master Prompt first, check UNPROCESSED, run Procedure Prompt on flagged sections
+
+**Chunk format compatibility:**
+- Both prompts produce the same metadata structure
+- `[CATEGORY: doctrine]` vs `[CATEGORY: procedure]` distinguishes chunk type
+- Both append to the same `master_corpus.md`
+
+**Known corpus content gap:**
+- Procedural/annotation content in blocks 027, 020, 008, 024, 021, 007 was stripped by the Master Prompt during original processing
+- block_027 tested against Procedure Prompt this session — output validated
+- Remaining blocks to be re-processed when retrieval testing confirms the gap is material
+- Decision deferred: run retrieval quality tests against current corpus first before committing to full Hogan on Crime re-processing
 
 ---
 
 ## PRIORITIES — NEXT SESSION
 
-### Priority 1 — Corpus ID collision audit
-Scan master_corpus.md for all duplicate chunk IDs. Confirm scope. Fix collisions by appending a disambiguator (e.g. `-doctrine`, `-procedure`) before next ingest run.
-
-### Priority 2 — Re-process block_027 (s 38 practical content)
-Extract from block_027.txt:
-- "Quick soldiers 5 on PIS s. 38" full workflow
-- Scripted examination question templates (PROCEEDING TO S 38 sections)
-Create as new chunks with unique IDs (e.g. `Evidence Act 2001 (Tas) s 38 — Practical Workflow`). Upload via console.
-
-### Priority 3 — Define `type: procedure` chunk format
-Write an enrichment prompt that PRESERVES rather than sanitises:
-- Step sequences
-- Scripted questions
-- Tactical notes and practitioner commentary
-Apply to blocks 020, 008, 024, 021, 007 after block_027.
-
-### Priority 4 — Re-process remaining affected blocks
-blocks 020, 008, 024, 021, 007 — extract stripped informal/practical content, upload as procedure chunks.
-
-### Priority 5 — Schema versioning
-Add `embedding_model` TEXT and `embedding_version` TEXT columns to `secondary_sources` and `legislation_sections`. Backfill current rows with `pplx-embed-context-v1-0.6b` / `1.0`. Prevents painful audits on future embedding model migrations.
-
-### Priority 6 — LLM metadata extraction for scraper
-Replace regex-based case metadata extraction in scraper with LLM extraction (Workers AI). Must be done BEFORE scraper resumes — regex will eventually break on AustLII HTML variation.
-
-### Priority 7 — Resume scraper
-Only after Priorities 1-6 complete. Run from `Local Scraper/` directory:
-```powershell
-python austlii_scraper.py
+### Priority 1 — Verify embed pass complete
+```bash
+curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool | grep points_count
 ```
+Expected: ~1984 points. If not complete, resume:
+```bash
+nohup python3 enrichment_poller.py --mode embed --batch 100 --loop > embed.log 2>&1 &
+```
+
+### Priority 2 — Retrieval quality testing
+Run 10–15 test queries via the console search page. Mix of:
+- Doctrinal: "what is the test under s 137", "elements of assault"
+- Practitioner: "how do I handle a hostile witness", "s 38 application steps"
+
+Evaluate whether procedural gap is hurting retrieval in practice before deciding on Hogan on Crime re-processing.
+
+### Priority 3 — Schema versioning
+Add `embedding_model` TEXT and `embedding_version` TEXT columns to `secondary_sources` and `legislation_sections`. Backfill with `pplx-embed-context-v1-0.6b` / `1.0`.
+
+### Priority 4 — LLM metadata extraction for scraper
+Replace regex-based case metadata extraction in scraper with Workers AI extraction. Must be done BEFORE scraper resumes.
+
+### Priority 5 — Resume scraper
+Only after Priorities 1–4 complete.
 
 ---
 
 ## FUTURE ROADMAP
 
-- **Legislation enrichment via Claude API** — add plain English summaries, cross-references, key concepts to legislation vectors. Do AFTER cross-reference agent design is clear so enrichment prompt supports that use case specifically.
-- **Cross-reference agent** — nightly cron, citation graph in D1. "What cases cite s 138 most often?" High differentiation value.
-- **Auto-populate legislation metadata on upload** — Claude API reads filename/first page, populates title/jurisdiction/year fields. Prevents typo slugs. Low complexity, high daily-use value.
-- **BM25 improvements** — current implementation is query-text-only ref extraction. Future: also extract refs from returned chunks with noise filtering, or implement proper BM25 scoring rather than score:0.0 appending.
-- **Cross-jurisdiction retrieval synonyms** — query expansion layer. Validate baseline retrieval quality first.
-- **Doctrinal normalisation pass** — unify citation formats, remove duplicates, normalise metadata. After retrieval quality validated.
+- **Hogan on Crime procedural re-processing** — re-run blocks 027, 020, 008, 024, 021, 007 through Procedure Prompt, upload procedure chunks via console. Full book re-processing only if retrieval testing reveals material gap.
+- **Automated ingestion pipeline** — drag-and-drop in console → Claude API enrichment/splitting → embed. For smaller documents. Larger docs (Hogan on Crime scale) stay on manual ChatGPT pipeline.
+- **Legislation enrichment via Claude API** — plain English summaries, cross-references, key concepts. After cross-reference agent design is clear.
+- **Cross-reference agent** — nightly cron, citation graph in D1.
+- **Auto-populate legislation metadata on upload** — Claude API reads filename/first page, populates fields.
+- **BM25 improvements** — proper scoring, hybrid ranking.
 - **Console status indicator** — show enriched/embedded progress per document after upload.
 - **Performance evaluation** — Claude API vs Workers AI response quality comparison once corpus validated.
-- **BM25 pre-retrieval** — DONE (basic implementation live). Full BM25 scoring and hybrid ranking is a future improvement.
 
 ---
 
-## SCRAPER CONFIG (file is authoritative)
+## SCRAPER CONFIG
+
 - Courts: TASSC, TASCCA, TASFC, TAMagC
 - Years: `range(2025, 2004, -1)` — 2025 to 2005 inclusive
 - `MAX_CASES_PER_SESSION`: 100
 - Delays: 10–20s random
 - Business hours: 08:00–18:00 AEST
-- Proxy: `arcanthyr.com/api/legal/fetch-page` — routes fetches via Cloudflare edge (VPS IP blocked by AustLII — run scraper locally only)
+- Proxy: `arcanthyr.com/api/legal/fetch-page`
 - Progress file: `scraper_progress.json` — deleted for clean slate
 - Previously ingested: TASSC 2025 (1–17), TASCCA 2025 (1–16), partial TASFC 2025
+- Do not resume until LLM metadata extraction is implemented (Priority 4)
 
 ---
 
@@ -287,18 +296,12 @@ python austlii_scraper.py
 |---|---|
 | enrichment_poller.py | `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
 | server.py (nexus) | `Arc v 4/arcanthyr-nexus/server.py` (local, gitignored) · `~/ai-stack/agent-general/src/server.py` (VPS) |
-| ingest_corpus.py | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\ingest_corpus.py` (untracked, outside repo) |
-| master_corpus.md | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\master_corpus.md` |
-| block_*.txt | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\` (source blocks) |
-| Worker.js | `Arc v 4\Worker.js` |
-| CLAUDE.md | `Arc v 4\CLAUDE.md` |
+| ingest_corpus.py | repo root — run from `Arc v 4/` |
+| master_corpus.md | `Arc v 4/master_corpus.md` |
+| block_*.txt | repo root |
+| Worker.js | `Arc v 4/Worker.js` |
+| CLAUDE.md | `Arc v 4/CLAUDE.md` |
 | austlii_scraper.py | `Local Scraper/` (not in git) |
+| RAG_Workflow_Arcanthyr_v1.docx | manually maintained — prompt reference document |
 | docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
-| split_legal_doc.py | repo root — document splitter |
-
----
-
-## MIGRATION HISTORY (recent)
-
-- **This session:** Legislation embedding migrated to pipeline v2 (poller handles legislation, nexus call removed from Worker). Worker v9→v11. BM25 pre-retrieval implemented in server.py. Corpus re-embedded from raw_text (enriched_text was NULL across all 662 rows — vectors were previously meaningless). D1 100-param limit fixed in handleResetEmbedded, handleMarkEmbedded, handleMarkLegislationEmbedded. Qdrant verify retries increased to 5, pre-sleep to 2s. Reconcile pass confirmed 1935 points valid.
-- **Previous session:** Embedding: `nomic-embed-text` (768-dim) → `argus-ai/pplx-embed-context-v1-0.6b:fp32` (1024-dim, MIT). Qdrant: `general-docs` deleted → `general-docs-v2`. D1 wipe: `cases` + `legal_principles` deleted. Security incident resolved: `.env` exposed via Wrangler. Worker.js v9: fire-and-forget nexus removed, pipeline v2 routes added. enrichment_poller.py written and deployed.
+| split_legal_doc.py | repo root |
