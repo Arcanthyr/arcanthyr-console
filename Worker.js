@@ -827,6 +827,31 @@ async function handleUploadCase(body, env) {
 }
 
 
+async function handleReprocessCase(body, env) {
+  const { citation } = body;
+  if (!citation) throw new Error("Missing required field: citation");
+
+  const row = await env.DB.prepare("SELECT raw_text, court FROM cases WHERE citation = ?")
+    .bind(citation).first();
+  if (!row) throw new Error(`Case not found: ${citation}`);
+  if (!row.raw_text) throw new Error(`No raw_text available for reprocessing: ${citation}`);
+
+  const caseData = {
+    citation,
+    court: row.court || "unknown",
+    year: citation.match(/\[(\d{4})\]/)?.[1] || new Date().getFullYear().toString(),
+    full_text: row.raw_text,
+  };
+
+  const summary = await summarizeCase(env, caseData);
+
+  await env.DB.prepare(
+    "UPDATE cases SET judge = ?, parties = ?, processed_date = ? WHERE citation = ?"
+  ).bind(summary.judge, summary.parties, new Date().toISOString(), citation).run();
+
+  return { success: true, citation, judge: summary.judge, parties: summary.parties };
+}
+
 /* =============================================================
    PDF EXTRACTION PROXY
    Proxies base64 PDF to nexus/extract-pdf endpoint for
@@ -1780,6 +1805,7 @@ export default {
         else if (action === "trigger-sync" && request.method === "POST") result = await runDailySync(env);
         else if (action === "backfill-year" && request.method === "POST") result = await runYearBackfill(env, body.year || new Date().getFullYear() - 1);
         else if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
+        else if (action === "reprocess-case" && request.method === "POST") result = await handleReprocessCase(body, env);
         else if (action === "extract-pdf" && request.method === "POST") result = await handleExtractPdf(body, env);
         else if (action === "upload-legislation" && request.method === "POST") result = await handleUploadLegislation(body, env);
         else if (action === "upload-secondary" && request.method === "POST") result = await handleUploadSecondarySource(body, env);
