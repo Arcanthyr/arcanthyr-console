@@ -844,6 +844,7 @@ async function handleReprocessCase(body, env) {
   };
 
   const summary = await summarizeCase(env, caseData);
+  console.log('Reprocess summary judge/parties:', JSON.stringify({ judge: summary.judge, parties: summary.parties, citation }));
 
   await env.DB.prepare(
     "UPDATE cases SET judge = ?, parties = ?, processed_date = ? WHERE citation = ?"
