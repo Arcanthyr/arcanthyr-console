@@ -846,9 +846,12 @@ async function handleReprocessCase(body, env) {
   const summary = await summarizeCase(env, caseData);
   console.log('Reprocess summary judge/parties:', JSON.stringify({ judge: summary.judge, parties: summary.parties, citation }));
 
+  const judge = summary.judge ?? null;
+  const parties = summary.parties ?? null;
+
   await env.DB.prepare(
     "UPDATE cases SET judge = ?, parties = ?, processed_date = ? WHERE citation = ?"
-  ).bind(summary.judge, summary.parties, new Date().toISOString(), citation).run();
+  ).bind(judge, parties, new Date().toISOString(), citation).run();
 
   return { success: true, citation, judge: summary.judge, parties: summary.parties };
 }
