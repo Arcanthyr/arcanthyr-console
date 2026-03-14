@@ -24,7 +24,7 @@
       transition: border-color var(--t);
     }
     .query-input::placeholder { color: var(--text-dim); font-style: italic; }
-    .query-input:focus { outline: none; border-color: var(--gold); }
+    .query-input:focus { outline: none; border-color: var(--blue); }
 
     .answer-block {
       background: var(--surface);
@@ -32,7 +32,7 @@
       border-left: 2px solid rgba(58, 106, 154, 0.5);
       border-radius: var(--radius);
       padding: 20px 22px;
-      font-family: 'Times New Roman', Times, serif;
+      font-family: Georgia, 'Times New Roman', Times, serif;
       font-size: 0.9375rem;
       color: var(--text);
       line-height: 1.9;
@@ -56,7 +56,7 @@
       gap: 4px;
       transition: border-left-color var(--t), border-color var(--t);
     }
-    .source-item:hover { border-left-color: var(--gold); }
+    .source-item:hover { border-left-color: var(--blue); }
     .source-item.legislation { border-left-color: rgba(74, 138, 78, 0.4); }
     .source-item.legislation:hover { border-left-color: var(--green); }
 
@@ -76,7 +76,7 @@
       gap: 8px;
     }
     .source-summary {
-      font-family: 'Times New Roman', Times, serif;
+      font-family: Georgia, 'Times New Roman', Times, serif;
       font-size: 0.875rem;
       color: var(--text-mid);
       line-height: 1.7;
@@ -111,9 +111,9 @@
       border: 1px solid var(--border-heavy);
     }
     .court-badge.cca, .court-badge.fullcourt {
-      background: var(--gold-dim);
-      color: var(--gold);
-      border-color: rgba(200, 151, 42, 0.25);
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-color: rgba(58, 106, 154, 0.25);
     }
     .court-badge.legislation {
       background: var(--green-dim);
@@ -152,7 +152,7 @@
     .threshold-row input[type="range"] {
       flex: 1;
       min-width: 120px;
-      accent-color: var(--gold);
+      accent-color: var(--blue);
     }
     .threshold-val {
       font-size: 0.72rem;
@@ -173,7 +173,7 @@
       padding: 2px 0;
       background: none;
       border: none;
-      color: var(--gold);
+      color: var(--blue);
       font-size: 0.65rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -182,7 +182,7 @@
     .expand-toggle:hover {
       background: none;
       border: none;
-      color: var(--gold);
+      color: var(--blue);
       opacity: 1;
       transform: none;
       box-shadow: none;
@@ -213,7 +213,7 @@
     }
     .model-toggle button.active {
       background: var(--surface-raise);
-      color: var(--gold);
+      color: var(--blue);
     }
     .model-toggle button:first-child { border-right: 1px solid var(--border-heavy); }
   </style>
@@ -260,7 +260,7 @@
 
       <div class="row space">
         <div class="row" style="gap:10px;">
-          <button id="queryBtn">Ask</button>
+          <button id="queryBtn" class="btn-primary">Ask</button>
           <button id="clearQueryBtn" class="ghost small">Clear</button>
         </div>
         <div class="model-toggle">

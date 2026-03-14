@@ -51,7 +51,7 @@
 
     .page-tab.active {
       background: var(--surface-raise);
-      color: var(--gold);
+      color: var(--blue);
       border-color: var(--border-heavy);
       transform: none;
       box-shadow: none;
@@ -85,9 +85,9 @@
       border-color: rgba(74, 138, 78, 0.3);
     }
     .badge-secondary {
-      background: var(--gold-dim);
-      color: var(--gold);
-      border-color: rgba(200, 151, 42, 0.25);
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-color: rgba(58, 106, 154, 0.25);
     }
 
     /* ── Upload forms ────────────────────────────────────────── */
@@ -924,7 +924,7 @@
           <div style="padding:12px 0;border-bottom:1px solid var(--border);">
             <div style="color:var(--text);font-size:0.875rem;">${s.title}</div>
             <div style="color:var(--text-dim);font-family:'DM Mono',monospace;font-size:0.72rem;margin-top:4px;">
-              ${s.category ? `<span style="color:var(--gold)">${s.category}</span> · ` : ''}${s.raw_size ? Math.round(s.raw_size / 1024) + ' KB' : '—'} · added ${s.date ? new Date(s.date).toLocaleDateString('en-AU') : '—'}
+              ${s.category ? `<span style="color:var(--blue)">${s.category}</span> · ` : ''}${s.raw_size ? Math.round(s.raw_size / 1024) + ' KB' : '—'} · added ${s.date ? new Date(s.date).toLocaleDateString('en-AU') : '—'}
             </div>
           </div>`).join('');
       } catch (err) {

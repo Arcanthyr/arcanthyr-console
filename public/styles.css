@@ -1,7 +1,7 @@
 /* =============================================================
-   ARCANTHYR — styles.css  v3
+   ARCANTHYR — styles.css  v4
    Aesthetic: Dark Gazette. Ink on stone. Editorial authority.
-   Palette: near-black ground, warm parchment text, gold accents
+   Palette: near-black ground, warm parchment text, blue accents
    Typography: Times New Roman (display + body) + DM Mono (UI)
    ============================================================= */
 
@@ -29,8 +29,6 @@
   --ink: #f0ece4;
   --ink-dim: #242424;
   --red: #a82020;
-  --gold: #c8972a;
-  --gold-dim: #2a2210;
   --amber: #c8972a;
   --amber-dim: #2a2210;
   --blue: #3a6a9a;
@@ -128,7 +126,7 @@ nav.site-nav a.btn {
   display: block;
   width: 40px;
   height: 1px;
-  background: var(--gold);
+  background: var(--blue);
   margin: 14px auto 0;
   opacity: 0.6;
 }
@@ -165,7 +163,7 @@ nav.site-nav a.btn {
 }
 
 .card:hover {
-  border-top-color: var(--gold);
+  border-top-color: var(--blue);
 }
 
 /* --- Label -------------------------------------------------- */
@@ -203,8 +201,8 @@ nav.site-nav a.btn {
 
 .textarea:focus {
   outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 1px var(--gold-dim);
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue-dim);
 }
 
 /* --- Select ------------------------------------------------- */
@@ -242,7 +240,7 @@ select.search-input {
 
 .search-input:focus {
   outline: none;
-  border-color: var(--gold);
+  border-color: var(--blue);
 }
 
 /* --- Filter row -------------------------------------------- */
@@ -284,9 +282,9 @@ select.search-input {
 }
 
 .chip.active {
-  background: var(--gold-dim);
-  border-color: rgba(200, 151, 42, 0.4);
-  color: var(--gold);
+  background: var(--blue-dim);
+  border-color: rgba(58, 106, 154, 0.4);
+  color: var(--blue);
 }
 
 /* --- Filter summary ---------------------------------------- */
@@ -334,9 +332,9 @@ button,
 
 button:hover,
 .btn:hover {
-  background: var(--gold-dim);
-  border-color: var(--gold);
-  color: var(--gold);
+  background: var(--blue-dim);
+  border-color: var(--blue);
+  color: var(--blue);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
@@ -349,9 +347,9 @@ button:active,
 
 button.active,
 .btn.active {
-  background: var(--gold-dim);
-  border-color: var(--gold);
-  color: var(--gold);
+  background: var(--blue-dim);
+  border-color: var(--blue);
+  color: var(--blue);
 }
 
 button:disabled,
@@ -372,8 +370,8 @@ button.ghost,
 button.ghost:hover,
 .btn.ghost:hover {
   background: transparent;
-  color: var(--gold);
-  border-color: var(--gold);
+  color: var(--blue);
+  border-color: var(--blue);
   transform: translateY(-1px);
   box-shadow: none;
 }
@@ -396,6 +394,29 @@ button.ai-btn:hover {
   border-color: var(--blue);
   color: var(--text);
   background: var(--blue-dim);
+}
+
+/* Primary action buttons */
+@keyframes pulse-blue {
+  0%   { box-shadow: 0 0 0 0 rgba(58, 106, 154, 0.55); }
+  60%  { box-shadow: 0 0 0 8px rgba(58, 106, 154, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(58, 106, 154, 0); }
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: #ffffff;
+  border-color: var(--blue);
+  font-family: 'Times New Roman', Times, serif;
+  letter-spacing: 0.12em;
+}
+
+.btn-primary:hover {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #ffffff;
+  transform: translateY(-1px);
+  animation: pulse-blue 0.7s ease forwards;
 }
 
 /* --- Output area -------------------------------------------- */
@@ -432,10 +453,10 @@ button.ai-btn:hover {
 .review-output {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-left: 2px solid var(--gold);
+  border-left: 2px solid var(--blue);
   border-radius: var(--radius);
   padding: 16px 18px;
-  font-family: 'Times New Roman', Times, serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 0.9375rem;
   font-weight: 400;
   color: var(--text-mid);
@@ -449,7 +470,7 @@ button.ai-btn:hover {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--gold);
+  color: var(--blue);
   margin-bottom: 6px;
   margin-top: 14px;
 }
@@ -465,13 +486,13 @@ button.ai-btn:hover {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--blue);
 }
 
 /* --- Card headings ----------------------------------------- */
 .card h2,
 .card h3 {
-  color: var(--gold);
+  color: var(--blue);
   font-weight: 700;
 }
 
@@ -499,11 +520,11 @@ button.ai-btn:hover {
 
 .item:hover {
   border-color: var(--border-heavy);
-  border-left-color: var(--gold);
+  border-left-color: var(--blue);
 }
 
 .item.highlight {
-  border-left-color: var(--gold);
+  border-left-color: var(--blue);
 }
 
 /* --- Meta row ---------------------------------------------- */
@@ -540,9 +561,9 @@ button.ai-btn:hover {
 }
 
 .tag.tag-decision {
-  background: var(--gold-dim);
-  color: var(--gold);
-  border-color: rgba(200, 151, 42, 0.25);
+  background: var(--blue-dim);
+  color: var(--blue);
+  border-color: rgba(58, 106, 154, 0.25);
 }
 
 .tag.tag-question {
@@ -581,8 +602,8 @@ button.ai-btn:hover {
 
 /* --- Keyword highlight ------------------------------------- */
 mark {
-  background: rgba(200, 151, 42, 0.15);
-  color: var(--gold);
+  background: rgba(58, 106, 154, 0.15);
+  color: var(--blue);
   border-radius: 2px;
   padding: 0 1px;
 }
@@ -620,8 +641,8 @@ mark {
   left: 50%;
   transform: translateX(-50%);
   background: var(--surface-raise);
-  color: var(--gold);
-  border: 1px solid rgba(200, 151, 42, 0.35);
+  color: var(--blue);
+  border: 1px solid rgba(58, 106, 154, 0.35);
   border-radius: var(--radius);
   padding: 10px 20px;
   font-family: 'DM Mono', monospace;
@@ -724,7 +745,7 @@ nav.site-nav { animation: page-in 0.3s ease both; }
 }
 
 .contact-item:hover {
-  border-color: var(--gold);
+  border-color: var(--blue);
 }
 
 /* --- Case dropzone ------------------------------------------ */
@@ -739,8 +760,8 @@ nav.site-nav { animation: page-in 0.3s ease both; }
 
 .case-dropzone:hover,
 .case-dropzone.dragover {
-  border-color: var(--gold);
-  background: var(--gold-dim);
+  border-color: var(--blue);
+  background: var(--blue-dim);
 }
 
 .dropzone-text {
@@ -822,7 +843,7 @@ nav.site-nav { animation: page-in 0.3s ease both; }
 }
 
 .lib-section-header:hover {
-  color: var(--gold);
+  color: var(--blue);
   border: none;
   transform: none;
   box-shadow: none;
