@@ -29,7 +29,8 @@
       "Bash(python3:*)",
       "Bash(grep -n \"block\\\\\\\\\\\\_026\" \"c:/Users/Hogan/OneDrive/Arcanthyr/arcanthyr-console/Arc v 4/master_corpus.md\")",
       "Bash(npx wrangler:*)",
-      "Bash(scp \"C:\\\\Users\\\\Hogan\\\\OneDrive\\\\Arcanthyr\\\\arcanthyr-console\\\\Arc v 4\\\\enrichment_poller.py\" tom@31.220.86.192:~/ai-stack/agent-general/src/)"
+      "Bash(scp \"C:\\\\Users\\\\Hogan\\\\OneDrive\\\\Arcanthyr\\\\arcanthyr-console\\\\Arc v 4\\\\enrichment_poller.py\" tom@31.220.86.192:~/ai-stack/agent-general/src/)",
+      "Bash(git -C \"c:\\\\Users\\\\Hogan\\\\OneDrive\\\\Arcanthyr\\\\arcanthyr-console\\\\Arc v 4\" push origin master)"
     ]
   }
 }

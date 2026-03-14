@@ -1292,11 +1292,26 @@ ${c.text}${principles}`;
     ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`
     : `Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
 
+  const citationRules = `CRITICAL CITATION RULES:
+- You may only cite cases, legislation, and authorities that appear explicitly in the source material provided above.
+- Do NOT generate, recall, or infer case citations from your training knowledge.
+- If a case name or citation does not appear in the retrieved sources, do not mention it.
+- If the retrieved sources do not contain sufficient case authority on a point, say so explicitly — do not fabricate citations to fill the gap.
+- Legislation references must match exactly what appears in the source material — do not correct, complete, or substitute legislation names from your training knowledge.
+- It is better to say "the retrieved sources do not contain specific case authority on this point" than to cite a case that may not exist or may not stand for the proposition stated.
+
+ANSWER STRUCTURE:
+- Answer based only on the retrieved source material provided.
+- Where the sources are insufficient to fully answer the question, say so clearly.
+- Do not pad answers with general legal principles from your training knowledge unless they are directly supported by the retrieved sources.`;
+
   const userPrompt = `Question: ${query.trim()}
 
 Relevant material:
 
 ${contextBlocks}
+
+${citationRules}
 
 ${answерNote}`;
 
@@ -1475,7 +1490,7 @@ ${c.text}`;
   const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\n${answerNote}` },
+      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nCRITICAL CITATION RULES:\n- You may only cite cases, legislation, and authorities that appear explicitly in the source material provided above.\n- Do NOT generate, recall, or infer case citations from your training knowledge.\n- If a case name or citation does not appear in the retrieved sources, do not mention it.\n- If the retrieved sources do not contain sufficient case authority on a point, say so explicitly — do not fabricate citations to fill the gap.\n- Legislation references must match exactly what appears in the source material — do not correct, complete, or substitute legislation names from your training knowledge.\n- It is better to say "the retrieved sources do not contain specific case authority on this point" than to cite a case that may not exist or may not stand for the proposition stated.\n\nANSWER STRUCTURE:\n- Answer based only on the retrieved source material provided.\n- Where the sources are insufficient to fully answer the question, say so clearly.\n- Do not pad answers with general legal principles from your training knowledge unless they are directly supported by the retrieved sources.\n\n${answerNote}` },
     ],
     max_tokens: 800,
   });
