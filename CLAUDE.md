@@ -1,5 +1,5 @@
 # CLAUDE.md — Arcanthyr Session Handover
-*Updated: 15 March 2026*
+*Updated: 15 March 2026 (evening)*
 
 ---
 
@@ -25,7 +25,7 @@
 
 ---
 
-## SYSTEM STATE (as of 15 Mar 2026)
+## SYSTEM STATE (as of 15 Mar 2026 evening)
 
 | Component | Status |
 |---|---|
@@ -35,12 +35,17 @@
 | D1 `cases` | 8 rows — 2026 scrape batch (TASSC 1–6, TASFC 1–2) · judge + parties backfilled |
 | D1 `secondary_sources` | 711 rows · enriched=1, embedded=1 · category=doctrine · embedding_model + embedding_version populated |
 | D1 `legislation` | 5 Acts · embedded=1 · 1272 sections in Qdrant · embedding_model + embedding_version populated |
-| Worker.js | Latest deployed (a66e5b44) |
+| D1 `case_citations` | 5 rows · 1 case processed · ready to scale with scraper |
+| D1 `case_legislation_refs` | 5 rows · 1 case processed · ready to scale with scraper |
+| Worker.js | Latest deployed (402aa0e9) |
 | enrichment_poller.py | In repo + VPS · includes category in Qdrant payload |
-| server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 pre-retrieval LIVE |
+| server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 pre-retrieval LIVE · case_name added to ingest payload (15 Mar 2026) |
+| xref_agent.py | Built + validated · VPS · INSERT OR IGNORE idempotency confirmed |
 | Phase 5 | VALIDATED — citation discipline rules live, hallucination significantly reduced |
-| BM25 pre-retrieval | LIVE |
+| BM25 pre-retrieval | LIVE — legislation sections layer + case-law layer (case_legislation_refs) |
+| Workers AI citation discipline | TIGHTENED 15 Mar 2026 — approved gap phrase enforced, confabulation substantially reduced |
 | Frontend | Dark Gazette theme deployed — see Frontend section below |
+| Hogan on Crime re-processing | **IN PROGRESS** — automated pipeline running overnight (see RAG Pipeline section) |
 
 ---
 
@@ -64,13 +69,13 @@ Console upload → Worker → D1 (raw_text stored, enriched=0, embedded=0)
                        → NO nexus call (fire-and-forget removed in v9)
 
 VPS enrichment_poller.py (manual or cron):
-  --mode enrich  → fetches enriched=0 rows → Claude API → writes enriched_text → enriched=1
-  --mode embed   → fetches enriched=1, embedded=0 rows → pplx-embed → Qdrant → embedded=1
-                 → ALSO runs legislation embedding pass automatically
-  --mode both    → enrich then embed in sequence
+  --mode enrich    → fetches enriched=0 rows → Claude API → writes enriched_text → enriched=1
+  --mode embed     → fetches enriched=1, embedded=0 rows → pplx-embed → Qdrant → embedded=1
+                   → ALSO runs legislation embedding pass automatically
+  --mode both      → enrich then embed in sequence
   --mode reconcile → diffs D1 embedded=1 vs Qdrant chunk_ids → resets missing to embedded=0
-  --loop         → runs continuously (60s sleep between passes)
-  --status       → prints pipeline counts and exits
+  --loop           → runs continuously (60s sleep between passes)
+  --status         → prints pipeline counts and exits
 ```
 
 **CRITICAL — Enrichment model by content type:**
@@ -100,17 +105,39 @@ Step 2 — Extract section references from query text (regex: s\s*(\d+[A-Z]?)(?!
 Step 3 — Fetch matching rows from legislation_sections AND secondary_sources via
          Worker route /api/pipeline/fetch-sections-by-reference
     ↓
+Step 3b — Fetch cases citing same legislation from case_legislation_refs via
+          Worker route /api/pipeline/fetch-cases-by-legislation-ref (LIKE '% s N%')
+    ↓
 Step 4 — Merge, deduplicate, append with bm25:true and score:0.0
+         Case-law BM25 chunks carry bm25_source:"case_litigation_ref"
     ↓
 Response generator (Workers AI / Claude API)
 ```
 
 Note: BM25 extracts refs from QUERY TEXT ONLY — not from returned chunks — to avoid cascade noise.
 
+**Cross-reference Worker routes (added 15 Mar 2026):**
+- `GET  /api/pipeline/fetch-cases-for-xref` — returns citation + authorities_extracted + legislation_extracted for all cases with xref data. Paginated (limit/offset).
+- `POST /api/pipeline/write-citations` — batch INSERT OR IGNORE into case_citations
+- `POST /api/pipeline/write-legislation-refs` — batch INSERT OR IGNORE into case_legislation_refs
+- `POST /api/pipeline/fetch-cases-by-legislation-ref` — takes references array, LIKE matches against case_legislation_refs, joins to cases. Returns citation + case_name + court + holding.
+
+All four use standard inline X-Nexus-Key auth pattern.
+
+**Case ingest path (IMPORTANT — different from secondary sources):**
+Cases do NOT go through enrichment_poller.py for embedding. They go:
+```
+Worker summarizeCase() → nexus /ingest endpoint → server.py ingest_text() → Qdrant
+```
+The Qdrant payload for cases is built in `ingest_text()` in server.py. `case_name` is now included in this payload (added 15 Mar 2026). All future scrapes will have `case_name` in Qdrant vectors automatically.
+
+**Existing 8 cases — known gap:** `case_name` is NOT in their Qdrant payloads (fix applied after they were ingested). Citation-only display degrades gracefully. Backfill requires a `reingest-case` Worker route (delete + reingest pattern). Not worth building for 8 cases — defer until scraper has run at volume.
+
 **server.py (nexus):**
 - Lives in `agent-general/src/` — volume-mounted
 - Local copy: `Arc v 4/arcanthyr-nexus/server.py` (gitignored)
-- Update: edit locally → SCP → `docker compose restart agent-general` → test
+- Update: edit locally → SCP → `docker compose restart agent-general` → curl health check
+- **Port is 18789** — not 8000. Always health check on `http://localhost:18789/health` after restart.
 
 **SCP commands:**
 ```powershell
@@ -119,6 +146,9 @@ scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\enrichment_poll
 
 # server.py
 scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\arcanthyr-nexus\server.py" tom@31.220.86.192:~/ai-stack/agent-general/src/server.py
+
+# xref_agent.py
+scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\xref_agent.py" tom@31.220.86.192:~/ai-stack/agent-general/src/
 ```
 
 ---
@@ -128,294 +158,239 @@ scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\arcanthyr-nexus
 **cases:**
 id, citation, court, case_date, case_name, url, facts, issues, holding, principles_extracted,
 processed_date, summary_quality_score, raw_text, holdings_extracted, legislation_extracted,
-authorities_extracted, enriched, embedded, enrichment_error, **judge** ← new, **parties** ← new
+authorities_extracted, enriched, embedded, enrichment_error, judge, parties
 
 **secondary_sources:**
 id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text,
 chunk_count, date_added, enriched_text, enriched, embedded, enrichment_error, category,
-**embedding_model** ← new, **embedding_version** ← new
+embedding_model, embedding_version
 
 **legislation:**
 id, title, jurisdiction, act_type, embedded
 
 **legislation_sections:**
 id, legislation_id, section_number, heading, text, part,
-**embedding_model** ← new, **embedding_version** ← new
+embedding_model, embedding_version
+
+**case_citations:**
+id (SHA1 of citing_case|cited_case), citing_case, cited_case, treatment, why, date_added
+
+**case_legislation_refs:**
+id (SHA1 of citation|legislation_ref), citation, legislation_ref, date_added
 
 **email_contacts:**
-id, name, email, created_at
-
-**entries:**
-id, created_at, text, tag, next, clarify, draft, _v, deleted
+id, name, email, role, organisation, jurisdiction, date_added, notes
 
 ---
 
-## WORKER ROUTES
+## LLM QUERY PATHS
 
-All routes require `X-Nexus-Key` header:
-
-| Route | Method | Purpose |
+| Path | Model | Route |
 |---|---|---|
-| `/api/legal/upload-corpus` | POST | Ingest secondary source chunk |
-| `/api/legal/upload-case` | POST | Ingest case (Workers AI enrichment inline) |
-| `/api/legal/reprocess-case` | POST | Re-run summarizeCase() on existing case from raw_text — updates judge, parties, processed_date ONLY |
-| `/api/pipeline/fetch-unenriched` | GET | Returns enriched=0 rows |
-| `/api/pipeline/fetch-for-embedding` | GET | Returns enriched=1, embedded=0 rows — includes category |
-| `/api/pipeline/fetch-embedded` | GET | Returns all embedded=1 IDs |
-| `/api/pipeline/fetch-legislation-for-embedding` | GET | Returns legislation sections where legislation.embedded=0 |
-| `/api/pipeline/fetch-sections-by-reference` | POST | BM25: fetches legislation_sections + secondary_sources by section_number |
-| `/api/pipeline/write-enriched` | POST | Writes enriched_text, sets enriched=1 |
-| `/api/pipeline/mark-embedded` | POST | Sets embedded=1 (batched, max 99 per D1 call) |
-| `/api/pipeline/mark-legislation-embedded` | POST | Sets legislation.embedded=1 for list of leg_ids |
-| `/api/pipeline/reset-embedded` | POST | Sets embedded=0 (batched, max 99 per D1 call) |
+| Claude API | claude-sonnet-4-20250514 | POST /api/legal/legal-query |
+| Workers AI | @cf/meta/llama-3.1-8b-instruct | POST /api/legal/legal-query-workers-ai |
+| Qwen3 | Via nexus | POST /api/legal/legal-query-qwen |
 
-**IMPORTANT — `/api/legal/upload-case` hard-rejects duplicate citations (line 149).** To re-extract fields on an existing case, use `/api/legal/reprocess-case` instead.
+**Frontend model toggle:** Workers AI is default on page load. Toggle switches between Workers AI and Claude only. Qwen is intentionally not exposed in the UI yet — route exists in Worker, no frontend button.
 
----
+**Citation format in LLM context (updated 15 Mar 2026):**
+Cases are now formatted as `{case_name} {citation} ({court})` — e.g. `Smith v Jones [2024] TASSC 42 (Supreme)`. The `[N]` chunk index prefix has been removed. `case_name` degrades gracefully to empty string for existing 8 cases (citation-only display) until Qdrant backfill.
 
-## CASE EXTRACTION PIPELINE (Worker — Llama 3.1 8B)
+**Workers AI citation discipline (tightened 15 Mar 2026):**
+Llama system prompts now include "Never invent citations" in every variant. User prompt citation rules expanded from a single IMPORTANT sentence to 5 explicit rules including an approved gap phrase: "The retrieved sources do not contain sufficient information on this point." Confabulation on insufficient sources substantially reduced — confirmed in live testing.
 
-The `summarizeCase()` function in Worker.js runs a two-pass Llama extraction for cases over ~6,000 chars, single-pass for shorter cases.
-
-**Fields extracted:**
-- Pass 1: `case_name`, `facts`, `issues`, `judge`, `parties`
-- Pass 2: `holdings`, `legislation`, `key_authorities` (with treatment: applied/followed/distinguished/mentioned), `principles`
-
-**Jurisdiction anchoring (in prompt):**
-- All prompts open with: "You are extracting verified legal information from a Tasmanian court judgment. Primary jurisdiction is Tasmania."
-- Legislation must be extracted verbatim from the case text — Llama must NOT recall or infer legislation names from training knowledge
-- `_sanitiseLegislation()` post-processes refs to append `(Tas)` if no jurisdiction suffix present
-
-**`_buildSummary()` note:**
-- Uses `asString(val, fallback)` helper — `!val` catches null/undefined/empty string
-- Watch for Llama returning literal string `"null"` — `!val` won't catch it, `"null"` would be written to D1
-- `judge` and `parties` use `?? null` coercion before D1 bind to prevent D1_TYPE_ERROR on undefined
-
-**Backfill script:** `Arc v 4/reprocess_cases.ps1`
-- Loops citations, POSTs to `/api/legal/reprocess-case`
-- Reads `NEXUS_KEY` from `$env:NEXUS_KEY`
-- Response wrapped as `{ result: { ... } }` — access fields as `$Response.result.judge`
-- Usage:
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-$env:NEXUS_KEY = "your-key-here"
-.\reprocess_cases.ps1
-```
+**First live A/B comparison — 15 Mar 2026 (planning law query, thin corpus):**
+- Workers AI: after tightening, used approved gap phrase correctly, no fabricated conclusions
+- Claude API: correctly identified source limitations, transparently admitted gap without padding
+- Baseline data point for future performance evaluation once corpus is validated
 
 ---
 
-## PHASE 5 — QUERY PIPELINE
+## XREF AGENT
 
-**Citation discipline rules (live as of 15 Mar 2026):**
-Both Workers AI and Claude API paths now include citation grounding rules in the user turn (after contextBlocks, before answerNote):
-
-- Workers AI path: trimmed single-sentence rule (prompt length sensitive — verbose rules caused Worker CPU timeout)
-- Claude API path: full citation discipline block
-
-**Rule summary:** Only cite cases and legislation appearing explicitly in retrieved source material. If sources lack specific authority, say so. Do not generate citations from training knowledge.
-
-**Workers AI timeout risk:** Workers AI (Llama 3.1 8B) is sensitive to prompt length. Keep citation rules in the Workers AI path concise. If queries start timing out, suspect prompt length first.
-
-**Phase 5 design (locked):**
-- Qdrant top 6 chunks, min score 0.45, max 8
-- Re-rank by court hierarchy (CCA/FullCourt > Supreme > Magistrates) within 0.05 band
-- Full metadata per chunk
-- Claude API first, Workers AI fallback
-
----
-
-## RETRIEVAL QUALITY TESTING (15 Mar 2026)
-
-15 queries run. Key findings:
-
-**Working well:**
-- Legislation retrieval — Acts and sections surfacing correctly
-- s 38 procedure (Q11) — excellent, step-by-step with correct section references
-- Citation discipline rules — hallucinated citations eliminated after fix
-
-**Corpus gaps confirmed:**
-- Recklessness fault element — no Tasmanian Criminal Code doctrine chunks
-- Tendency evidence doctrine — partial (Brown v Tasmania, McPhillamy correct; procedure missing)
-- Sentencing first offenders — no specific material
-- Corroboration — no material
-
-**Procedural content gap confirmed:**
-- Q12 (hostile witness handling) — complete retrieval failure, returned irrelevant Criminal Code sections
-- Q14 (examination in chief leading questions) — poor
-- Q15 (witness refuses to answer) — confused Justices Act committal with Evidence Act compellability
-
-Hogan on Crime procedural re-processing is justified — see Priority 1 below.
-
----
-
-## FRONTEND (Dark Gazette theme — deployed 15 Mar 2026)
-
-**Pages:**
-| File | Purpose |
-|---|---|
-| `index.html` | Landing — sigil hero, nav bar added, centred layout, blue pulse-hover buttons |
-| `console.html` | Merged console + search — query card, answer card, sources card, Axiom Relay |
-| `email.html` | New standalone email page — compose form + contacts |
-| `legal.html` | Legal research — Cases/Legislation/Secondary Sources/Library tabs |
-| `search.html` | DELETED — merged into console.html |
-
-**Structural changes from previous version:**
-- Input card and Recent Entries removed from console
-- Email Centre moved to own page
-- search.html deleted, merged into console.html
-- Nav bar added to index.html
-- legal.html width overflow fixed (table replaced with lib-item rows)
-- Library tab — expandable sections grouped by category
-
-**Design tokens (styles.css v4):**
-- `--bg`: `#0e0e0e` · `--surface`: `#1a1a1a` · `--surface-raise`: `#242424`
-- `--text`: `#f0ece4` · `--text-mid`: `#b8b0a4` · `--text-dim`: `#706860`
-- `--border`: `#2e2e2e` · `--border-heavy`: `#444`
-- `--red`: `#a82020` · `--blue`: `#3a6a9a` · `--blue-dim`: `#0e1e30`
-- `--green`: `#3a6a3e` · `--ink`: `#f0ece4`
-- `--gold` and `--gold-dim` REMOVED — replaced entirely with blue tokens
-- Max-width: 800px · Top-rule cards (no box borders) · Times New Roman headings/buttons
-- Output/generated text areas (answer, sources, relay): Georgia serif
-- `.btn-primary`: blue bg, white text, Times New Roman, pulse-blue hover animation
-- Nav sigil: `sigil.jpg` at 36px height on all pages
-
-**Bug fixes in this session:**
-- `--text-primary` → `--text` in app.js
-- `contactsModal.style.display` null guard added
-- `lookupLegislationRef` defined in legal.html inline script
-- `--gold`/`--gold-dim` undefined tokens globally fixed
-
----
-
-## ENRICHMENT POLLER — OPERATION
-
-**Location:** `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS)
-
-**Environment:**
+**xref_agent.py — usage:**
 ```bash
+# On VPS — always source env first
 set -a && source ~/ai-stack/.env && set +a
+
+python3 ~/ai-stack/agent-general/src/xref_agent.py --mode both       # full run
+python3 ~/ai-stack/agent-general/src/xref_agent.py --mode citations   # citations only
+python3 ~/ai-stack/agent-general/src/xref_agent.py --mode legislation # legislation refs only
+python3 ~/ai-stack/agent-general/src/xref_agent.py --mode status      # connectivity check
 ```
 
-**Run commands:**
-```bash
-# Status
-python3 enrichment_poller.py --status
+**Run after every scraping batch.** Fully idempotent — safe to re-run at any time.
 
-# Embed pass
-python3 enrichment_poller.py --mode embed --batch 100
+**Dedup mechanism:** SHA1 hash of `citing_case|cited_case` (citations) and `citation|legislation_ref` (legislation refs). INSERT OR IGNORE — re-runs skip existing rows automatically.
 
-# Background loop
-nohup python3 enrichment_poller.py --mode embed --batch 100 --loop > embed.log 2>&1 &
+**Data source:** Reads `authorities_extracted` and `legislation_extracted` from D1 `cases` table.
+- `authorities_extracted` — JSON array of `{name, treatment, why}` objects. Treatment values: applied, followed, distinguished, mentioned, cited.
+- `legislation_extracted` — JSON array of plain strings e.g. `"Evidence Act 2001 (Tas) s 138"`
 
-# Reconcile
-python3 enrichment_poller.py --mode reconcile
+**CRITICAL naming:** D1 column is `authorities_extracted`. `key_authorities` is the Llama prompt field name only — it does NOT exist as a D1 column. Do not use `key_authorities` in any D1 query.
 
-# Check Qdrant point count
-curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool | grep points_count
-
-# Find embed log
-find ~/ -name "embed.log" 2>/dev/null
-# Usually at: ~/ai-stack/agent-general/src/embed.log
-```
+**Cron — PENDING:** Set up nightly cron once scraper is actively running.
 
 ---
 
-## CORPUS STATE
+## FRONTEND
 
-**secondary_sources (711 chunks):**
-- Pre-enriched via ChatGPT Master Prompt before upload — raw_text IS the content
-- enriched_text NULL across all rows — correct, do NOT run `--mode enrich`
-- All 244 original CITATION IDs unique after collision fix
-- category column: all current rows = doctrine
-- Embed pass COMPLETE as of 15 Mar 2026 — 1984 points in Qdrant confirmed
+**Dark Gazette theme** — live at arcanthyr.com
+- Colour tokens: `--blue`, `--blue-dim` (gold removed entirely in 14 Mar session)
+- Output text: Georgia
+- `.btn-primary`: blue bg, white text, Times New Roman
+- Index page: centred card layout
 
-**Corpus files:**
-- `master_corpus.md` — lives in `Arc v 4/` (not repo root)
-- `block_*.txt` — source blocks in repo root
-- `ingest_corpus.py` — in repo root, must be run from `Arc v 4/` directory
+**Console model toggle:** Workers AI default, Claude toggle. Qwen not wired in UI.
+
+**Sources panel citation format:** Now displays `Case Name [Year] Court DecisionNo` where case_name is available. Existing 8 cases show citation only until Qdrant backfill.
 
 ---
 
-## RAG WORKFLOW — PROMPT DEVELOPMENT
+## RAG PIPELINE — AUTOMATED HOGAN ON CRIME REPROCESSING
 
-**Document:** `RAG_Workflow_Arcanthyr_v1.docx` (manually maintained)
+**Status: RUNNING OVERNIGHT (started 15 Mar 2026 evening)**
 
-Three prompts available:
+This session built and validated an automated pipeline (`process_blocks.py`) to re-process all 56 Hogan on Crime blocks through the Master and Procedure prompts, replacing the previous manual ChatGPT workflow.
 
-| Prompt | Section | Use for | CATEGORY value |
-|---|---|---|---|
-| Master Prompt | Section 6 | Doctrinal content — legislation, cases, legal rules | doctrine |
-| Procedure Prompt | Section 6A | Practitioner content — workflows, scripts, checklists, annotations | procedure |
-| UNPROCESSED follow-up | Section 6B (TBC) | Doctrinal units flagged UNPROCESSED by Master Prompt | doctrine |
+### What was built
 
-**Processing sequence for new blocks:**
-1. Master Prompt → doctrinal chunks
-2. Procedure Prompt → practitioner/procedure chunks
-3. UNPROCESSED follow-up → catches units flagged by Master Prompt
-4. Validation Prompt → quality check (split corpus into two documents if too large for single pass — split at clean citation boundary)
+**`process_blocks.py`** — located at `Arc v 4/process_blocks.py`
 
-**Procedure Prompt constraint:** Must preserve scripted questions, examination sequences, and tactical notes intact — NOT summarise or sanitise. The practitioner value is in the exact wording and sequence.
+Automated pipeline that:
+1. Reads each block file from `blocks_3k/` sequentially
+2. Sends each block through Master Prompt (fresh context) then Procedure Prompt (fresh context)
+3. Extracts only `## FORMATTED CHUNKS` sections from each response
+4. Appends to `master_corpus_part1.md` (blocks 1–28) or `master_corpus_part2.md` (blocks 29–56)
+5. Auto-triggers follow-up prompt in same session if FINAL STATUS is not READY FOR APPEND
+6. Logs every call to `process_log.txt`
+7. Logs failures to `failed_blocks.txt` with block number, prompt name, and error
 
-**Selection rule:**
-- Default to Master Prompt
-- Switch to Procedure Prompt for blocks containing scripted questions, numbered workflows, bold/italic practitioner notes, or in-court step sequences
-- When in doubt: run Master Prompt first, check UNPROCESSED, run Procedure Prompt on flagged sections
+**Key configuration (current):**
+```python
+MODEL         = "gpt-5-mini-2025-08-07"
+MAX_TOKENS    = 32000        # max_completion_tokens
+BLOCKS_DIR    = "./blocks_3k"
+TOTAL_BLOCKS  = 56
+PART1_END     = 28           # blocks 1-28 → part1, 29-56 → part2
+SLEEP_BETWEEN = 5            # seconds between calls
+```
+
+**Resilience features:**
+- 4 retry attempts per call
+- 60s backoff on rate limit errors (429), 10s on other errors
+- Failed blocks logged to `failed_blocks.txt` — re-run with `--single N`
+- End-of-run summary prints failed blocks if any
+
+**CLI flags:**
+```
+python process_blocks.py                  # full run
+python process_blocks.py --start-from 15 # resume from block 15
+python process_blocks.py --single 7      # re-run one block
+python process_blocks.py --test          # blocks 1-2 only
+python process_blocks.py --dry-run       # validate config, no API calls
+```
+
+### Source file locations
+
+| File | Path |
+|---|---|
+| process_blocks.py | `Arc v 4/process_blocks.py` |
+| blocks_3k/ | `Arc v 4/blocks_3k/` — 56 files at ~3,000 words each |
+| blocks/ | `Arc v 4/blocks/` — original 32 files at ~5,000–7,400 words (keep as backup) |
+| hogan_on_crime.md | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\hogan_on_crime.md` |
+| split_legal_doc.py | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\split_legal_doc.py` |
+| master_corpus_part1.md | `Arc v 4/master_corpus_part1.md` — generated by pipeline |
+| master_corpus_part2.md | `Arc v 4/master_corpus_part2.md` — generated by pipeline |
+| process_log.txt | `Arc v 4/process_log.txt` |
+| failed_blocks.txt | `Arc v 4/failed_blocks.txt` — only exists if failures occurred |
+
+### Model selection rationale
+
+Tested models during this session:
+- `gpt-5-mini-2025-08-07` — **SELECTED**. Fast (~1.5 min/call), good instruction following on 3k-word blocks, full coverage confirmed on block_002 test. Cost estimate ~$3 for full 56-block run.
+- `gpt-5.2` — rejected. Near-empty output on test (7 lines, 264 bytes). Unusable.
+- `gpt-5.4` — rejected. Stalled at 23+ minutes on single block, produced near-empty output. Unusable for this volume.
+
+Mini on 3,000-word blocks performs significantly better than mini on the original 5,000–7,400-word blocks. The resplit from 32 → 56 blocks was the key fix.
+
+### API configuration notes (OpenAI mini-specific)
+
+Mini requires different parameters than standard OpenAI models:
+- Use `max_completion_tokens` NOT `max_tokens` — mini rejects `max_tokens` with 400 error
+- Do NOT pass `temperature` parameter — mini only supports default (1), rejects explicit values
+- `\r\n` line endings in responses — extraction regex must normalise before matching (already handled in script)
+
+### Morning checklist after overnight run
+
+1. Check `process_log.txt` — confirm all 56 blocks completed
+2. Check `failed_blocks.txt` — if exists, re-run each failed block with `--single N`
+3. Check file sizes of `master_corpus_part1.md` and `master_corpus_part2.md` — should be substantial (100KB+ each)
+4. Spot-check output quality — open corpus files and verify chunk structure, metadata markers, and coverage
+5. Bring corpus files to Claude.ai for global validation pass before ingestion
+6. After validation: upload via Arcanthyr console → run embed pass on VPS → confirm Qdrant point count increase
+
+### After overnight run — next steps
+
+1. **Global validation pass** — run Validation Prompt (Section 9 of RAG_Workflow_Arcanthyr_v1.docx) across each corpus file. Split into two passes (part1 and part2) — each is too large for a single context window pass together.
+2. **Wipe existing secondary_sources corpus** — the 711 rows in D1 and corresponding Qdrant vectors are the old ChatGPT-enriched corpus with known procedural content gaps. After validation confirms the new corpus is clean, wipe and re-ingest.
+3. **Upload new corpus** — upload `master_corpus_part1.md` and `master_corpus_part2.md` via Arcanthyr console upload endpoint.
+4. **Run embed pass** — `python3 enrichment_poller.py --mode embed` on VPS.
+5. **Confirm Qdrant point count** — should increase significantly from 1984.
+6. **Retrieval testing** — test the practitioner queries that previously failed (s 38 hostile witness, tendency evidence, recklessness, first offender sentencing).
+
+---
+
+## RAG WORKFLOW PROMPTS
+
+The full prompt text for all four prompts (Master, Procedure, Follow-up, Validation) is documented in `RAG_Workflow_Arcanthyr_v1.docx` (manually maintained). The Master and Procedure prompts are also embedded verbatim in `process_blocks.py` as constants `MASTER_PROMPT`, `PROCEDURE_PROMPT`, and `FOLLOWUP_PROMPT`.
+
+**Two-prompt system design:**
+- Master Prompt → formal doctrine chunks (`[CATEGORY: doctrine]`)
+- Procedure Prompt → practitioner/procedure chunks (`[CATEGORY: procedure]`)
+- Both prompts run on every block — master covers doctrinal content, procedure covers scripted questions, workflows, annotations
+- Follow-up prompt fires automatically in same session if FINAL STATUS ≠ READY FOR APPEND
+- Validation Prompt → global quality check on assembled corpus (run manually after assembly)
+
+**Key design constraint:** Each block processed in a completely fresh context window — no shared history between blocks or between master/procedure passes within the same block. Follow-up is the only exception (appends to same session).
+
+**Output extraction:** Only `## FORMATTED CHUNKS` section extracted from each response. All other sections (SOURCE DOCTRINAL UNITS, COVERAGE REPORT, VALIDATION REPORT, FINAL STATUS) are discarded from corpus output.
 
 ---
 
 ## PRIORITIES — NEXT SESSION
 
-### Priority 1 — Procedure chunk re-processing (Hogan on Crime)
-Retrieval testing confirmed procedural content gap is material. Process blocks in this order:
+### Priority 1 — Complete Hogan on Crime automated re-processing ⏳ IN PROGRESS
+- Morning: check process_log.txt and failed_blocks.txt
+- Re-run any failed blocks with `--single N`
+- Run global validation pass on both corpus files
+- Wipe old secondary_sources corpus and re-ingest new corpus
+- Run embed pass on VPS
+- Confirm retrieval quality improvement on practitioner queries
 
-1. block_027 (s 38 hostile witness — highest value, Procedure Prompt already validated)
-2. block_020
-3. block_008
-4. block_024
-5. block_021
-6. block_007
-7. Identify tendency evidence block — check which block covers s 97/tendency applications, add to list
-
-For each block: run through Procedure Prompt → review output → append to master_corpus.md → upload via console → confirm embedded.
-
-Also check for blocks with corpus gaps confirmed in retrieval testing:
+### Priority 2 — Retrieval testing after new corpus ingested
+Test these specific queries that previously failed or returned gaps:
+- s 38 hostile witness procedure
+- Tendency evidence (s 97) — doctrine + procedure
 - Recklessness (Criminal Code fault elements)
 - Sentencing principles for first offenders
-- Corroboration
-
-### Priority 2 — Broader corpus audit
-Before scraper resumes, audit master_corpus.md for procedural content that was formalised by the Master Prompt (no informal markers) and is therefore not flagged by the existing block inventory. Use missed-recall patterns from retrieval testing (Priority 1 above) to identify which topics to audit first.
+- Corroboration (NOTE: s 64 Evidence Act definition cited by old system does NOT exist — largely abolished under uniform evidence law. Do not add a corroboration chunk until confirmed clean from new corpus.)
 
 ### Priority 3 — Resume scraper
 Only after Priority 1 and 2 have meaningfully improved retrieval quality on practitioner queries.
 
 Pre-scraper checklist:
-- [ ] Confirm `summarizeCase()` prompt includes judge and parties (DONE ✅)
-- [ ] Confirm scraper routes AustLII fetches via `arcanthyr.com/api/legal/fetch-page` proxy (DONE ✅)
-- [ ] Scraper runs locally on Windows — NOT on VPS (VPS IP blocked by AustLII)
+- [x] Confirm `summarizeCase()` prompt includes judge and parties
+- [x] Confirm scraper routes AustLII fetches via `arcanthyr.com/api/legal/fetch-page` proxy
+- [x] Scraper runs locally on Windows — NOT on VPS (VPS IP blocked by AustLII)
+- [ ] After first scraping batch: run `xref_agent.py --mode both`
+- [ ] After first scraping batch: set up xref_agent.py nightly cron
 
-### Priority 4 — Cross-reference agent (new D1 tables)
-Build two new tables and nightly cron to populate them:
-
-```sql
-CREATE TABLE case_citations (
-  id TEXT PRIMARY KEY,
-  citing_case TEXT,
-  cited_case TEXT,
-  treatment TEXT,   -- applied|followed|distinguished|mentioned
-  why TEXT,
-  date_added TEXT
-);
-
-CREATE TABLE case_legislation_refs (
-  id TEXT PRIMARY KEY,
-  citation TEXT,
-  legislation_ref TEXT,
-  date_added TEXT
-);
-```
-
-Agent reads `key_authorities` and `legislation_extracted` from D1 cases, builds citation graph. Enables "what cases cite s 138 most often" as a direct D1 lookup. Feeds BM25 and stare decisis layer.
+### Priority 4 — Cross-reference agent follow-up
+- [ ] Nightly cron setup — after scraper is actively running
+- [ ] Wire case_legislation_refs into BM25 improvement pass (proper scoring, not score:0.0)
+- [ ] Stare decisis layer — surface treatment history from case_citations when a case is returned in search results
+- [ ] Backfill case_name into Qdrant for existing 8 cases — build `reingest-case` Worker route after scraper has run at volume
 
 ### Priority 5 — Schema versioning backfill for cases
 Add `embedding_model` and `embedding_version` to `cases` table (currently only on secondary_sources and legislation_sections). Backfill when cases corpus is populated.
@@ -424,17 +399,18 @@ Add `embedding_model` and `embedding_version` to `cases` table (currently only o
 
 ## FUTURE ROADMAP
 
-- **Hogan on Crime procedural re-processing** — Priority 1 above. Full book re-processing if retrieval testing reveals further material gaps beyond identified blocks.
-- **Legislation enrichment via Claude API** — plain English summaries, cross-references, key concepts. Write enrichment prompt to specifically support cross-reference agent (Priority 4) — not generic summarisation. Do AFTER cross-reference agent design is confirmed.
-- **Cross-reference agent** — Priority 4 above. Nightly cron, citation graph in D1. "What cases cite s 138 most often?" High differentiation value.
+- **Legislation enrichment via Claude API** — plain English summaries, cross-references, key concepts. Write enrichment prompt to specifically support cross-reference agent — not generic summarisation. Do AFTER cross-reference agent design confirmed (DONE).
 - **Auto-populate legislation metadata on upload** — Claude API reads filename/first page, populates title/jurisdiction/year fields. Prevents typo slugs. Low complexity, high daily-use value.
-- **Automated ingestion pipeline** — drag-and-drop in console → Claude API enrichment/splitting → embed. For smaller documents. Larger docs (Hogan on Crime scale) stay on manual ChatGPT pipeline.
-- **BM25 improvements** — proper scoring, hybrid ranking. Current implementation is query-text-only ref extraction. Future: also extract refs from returned chunks with noise filtering.
+- **Automated ingestion pipeline** — drag-and-drop → Claude API enrichment/splitting → embed. For smaller documents. Larger docs (Hogan on Crime scale) stay on automated process_blocks.py pipeline.
+- **BM25 improvements** — proper scoring, hybrid ranking. Current: score:0.0 append. Future: proper BM25 scoring + hybrid ranking with semantic scores.
 - **Console status indicator** — show enriched/embedded progress per document after upload.
-- **Performance evaluation** — Claude API vs Workers AI response quality comparison once corpus validated.
+- **Performance evaluation** — Claude API vs Workers AI response quality. First baseline data point captured 15 Mar 2026 (planning law query, thin corpus). Full evaluation after corpus validated.
 - **Doctrinal normalisation pass** — after retrieval quality validated. If missed recalls on related concepts confirmed, normalise synonym handling across corpus before adding query expansion layer.
 - **Cross-jurisdiction retrieval synonyms** — query expansion layer: intercept search query, expand with synonyms before Qdrant call. Implement only after baseline retrieval quality confirmed.
+- **Qwen3 UI toggle** — add third button to model toggle in console.html once Qwen validated for production use. Route already exists in Worker.
+- **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant for existing cases. Build after scraper has run at volume.
 - **Animated sigil** — if a rotating GIF of the sigil is produced, swap `sigil.jpg` for `sigil.gif` in nav on all pages (same position, same 36px height).
+- **Two-tier model fallback for process_blocks.py** — if mini failure rate proves material after first full run, add gpt-5.4 automatic fallback for blocks where mini produces empty or sub-threshold chunk counts. Not needed yet — assess after overnight run results.
 
 ---
 
@@ -448,7 +424,7 @@ Add `embedding_model` and `embedding_version` to `cases` table (currently only o
 - Proxy: `arcanthyr.com/api/legal/fetch-page` — routes fetches via Cloudflare edge (VPS IP blocked by AustLII — run scraper locally only)
 - Progress file: `scraper_progress.json` — deleted for clean slate
 - Previously ingested: TASSC 2026 (1–6), TASFC 2026 (1–2) — 8 cases total in D1
-- Do not resume until Priority 1 (procedural re-processing) is substantially complete
+- Do not resume until Priority 1 (corpus re-processing) is substantially complete
 
 **Scraping workflow (confirmed design):**
 ```
@@ -461,10 +437,13 @@ austlii_scraper.py (local Windows)
         → Worker: two Llama calls (pass 1: case_name/facts/issues/judge/parties,
                                     pass 2: holdings/legislation/key_authorities/principles)
         → D1: all fields written, enriched=1, embedded=0
-    → VPS poller picks up embedded=0 → pplx-embed → Qdrant → embedded=1
+    → nexus /ingest called by Worker → server.py ingest_text() → Qdrant
+    → case_name now included in Qdrant payload for all future ingests ✓
 ```
 
-Note: citation and court derived from URL structure (stable). Llama handles all content fields including case_name, judge, parties. No regex on page HTML body for metadata.
+**Post-scrape checklist:**
+- Run `xref_agent.py --mode both` after each batch
+- Audit D1 for Llama literal `"null"` strings (known latent risk — see Known Issues)
 
 ---
 
@@ -474,24 +453,39 @@ Note: citation and court derived from URL structure (stable). Llama handles all 
 |---|---|
 | enrichment_poller.py | `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
 | server.py (nexus) | `Arc v 4/arcanthyr-nexus/server.py` (local, gitignored) · `~/ai-stack/agent-general/src/server.py` (VPS) |
+| xref_agent.py | `Arc v 4/xref_agent.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
 | ingest_corpus.py | repo root — run from `Arc v 4/` |
-| master_corpus.md | `Arc v 4/master_corpus.md` |
-| block_*.txt | repo root |
+| master_corpus.md | `Arc v 4/master_corpus.md` — OLD corpus (pre-automation, keep until new corpus validated) |
+| master_corpus_part1.md | `Arc v 4/master_corpus_part1.md` — NEW corpus blocks 1–28 (generated by process_blocks.py) |
+| master_corpus_part2.md | `Arc v 4/master_corpus_part2.md` — NEW corpus blocks 29–56 (generated by process_blocks.py) |
+| process_blocks.py | `Arc v 4/process_blocks.py` — automated RAG pipeline script |
+| blocks_3k/ | `Arc v 4/blocks_3k/` — 56 resplit blocks at ~3,000 words each |
+| blocks/ | `Arc v 4/blocks/` — original 32 blocks at ~5,000–7,400 words (backup) |
+| hogan_on_crime.md | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\hogan_on_crime.md` — source document |
+| split_legal_doc.py | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\split_legal_doc.py` — block splitter |
+| process_log.txt | `Arc v 4/process_log.txt` — pipeline run log |
+| failed_blocks.txt | `Arc v 4/failed_blocks.txt` — exists only if failures occurred |
 | Worker.js | `Arc v 4/Worker.js` |
 | CLAUDE.md | `Arc v 4/CLAUDE.md` |
 | austlii_scraper.py | `Local Scraper/` (not in git) |
-| reprocess_cases.ps1 | `Arc v 4/reprocess_cases.ps1` — backfill judge/parties for existing cases |
-| RAG_Workflow_Arcanthyr_v1.docx | manually maintained — prompt reference document |
+| reprocess_cases.ps1 | `Arc v 4/reprocess_cases.ps1` — backfill judge/parties for existing cases ONLY. Does NOT re-embed or touch Qdrant. |
+| RAG_Workflow_Arcanthyr_v1.docx | manually maintained — full prompt reference document |
 | docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
-| split_legal_doc.py | repo root |
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Llama returning literal `"null"` string** — `asString()` helper won't catch this, it would be written to D1 as the string "null". Latent risk, not currently causing issues. Worth a D1 audit after bulk scraping.
+- **authorities_extracted vs key_authorities** — D1 column is `authorities_extracted`. `key_authorities` is the Llama prompt field name only — does NOT exist as a D1 column. Do not use `key_authorities` in any Worker or agent query.
+- **case_name missing from Qdrant for existing 8 cases** — fix applied to server.py 15 Mar 2026 but only affects future ingests. Existing vectors show citation-only in LLM context. Backfill requires reingest-case route — deferred until scraper has run at volume.
+- **Unknown chunk in sources panel** — one semantic result displaying as `unknown Unknown score 0.678`. Pre-existing corpus chunk with incomplete metadata. Not related to xref or BM25 changes.
+- **Llama returning literal `"null"` string** — `asString()` helper won't catch this, written to D1 as string "null". Latent risk, not currently causing issues. Audit D1 after bulk scraping.
 - **Workers AI prompt length sensitivity** — verbose prompts cause CPU timeout. Keep Workers AI path prompts concise. If queries timeout, suspect prompt length first.
-- **Tendency evidence corpus gap** — doctrine partial (Brown v Tasmania, McPhillamy present), procedure missing. Identify which Hogan on Crime block covers s 97 and add to Priority 1 list.
-- **Corroboration corpus gap** — s 64 Evidence Act definition cited by system does NOT exist. Corroboration has largely been abolished under uniform evidence law. Needs a correct doctrine chunk added.
+- **Tendency evidence corpus gap** — doctrine partial (Brown v Tasmania, McPhillamy present), procedure missing. Should be captured in new corpus — verify in retrieval testing after ingestion.
+- **Corroboration corpus gap** — s 64 Evidence Act definition cited by system does NOT exist. Corroboration has largely been abolished under uniform evidence law. Do not add a chunk until new corpus retrieval testing confirms the position.
 - **AustLII block** — VPS IP (31.220.86.192) permanently blocked by AustLII. Scraper must run locally on Windows only. Fetches route via Cloudflare proxy.
 - **Cloudflare Workers Observability disabled** — use `npx wrangler tail arcanthyr-api` in a second PowerShell window for real-time logs during debugging.
+- **nexus health check port is 18789** — not 8000. Always curl `http://localhost:18789/health` after agent-general restart.
+- **process_blocks.py debug_response.txt** — this file is overwritten by each API call and will always contain the LAST response (typically the procedure prompt follow-up). Not a reliable debug tool post-run. Use process_log.txt for run history instead.
+- **OpenAI mini API quirks** — `max_completion_tokens` not `max_tokens`; do not pass `temperature` parameter; responses use `\r\n` line endings which require normalisation before regex extraction (handled in script).
+- **PART1_END in process_blocks.py** — currently set to 28 (blocks 1–28 → part1, 29–56 → part2). If total block count changes from 56, update both `TOTAL_BLOCKS` and `PART1_END`.
