@@ -1024,8 +1024,11 @@ async function handleUploadSecondarySource(body, env) {
    Also records a row in secondary_sources for library visibility.
    ============================================================= */
 async function handleUploadCorpus(body, env) {
-  const { text, citation, source, category, doc_type } = body;
+  let { text, citation, source, category, doc_type } = body;
   if (!text || !citation) throw new Error("Missing required fields: text and citation");
+  if (body.encoding === 'base64') {
+    text = atob(text);
+  }
 
   // Record in D1 secondary_sources — INSERT OR IGNORE skips duplicate citations silently
   await env.DB.prepare(`
