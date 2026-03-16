@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arcanthyr – Ingest</title>
+  <title>Arcanthyr – Upload</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
@@ -29,31 +29,31 @@
     <a class="btn ghost small" href="index.html">Home</a>
     <a class="btn ghost small" href="console.html">Arc Console</a>
     <a class="btn ghost small" href="legal.html">Legal</a>
-    <a class="btn ghost small" href="email.html">Email</a>
+    <a class="btn ghost small" href="axiom-relay.html">Axiom Relay</a>
   </nav>
 
   <main class="wrap">
     <header class="header">
-      <h1>Ingest</h1>
+      <h1>Upload</h1>
       <p class="sub">Pipeline management — upload cases, legislation, and secondary sources.</p>
     </header>
 
     <hr class="divider" />
 
     <!-- DATABASE STATUS -->
-    <section class="card">
+    <section style="border-top:1px solid var(--border);padding:12px 0 4px;">
       <div class="row space">
-        <h2 class="h2">Database Status</h2>
-        <button id="legalSyncBtn" class="btn ai-btn">Check New Cases</button>
+        <span style="font-family:'DM Mono',monospace;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-dim);">Database Status</span>
+        <button id="legalSyncBtn" class="btn ghost small">Check New Cases</button>
       </div>
-      <div id="legalSyncStatus" class="filter-summary" style="margin-top:8px;"></div>
+      <div id="legalSyncStatus" class="filter-summary" style="margin-top:6px;"></div>
     </section>
 
     <!-- UPLOAD CASE -->
     <section class="card">
       <div class="row space">
         <h2 class="h2">Upload Case</h2>
-        <button id="toggleUploadBtn" class="btn ghost small">Upload Form</button>
+        <button id="toggleUploadBtn" class="btn ghost small">Upload</button>
       </div>
       <p class="sub" style="margin-top:6px;">Paste case text from AustLII or upload a PDF for AI extraction.</p>
 
@@ -100,7 +100,7 @@
     <section class="card">
       <div class="row space">
         <h2 class="h2">Upload Legislation</h2>
-        <button class="btn ghost small" id="toggleLegislationUploadBtn">Upload Form</button>
+        <button class="btn ghost small" id="toggleLegislationUploadBtn">Upload</button>
       </div>
       <p class="sub" style="margin-top:6px;">Upload an Act. Sections are parsed and stored for direct lookup.</p>
 
@@ -151,7 +151,7 @@
     <section class="card">
       <div class="row space">
         <h2 class="h2">Upload Secondary Source</h2>
-        <button class="btn ghost small" id="toggleSecondaryUploadBtn">Upload Form</button>
+        <button class="btn ghost small" id="toggleSecondaryUploadBtn">Upload</button>
       </div>
       <p class="sub" style="margin-top:6px;">Notes, articles, commentary, textbooks. Reference context for queries and analysis.</p>
 

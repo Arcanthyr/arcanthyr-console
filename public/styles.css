@@ -18,19 +18,19 @@
 
 /* --- Design Tokens ------------------------------------------ */
 :root {
-  --bg: #0e0e0e;
-  --surface: #1a1a1a;
-  --surface-raise: #242424;
-  --border: #2e2e2e;
-  --border-heavy: #444444;
-  --text: #f0ece4;
-  --text-mid: #b8b0a4;
-  --text-dim: #706860;
-  --ink: #f0ece4;
-  --ink-dim: #242424;
+  --bg: #000000;
+  --surface: #141414;
+  --surface-raise: #1e1e1e;
+  --border: #505050;
+  --border-heavy: #666666;
+  --text: #ffffff;
+  --text-mid: rgba(255,255,255,0.7);
+  --text-dim: rgba(255,255,255,0.5);
+  --ink: #ffffff;
+  --ink-dim: #1e1e1e;
   --red: #a82020;
-  --amber: #c8972a;
-  --amber-dim: #2a2210;
+  --amber: #ffffff;
+  --amber-dim: #1a1a1a;
   --blue: #3a6a9a;
   --blue-dim: #0e1e30;
   --green: #4a8a4e;
