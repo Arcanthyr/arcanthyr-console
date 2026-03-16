@@ -368,6 +368,25 @@ Frontend only — safe to run anytime, no VPS interaction. Paste briefs in order
 
 ---
 
+## COMPONENT NOTES
+
+Operational limitations, gotchas, and non-standard invocations for stack components.
+
+### enrichment_poller.py
+
+Not container-native. Defaults to `localhost` for Ollama (port 11434) and Qdrant (port 6334). When run via `docker compose exec`, must override:
+
+```
+OLLAMA_URL=http://ollama:11434
+QDRANT_URL=http://qdrant-general:6333
+```
+
+These are now set in the `agent-general` environment block in `docker-compose.yml`.
+
+**Pending fix:** add internal loop so poller doesn't exit after each pass (currently requires external restart or nohup loop).
+
+---
+
 ## FUTURE ROADMAP
 
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references, key concepts. Do AFTER cross-reference agent design confirmed.

@@ -10,7 +10,8 @@
 |---|---|
 | Read this file first | Always |
 | Diagnose from actual output | Before recommending any fix |
-| PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session |
+| PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler command |
+| enrichment_poller | Run inside container only: `docker compose exec agent-general python3 /app/src/enrichment_poller.py` (use `-d` to background). `docker exec` won't have env vars set. |
 | git commits | `git add -A`, `git commit`, `git push origin master` — separately, no `&&` |
 | Pre-deploy check | Verify upload list shows only `public/` files — if `.env` or `.git` appear, stop |
 | wrangler d1 | Must run from `Arc v 4/` directory · always add `--remote` for live D1 |
@@ -20,6 +21,7 @@
 | CC vs SSH | CC for local file edits · SSH terminal for VPS runtime commands |
 | Context window | Suggest restart proactively when conversation grows long |
 | D1 database name | `arcanthyr` (binding: `DB`, ID: `1b8ca95d-b8b3-421d-8c77-20f80432e1a0`) |
+| Component quirks | Any known operational limitation, gotcha, or non-standard invocation for any component must be documented in CLAUDE_arch.md under a "Component Notes" section — not just user-facing bugs |
 
 **Tooling:**
 - **Claude.ai** — architecture, planning, debugging, writing CLAUDE.md, code review

@@ -1,0 +1,162 @@
+
+# ── Networks ────────────────────────────────────────────────────
+networks:
+  sensitive-net:
+    driver: bridge
+    internal: true          # no internet — ever
+
+  ollama-net:
+    driver: bridge
+    internal: true          # internal inference only
+
+  general-net:
+    driver: bridge           # outbound internet allowed here only
+
+  webui-net:
+    driver: bridge           
+    internal: false          # needed for host port binding only
+
+# ── Services ────────────────────────────────────────────────────
+services:
+
+  # ── Container 3: Ollama (local inference) ─────────────────────
+  ollama:
+    image: ollama/ollama:0.16.3
+    container_name: ollama
+    restart: unless-stopped
+    networks:
+      - ollama-net
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT}:11434"
+    volumes:
+      - ./ollama-data:/root/.ollama
+    mem_limit: 10g
+    cpus: "6.0"
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:0.6.5
+    container_name: open-webui
+    restart: unless-stopped
+    networks:
+      - ollama-net
+      - general-net
+      - webui-net
+    ports:
+      - "0.0.0.0:3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - RAG_EMBEDDING_MODEL_AUTO_UPDATE=false
+      - ENABLE_RAG_WEB_SEARCH=false
+    volumes:
+      - ./open-webui-data:/app/backend/data
+    mem_limit: 1g
+    cpus: "0.5"
+    depends_on:
+      - ollama
+  # ── Container 4: Qdrant — Sensitive ───────────────────────────
+  qdrant-sensitive:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-sensitive
+    restart: unless-stopped
+    networks:
+      - sensitive-net
+    ports:
+      - "127.0.0.1:${QDRANT_SENSITIVE_PORT}:6333"
+    volumes:
+      - ./qdrant-sensitive/storage:/qdrant/storage
+    mem_limit: 1g
+    cpus: "0.5"
+
+  # ── Container 5: Qdrant — General ─────────────────────────────
+  qdrant-general:
+    image: qdrant/qdrant:latest
+    container_name: qdrant-general
+    restart: unless-stopped
+    networks:
+      - general-net
+    ports:
+      - "127.0.0.1:${QDRANT_GENERAL_PORT}:6333"
+    volumes:
+      - ./qdrant-general/storage:/qdrant/storage
+    mem_limit: 1g
+    cpus: "0.5"
+
+  # ── Container 1: Sensitive Agent ──────────────────────────────
+  agent-sensitive:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    container_name: agent-sensitive
+    restart: unless-stopped
+    networks:
+      - sensitive-net
+      - ollama-net
+    ports:
+      - "127.0.0.1:${AGENT_SENSITIVE_PORT}:18791"
+    volumes:
+      - ./agent-sensitive/logs:/app/logs
+      - ./agent-sensitive/config:/app/config
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - QDRANT_HOST=http://qdrant-sensitive:6333
+      # NO API KEY — this container never touches the internet
+    mem_limit: 2g
+    cpus: "1.0"
+    working_dir: /app
+    command: ["python", "-u", "src/server.py"]   # replace with your agent entrypoint later
+    depends_on:
+      - ollama
+      - qdrant-sensitive
+
+  # ── Container 2: General Agent ────────────────────────────────
+  agent-general:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    container_name: agent-general
+    restart: unless-stopped
+    networks:
+      - general-net
+      - ollama-net
+    ports:
+      - "127.0.0.1:${AGENT_GENERAL_PORT}:18789"
+    volumes:
+      - ./agent-general/logs:/app/logs
+      - ./agent-general/config:/app/config
+      - ./agent-general/src:/app/src        # <-- add this line
+      - ./agent-general:/app/docs
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OLLAMA_HOST=http://ollama:11434
+      - QDRANT_HOST=http://qdrant-general:6333
+      - OLLAMA_URL=http://ollama:11434
+      - QDRANT_URL=http://qdrant-general:6333
+      - NEXUS_SECRET_KEY=${NEXUS_SECRET_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - WORKER_URL=${WORKER_URL}
+    mem_limit: 2g
+    cpus: "1.0"
+    working_dir: /app
+    command: ["python", "-u", "src/server.py"]           # leave as-is, we exec in manually
+    depends_on:
+      - ollama
+      - qdrant-general
+
+  # ── n8n — Workflow Automation ──────────────────────────────────
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    networks:
+      - general-net
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+    environment:
+      - N8N_HOST=n8n.arcanthyr.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://n8n.arcanthyr.com/
+      - N8N_RUNNERS_HEARTBEAT_INTERVAL=300
+    mem_limit: 1g
+    cpus: "0.5"
