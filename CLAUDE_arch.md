@@ -383,7 +383,7 @@ QDRANT_URL=http://qdrant-general:6333
 
 These are now set in the `agent-general` environment block in `docker-compose.yml`.
 
-**Pending fix:** add internal loop so poller doesn't exit after each pass (currently requires external restart or nohup loop).
+**`--loop` flag already implemented** — correct invocation is: `docker compose exec -d agent-general python3 /app/src/enrichment_poller.py --loop` · `OLLAMA_URL` and `QDRANT_URL` now set in docker-compose.yml (added 17 Mar 2026) so no inline env var overrides needed after next agent-general restart.
 
 ---
 

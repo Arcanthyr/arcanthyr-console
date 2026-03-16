@@ -11,7 +11,7 @@
 | Read this file first | Always |
 | Diagnose from actual output | Before recommending any fix |
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler command |
-| enrichment_poller | Run inside container only: `docker compose exec agent-general python3 /app/src/enrichment_poller.py` (use `-d` to background). `docker exec` won't have env vars set. |
+| enrichment_poller | Run inside container only with --loop flag: `docker compose exec -d agent-general python3 /app/src/enrichment_poller.py --loop` · Env vars set in docker-compose.yml — no overrides needed after agent-general restart · `docker exec` won't have env vars set |
 | git commits | `git add -A`, `git commit`, `git push origin master` — separately, no `&&` |
 | Pre-deploy check | Verify upload list shows only `public/` files — if `.env` or `.git` appear, stop |
 | wrangler d1 | Must run from `Arc v 4/` directory · always add `--remote` for live D1 |
