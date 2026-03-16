@@ -6,3 +6,4 @@ Set-ExecutionPolicy
 debug_extract.txt
 debug_response.txt
 .claude/
+backfill_enriched.sql
