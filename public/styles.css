@@ -135,7 +135,7 @@ nav.site-nav a.btn {
   font-family: 'DM Mono', monospace;
   font-size: 0.75rem;
   font-weight: 300;
-  color: var(--text-dim);
+  color: rgba(255,255,255,0.5);
   letter-spacing: 0.06em;
   margin-top: 10px;
 }
@@ -195,7 +195,7 @@ nav.site-nav a.btn {
 }
 
 .textarea::placeholder {
-  color: var(--text-dim);
+  color: rgba(255,255,255,0.5);
   font-style: italic;
 }
 
@@ -234,7 +234,7 @@ select.search-input {
 }
 
 .search-input::placeholder {
-  color: var(--text-dim);
+  color: rgba(255,255,255,0.5);
   font-style: italic;
 }
 
@@ -319,7 +319,7 @@ button,
   color: var(--text);
   border: 1px solid var(--border-heavy);
   border-radius: var(--radius);
-  font-family: 'DM Mono', monospace;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 0.75rem;
   font-weight: 400;
   letter-spacing: 0.08em;
@@ -404,19 +404,19 @@ button.ai-btn:hover {
 }
 
 .btn-primary {
-  background: var(--blue);
+  background: var(--surface-raise);
   color: #ffffff;
-  border-color: var(--blue);
+  border-color: var(--border-heavy);
   font-family: 'Times New Roman', Times, serif;
   letter-spacing: 0.12em;
 }
 
 .btn-primary:hover {
-  background: var(--blue);
+  background: var(--blue-dim);
   border-color: var(--blue);
-  color: #ffffff;
+  color: var(--blue);
   transform: translateY(-1px);
-  animation: pulse-blue 0.7s ease forwards;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* --- Output area -------------------------------------------- */
@@ -486,13 +486,13 @@ button.ai-btn:hover {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--blue);
+  color: var(--text);
 }
 
 /* --- Card headings ----------------------------------------- */
 .card h2,
 .card h3 {
-  color: var(--blue);
+  color: var(--text);
   font-weight: 700;
 }
 

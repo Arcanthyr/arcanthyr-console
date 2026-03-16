@@ -624,57 +624,6 @@ If a section has nothing to report, write: None identified.`;
   return callWorkersAI(env, system, `Entries:\n${entries.map(e => `[${(e.tag || "note").toUpperCase()}] ${e.text}`).join("\n")}`, 700);
 }
 
-async function handleAxiomRelay(body, env) {
-  const { entries, focus } = body;
-  if (!entries || !entries.length) throw new Error("No entries to relay.");
-
-  const stage1System = `You are Stage 1 of a multi-step reasoning agent called Axiom Relay inside Arcanthyr.
-Decompose each entry into its components.
-For each entry identify surface (what they said), intent (what they need), constraint (hidden blocker).
-Respond as a JSON array: [{ "id": number, "surface": "...", "intent": "...", "constraint": "..." }]
-Output ONLY valid JSON. No markdown fences.`;
-
-  let decomposed;
-  try {
-    const raw1 = await callWorkersAI(env, stage1System, entries.slice(-20).map((e, i) => `${i}: [${e.tag}] ${e.text}`).join("\n"), 800);
-    decomposed = JSON.parse(raw1.replace(/```json|```/g, "").trim());
-  } catch {
-    decomposed = entries.map((e, i) => ({ id: i, surface: e.text, intent: e.text, constraint: "" }));
-  }
-
-  const stage2Raw = await callWorkersAI(env,
-    `You are Stage 2 of Axiom Relay. Identify the 3 most important tensions ACROSS the entries. Each under 20 words, referencing specific content.
-Output EXACTLY:
-TENSION_1: [text]
-TENSION_2: [text]
-TENSION_3: [text]
-No other text.`,
-    `Focus: ${focus || "none"}\n${decomposed.map(d => `[${d.id}] ${d.surface} | ${d.intent} | ${d.constraint}`).join("\n")}`,
-    400);
-
-  const finalReport = await callWorkersAI(env,
-    `You are Stage 3 of Axiom Relay — final synthesis. Produce an actionable report:
-
-SIGNAL
-[1-2 sentences: single most important insight]
-
-LEVERAGE POINT
-[1 sentence: one action that unlocks the most]
-
-RELAY ACTIONS
-1. [specific action, under 12 words]
-2. [specific action, under 12 words]
-3. [specific action, under 12 words]
-
-DEAD WEIGHT
-[1 sentence: what to stop or deprioritise]
-
-Output only these sections.`,
-    `${stage2Raw}\n\nFocus: ${focus || "none"}`,
-    500);
-
-  return { stages: { decomposed, tensions: stage2Raw }, report: finalReport };
-}
 
 async function handleClarifyAgent(body, env) {
   const { text, tag, history = [], userReply = null } = body;
@@ -1151,6 +1100,69 @@ async function handleLibraryDelete(docType, id, env) {
   }
 
   return { ok: true, deleted: id };
+}
+
+async function handleLegislationSearch(body, env) {
+  const { query } = body;
+  if (!query || !query.trim()) throw new Error("Missing query");
+  const q = query.trim();
+  const wild = `%${q}%`;
+
+  // Extract section number if present (e.g. "s 125", "section 38A", "s.38")
+  const secMatch = q.match(/\bs(?:ection)?\.?\s*(\d+[A-Z]?)/i);
+  const secNum = secMatch ? secMatch[1] : null;
+
+  // Act name fragment: strip section ref and 4-digit year
+  const actFrag = q
+    .replace(/\bs(?:ection)?\.?\s*\d+[A-Z]?/gi, '')
+    .replace(/\b(1[89]\d{2}|20\d{2})\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  let rows;
+
+  if (secNum && actFrag) {
+    // Act name + section: exact section_number under matching act title
+    const r = await env.DB.prepare(`
+      SELECT s.section_number, s.heading, SUBSTR(s.text, 1, 600) AS text, s.part, l.title, l.jurisdiction, l.year
+      FROM legislation_sections s JOIN legislation l ON s.legislation_id = l.id
+      WHERE s.section_number = ? AND l.title LIKE ?
+      ORDER BY l.title ASC LIMIT 10
+    `).bind(secNum, `%${actFrag}%`).all();
+    rows = r.results;
+
+    // Fallback: section number across all acts
+    if (!rows?.length) {
+      const r2 = await env.DB.prepare(`
+        SELECT s.section_number, s.heading, SUBSTR(s.text, 1, 600) AS text, s.part, l.title, l.jurisdiction, l.year
+        FROM legislation_sections s JOIN legislation l ON s.legislation_id = l.id
+        WHERE s.section_number = ?
+        ORDER BY l.title ASC LIMIT 10
+      `).bind(secNum).all();
+      rows = r2.results;
+    }
+  } else if (secNum) {
+    // Section number only — match across all acts
+    const r = await env.DB.prepare(`
+      SELECT s.section_number, s.heading, SUBSTR(s.text, 1, 600) AS text, s.part, l.title, l.jurisdiction, l.year
+      FROM legislation_sections s JOIN legislation l ON s.legislation_id = l.id
+      WHERE s.section_number = ?
+      ORDER BY l.title ASC LIMIT 20
+    `).bind(secNum).all();
+    rows = r.results;
+  } else {
+    // Broad search: title, year, heading, section text
+    const r = await env.DB.prepare(`
+      SELECT s.section_number, s.heading, SUBSTR(s.text, 1, 600) AS text, s.part, l.title, l.jurisdiction, l.year
+      FROM legislation_sections s JOIN legislation l ON s.legislation_id = l.id
+      WHERE l.title LIKE ? OR l.year LIKE ? OR s.heading LIKE ? OR s.text LIKE ?
+      ORDER BY l.title ASC LIMIT 20
+    `).bind(wild, wild, wild, wild).all();
+    rows = r.results;
+  }
+
+  if (!rows?.length) return { found: false, results: [], message: `No legislation found matching "${q}".` };
+  return { found: true, results: rows };
 }
 
 async function handleSectionLookup(body, env) {
@@ -1896,7 +1908,6 @@ export default {
         if (action === "draft") result = await handleDraft(body, env);
         else if (action === "next-actions") result = await handleNextActions(body, env);
         else if (action === "weekly-review") result = await handleWeeklyReview(body, env);
-        else if (action === "axiom-relay") result = await handleAxiomRelay(body, env);
         else if (action === "clarify-agent") result = await handleClarifyAgent(body, env);
         else return json({ error: `Unknown AI action: ${action}` }, 404);
         return json({ result });
@@ -1945,6 +1956,7 @@ export default {
           const docId = parts.slice(1).join("/");
           result = await handleLibraryDelete(docType, docId, env);
         }
+        else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-qwen" && request.method === "POST") result = await handleLegalQueryQwen(body, env);
