@@ -1986,6 +1986,41 @@ export default {
     if (url.pathname === '/api/pipeline/write-legislation-refs' && request.method === 'POST') return handleWriteLegislationRefs(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-cases-by-legislation-ref' && request.method === 'POST') return handleFetchCasesByLegislationRef(request, env, corsHeaders);
 
+    /* ── INGEST ROUTES ────────────────────────────────────────── */
+    if (url.pathname.startsWith("/api/ingest/")) {
+      if (!rateLimit(`${ip}:ingest`, 10, 60_000)) return json({ error: "Ingest rate limit exceeded." }, 429);
+      const segment = url.pathname.replace("/api/ingest/", "");
+
+      if (segment === "upload-document" && request.method === "POST") {
+        let body;
+        try { body = await request.json(); } catch { return json({ error: "Invalid JSON body." }, 400); }
+        try {
+          const nexusRes = await fetch("https://nexus.arcanthyr.com/process-document", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+            body: JSON.stringify(body),
+          });
+          const data = await nexusRes.json();
+          return json(data, nexusRes.status);
+        } catch (err) { return json({ error: err.message }, 502); }
+      }
+
+      if (segment.startsWith("status/") && request.method === "GET") {
+        const jobId = segment.replace("status/", "");
+        if (!jobId) return json({ error: "jobId required" }, 400);
+        try {
+          const nexusRes = await fetch(`https://nexus.arcanthyr.com/ingest-status/${jobId}`, {
+            method: "GET",
+            headers: { "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+          });
+          const data = await nexusRes.json();
+          return json(data, nexusRes.status);
+        } catch (err) { return json({ error: err.message }, 502); }
+      }
+
+      return json({ error: "Invalid ingest endpoint" }, 404);
+    }
+
     /* ── ENTRIES ROUTES ───────────────────────────────────────── */
     if (url.pathname.startsWith("/api/entries")) {
       const limits = {

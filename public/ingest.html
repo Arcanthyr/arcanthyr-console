@@ -200,6 +200,52 @@
       </div>
     </section>
 
+    <!-- PROCESS DOCUMENT (corpus ingest pipeline) -->
+    <section class="card">
+      <div class="row space">
+        <h2 class="h2">Process Document</h2>
+        <button class="btn ghost small" id="toggleProcessDocBtn">Upload</button>
+      </div>
+      <p class="sub" style="margin-top:6px;">Upload a document for AI enrichment and corpus ingestion. GPT formats the content into retrieval chunks and inserts them into D1.</p>
+
+      <div id="processDocForm" style="display:none;" class="upload-panel">
+
+        <div class="case-dropzone" id="processDocDropzone">
+          <div class="dropzone-text">📎 Drag & drop file or click to browse</div>
+          <div class="dropzone-hint">Accepted: PDF, DOCX, RTF, MD, TXT</div>
+        </div>
+        <input type="file" id="processDocFileInput" accept=".pdf,.docx,.rtf,.md,.txt" style="display:none;" />
+
+        <label class="label" style="margin-top:16px;">Prompt Mode</label>
+        <select id="processDocPromptMode" class="search-input" style="margin-top:6px;">
+          <option value="master">Master (doctrine)</option>
+          <option value="procedure">Procedure</option>
+          <option value="both">Both</option>
+        </select>
+        <small style="color:var(--text-dim);font-family:'DM Mono',monospace;font-size:0.72rem;margin-top:4px;display:block;">Master: doctrine, case law, legislation analysis. Procedure: tactical workflows, scripts, practitioner notes.</small>
+
+        <div class="row" style="margin-top:16px;">
+          <button id="processDocUploadBtn" class="btn" disabled>Upload &amp; Process</button>
+          <button id="processDocCancelBtn" class="btn ghost small">Cancel</button>
+        </div>
+
+        <div id="processDocStatus" style="display:none;margin-top:16px;padding:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;">
+          <div class="row space" style="margin-bottom:8px;">
+            <span style="font-family:'DM Mono',monospace;font-size:0.72rem;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);">Status</span>
+            <span id="processDocStatusBadge" style="font-family:'DM Mono',monospace;font-size:0.76rem;color:var(--gold);">—</span>
+          </div>
+          <div id="processDocBlockProgress" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--text-dim);margin-bottom:6px;display:none;"></div>
+          <div class="row" style="gap:24px;margin-bottom:6px;">
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;">Parsed: <strong id="processDocChunksParsed">0</strong></span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;">Inserted: <strong id="processDocChunksInserted">0</strong></span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.78rem;">Skipped: <strong id="processDocChunksSkipped">0</strong></span>
+          </div>
+          <div id="processDocErrors" style="display:none;margin-top:8px;font-family:'DM Mono',monospace;font-size:0.76rem;color:#e57373;"></div>
+        </div>
+
+      </div>
+    </section>
+
     <footer class="footer">
       <small>Arcanthyr — Pipeline management</small>
     </footer>
@@ -252,6 +298,11 @@
 
     document.getElementById('cancelSecondaryBtn').addEventListener('click', () => {
       document.getElementById('uploadSecondaryForm').style.display = 'none';
+    });
+
+    toggleForm('toggleProcessDocBtn', 'processDocForm');
+    document.getElementById('processDocCancelBtn').addEventListener('click', () => {
+      document.getElementById('processDocForm').style.display = 'none';
     });
 
     /* ── Character counters ──────────────────────────────────── */

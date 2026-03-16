@@ -11,7 +11,8 @@ const SCHEMA_VERSION = 1;
 const API_BASE = "https://arcanthyr.com/api/entries";
 const AI_BASE = "https://arcanthyr.com/api/ai";
 const EMAIL_BASE = "https://arcanthyr.com/api/email";
-const LEGAL_BASE = "https://arcanthyr.com/api/legal";
+const LEGAL_BASE  = "https://arcanthyr.com/api/legal";
+const INGEST_BASE = "https://arcanthyr.com/api/ingest";
 
 /* =============================================================
    DOM refs
@@ -1279,3 +1280,139 @@ function showLegModal(ref, section, errorMsg) {
 
   document.body.appendChild(modal);
 }
+
+/* =============================================================
+   PROCESS DOCUMENT — corpus ingest pipeline
+   ============================================================= */
+(function initProcessDocument() {
+  const dropzone   = document.getElementById('processDocDropzone');
+  const fileInput  = document.getElementById('processDocFileInput');
+  const uploadBtn  = document.getElementById('processDocUploadBtn');
+  const statusBox  = document.getElementById('processDocStatus');
+
+  if (!dropzone || !fileInput || !uploadBtn) return;  // not on this page
+
+  let selectedFile = null;
+  let pollTimer    = null;
+
+  // ── Dropzone ──────────────────────────────────────────────
+  dropzone.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) setFile(file);
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) setFile(fileInput.files[0]);
+  });
+
+  function setFile(file) {
+    selectedFile = file;
+    dropzone.querySelector('.dropzone-text').textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+    uploadBtn.disabled = false;
+  }
+
+  // ── Status display helpers ─────────────────────────────────
+  function showStatus(job) {
+    statusBox.style.display = 'block';
+
+    const badge = document.getElementById('processDocStatusBadge');
+    const badgeColors = { queued: 'var(--text-dim)', extracting: 'var(--gold)', splitting: 'var(--gold)', enriching: 'var(--gold)', inserting: 'var(--gold)', complete: '#81c784', failed: '#e57373' };
+    badge.textContent = job.status.toUpperCase();
+    badge.style.color = badgeColors[job.status] || 'var(--gold)';
+
+    const progressEl = document.getElementById('processDocBlockProgress');
+    if (job.total_blocks && job.block_current) {
+      progressEl.style.display = 'block';
+      progressEl.textContent = `Block ${job.block_current} of ${job.total_blocks}`;
+    } else if (job.total_blocks) {
+      progressEl.style.display = 'block';
+      progressEl.textContent = `${job.total_blocks} block${job.total_blocks !== 1 ? 's' : ''} detected`;
+    } else {
+      progressEl.style.display = 'none';
+    }
+
+    document.getElementById('processDocChunksParsed').textContent   = job.chunks_parsed   || 0;
+    document.getElementById('processDocChunksInserted').textContent = job.chunks_inserted || 0;
+    document.getElementById('processDocChunksSkipped').textContent  = job.chunks_skipped  || 0;
+
+    const errEl = document.getElementById('processDocErrors');
+    if (job.errors && job.errors.length > 0) {
+      errEl.style.display = 'block';
+      errEl.textContent = job.errors.slice(-3).join('\n');  // last 3 errors
+    } else if (job.error) {
+      errEl.style.display = 'block';
+      errEl.textContent = job.error;
+    } else {
+      errEl.style.display = 'none';
+    }
+  }
+
+  // ── Poll ──────────────────────────────────────────────────
+  function startPolling(jobId) {
+    pollTimer = setInterval(async () => {
+      try {
+        const r = await fetch(`${INGEST_BASE}/status/${jobId}`);
+        const data = await r.json();
+        const job = data.result || data;
+        showStatus(job);
+        if (job.status === 'complete' || job.status === 'failed') {
+          clearInterval(pollTimer);
+          uploadBtn.disabled = false;
+          uploadBtn.textContent = 'Upload & Process';
+        }
+      } catch (err) {
+        clearInterval(pollTimer);
+        document.getElementById('processDocStatusBadge').textContent = 'POLL ERROR';
+        document.getElementById('processDocErrors').style.display = 'block';
+        document.getElementById('processDocErrors').textContent = err.message;
+      }
+    }, 5000);
+  }
+
+  // ── Upload ────────────────────────────────────────────────
+  uploadBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Uploading…';
+    if (pollTimer) clearInterval(pollTimer);
+
+    try {
+      const arrayBuffer = await selectedFile.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+      const file_b64 = btoa(binary);
+
+      const promptMode = document.getElementById('processDocPromptMode').value;
+
+      const r = await fetch(`${INGEST_BASE}/upload-document`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ file_b64, filename: selectedFile.name, prompt_mode: promptMode }),
+      });
+
+      const data = await r.json();
+      const result = data.result || data;
+
+      if (data.error || result.error) throw new Error(data.error || result.error);
+
+      showStatus({ status: result.status || 'queued', chunks_parsed: 0, chunks_inserted: 0, chunks_skipped: 0, errors: [] });
+      uploadBtn.textContent = 'Processing…';
+      startPolling(result.job_id);
+
+    } catch (err) {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = 'Upload & Process';
+      statusBox.style.display = 'block';
+      document.getElementById('processDocStatusBadge').textContent = 'ERROR';
+      document.getElementById('processDocStatusBadge').style.color = '#e57373';
+      document.getElementById('processDocErrors').style.display = 'block';
+      document.getElementById('processDocErrors').textContent = err.message;
+    }
+  });
+})();
