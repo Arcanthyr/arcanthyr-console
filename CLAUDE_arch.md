@@ -385,6 +385,20 @@ These are now set in the `agent-general` environment block in `docker-compose.ym
 
 **`--loop` flag already implemented** — correct invocation is: `docker compose exec -d agent-general python3 /app/src/enrichment_poller.py --loop` · `OLLAMA_URL` and `QDRANT_URL` now set in docker-compose.yml (added 17 Mar 2026) so no inline env var overrides needed after next agent-general restart.
 
+### Workers AI (Cloudflare) — model and usage inventory
+
+**Current model:** `@cf/meta/llama-3.1-8b-instruct` — used for ALL Workers AI calls via `callWorkersAI()` helper (line 31), except `handleLegalQueryWorkersAI()` which calls `env.AI.run` directly with the same model. The `llama-3.2-3b-instruct` reference was incorrect — does not exist in Worker.js.
+
+**Active Workers AI calls:**
+
+- **`summarizeCase()`** — two-pass case enrichment at scrape time (pass 1: facts/issues/case_name from opening; pass 2: principles/holdings/legislation from reasoning). Upgrade target: `@cf/qwen/qwen3-30b-a3b-fp8`.
+- **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle. Evaluate model upgrade separately.
+- **`handleDraft()`, `handleNextActions()`, `handleWeeklyReview()`, `handleClarifyAgent()`** — Axiom journal features (entry drafting, next actions, weekly review, clarification). Not legal extraction — upgrade optional, low priority.
+
+**Planned:** `/api/legal/extract-metadata` route (not yet built) — scraper metadata pre-extraction. Will use `@cf/qwen/qwen3-30b-a3b-fp8`. Upgrade `summarizeCase()` at the same time when scraper work resumes.
+
+> Do NOT do a global model string replace — query handler and journal functions need independent evaluation.
+
 ---
 
 ## FUTURE ROADMAP
