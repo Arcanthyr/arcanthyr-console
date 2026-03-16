@@ -1,0 +1,339 @@
+## Restriction on JP's
+
+[**Justices Rules 2003**](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2003-184)
+
+**54T.**   **Jurisdiction of justices**
+
+[*\[Rule 54T Substituted by S.R. 2009, No. 77, Applied:08 Jul 2009\] *](https://www.legislation.tas.gov.au/view/html/inforce/2009-07-08/sr-2009-077#GS5@EN)The court, when constituted by one or more justices (one of whom is not a magistrate), may exercise only the following jurisdiction under the[Family Violence Act 2004](https://www.legislation.tas.gov.au/view/html/inforce/2014-04-16/act-2004-067) :
+
+\(a\) the granting or refusal of bail under [section 12](https://www.legislation.tas.gov.au/view/html/inforce/2014-04-16/act-2004-067#GS12@EN) of that Act;
+
+\(b\) the making, variation, extension or revocation of an interim FVO under [section 23](https://www.legislation.tas.gov.au/view/html/inforce/2014-04-16/act-2004-067#GS23@EN) of that Act;
+
+\(c\) the revocation (but not the making, variation or extension) of an FVO under [section 20](https://www.legislation.tas.gov.au/view/html/inforce/2014-04-16/act-2004-067#GS20@EN) of that Act.
+
+## Standing in private applications
+
+Generally none. However:
+
+There is authority that had deemed that police were not a party to family violence proceedings and that the Act was amended thereafter to permit it. And I did not have it to hand. It was the decision of the Supreme Court in *McLean v Kemp* \[2005\] TASSC 100. Parliament responded by introducing s31 (2A) to remedy the situation.
+
+ 
+
+An ambiguity arises if similarly, to *Lacroix v Lacroix* \[2015\] TASSC 42, *Lacroix v Lacroix *\[2018\] TASFC 8, a fresh application, rather than extension/ variation, is filed.
+
+ 
+
+It may be that given that under s14(8) the PFVO is revoked making of an IFVO or FVO, an application under s15 is be construed in these situations to also be made pursuant to Part 3. Which would mean that s31(2A) would engage the Police as a party.
+
+ 
+
+Otherwise the situation would be that a PFVO could be weakened significantly by the making of a basic FVO without further input from the Commissioner for Police, despite a police officer being satisfied that a PFVO on particular terms was required to protect the safety wellbeing and interests of protected party and or any affected children.
+
+**McLean v Kemp \[2005\] TASSC 100 (18 August 2005)**
+
+**Decision was made in the context of granting leave to hear the application \*This is not the same as a determination that the order should in fact be changed! Just a question of leave. They are not the same. They are different thresholds!**
+
+\[23\] The learned magistrate was required to be satisfied before granting leave that there had been a substantial change in the relevant circumstances since the order was made on 26 April.
+
+\[24\] The words \"substantial change\" and \"relevant circumstances\" are not defined in the [Act](http://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/). The ordinary meaning of those words would suggest that what was intended was that the Court be satisfied there had been a significant or obvious change in the circumstances involving the parties affected by the FVO since the date it was made.
+
+28 There was clear material before the learned magistrate that neither the applicant nor Mr Kemp wanted the no contact provisions in the FVO to continue.
+
+29 The learned magistrate took the view that he did not accept that the applicant could not have been scared of Mr Kemp if he did what she said. However, on the material before him, while he might reasonably have been satisfied the applicant had indeed been scared prior to the making of the FVO, there was no evidence apart from hers as to what had since occurred and she unequivocally said she now was not fearful. That is, apart from anything else, a clear change of circumstances.
+
+## Family Court Orders
+
+Family court order defined in FV act as one made under Part 7 (children) of the Family Law Act. There are other types of orders from other parts that are made, so be sure to check.
+
+Family law act powers of inconsistency (eg. 68 onwards) are also limited to considerations of Parenting orders under part 7. So can suspend Family Court parenting order for FVO if inconsistent. Per s. 68R.
+
+## Supreme court
+
+## Form of applications
+
+**30.**   **Forms of FVO, PFVO and applications**
+
+An FVO, a PFVO or an application under this Act is to be in a form approved by the Chief Magistrate.
+
+**Magistrates Court Act 1987**
+
+**15AA. Practice directions**
+
+\(1\) The Chief Magistrate may --
+
+\(a\) issue such practice directions in relation to the practice and procedure of the lower courts as the Chief Magistrate thinks fit; and
+
+\(b\) vary or revoke any such practice directions; and
+
+\(c\) publish any such practice directions as the Chief Magistrate thinks fit.
+
+\(2\) The practice and procedure of the lower courts is to be in accordance with the practice directions from time to time in force unless the provisions of any Act or of any rules or other statutory instruments made under an Act provide otherwise.
+
+\(3\) The Chief Magistrate may issue practice directions specifying the circumstances in which initiating process must be filed in a registry.
+
+**PRACTICE DIRECTION**
+
+**(No. 3 of 2005)**
+
+I, Arnold George Shott, Chief Magistrate of Tasmania, pursuant to the Magistrates Court Act 1987 section 15AA, hereby approve the following forms: -
+
+Family Violence Order;
+
+Interim Family Violence Order;
+
+Application for Family Violence Order;
+
+Application for variation of a Police Family Violence Order or a Family Violence Order;
+
+Application for extension of a Police Family Violence Order or a Family Violence Order; and
+
+Application for revocation of a Police Family Violence Order or a Family Violence Order,
+
+**(NOT ORAL)**
+
+in accordance with the Family Violence Act 2004 section 30.
+
+Direct link to forms format.
+
+Dated this Thirtieth day of March 2005.
+
+A. G. Shott
+
+Chief Magistrate
+
+**So oral applications for IFVO's are really just an invite for the MAGI to use their own discretion to make an order under s 23 (FV Act) as opposed to us formally "applying"**
+
+**JUSTICES RULES 2003 - REG 54L**
+
+**PART 9B - Practice and procedures under Family Violence Act 2004**
+
+**54L. Applications generally**
+
+An application is to --
+
+\(a\) specify the order sought; and
+
+\(b\) include --
+
+\(i\) in the case of an application made by a police officer, a statutory declaration of the officer that to the best of his or her knowledge and belief the information contained in the application is true; or
+
+\(ii\) in the case of any other applicant, an affidavit of the person that to the best of his or her knowledge and belief the information contained in the application is true; and
+
+\(c\) be filed with the clerk.
+
+**JUSTICES RULES 2003 - REG 54S**
+
+**54S. Power of justices to dispense with Part**
+
+Justices may, upon such terms and conditions as they think necessary, dispense with the need for a party to proceedings under Part 4 of the [Family Violence Act 2004](http://www.austlii.edu.au/au/legis/tas/consol_act/fva2004158/) to comply with any provision of this Part.
+
+## Service of Applications:
+
+**JUSTICES RULES 2003 - REG 54N**
+
+**54N. Service of applications**
+
+\(1\) A person making an application is to, as soon as practicable after it is filed with the clerk, cause a sealed copy of the application to be served personally on --
+
+\(a\) in the case of an application for an FVO or an application for a variation to, or extension or revocation of, an FVO, on all other parties to the application; or
+
+\(b\) in the case of an application for a variation to, or extension or revocation of, a PFVO, on all other parties to the application and on the Commissioner of Police.
+
+\(2\) Where a police officer is the applicant for the revocation of an FVO or a PFVO, service of a sealed copy of the application is not required.
+
+\(3\) A person who serves a sealed copy of an application is to --
+
+\(a\) endorse a copy of the application with a memorandum stating the day, place and mode of service; and
+
+\(b\) sign the memorandum; and
+
+\(c\) as soon as practicable, cause the endorsed copy to be lodged with the clerk for the district in which it is returnable.
+
+**54S. Power of justices to dispense with Part**
+
+Justices may, upon such terms and conditions as they think necessary, dispense with the need for a party to proceedings under Part 4 of the [Family Violence Act 2004](http://www.austlii.edu.au/au/legis/tas/consol_act/fva2004158/) to comply with any provision of this Part.
+
+## Hearings:
+
+### FVO Hearings
+
+**JUSTICES RULES 2003 - REG 54P**
+
+**PART 9B - Practice and procedures under Family Violence Act 2004**
+
+**54P. Hearing of applications**
+
+\(1\) At the hearing of an application under this Part, evidence may be given by affidavit.
+
+\(2\) A person who makes an affidavit for the purposes of subrule (1) is not required to attend the hearing of the application unless a party to the proceedings, or the justice, so requires.
+
+\(3\) By notice in writing given to the person who made an affidavit for the purposes of subrule (1), a party to the proceedings may require that the person attend the hearing for cross-examination and, if the person fails to attend, the court may --
+
+\(a\) refuse to allow the affidavit to be used; or
+
+\(b\) allow the affidavit to be used on any conditions the court thinks fit; or
+
+\(c\) adjourn the proceedings until the person attends for cross-examination.
+
+\(4\) Notice under subrule (3) is to be given not less than 10 clear working days before the proceedings.
+
+### **Affidavits**
+
+MAGISTRATES COURT (CIVIL DIVISION) RULES 1998 - REG 55
+
+Division 8 - Affidavits 55. Form of affidavit
+
+\(1\) An affidavit is to --
+
+\(a\) specify the title of the action in which it is sworn; and
+
+\(b\) be drawn up in the first person; and
+
+\(c\) state --
+
+> \(i\) the name, address and occupation of the person making the affidavit; or
+
+\(ii\) if the person making the affidavit does not have an address or occupation, a description of the person; and
+
+\(d\) be divided into consecutively numbered paragraphs that, as far as practicable, relate to separate portions of the subject matter of the affidavit; and
+
+\(e\) specify any sum of money or number in figures only; and
+
+\(f\) contain a statement signed by the person before whom it was sworn specifying --
+
+> \(i\) the full name of the person making the affidavit; and
+>
+> \(ii\) the day on which and the place at which the affidavit was sworn; and
+
+\(g\) be signed on each page by --
+
+> \(i\) the person making the affidavit; and
+>
+> \(ii\) the person before whom it was sworn.
+
+\(2\) Any annexure or exhibit filed with an affidavit is to be --
+
+\(a\) identified by the title of the action; and
+
+\(b\) signed by the person before whom the affidavit was sworn.
+
+\(3\) Unless the Court orders otherwise, an affidavit may be received in evidence despite any irregularity in form.
+
+MAGISTRATES COURT (CIVIL DIVISION) RULES 1998 - REG 56
+
+56. Contents of affidavit
+
+\(1\) An affidavit is to be confined to facts to which the person making the affidavit is able to depose from his or her own knowledge.
+
+\(2\) An affidavit filed in relation to an interlocutory application may contain statements based on information received by the person making the affidavit, and believed by that person to be true, if the affidavit also contains --
+
+\(a\) the sources of the information received; and
+
+\(b\) the grounds for believing thatthe information is true.
+
+MAGISTRATES COURT (CIVIL DIVISION) RULES 1998 - REG 74
+
+74. Hearing an application
+
+\(1\) Unless the Court orders otherwise, an interlocutory application is to be heard in open court.
+
+\(2\) With the leave of the Court, a person may appear by telephone or video link at the hearing of an interlocutory application.
+
+\(3\) The hearing of an interlocutory application may be adjourned --
+
+\(a\) on no more than 2 occasions; and
+
+\(b\) to a fixed date only.
+
+\(4\) At the hearing of an interlocutory application, a fact may be proved by affidavit.
+
+**Oaths Act 2001**
+
+3\. Interpretation
+
+In this Act --
+
+affidavit includes --
+
+\(a\) any affirmation, statutory declaration or other declaration; and
+
+\(b\) any acknowledgment, examination or attestation; and
+
+\(c\) for the purpose of section 7 , any deposition or statement made by an informant or a complainant;
+
+Im not sure about this!!! It says "within this act" as opposed to a general definition. A stat dec, maybe. But must comply with the form as presecribed but the oaths act.
+
+## PFVO
+
+Leave of the court is NOT needed to make an app to vary -- extend -- revoke a PFVO in court. zIt is for a second attempt can only be made with leave (requiring evidence of substantial change) from the court as it becomes an FVO
+
+App to vary PFVO can be made to an inspector but only with consent of both parties (s 14((7))
+
+PFVO automatically revoked when IFVO or FVO made in realtion to both parties.(s 14((8)).
+
+### Authority to issue:
+
+Section 35(3) creates a rebuttable presumption that the order has been made, and that it was validly made\" in Proving authority
+
+See **McKenna v Smith \[2014\] TASMC 11 (27 March 2014**
+
+**\[35\] ...**
+
+... [Section 35(3)](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/s35.html), [*Family Violence Act*](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/), establishes that the allegation that the order was made is evidence that it was made and in force at the time of the alleged contravention. This can only mean that the allegation constitutes evidence that the order was made pursuant to the provisions of [s 14](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/s14.html), and it would follow, therefore, that the allegation is evidence that it was made by a police officer of the requisite rank. Furthermore, although Constable Goss was clearly not familiar with the technical processes by which he came to act in the rank of sergeant, it is clear that he regarded himself, and was regarded by other officers as acting as sergeant for the shift. This, in itself, raises an inference that he held appropriate authority to perform those duties. When regard is then had to the provisions of [s 35(3)](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/s35.html), it is not necessary, in my view, for the prosecution to prove the existence of the authority to act in that rank. I agree with Magistrate Bartlett\'s description of that section in *Police v Maxwell*(unreported, 9 August 2012) that the subsection *\"creates a rebuttable presumption that the order has been made, and that it was validly made\"*. In my view, the court should accept that Constable Goss held the requisite rank, in the absence of specific evidence that he did not hold that rank. The evidence does not enable a finding to be made that he did not hold the rank of acting sergeant within the meaning of [s 34](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/s34.html), [*Police Service Act*](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/psa2003149/) at the time that he made the order.
+
+**My Summary - Lack of evidence the order was validly made is not enough to displace the presumption -- they need positive evidence to support Act was not acting.**
+
+### "Acting" SGT -- delegated power
+
+PFVO can only be issued by an officer of the rank of Sergeant or above, or authorised by the Commissioner of Police
+
+There is a power vested in the Commissioner of Police, under a section of the *Police Service Act*, to appoint an officer to temporarily act in a higher roll/ rank, and such officer, so appointed, is vested with all the powers inherent in that roll/ rank. (per s 34 police service act 2003
+
+Yet another section in the *Act* allows the Commissioner to delegate any vested power. (section 8) Police service act
+
+Finally, there is an evidentiary provision in the *Act *that allows a certificate declaring that such a delegation had occurred, to be tendered as evidence of such. (s 95 Police service act)
+
+There is a power of delegation document on record
+
+This doc is to Inspectors or higher (on file)
+
+*23AA Acts interpretation Act* TAS says that reference to a rank is sufficient -- need not be a person
+
+### PFVO Conditions:
+
+Limited to the confines of the permitted restrictions under s 14
+
+14 (3) A PFVO may require the person to whom it is issued to do any or all of the following:
+
+\(a\) vacate any premises, whether or not that person has a legal or equitable interest in the premises;
+
+\(b\) not enter any premises or only enter premises on certain conditions, whether or not that person has a legal or equitable interest in the premises;
+
+\(c\) surrender any firearm or other weapon;
+
+\(d\) refrain from harassing, threatening, verbally abusing or assaulting an affected person, affected child or other person named in the order;
+
+\(e\) not approach, within a specified distance, an affected person, an affected child, other person named in the order or certain premises;
+
+\(f\) refrain from contacting an affected person, affected child or other person named in the order directly or indirectly or otherwise than under specified conditions.
+
+### REVOCATION OF PFVO 
+
+Not the same as the making of an FVO -- FVO needs to be satisfied FV (not offence) has occurred and FV (not offence) will happen again.
+
+Revocation of a PFVO has no such indicia.
+
+Court may make an FVO at the hearing of revocation of a FVO -- then bound by those considerations -- but if not being asked to make one, or electing it's own jurisdiction, the question is only whether to revoke a PFVO.
+
+I accept -- that is not necessarily an unreasonable basis for the question to be determined -- but that has not been provided for under the ACT --
+
+Section 14 should be considered in light of the objects of the act -- in the administration of the FV act the safety, psychological wellbeing and interests of people affected by family violence are the paramount considerations.
+
+That is consistent with the indicia an Inspector of Tas police must consider.
+
+Not the convenience of the Respondent.
+
+The order was validly made. There can be no further challenge to its validity.
+
+Where there es recent physical violence, only, in my submission strong psychological evidence supporting the contention that the protected party's mental wellbeing would be adversely affected by the continuation of the PFVO would justify it's revocation -- and none has been submitted

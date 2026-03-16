@@ -1,0 +1,239 @@
+## Privilege against self-incrimination (s 128 certificates)
+
+Not available to **[Defendant]{.underline}** in EIC or RX to questions from their own lawyer! Not "compelled" (*Song v Ying* (2010) 79 NSWLR 442; \[2010\] NSWCA
+
+**Privilege in respect of self-incrimination in other proceedings**
+
+1.  Section 128 applies if a witness objects to giving particular evidence or evidence on a particular matter because doing so may tend to prove the witness has committed an offence against, or arising under, an Australian law or a law of a foreign country, or is liable to a civil penalty (s128(1)). It details a procedure which both protects the witness claiming the privilege and enables the proceeding in which the witness is called to have the benefit of his or her evidence.
+
+2.  If the court considers that a witness or party may have grounds for applying or objecting under this Part, it must satisfy itself that the witness or party is aware of the effect of s128 (s132).
+
+3.  If the court takes the precaution of warning a possible co-offender or alternative suspect of the availability of the privilege, it is prudent to do so in the absence of the jury (*KH v R *\[2014\] NSWCCA 294 at \[35\]). Similarly, any application for a s 128 certificate should be determined in the absence of the jury (*Spence v The Queen *\[2016\] VSCA 113, \[55\]).
+
+4.  If the court determines there are reasonable grounds for the objection, it must inform the witness:
+
+    - that he or she need not give the evidence unless required by the court to do so under s128(4); and
+
+    - that the court will give a certificate under s128 if:
+
+      - the witness willingly gives the evidence without being required to do so; or
+
+      - the witness gives the evidence after being required by the court to do so; and
+
+    - of the effect of the certificate (s128(3)).
+
+5.  The court may require the witness to give the evidence if it is satisfied that the interests of justice require the witness to give the evidence, provided that the evidence does not tend to prove that the witness has committed an offence or is liable to a civil penalty under a law of a foreign country (s128(4)).
+
+6.  The following cannot be used against a person who gave the evidence in any proceeding in a Victorian court or before any person or body authorised by a law of Victoria, or by consent of parties, to hear, receive and examine evidence:
+
+    - evidence given by the person in respect of which a certificate has been given; and
+
+    - any information, document or thing obtained as a direct or indirect consequence of the person having given that evidence (s128(7)).
+
+7.  This protection does not apply to a criminal proceeding in respect of the falsity of the evidence (s128(7)). Nor does it apply to proceedings which are a retrial of the accused for the same offence, or a trial of the accused for an offence arising out of the same facts that gave rise to that offence (s128(9)).
+
+8.  The section does not apply in criminal proceedings where an accused gives evidence that he or she:
+
+    - did an act, the doing of which is a fact in issue; or
+
+    - had a state of mind, the existence of which is a fact in issue (s128(10)).
+
+**Section 128 and the common law**
+
+9.  While the common law privilege against self-incrimination can apply to both judicial and non-judicial proceedings, along with associated procedures like discovery and interrogatories, s 128 is limited to a witness who objects to giving evidence in court (*DPP v Peters* (2019) 59 VR 203, \[74\], \[114\]).
+
+10. Within its sphere of operation, s 128 ousts the common law. Thus, where the issue concerns the privilege against self-incrimination for a witness giving or about to give evidence in court, there is no room for common law principles to apply (*DPP v Peters* (2019) 59 VR 203, \[88\]-\[89\], \[114\]).
+
+**Application and no adverse inference**
+
+11. Absent specific provision in other legislation, s128 applies only in proceedings to which the Act applies. Also, it is implicit that it applies only in respect of 'testimonial disclosure' at a hearing (in all other contexts the common law applies). This is reinforced by s131A which applies most of Part 3.10 to pre-trial processes but specifically excepts s123 and s128.
+
+12. One consequence of the structure of s128, and its application to hearings, is that the section only applies when the witness is giving evidence. A witness cannot refuse to enter the witness box on the basis of the privilege (*Chong v CC Containers Pty Ltd* (2015) 49 VR 402; \[2015\] VSCA 137 at \[236\]-\[237\]).
+
+13. As at common law, no adverse inference should be drawn from the fact that privilege is claimed under s128 (*Versace v Monte* \[2001\] FCA 1572 at \[6\] per Tamberlin J (citing ALRC 26:1 at \[862\])).
+
+14. However, it is likely that claiming the privilege under s128 does not provide an adequate explanation for a failure to call evidence in civil proceedings. This means that the rule in *Jones v Dunkel* may apply to a defendant in a civil proceeding who claims the s 128 privilege (see *Chong v CC Containers Pty Ltd* (2015) 49 VR 402; \[2015\] VSCA 137 at \[221\]-\[229\] and cases cited).
+
+**'... if a witness objects to giving particular evidence, or evidence on a particular matter ...': s128(1)**
+
+**(i) 'witness'**
+
+15. A witness includes a party, a person called by a party to give evidence and an accused (see clause 7, Part 2, UEA Dictionary). However, it does not include:
+
+    - an accused who gives evidence with respect to either an act done by him- or herself, which act is a fact in issue or a state of mind the existence of which is a fact in issue (s128(10)); or
+
+    - an accused in voir dire proceedings (s189(6)).
+
+16. The section protects only the witness. It does not protect the interests of other persons, including a spouse. The possible unreliability of such evidence should affect its weight rather than its admissibility (ALRC 26:1 at \[862\]).
+
+17. In any event, s18 (Compellability of spouses and others in criminal proceedings generally) allows a spouse, de facto partner, parent or child of an accused to object to giving evidence as a prosecution witness.
+
+18. [The High Court, in heavily qualified obiter dicta in *Cornwell v R* questioned whether a witness (including an accused) who wishes to reveal some criminal conduct in evidence in chief, because of the forensic advantage in doing so, should receive the benefit of s128. The dicta considered whether such a witness' objection may be regarded as objecting to giving evidence. The possible forensic advantages identified for the accused in *Cornwell* was avoiding the risk of not being asked questions about the matter in cross-examination and, if asked, having to do so in circumstances less favourable to his interests (*Cornwell v R* (2007) 231 CLR 260; \[2007\] HCA 12 at \[111\]-\[112\]).]{.mark}
+
+19. [The Court expressed concern about straining the meaning of the words \'object\' in s128(1) and 'require' in s128(5), when dealing with a party who is a witness and who clearly wishes to adduce the evidence, but seeks the protection of a certificate. There is, however, no explicit requirement in s128(1) for the judge to consider the motives behind the objection. These are more likely to be relevant under s128(4) when considering whether to compel the witness to give the evidence.]{.mark}
+
+20. [In *Song v Ying*, the NSW Court of Appeal held that any witness who is compellable to give evidence may object to giving evidence without the protection of a certificate at any stage. This includes examination-in-chief and re-examination (*Song v Ying* (2010) 79 NSWLR 442; \[2010\] NSWCA 237 at \[20\] per Hodgson JA (Giles and Basten JJA agreeing); see also *Aitken v Murphy* \[2011\] FamCA 785 at \[114\] per Young J).]{.mark}
+
+21. [However, the NSW Court of Appeal held that s 128 does not apply where a party gives evidence-in-chief, or in re-examination, in response to questions from his or her own lawyer. This is because such evidence is not evidence which the party is compelled to give. A party who wants to give evidence, but only if he or she has the protection of a s128 certificate, does not 'object' to giving that evidence, within the meaning of s128(1) 'because there is no element of compulsion or potential compulsion which makes the expression 'objects' apposite' (*Song v Ying* (2010) 79 NSWLR 442; \[2010\] NSWCA 237 at \[28\] per Hodgson JA (Giles and Basten JJA agreeing). See also *Re Lime Gourmet Pizza Bar (Charlestown) Pty Ltd (formerly under administration)* \[2014\] NSWSC 1898; *Que Noy v Qadir* \[2020\] NTSC 73, \[74\]; *Clayton Utz (a Firm) v Dale* (2015) 47 VR 48, \[164\]-\[180\]).]{.mark}
+
+22. While a body corporate may not claim the privilege, an individual officer of that body, speaking in his or her own right (as opposed to as a representative of the body corporate), may claim the privilege on his or her own behalf (see *Environmental Protection Authority v Caltex* (1993) 178 CLR 477; \[1993\] HCA 74).
+
+**(ii) 'particular evidence, or evidence on a particular matter'**
+
+23. The 2007 amendments to this provision expanded the scope of evidence from 'particular evidence' also to include 'evidence on a particular matter'. This overcomes the need to invoke the s128 process with respect to each question to ensure it can apply to the 'subject matter' of the questions (see ALRC 102 at \[15.95\], \[15.106\]).
+
+24. The phrase 'particular evidence, or evidence on a particular matter' has been interpreted broadly (*Ferall v Blyton* \[2000\] FamCA 1442; *Ollis v Melissari* \[2005\] NSWSC 1016).
+
+25. The provision deliberately avoids distinguishing between giving oral and documentary evidence (ALRC 26:1 at \[862\]; ALRC 38 at \[214\]).
+
+26. While courts originally required the maker of an affidavit to give oral evidence and raise an objection under s128, later decisions have held that a witness who is compelled to make an affidavit may raise the objection without giving oral evidence (see *AMP General Insurance Ltd v Prasad* \[1999\] NSWSC 349 per Hamilton J; *Ross v Internet Wines* (2004) 60 NSWLR 436; \[2004\] NSWCA 195 per Giles JA, (Spigelman CJ and McColl JA agreeing); compare *HPM Industries Pty Ltd v Graham (No 2)* \[1996\] NSWSC unreported, 27 August 1996 per Young CJ in Eq).
+
+27. It is uncertain, however, whether s128 can apply when a witness is not compelled to make an affidavit. Traditionally, courts have allowed a witness or a party to volunteer incriminating statements in an affidavit while simultaneously asserting the privilege under s128 (see *Ferrall v Blyton; A-G* (Cth) (Intervener) \[2000\] FamCA 1442 at \[89\]-\[90\], where the witness objected to filing the affidavit without a certificate; *Sheikholeslami v Tolcher* (2009) 75 NSWLR 418; \[2009\] NSWSC 920).
+
+28. Section 128 does not apply at a pre-trial stage (s131A). When a person objects to making an affidavit, the court must consider whether he or she is \'a witness\' and whether the potential affidavit is for the purpose of giving evidence. The court should not fashion an artificial procedure to compel a person to become a deponent or a witness who is giving evidence, and subvert the operation of the common law privilege against self-incrimination (*Ross v Internet Wines* (2004) 60 NSWLR 436; \[2004\] NSWCA 195; *Pathways Employment Services v West* \[2004\] NSWSC 903). However, see s128A on disclosure affidavits under freezing or search orders.
+
+**'tend to prove ... has committed an offence against or arising under an Australian law or a law of a foreign country': s128(1)(a)**
+
+29. Section 128 only applies to evidence that may tend to prove the witness has committed an offence. It is therefore limited to evidence of past offences, and cannot apply to an offence a witness will commit by giving evidence, such as where the witness will commit answer untruthfully and commit perjury (*DPP v Peters* (2019) 59 VR 203, \[78\], \[114\]-\[115\]).
+
+30. The offence may arise under a written or unwritten law of the Commonwealth, a State or a Territory, or the written or unwritten law of a foreign country.
+
+31. 'Tends to prove' means the evidence sought to be adduced need not prove in fact the commission of an offence or liability. It is sufficient if there are reasonable grounds for objecting on the ground that the evidence may tend to prove the commission of an offence (*Application concerning Section 80 of the Supreme Court Act and Sections 119 and 128 of the Evidence Act* \[2004\] NSWSC 614 at \[20\]-\[24\] per Brownie JA).
+
+32. Evidence will be sufficient to 'tend to prove' the commission of an offence by the witness even if it provides only a 'link in the chain' (*Application concerning Section 80 of the Supreme Court Act and Sections 119 and 128 of the Evidence Act* \[2004\] NSWSC 614 at \[35\]-\[36\] per Brownie JA).
+
+**'is liable to a civil penalty': s128(1)(b)**
+
+33. 'Civil penalty' means a penalty arising under proceedings under an Australian or foreign law excluding criminal proceedings (refer clause 3, Part 2, UEA Dictionary).
+
+34. The common law distinguishes a penalty ('punishment') from damages ('compensation').
+
+35. The common law privilege has been applied in relation to disciplinary penalties imposed by statute (*Police Service Board v Morris* (1985) 156 CLR 397; \[1985\] HCA 9).
+
+36. The privilege is not available for matters that might tend to 'disgrace' a witness, to show him or her to be guilty of forfeiture or adultery or liable to ecclesiastical censure (ALRC 26:1 at \[862\]).
+
+**'reasonable grounds for the objection': s128(2)**
+
+37. The Act does not define or offer guidance regarding the term 'reasonable grounds'.
+
+38. A witness' own apprehension that there is a risk of incrimination is not sufficient to establish reasonable grounds. The court must be able to see that there are reasonable grounds for the objection. This is a matter that must be decided judicially and can require evidence (*Roo-Roofing Pty Ltd v The Commonwealth (Ruling No 5)* \[2018\] VSC 338, \[26\]; *Sorby v Commonwealth* (1983) 152 CLR 281, 289; *Jackson v Gamble* \[1983\] 1 VR 552, 555).
+
+39. The words of the provision are 'reasonable grounds for objection' and not reasonable grounds for the conclusion that the evidence may tend to prove the witness has committed an offence (*R v Bikic* \[2001\] NSWCCA 537 at \[13\] per Giles JA (Sully and Levine JJ agreeing)).
+
+40. His Honour, referring to *R v Boyes* (1861) 121 ER 730 (at 738) (as cited in *Sorby v The Commonwealth* (1983) 152 CLR 281 at 289 per Gibbs CJ; \[1983\] HCA 10), observed that the terms of s128 recall those used at common law. And at common law, a witness could not refuse to answer a question which tended to show he or she had committed a crime for which he or she could not be convicted or punished (*R v Bikic* \[2001\] NSWCCA 537 at \[14\] per Giles JA (Sully and Levine JJ agreeing)).
+
+41. His Honour went on to hold that 'reasonable grounds for objection must pay regard to whether or not the witness can be placed in jeopardy by giving the particular evidence' (*R v Bikic* \[2001\] NSWCCA 537 at \[15\] per Giles JA (Sully and Levine JJ agreeing)).
+
+42. This requires the court to consider whether there is a real prospect of criminal prosecution based on the evidence. Factors such as limitations periods, or the improbability of the answers either directly incriminating, or leading to a trail of investigation which might ultimately lead to prosecution, are relevant to deciding whether there are reasonable grounds for the objection (*Roo-Roofing Pty Ltd v The Commonwealth (Ruling No 5)* \[2018\] VSC 338).
+
+43. The burden of proving there are 'reasonable grounds' lies with person seeking protection of the provision. By s142, the standard is the 'balance of probabilities'.
+
+**'If the court determines there are reasonable grounds for the objection, the court is to inform the witness ... ': s128(3)**
+
+44. If the court finds there are reasonable grounds for a witness' objection under s128(1), s128(3) requires the court to:
+
+    - inform the witness that he or she need not give evidence unless required by the court (s128(3)(a));
+
+    - inform the witness that whether he or she gives evidence willingly or by the court's direction under s128(4), he or she will be issued with a certificate (s128(3)(b)); and
+
+    - explain the effect of such a certificate (s128(3)(c)).
+
+45. There is no express provision for the loss of this privilege. Odgers suggests that questions of waiver may be considered in this context of determining 'reasonable grounds' and it would be relevant to refer to common law principles (Odgers, *Uniform Evidence Law *(2022) at \[EA.128.450\]).
+
+**'The court may require the witness to give the evidence if the court is satisfied ...': s128(4)**
+
+46. Section 128(4) allows the court to compel a witness to give evidence and so subjects the protection against self-incrimination to the exercise of a judicial discretion. If s128(4) is applied, s128(5) requires the court to issue a certificate of immunity. A certificate provides the protection set out in s128(7).
+
+47. Section 128(4) requires the terms of both paragraphs (a) and (b) to be met.
+
+48. In determining whether to admit the evidence, the court must be satisfied that the interests of justice require admission, not merely that the evidence is relevant. This is consistent with the fact that the Act essentially abrogates a common law right (*Gedeon v R* \[2013\] NSWCCA 257 at \[286\] per Bathurst CJ (Beazley P, Hoeben CJ at CL, Blanch and Price JJ agreeing)).
+
+**(i) 'the evidence does not tend to prove ... an offence against ... or is liable to a civil penalty ... under ... a law of a foreign country': s128(4)(a)**
+
+49. ALRC 102 explains that, as a person may be compelled to give evidence and an Australian court cannot guarantee that any certificate issued by it will be respected in a foreign jurisdiction, a legitimate claim to privilege in this context should not be overruled. Thus, a court's ability to compel answers in the interests of justice ought not be removed when it cannot guarantee protection against the risk of incrimination in relation to offences in foreign jurisdictions (at \[15.104\]).
+
+50. This requirement is discussed in *In the Marriage of Atkinson* (1997) 136 FLR 347; (1997) 21 Fam LR 279 where Baker J (at 288) and Lindenmayer J (at 315-16) disagree on the facts of the case about whether its terms have been met.
+
+51. In *R v Lodhi* \[2006\] NSWSC 638, Whealy J was not satisfied the evidence sought to be adduced by the Crown did not tend to prove an offence under a foreign law (*R v Lodhi* \[2006\] NSWSC 638 at \[29\], \[31\]-\[39\] per Whealy J).
+
+**(ii) 'the interests of justice' require the witness to give evidence: s128(4)(b)**
+
+52. The Act does not provide any guidance as to the meaning of 'the interests of justice'. It is for the party seeking to have the witness compelled to give evidence to satisfy the court that the interests of justice 'require' the evidence to be adduced.
+
+53. In determining whether the interests of justice require such action in any given case, it is important to consider the scope and purpose of the provision, as well as what is its real objective. Often, the real purpose of the legislature in using such broad wording is to give the judicial officer scope to give effect to his or her 'view of the justice of the case', while remaining cognisant of the general purpose of the legislation (see *Rich v Attorney General (NSW)* \[2013\] NSWCA 419 at \[19\]--\[20\] per Leeming JA (Bathurst CJ and Beazley P agreeing), citing *Klein v Domus Pty Ltd* (1963) 109 CLR 467 at 473 per Dixon CJ; \[1963\] HCA 54).
+
+54. In *Cureton v Blackshaw Services Pty Ltd* \[2002\] NSWCA 187, Sheller JA observed the term should be 'should be construed broadly and would permit questions to be put going to credit' (*Cureton v Blackshaw Services Pty Ltd* \[2002\] NSWCA 187 at \[37\] per Sheller JA).
+
+55. In *Lodhi*, Whealy J notes this limb requires consideration of 'complex of matters which, by their nature, tend to pull in different directions' (*R v Lodhi* \[2006\] NSWSC 638 at \[40\] per Whealy J).
+
+56. Odgers (Uniform Evidence Law (2022), \[EA.128.540\] suggests that the following factors may be considered when determining whether to admit evidence
+
+    - the importance of the evidence in the proceeding (*R v Lodhi* \[2006\] NSWSC 638 at \[41\]--\[46\]; *Gedeon v R* \[2013\] NSWCCA 257 at \[289\]--\[290\]; *Turco v HP Mercantile Pty Ltd* (No 2) \[2009\] NSWCA 209 at \[24\]--\[25\] per Hodgson JA, at \[30\] per Campbell JA);
+
+    - the likelihood that the evidence will be unreliable even if a certificate is given (*R v Lodhi* \[2006\] NSWSC 638 at \[56\]; *R v Collisson* \[2003\] NSWCCA 212; compare *Turco v HP Mercantile Pty Ltd* (No 2) \[2009\] NSWCA 209 at \[19\]--\[23\], \[27\]--\[28\], \[30\]; see also *The Honourable Tim Smith QC, 'The More Things Change the More They Stay the Same? The Evidence Acts 1995 -- An Overview' (1995) 18 UNSWLJ 1* at 30-31 and *In the Marriage of Atkinson* (1997) 136 FLR 347 at 355-357 per Baker J);
+
+    - if the proceeding is a criminal proceeding -- whether the party seeking to adduce the evidence is a defendant or the prosecutor;
+
+    - the nature of the offence, cause of action or defence alleged in the proceeding (*R v Lodhi* \[2006\] NSWSC 638 at \[47\]);
+
+    - the nature of the offence or liability to penalty to which the evidence relates;
+
+    - the likelihood of any proceeding being brought to prosecute the offence or impose the penalty (*R v Lodhi* \[2006\] NSWSC 638 at \[41\]-\[57\]);
+
+    - any resulting unfairness to a party (e.g., unfairness arising from the party being forced to disclose potentially incriminatory conduct which would not be protected by a certificate for tactical reasons) (*R v Lodhi* \[2006\] NSWSC 638 at \[36\]; *Gedeon v R* \[2013\] NSWCCA 257 at \[292\]);
+
+    - the likely effects of requiring the evidence to be given, and the means available to limit its publication (*R v Lodhi* \[2006\] NSWSC 638 at \[41\]-\[57\] per Whealy J; see also *Attorney-General (NSW) v Borland* \[2007\] NSWCA 201 which considered a similar provision in the *Coroners Act 1980* (NSW));
+
+    - whether the substance of the evidence has already been published;
+
+    - where a charge/s has/have already been brought arising out of the events to which the evidence relates, whether the charge/s have been finally dealt with (*R v Collisson* \[2003\] NSWCCA 212);
+
+    -  if the witness will not be required to give evidence, the way in which the refusal to give evidence is to be approached by the tribunal of fact (thus, in a jury trial, the content of anticipated directions to the jury regarding the approach to any refusal to give evidence) (*R v Hore* \[2005\] NSWCCA 3 at \[218\]--\[219\]).
+
+57. It may be appropriate to consider the question of whether 'the interests of justice require that the witness give the evidence' on a topic by topic basis (*Rich v Attorney General* (NSW) \[2013\] NSWCA 419 at \[45\]-\[49\] per Leeming JA (Bathurst CJ and Beazley P agreeing)).
+
+**Giving a certificate: s128(5), s128(6)**
+
+58. Regulation 9 of the *Evidence Regulations 2009* (Vic) provides that a certificate for the purposes of s128 and s128A of the Act may be in the form set out in Form 1 of the Schedule to those Regulations.
+
+**Effect of a certificate: s128(7), s128(9)**
+
+59. Section 128(7) confers both a use and a derivative use immunity with respect to evidence which is the subject of a certificate in any proceeding:
+
+    - in a Victorian court (see UEA Dictionary); and
+
+    - before any person or body authorised by a Victorian law, or by consent of parties, to hear, receive and examine evidence.
+
+60. The second limb, bodies authorised to hear, receive and examine evidence, was added to the Uniform Evidence Law following an ALRC recommendation in 2005 (see ALRC 102 at \[15.119\]-\[15.121\], and Recommendation 15-9). This was designed to ensure that the certificate was effective in proceedings where the rules of evidence do not apply, such as tribunals.
+
+61. A certificate does not prevent the tender of evidence in criminal proceedings relating to the falsity of the evidence.
+
+62. In addition, pursuant to s128(12)-(13) of the *Evidence Act 1995 *(Cth), the use of evidence covered by a Victorian certificate is prohibited in Federal and ACT courts, in any proceeding for an offence against a law of the Commonwealth or the ACT or for recovery of a civil penalty under a law of the Commonwealth or the ACT. A Victorian certificate will not prohibit the use of the evidence in other State courts or overseas jurisdictions.
+
+63. 'Proceeding' is not defined but, given the inclusion of both courts and tribunals, can be taken to cover any step in an action or suit where there is an issue in dispute between parties and which includes evidence to be adduced, whether or not under the rules of evidence.
+
+64. In *Cornwell v R* (2007) 231 CLR 260; \[2007\] HCA 12, the High Court held that a retrial was not a 'proceeding' to which s128 (as it then was) applied (and so the second trial judge was not bound by a decision made by the first trial judge).
+
+65. The Court observed that, traditionally at a retrial, parties were able to tender evidence of admissions made at the first trial and there were no clear words in s128 (as it then was) to negate that possibility.
+
+66. Section 128(9) was inserted expressly to provide that the prosecution in a criminal trial would, in a retrial (or a trial of the accused for an offence arising from the same facts), be able to tender evidence of admissions made by the accused under the protection of a certificate at the first trial. While this amendment preserves the result of *Cornwell*, the High Court's construction of 'proceeding' remains available.
+
+67. With respect to use of the evidence in cross-examination as opposed to admitting it in the proceeding, in *Bax Global (Australia) Pty Ltd v Evans* (1999) 47 NSWLR 538; \[1999\] NSWSC 815 it was observed that 'there is a plausible view that s128(7) would not prevent the use of the \[evidence the subject of a certificate\] in cross-examination' (*Bax Global (Australia) Pty Ltd v Evans* (1999) 47 NSWLR 538; \[1999\] NSWSC 815 at \[53\] per Austin J).
+
+68. However, as Odgers observes, such use is 'use against the person' within the terms of the provision (Odgers, *Uniform Evidence Law *(2022) at \[EA.128.600\]).
+
+**Challenge etc to the giving of a certificate: s128(8)**
+
+69. Section 128(8) responds to another issue raised in *Cornwell v R *(2007) 231 CLR 260; \[2007\] HCA 12 -- in this instance, when the validity of the certificate is called into question.
+
+70. In *Cornwell*, the Court considered a range of circumstances whereby it would be 'absurd' if the witness were not to receive the protection of a certificate -- for instance, 'merely because the witness and the registry lost all copies of the certificate' (*Cornwell v R *(2007) 231 CLR 260; \[2007\] HCA 12 at \[91\] per Gleeson CJ, Gummow, Heydon and Crennan JJ).
+
+71. A certificate has effect irrespective of the outcome of any challenge to its validity (s128(8)). Section 128(8) recognises that the grant of a certificate under s128 is not the same as any other evidential ruling. To ensure the policy behind s128 is effective, the witness must be certain of being able to rely on a certificate in future proceedings, including even if the certificate was given in error.
+
+**Exception -- evidence of an accused: s128(10)**
+
+72. This subsection provides that, in criminal proceedings, s128 does not apply to the giving of evidence which goes to either an act or a state of mind which is a fact in issue.
+
+73. This is not limited to 'direct evidence'; it extends to 'the giving of evidence by the defendant of facts from which the doing of the act or the having of the state of mind can be inferred' (*Cornwell v R* (2007) 231 CLR 260; \[2007\] HCA 12 at \[84\]).
+
+74. Section 189(6) provides that s128(10) does not apply to a hearing to decide a preliminary question under s189 (The voir dire). Section 189(1) defines a preliminary as a question about whether evidence should be admitted. This means an accused may rely on the privilege against self-incrimination when giving evidence under s189.

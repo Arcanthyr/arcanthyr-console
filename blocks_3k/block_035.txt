@@ -1,0 +1,290 @@
+# Speeding
+
+EIO of officer:
+
+ \
+1.  Identification of the driver 
+
+2.  The speed zone -- was it a built up area or were there speed signs? 
+
+3.  Do the sped signs comply with the legislation is size, and how displayed 
+
+ 
+
+**See section 51 of the Traffic Act -- averment in a complaint is evidence.** 
+
+ 
+
+4.  Was the device used approved?  (see regulation 6 of the *Vehicle and Traffic (Offence Detection Device) Regulations *2012 
+
+5.  Was the device tested within the last 12 months? (see regulation 8 ibid.) 
+
+6.  Has it been repaired, altered or adjusted? (see regulation 8 ibid.) 
+
+7.  Was the device sealed so its speed computing circuitry can not be interfered with? (see regulation 8 ibid.) 
+
+8.  Do we have proof of the device having been tested in the last 12 months?  (see regulation 9 ibid.)  Tender the regulation 10 certificate. 
+
+9.  Was the police officer suitably trained and or experience in the use of the device? See *Wheaton v Wilson* \[2017\] TASSC 40 
+
+10.  Make sure the police officer gives evidence of the serial number of the device that matches the serial number/s on the certificate. 
+
+ 
+
+ 
+
+Get out evidence of the morning testing aciticites the cops do when they set up 
+
+**SPEEDING**
+
+**Speeding -- Proof of certain matters**
+
+Traffic Act 1925
+
+**51.**   **Facilitation of proof of certain matters**
+
+(1)  In any proceeding under this Act --
+
+(l) an averment in a complaint that on a specified day a specified person was --
+
+\(i\) of, over or under a specified age; or
+
+\(ii\) had or had not attained a specified age --
+
+is evidence of the matter so averred; and
+
+(m) an averment in a complaint that on a specified day a specified traffic sign or other device for the control of traffic applied to a specified length of road or area, or to another specified place, is evidence of the matter so averred; and
+
+(n) the production of a certificate purporting to be signed by the Commissioner or Deputy-Commissioner of Police, or by an Assistant Commissioner of Police, and certifying that on or by a specified day a specified person had failed to report to any police officer a specified collision between 2 or more vehicles, or another specified traffic accident or incident, is evidence that that person failed to make such a report on or by that day.
+
+**Speeding -- Speedometer Accuracy**
+
+*Allen v Broome \[2003\] TASSC 38*
+
+Evidence - Burden of proof, presumptions, and weight and sufficiency of evidence - Presumptions - As to scientific instruments - Accuracy of speedometer.
+
+"There is a common law presumption as to the accuracy of readings of scientific or technical instruments of a character which, by general experience, are known to be trustworthy. For a considerable time in a number of jurisdictions it has been accepted that a speedometer is such an instrument and that evidence of a speedometer reading is *prima facie* evidence of that fact without the need for evidence that the accuracy of the speedometer has been tested."
+
+**Speeding -- Prosecution points of proof for Radar and Laser devices**
+
+1\. Identification of the driver
+
+2\. The speed zone -- was it a built up area or were there speed signs?
+
+3\. Do the sped signs comply with the legislation in size (see Regulations 23, 24 and 24 of the Road Rules Regulations 2009) How were they displayed, were they clearly visible? Describe the signs.
+
+4\. Was the device used the approved type supplied by the DPFEM? (see regulation 6 of the *Vehicle and Traffic (Offence Detection Device) Regulations* 2012
+
+5\. Was the device tested within the last 12 months? (see regulation 8 ibid.)
+
+6\. Has it been repaired, altered or adjusted? (see regulation 8 ibid.)
+
+7\. Was the device sealed so its speed computing circuitry can not be interfered with? (see regulation 8 ibid.)
+
+8\. Do we have proof of the device having been tested in the last 12 months? (see regulation 9 ibid.) Tender the regulation 10 certificate.
+
+9\. Was the police officer gives evidence of the serial number of the device that matches the serial number/s on the certificate.
+
+10\. Was the police officer suitably trained and/or experienced in the use of the device? See *Wheaton v Wilson* \[2017\] TASSC 40
+
+**Speeding -- Proving the use of Radar and laser devices**
+
+*Wheaton v Wilson* \[2017\] TASSC 40
+
+17\. Proof of a speed limit offence by use of a radar device is evidence of a fact in issue given by a scientific or measuring instrument. A series of Tasmanian cases has decided that evidence of the result of the operation of a speed analysing device is to be considered in accordance with the three principles advanced in Professor Wigmore\'s work, *The Science of Judicial Proof, *3rd ed, at 220 and following:* Leonard v Newell *[\[1983\] TASRp 11](http://www.austlii.edu.au/au/cases/tas/TASRp/1983/11.html); [\[1983\] Tas R 78](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1983%5d%20Tas%20R%2078) per Green CJ, referring to *Leonard v Weatherburn *A65/1981*;* *Philpott v Boon* [\[1968\] TASStRp 12](http://www.austlii.edu.au/au/cases/tas/TASStRp/1968/12.html); [\[1968\] Tas SR 97](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1968%5d%20Tas%20SR%2097); *Visser v Miller* [\[1986\] TASRp 12](http://www.austlii.edu.au/au/cases/tas/TASRp/1986/12.html); [\[1986\] Tas R 103.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1986%5d%20Tas%20R%20103) The three propositions are:
+
+\"A The type of apparatus purporting to be constructed on scientific principles must be accepted as dependable for the proposed purpose by the profession concerned in that branch of science or its related art. This can be evidenced by qualified expert testimony; or, if notorious, it will be judicially noticed by the judge without evidence.
+
+B The particular apparatus used by the witness must be one constructed according to an accepted type and must be in good condition for accurate work. This may be evidenced by a qualified expert.
+
+C The witness using the apparatus as the source of his testimony must be one qualified for its use by training and experience (§220).\"
+
+18\. There are some mechanical or scientific instruments which are in such common use and which by general experience are known to be trustworthy such as to make their results acceptable in courts as substantially accurate without endorsement by expert evidence. However, a radar speed analyser has not, to date, been accepted as such a device: *Leonard v Weatherburn* at 9*, Leonard v Newell *at 82 and *Visser v Miller* at 109. In *Leonard v Newell* Green CJ added that it would \"not be open to a court to take judicial notice of the nature of the device, how it works, or how it should be used\". However, proof of the first two of the Wigmore propositions is facilitated by legislation.
+
+**Speeding -- Obligation to show the driver the reading on the radar or laser**
+
+*Wheaton v Wilson* \[2017\] TASSSC 40, at para 12 and 13
+
+12\. There was evidence from Constable Adams in one case, and Sergeant Flude in the other, that the radar speed detection device was operated, and that the device displayed the resulting speed measurement. The applicant contends that the evidence of the police about what they did and saw should not have been accepted by the magistrate, and that the magistrate could only have been satisfied of the speed of the applicant\'s vehicle if there had been something like a \"print out\" or photograph of the speed shown on the radar detection device. In the case of the 29 December 2014 offence, the applicant placed emphasis on the evidence that he asked Constable Adams to show him the instrument display on the device, but the display no longer appeared because of something Constable McKenna did, and no evidence was adduced from Constable McKenna.
+
+13\. There is no merit in any of these grounds. Each of the learned magistrate\'s decisions must be considered separately. However, in each case, the applicant has not established that the decision to accept the evidence of the prosecution witness about the result displayed by the radar speed analyser is not one to which the magistrate, as a reasonable man, should have come. [The law imposed no obligation on either police officer to show the applicant the speed display on the device.]{.underline} Both gave evidence of what the display showed and thus the speed the device measured. The learned magistrate was able to hear and observe the prosecution witnesses, and in one hearing, the evidence of the applicant. He enjoyed an advantage in the assessment of the credibility and reliability of each witness I do not share. My review of all of the evidence leads me to conclude that it was reasonably open to the magistrate to be satisfied beyond reasonable doubt of the truth of the evidence given by each witness about the result of the speed measurement. He was entitled to accept the evidence of the police witnesses.
+
+QUESTIONS
+
+Get out evidence of the morning testing aciticites the cops do when they set up 
+
+ 
+
+- Name, rank and current posting  
+
+- How long have you served with Tasmania Police 
+
+<!-- -->
+
+- In what role are you currently serving 
+
+- In what role were you serving on the ...
+
+- What were your specific duties on that day 
+
+- Was anyone tasked to assist you 
+
+- What training have you had that made you an appropriate candidate for such duties  
+
+<!-- -->
+
+- How much experience had you had in that sort of role 
+
+- Where were you positioned  
+
+ 
+
+ 
+
+- What was the designated speed limit of that area of road 
+
+- How did you know that was the applicable speed-limit 
+
+ 
+
+ 
+
+- Can you describe the vehicle? 
+
+- Can you remember the registration number 
+
+- Can you describe what made it come to your attention 
+
+- Was an estimate made of its speed 
+
+- Believing it to be in excess of the applicable speed-limit, what action did you take 
+
+<!-- -->
+
+- What speed did the device record 
+
+- What was the devices serial number  
+
+- What action did you take 
+
+- Did you speak with the driver 
+
+- How would you describe the driver's demeanor 
+
+<!-- -->
+
+- Did the driver identify himself 
+
+- Was his identity confirmed 
+
+ 
+
+, have you much experience using a radar speed analyzer  
+
+ 
+
+- Can you explain the process of using the device  
+
+- Was the functionality of the device tested  
+
+ 
+
+Tender certificate 
+
+Refined updated 2022 questions:
+
+**Speeding -- Prosecution points of proof for Radar and Laser devices**
+
+1\. Identification of the driver
+
+2\. The speed zone -- was it a built up area or were there speed signs?
+
+3\. Do the speed signs comply with the legislation in size (see Rules 21, 22, 23, and 24 of the Road Rules 2019)?
+
+How were they displayed, were they clearly visible? Describe the signs.
+
+4\. Was the device used a radar speed analyser, or a laser speed analyser? (see regulation 6 of the *Vehicle and Traffic (Offence Detection Device) Regulations* 2022
+
+5\. Was the device tested within the last 12 months? - see regulation 8(1)(a)
+
+6\. Has it been repaired, altered or adjusted? - see regulation 8(1)(b)
+
+7\. Was the device sealed so its speed computing circuitry can not be interfered with? - see regulation 8(1)(c)
+
+8\. Do we have proof of the device having been tested in the last 12 months?
+
+\- see regulation 9
+
+9\. Was the testing completed by an employee of
+
+\- a school/uni etc of a registered higher education provider etc., or
+
+\- an organisation accredited by the NATA, Australia
+
+\- an organisation approved by the commissioner
+
+\- see regulation 9
+
+10\. Tender the regulation 11 certificate.
+
+11\. When the police officer gives evidence of the serial number of the device it must match the serial number/s on the device certificate. The witness can not give the device ID number, it must be the serial number.
+
+12\. Was the police officer suitably trained and/or experienced in the use of the device? See *Wheaton v Wilson* \[2017\] TASSC 40
+
+13\. Tender the witness' training certificate/letter.
+
+# Monetary Penalties Enforcement Act 2005 (MPES)
+
+Application to set aside statutory conviction: Section 40. Need to satisfy court that there is valid reason for delay in electing court hearing and that there is a prima facie defence.
+
+**Marriage v Tasmania Police \[2020\] TASMC 4 (6 April 2020)**
+
+App can be consented to by prosecution. There is no need for court to be independently satisfied of anything if there is consent.
+
+# Police Offences Act
+
+### Evidentiary provisions 
+
+Age
+
+**Police Offences Act 1935**
+
+**67. Averment of age *prima facie* proof**
+
+In any proceedings under this Act an averment in the complaint as to the age of any person shall be deemed to be proved in the absence of proof to the contrary.
+
+## Failure to state name and address 
+
+See **Arnesto v Hickman \[2016\] TASSC 26**
+
+## Disorderly / public nuisance etc
+
+Section 13 etc POA
+
+**McDonald, Scott Raymond v Sherrin, Robyn Lynette \[1998\] TASSC 126 (14 October 1998)**
+
+*When dealing with a charge involving disorderly conduct, the correct approach to the evidence is as stated in Watson v Trenerry, an unreported decision of the Supreme Court of the Northern Territory dated 3 October 1997 where Martin CJ said:*
+
+*\"It is for the tribunal of fact to say whether matters established before the tribunal or any of them in fact constitute disorderly behaviour (per Zelling J in Samuels v Hall [\[1969\] SASR 296](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1969%5d%20SASR%20296?stem=0&synonyms=0&query=poa1935140%20s13) at p309, and Mitchell J pointed out in Ellis v Fingleton [(1972) 3 SASR 437](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281972%29%203%20SASR%20437?stem=0&synonyms=0&query=poa1935140%20s13) at 440 that \'Whether conduct is disorderly \... is to be decided by an objective test.\' It is a matter of judgment for the court drawing upon \'its own experience and knowledge of life\' per Bray CJ in Romeyko v Samuels [(1972) 2 SASR 529](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281972%29%202%20SASR%20529?stem=0&synonyms=0&query=poa1935140%20s13) at p564.\"*
+
+**Kim Hibble v Jody William Phegan, Kim Hibble v Dean Mark Jenkins David John Brooks v Leigh Andrew Phegan, Kim Hibble v Kim Maree Ogden, David John Brooks v Andrew David Hulse Files \[1997\] TASSC 52 (20 May 1997)**
+
+*60... "In order to sustain a charge under the Act, s13(1)(c) it is sufficient to show that the conduct complained of, according to the time, place and circumstances, offends against public decorum and is calculated to disturb, alarm or annoy (Kruger v Humphreys [\[1968\] SASR 75)](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1968%5d%20SASR%2075?stem=0&synonyms=0&query=poa1935140%20s13)"*
+
+**McDonald, Scott Raymond v Sherrin, Robyn Lynette \[1998\] TASSC 126 (14 October 1998)**
+
+The word \"disorderly\" is not defined by the [Act](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/).
+
+In *Hebble v Phegan* 50/1997 at 13, Zeeman J said of a charge of engaging in disorderly conduct in a public place in breach of the [Act](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/), ![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}** [s13(1)(c)](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s13.html) **![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"} that in order to sustain the charge \"it is sufficient to show that the conduct complained of, according to the time, place and circumstances, offends against public decorum and is calculated to disturb, alarm or annoy (*Kruger v Humphries* [\[1968\] SASR 75)\".](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1968%5d%20SASR%2075?stem=0&synonyms=0&query=poa1935140%20s13)
+
+*In Barrington v Austin & Ors [\[1939\] SASR 130](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1939%5d%20SASR%20130?stem=0&synonyms=0&query=poa1935140%20s13), Napier J at 132 said that disorderly behaviour refers to \"any substantial breach of decorum which tends to disturb the peace or to interfere with the comfort of other people who may be in, or in the vicinity of, the street or public place\". In Melser & Ors v The Police [\[1967\] NZCA 5](http://www.nzlii.org/nz/cases/NZCA/1967/5.html); [\[1967\] NZLR 437](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1967%5d%20NZLR%20437?stem=0&synonyms=0&query=poa1935140%20s13), the judges of the Court of Appeal all expressed views to the effect that conduct which is the subject of a complaint of disorderly conduct must do more than seriously offend against recognised values of orderly conduct and must be likely to cause a disturbance or to annoy others. North P at 443, Turner J at 444 and McCarthy J at 446.*
+
+*In Reeve v Cornish 3/1973, Crawford J relied on Barrington v Austin & Ors (supra) and Melser & Ors v The Police (supra) when considering what amounted to disorderly conduct for the purposes of the [Act](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/), [s10(1)(a).](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s10.html) The passage quoted above from the decision of Napier J in Barrington v Austin & Ors (supra) has been approved by the Full Court in South Australia and favourably cited in nearly all of the authorities I have read on disorderly conduct.*
+
+*It is clear from the authorities I have read that the limits of disorderly behaviour cannot be sharply defined. Subject to that qualification, I proceed on the basis that to obtain a conviction, the applicant had to satisfy the learned magistrate that the conduct complained of, viewed in the light of the surrounding circumstances, was a substantial breach of public decorum which was likely to disturb, alarm or annoy others.*
+
+### Nuisance: 
+
+**Lusted v Van der Meer \[2012\] TASMC 8 (23 February 2012)**
+
+\[25\] *To commit a nuisance contrary to this provision the conduct must amount to a public nuisance. To do so it must materially affect \"Her Majesty\' s subjects generally or at least a class of Her Majesty\'s subjects\"; see Richter v Risby and Others [\[1987\] TASSC 4](http://www.austlii.edu.au/au/cases/tas/TASSC/1987/4.html); [(1987) Tas R 36](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281987%29%20Tas%20R%2036?stem=0&synonyms=0&query=poa1935140%20s13) per Cox J at 30-34. A public nuisance is an act or omission which materially affects the reasonable comfort and convenience of the life of a class of the public. Obstruction of a public highway may amount to such a nuisance, depending upon the degree and length of time and reasonableness of the obstruction. Wallace v Powell and Ors [\[2000\] NSWSC 406.](http://www.austlii.edu.au/au/cases/nsw/NSWSC/2000/406.html) It is not necessary to have evidence of annoyance, inconvenience or discomfort to particular persons before there can be a conviction; Smith v Cornish [\[1971\] Tas SR 383 (NC](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1971%5d%20Tas%20SR%20383) 17)*

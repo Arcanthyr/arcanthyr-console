@@ -1,0 +1,279 @@
+### 
+
+Common law principle of liability: "joint criminal enterprise"
+
+Can find them guilty where satisfied beyond reasonable doubt that the parties had reached an understanding to commit that crime, and that it was committed in accordance with that understanding, in which case each was responsible for what the other one did."
+
+**Shaw v Tasmania \[2022\] TASCCA 2 (7 March 2022)**
+
+Definition of abets:
+
+\[18\]  
+
+*In our s 3(1)(c), \"abets\" means \"encourages\":  It is possible for a person to abet the commission of an offence merely by being present at the place where it is committed:  Encouraging the commission of an offence in that way has been regarded in Queensland as aiding the commission of the offence.*
+
+ A person who intentionally assists the offender who commits a crime would be guilty of that crime under s 3(1)(b) of the Code as a \"person who does any act or makes any omission for the purpose of enabling or aiding another person to commit the crime\". A person who intentionally encourages an offender to actually commit a crime can be guilty by virtue of s 3(1)(c) as a \"person who abets another person in committing the crime\"
+
+69 A person who, at common law, would be regarded as a party to a joint criminal enterprise, but who does not actively take part in that enterprise, might incur criminal liability as an abettor pursuant to s 3(1)(c). A person who is merely present at the scene of a crime will incur criminal liability as an abettor if he or she intends, by mere presence, to encourage the offender and if the offender is in fact encouraged by that person\'s mere presence: *Hutt v The Queen *(above) at \[51\] per Underwood J (as he then was), with whom Cox and Crawford JJ (as they then were) agreed.
+
+\[76\] In our view it is clear that the words \"every person who actually commits the crime\" in s 3(1)(a) must be given their ordinary literal meaning, and must not be interpreted as including every person present when a crime is committed who has reached an understanding or arrangement with a person who actually commits the crime that it will be committed. In other words, s 3(1)(a) is not to be interpreted as somehow restating the common law as to the criminal liability of parties to joint criminal enterprises. The Crown\'s contentions as to the scope of s 3(1)(a) must be rejected. The learned trial judge directed the jury on an erroneous basis.
+
+Section 4:
+
+Not so limited as to apply only to offence b when intent was to commit offence a. "a" can be said to be a probable conseuqnece of intending to commit "a"!
+
+\[86\]T... The foundation of criminal responsibility under s 4 is the \"mutual embarkation on a crime\". The section establishes the ambit of criminal responsibility by participants while carrying out a common unlawful purpose. In contrast to the common law, the Code defines this ambit by requiring a connection of objective probability between the common purpose and the committed crime.
+
+\[83\] *Interpreted in this way, criminal responsibility will arise when:*
+
+*(a) two or more persons form a common intention to prosecute an unlawful purpose in conjunction with one another, and*
+
+*(b) a crime is committed in the prosecution of such unlawful purpose, and*
+
+*(c) the crime committed is of such a nature that its commission is a probable consequence of the prosecution of the unlawful purpose.*
+
+*83 Provided the requisite connection is established between the unlawful purpose and the crime, there is nothing in the text of the provision which suggests that its operation should be limited by excluding crimes which are included within the intended scope of the unlawful purpose. Obviously, the provision extends the ambit of responsibility beyond this, by applying an objective test of probable consequence. However, this prescribes the outer reach of the provision. It does not expressly or impliedly exclude intended crimes. Self-evidently, a crime which is intended will meet the objective test of \"probable consequence\".*
+
+\[87} "...The criminal responsibility of the person should be determined by application of the test prescribed by s 4 according to its terms. Under that test, a person will be responsible for any crime committed in the prosecution of the common purpose, provided that the crime is of such a nature that its commission was a probable consequence of such prosecution, including those where the test is satisfied because the crime was expressly agreed or contemplated by the common purpose. The intention of the provision is to attribute criminal responsibility to all such crimes, on the basis of their connection to the prosecution of the unlawful purpose, irrespective of the contribution actually made by the person as defined in s 3. The section defines the limits of criminal responsibility arising from the prosecution of common purpose. There is no justification for excluding crimes which fall within that ambit from attribution of criminal responsibility."
+
+100 As already noted, a consequence of the wider interpretation is the potential for considerable overlap between ss 3 and 4, because in cases in which the crime committed is that which is intended by the participants, criminal responsibility will almost certainly arise under both provisions. We see no difficulty either in principle or in practical application with this outcome. In fact, we would consider it to be the expected and appropriate effect of provisions which attribute criminal responsibility to those complicit in a crime on more than one basis. Certainly, under s 3 it is common for criminal responsibility to arise under more than one provision. We accept that there is a practical danger that relying on both provisions in every case to which both may apply on the facts, could lead to unnecessarily complicated directions, and thereby create confusion for juries. Any such problem is capable of amelioration by the exercise of appropriate discretion on the part of the prosecution. As a matter of practice, resort should only be had by prosecutors to s 4 in cases where, on the facts, there may realistically be a need to rely on the extended ambit of the provision in order to attribute criminal responsibility, or where there is clear evidence of a preformed common unlawful purpose, which is additional to inferences drawn from the conduct of the parties in the commission of the crime. In any event, practical issues concerning the potential for overlap of the provisions will not \"deny their separate utility\".
+
+108 In relation to the arson charge, the Crown bore the burden of proving beyond reasonable doubt that the fire was deliberately lit, that it was lit with an intention to set fire to the building, and that the appellant was criminally responsible for the commission of the crime.
+
+12-15
+
+*Evidence of a consciousness of guilt*
+
+**Smith-Towns v Tasmania** \[2019\] TASCCA 22 (23 December 2019) look at last para - maybe Tas authority sort of in line with Chong that of the particulars are too specific we may be limited to them (that is don't specify what type of assault - just leave it\...
+
+<https://aus01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fwww8.austlii.edu.au%2Fcgi-bin%2Fviewdoc%2Fau%2Fcases%2Ftas%2FTASCCA%2F2019%2F22.html&data=05%7C01%7Cthomas.hogan%40police.tas.gov.au%7C02f4f0e61954481717ec08db29f67d6c%7Ced13a8afa76343dcb114891492b38482%7C0%7C0%7C638149910866035625%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=XfZaUwGv64bV5le50VaORj1mzbPeNsazA7%2B1qK3c5os%3D&reserved=0>
+
+***Smith-Towns v Tasmania \[2019\] TASCCA 22*** (23 December 2019) from about para 80' onwards has a good discussion about whether guilt can be found when outside of specific complaint (I.e in robbery particulars said
+
+**R v Chong \[2012\] QCA** 265 (28 September 2012) case that says bound by specific particulars - take away - keep it broad. You're allowed to, and Defence are then on notice as to all options upon which they can be
+
+Can particulairse different ways a single act may amount to an assault:
+
+The original charge as particularised by the Crown was: "the assault as one where the appellant "threw, or threatened to throw, a rock or piece of concrete" in the direction of the complainant police officer."
+
+The trial judge said this was duplicitious and that they had to narrow the particulars or lay two discreet charges as there was pne more than one act involved; one for threaten and one for attempt but if only a single act were involved, it was incumbent on the Crown to elect whether it would proceed on the basis that the appellant threw the rock, or that she threatened to throw it, since either would constitute an assault.  As a result, the Crown provided amended particulars, alleging that the appellant "threw a rock or piece of concrete" in the direction of the complainant police officer.  The trial then proceeded on that basis.
+
+Blah blah blah some other stuff, but in the end on appeal they held that the trial judge had made a mistake in forcing the crown to amend their particuylars.  
+
+"When assessing whether a miscarriage of justice had occurred because the Crown was permitted to depart from the particulars of the charge it had given at the start of the trial, Holmes JA first observed it was not necessary for the Crown to have made the election it did. Her Honour noted the case was not one of latent ambiguity in which there was more than one occasion which might be embraced by the count and the particulars given of it. Rather, it involved a single course of conduct and the only conflict in the evidence was as to its extent: whether the appellant's conduct was simply running in the direction of the complainant with a rock held over her head, or whether it included the further step of actually throwing it at the complainant. Her Honour considered the first scenario could properly be characterised as a threat to apply force within the meaning of s [245](https://jade.io/article/529633/section/1064) of the [*Criminal Code*](https://jade.io/article/529633), and the second as an attempt to do so.[^\[7\]^](https://jade.io/#_ftn7)"
+
+Liability -- without prejudice basis anticipate blade and kid as principles.
+
+Not set in stone -preliminary assessment.
+
+Aligation 2 have entered
+
+Particularisation
+
+***B v Visser***
+
+\[2\] "Wilfully" -- includes recklessly so that arson may be committed if the accused deliberately does a willed act, aware that setting fire to a particular building is a likely consequence of that act, and if he or she recklessly does that act, regardless of that risk: *R v Hodgson* \[1985\] Tas R 75; *R v Gardenal-Williams* \[1989\] Tas R 62.
+
+\[4\] To find guilty by aiding or abetting: it is necessary for the prosecution to prove that he knew all the essential facts which made his companion\'s act a crime, and that he intentionally aided or abetted his companion\'s act of \"posting\" the burning paper: *Giorgianni v R* (1985) 156 CLR 473. It was thus necessary for the prosecution to prove that the applicant knew his companion was contemplating putting a burning paper into the letterbox, and either knew that his companion intended thereby to set the building on fire or knew that his companion was aware of the likelihood of that consequence and recklessly indifferent to it. Thus one of the facts the prosecution had to prove was that the applicant, at the time of lighting the paper, knew of the likelihood that putting the burning paper in the letterbox could result in the building catching fire. Little turns on the point that it was knowledge of the likelihood of that consequence, as distinct from foresight of the likelihood of that consequence, that needed to be proved in relation to the applicant.
+
+\[5\] The Code, s4, may have provided another basis for the prosecution case, quite apart from aiding and abetting. There was a live issue as to whether the evidence was sufficient to establish that the applicant joined his companion in forming a common intention to prosecute an unlawful purpose by putting the burning paper in the letterbox, or whether he was indifferent as to whether his companion would prosecute that purpose, and thus did not share any common intention.
+
+*Baker v Smith* \[2021\] QCA 66
+
+From para 7.
+
+## Section 50. Domestic discipline
+
+It is lawful for a parent or a person in the place of a parent to use, by way of correction, any force towards a child in his or her care that is reasonable in the circumstances.
+
+Three principles (from Lane v James \[2010\] TASMC 19)
+
+- Punishment must be moderate and reasonable
+
+- Must have a proper relationship to the age, physique and mentality of the child
+
+- The punishment must be carried out with a reasonable means or instrument
+
+# Charging as accessory or principle 
+
+Section 73 of the Justices Act or section 3 of the CODE:
+
+# Attempts
+
+### For complaints:
+
+**ACTS INTERPRETATION ACT 1931 - SECT 34**
+
+**34. Attempt to commit any offence to be an offence**
+
+Where by any Act an offence is constituted, any attempt to commit such offence shall be an offence and be punishable in the same manner as the offence constituted by such Act.
+
+**CRIMINAL CODE ACT 1924 -- SECT 299**
+
+**299.**   **Attempts to commit crimes**
+
+Any person who attempts to commit a crime is guilty of a crime.
+
+Charge:  Attempting to commit \[*specify particular crime*\].
+
+*R v Hodgson* \[1985\] TASSC 40
+
+91 Attempts to commit a crime require an actual intention to bring about the proscribed consequence (*R v Bell *[(1972) Tas SR 127](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281972%29%20Tas%20SR%20127?stem=0&synonyms=0&query=arson) and *Haas v The Queen* [(1964) Tas SR 1).](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281964%29%20Tas%20SR%201?stem=0&synonyms=0&query=arson) In the same way it seems to me that Parliament might consistently require that the doing of potentially injurious acts not in fact causing injury should be accompanied by a like intention. One imagines that these acts are prohibited if accompanied by such an intention because they may not be sufficient in law to constitute an attempt to commit some crime involving actual damage by virtue of their not having gone beyond the merely preparatory stage, and yet obviously it is highly threatening to society, that such acts, if done with an intention to cause injury, should be tolerated.
+
+Alternative convictions for attempts where actual not proven
+
+Section 74 Justices Act 1959 for dimple offences
+
+Section 342 Criminal Code Act 1924 for indictable
+
+# Bail
+
+## Repeated applications
+
+*Trotter v The Queen* \[1977\] Tas SR 75 to HH\'s attention, where Green CJ makes comment on repeated bail applications - how, once bail is refused on its merits, a second application ought not be considered unless there are material changes in circumstances.
+
+## Bail Hearing flow chart
+
+### **Introduction:**
+
+If an after Hours Court, introduce yourself to the JP. State the date and time and introduce the defendant by name and DOB
+
+Ask the defendant to stand -- and identify him by asking him if he is x
+
+- Read the charges in full
+
+- Make application for IFVO if there is a FVO apo
+
+*"There is an application for a family violence order before you, and the Prosecution seek that on an interim basis until the resolution of these matters."*
+
+### **State the basis of the opposition:**
+
+**Concern that def will not turn up to court to answer the charge**
+
+"The defendant has a demonstrable tendency to avoid/ disregard / and or frustrate the criminal justice process".
+
+**Contrary to the public interest in that the defendant is likely to continue offending**
+
+There is a strong public interest in preventing the defendant from committing further serious offending. The defendant was granted the benefit of bail
+
+**Section 12 Family Violence Act**
+
+*"The court cannot be satisfied that the defendant's release would not be adverse to the safety, wellbeing and interests of the person to be protected"*
+
+**[Remember s 12 *FV Act* for FV matters, and s 35(2) *Justices Act* for RO matters, the onus is reversed.]{.mark}**
+
+### **The "current" matter that sees them before the court today:**
+
+Advise court of the incident which brings the def before the court mention the nature of the charges (if not done already, and read the facts for prosecutor
+
+Tender photos or other evidence available
+
+- Make submission as to strength of the case
+
+- The seriousness of the matter and the likelihood of conviction
+
+- Consider likely period of incarceration if convicted against likely period of remand
+
+<!-- -->
+
+- Given the above, what incentive does he have not appear on the next occasion???
+
+### **Circumstances of arrest**
+
+Be sure to highlight any aggravating circumstances surrounding the def's apprehension, such as trying to evade arrest
+
+- Was he on the run?
+
+- Did he cooperate with Police?
+
+- Does the defendant appreciate the severity of the situation? Or make threats?
+
+I.e. Defendant says in interview or in an afterhours court that they have done nothing wrong, or that their conduct shouldn't/ doesn't amount to a crime/offence -- anything to demonstrate the person does not appreciate the significance of the allegation, and their inability to see it as offending behavior
+
+**[This is particularly important for Section 12 as "*Demeanor*" is a legislative consideration.]{.mark}**
+
+**Consider child/ren at scene:**
+
+- Was there a child present? Could they hear? Were they subject to the consequences of the offending (i.e. seeing the parents in a state of distress?)
+
+*"Master, x was born on the 8^th^ of November 2011"*
+
+- He is said to have been present at both family Violence incidents
+
+- On both occasions witnesses have reported that he was screaming and crying
+
+Under section 13 sub-s (a) the court may consider the defendants may consider the offences to be aggravated.
+
+### **Pending matters:**
+
+Advise the court of any other pending matters the def may be facing (see CRIMES)
+
+Read the facts of those if FV matters
+
+Conclude*: It is for these reasons, your honor, that I submit that the defendant should be remanded in custody.*
+
+### **Tender Priors:**
+
+If a defendant refuses to accept priors, seek to have them remanded until certificates of conviction can be obtained from relevant courts
+
+- Identify those relevant for the opposition
+
+- Identify similar parties, such as previous FV victims
+
+- Identify any breaches which may arise if conviction follows (i.e. Sus-S or UT)
+
+- Remember -- breaches of court disqualifications still amount to breaches of court orders!!!
+
+### **Closing Submission examples:**
+
+*The family violence creates a presumption against bail. The onus is on the respondent to displace the presumption*
+
+*The history of his breaches should leave no confidence that he will comply with the conditions of bail he submits would protect the complainant,*
+
+*There are no grounds upon which the defendant can assure you that the existence of a family violence order would have any effect*
+
+- *He has a history of violence*
+
+- *A history of non-compliance with authorities,*
+
+- *He has displayed a disregard for the law and contempt for the force of court orders.*
+
+- *He has not been deterred by sentences of actual and suspended imprisonment*
+
+- *The history of his breaches gives me no confidence that he will comply with the conditions of bail he says will protect the complainant.*
+
+- *the respondent\'s release on bail would pose a continuing risk to the complainant and her children.*
+
+*And it is for these reasons, and those made, your honor, that I submit that the defendant should be remanded in custody pending determination.*
+
+If I can be of no further assistance to the court, that concludes the Prosecution's submissions.
+
+## Police Bail: 
+
+*Justices Act* 1959, ss 34, 34A & 35
+
+If denied by Police, s4 of the *Criminal Law (Detention and Interrogation) Act* 1995 applies and requires the police to bring the accused before a justice in a reasonable time.
+
+## Relevant considerations when opposing bail 
+
+Save for s. 12, principle question is: ***whether there is a reasonable likelihood that the accused will be present at the hearing***. Bail is not to restrict lifestyle pending hearing or to impose punishments, but serves the purpose of non-interference with witnesses and the ***securing of attendance at trial***.
+
+- Public interest
+
+- Family ties
+
+- Employment
+
+- Property
+
+- Prior Criminal record
+
+- History of turning up or not turning up to court
+
+- The probability of conviction or strength of the evidence Strength of the prosecution case
+
+- Severity of the penalty that may be imposed.
+
+- Likelihood of D interfering with witness
+
+- Whether remaining in custody will prejudice their case

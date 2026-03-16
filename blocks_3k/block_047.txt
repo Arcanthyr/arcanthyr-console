@@ -1,0 +1,349 @@
+### More tendency and coincidence 
+
+Tendency/Coincidence Rules -- a purpose rule Hearsay, for what purpose is the evidence being used 
+
+However, to avoid application of the provision it will not be sufficient to assert that the evidence is relevant to prove something other than 'tendency' but to demonstrate that the evidence is relevant to a fact in issue by a process of reasoning which does not involve the drawing of an inference from evidence of tendeny to conforming behavior.  
+
+ 
+
+1.  Is it evidence to act in a 'particular' war or 'particular' state of mind? 
+
+<!-- -->
+
+i.  S 97: Tendency Rule (eg. Reputation)  
+
+<!-- -->
+
+1.  Tendency evidence is evidence that is used to prove the person had a tendency to act in a particular way or to have a particular state of mind. 
+
+<!-- -->
+
+2.  R v PWD "Proof of a tendency to act in a particular way of itself goes nowhere. Evidence that a person had a particular tendency is adduced in order to render [more probable the proposition that, on a particular occasion relevant to the proceedings, that person acted in a particular way (or had a particular state of mind); that is, to provide the foundation for an inference to that effect[. ]{.mark}]{.underline}[Put another way, tendency evidence is tendered to prove (by inference), that, because, on a particular occasion, a person acted in a particular way (or had a particular state of mind), that person, on an occasion relevant to the proceeding, acted in a particular way (or had a particular state of mind)." "Section 97 is not directed only at evidence showing a tendency to commit a particular crime but showing a tendency 'to act in a particular way']{.mark}. In this case it was directed to showing that the appellant had a tendency to use violence to the complainant and to seek to control her in stressful marriage situations, and was relevant to whether he did by his actions on the night in question effectively 'detain' her; but it was not necessary for this purpose to show that he had detained her on any other occasion." 
+
+<!-- -->
+
+b.  S 98: Coincidence Rule ('related events') 
+
+<!-- -->
+
+2.  Is it admissible? 
+
+<!-- -->
+
+a.  Admissible only if of 'significant probative value' 
+
+<!-- -->
+
+i.  S 97 
+
+<!-- -->
+
+ii. ***CGL v DPP (Vic) \[2010\] at \[22\]*** Sexual assault case; whether the different complainants charges should be heard separately. 22 Accordingly, the questions to be addressed in relation to coincidence evidence are as follows: 
+
+1\. Are the similarities in the specified events and/or in the circumstances in which they occurred such that it is improbable that the events occurred coincidentally? 
+
+2.If so, would the evidence of those events and circumstances tend to prove that the accused: 
+
+(a)did the specified act; or 
+
+(b)had the specified state of mind 
+
+where doing that act or having that state of mind is a fact in issue or is relevant to a fact in issue? 
+
+3.If so, does the evidence have *significant* probative value, either by itself or having regard to other evidence adduced or ought to be adduced by the prosecution? 
+
+4.If so, does the probative value of the evidence *substantially* outweigh any prejudicial effect it may have on the accused? 
+
+iii. R v PWD The authorities are clear that for evidence to be admissible under s 97 there does not have to be striking similarities, or even closely similar behaviour. 
+
+<!-- -->
+
+1.  Exceptions 
+
+<!-- -->
+
+a.  S 100: Direction by Judge 
+
+<!-- -->
+
+b.  S 97(2)(b): adduced to rebut other parties' tendency evidence 
+
+<!-- -->
+
+2.  Case Law 
+
+<!-- -->
+
+a.  Jacara v Perpetual Trustees 
+
+<!-- -->
+
+b.  Lockyer:  
+
+<!-- -->
+
+i.  Something more than mere relevance, but less than a substantial degree of relevance  
+
+<!-- -->
+
+ii. It must also be important or of consequence  
+
+<!-- -->
+
+c.  Townsend v Townsend 
+
+<!-- -->
+
+iv. S 98 
+
+<!-- -->
+
+1.  (2): 'related events' if 'substantially or relevantly similar' 
+
+<!-- -->
+
+a.  *DSJ v The Queen*  'In my opinion, it is plain that s 98, in its terms, poses this simple question: whether the evidence being considered is capable, to **a significant degree, of rationally affecting the assessment (ultimately by a jury) of the probability of the existence of a fact in issue.' \[and\] '**if a hypothetical jury would think it unlikely that the evidence were important in relation to the facts in issue then the trial Judge might the more readily conclude that the evidence lacks the capacity required for admissibility.'  
+
+<!-- -->
+
+b.  *R v PWD (2010)* Section 98 provides in terms that two or more events occurring is not admissible to prove that a person did a particular act, on the basis that, *having regard to any similarities* in the events or the circumstances in which they occurred, or any similarities in both the events and the circumstances in which they occurred, it is improbable that the events occurred coincidentally unless, the evidence has significant probative value. \[...\] In *PNJ*, the Victorian Court of Appeal acknowledged that under the express provision in s 98, similarity is an important factor from which probative force is derived under s 98 
+
+<!-- -->
+
+2.  W v The Queen: If not a 'related event', s 137 applies.  
+
+<!-- -->
+
+a.   In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant. 
+
+<!-- -->
+
+v.  S 95 
+
+<!-- -->
+
+1.  Makes it clear that unlike hearsay and Character, if the evidence is admitted for another purpose, the section for tendency/coincidence must still be satisfied; it cannot automatically be used for coincidence just because it has been admitted for another purpose.  
+
+<!-- -->
+
+b.  Proceedings 
+
+<!-- -->
+
+i.  Civil: apply 'significant probative value' test 
+
+<!-- -->
+
+ii. Criminal: offered by Crown about D -- s 101 Further restrictions on tendency evidence and coincidence evidence adduced by prosecution 
+
+<!-- -->
+
+1.  S101(2): Probative value must substantially outweigh prejudicial effect 
+
+<!-- -->
+
+2.  S 101(3/4): Inapplicable if defendant 'opens the door' 
+
+<!-- -->
+
+3.  Reasonable notice to be given to other parties: s 97-100
+
+## Opinion evidence:
+
+Per s 79 -- a report previously written, is not "hearsay" though it is an out of court previous representation. It is evidence of an "opinion." It is not evidence of a prior rep adduced to prove an asserted fact in the representation.
+
+### Underlying facts need not be proved:
+
+As to the question: of whether proof of the facts and assumptions upon which expert opinion is based is a necessary precondition of admissibility under [s 79](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s79.html) of the Act and, if not, the consequences of lack of such proof on the probative value of the opinion.
+
+\"In my view the evidence to which I have referred should be admitted. It is not adduced as evidence of the truth of the representations made to him, see [section 59](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s59.html), moreover by [section 60](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s60.html) of the [Evidence Act](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/) the hearsay rule does not apply because the evidence is relevant for a non-hearsay purpose, that is, as evidence of the basis of an expert\'s opinion."
+
+Need not prove the underlying facts upon which the opinion is based. However, proof, or lack thereof will go to weight ***Langford v Tasmania \[2018\] TASCCA 1 (18 January 2018) at para 38***
+
+**At 44** *"... provided that the opinion is relevant, even if only tenuously so, and satisfies the conditions of admissibility set out in [s 79](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/ea199580/s79.html), the failure to prove underlying factual assumptions may affect the weight to be attributed to the opinion, but not its admissibility. Apart from the extreme case just discussed, weight will never affect relevance, and hence admissibility under [s 55.](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/ea199580/s55.html) This point was also made in IMM at \[40\]"*
+
+## Lay opinion
+
+Remember s. 78 exception allowing lay opinion representations to be made by a witness if they submit an opinion of what happened to better give descriptive weight of what they saw, heard, or otherwise perceived. Not direct evidence, but admissible to give the court a better description of what they were in fact able to perceive.
+
+## Expert evidence 
+
+Expert evidence is an exception to hearsay evidence. It is relevant as the basis of an expert's opinion
+
+**BRENT as an expert witness under s. 79.**
+
+Q: What is your training and experience with respect to identifying controlled plants or products, specifically for cannabis
+
+**Dot points:**
+
+- How long on the job
+
+- Years in uniform
+
+- Years as a specialist investigator/ detective
+
+- Time spent in specialist roles? Drug/ CIB secondments?
+
+- Specialist lessons/ seminars at the Academy
+
+- Specialist courses? Specialist conferences?
+
+- Internal training with Forensics?
+
+- Time posted to Western Drugs
+
+- Promoted to rank of Sgt at western dugs
+
+- During these roles, have or haven't been directly, or indirectly involved in countless incidents involving the seizure of controlled plants. Have seen it, processed, had cause for it to be subject to examination to confirm your assessment?
+
+- In every/ most/ some instance a presumptive test or full analysis has been performed on a product I have identified as cannabis, it has been confirmed?
+
+Q: Would you accept the proposition that you have specialised knowledge with respect of the identification and seizure of Cannabis?
+
+A: Yes or no
+
+- **[submit to court that witness is qualified to present expert opinion]{.mark}**
+
+Q: Sgt, was this the exhibit that was admitted by the def, and seized during the course of your search?
+
+A: Confirm... or not
+
+Q: You've had an opportunity to examine that exhibit?
+
+A: Yes or no
+
+Q: Based on your training. Study and experience, can you provide the Court with your opinion as to what that exhibit is?
+
+### Other evidence that can be given:
+
+Police can give evidence that in carrying out numerous investigations into drug-related offences they had become familiar with the forms of communication used by people involved in that sort of activity.
+
+### Expert reports:
+
+All cited with approval in **Jackson v The State of Western Australia** \[2025\] WASCA 33 
+
+- A report is not evidence of a previous representation made by a person cannot be used to prove the existence of a fact
+
+- That methylamphetamine can be diluted by the use of \'cutting\' agents, including dimethyl sulfone or \'MSM\', in order to increase the weight of the drug and, in turn, its profitability. 
+
+- gave evidence about the way in which methylamphetamine is commonly used.  He said that it can be smoked in a glass smoking implement and also explained some of the slang that is used by drug users. 
+
+- gave evidence about the value of methylamphetamine.  According to Detective Buchan, the coronavirus pandemic affected the availability and therefore the price of methylamphetamine at the relevant time.
+
+- about the things that are commonly found in the possession of people who are engaged in drug dealing, including plastic clipseal bags, electronic scales, vacuum sealers and mobile telephones.  Detective Buchan explained that scales may be used by both drug buyers and sellers to weigh drugs to ensure that the correct weight is being sold, and that payment is almost always made using cash. 
+
+- bout the fact that drug dealers often use multiple mobile telephones, and that it was common for them to have access to encrypted devices and applications, including dedicated encrypted communication devices such as \'Cipher\'.
+
+- the structure of established drug dealing networks.
+
+### How to ID docs over video link:
+
+After establishing id and quals, and confirm a report was generated by the witness, and whether they have a copy with them, seek leave for witness to refer to document to describe id factors (i.e. sample id and barcode and doc id details), once done confirm info to FFST provided by police, that sample was analysed and what the result was.
+
+## Witnesses not answering questions put to them
+
+**[Justices Act 1959](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077) 43.**   **Witness not answering**
+
+If on the appearance of a person required as a witness before justices, either voluntarily or in obedience to a summons, or upon being brought before them by virtue of a warrant, that person --
+
+\(a\) refuses to be examined upon oath concerning the matters;
+
+\(b\) refuses to take an oath; or
+
+\(c\) having taken an oath refuses to answer such questions concerning the matter as are then put to him --
+
+without offering any sufficient excuse for his refusal, any justice then present and having there jurisdiction may by warrant commit the person so refusing to a gaol, there to remain and be imprisoned for 7 days, unless in the meantime he consents to be examined and to answer concerning the matter.
+
+## Credibility:
+
+### Submissions for defence favourable witnesses -- 
+
+**Police v Endlay \[2020\] TASMC 13 (9 January 2020)**
+
+"As to her credit and reliability I also observe that I place no weight on her answers to questions asked of her in cross-examination proper by Ms Stewart. Those questions were entirely leading. While the asking of leading questions in cross-examination is permissible and obviously in many cases quite common, in this case it was plain that the complainant was a partisan witness who was entirely favourable to the defence case. She was effectively a defence witness. To use the words of Mr Gillies in "The Law of Evidence in Australia" at page 126 in giving her answers to those questions she functioned as **["a mere echo of counsel".]{.mark}**
+
+### Submissions as to complainant credibility 
+
+1.  The complainant gave a version of events which was narrated confidently and chronologically. Her evidence was populated by significant amount of minor detail about the events she was narrating. These matters enabled me to form an impression that the complainant's version was produced from her memory of events which were events which she actually experienced. The complainant's version was without internal or other inconsistencies.
+
+> The complainant's conduct in immediately contacting her friend Ms A, her father, her grandmother and by going immediately to the police station was consistent with the complaint of having been assaulted as alleged. This conduct is a matter indicating to me that the complainant is a credible witness: *Kilby *[\[1973\] HCA 30](http://www.austlii.edu.au/au/cases/cth/HCA/1973/30.html); [(1973) 129 CLR 460.](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281973%29%20129%20CLR%20460?stem=0&synonyms=0&query=poa1935140%20s35)
+
+## Section 106 Rebuttal evidence: 
+
+***Australian Automotive Repairers Association v Insurance Australia Ltd* (2006) FCAFC33** i that in that case the evidence which was sought to be tendered to rebut the witness' evidence was direct evidence by people who saw the witness being coached pre-trial as to how to answer questions in cross-examination in a certain way. 
+
+**Neill-Fraser v Tasmania (No 2) \[2019\] TASSC 11 (21 March 2019)**
+
+A weird one:
+
+Witness had previously spoken to police. During the conversation with the officer, she was asked about dates and details. In the cours of the conversation she sais she couldn't remmebr the exat dates, but had them in a diary. She retrieved the diary, refreshed her memoet/ read from it, and provided the police with the dates.
+
+At the hearing, she could not remember the date, and despite lots of searching could not find the diary.
+
+Prosecution sought to CX under 38(1)(c) \[ not clear what was inconsistent from the case\]
+
+She was permeated to give oral evidence about the facts in the diary by virtue of s 48 in that it could not be found.
+
+This as objected to on the previous representation, namely the saying of the dates, was based on the diary entry (itself a previous representation) and thus 2^nd^ hand hearsay.
+
+Court allowed it, as the evidence was in the personal knowledge of the woman, and notwithstanding the reference to the diary, was fresh in the memory in the circumstances (being about a month only and a few other indicia).
+
+It was held not to be 2^nd^ hand hearsay because her representation was not dependant upon the representation of another person, but rather her own contemporaneous notes.
+
+She was asked about making the inconsistent statement, and agreed that she may have done so, but did not remember doing so, or the specific dates. The requirements of s 43 were also addressed. Having put the representation to her, and getting the answer "could not remember", it enlivened s 106, and evidence oculd be tendered through the officer she talked to, that she did so, and the specific dates she told him could be tendered. As it is in through 106, s60 gets it in as proof of the fact.
+
+## Relationship to misuse of drugs act 
+
+[**Misuse of Drugs Act 2001**](https://www.legislation.tas.gov.au/view/html/inforce/current/act-2001-094)
+
+**34.**   **Prosecution witness need not disclose source of information**
+
+A witness for the prosecution in proceedings under this Act is not obliged to disclose --
+
+\(a\) the fact that the witness received any information; or
+
+\(b\) the nature of any information received by the witness; or
+
+\(c\) the name of the person who gave the witness any information.
+
+## Leave under s192 (s 26)
+
+### Used to curtail defence questioning
+
+**Police v Endlay \[2020\] TASMC 13 (9 January 2020) \[92-\]**
+
+92. the *[Evidence Act](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), *[s 26](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s26.html) gives the Court power to disallow certain forms of questioning. In my view this is such an example. It provides as follows:
+
+*"26. **Court\'s control over questioning of witness***
+
+*The court may make any orders it considers just in relation to --*
+
+*(a) the way in which witnesses are to be questioned; and*
+
+*(b) the production and use of documents and things in connection with the questioning of witnesses; and*
+
+*(c) the order in which parties may question a witness; and*
+
+*(d) the presence and behaviour of any person in connection with the questioning of witnesses."*
+
+93. [Section 26](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s26.html) gives the Court very considerable breadth of powers to ensure a fair and efficient hearing. In *ASIC v Rich* [(2006) 201 FLR 206](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%282006%29%20201%20FLR%20206), Austin J held that in the exercise of the power it has under [s 26](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s26.html) that the Courts should consider the factors listed in [s 192](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s192.html) of the act.
+
+94. [Section 192](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s192.html) provides that:
+
+*"192. **Leave, permission or direction may be given on terms***
+
+*(1) If, because of this Act, a court may give any leave, permission or direction, the leave, permission or direction may be given on any terms the court thinks fit.*
+
+*(2) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --*
+
+*(a) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and*
+
+*(b) the extent to which to do so would be unfair to a party or to a witness; and*
+
+*(c) the importance of the evidence in relation to which the leave, permission or direction is sought; and*
+
+*(d) the nature of the proceeding; and*
+
+*(e) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence."*
+
+95. In my view, s 192(2)(a) and (b) are of relevance here. In that regard I briefly refer to *ASIC v Citigroup Global Markets Australia Pty Ltd* [(2007) FCA 121](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/FCA/2007/121.html) at par7 and 8.

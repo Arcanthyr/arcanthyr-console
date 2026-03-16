@@ -1,0 +1,127 @@
+### Unknown witnesses. 
+
+No obligation to call an unknown witness where impractical to find them. Defence argued that Pross failed to make enquiries to identify a potential witness and their potential evidence.
+
+***Hrycyszyn v Bonde* \[2003\] TASSC 126 (27 November 2003)**
+
+*\[16\] Counsel for the applicant conceded that no duty rested on the prosecutor to call the unknown person, referring in that regard to Richardson v R [\[1974\] HCA 19](http://www.austlii.edu.au/au/cases/cth/HCA/1974/19.html); [(1974) 131 CLR 116](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281974%29%20131%20CLR%20116?stem=0&synonyms=0&query=poa1935140%20s13) at 119 - 121, Whitehorn v R [\[1983\] HCA 42](http://www.austlii.edu.au/au/cases/cth/HCA/1983/42.html); [(1983) 152 CLR 657](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281983%29%20152%20CLR%20657?stem=0&synonyms=0&query=poa1935140%20s13) at 663 - 665 and Taylor v Hayes [(1989) 46 A Crim R 457](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281989%29%2046%20A%20Crim%20R%20457?stem=0&synonyms=0&query=poa1935140%20s13) at 461 - 463. No authority was cited in support of the ground of review. No attack was made on the fairness of the hearing because of the failure of the police to locate and call the unknown witness. The attack was made solely on the omission of the learned magistrate to deal in his reasons with that failure. I can find no basis for concluding that his Worship ought to have done so. The issue would only have been material if it had been open to the learned magistrate to draw an inference adverse to the prosecution by reason of Constable Steele\'s failure to ascertain who the witness was and what he might have said in evidence. On such skimpy material, no adverse inference could be drawn that might have assisted the applicant\'s case. There is no merit in the ground.*
+
+## Obligation to Call Material Witnesses
+
+The prosecution alone bears the responsibility of deciding whether to call a person as a witness for the prosecution (*Apostilides v R* (1984) 154 CLR 563).
+
+The prosecution must call all witnesses necessary to unfold the narrative of events unless there is a good reason not to do so (*Whitehorn v R* (1983) 152 CLR 657; *Dyers v R* (2002) 210 CLR 285*; Mahmood v Western Australia* (2008) 232 CLR 397).
+
+As the prosecution seeks the truth, it must call evidence favourable and unfavourable to its case (*R v Soma* (2003) 212 CLR 299; *R v Shaw* (1991) 57 A Crim R 425; *R v Glennon (No. 2)* (2001) 7 VR 631).
+
+However, the prosecution does not need to call a witness if his or her evidence:
+
+- Is likely to be unreliable, untrustworthy or otherwise incapable of belief (*Whitehorn v R* (1983) 152 CLR 657; *R v Newland* (1997) 98 A Crim R 455). It is not enough for the prosecution to merely suspect the witness is unreliable. There must be identifiable circumstances which clearly establish unreliability (*Apostilides v R* (1984) 154 CLR 563).
+
+> The mere fact that a potential witness has made contradictory statements in the past is not a sufficient reason for failing to call him or her (*R v Shaw* (1991) 57 A Crim R 425; *R v Armstrong* \[1998\] 4 VR 533; *R v Palmer* \[2000\] VSCA 236).
+>
+> The fact that the prosecution expects the witness to be unfavourable, or to give evidence that does not accord with the prosecution's case theory, is also not a sufficient reason for failing to call a witness (*Whitehorse v R* (1983) 152 CLR 657; *R v Newland* (1997) 98 A Crim R 455; *R v Heinze* \[2005\] VSCA 124; *Dyers v R* (2002) 210 CLR 285; *R v Kneebone* (1999) 47 NSWLR 450).
+
+- Is likely to be unnecessarily repetitious, in light of the number of witnesses available for the proof of the matter on which they would give evidence (*Whitehorn v R* (1983) 152 CLR 657); or
+
+- Relates to an issue which has been raised by the defence, and on which the defence bears the onus of proof (e.g., mental impairment) (*R v Fitchett* \[2009\] VSCA 150).
+
+Previously, one of the factors the prosecution could consider when deciding whether to call a witness was whether the interests of justice required that it be able to cross-examine that witness (see, e.g., *Richardson v R* (1974) 131 CLR 116). This was due to the restrictions the common law placed on the prosecution's ability to cross-examine its own witnesses. As *Evidence Act 2008* s38 now provides the prosecution with a greater opportunity to cross-examine its own witnesses, this is no longer a reasonable basis for refusing to call a witness (*Santo v R* \[2009\] NSWCCA 269; *Kanaan v R* \[2006\] NSWCCA 109; *Kneebone v R* (1999) 47 NSWLR 450 per Smart AJ).
+
+It will usually be unjust to refuse the prosecution leave to cross-examine a witness under *Evidence Act 2008* s38 where it has called that witness because of its duty to put all material evidence (including unfavourable evidence) before the jury (*Santo v R* \[2009\] NSWCCA 269; *Kanaan v R* \[2006\] NSWCCA 109; *Kneebone v R* (1999) 47 NSWLR 450 per Smart AJ).
+
+## Other Explanations for not calling a witness
+
+At common law, the prosecution has been held to have a good reason for not calling a witness in the following circumstances:
+
+- Where it did not know what evidence the witness would give (e.g., because the police did not take a witness statement) (*Gillan v Police (SA)* (2004) 149 A Crim R 354);
+
+(**My note** *CF* with (*Solis v The Queen* \[2018\] VSCA 275, \[104\]-\[108\]) where it was said a failure by police to question a relevant person is not a satisfactory reason for not calling the person. A prosecutor cannot remain passive, leaving a failure by police to dictate who should be called at the trial).
+
+- Where the witness could not have been compelled to give evidence (*R v Reardon (No 2)* (2004) 60 NSWLR 454);
+
+- Where the witness had been deported and could not be subpoenaed (*Fonseka v R* (2003) 140 A Crim R 395);
+
+- Where the witness had indicated that he or she would not give evidence due to a privilege under *Evidence Act 2008* (*R v Kessing* (2008) 73 NSWLR 22).
+
+## Can a prosecutor select the witnesses to suit his or her case?
+
+No, Prosecutor's obligation is to call all material witnesses unless ...
+
+The object is a fair trial and section 38 Evidence, 2001 offers the prosecutor some ability to deal with unfavourable witnesses. Failure to call an apparent witness will generally give rise to a *Jones v Dunkel* warning! Though there is a authority that says there is limited application of the principle to criminal proceedings as explained by the Full Court of the ***South Australian Supreme Court in Police v Kyriacou*** \[2009\] SASC 66; (2009) 103 SASR 243; (2009) 193 A Crim R 490 at \[62\]- \[63\].
+
+### Witnesses - Prosecution obligation
+
+In *Whitehorn v R* [\[1983\] HCA 42](https://mail.connect.tas.gov.au/owa/redir.aspx?C=2fUbEkXTpFQxCgwlL939wml8ZWeeqWYOzU8XMiVqCgxfZ4btcrPUCA..&URL=http%3a%2f%2fwww.austlii.edu.au%2fau%2fcases%2fcth%2fHCA%2f1983%2f42.html); [(1983) 152 CLR 657](https://mail.connect.tas.gov.au/owa/redir.aspx?C=96fI2NG7sD3bU6Vund976ve4uzKA7Nd0AdisaDqOSZ9fZ4btcrPUCA..&URL=http%3a%2f%2fwww.austlii.edu.au%2fcgi-bin%2fLawCite%3fcit%3d%25281983%2529%2520152%2520CLR%2520657) at 16, Dawson J said:
+
+\[15\] *In Richardson v. The Queen [\[1974\] HCA 19](https://mail.connect.tas.gov.au/owa/redir.aspx?C=j5Sqf9udDEz-UTEH7ULB39z8Ox8pLI9QJtkZQaO2KqdfZ4btcrPUCA..&URL=http%3a%2f%2fwww.austlii.edu.au%2fau%2fcases%2fcth%2fHCA%2f1974%2f19.html); [(1974) 131 CLR 116](https://mail.connect.tas.gov.au/owa/redir.aspx?C=FEIeysrjjc8Slx3qQEsbZE7objG2_qPKO18ZzY3SC8RfZ4btcrPUCA..&URL=http%3a%2f%2fwww.austlii.edu.au%2fcgi-bin%2fLawCite%3fcit%3d%25281974%2529%2520131%2520CLR%2520116) this Court pointed out that although the choice made by a Crown Prosecutor of the witnesses to be called in support of the Crown case may be said to involve the exercise of a discretion, that means no more than that he is called upon to make a personal judgment bearing in mind the responsibilities of his office. It is not a discretion which he can be compelled to exercise in a particular manner, although his failure to call witnesses who ought to be called may constitute misconduct and may result in a miscarriage of justice which will constitute a ground for setting aside a conviction and granting a new trial. It is in this context that it is possible to speak of a Crown Prosecutor being bound, or under a duty, to call all available material witnesses. It is not a duty owed by the prosecutor to the accused which is imposed by some rule of law; rather it forms part of a description of the functions of a Crown Prosecutor. *
+
+ 
+
+\[16\] *Nevertheless, there is good guidance in the cases for what constitutes a material witness. All available witnesses should be called whose evidence is necessary to unfold the narrative and give a complete account of the events upon which the prosecution is based. In general, these witnesses will include the eye-witnesses of any events which go to prove the elements of the crime charged and will include witnesses notwithstanding that they give accounts inconsistent with the Crown case. However, a prosecutor is not bound to call a witness, even an eye-witness, whose evidence he judges to be unreliable, untrustworthy or otherwise incapable of belief. And if the number of witnesses available for the proof of some matter is such that in the circumstances it would be unnecessarily repetitious to call them all, then a selection may be made. All witnesses whose names are on the indictment, presentment or information should nevertheless be made available by the prosecution in order that they may be called by the defence and should, if practicable, be present at court.*
+
+ 
+
+*Randall v R; Farmer v R \[2004\] TASSC 42*
+
+Final paragraph at \[31\] *Further, as a general rule, a trial judge should not direct the jury in a criminal trial that the prosecution would be expected to have called persons to give evidence other than those it did call as witnesses. It follows that, as a general rule, the judge should not direct the jury that they are entitled to infer that the evidence of those who were not called would not have assisted the prosecution. A direction not to speculate about what the person might have said should be given. Again, exceptions to these general rules will be rare and will arise only in cases where it is shown that the prosecution\'s failure to call the person in question was in breach of the prosecution\'s duty to call all material witnesses.*
+
+*R v Apostilides* \[1984\] HCA 38,
+
+\[13\] *We have come to the conclusion that the following general propositions are applicable to the conduct of criminal trials in Australia:*
+
+> *1. The Crown prosecutor alone bears the responsibility of deciding whether a person will be called as a witness for the Crown.*
+>
+> *2. The trial judge may but is not obliged to question the prosecutor in order to discover the reasons which lead the prosecutor to decline to call a particular person. He is not called upon to adjudicate the sufficiency of those reasons.*
+>
+> *3. Whilst at the close of the Crown case the trial judge may properly invite the prosecutor to reconsider such a decision and to have regard to the implications as then appear to the judge at that stage of the proceedings, he cannot direct the prosecutor to call a particular witness.*
+>
+> *4. When charging the jury, the trial judge may make such comment as he then thinks to be appropriate with respect to the effect which the failure of the prosecutor to call a particular person as a witness would appear to have had on the course of the trial. No doubt that comment, if any, will be affected by such information as to the prosecutor\'s reasons for his decision as the prosecutor thinks it proper to divulge.*
+>
+> *5. Save in the most exceptional circumstances, the trial judge should not himself call a person to give evidence.*
+>
+> *6. A decision of the prosecutor not to call a particular person as a witness will only constitute a ground for setting aside a conviction if, when viewed against the conduct of the trial taken as a whole, it is seen to give rise to a miscarriage of justice.*
+
+## WITNESS - COURT CALLING A WITNESS
+
+**Court Calling a Witness**
+
+*In Whitehorn v R* \[1983\] HCA 42; (1983) 152 CLR 657 at 17 - 18, Dawson J said:
+
+\[17\] *No doubt all of these observations are merely aspects of the general obligation which is imposed upon a Crown Prosecutor to act fairly in the discharge of the function which he performs in a criminal trial. That function is ultimately to assist in the attainment of justice between the Crown and the accused. In this respect the Crown Prosecutor may have added responsibilities in comparison with other counsel but it does not mean that his is a detached or disinterested role in the trial process. As Barwick C.J. pointed out in Ratten v. The Queen (1974) 131 CLR 510, at p 517 :*
+
+* *
+
+> *\"It is a trial, not an inquisition: a trial in which the protagonists are the Crown on the one hand and the accused on the other. Each is free to decide the ground on which it or he will contest the issue, the evidence which it or he will call, and what questions whether in chief or in cross-examination shall be asked; always, of course, subject to the rules of evidence, fairness and admissibility. The judge is to take no part in that contest, having his own role to perform in ensuring the propriety and fairness of the trial and in instructing the jury in the relevant law. Upon the evidence and under the judge\'s directions, the jury is to decide whether the accused is guilty or not.\" (at p675)*
+
+\[18\] The means by which a trial judge may ensure the propriety and fairness of a trial do not, however, extend to the assumption of responsibilities which are properly those of the parties. The decision whether to call or not to call witnesses in a criminal trial is a decision for the parties. If the Crown fails to call a witness whom the trial judge considers ought to be called, no doubt he may invite the Crown to reconsider whether the witness ought to be called and if the invitation is declined, and the judge remains of the same view, he may comment upon the failure of the Crown to call the witness. of usurping the 
+
+***Darren John Burston v David John Brooks \[1996\] TASSC 152 (2 December 1996)***
+
+\[17\] *I have mentioned that a number of witnesses who might have been expected to have been called by the respondent, namely the manager of the Saloon Bar and some four police officers, were not called by him and no explanation was given for this failure. Counsel who appeared for the applicant before the learned magistrate raised this matter in his opening address but the learned magistrate made no mention of it in his reasons. When spoken to in the charge room, the applicant made it quite clear that he did not consider that he had done anything wrong. On the prosecution version of events, the applicant\'s altercation with the manager was the catalyst which led to subsequent events. The respondent\'s failure to call her is mystifying and on the face of it suggests a quite inappropriate conduct of the prosecution. I consider that in summary prosecutions the prosecutor has the same duties as to the calling of witnesses as that held to be appropriate in relation to Crown counsel in Richardson v R [\[1974\] HCA 19](http://www.austlii.edu.au/au/cases/cth/HCA/1974/19.html); [(1974) 131 CLR 116](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281974%29%20131%20CLR%20116?stem=0&synonyms=0&query=poa1935140%20s13) and R v Apostolides [\[1984\] HCA 38](http://www.austlii.edu.au/au/cases/cth/HCA/1984/38.html); [(1984) 154 CLR 563.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281984%29%20154%20CLR%20563?stem=0&synonyms=0&query=poa1935140%20s13)*
+
+\[18\] *The effect of what was said by counsel in the course of opening of the defence case before the learned magistrate was that he invited the learned magistrate to apply the rule in Jones v Dunkel [\[1959\] HCA 8](http://www.austlii.edu.au/au/cases/cth/HCA/1959/8.html); [(1959) 101 CLR 298.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281959%29%20101%20CLR%20298?stem=0&synonyms=0&query=poa1935140%20s13) Whether the rule strictly applies to the prosecution in a criminal case may be doubted having regard to the special nature of the duties imposed upon a prosecutor, but where there is a failure on the part of the prosecution \"to call a witness whose evidence is essential to the unfolding\" of its case \"the central question is \... whether in all the circumstances the verdict is unsafe or unsatisfactory\" (R v Apostolides (supra) at 577 - 578). The manager\'s evidence was essential to the unfolding of the respondent\'s case. The absence of her evidence was relevant to the issues which the learned magistrate was required to determine and had been the subject of a specific submission. What weight, if any, the learned magistrate attached to the failure of the respondent to call the manager cannot be gleaned from his reasons. His consideration of this question, and his conclusions concerning it, were required to be disclosed by his reasons.*
+
+## Model Rules of Professional Conduct and Practice
+
+20.7 A prosecutor must call as part of the prosecution\'s case all witnesses:
+
+20.7.1 whose testimony is admissible and necessary for the presentation of the whole picture;
+
+20.7.2 whose testimony provides reasonable grounds for the prosecutor to believe that it could provide admissible evidence relevant to any matter in issue;
+
+20.7.3 whose testimony or statements were used in the course of any committal proceedings; and
+
+20.7.4 from whom statements have been obtained in the preparation or conduct of the prosecution\'s case, unless:
+
+\(a\) the opponent consents to the prosecutor not calling a particular witness;
+
+\(b\) the only matter with respect to which the particular witness can give admissible evidence has been dealt with by an admission on behalf of the accused; or
+
+\(c\) the prosecutor believes on reasonable grounds that the administration of justice in the case would be harmed by calling a particular witness or particular witnesses to establish a particular point already adequately established by another witness or other witnesses, provided that:
+
+- the prosecutor is not obliged to call evidence from a particular witness, who would otherwise fall within Rules 20.7.1-20.7.4, if the prosecutor believes on reasonable grounds that the testimony of that witness is plainly unreliable by reason of the witness being in the camp of the accused;
+
+- the prosecutor must inform the opponent as soon as practicable of the identity of any witness whom the prosecutor intends not to call on any ground within (a), (b) and (c), together with the grounds on which the prosecutor has reached that decision; and
+
+- the prosecutor must call any witness whom the prosecutor intends not to call on the ground in (i) if the opponent requests the prosecutor to do so for the purpose of permitting the opponent to cross-examine that witness.

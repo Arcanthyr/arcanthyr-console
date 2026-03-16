@@ -1,0 +1,287 @@
+## Search and seizure of post
+
+Per s 90N Australian Postal Corporation Act 1989 (the APCA)
+
+**Non-Negotiables (Hard Rules)**
+
+**1. Police can RECEIVE mail without a warrant --- but not open it**
+
+- Australia Post can lawfully **hand over** suspicious mail if it's evidence of an offence.
+
+- **Taking possession ≠ searching or opening.**
+
+- Opening **always** requires a warrant (Search Warrants Act s 5).
+
+**2. Illicit drugs are NOT "dangerous or injurious" for postal law**
+
+- You **cannot** rely on APCA s 90Z to open mail just because it contains drugs.
+
+- Courts have been explicit: drugs ≠ explosives / immediate danger.
+
+- This is a **repeat failure point** in prosecutions.
+
+**3. You must form YOUR OWN prescribed belief**
+
+- A Post employee's suspicion **is not enough**.
+
+- You must personally meet **s 29 Misuse of Drugs Act** threshold.
+
+- "Prescribed belief" = more than suspicion, less than proof (George v Rockett).
+
+- Common lawful method: **drug dog indication** you personally observe.
+
+**4. Even with prescribed belief --- you STILL need a warrant to open**
+
+- s 29 MDA allows **seizure**, not opening.
+
+- Opening without a warrant = unlawful search, high exclusion risk.
+
+**What Australia Post CAN and CAN'T Do**
+
+**They can:**
+
+- X-ray, sniff, scan (non-intrusive examination).
+
+- Disclose the article to police if it's suspected evidence.
+
+- Act under APCA protections if done lawfully and in good faith.
+
+**They cannot:**
+
+- Open mail unless very specific exceptions apply (undeliverable, quarantine, etc.).
+
+- Create lawful grounds for police just by saying "we suspect drugs".
+
+**Practical Workflow (Defensible Path)**
+
+1.  **Confirm permitted person**
+
+    - Verify the AusPost employee is lawfully authorised.
+
+2.  **Document how the parcel came to attention**
+
+    - Random scan vs targeted activity matters (Melick issue).
+
+3.  **Independently form prescribed belief**
+
+    - Drug dog, leakage, weight inconsistencies, smell, etc.
+
+    - You must be able to articulate this **personally**.
+
+4.  **Seize but do not open**
+
+    - Secure chain of custody.
+
+5.  **Obtain a warrant**
+
+    - Telephone warrant acceptable.
+
+    - Can rely on AusPost info + your own observations.
+
+6.  **Open only after warrant**
+
+    - Anything earlier risks exclusion.
+
+**Key Risk Triggers (Red Flags)**
+
+- Opening mail "because Post said so"
+
+- Treating drugs as "dangerous goods"
+
+- No record of *how* belief was formed
+
+- Post employees exceeding their authority (x-ray misuse, disclosures)
+
+- Assuming urgency removes warrant requirements
+
+**Bottom Line**
+
+- **Mail is one of the easiest ways to lose an otherwise strong drug matter.**
+
+- If you shortcut belief formation or opening authority, **the evidence dies**.
+
+- This policy is conservative by design --- follow it and prosecutions survive.
+
+**Search Warrants**
+
+**Common Law**
+
+Purpose of a search warrant: Search warrant operates as a control design --imposes an independent judicial officer between official and citizen. That's why at CL you see the initial conservative approach to issue search warrant (and the jealously the CL protects rights of occupiers)
+
+At CL: need to ensure that goods ceased during the search were covered by the search warrant (if not, could be sued for trespass to private property)
+
+CL rejected the idea of general warrants (i.e. unspecified warrants to search anytime/anywhere) --because they had been used by the Star Chamber in a very oppressive way.
+
+**Statutory extensions**
+
+Have expanded to any offence at all (s5 SWA), not just re: stolen property.
+
+*George v Rockett* (1990) 170 CLR 104
+
+HC explaining the purpose of a search warrant
+
+*Search Warrants Act 1997* (Tas)
+
+*Crimes Act 1914* (Cth), s 3E
+
+*Police Offences Act* 1935 (Tas), s 60
+
+General warrant provision, but confined to searches for stolen property (issued to all PO by the commissioner of police, not issued by an independent judicial officer). They are issued for 6months (and allow police to enter any premises where they have a reasonable believe there may be stolen property).
+
+\*Not HR's compliant (as no safeguard of judicial oversight)
+
+General warrant, couple with *Spyke* gives PO a pretty free hand at searching shit in Tas. All they need is reasonable belief
+
+***Granting a warrant***
+
+***George v Rockett (1990) 170 CLR 104***
+
+F: PO had given an application for a warrant to a Qld Magistrate. The application just stated that reasonable grounds for believe that there were documents on premises re: ex-premier.
+
+HC held: this was completely legit. Just need sufficient evidence placed before the magistrate or JP so that they themselves have a RB/Suspicion that the items were on the property.
+
+Purpose of a search warrant: Search warrant operates as a control design --imposes an independent judicial officer between official and citizen. That's why at CL you see the initial conservative approach to issue search warrant (and the jealously the CL protects rights of occupiers)
+
+This gives an indication of what a JO should do when decided whether to issue a warrant.
+
+HC said warrants can only work effectively if the JO brings an independent mind to the application
+
+***MacLeod (1991) 61 A.Crim.R. 465***
+
+Applied George v Rockett (Slicer J)
+
+What is required for a valid warrant: not the mind of the applicant, but the mind of the issuing authority. Justice cannot rely on the suspicion/believe of the applicant, must form it themselves.
+
+Applications are usually made on oath, or by affidavit, and must put before the authority sufficient evidence to enable them to form a reasonable believe/suspicion
+
+This case is an example where warrant had no technical defect, however court could not be satisfied on the evidence it had (JPs notebook), that the JP actually did have sufficient evidence before him to form reasonable suspicion/belief.
+
+***Disclosure -- what is required of the party seeking a warrant?***
+
+*Karina Fisheries v Mitson* (1990) 26 FCR 473
+
+Full disclosure by the applicant is required that might effect the making of a decision
+
+*Lego Australia v Paraggio* (1994) 52 FCR 542
+
+Only fraud or misrepresentation will invalidate a warrant (sooo mixed authority on this point)
+
+Probs best if PO do disclose all material knowledge they have to the issuing authority, and then if it is issued, unlikely to be challenged in future for non disclosure
+
+***Wording of a Warrant***
+
+*NSW v Corbett* (2007) 230 CLR 606
+
+F: Warrant made reference to a section in legislation that had been repealed at the time it had been applied for
+
+HC: The fact the warrant referred to now no-existent statute didn't matter, as it was quite clear on the warrant what the PO were searching for (unlawfully possessed firearms), didn't matter that the wrong provision had been listed in the warrant.
+
+Sooo....don't need to be technical, but people need to know what the PO are searching for, and that they do have the power to search (which they did in that case)
+
+***What is the extent of power granted under a warrant?***
+
+*Challenge Plastics v Collector of Customs* (1993) 115 ALR 149
+
+Scrutinize legislation to establish what conduct it authorizes.
+
+In Tasmania, we have applied *Ghani v Jones* and *Spyk*
+
+s 6(1)(e) *Search Warrants Act 1997* (Tas)
+
+Must behave reasonably
+
+**Legal Professional Privilege**
+
+Kirby J describes it as a fundamental CL right. And thus it should not be the subject of forced disclosure at the cost of anything. Thus where does it stand when police have a warrant (can they seize items subject to LPP?)
+
+HC authority suggests they can't, and thus LPP trumps a search warrant. Thus, police unable to seize documents covered by LPP from a firm or home. LPP applies pre hearing and at hearing.
+
+Thus a quandary when someone claims LPP in relation to items the police wish to seize. If police look at them, they breach LPP (which is unlawful). This in *Oke*, a number of formal rules were set down for when someone claims LPP:
+
+The rules provide that the document should be bundled up and sent to 3^rd^ party for safe keeping (police not to look). Then the person claiming LPP has a specified time to establish LPP on them on interlocutory proceedings before a court (i.e. proceeding before the proceeding).
+
+***Execution of a warrant***
+
+*Baker v Campbell* (1983) 153 CLR 52
+
+HC decision: legal professional privilege trumps the search warrant (unless the legislation under which the search warrant derives allows it) --courts don't like legislation to trump LPP
+
+*Crowley v Murphy* (1981) 34 ALR 496
+
+Set out the principles behind search warrants, and relies heavily on the principle of legality and the right to privacy. Search warrant can't be used by police to go on a fishing expedition. Thus can't search whole filing cabinet to cease items in it --must be sensible about identifying items that are covered by the warrant. Or 'wreck revenge on people'
+
+*Oke v Commr Australian Federal Police* (2007) 168 A Crim R 503
+
+See notes directly above re: LPP rules/guidelines
+
+Therese reckons this case shows the bravery of lawyers standing up to police
+
+*Larsson v Commr of Police for NSW* (1988) 16 NSWLR 173
+
+Warrant can only be executed in one hit, unless legislation gives them the power to return (however may have separate searches under general warrant)
+
+s 9(2) *Search Warrants Act 1997* (Tas).
+
+Does permit temporary cessation and return to searching under a warrant (but only allows one hour-so basically a lunch break), unless they have consent of the occupier
+
+**When is a warrant executed?**
+
+When police have done everything they have power to do under the warrant.
+
+*Larsson* says police do not have power to execute a warrant after it has already been used
+
+\*\*Look at chapter on search --see what can result from police execution of warrants and search of private premises (police can rip up carpet and walls etc and leave it exactly as they have finished with it) --thus need to be careful when thinking about what is legitimate
+
+**Interrogation**
+
+*Williams* (1986) 161 CLR 278 (**CR**)
+
+**H**. Police cannot arrest for the purposes of furthering the investigation or simply asking questions.
+
+However, note the above discussion regarding s4 of the police the *Criminal Law (Detention and Interrogation) Act 1995* (Tas) regarding the power to detain people for reasonable time after lawful arrest.
+
+**Other Protections for Detainees**
+
+**Video recording**
+
+s85A of the *Evidence Act* *2001* (Tas) requires video recording of admissions; if not complied with evidence will be inadmissible (unless exceptions apply). Designed as a protective mechanism to prevent 'verballing'.
+
+*R v Kelly* (2004) 205 ALR 274 (**CR**)
+
+**F**. Kelly didn't want to participate in video recording and instead made admissions on paper. He then made a video recording stating that the admission was only made because the police were harassing him. He then made another statement saying that he was sorry for the video and his own performance while being video taped (stating that he was 'playing the game').
+
+Admissions had to be taped if they were in the course of 'official questioning'. So what is official questioning? Accused argued that it was during official questioning therefore admission not admissible.
+
+**H**. HCA held that this was not official questioning. Majority took a very narrow, textual and specific analysis of the provision while the minority took a far more purposive approach.
+
+Kelly still stands as the law, though we have had differently constituted High Court's interpret different (yet similar provisions) much broader (i.e. *Nichols v Coates*).
+
+*R v Challender* \[2007\] TASSC 58
+
+**F**. Accused arrested early in the morning and was still in detention in the afternoon. Before interview, officer took her outside for chat and smoke. Told her what was going to happen in the interview (i.e. kinds of questions etc) and that she was going to be charged with drug offences.
+
+She said during the chat that all she had was a couple of pills. When he took her up to the interview room he asked her what she had said earlier and asked her to confirm it. Accused became confused and reluctant and wanted to speak to lawyer. Then confirmed she had done it. So the question was, was the earlier chat 'official questioning'.
+
+**H**. Applying Kelly, the court held it was not official questioning. Blow J held that this was not a good approach though. Had complied with the letter of the law but not the spirit. Here they were confirming the previous admission (but it wasn't a very ethical approach -- i.e. be friendly to start with to get them to confess and then trap them). So Blow J held unfair, and excluded the evidence on that basis.
+
+Exceptions to the video recording provisions are in s85 of Evidence Act. May be unreasonable in some situations to require recording. See for example Cox CJ in *Browne*.
+
+*R v Browne* \[2000\] TASSC 105 (**CR**)
+
+**F**. Accused charged with 3 counts of sexual assault. Reasonable mistake as to age was raised as defence. Case considered the meaning of the exceptional circumstances exception in s85 of the *Evidence Act*.
+
+**H**. Cleary lays down the proposition that a court will only find the circumstantial exceptional if the circumstances are ***truly exceptional***. The police should be able to take equipment with them when they know that they are going to make an arrest. Not a basis to excuse the making of the video tape that the police didn't have video equipment with them when they knew they were going to be making a video.
+
+There is also an exception where the accused doesn't consent to the taping (e.g. *Kelly* and also *Nicholls v Coates*). This may take it out of the required area for video taping. Does this mean that the video must be consented to? What about video taping without knowledge? These questions were both considered in *Carr*.
+
+*Carr v Western Australia* (2007) 239 ALR 415
+
+**F**. Admissions made following a bank robbery. Banter outside of the lockup area was going on and the accused wasn't aware that CCTV was recording everything he was saying.
+
+**H**. HCA took a purposive approach. Purpose was to ensure formality. Considered both the consent issue and meaning of interview raised in Browne:
+
+\(1\) *Consent*: As long as the interview was still formal then it was ok. Majority believed that you did not have to give consent. Nothing in the wording of the legislation which imposes a consent requirement on the police. Note, Kirby J dissented and believed that consent was required.
+
+\(2\) *Meaning of interview*: accused argued that the discussions were not an interview. Majority held however that the discussion did constitute an interview (note Kirby J's consent -- needs to be degree of formality to protect right to silence). There had been ***no trickery or collusion***. Majority recognised the purpose of the provisions (to protect the accused) and it is necessary to give it a wide interpretation in order to apply the protection of video recording. Thus, what has occurred here (information conversation outside of the interview room) also constituted an interview.
+
+See also *Crimes Act 1914* (Cth) s 23C-W cf *Australian Security Intelligence Organisation Act 1979* (Cth), s 34ZP.

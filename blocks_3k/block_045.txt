@@ -1,0 +1,229 @@
+### Proposed "Tendency" need not be identical to alleged act
+
+**Brown v Tasmania \[2019\] TASCCA 4 **
+
+\[55\] *... There is no requirement for the tendency evidence to be closely similar to the alleged offence for it to have significant probative value, although if it is strikingly similar, it will have significant probative value: see Hughes v The Queen [\[2017\] HCA 20](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2017/20.html), [344 ALR 187](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=344%20ALR%20187) at [\[39\]](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2017/20.html#para39). What is required, as occurred in this case, is that there is some feature or features between the tendency evidence and the alleged offending that links them: see R v Bauer (above) at \[85\]. The linking factors were referred to by the trial judge as set out at \[52\].*
+
+**Brown v Tasmania \[2019\] TASCCA 4 **
+
+From para \[3\] onwards.
+
+Essentially when faced with the defence argument: *There was not sufficient similarity between the conduct said to establish the tendency, and the conduct of the person who perpetrated the crime alleged in the indictment, to support a reasoning process that it was highly probable that the same person must have committed both crimes.*
+
+The counter is that the tendency is: *Yes, however, when combined with other evidence, the asserted tendency evidence constituted an important component of a strong circumstantial case.* 
+
+The gist is that the proposed 'tendency' is just another form of circumstantial evidence that is to be considered with other evidence.
+
+In this case the stated alleged tendency was:
+
+> *"a tendency to impose himself in a sexual manner upon females whilst they were in a vulnerable position, namely whilst asleep in bed"*
+
+Facts:
+
+- Victims were vastly different ages
+
+- "Tendency evidence was not an actual rape just spooning while vic was asleep. And this was after the offence date
+
+- They were a year apart
+
+The trial court ruled, correctly:
+
+*The crucial aspect with respect to the circumstantial reasoning open to the jury on the question of identity was that the appellant had a tendency to impose himself in a sexual manner upon females. The fact that the female was in a vulnerable position at the time contributed to the probative value of the tendency, but was not dependent on the female being in bed or asleep. The feature of imposition meant that the appellant\'s tendency was to physically engage in a sexual way with a female without seeking or obtaining her consent. Clearly, taken alone, this tendency was too broad to identify him as the offender in this case. However, when considered with the other circumstantial evidence relating to the question of identity, the evidence supported the improbability that another person with similar characteristics, who was in the area at the same time, and had the same tendency, that is, a tendency to impose himself sexually upon females without seeking or obtaining their consent, was responsible for the crime. It also strengthened the significance of the location of DNA which had a high probability match with the accused, and supported the conclusions available from the evidence of flight and false alibi. The tendency evidence was a piece of circumstantial evidence, which the trial judge correctly concluded, having regard to the balance of the circumstantial case, had significant probative value. It was an important \"strand\" in a \"strands in the cable\" circumstantial case. The evidence was correctly admitted.*
+
+#### Distinction
+
+- **TENDENCY CONCERNS THE PERSON**
+
+- **COINCIDENCE CONCERNS EVENTS**
+
+Evidence is generally inadmissible to prove a tendency purpose or to prove a fact coincidentally although it may be admissible for another purpose (s 95 of the *Evidence Act 2001* (the Act)) unless it is admissible under the provisions of the Act.
+
+Tendency and coincidence evidence is governed by ss 97, 98 and 101 of the Act.
+
+It is a rule of exclusion. That is, evidence of tendency or coincidence is not admissible unless the above provisions are satisfied.
+
+Now when dealing with the evidence, the first point to understand is the difference between the two types of evidence.
+
+In the case of tendency evidence we are dealing with a person. In criminal law that is normally the accused, although not necessarily. Tendency evidence is evidence tendered to establish that a person has or had acted in a particular way, or has or had a particular state of mind. It is evidence that is tendered in order to provide the foundation for an inference that because a person has or had that tendency, it is more likely that he or she behaved in a particular way or had a particular state of mind at a time or in circumstances relevant to the issues in dispute: *Elomar v R* \[2014\] NSWCCA 303 at \[253\]; *Gardiner v R* (2006) 162 A Crim R 233; *Patterson v Tasmania* \[2017\] TASCCA per Wood J at \[68\]
+
+Evidence of actual conduct and an actual state of mind is not tendency evidence: *Patterson v Tasmania* supra per Wood, J at \[25\]. Similarly, evidence that an accused actually had a motive to do something is not tendency evidence: *Patterson v Tasmania* supra at \[22\].
+
+It is important to remember that the evidence must prove that the accused committed the particular act or had a particular state of mind and not somebody else, such as the complainant: *Phillips v R* 225 CLR 303.
+
+Coincidence evidence does not relate to persons, it relates to events, such events being similar. For the purpose of the criminal law, in effect, the coincidence rule applies where the Crown contends that because two crimes are so substantially similar one person must have committed both crimes. In that way, the Crown may not have sufficient evidence in respect of each individual crime but a jury can use the evidence in respect of each crime to conclude the accused committed both crimes. Where there is no other evidence the similarities between the two crimes would have to be unique or striking: *Sutton v R* (1984) 152 CLR 528.
+
+Similar conduct on different occasions can reveal a pattern from which it may be inferred, via coincidence reasoning, that an accused did a particular act or had a particular state of mind even though the crimes may not be strikingly similar but the evidence shows the accused is intricately involved in both crimes: *R v Bell* \[2002\] NSWCCA 2; *Tasmania v Standage* \[2012\] TASSC 88.
+
+Or there may be a combination of the above two options, which makes it outside human experience that the crimes were carried out in such a like manner and the accused behaved in such a like manner other than the accused was committing both crimes.
+
+In *Tognolini v R* \[2011\] VSCA 394 Nettle JA said at \[6\] -
+
+> > Ultimately, the question is not whether the means of commission of the crime is in each case the same or strikingly similar but whether the evidence sought to be admitted \"is cogent enough to be admitted as proof of identification of this offender\". Logically, that depends upon all the evidence in the case and whether, when the putative similar fact evidence is considered in the context of all the evidence, its probative value sufficiently outweighs any prejudicial effect as to render its admission just.
+>
+> > Understandably, cases concerning the admissibility of similar fact evidence tend to divide according to whether or not there is direct testimony of the accused\'s commission of the offence charged. Where there is no direct evidence of the accused\'s commission of the offence charged, the need for striking similarity or signature is logically more likely to apply. But where there is some direct evidence of involvement apart from the similar fact evidence, the similar fact evidence need not be as \"uniquely denominative\" of the accused, because it is not the sole means of identifying the accused, and something less than striking similarity or signature is more likely to suffice.
+>
+> > So, too, if there is evidence which in some way connects an accused with a series of offences, as well as with the offence which is charged, then, even though it may fall short of striking similarity or signature, the combined effect of the evidence can render it so improbable that any person other than the accused committed each of the offences as to make evidence of all admissible.
+>
+> > \.....the applicant made threats of consequences which, not long later, were followed by conflagration.
+
+And Judd AJA said at \[54\] -
+
+> While the evidence disclosed some similarity in the way the fires were started, that was not the primary connecting factor upon which the Crown case against the applicant depended. There was an evident pattern of behaviour on the part of the applicant that was before his Honour at the time of his ruling, and the existence of the pattern was established on the evidence at trial. The applicant sought to advance his own business and eliminate competition by approaching the operators of competing businesses, threatening them with fire, or alluding to the risk of fire, and demanding their commercial cooperation.
+
+In *CW v R* \[201O\] VSCA 288 at \[19\]:
+
+> Not only was each victim a person with whom the applicant had had business dealings, but he was in a current dispute with each of them. In the circumstances, the judge was entitled to conclude\...that\...it would be contrary to ordinary experience for this series of fires, affecting these particular victims, to have occurred by coincidence.
+
+See also *Perry v R* (1982) 150 CLR 580 at 587.
+
+More controversially, similarities in the accounts of two or more witnesses regarding the conduct of an accused make it improbable that the witnesses are telling lies in the absence of concoction or contamination: See *OPP v Boardman* \[1975\] AC 421; *Hock v R* (1988) 165 CLR 292; *WRC* (2002) 130 A Crim R 89; "Uniform Evidence Law" Odgers 13^th^ ed pp 255-6.
+
+In *Tasmania v Y* \[2007\] TASSC 112, Crawford J said that these cases were common law cases (except *WRC*) and that such evidence is not admissible on that basis, saying, \"*if the evidence is only relevant to credibility then it is not admissible at all*". He admitted the evidence on the basis of tendency evidence. That is, the accused had a tendency to act in a similar manner. The identical accounts of the complainants added to its probative value.
+
+However, in *BBH v R* \[2012\] HCA 9, Crennan and Kiefel JJ said at \[159\] -
+
+> The probative force of W\'s evidence arises in part because of the similarity between the event observed by him and the acts of which the complainant complained. It was the coincidence of both the complainant and W independently giving evidence of such events which gave the evidence its special probative force. There could be no suggestion of collusion between the complainant and W concerning the evidence - either in fact or at law. Here the evidence was truly independent.
+
+Their Honours then endorsed the comments of Hodgson JA in *WRC* where he said -
+
+> \....in cases of this kind, the related events do not need to have such striking similarity as is required when it is the events themselves that are said to have probative value.
+
+The answer would appear to be that the events still have to be similar to enact the section but once that is the case independent witnesses telling the same account adds to the probative value of the events. In that way, the events do not have to be so strikingly similar.
+
+Of course, some evidence may be admissible as both tendency and coincidence evidence.
+
+**Admissibility**
+
+Tendency evidence is governed by ss 97 and 101 of the Act. Such evidence is admissible only if the court thinks that the evidence, either by itself or having regard to other evidence, will have "significant probative value" (s 97(1)(b)).
+
+The evidence is not admissible unless its probative value substantially outweighs any prejudicial effect it may have on the accused (s 101(2)).
+
+Determination·of the admissibility of such evidence involves an evaluative judgment: *L v Tasmania* (2006) 15 Tas R 381 per Underwood CJ at \[52\]; *Donoghue v Tasmania* \[2016\] TASCCA 17 per Estcourt J at \[22\].
+
+The evaluative process involves a consideration of the nature of the evidence, the probative value of the evidence and an evaluation of whether the probative value substantially outweighs any prejudicial effect.
+
+Because it is an evaluative process and not a discretion, on appeal before the Court of Criminal Appeal it is that court's task to determine on the evidence at trial whether the tendency evidence was correct or whether it caused a miscarriage of justice: *L v Tasmania* supra; *KMJ v Tasmania* (2011) 218 A Crim R 87 per Evans J at \[4\]; *McPhillamy v R* \[2018\] HCA 52 at \[11\]. The principles in *House v R* do not apply.
+
+**Probative value**
+
+In assessing the probative value of the evidence, it must be assumed that the evidence will be accepted and that any inference open to a jury and favourable to the Crown will be drawn. The probative value of the evidence must be taken at its highest. The credibility or reliability of the evidence, or the witness giving the evidence, is irrelevant. The consideration is whether the evidence could rationally effect the probability of a fact in issue: *Tasmania v L* \[2013\] TASSC 47 at \[42\]; *Tasmania v W (No.2)* \[2012\] TASSC 48 at \[11\]; *Tasmania v Finnegan (No. 2)* \[2012\] TASSC 1 at \[22\]; *KMJ v Tasmania* supra at \[30\] & \[34\]; *DSR v R* (2012) 215 A Crim R 349; *R v Shamouil* (2006) 66 NSWLR 112 at \[61\]; *R v Sood* \[2007\] NSWCCA 214 at \[26\]-\[40\]; *R v Bauer* \[2018 HCA 40 at \[95\].
+
+Tendency and coincidence evidence has significant probative value if it has more than mere relevance and if it is important or of consequence. It does not have to have a substantial degree of relevance: *Tasmania v W (No.2)* supra; *R v Lockyer* (1996) 89 A Crim R 457 per Hunt CJ at CL at 459; *L v Tasmania* supra at \[31\], \[391\]-\[393\]; *R v Fletcher* (2005) 156 A Crim R 308 at \[67\], \[110\]-\[111\]; *R v PWD* (2010) 205 A Crim R 75 at \[66\].
+
+To have probative value that is significant, tendency evidence must potentially be influential in the context of fact finding or potentially have importance in establishing one or more of the disputed facts: *IMM v R* \[2016\] HCA 14 at \[46\]; *Hughes v R* \[2017\] HCA 20 at \[40\].
+
+The assessment of whether the tendency evidence has significant probative value involves consideration of two interrelated but separate matters. Firstly, taking the evidence at its highest, does it support, and if so to what extent, the alleged tendency? Secondly, to what extent does the tendency support the elements of the offence: *Hughes v R* supra at \[26\] and \[34\].
+
+In assessing the probative value of the evidence, it must be assessed in the context of the other evidence and the nature of the facts in issue: *IMM v R* (2016) 257 CLR 300 per French CJ, Kiefel, Bell and Keane JJ at \[46\]; *R v Bauer* supra at \[58\]-\[60\]; *Hughes v R* supra at \[40\]. Thus, the tendency evidence does not have to have significant probative value looking at it in isolation but rather looking at it in the context of the entire evidence.
+
+It is not necessary for tendency evidence to be strikingly similar, or even closely similar, to the alleged offence for it to have significant probative value but if the evidence is strikingly similar it is likely to have significant probative value: *Hughes v R* supra at \[39\]; *BP v R; R v BP* \[2010\] NSWCCA 303 at \[108\]; *R v Ford* (2009) 273 ALR 286 at \[38\]; *R v PWD* supra at \[79\]; *Tasmania v W (No. 2)* supra at \[13\]; *R v Fletcher* supra at \[57\]-\[60\]; *R v Bauer* supra at \[58\].
+
+What is required is that ordinarily there should be some feature between the tendency evidence and the alleged offending that links them: *R v Bauer* supra at \[56\]; *McPhillamy v R* supra at \[31\].
+
+In a single complainant sexual offence case, generally the fact that the accused has committed sexual offences on one complainant is sufficient connection to prove a tendency of significant probative value without proving some other special feature because where one person is sexually attracted to another and has sought to fulfil that attraction by committing a sexual act with him or her, it is more likely that person will continue to seek to fulfil the attraction by committing further sexual acts when the occasion presents: *R v Bauer* supra at \[60\].
+
+However, in multiple complainant sexual offence cases there must be some common feature of or about the offending, apart from the fact it is alleged a sexual offence occurred that demonstrates the accused acted in a particular way, proof of which increases the likelihood that the account under consideration is true: *Bauer v R* supra at s8; *McPhillamy v R* \[2018\] HCA 52.
+
+Generally speaking, a mere sexual interest in a particular class of persons, although relevant, would not meet the requirement of significant probative value for the admission of tendency evidence. Generally, it is the tendency to act on the sexual interest that gives evidence in sexual cases its probative value: *McPhillamy v R* supra at \[28\].
+
+An inclination on the part of an adult to engage in sexual conduct with underage persons and to act upon it is a matter outside ordinary human experience. When led in with other factors such as grooming or engaging in such behaviour where there is a risk of detection the conduct will have significant probative force: *Hughes v R* supra at \[57\].
+
+Often when identity is in issue more similarity will be required to reach the level of significant probative value. However, where a crime is rare or unusual the more weight that can be given to a similarity the more difficult it is to dismiss it as a coincidence, thus giving it greater probative force: *Pfennig v R* (1995) 182 CLR 461 at 472; *Tasmania v Standage* \[2012\] TASSC 88 per Evans J at \[110\].
+
+Further, in assessing the force of any similarities they should not be looked at in isolation but as a whole in the context of the entire case: *Sutton v R* (1984) 152 CLR 528 at 536 and 550; *Tasmania v Standage* supra at \[110\]; *Hughes v R* supra at \[40\].
+
+**Coincidence evidence**
+
+Unlike tendency evidence, in order for coincidence evidence to be admitted pursuant to s 98 of the Act it does have to be similar. How similar as to reach significant probative value will depend on the nature of the case and the other evidence.
+
+Factors to be taken into account when determining probative value in respect to coincidence reasoning include:
+
+- The degree of similarity
+
+- The number of similarities
+
+- The timing of the similarities
+
+- The capacity of each similarity, either individually or in conjunction with one another, or with the other evidence, to affect a fact in issue.
+
+  See *Sutton v R* (1984) 152 CLR 528 per Gibbs CJ at 536 and Brennan J at 550.
+
+  The more rare the crime, the less similarities that are required for the evidence to be of significant probative value.
+
+  Further, in many cases, it may not be just similarities that will give the evidence significant probative value. The test is whether the evidence is cogent enough to be admitted as proof of identification of the accused. If there are similarities between the crimes and other evidence that intrinsically link the accused to the crimes, this may be of significant probative value even if the crimes are not strikingly similar: *Tognolini v R* supra at \[6\]-\[8\]; *CW v R* supra at \[10\]-\[22\]; *Perry v R* (1980) 150 CLR 580 per Gibb CJ at 587.
+
+  Further, in respect to tendency and coincidence evidence, the court should not focus on the dissimilarities, rather it should focus on the similarities and whether they supports the tendency and coincidence reasoning: *Hughes v R* supra at \[56\].
+
+  Although it is necessary to keep a distinction between tendency and coincidence evidence because the test is different, the distinction becomes less important where it is being argued that the same conduct should be admitted both for a tendency purpose and for coincidence reasoning. In *Standage v Tasmania* supra Evans J at \[5\] said:
+
+> For the evidence to be cross-admissible as either or both coincidence evidence or tendency evidence, it must have significant probative value, s97(1)(b), and s98(1)(b). As to coincidence evidence, consistent with s98(1)(b), the probability of the similarities between the killings being explicable on the basis of coincidence is a crucial aspect of the assessment of the probative value of the evidence and its capacity to prove that the accused was the killer on each occasion. Whilst no similar statutory reference to similarities underpins an assessment of the probative value of the evidence as tendency evidence, it is well settled that a significant factor in the assessment of the strength of tendency evidence is the degree of similarity between the conduct on the occasions relied upon. See *FB v R* \[2011\] NSWCCA 217 at pars\[28\] -- \[30\]; *BP v R* \[2010\] NSWCCA 303 at \[108\], and *R v Fletcher* (2005) 156 A Crim R 308 at pars\[57\]-\[60\]. So whilst it is necessary to keep the distinction between coincidence evidence and tendency evidence in mind, the distinction is less stark in this case than it can be, as in arguing for the admission of the evidence as both coincidence evidence and tendency evidence ...
+
+This passage was approved by the Court of Criminal Appeal in *Donohue v Tasmania* \[2016\] TASCCA 17.
+
+**Prejudicial effect**
+
+Pursuant to s 101 of the Act the probative value must substantially outweigh the prejudicial effect of the evidence.
+
+**Substantial**
+
+In *VOT v WA* 184 A Crim R 284 at 288, Steytler J said \"... *the evidence must be evidence that carries substantial weight in tending to prove or disprove facts in issue*\".
+
+In *R v Fletcher* 156 A Crim R 308 \... substantial means large, weighty or big and indicates an absolute significance.
+
+In *Tasmania v Martin (No. 2)* supra, Porter J said for the purposes of s 194M it is a combination of the above.
+
+**Prejudice**
+
+Evidence is not prejudicial merely because it establishes the Crown case. It has to be prejudicial in the sense that a jury will give it more weight than it deserves, or in other words that a jury will use it in some unfair way or it will inflame their prejudices (s 101): *Papakosmas v R* 196 CLR 297 per McHugh J at 325; *Festa v R* 208 CLR 593 per Gleeson CJ at 603 and McHugh J at 609-10.
+
+- "\[the\] danger that the jury\'s recognition of the appellant\'s prior guilt was likely to divert them from a proper consideration of the evidence as bearing on the question of his intent in the charges before them": *R v Watkins* \[2005\] 153 A Crim R 434 at \[50\].
+
+- "The primary danger is notwithstanding directions given by the trial judge the jury might reason no more rationally than that, if the respondent molested \[two other persons\] he did the same to the complainant and that emotion not rationality would govern": *R v GAG* (2007) 178 A Crim R 408.
+
+- "\...the possibility that the jury will treat the similar facts as establishing an inference of guilt where neither logic nor experience would necessitate the conclusion that it clearly points to the guilt of the accused": *Roach v R* 242 CLR 610 at 617.
+
+  See also *Tasmania v Martin (No. 2)* supra at \[63\]; *Neill-Fraser v Tasmania* \[2012\] TASCCA 2 at \[184\]; *Tasmania v W (No. 2)* supra at \[11\]; *BP v R; R v BP* supra at \[109\].
+
+  Other prejudicial effects include:
+
+<!-- -->
+
+- The jury may fail to appreciate a person to have a tendency to have a particular state of mind or to act in a particular way, may not have had that state of mind or may not have acted in that particular way on the occasion in issue.
+
+- The jury may underestimate the number of persons who share that particular tendency.
+
+- It may require the accused to answer a raft of uncharged conduct stretching back over many years.
+
+  See *Hughes v R* supra at 17.
+
+  In *Bauer* supra at \[62\] "*the trial judge was correct to hold that RC\'s evidence was not productive of unfair prejudice*". The relevant portion of the trial judge\'s ruling is contained at \[21\], specifically --
+
+> ...Any prejudice is due to the inculpatory nature of the tendency evidence and is not unfair prejudice. The proposed tendency evidence goes to proof of the fact in issue in each charge and will not distract the jury from its task, and clear directions \... will ensure that there is no substitution of the tendency evidence for the charged acts and no impermissible reasoning towards guilt.
+
+The directions by a trial judge to the jury must be taken into account when assessing the risk of unfair prejudice. Juries are often required to follow complex legal directions and disregard inadmissible evidence. It must be assumed that a jury will follow directions from the trial judge: *Gilbert v R* (2000) 201 CLR 414 at \[31\]-\[32\]; *R v PWD* supra at \[89\]-\[90\].
+
+The fact that the tendency evidence addressed by the prosecution alleges criminal conduct of which the person has not been charged is irrelevant: *R v Hawker* \[2004\] NSWCCA 427.
+
+**Concoction and contamination**
+
+At common law tendency and coincidence evidence will lose its probative force if there is a real chance that the evidence was concocted or contaminated: *Hoch v R* (1988) 165 CLR 292.
+
+Under the Act the probability that the tendency or coincidence evidence may be the result of collusion, concoction or suggestion is not to be taken into account when determining the probative value of the evidence or its prejudicial effect (s 101(5)): *Bauer v R* supra at \[69\].
+
+**\**
+
+**Non-tendency evidence**
+
+Now it is important to remember the exclusion provisions of Part 6 only apply if you are leading the evidence to prove tendency or coincidence reasoning. If you are leading the evidence for some other purpose, you do not have to comply with ss 97(1)(b), 98(1)(b) or 101 of the Act. Although you would still have to comply with ss 135 and 137 of the Act. In such circumstances, the court has a duty to examine the evidence of the parties. This is necessary because the court needs to determine whether there is a legitimate tendency purpose and, equally, if it is characterised as non­tendency evidence, the court will need to undertake an examination to determine whether there is a legitimate non-tendency purpose: *Patterson v Tasmania* supra at \[64\]. Of course, evidence may be relevant for a non-tendency purpose but it could also be tendency evidence where it is not intended to be led for a tendency purpose or it is inadmissible on that basis. The judge would have to direct a jury that it cannot use the evidence for tendency or coincidence reasoning (s 95 of the Act).
+
+Where evidence is not being used for a tendency purpose there is no need to give notice of intention to adduce such evidence (ss 97(1)(a) and 98(1)(a)). Such evidence can include:
+
+- evidence of opportunity
+
+- identification
+
+- motive
+
+- *res gestae*
+
+  And probably the most contentious of all, relationship evidence.

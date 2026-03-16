@@ -1,0 +1,217 @@
+### Unavailable witness:
+
+NOTICE MUST be given under s 67 first. That notice has to be in accordance with the requirements of regulation 4 of the Evidence regulations 2022.
+
+Section 18 (non-compellable) is basis for unavailability argument. *Sanderson v Rabuntja* \[2014\] NTSC 13
+
+**DPP v Nicholls \[2010\] VSC 397 (6 September 2010)**
+
+https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSC/2010/397.html?query=
+
+Start with one of the catagories in 3B of the EA
+
+Then 65(2)(b) or (d)
+
+For (b)
+
+**Tasmania v Dolega \[2016\] TASSC 65**
+
+Paraphrased - there is the need to consider the circumstances in which the representation was made, and the effect of those circumstances on either the credibility or reliability of the representation, as the case may be.
+
+Similar observations can be made in respect of the requirement in the second limb of s 65(2)(b). To allow the admission of the evidence in this case as an exception to the hearsay rule, the court must be satisfied that the circumstances in which the previous representation was made \"make it unlikely that the representation is a fabrication\".
+
+**State of Tasmania v Allie and Maple \[2025\] TASSC 6 **
+
+This case considered hearsay evidence after the complainant had died before trial. The issues were the timing of the representations (i.e. shortly after) and "unfair prejudice" as defence had little opportunity to challenge the assertions of the complainant in interview. Which meant there was an unfair impetus for the defendant to have to give evidence in the trial to refute the claims -- a tactical disadvantage, and as such, unfairly prejudicial.
+
+Specifically, at para 38, it is spelled out what issue defence took: *"It is contended for the accused that the representations were not made \"shortly after\" the events in question. Further, it is submitted on their behalf that it has not been shown that the representations were made \"in circumstances that make it unlikely that the representation is a fabrication\". In relation to s 65(2)( c), it is contended the higher threshold test is not met, namely that the representations were not made in \"circumstances that make it highly probable that the representation is reliable.\"*
+
+The case referred to the HCA decision of: *Sio v the Queen *\[2016\] HCA 32, at para 34
+
+This case spells out the procedure: *\"It then requires the identification of the particular representation to be adduced in evidence as proof of that fact. The circumstances in which that representation was made may then be considered in order to determine whether the conditions of admissibility are met. This process must be observed in relation to each relevant fact sought to be proved by tendering evidence under s 65.\"*
+
+#### 65(2)(b)
+
+Case also discussed meaning of "*Shortly after*" and *"make it unlikely that it is a fabrication."*
+
+\[51\] The common approach is to focus upon the circumstances of the making of the representation to determine whether it is unlikely that the representation was a fabrication.
+
+"Circumstances":
+
+\[52\] Section 65(2)(b) and (c) require courts to have regard to the \"circumstances\" in which the relevant representation was made. The focus is the reliability of the representation, not (directly) the reliability of the asserted fact: Mason P in *Ambrosoli *at \[28\]. The enquiry is not concerned with independent evidence that tends only to prove the asserted fact. The enquiry is concerned with the objective circumstances in which it was made, not the apparent truthfulness of the person making it: *Sio *at \[70\].
+
+\[55\] "...The true concern of the provision is with the identification of circumstances which of themselves warrant the conclusion that the representation is reliable notwithstanding its hearsay character.\"
+
+\[57\] It can be seen that the \"circumstances\" to be considered in the application of s 65(2)(b) can include previous, or subsequent, statements or conduct of the person who made the representation, to the extent to which they reflect on the reliability of the circumstances of the making of the particular hearsay representations.
+
+Basically, in this case, representations made on the day were allowed under 65(2)(b), but the representations made 2 days later about the same events, in a stat dec, were not. This was despite the fact the statement was attested to as true. Though the court did accept it wayed in favour of reliability generally.
+
+#### 65(2)(c)
+
+The court than considered the representation under 65(2)(c). It said that this test involves a higher threshold of \"highly\" probable and is concerned with reliability at large. As such it also excluded the later statement.
+
+\"**137 Exclusion of prejudicial evidence in criminal proceedings**
+
+***Papakosmas v The Queen *(1999) 196 CLR 297 at \[91\].**
+
+In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.\"
+
+Evidence is not unfairly prejudicial because it makes it more likely that the accused will be convicted. As Hunt CJ at CL said in *R v BD *[(1997) 94 A Crim R 131](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281997%29%2094%20A%20Crim%20R%20131), 139:
+
+\"The prejudice to which each of the sections \[ss 135, 136 and 137\] refers is *not* that the evidence merely tends to establish the Crown case; it means prejudice which is unfair because there is a real risk that the evidence will be misused by the jury in some unfair way.\"
+
+The submissions by defence as to what amounted to unfair prejudice in the matter:
+
+- representations will not only be unassailed by cross-examination (because he is an unavailable witness) but that this will occur in the context of a trial where the accused in their interviews were not provided with an opportunity to refute Mr Percy\'s representations of what happened.
+
+- will create forensic pressure for him to give evidence to meet the State\'s cases and then the issues on his trial will be joined. It is submitted that the unfairness will be particularly marked if he does not give evidence. It is submitted that the jury are likely to draw an adverse inference from a failure to give evidence in this context.
+
+- given there will be no cross-examination of the complainant, no forensic challenge, and no joinder of issues arising from Mr Allie\'s record of interview, there will be a greater likelihood of the jury, in some way, impermissibly informing itself on Mr Allie\'s trial using Mr Maple\'s police interview.
+
+- the inability to cross-examine the complainant is that there is no opportunity to cross-examine the complainant about his drug use, which might have had implications for the reliability of his representations.
+
+- the inability to cross-examine the complainant, the nature of the accounts given by the accused in their interviews which were lacking in detail and which, as a result, did not contradict the detail of the complainant\'s account. 
+
+- It is said that self-defence is raised by the two accused in their interviews with police. Critical issues on the trial will be why the men were there and what they did. Unfortunately, however, the detail of what Mr Percy said in his statutory declaration was not put to the accused during their police interviews. It was pointed out in submissions for the accused Mr Allie that in relation to his interview, the police do not put to the accused most of the allegations that were made by Mr Percy. The only allegation put with any precision or detail relates to the taking of the vehicle and setting fire to it.
+
+ALL were dismissed as being amenable to proper and detailed directions to the jury.
+
+## Section 137 Exclusion of prejudicial evidence in criminal proceedings
+
+### The general principle 
+
+***Papakosmas v The Queen *(1999) 196 CLR 297 at \[91\].**
+
+In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.\"
+
+Evidence is not unfairly prejudicial because it makes it more likely that the accused will be convicted. As Hunt CJ at CL said in *R v BD *[(1997) 94 A Crim R 131](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281997%29%2094%20A%20Crim%20R%20131), 139:
+
+\"The prejudice to which each of the sections \[ss 135, 136 and 137\] refers is *not* that the evidence merely tends to establish the Crown case; it means prejudice which is unfair because there is a real risk that the evidence will be misused by the jury in some unfair way.\"
+
+**Unfair prejudice vs prejudice**
+
+Crawford CJ: ***Neill-Fraser v Tasmania*** \[2012\] TASCCA 2 \[184\]
+
+There is a difference. All evidence that may tend to convict is prejudicial. What is meant by unfair prejudice is that the jury may use the evidence to make a decision on an improper, perhaps emotional basis. If there is a real risk that the evidence may be misused by the jury in some way, then it may be unfairly prejudicial.
+
+### Examples
+
+#### State of Tasmania v Allie and Maple \[2025\] TASSC 6
+
+The submissions by defence as to what amounted to unfair prejudice in the matter:
+
+- representations will not only be unassailed by cross-examination (because he is an unavailable witness) but that this will occur in the context of a trial where the accused in their interviews were not provided with an opportunity to refute Mr Percy\'s representations of what happened.
+
+- will create forensic pressure for him to give evidence to meet the State\'s cases and then the issues on his trial will be joined. It is submitted that the unfairness will be particularly marked if he does not give evidence. It is submitted that the jury are likely to draw an adverse inference from a failure to give evidence in this context.
+
+- given there will be no cross-examination of the complainant, no forensic challenge, and no joinder of issues arising from Mr Allie\'s record of interview, there will be a greater likelihood of the jury, in some way, impermissibly informing itself on Mr Allie\'s trial using Mr Maple\'s police interview.
+
+- the inability to cross-examine the complainant is that there is no opportunity to cross-examine the complainant about his drug use, which might have had implications for the reliability of his representations.
+
+- the inability to cross-examine the complainant, the nature of the accounts given by the accused in their interviews which were lacking in detail and which, as a result, did not contradict the detail of the complainant\'s account. 
+
+- It is said that self-defence is raised by the two accused in their interviews with police. Critical issues on the trial will be why the men were there and what they did. Unfortunately, however, the detail of what Mr Percy said in his statutory declaration was not put to the accused during their police interviews. It was pointed out in submissions for the accused Mr Allie that in relation to his interview, the police do not put to the accused most of the allegations that were made by Mr Percy. The only allegation put with any precision or detail relates to the taking of the vehicle and setting fire to it.
+
+ALL were dismissed as being amenable to proper and detailed directions to the jury.
+
+## Admissions
+
+Defined in the EA:
+
+Adverse to the person\'s interest in the outcome of the proceeding
+
+Admissions are an exception to the hearsay rule, as are the representations made around the same time, which provide context for the admission (e.g. the entire video statement) per s 81 EA
+
+Hearsay exception limited to first hand hearers of the admission, or to the document in which the admission is made per s 82 EA
+
+Any acknowledgment of some relevant fact that tended to establish guilt, would amount to an admission,
+
+Any representation adduced and capable of rationally affecting the assessment of the probability
+
+## Notebook interview admissions (oral admission to officers)
+
+Evidence is admissible if written down and acknowledged by defendant per s 86 of EA. Not eligible for "serious offences" as defined in act (basically over 18 and indictable offences)
+
+#### Admissions as to elements of the offence
+
+If defendant has some familiarity with the subject upon which an admission is made (eg. Admitting that item in possession is an illegal drug), then it can be used as evidence as to the element.
+
+***Bird v Adams* Criminal Law Review 1972 Page 174**
+
+The defendant was arrested for having in his possession LSD on 1/12/70. He was taken to the Police Station, and after being cautioned, he admitted having had 15 LSD tablets of LSD and supplying them to 5 or 6 people. He was charged with having in his possession on December 11 a substance for the time being - mentioned in The Schedule the to Drugs (Prevention of Misuse) Act 1964 without being duly authorised, contrary to Section 1 of the Act. After the prosecution evidence, which was that of the Police Officer to whom the defendant had been in possession of a prohibited drug, for there had been no analysis of the tablets. The Justices ruled there was case to answer. The defence did not give evidence and the Justices found the defendant guilty.
+
+HELD : Dismissing the Appeal, that there were many instances where an admission made by a defendant on a matter of law in respect of which he was not an expert was really no admission at all. Eg -- A defendant could no know in a bigamy case, whether the foreign marriage was valid, and there were cases where an admission of a fact was value-less because the circumstances were such that a defendant could not possibly have the necessary knowledge, but here the defendant admitted that he had in his possession a dangerous drug and had been peddling it. The defendant had certainly sufficient knowledge of the circumstances of his conduct to make his admission at least prima facie evidence of its truth which was all that was required at the stage in the proceedings when the submission of no case was made, and accordingly, the Justices had correctly ruled that there was a case to answer.
+
+See also --
+
+***Harris v Pandava* 24/75 Neasey J. 10/6/75**
+
+"The sort of evidence before the court has some similarity with that adduce in *Bird v Adams* (1972) Cr Law Rev 174, in which the divisional Court held that there was sufficient evidence to ground a reasonable inference by the court that the defendant knew what he was talking about when he made an admission that a drug in his possession was L.S.D. and that therefore there was a proper basis upon which the court could rule that there was a case to answer. In the present case it seems to me that there was sufficient evidence of the respondent's familiarity and knowledge of the drug to warrant acceptance at its face value of the respondent's admission that he had smoked cannabis in Hobart some two months before the interview took place; and it would be unreasonable to hold otherwise.
+
+See also --
+
+Confessions
+
+### Admission to age
+
+*R v Recorder of Grimsby Ex P. Purser* *(*1951) 2 All E.R. 889; 35 CR. APP.R. 155
+
+Proof of age
+
+The court held on appeal that magistrates are entitled to accept an admission by the offender as to his age in a case where there is no reason to doubt the truth of the admission and that no further proof of age is necessary.
+
+### Admission when def not aware a suspect:
+
+**FW: Tasmania v Thompson \[2022\] TASSC 27 (28 April 2022)**
+
+Ok when they have been cautioned, but it is not always necessary that they're on notice that they are a suspect of a specific offence.
+
+Although, may still be excluded under s 90 of the EA -- but onus on defendant
+
+Section 90 Evidence Act.
+
+16. The court needs... "to be positively satisfied that the accused did in fact misunderstand the situation, and in particular did not realise that he was a suspect. Such a finding is critical because there is nothing that the police did which would, of itself, give rise to unfairness in respect of the use of the accused\'s statements during the search. As already noted, the police were acting lawfully and the accused was conversing with them voluntarily. Any argument concerning unfairness could only arise if, in actual fact, the accused did not understand or believe that he might be the subject of this investigation, and, accordingly, spoke when he would otherwise have remained silent.
+
+17. This is similar to the situation which was before the High Court in *Em (Em v The Queen [\[2007\] HCA 46](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2007/46.html), [232 CLR 67](http://www.austlii.edu.au/cgi-bin/LawCite?cit=232%20CLR%2067), )*. As was pointed out by the Court in that case[, the onus of demonstrating that it would be unfair to an accused person to use the evidence, for the purposes of the application of s 90, falls on the accused. Gleeson CJ and Heyden J noted that, in the circumstances of that case, the question of unfairness depended \"to a considerable extent\" on a finding that the appellant believed that what he had said in a particular conversation with police could not be used against him, and that police had conveyed that \"message\" to him.]{.mark} Their Honours reasoned that the failure of the accused to give evidence on the voir dire meant that any conclusion concerning his mental state must rely solely on circumstantial inference. Their Honours went on to say:
+
+\"Here circumstantial inference falls well short of the best evidence, direct evidence from the appellant. The appellant\'s failure to give evidence on the voir dire thus increased his difficulties in discharging the onus of proof.\"
+
+## Non-summonsed witness in court
+
+Court can order person in the court to give evidence even if not previously served with summons
+
+***Section 36 of the Evidence Act.** **Examination without subpoena or other process***
+
+## 170 certificates -- business records by affidavit 
+
+Business records in by **affidavit** under s 170/171.
+
+Can rely on a affidavit of record keeper if they satisfy s 171(1)(a) to adduce evidence of business records so long as it is "served" (not just disclosed) to defence in a reasonable time prior to hearing
+
+## Illegally obtained evidence
+
+### Factors supporting admission:
+
+**Tasmania v Melick \[2019\] TASSC 19**
+
+Brett J
+
+- evidence has high probative value - the capacity of that evidence to rationally affect the probability of the existence of a fact in issue
+
+- The evidence is extremely important in the proceedings
+
+- The evidence relates to proof of a charge
+
+- inherent potential for harm to an indefinite number of people
+
+- not a case in which the contraventions occurred during the course of an investigation, or which related directly to an intention on the part of investigators to obtain the evidence. No one involved in this case set out to
+
+- This contravention occurred because of a misunderstanding - were attempting to comply with the law. n, the contraventions did not occur because of an attempt to obtain evidence in contravention of or without regard to the law, but rather because of mistakes with respect to the interpretation of that law.
+
+## Evidence of silence:
+
+Cant use silence as a weapon to later attack/ seek to draw negative inference of the credibility of an account. S. 89 EA. Includes witnesses used to support the defence!
+
+Credit of complainant
+
+Why would they lie? Cannot ask this of a defendant. Prejudicial. Obviously credibility of the complainaint can be attacked y other means and witnesses, bit not of the defendant. did

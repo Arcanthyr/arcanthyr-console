@@ -1,0 +1,405 @@
+#  Mental health "protective custody"
+
+**Mental Health Act 2013**
+
+Section 17: power for police officer to take a person into protective custody if the r police officer reasonably believes that --
+
+\(a\) the person has a mental illness; and
+
+\(b\) the person should be examined to see if he or she needs to be assessed against the assessment criteria or the treatment criteria; and
+
+**SCHEDULE 2 - Custody and escort provisions**
+
+**1.   Interpretation**
+
+In this Schedule --
+
+***custodian*** or *escort*, of a patient, means a police officer, MHO or authorised person who, by or under this Act, is empowered or authorised to take the patient into protective custody or under escort;
+
+**1.   General powers, &c., of custodians and escorts**
+
+To take a patient into protective custody or under escort --
+
+\(a\) the custodian or escort may enlist the assistance of any person, including, if necessary, a police officer; and
+
+\(b\) the custodian or escort (and any assistant) may use reasonable force against the patient if he or she resists being taken into protective custody or under escort; and
+
+\(c\) the custodian or escort (and any assistant) may use reasonable force against anyone who may try to prevent the patient from being taken into protective custody or under escort; and
+
+\(d\) the custodian or escort (if necessary with any assistant) may, without warrant and doing as little damage as possible, enter any premises if the custodian or escort reasonably believes that the patient may be found on those premises; and
+
+\(e\) the custodian or escort (or any assistant) may take possession of and safeguard any medication, physical aid or other thing that the custodian or escort reasonably believes is or may be necessary to the patient\'s health, safety or welfare; and
+
+\(f\) the custodian or escort (or any assistant) may take possession of and safeguard any medication, prescription or other thing that the custodian or escort reasonably believes is or may be relevant to the patient\'s examination, assessment, treatment or care; and
+
+\(g\) the custodian or escort may, as circumstances require, transfer physical control of the patient to another custodian or escort or to another police officer, MHO or authorised person (who then has, and may exercise, any powers of the transferring custodian or escort under this clause); and
+
+\(h\) the custodian or escort is not required to be in close physical proximity to the patient during any examination or assessment.
+
+# Contempt of court
+
+**Mansell v Hughes \[2024\] TASSC 28 (28 May 2024)**
+
+Section 25 of the Justices Act.
+
+There is clear authority for the proposition that something heard but not seen by a judicial officer can constitute contempt in the face of the court: *Registrar, Court of Appeal v Collins* [\[1982\] 1 NSWLR 682](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1982%5d%201%20NSWLR%20682); *Fraser v The Queen *[\[1984\] 3 NSWLR 212.](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1984%5d%203%20NSWLR%20212)
+
+# Course of Hearing:
+
+There is no requirement that the accused give evidence before calling other witnesses although there is a general practice to that effect: *RPS v The Queen* (2000) 199 CLR 620 at \[8\]-\[9\] and see the discussion in *R v RPS* (unrep, 13/8/97, NSWCCA).
+
+***RPS v The Queen* (2000) 199 CLR 620 at \[8\]-\[9\]**
+
+\[8\] Two other features of the trial should be mentioned. First, at the close of the prosecution\'s case at trial, counsel for the appellant announced his intention to call a social worker. The trial judge said, in the presence of the jury, \"You must call your client before you can call any other witness. ... That\'s what the law says. It is customary, and the accused must be called first.\" The jury were then asked to leave the court and counsel for the appellant informed the judge (in the absence of the jury) that he did not propose to call the appellant to give evidence. 9 Although no separate ground of appeal was advanced in this Court that alleged the trial miscarried on this account, reference was made to the trial judge\'s statements in connection with the appellant\'s contention that the jury were misdirected about the significance to be attached to the appellant\'s not giving evidence. In the end, however, the statements made by the trial judge (which, as Gaudron ACJ Gummow J Kirby J Hayne J 3. the Court of Criminal Appeal rightly pointed out4 , were not well founded in law) do not affect whether the trial judge erred in his directions about the appellant\'s not giving evidence. This matter need not be noticed further.
+
+## If defendant doesn't turn up there are a few options.
+
+1: proceed to an ex parte hearing under rule 31 of the justices rules (or 72D of the *Justices Act* if optional).
+
+### *Ex parte hearings*
+
+***READ this case!!! Woodward v Moore \[2017\] TASSC 63 (9 November 2017) -- not always ok to do it!***
+
+2: Seek an order of personal service or a warrant of arrest (subject to previous service) under Rule 32 of the Justices rules
+
+## 72D
+
+**Justices ACT**
+
+This section can be used where a defendant fails to appear in answer to a summons when the charge falls within those prescribed under Schedule 2 of the RULES.
+
+144(4)(ca) of the Act says the court may make rules as to matters and circumstances under which a defendant need not appear in answer to a summons.
+
+Rule 27 of the Rules -- refers to schedule 2 of the Rules which contains a list of offences.
+
+72D says that those matters within Schedule 2 (existing by virtue of s. 144(4)(ca)) can be dealt with by virtue of complaint and summons as prima facie evidence.
+
+**Most popular ones will be:**
+
+An offence under [section 5(4)](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1994-009#GS5@Gs4@EN) or [9 of the ](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1994-009#GS9@EN)[Bail Act 1994](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1994-009)
+
+An offence under [section 13](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS13@EN) , [14](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS14@EN) , [14B](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS14B@EN) , [15(1)](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS15@Gs1@EN) , [15A](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS15A@EN) , [15B](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS15B@EN) , [15C](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS15C@EN) , [16](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS16@EN) , [17](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS17@EN) , [19A](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS19A@EN) , [20AA](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS20AA@EN) , [25](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS25@EN) , [34B](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS34B@EN) , [37(1)](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS37@Gs1@EN) , [37(3)](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS37@Gs3@EN) , [37(4)](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS37@Gs4@EN) , [41](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS41@EN) , [43](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS43@EN) , [55A](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS55A@EN) or [57 of the ](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044#GS57@EN)[Police Offences Act 1935](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1935-044)
+
+**13. Public annoyance**
+
+**14. Public decency**
+
+**15B. Dispersal of persons**
+
+**15C. Dangerous articles**
+
+**16. Street entertainment**
+
+**17. Chimneys on fire**
+
+**19A. Sports venues**
+
+**25. Consumption of liquor in streets, &c.**
+
+**34B. Resistance to, and obstruction of, public officers prohibited**
+
+**37. Offences relating to property**
+
+**41. Advertising reward for return of stolen property**
+
+**43. Finding property**
+
+**55A. Names and addresses of offenders**
+
+**57. Power of police officers to enter certain places**
+
+An offence under [section 7 of the ](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1970-077#GS7@EN)[Road Safety (Alcohol and Drugs) Act 1970](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1970-077)
+
+**7. Consumption, &c., of intoxicating liquor in motor vehicles**
+
+An offence under the [Road Rules 2009](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/sr-2009-142)
+
+An offence under [section 41(1)](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1925-038#GS41@Gs1@EN) or [51(3) of the ](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1925-038#GS51@Gs3@EN)[Traffic Act 1925](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1925-038)
+
+**41. Refusing to give name and address, &c.**
+
+**51. Facilitation of proof of certain matters**
+
+An offence under the [Vehicle and Traffic Act 1999](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070) , except [sections 9](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS9@EN) , [13](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS13@EN) , [14](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS14@EN) , [15](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS15@EN) , [18](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS18@EN) , [31](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS31@EN) and [64](https://www.legislation.tas.gov.au/view/html/inforce/2022-09-02/act-1999-070#GS64@EN) , and any regulations made under that Act
+
+**ONLY CAVEAT IS THAT THERE MUST BE NO IMPRISONMENT OR COMMUNITY CORRECTIONS AS PENALTY**
+
+The prescribed offences appear in Schedule 2 to the *Justices Rules* 2003. It is always within the discretion of the justices as to whether or not they will hear a complaint ex parte (see *Justices Rules* 2003, rules 31, 32, and 34 (2)). If the justices in the exercise of their discretion determine to hear a complaint ex parte, then, in the circumstances postulated in the subsection, they are required to receive the complaint and summons in to evidence. It might be said that a summons, as distinct from a complaint, is unlikely to contain any relevant evidentiary material. This section cannot be used as proof of something not alleged in the complaint (*Howie v Gordon* (1986) 60 L.G.R.A. 36).
+
+There is provision for the setting aside of ex parte convictions and orders in the *Justices Rules* 2003 (rule 38) and in the light of that, the cautionary dicta of Bray C.J in *Walker v Eves* (1976) 13 SASR 249 as to hearing complaints ex parte are of limited application in Tasmania.
+
+The section presupposes that the complaint will be in proper form. The section only states the legal consequences which flow from the contents of a complaint in proper form (per Evatt J in *R v Hush; Ex parte Devanny* (1932) 48 CLR 487, at 513). If the allegations of fact in the complaint did not constitute the offence charged the subsection does not operate so as to enable the justices to convict (*Ex parte Ryan; Re Johnson* (1943) 44 SR (NSW) 12).
+
+The term \"prima facie evidence\" probably means \"sufficient evidence\" (*Galvanized Iron Co v Westoby* (1852) 8 Ex 17), until rebutted (*Hewitt v Taylor* \[1896\] 1 QB 287; *Garbutt v Durham Joint Committee* \[1906\] AC 291; *Barraclough v Greenhough* \[1867\] LR 2 QB 612).
+
+It is a matter for the Crown how it structures its case, what witnesses to call and the order of calling witnesses.
+
+# Liqior licening act:
+
+"sell' has extended definition under the act
+
+Evidentiary provisions that averment in complaint is evidence of no licence etc
+
+Presence of btls etc evidence of sale.
+
+# Restricted Licences
+
+INTERSTATE LICENCE holders ARE eligible for them too!
+
+May grant where punishment imposed. S 18(5) of Vehicle and Traffic act.
+
+Qualified by 2 factors *severe hardship* -- license mitigates hardship -- *not contrary to public interest*.
+
+Court must be satisfied under s 19(2) RSAD that person not dependent on grog
+
+There are statutory bars under 18 of the V&T Act
+
+-rejected good behaviour undertaking for loss of demerit points.
+
+There are statutory bars under 19(1A) of the RSAD
+
+- S 19(1A) road safety act -- offence during or within 3 years of disqualification (end of disqualification period).
+
+- Blow over .15 cant get one
+
+- Offence under s 4 -- DUI
+
+- Offence under 14(5)
+
+- Driving a prescribed vehicle
+
+- Unlicensed
+
+18(3)(d) VEHICLE AND TRAFFIC ACT 1999 - SECT 18
+
+- need to have priors on app
+
+18(3)(g) VEHICLE AND TRAFFIC ACT 1999 - SECT 18
+
+Must detail sever and unusual hardship suffered by def or dependants and outlining why other modes of transport are not acceptable.
+
+18(4)(a) VEHICLE AND TRAFFIC ACT 1999 - SECT 18
+
+- Must serve registrar of motor vehicles
+
+Provisional licence holders can apply (no need to be eligible for full licence). They are not eligible for an undertaking to be of good behaviour pers 24(4) and as such not barred by virtue of not pursuing that option.
+
+**Severe hardship means pretty serious.**
+
+Examples:
+
+Lose employment because of disqualification
+
+Medical appointments
+
+School trips
+
+People need to drive to work a long way away
+
+**Public interest**
+
+Public interest may require that the restriction not be granted. Like where past attempts haven't worked in the past etc. section 18(5) (V+T Act) says that even where there is hardship as that described, and a licence should be granted, it is STILL subject to public interest test. Go one further, s 19(2) of the RSAD act says that it will be contrary to public interest where def has alcohol dependency and may refuse to grant app without proof from a medical practitioner (there are certificate requirements that are also required). Alchol dependency **[USED TO BE]{.underline}** given broad definition in the Alcohol and Drug dependency act:
+
+**Alcohol and Drug Dependency Act 1968**
+
+3.   Meaning of alcohol dependency
+
+For the purposes of this Act a person shall be regarded as suffering from alcohol dependency if he consumes alcohol to excess and --
+
+\(a\) is thereby dangerous at times to himself or others or incapable at times of managing himself or his affairs; or
+
+\(b\) shows prodromal signs of becoming so dangerous or so incapable.
+
+**HOWEVER with the rescinding o the Alcohol and Drug dependency act in 2021, the** repealing legislation did not provide a new definition clause. The draft repeal bill did, but that was specifically considered and rejected by the Upper house (not the lower house) following the first reading (see upper house Hansard dated 9 NOV 2021).
+
+Rationale was that there are medical definitions of dependency that are used by GP's and that should be sufficient. See Hansard below
+
+*"The Government was initially concerned that removing the definition would result in divergent decisions from medical practitioners and courts about whether a person was or was not alcohol-dependent. I am, however, advised medical standards exist for medical practitioners who are required to assess a person\'s fitness to drive. For example, Assessing Fitness to Drive, a joint publication of Austroad and National Transport Commission details the medical standards for driver licensing for use by health professionals and contains a chapter on substance misuse. The standards are approved by the Commonwealth, state and territory transport ministers. It should be noted this amendment does not remove the requirement for a person wishing to rebut the court\'s presumption of alcohol dependency to provide evidence that they are not alcohol-dependent. I expect the evidence required will stillneed to be robust to satisfy the court."* *Mrs HISCUTT (Montgomery - Leader of the Government in the Legislative Council)*
+
+19(3) ROAD SAFETY (ALCOHOL AND DRUGS) ACT 1970 - SECT 19
+
+- Report from Dr provision - but once in fairlys court he said he need not have a certificate for the Magi to be satisfied -- he could be satisfied just by the oral evidence of the defednat. -- it never got that far
+
+Consider seriousness of the charge -- and the period of disqualification. Longer period suggests greater interest in the state seeing disqualifications (i.e. Agg evade 2 year disqual). There is a positive onus on the applicant to satisfy the court that exercising the option is not contrary to the public interest. The citicmstnces of the offending are highly relevant. There is a public interst in seeing
+
+**Don't forget to 19(1B) -- extension**
+
+**A defendant can authenticate their own priors:**
+
+- Hand them a copy -- did you see these this morning (during the sentencing of the drink drive)?
+
+- Did you have an opportunity to review them?
+
+- You your knowledge and belief, are they correct?
+
+<!-- -->
+
+- **Tender and ask about them**
+
+- **Look at the BAS statement for excuses about drinking/**
+
+**Unusual hardship**
+
+**Work**
+
+What are you qualifications?
+
+Has the applicant consulted with a job agency to assess the job market for someone with his sills
+
+Have you made any enquires as to alternative employment.
+
+Surrender your licence on or about the 11 OCT correct
+
+We are now in December, you are still employed, correct?
+
+You have been able to make arrangements to continue in your employment without one?
+
+Do you accrue Recreational leave?
+
+Do you have any?
+
+Are you expecting to be required for work over the Christmas newy year period?
+
+What is Your current address?
+
+I understand the business has a number of sites, but you begin from that central location and then depart from there, yes?
+
+And once at work, you are provided with one of 5 vehicles for use for work, correct?
+
+But to get to work, I would suggest is about 1 -- 1.5 KM?
+
+Distance to Town -- given your address at 198 Grassy Rd? within 2KM from the town centre, yes?
+
+Both within walking distance you'd agree??
+
+**Consider demographics -- more likely to get another if young -- trained - experienced**
+
+Ask about bus services and alternative travel arrangements. Have you asked colleagues?
+
+How much are you required to drive?
+
+What hours
+
+Holiday leave?
+
+Long service leave?
+
+**Circumstances of offending:**
+
+Wednsday the 12^th^ of June of this year, was the day of your drug drivngoffending, , do you recall that morning?
+
+did you have work that day?
+
+At 1:30 am on a weeknight you were driingivn on a public road with Methylamphetamine in your system. How was that ingested?
+
+When?
+
+You were aware that it was an offence to use Methampetamine?
+
+Aware that it was an offence drive with an illegal drug in your system
+
+Did you think about the possibility of it being in your system when you drove that morning?
+
+- Didn't put your mind to it all? No consideration at all?
+
+- Thought youd just risk it did you? Just take a chane?
+
+That's not the first time you've dealt with ICE is it? 2014 -- covncited for importing and possessing
+
+Amphetamine was also decteded in your oral sample, you accept that MR. Day?
+
+Had you taken any other drug before driving?
+
+In the days leading up to the interception in June, Had you taken any other type of drug?
+
+In the days leading up to the interception in June, Had there been other instances when you had taken ICE?
+
+Have you used it since?
+
+Would you be prepared to today submit to an Oral fluid test admitestereed by a police officer?
+
+**Public interest Ask questions about drinking habits**
+
+Do you drink to get intoxicated?
+
+Have you ever missed work due to your drinking?
+
+How long have you had your licence?
+
+What were the circumstances leading to your drinking.
+
+Why were you drinking at that particular time day?
+
+How long were you at the pub?
+
+How much did you drink?
+
+Was it full strength?
+
+What vehicle did you drive? Your own or a work vehicle?
+
+Would you have known you were drinking to excess before getting behind the wheel? Should you have known?
+
+Was the defendant on bail at the time of offending? What for?
+
+Was he offending whilst facing any driving restrictions?
+
+Circumstances re -- drinking:
+
+What did you say to police when intercepted?
+
+When you got in the car you must have known that you were over the limit -- 5 cans in 1.5 hours -- you must have known do you agree?
+
+- Consider Do they have a history for drink driving?
+
+- Would that give them experience as to how much they could/ could not drink?
+
+You knew you must have been over the limit but you chose to drive anyway?
+
+- Ask about previous disqualifications? Ask about the arrangements they used then -- how come they managed to be without it before?
+
+Managed to keep job before how come not now?
+
+The last time you were busted you must have known you were over the limit -- or close -- and you decided to run the risk. This is the 3^rd^ occasions you have just decided to run the risk?
+
+What can you say to the court to convince his honour that you would comply with the restricted licence -- that you would run the risk again?
+
+Given prior restrictions and convictions s- defendant would have known the hardship they would likely face before getting behind the wheel yet did it anyway?
+
+**Submission**
+
+The public interest will not be served by the granting of a restricted licence. The public have a right to be protected from repeat offenders. This is the very purpose of the RSDA -- they have a right to be protected from individual who are willing to risk it, and to risk their safety?
+
+The defendant said they did not put their mind to it -- that's illogical -- they have been convicted before -- given his previous experiences with related matters he must have considered that he would be affected by consuming that amount.
+
+To continue to drive he demonstrates a disregard for the law of the state and the safety of other rd users. He ought to have known there would be likely consequences for such action.
+
+3^rd^ breach - At what stage are the public to be assured that their safety will be considered?
+
+**Restricted Licence**
+
+*R v Stockman*
+
+Public Interest - When determining whether or not to grant a restricted licence to a person a magistrate should take into account the following matters;
+
+- Is it in the public interest to grant the applicant a restricted licence?
+
+- Is the applicant likely to commit further offences whilst the holder of a restricted licence?
+
+- The gravity of the offence for which the applicant was disqualified.
+
+- The circumstances surrounding the commission of the offence.
+
+- Will the applicant be likely to be source of danger on the road whilst driving pursuant to a restricted licence?
+
+- The public interest in seeing disqualification orders given full force in acting as a general and/o specific deterrent.
+
+***Davies v Deverell (1992) 1 Tas R 214***
+
+- Held, that except in the clearest cases the public interest requires that evidence in support of applications for such licences is properly tested in cross-examination.
+
+Insofar as the public interest was concerned, the respondent's record of prior convictions and the circumstances surrounding the commission of the offences to which those convictions related were of particular significance.
+
+There is a positive onus cast upon an applicant for a restricted licence to satisfy a magistrate that the exercise of the powers would not be contrary to the public interest.
+
+**Morton v Scott \[2016\] TASSC 51** General and personal deterrence should have been at the forefront of the learned magistrate\'s mind.

@@ -1,0 +1,289 @@
+## Drug Treatment Order:
+
+**Drug Treatment Orders**
+
+SNAP SHOT:
+
+DTO instead of into prison. This is called the **Court Mandated Diversion Program**, and involves drug treatment orders.
+
+It's done to address the issues behind your drug use and offending --- and therefore hopefully help you break the link between your drug use and offending, and improve your life.
+
+This is a strict program with many requirements that will take up a lot of your time. It is not an easy option.
+
+**Eligibility**
+
+You are eligible if you:
+
+- plead guilty, or are found guilty
+
+- have a history of drug use and offending linked to your drug use
+
+- are 18 years or over
+
+- are willing to participate in the program
+
+You are not eligible if you:
+
+- have a current or outstanding sexual or offence including actual serious bodily harm (can be psych)
+
+- are subject to a Supreme Court Order or Parole Order
+
+**Court diversion officers**
+
+A court diversion officer will assess your suitability by asking about your previous and current drug use, criminal activity, and lifestyle.
+
+The court diversion officer will also:
+
+- be your case manager throughout the program and help you meet your goals and make sure you get the most suitable treatments
+
+- give regular progress reports to the Magistrate
+
+**Drug treatment orders**
+
+A drug treatment order:
+
+- can last for 24 months
+
+- has a sentence attached, which means if you don't successfully complete it, you could serve time in prison
+
+Essentially, your sentence is 'on hold' while you take part in the program:
+
+- if you **don't** successfully complete or comply with the program, you could be imprisoned or do community service
+
+- if you **do **successfully complete the program, your sentence could be cancelled or reduced
+
+**The program in detail**
+
+These restrictions are designed to help you recover from drug use and break the drug-crime cycle.
+
+**You must abstain from all illicit drug use.**
+
+Usually, you must also:
+
+- have regular, random urinalysis
+
+- go to regular face-to-face meetings with your court diversion officer
+
+- go to regular court reviews with a Magistrate
+
+- go to individual counselling and group programs
+
+You may be offered residential rehabilitation and medically-supervised withdrawal.
+
+You'll also be offered services to help you improve your life skills, such as:
+
+- lessons in literacy and numeracy
+
+- programs addressing anger and family violence, gambling, parenting
+
+- employment services
+
+There are three phases to the program:
+
+Phase 1: Stabilisation (6 to 12 months)
+
+- Weekly case management
+
+- Weekly counselling
+
+- Random drug testing (at least once a week)
+
+- Regular court appearances
+
+Phase 2: Consolidation (4 to 7 months)
+
+- Fortnightly case management
+
+- Fortnightly counselling
+
+- Random drug testing (at least once a fortnight)
+
+- Reduced court appearances
+
+Phase 3: Re-integration (3 to 5 months)
+
+- Monthly case management
+
+- Monthly counselling
+
+- Random drug testing (at least once a month)
+
+- Reduced court appearances
+
+**Section 27A Sentencing Act**
+
+Can be made where defendant pleads guilty or found guilty to offences where illicit drug use contributed to the commission of the imprisonable offence or offences.
+
+Conditions which prevent court from making a DTO:
+
+**Section 27B Sentencing Act**
+
+- Sexual offences
+
+- Offences amounting to actual physical harm (see *Tasmania v Joseph* \[2017\] TASSC 23)
+
+- Outstanding proceedings in any court for the **above type offences**
+
+- Subject to Parole order
+
+- Subject to Supreme Court sentence
+
+- Subject to a previous Drug Treatment Order
+
+**Actual Bodily Harm -- can include psych harm**
+
+***Tasmania v Joseph* \[2017\] TASSC 23**
+
+*15. The term \"bodily harm\" is not defined in Tasmanian legislation including the Code, the Act or the [Police Offences Act](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/). Despite this, it is a concept regularly referred to as an element of various crimes and offences. For example, the crime of aggravated robbery occurs when a person commits a robbery and \"causes bodily harm to any person immediately before, at, or immediately after the time of committing that robbery\". The definition of \"bodily harm\" which is consistently applied in Tasmania, is derived from McCallum [\[1969\] TASStRp 11](http://www.austlii.edu.au/au/cases/tas/TASStRp/1969/11.html); [\[1969\] Tas SR 73](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1969%5d%20Tas%20SR%2073) at 88 per Burbury CJ as follows:*
+
+*\"Bodily harm includes any hurt or injury calculated to interfere with health or comfort. It need not been permanent and must be more than transient or trifling.\"*
+
+*21. Further, irrespective of the policy behind the unavailability of a drug treatment order as a sentencing option for such offences, there does not seem to be any logical reason to distinguish, for the purposes of this provision, between cases where the injury inflicted is psychological rather than physical. Both involve significant personal harm to a victim of the crime, and such harm will invariably have been inflicted by serious violence, albeit that it may be threatened or indirect. This case is a good example, and sits comfortably with the notion of \"an offence involving the infliction of actual bodily harm\". The defendant held a knife up to the employee and made serious threats to directly harm her with it if she did not follow his instructions. The defendant\'s purpose and intention was to cause such fear that any resistance from her or other staff members would be overcome. In those circumstances, the causation of psychological harm and development of psychiatric injury was likely. The injury is as serious and debilitating as physical injury. There is no valid reason, as a matter of policy or interpretation to distinguish between psychiatric and physical injury for the purposes of this provision. As I said in the case of Bartel v State of Tasmania [\[2016\] TASCCA 18:](http://www.austlii.edu.au/au/cases/tas/TASCCA/2016/18.html)*
+
+*\"Armed robbery is a crime against people, notwithstanding that it also involves property. By definition, it involved threatened or actual violence. The threat and trauma to which victims are exposed, more often than not, result in devastating long-term consequences, irrespective of the use or extent of actual physical violence.\"*
+
+**Family violence offences:**
+
+Where the DTO stems from Family Violence matters, additional "core" conditions of the DTO must include the requirement that no other family violence occur.
+
+Where the court is satisfied beyond reasonable doubt that the defendant has committed a crime punishable by more than 12 months in prison, an application may be made by prosecution to activate part or all of the custodial component of the order.
+
+First step where Magi considering an order is to get an assessment report (per s 27D)
+
+Basically, court sentences them to prison, but then says need not serve that part unless activated under the sentencing act/
+
+- All the DTO have "core conditions" under s 27G
+
+- There are additional "program conditions" which can be applied under s 27H
+
+- Case conferences are held regularly for updates -- but in a closed court s27I
+
+  - Anything said by the defendant here is with immunity. Cannot use admissions for a charge. (s. 27T)
+
+- There are reward and punishments for compliance under ss 27K and 27M
+
+- Contraventions that amount to offences punishable by 12 months imprisonment can lead to punishment under s 27M. The court needs only be satisfied on the balance of probabilities that a contravention has occurred, unless they want to send them to prison under s 27M(1)(d). That section has the usual requirement.
+
+- If the defendant accrues 13 days punishment under sanction, then they have to "actually" serve it, as opposed to just earning the sanctions.
+
+- Where the contravention is an offence with a punishment greater than 12 months, the court must act under s 27M. They can go further than just sanction days, they can cancel the DTO and sentence as if the DTO wasn't there for the original offending. The court can do this on its own motion, or on application.
+
+- If a defendant is to be sentenced on "new" charges, whether they occurred before or during the life of the extant DTO, the court, under s 27P can subsume the new sentence into the extant DTO custodial period, where such sentence is less that hey length of the extant DTO custodial sentence.
+
+**Cancellation:**
+
+**27Q.**   **Cancellation**
+
+\(1\) A court may cancel the treatment and supervision part of a drug treatment order made by the court if it is satisfied on the balance of probabilities that --
+
+> \(a\) before the order was made, the offender\'s circumstances were not accurately presented to the court or the authors of the relevant drug treatment order assessment report; or
+>
+> \(b\) the offender will be unable to comply with a condition of the order because his or her circumstances have materially changed since it was made; or
+
+\(c\) the offender is no longer willing to comply with one or more conditions of the order; or
+
+> \(d\) the continuation of the treatment and supervision part of the order is unlikely to achieve one or more of the purposes for which the order was made.
+
+### Five Stages of Change In Recovery?
+
+1\. Precontemplation Stage of Addiction Recovery
+
+People who are in the first stage of addiction recovery aren't yet ready for any addiction treatment program. This phase is characterized by defensiveness and endless justification of their behavior. There's a clear lack of insight into the negative impact of excessive drug or alcohol use and a strong focus on the positive effects they experience from using their drug of choice.
+
+2\. Contemplation Stage of Recovery
+
+The next phase is characterized by contemplative readiness. This means the person is ready to bring about change in the future, but not immediately. Unlike the previous stage, they're aware of the pros of becoming drug-free.
+
+3\. Preparation Stage of Addiction Recovery
+
+When it comes to the preparation stage, the individual is building a sense of urgency regarding their desire for sobriety. They've usually made steps toward taking action, such as intending to join a gym, seeing a counselor or attempting to quit addiction by themselves without attending a treatment center.
+
+4\. Action Stage of Recovery
+
+During the action stage, the person has made significant changes in their lives and is committed to change. This stage of change is characterized by prolonged periods of abstinence and the inclination to turn to professionals for help before or after relapse.
+
+5\. Maintenance Stage of Addiction Recovery
+
+During the maintenance stage, the individual is working hard to prevent addiction recovery relapse. They're also keeping up the lifestyle changes they made, like getting regular exercise, recreational activities, staying sober, paying attention to sleep hygiene and attending support groups. They don't feel the urge to relapse as frequently as people in the action stage, so their confidence grows and they truly believe in their ability to maintain sobriety long term.
+
+## Suspended sentences:
+
+**Sentencing Act 1997**
+
+**27.**   **Breach of order suspending sentence**
+
+(4B)  If, on the hearing of an application under this section, the court is satisfied that the offender has been found guilty of a new offence, the court must activate the sentence of imprisonment that is held in suspense and order the offender to serve it.
+
+(4C)  If the court is of the opinion that an order under [subsection (4B)](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1997-059#GS27@Gs4B@EN) would be unjust, the court may instead --
+
+\(a\) activate part of the sentence that is held in suspense and order the offender to serve it; or
+
+\(b\) order that a sentence (in this section called the \"**substituted sentence**\") take effect in place of the suspended sentence; or
+
+\(c\) by order, vary the conditions on which the execution of the sentence was suspended, including extending the period of suspension in the order to a day no later than 12 months after the day the offender was found guilty of the new offence; or
+
+\(d\) make no order in respect of the suspended sentence.
+
+### Facts must be read out:
+
+**Young v Wilson \[2015\] TASSC 16 (28 April 2015)**
+
+### Where original suspended sentence imposed by Supreme Court -- Magi can hear application. 
+
+***Magi can deal with breach of SS imposed by supreme court***
+
+Generally, r 50 of the JR would require app lodged with the originating court. However, counter argument made below:
+
+"Neither I, or they, are aware of any case precedent in relation to this issue.  As far as my view goes, s 308 does not apply to this situation.  If a remittal order is made under s 308 it gives the Magistrate the powers of a trial judge but is limited solely to that situation.
+
+ 
+
+As a starting point, a Magistrate does not have the jurisdiction to sentence for an Indictable crime.  Just like a Judge only has jurisdiction to sentence for a summary offence via s 385A of the Code or if someone is found guilty of an alternative offence (such as possession in a trafficking case).  That means, that on its face, HH McKee would not have jurisdiction to resentence for the Code assault.  However, I would argue that s 27(4A) gives him that power.  The legislative intent of that sub section seems to be to ensure that other Courts can deal with breach applications if they are sentencing for the offences/crimes that breach it.  That is to ensure efficiency in the process and to allow a sentencing judicial officer to properly consider principles like totality etc.  Judges often sentence on breaches of CPS suspended sentences whilst sentencing for the breaching crime, even though normally they wouldn't have jurisdiction to deal with the matter.  That is because s 27(4A) gives them the power to hear and determine the application and hence, arguably utilise any of the options in s 27(4C), including resentencing for a crime they would not normally have jurisdiction to sentence on.
+
+ 
+
+Anyway, that is my view.  If Magistrate McKee however is not with you on that, and is not convinced that he should simply activate all of the sentence, then it may be safer for him to simply adjourn the breach application for the Supreme Court to deal with."
+
+### Meaning of Unjust
+
+*Biddle v Hayward \[2014\] TASSC 65*
+
+**The meaning of the term \"unjust\" in [[s 27(4C)]{.underline}](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/s27.html)**
+
+2.  The term \"unjust\" in the Act is not defined. It has largely been left to individual judicial officers to determine what is and what is not unjust in particular cases. However, there has been guidance in the form of an analysis of the provision by Wood J in *Tanner v Brown* [[\[2011\] TASSC 59]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2011/59.html) at [[\[84\]]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2011/59.html#para84) to \[99\]. With respect, I adopt her Honour\'s analysis as did Pearce J in *Cannell v Hughes* [[\[2014\] TASSC 41.]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2014/41.html) At [[\[14\]]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2014/41.html#para14), his Honour said:
+
+\"The operation of [[s27]{.underline}](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/s27.html) was considered by Wood J in *Tanner v Brown* (above). I would respectfully adopt her Honour\'s analysis. There is no need to repeat all of it, although I will refer to some parts of it. Her Honour\'s decision was followed by Crawford CJ in *Jones v Clarke* [[\[2012\] TASSC 21]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2012/21.html), and has been considered in other cases including by Porter J in *Chatwin v Godfrey* [[\[2013\] TASSC 70.]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2013/70.html) Introduction of [[s27]{.underline}](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/s27.html) on 1 January 2011 was intended to result in a hardening of the approach to suspended sentences. **It has long been the case that, generally speaking, if an offender wastes an opportunity offered by the court by re-offending, then a suspended sentence should be activated. Ordinarily, suspended sentences are meant to be a last chance**. Any unjustified departure from that principle undermines the integrity of the system of suspended sentences and the extent to which they may deter future offenders. As Wood J pointed out in *Tanner v Brown* at \[91\], [[s27]{.underline}](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/s27.html) now enshrines that policy in a legislative form and creates a presumption that the suspended sentence will be activated unless the court is of the opinion that it is unjust. **The clear starting point is that the sentence should be activated.** The court is not considering the original sentence afresh but determining whether activation of the sentence is unjust. In the words used by Wood J in *Tanner v Brown* (above) at \[103\], \'the exercise of the sentencing function is not at large, and is limited to an evaluation of whether it would be unjust to activate the sentence\'. In considering an application under [[s27]{.underline}](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/s27.html) there may be sentencing considerations which properly incline a sentencing court against activation of a suspended sentence, but which fall short of justifying a conclusion that it would be unjust to do so. The meaning of \'unjust\' is not prescribed by the [*[Sentencing Act]{.underline}*](http://www.austlii.edu.au/au/legis/tas/consol_act/sa1997121/). Its ordinary meaning, according to the Macquarie Dictionary online, is \'not in accordance with justice or fairness\'. It is for the sentencing court to consider and weigh the circumstances of each case. In the circumstances of this case, the most important factors seem to me to be:
+
+- [the nature and circumstances of the offences for which the sentence was originally imposed;]{.mark}
+
+- [the nature and gravity of the breach in comparison to the original offences and whether activation of the suspended sentence may represent a disproportionate response;]{.mark}
+
+- [the lapse of time between the imposition of the suspended sentence and the breach;]{.mark}
+
+- [whether there is any, and if so what, indication of reform and rehabilitation. That is, whether the suspended sentence may be having its desired effect.\"]{.mark}
+
+### Disparity between offences
+
+*Chatwin v Godfrey \[2013\] TASSC 70*
+
+11 The disparity in nature between original offending and breaching offending is a factor, but I do not regard it as one of great significance in general terms. The condition that no offence punishable by imprisonment be committed during a specified period is a statutory condition of suspending the execution of the term of imprisonment. Parliament\'s intention was plain enough. The object is to punish, as well as to rehabilitate, and the rehabilitative aspect is directed towards people becoming law abiding citizens, not selective offenders.
+
+### Activation Youth/ young offenders
+
+**Allie v Wilkie \[2019\] TASSC 27 (28 June 2019)**
+
+In terms of the public interest, the following passage from the Court of Criminal Appeal in England in *Smith\'s Case *[\[1964\] Crim LR 70](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1964%5d%20Crim%20LR%2070),* *endorsed by Nettlefold J in *Gray v Strickland *A44/1978,* *approved by the Court of Criminal Appeal, see *DPP v R,K D* [\[2018\] TASCCA 10](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2018/10.html) at [\[37\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2018/10.html#para37), has particular application.
+
+*\"In the case of a young offender there can hardly ever be any conflict between the public interest and that of the offender. The public have no greater interest than that he should become a good citizen. The difficult task of the court is to determine what treatment gives the best chance of realising that object. That realisation is the first and by far the most important consideration.\"*
+
+*KL\*
+
+# Practice:
+
+# sovereign citizens
+
+**Police v Gale \[2020\] TASMC 11 (24 February 2020)**
+
+*Nibbs v Devonport City Council* [\[2015\] TASSC 34](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2015/34.html)
+
+*Kosteska* v *Magistrate* *Manthey* *& Anor* [\[2013\] QCA 105](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/qld/QCA/2013/105.html); *Meads* v *Meads* [\[2012\] ABQB 571](http://www.canlii.org/en/ab/abqb/doc/2012/2012abqb571/2012abqb571.html)

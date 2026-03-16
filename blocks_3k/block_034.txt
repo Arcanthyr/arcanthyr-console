@@ -1,0 +1,263 @@
+### Hearing sequence 
+
+**From witnesses:**
+
+Evidence of intercept/ driving a motor vehicle
+
+Evidence of belief (positive OFT)
+
+Evidence of an approved operator (oral)
+
+Evidence OFA conducted (oral)
+
+Form 5 -- doc read over and handed to defendant (oral -- and tender form 5)
+
+Evidence of storage of samples (oral plus the storage register doc)
+
+**Certificates:**
+
+Start with sub-section 29(1A) "certificate of service." Must prove def served with certificates before they can be relied upon (disclosure not sufficient, but postage is -- per *Acts Interpretation Act*)
+
+Section 27A(1): "A cert (taking and dealing)" stating person stated (approved Bas operator) took sample at day and time of offender named and also that they were an approved operator and that sample was dealt with in certain way
+
+Section 27A(2): "A cert of delivery," by person named, to analyst with details as to marks and labels
+
+Section 28/ 28A: "A certificate of analysis" that show corresponding continuity information as to "delivery receipt." Note this also covers Section 19C requirement)
+
+## Liability no matter intended purpose
+
+**Tasmania v Billinghurst (No 1) \[2018\] TASSC 3 **
+
+\[15\] *"... Even a sham random breath test site would not, to my mind, have involved impropriety, much less the symbiotic use of three sets of police powers via the conduit of a working random breath test site."*
+
+## Defences to OFA 
+
+Onus on defence on balance of probability under 142 of evidence act see (Chidiac v R (1991) 171 CLR 432) and **Bass v Holbrow \[2011\] TASMC 4 (21 April 2011)**
+
+## Breath Analysis law
+
+Liability under s 8(1). If suspicion (arguably lower threshold than belief -- authority somewhere) someone is liable to breath analysis. Officer can choose to check with road side breath test to confirm alcohol -- but if negative reading then liability dissipates (s. 8(8)).
+
+Section 11 -- after breath analysis have to hand defendant and read a form 2
+
+Presumptions
+
+23(2) -- presumbed result of breath analysis ios accurate at time of testing unless proved otherwise on balance of probabilities.
+
+23(4) breath level in def was -- at anytime within 6 hours after "relevant time" (i.e. when police found him under s 2A(2)(a) as specific time of driving
+
+(8)  For the purposes of this section, ***relevant act of driving***, in relation to a person against whom proceedings to which this Division applies are brought, means the act of driving alleged to be an ingredient of the crime or offence with which the person is charged in those proceedings.
+
+## Presumptions
+
+**Ausburn v Tasmania Police \[2009\] TASSC 21 (6 April 2009)**
+
+The learned magistrate accepted that the applicant had consumed whisky and beer after he finished driving, but was not satisfied on the balance of probabilities that the concentration of alcohol in his breath at the time of his driving was .05 or less.
+
+14 No doubt the primary purpose of s23(4) is to facilitate proof of drink driving offences. Proof of a motorist\'s alcohol concentration as at the time of the taking of a breath or blood sample is often insufficient to prove the commission of an offence. Without s23(4) or a provision like it, difficulties could often arise in proving that a driver\'s alcohol concentration exceeded the limit at the time of his or her driving. It would often be necessary to adduce evidence as to what the motorist drank and when, as well as expert evidence based on the result of a breath or blood analysis. By casting a burden on the defendant to prove innocence, rather than just proving a lower alcohol concentration at the time of driving, s23(4) relieved magistrates of the burden of making detailed findings as to alcohol concentrations in cases where defendants were unable to establish their innocence.
+
+15 There have been cases about s23(4) in this Court before but, as far as I know, none of them has raised any question as to whether an offender might be deemed to have a particular alcohol concentration for one purpose but not another. In *Peterson v Mitchell* [\[1972\] Tas SR 202](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%5b1972%5d%20Tas%20SR%20202), the Full Court held that s23(4) does not just create an evidential burden, but imposes a burden upon a defendant to prove on the balance of probabilities that his or her alcohol concentration was not excessive. 
+
+16 The words of s23(4) are absolutely unambiguous. The alcohol concentration, as determined by a breath or blood test, \"shall be deemed to have been the concentration of alcohol \... at the time of the relevant act of driving\"
+
+## Drink driving sentencing submissions
+
+7 priors means prison! ***McDonald v Nilsson \[2009\] TASSC 83***
+
+For lower range offences, it is possible that a Court will accept that a person was not aware that they were over the prescribed limit. At the high range, it could rarely, if ever, be suggested that the person lacked the appreciation that he or she would run the risk of reaching a level of intoxication at which it is a criminal offence to drive a motor vehicle, at some point of time before the decision was made to get behind the wheel of motor vehicle
+
+**The Manner and Reasons for Driving •**
+
+Whether there were any passengers.
+
+• Whether the matter resulted in a motor vehicle accident. • The distance and period over which your client was driving.
+
+• Where your client was driving.
+
+• Why your client drove while over the prescribed range.
+
+• Whether your client made other arrangements in relation to driving the vehicle, and what happened to those plans.
+
+• What occurred before the offence took place. How your client came to be apprehended?
+
+For offences involving drugs or alcohol, you must have specific instructions in relation to consumption and use by your client before driving. Police will usually ask a person who has breath-tested positively about the quantity of alcohol consumed and the period of time over which it was consumed. You should make sure that you are aware of what (if anything) your client said to police at the time of being apprehended. This will be noted in the police facts that are given to your client
+
+## Special circumstances
+
+Injuries sustained as a result of an accident occurring with alcohol in system are not "special" as they are unfortunately common among drink drivers.
+
+**Barratt v Thorpe \[2020\] TASMC 15 (14 May 2020)**
+
+The Applicable Law
+
+23\. In *Strickland v Whitehead *[\[1995\] TASSC 125](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1995/125.html) Zeeman J discussed the principles to be applied when considering whether particular circumstances amounted to special circumstances within the meaning of [section 17(5)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/rsada1970264/s17.html) of the Act. At \[6\] his Honour said:
+
+"The principles to be applied in considering whether particular circumstances may amount to special circumstances within the meaning of the Act, [s16(5)](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/rsada1970264/s16.html) have been considered in a number of cases (*Gela v Cochrane* [\[1992\] TASSC 17](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1992/17.html); [(1992) 3 Tas R 10](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%203%20Tas%20R%2010); *Johnston v Davies* [\[1992\] TASSC 51](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1992/51.html); [(1992) 1 Tas R 183](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%201%20Tas%20R%20183); *Dellar v Crawford *[(1992) 62 A Crim R 171](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%2062%20A%20Crim%20R%20171); *Maynard v White *[(1994) 77 A Crim R 62](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281994%29%2077%20A%20Crim%20R%2062); *Davies v Kennedy* [\[1992\] TASSC 58](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1992/58.html); [(1992) 17 MVR 264).](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%2017%20MVR%20264) From those cases I derive the following principles.
+
+1 It is not possible to enumerate exhaustively circumstances which may constitute special circumstances.
+
+2 The circumstances put forward as constituting special circumstances ought to be viewed collectively for the purpose of determining whether special circumstances exist and it is not appropriate to separately consider each matter put forward and determine whether it amounts to a special circumstance and, if not, to thereafter disregard it in the reasoning process.
+
+3 Circumstances amounting to special circumstances may concern matters connected with the commission of the offence and matters concerning the offender.
+
+4 Generally speaking, circumstances which may be regarded as being common to a large number of breaches of the Act or of persons who commit them do not constitute special circumstances".
+
+24\. In *Bottomley v McDonald *[\[2002\] TASSC 27](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2002/27.html) Blow J, as he then was, said the following with respect to the phrase "*special circumstances*" at \[6\]:
+
+"The expression \"special circumstances\" in [s17(5)](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ta192577/s17.html) covers circumstances both of the offence and the offender. For there to be special circumstances, there must be something extraordinary, unusual or atypical. See *Dellar v Crawford *[(1992) 62 A Crim R 171](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%2062%20A%20Crim%20R%20171) at 177 - 178, and *Johnston v Davies* [\[1992\] TASSC 51](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1992/51.html); [(1992) 1 Tas R 183](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%201%20Tas%20R%20183) at 189. Special circumstances must be clearly distinguishable from the general run of cases that Parliament had in mind when it provided for the penalty of disqualification: *Davies v Kennedy* 81/1992 (Underwood J); *Turner v Visser* 93/1998 (Evans J). Significantly for the purposes of this case, [s17(5)](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ta192577/s17.html) does not require that a period of disqualification or fine less than the normal minimum should be imposed whenever special circumstances exist. In *Johnston v Davies* (supra) at 191, Crawford J said:
+
+\"It is to be noted that unlike the legislation considered by Bray CJ in *Baskerville v Martin *[\[1967\] SASR 156](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1967%5d%20SASR%20156), [s17(5)](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ta192577/s17.html) does not provide that the court shall or must impose a lesser fine or lesser period of disqualification if it is satisfied that special circumstances for that course exist. What the subsection provides is that if the court is satisfied that there are special circumstances why the minimum penalty should not be imposed, the court may impose a lesser penalty. This serves to emphasise that a discretion is given to the court and notwithstanding that there may be special circumstances justifying a penalty less than the prescribed minimum, the court nevertheless has a discretion whether it should sentence accordingly. This further emphasises the need for the court to have regard to all the circumstances of the particular case, not only those relied upon by the defendant as being \"special circumstances\" but also the other circumstances which might influence the court whether or not to exercise the discretion in favour of the defendant, whether it be a very high blood alcohol reading or anything else.\"
+
+**See also Turner, Andrew Quinton v Visser, Claas \[1998\] TASSC 93**
+
+## Section 6(3A) Defence:
+
+Onus on defendant to satisfy the "admin" error.
+
+**Richardson, Roger v Pullen, Darren Arthur \[1998\] TASSC 167 (23 December 1998)**
+
+*For the purposes of a defence pursuant to [s6(3A)](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/rsada1970264/s6.html), it was necessary for the learned magistrate to consider any relevant evidence and decide whether the respondent had satisfied the court that but for an unintentional failure to comply with an administrative requirement, he would have been licensed to drive. The learned magistrate did not do so. In announcing his reasons for decision, he did not expressly refer to the fact that the onus of proving this defence was on the respondent, or deal with the evidence in order to establish whether the respondent had satisfied him of the ingredients of the defence. I am unable to discern why the learned magistrate found that this defence was established.*
+
+### Home breathalysers (breath tests)
+
+Not reasonable to depend on them. **F v Ling** \[1985\] TASRp 10; \[1985\] Tas R 112
+
+## THC Cannnabis driving 
+
+Notes from JK on her case before Magi Hughes (Riley -- 23/3232)
+
+As the requirements of the Poisons Act permitting only Tasmanian doctors to prescribe narcotic substances were known to Parliament and must therefore have been within its contemplation in regards to the mandatory minimum penalty (therefore not special, unusual, or otherwise outside the general run of cases).
+
+## Costs of analysis 
+
+Costs can be claimed against def. **Tasmania Police v Kelly Jane Suitters \[2022\] TASMC 1 (28 January 2022)**
+
+## Drink Pattern defence
+
+DRINK PATTERN DEFENCE.
+
+It is generally accepted in the wake of ***Payne v Crawford***, that in order for a defendant to establish a \'drink pattern\' defence sufficient to displace the statutory presumption (S.23), he or she must replicate the pattern of drink consumption in accordance with the established time scale (pattern) and submit to analysis, conducted by an accredited expert.
+
+Most 'drink pattern' defences fail due to the defendant\'s in ability to satisfy the court as to the numbe.r ôf drinks consumed vis-â-vis ihe time scale. lt is usual in such cases for the number of drinks to be understated and the court tends to look for corroboration before accepting the word of a defendant whoses interests are best served by a lie
+
+Facts underpinning calculations:
+
+13oz Stubby of beer 4.5% alcohol content = 15.03grms 1 30mI nip Whiskey 37% alcohol content = 8.8 grrns
+
+Peak alcohol blood level occurs between 30 & 120 minutes after consumption
+
+Personal elimina\\ion rates vary between 0.01 and 0.02 grams per hour
+
+Formula G = B.A.C. x 12.5 x T.B.W.
+
+Where
+
+G
+
+=
+
+Grams of alcohol consumed
+
+B.A.C.
+
+T.B.W. =
+
+= Blood Alcohol Level
+
+Nota! Body Weight (includes age, sex, height and weig ht)
+
+IN PROVING A PARTICULAR 'DRINK PATTERN' READING, PERSONAL RATHER THAN
+
+POLPULATION AVERAGE EMMINATION :.RATES MUST BE USED.
+
+***Payne v Crawford Unreported Judgement A/54 of 1992***
+
+There is authority for the proposition that the statistical fact that a\' particular I proposition is true of the majority of persons of itself is incapable of constituting legal proof on the I balance of probabilities that that proposition is true of any given individual. ft is to be found in the decision of the Full Court of the Supreme Court of South Australia in State Government Insurance Commission v Laube (1984) 37 SASR 31\' where King, CJ said at p33:
+
+\" Despite the Eggleston view (\[1980\] Crim LR at p681). I am clearly of the
+
+opinion that the statistical fact that a particular proposition is true of the majority of persons cannot of itself amount to legal proof on the balance of DFObabilities that the proposition is true of any 9iven individual. The fact that most people with a blood alcohol level of 0.15 per cent are incapable cf exercising effective control of a motor vehicle does not establish against any individual with that blood alcohol level that that individual is so incapable. II
+
+(Millhouse J concurred; Prior J does not appear to have directly dealt with this point.)
+
+I therefore conclude that even if the learned.magistrate had acceDted the evidence given by the applicant as to his consumption of intoxicating liquor at relevant times and the opinions expressed by Mr. Jones, there would not have been a sufficient basis upon which the learned magistrate could have been satisfied on the balance of probabilities that the concentration of alcohol in the blood of the applicant at the time that concentration was determined by breath analysis, was not greater than the prescribed concentration.
+
+**WHITE v FAI - BC9600703 115 of 1994, B3/1996**
+
+SUPREME COURT OF TASMANIA
+
+UNDERWOOD J
+
+For the reasons expressed by Zeeman J in Payne v Crawford A54/1992, I propose to follow the South Australian Full Court decision.
+
+However, there is a major factual distinction to be drawn between the South Australian case and the present matter. In the former, the only evidence of impairment to driv\'e a motor vehicle was the fact that at the material time the concentration of alcohol in the blood was 0.15 per cent.
+
+In my view there is such evidence in this case.
+
+I accept Dr Collins\' evidence which, in essence, was that an average person\'s modalities would be impaired by a blood alcohol concentration in excess of .05 per cent. That opinion is consistent with the rationale behind the provisions of the Road Safety (Alcohol and Drugs) Act 1970. I also accept Dr Collins\' evidence that the faculties of a very significant proportion of the population wou)d be impaired by a blood alcohol concentration of .07 per cent. Finally, I also accept Dr Collins\' opinion that the faculties of only an extremely small proportion of the population would be unimpaired by a blood alcohol concentration of .1 per cent.
+
+# Traffic Act 
+
+32(2B) GBH from driving is a summary matter.
+
+Public place/ public road/ open to the public for driving offences:
+
+High Court case in *Schubert v Lee* [\[1946\] HCA 28](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1946/28.html); [(1946) 71 CLR 589](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281946%29%2071%20CLR%20589) at 592 where the Court said:
+
+*".. The words 'open to or used by the public' are apt to describe a factual condition consisting of any real use of the place by the public as the public - as distinct from use by licence of a particular person or only casual or occasional use. It may be necessary to distinguish places open to members of the public as such from places left open by the owner but obviously intended only for the use of a particular description of person, for examples visitors to his shop or other premises. Prima facie the words of the section mean streets, &c, which actually are open to or used by the public, so that there is some need for protection of the public in the use of such streets, &c."*
+
+# Vehicle and Traffic Act
+
+## Evidentiary certificates under s 67
+
+Certificate can be sigend by a delegate. Reigstrar has a power under s 7 of the Act to delegate functions.
+
+## Questions to ask re suspended licence papers being sent
+
+You were Driving
+
+ID issues
+
+Letter box -- security
+
+Issues with mail delivery with others
+
+Location at time of delivery
+
+Circumstances upon which found out
+
+Comments when told
+
+Action taken after being intercepted -- delay in contact to MPES suggest already new that she was suspended.
+
+Nature of payment plan if under one
+
+Compliance with plan -- if non-compliant than not reasonable that they didn't know.
+
+## Requirement to get Tas licence after 6 months
+
+Section 8(1) of the Vehicle and Traffic Act states there is a requirement to hold a tas licence
+
+Section 8(2) of the Vehicle and Traffic Act says that they are exempt from sub (1) if they have a licence from elsewhere.
+
+Recourse then to Regulation 49 of the *Vehicle and Traffic (Driver Licensing and Vehicle Registration) Regulations 2021*. That says a person CEASES to be exempt under section 8(2) when the person has resided in Tasmania for a continuous period of 3 months
+
+## Requirement to get Tas Registration after 3 months
+
+Section 28 of the Vehicle and Traffic Act states there is an exception from registration when registered under another law.
+
+Regulation 129 of *Vehicle and Traffic (Driver Licensing and Vehicle Registration) Regulations 2021* says that the exemption lapses once in Tas for 3 months, unless they have a residential address or ordinarily reside interstate (meaning if they travel here on an extended basis they don't need to register unless the move here)
+
+## Drive unlicensed 
+
+Interstate licences are only valid for 6 months before they have to get a Tas one
+
+Strict liability offence **Richardson, Roger v Pullen, Darren Arthur \[1998\] TASSC 167 (23 December 1998)**
+
+**Sentencing:**
+
+Not an insignificant offence. Requirements to have license not just revenue raisin but it's purpose is the safety of the public. Per ***Lusted v Saunders \[2012\] TASSC 6***
+
+## Unregistered:
+
+If no plate, then deemed to be unregistered (s. 69 Veh and Traf Act.).

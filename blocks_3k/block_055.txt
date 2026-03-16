@@ -1,0 +1,257 @@
+# Commonwealth Crimes Act
+
+**Commonwealth jurisdiction**
+
+This Court has jurisdiction in respect of Commonwealth criminal cases by virtue of [s 68(1)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/ja1903112/s68.html) of the [*Judiciary Act *1903](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/ja1903112/) (Cth). 
+
+A Local Court may therefore conduct committal proceedings in respect of Commonwealth indictable offences, may hear and determine summary hearings and may sentence offenders who have pleaded guilty to an offence against the laws of the Commonwealth.
+
+-- why aren't trials of Commonwealth offences heard before a federal court, such as the Federal Magistrates Court or the Federal Court of Australia, is answered thus: a. The criminal jurisdiction of those courts is necessarily limited by virtue of the statutes that create those courts and the range of matters of a criminal nature that may be heard by those courts (ie: those courts do not have a general grant of jurisdiction to hear and determine criminal matters involving offences under the laws of the Commonwealth); and b. The relevant State and Territory courts that normally hear and determine summary or indictable offences against the laws of the State or Territory are given federal jurisdiction to similarly hear and determine summary and indictable offences against the laws of the Commonwealth, pursuant to s 68(2) of the Judiciary Act.
+
+The Judiciary Act 1903 (Cth) permits State and Territory courts to exercise federal jurisdiction in respect of certain matters. Part X of the Judiciary Act contains provisions dealing with 'Criminal Jurisdiction'. Pursuant to s 68(2), within Part X, and in combination with respective State or Territory legislation granting criminal jurisdiction to a court, the State and Territory courts that have jurisdiction with respect to summary conviction, committal proceedings and trials on indictment of persons charged with offences against the laws of the relevant State or Territory, are invested with 'like jurisdiction' in respect of persons charged with offences against the laws of the Commonwealth. Section 68 and the meaning of the phrase 'like jurisdiction' have been considered in a number of cases. When exercising 'like jurisdiction' in respect of the determination of a Commonwealth offence the court applies the relevant procedural laws of the State 'by way of analogy'
+
+**DPP Guideline:**
+
+Joint Commonwealth/State trials On occasions it will be alleged that an accused person has committed both State and Commonwealth crimes arising out of the same factual circumstances. Also, a particular act could be both a State offence and a Commonwealth offence. This is particularly the case with drug offences and child exploitation material.
+
+The Director has an authority to prosecute on indictment Commonwealth matters. Likewise, the Commonwealth Director has been appointed a Crown Law Officer under the Criminal Code. There is a memorandum of understanding between the two Offices which sets out the protocol as to which Office should prosecute in such circumstances. The protocol states each Office should consult the other in such circumstances. In determining which Office should prosecute a matter the prime considerations are efficiency and effectiveness. Some of the factors taken into account are:
+
+• Which jurisdiction deals with the majority of that type of offence
+
+• The seriousness of the offence in each jurisdiction
+
+• Which jurisdiction investigated the offence
+
+• The nature and extent of each Office's previous involvement in the case
+
+• Where there are a number of offences, in which jurisdiction is the preponderance of the offences
+
+• How much duplication of work would there be in handing over the prosecution to the other Office.
+
+Where a prosecutor has a case in which there are possible Commonwealth offences he or she must consult with the Director in order for him to determine if it is necessary to consult with the Commonwealth Director and, if it is, to do so.
+
+**As this is a Commonwealth offence does that mean that the Evidence Act 1995 (Cth) applies and not the Tas version?**
+
+The short answer to that question is **no** - the applicable laws relating to evidence and arrest, bail, and criminal procedure in respect of offences against the laws of the Commonwealth are generally the respective laws of the relevant State or Territory. There is no federal legislation dealing with criminal procedure in a comprehensive fashion as such. The main piece of Commonwealth legislation that contains some aspects of procedural law regulating criminal proceedings in respect of Commonwealth matters is the Crimes Act 1914. By virtue of certain provisions of the Judiciary Act however, relevant State or Territory laws of procedure are adopted and applied as if they were laws of the Commonwealth.
+
+Pursuant to s 68(1) of the Judiciary Act, when exercising federal jurisdiction the State or Territory court applies, so far as they are applicable, the respective State or Territory laws with respect to the relevant criminal procedure. In addition to s 68(1), s 79 of the Judiciary Act also adopts the laws of procedure of the relevant State or Territory in respect of certain matters. Under this arrangement the relevant State or Territory laws in respect of the following matters will specifically apply to Commonwealth offences (subject to the Constitution and save where Commonwealth laws have otherwise provided):
+
+• Arrest, bail and custody of offenders or persons charged with offences;
+
+• Summary conviction of offenders or persons charged with summary offences, or indictable offences that may be dealt with summarily;
+
+• Committal proceedings in respect of persons charged with offences;
+
+• Trial upon indictment of persons charged with indictable offences;
+
+• Appeals arising out of any such trial, conviction or proceeding connected with the above proceedings.
+
+• Laws relating to procedure;
+
+• Laws of evidence and the competency of witnesses.
+
+It should be noted however that pursuant to s 5 of the Evidence Act 1995 (Cth) there are a number of provisions of the Commonwealth Evidence Act that do apply in all proceedings in any Australian court. The relevant provisions are:
+
+• Subsection 70(2) Evidence of tags and labels in Customs prosecutions and Excise prosecutions
+
+• Section 143 Matters of law
+
+• Section 150 Seals and signatures
+
+• Section 153 Gazettes and other official documents
+
+• Section 154 Documents published by authority of Parliaments etc.
+
+• Section 155 Official records
+
+• Section 155A Commonwealth documents
+
+• Section 157 Public documents relating to court processes
+
+• Section 158 Evidence of certain public documents
+
+• Section 159 Official statistics
+
+• Section 163 Proof of letters having been sent by Commonwealth agencies
+
+• Section 182 Commonwealth records, postal articles sent by Commonwealth agencies and certain Commonwealth documents
+
+Further, several other section of the Commonwealth Act have application in certain instances. Those sections are:
+
+• Section 185 -- Faith and credit to be given to documents properly authenticated;
+
+• Section 186 -- Swearing of affidavits before justices of the peace, notaries public and lawyers;
+
+• Section 187 - Abolition of the privilege against self-incrimination for bodies corporate As will be noted, these provisions generally relate to the admissibility of certain Commonwealth records and official documents or the means by which certain matters may be proved.
+
+• Part 1B of the Crimes Act provides a significant framework for sentencing of federal offenders. When sentencing a federal offender a court is required to apply the provisions of Part 1B. For example, in sentencing a federal offender a court must have regard to the relevant matters pertaining to the offenders subjective factors and the objective seriousness of the offence as set out in s 16A(2) and not the mitigating or aggravating features set out in s 21A of the Crimes (Sentencing Procedure) Act.
+
+## Indictable vs summary cth offences
+
+See 4G
+
+## Indictable heard summarily 
+
+The Crimes Act contains some provisions dealing with summary proceedings and the disposal of indictable offences summarily (eg. s 4J and 4JA). Therefore, the provisions of the Criminal Procedure Act that are otherwise 'inconsistent' do not apply to Commonwealth offences.
+
+## Youth cth offending:
+
+Can be dealt with as if State offence. See s 20C of the Crimes Act
+
+Where an investigation is conducted by a Commonwealth agency and both Commonwealth and related State offences are charged, generally the CDPP will be entitled to, and will, prosecute the related State offence. On occasion however, the State matter may be referred to the DPP to continue the prosecution.
+
+Principles of Criminal Responsibility -- The Criminal Code Act 1995
+
+Code Act 1995 (Cth) (the Code). In addition to the Crimes Act, the Code is the other major piece of Commonwealth legislation dealing with the criminal law. The Code sets out the relevant principles of criminal responsibility applicable in respect of all offences against the laws of the Commonwealth. The Code also now provides for a significant number of offences that were formerly contained within other Commonwealth legislation.
+
+.Principles of Criminal Responsibility
+
+Chapter 2 of the Code now codifies the general principles of criminal responsibility that are to apply to Commonwealth offences.23 Practitioners used to dealing with common law principles of criminal responsibility are familiar with the concepts of acuts reus (the act) and mens rea (guilty mind) and understand that proof of the commission of a criminal offence will generally require proof of some particular prohibited act together with the requisite culpable mental state at the same time. The Code implements a major departure for those under to analysing criminal offences in
+
+this manner. The Code sets out a comprehensive framework of the principles of criminal responsibility for Commonwealth criminal law.
+
+Under the Code, an offence consists of 'physical elements' and 'fault elements'.24 Proof of the commission of a Commonwealth offence now requires proof of the 'physical element/s' of an offence together with the applicable 'fault element/s' for each physical element.25 Accordingly, the concepts of actus reus and mens rea are in effect now dealt with under the Code as 'physical elements' and 'fault elements'.
+
+#### Physical elements under the Code may be either: 
+
+a\. conduct (defined as an act, an omission to perform an act or a state of affairs)
+
+b\. a result of conduct
+
+c\. a circumstance in which conduct, or a result of conduct, occurs.
+
+26 Fault elements under the Code may be either:
+
+a\. intention
+
+b\. knowledge
+
+c\. recklessness
+
+d\. negligence.
+
+27 Sections 5.2, 5.3, 5.4 and 5.5 of the Code define what is required to establish the particular fault element for the respective physical element.
+
+Whilst the general dichotomy between physical elements and fault elements appears relatively simple on its face, in practice the distillation of the relevant elements of an offence and their respective fault and physical elements is often a very difficult task. In part, the difficulty in this respect arises because not all offences clearly state what are the relevant fault and physical elements for the offence. The divination of the appropriate physical and fault elements is further complicated because of the somewhat cumbersome definitions provided for by the Code which do not always lend themselves to a seamless application to the case at hand.
+
+### Defences under the Criminal Code Act
+
+For all Commonwealth offences, Part 2.3 of Chapter 2 of the Code now provides statutory codification of general defences in respect of offences against the laws for the Commonwealth. These general defences include the standard defences available in most jurisdictions in respect of criminal offences. The relevant Divisions and provisions of the Code setting out these defences are:
+
+• Division 7, ss 7.1 -- 7.2 -- (doli incapax) Incapacity due to Age
+
+• Division 7, s 7.3 -- Mental Impairment
+
+• Division 8, ss 8.1 -- 8.5 -- Intoxication
+
+• Division 9, ss 9.1 -- Mistake of Fact/Ignorance of the Law
+
+• Division 9, s 9.5 -- Claim of Right
+
+• Division 10, s 10.1 -- Intervening Conduct or Event
+
+• Division 10, s 10.2 -- Duress
+
+• Division 10, s 10.3 -- Sudden or Extraordinary Emergency
+
+• Division 10, s 10.4 -- Self Defence
+
+• Division 10, s 10.5 -- Lawful Authority Other specific 'defences' will be found elsewhere within the various statutes creating particular offences, including within the offence provisions of the Code itself.
+
+#### Claim of right:
+
+See ***Moore v Howe \[2017\] TASMC 10***
+
+\[35\] The existence of a claim of right provides a defence to stealing or theft insofar as it negatives the requisite element of dishonesty.
+
+> *"It is not ignorance of the criminal law which founds a claim of right, but an ignorance of the civil law, because a claim of right is not a claim to freedom to act in a particular manner - to the absence of prohibition. It is a claim to an entitlement in or with respect to property which goes to establish the absence of mens rea. A claim of that sort is necessarily a claim to a private right arising under civil law."\[11\] Walden v Hensler [\[1987\] HCA 54](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1987/54.html); [(1987) 163 CLR 561](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281987%29%20163%20CLR%20561), per Dawson J at 592-3.*
+
+The fact that the defendant had not sought a court order or taken particular steps to exercise any rights he may have had does not mean he cannot rely upon the existence of those rights in defence of criminal charges.
+
+#### Mental Impairment (insanity)
+
+**Process on finding of not guilty on grounds of insanity:**
+
+See ***Bonde v Weate* \[2017\] TASMC 11**
+
+Need s. 33 and 34 reports under *Criminal Justice (mental impairment) Act*
+
+# Commonwealth offences
+
+### 474.17 Use a carriage service. 
+
+This is an electable offence.
+
+By virtue of the Cth' Crimes Act s. 4J -- needs to be elected by parties at first appearance.
+
+Technically requires OCDPP sign-off first, but whatevs.
+
+Utter Counterfeit Money (Crimes (currency) Act
+
+Punishable summarily per section 24 of the relevant Act.
+
+##
+
+## Sentencing of Federal Offenders 
+
+The relevant law applicable to the sentencing of a federal offender in a Tas ourt is to be found within the specific Commonwealth legislation, namely the Crimes Act, the applicable State procedural law, such as the Sentencing Act and the common law.
+
+When dealing with the sentencing of a federal offender a court is required to apply to the relevant provisions of Part 1B of the Crimes Act. Barristers dealing with the sentencing of a federal offender must ensure they are familiar with Part 1B as it is the applicable legislation that prescribes the relevant sentencing options a court may impose and sets out, in s 16A(2), the relevant factors a court must take into account in determining the appropriate sentence.
+
+The various sentencing options available under the Crimes Act are a conglomeration of specific unique Commonwealth sentencing alternatives and, by virtue of s 20AB, the adoption of some specific State alternatives. Federal offenders who are imprisoned serve their sentences in the correctional facilities of the relevant State or Territory. There are no prisons.3
+
+Relevant Sentencing Factors Pursuant to s 16A(2) of the Crimes Act, in addition to any other matters, a court must take into account such of the enumerated factors as are relevant and known to the court
+
+## Migration Act -- illegal refugee/ non-citizen. 
+
+See sections 189 etc, for detaining powers.
+
+# Appeals:
+
+## Manifest inadequacy 
+
+In ***Director of Public Prosecutions (Acting) v Pearce \[2015\] TASCCA 1***, Pearce J set out the principles relevant to appeals against sentence on the basis of manifest excess or inadequacy. His Honour said at \[8\]-\[9\]:
+
+\"8 As in all such appeals as this, it is necessary to refer to the principles which limit the circumstances in which intervention of an appellate court is justified. The court sits to correct material error: Dinsdale v The Queen \[2000\] HCA 54; (2000) 202 CLR 321 per Kirby J at \[57\]-\[60\]. Where no specific error is alleged, this Court must be persuaded of error of the second type referred to in House v The King (1936) 55 CLR 499 at 505, that is, that the sentence imposed by the sentencing judge is \'unreasonable or plainly unjust\'. It is not to the point that the sentence may be regarded by some as too lenient or too harsh. It must be established that the sentencing order is so manifestly wrong that it could only be the result of some undefinable error in the exercise of the judicial discretion: Bresnehan v The Queen \[1992\] TASSC 55; (1992) 1 Tas R 234 at 242. A court of criminal appeal may not substitute its own opinion for that of the sentencing judge merely because the appellate court would have exercised its discretion in a manner different from the manner in which the sentencing judge exercised his or her discretion: see Lowndes v The Queen \[1999\] HCA 29; (1999) 195 CLR 665 at \[15\], and the other cases referred to by this Court in Director of Public Prosecutions v CSS \[2013\] TASCCA 10. Sentencing judges should be \'accorded a wide measure of latitude\': Postiglione v The Queen \[1997\] HCA 26; (1997) 189 CLR 295 per Kirby J at 336. Excess or inadequacy is either apparent or it is not: Dinsdale v The Queen (above) at \[6\]. In considering that question regard is to be given to all the matters that are relevant to determining the sentence: Hili v The Queen \[2010\] HCA 45; (2010) 242 CLR 520 at 539.
+
+9 It is opportune to refer again to the oft quoted passage from the joint decision of Mason CJ, Brennan, Dawson and Toohey JJ in Veen v The Queen (No 2) \[1988\] HCA 14; (1988) 164 CLR 465 at 476:
+
+\'However, sentencing is not a purely logical exercise, and the troublesome nature of the sentencing discretion arises in large measure from unavoidable difficulty in giving weight to each of the purposes of punishment. The purposes of criminal punishment are various: protection of society, deterrence of the offender and of others who might be tempted to offend, retribution and reform. The purposes overlap and none of them can be considered in isolation from the others when determining what is an appropriate sentence in a particular case. They are guideposts to the appropriate sentence but sometimes they point in different directions\'.\"
+
+In Director of Public Prosecutions v Harington \[2017\] TASCCA 4, Pearce J summarised the considerations where the appeal is brought by the State on the ground of manifest inadequacy. His Honour said at \[95\]-\[96\]:
+
+\"95 This is a Crown appeal. The principles to be applied were reviewed in Director of Public Prosecutions v Swan \[2016\] TASCCA 9 at \[24\] and following. Those principles derive from the underlying principle that a primary purpose of Crown appeals is to lay down principles for the governance and guidance of courts having the duty of sentencing convicted persons: Green v The Queen; Quinn v The Queen \[2011\] HCA 49, 244 CLR 462 at 465-466 \[1\]- \[2\]. They also serve to maintain public confidence in the administration of justice by the intervention of this Court in the case of a manifestly inadequate sentence: Everett v The Queen \[1994\] HCA 49; (1994) 181 CLR 295 at 306; R v Stoupe \[2015\] NSWCCA 175 at \[115\]- \[116\]. In Everett v The Queen, McHugh J said at 306:
+
+\'Uniformity of sentencing is a matter of great importance in maintaining confidence in the administration of justice in any jurisdiction. Sentences that are higher than usual create justifiable grievances in those who receive them. But inadequate sentences also give rise to a sense of injustice, not only in those who are the victims of the crimes in question but also in the general public. Inadequate sentences are also likely to undermine public confidence in the ability of the courts to play their part in deterring the commission of crimes. To permit the Crown, as well as convicted persons, to appeal against sentences assists in maintaining confidence in the administration of justice.\'
+
+96 The appellant\'s right of appeal derives from the Code, s 401(2)(c). The appellant must persuade this Court that a more severe sentence is warranted in law and should have been passed in substitution for the original sentence. In any other case, the Court must dismiss the appeal. Thus, the appellant must not only establish appealable error in the exercise of the sentencing judge\'s sentencing discretion, but also negate any reason why this Court\'s residual discretion not to interfere should be exercised: R v Hernando \[2002\] NSWCCA 489, 136 A Crim R 451 at \[12\]; CMB v Attorney-General (NSW) \[2015\] HCA 9, 317 ALR 308, 89 ALJR 407; 243 A Crim R 282, per French CJ and Gageler J at \[34\], and Kiefel J (as she then was), Bell and Keane JJ at \[66\].\"
+
+# Correction of Sentence:
+
+Correcting a sentence can be sought under Section 94 of the *Sentencing Act*
+
+# Definitions
+
+## Breach of the peace:
+
+**"Breach of the peace defined"**
+
+As noted earlier, breach of the peace is not an offence, but instead it is the basis for the execution of the common law power which prevents public disorder. Furthermore, breach of the peace is one element of other public order offences such as unlawful assembly or riot.
+
+In attempting to establish what breach of the peace entails, we can turn to the leading authority of the concept which can be found in *R v Howell*, where Watkins LJ in the English Court of Appeal, defined breach of the peace in the following way:
+
+*"There is breach of the peace whenever harm is actually done or is likely to be done to a person or in his presence to his property or a person is in fear of being so harmed through an assault, an affray, a riot, unlawfully assembly or other disturbance."*
+
+*R v Howell \[1981\] 3 All ER 383*
+
+Cited in *Cintana v Burgoyne A Crim R 296 at para 13-19*
+
+Broadly speaking, breach of the peace as defined in *Howell* has been generally accepted in Australian common law.
+
+## Unfairly prejudiced:
+
+**Counter-argument**
+
+Use this line stolen from ***Young v Lusted***
+
+"In this case a jury was not involved in the decision-making process. Instead a legally trained magistrate had that task, one who until his recent appointment as a magistrate was an experienced defence counsel in the criminal jurisdiction. It was unlikely that his Honour would misuse the evidence, far less likely than a jury would have done."

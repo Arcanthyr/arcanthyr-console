@@ -1,0 +1,187 @@
+### Arguments in support of voluntary and intentional:
+
+**Based on facts of case:**
+
+Where defendant is clear, confident, deliberate in their denial/ communication with police about their version of events, it is arguable on the facts that they were not presenting as someone who commits an involuntary act
+
+**Strict Liability:**
+
+There is a common law presumption that knowledge of an unlawful act is an ingredient in every offence.
+
+A strict liability offence is one where "intent" does not need to be proved. However, the defence of honest and reasonable mistake is still available. Need only prove that the defendant performed the prohibited act.
+
+Driving without a licence is a strict liability offence. There is a defence if the driver has no notice of the fact that their licence has been suspended (case law and in defence prescribed in the Act).
+
+**Absolute Liability:**
+
+Need not prove that the defendant knew the action was an offence, only that he committed it.
+
+**The test of absolute vs Strict**
+
+The words of the statute itself
+
+The subject matter in which it is concerned
+
+Whether "absolute" liability will resolve the mischief concerend4
+
+**Specific intent:**
+
+A crime which an intent to bring about a particular result is upon the true construction of the provisions of the code or statute creating the offence
+
+**Subjective recklessness:**
+
+Foreseeing the possibility of the application of force but was heedless of such consequences when they acted.
+
+Wilfully in the charge of arson (imported by section 267(2)) includes recklessness -- arson may be committed if D deliberately does a willed act aware that setting fire to a building is a likely consequence of his act .
+
+*B v Visser* \[2000\] TASSC 141
+
+*2 Under the Criminal Code, s268, any person who unlawfully sets fire to any building is guilty of a crime, which is called arson. By virtue of the Code, s267(3), an act causing injury to property cannot constitute the crime of arson \"unless it is done wilfully\". The word \"wilfully\" includes \"recklessly\", so that arson may be committed if the accused deliberately does a willed act, aware that setting fire to a particular building is a likely consequence of that act, and if he or she recklessly does that act, regardless of that risk: R v Hodgson [\[1985\] TASSC 40](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1985/40.html); [\[1985\] Tas R 75](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1985%5d%20Tas%20R%2075); R v Gardenal-Williams [\[1989\] TASSC 29](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1989/29.html); [\[1989\] Tas R 62.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1989%5d%20Tas%20R%2062) *
+
+## Strict Vs Absolute liability 
+
+The law recognises three categories of statutory offences -- (1) those in which the prosecution must prove some state of mind, often referred to as mens rea, as an essential ingredient; (2) offences of \"**strict liability**\", as to which the prosecution need not prove any mental element unless the defendant adduces or elicits evidence suggesting an honest and reasonable mistaken belief in a state of facts that, if true, would render his or her acts or omissions innocent; and (3) offences of \"**absolute liability**\", as to which the prosecution does not ever need to prove any mental element, but need only prove the objective ingredients of the offences: He Kaw Teh v R \[1985\] HCA 43; (1985) 157 CLR 523.
+
+In *Proudman v Dayman* \[1941\] HCA 28; (1941) 67 CLR 536, the High Court was concerned with a charge of permitting an unlicensed person to drive a motor vehicle on a road. It was argued that the prosecutor needed to prove either knowledge that the driver was unlicensed or indifference. It was held that proof of knowledge or indifference was unnecessary. Rich ACJ and Dixon J (as he then was) held, on the facts, that no question of an honest and reasonable mistaken belief arose in that case. Dixon J suggested that that would have been a defence. At 541 he said:
+
+\"The burden of establishing honest and reasonable mistake is in the first place upon the defendant and he must make it appear that he had reasonable grounds for believing in the existence of a state of facts, which, if true, would take his act outside the operation of the enactment and that on those grounds he did so believe. The burden possibly may not finally rest upon him of satisfying the tribunal in case of doubt.\"
+
+The question of what the Crown needs to prove as to the state of mind of a defendant in prosecutions under ss7, 8(1) and 9 has to be determined in accordance with the ordinary principles of statutory interpretation. There is a common law presumption that mens rea is an essential ingredient in every offence: Sherras v De Rutzen \[1985\] 1 QB 918 at 921; He Kaw Teh v R (above) per Gibbs CJ at 528. Mens rea was described in Sherras v De Rutzen by Wright J at 921 as \"an evil intention, or a knowledge of the wrongfulness of the act\". As Gibbs CJ made clear in He Kaw Teh at 529, one must consider the words of the statute creating the offence and the subject matter of the statute in order to determine whether the common law presumption has been displaced.
+
+Intersction FVA act app and 94 sentencing act
+
+Defence on brief -- on app for fvo -- agree to variation - interim variation. Finalsiation
+
+More:
+
+In broad terms, statutory offences fall into three categories if distinguished on the basis of the mental element involved in them.
+
+\(1\) Offences which include as an element that the accused had guilty knowledge or intent.
+
+\(2\) Offences which include as an element that the accused did not have an honest belief on reasonable grounds that the circumstances were such as to make his or her behaviour innocent. These are offences of strict liability.
+
+\(3\) Offences which do not include either of the above elements. These are offences of absolute liability.
+
+## Implied mental element in criminal offending
+
+Taken from: **Cannell v G; G v Cannell \[2018\] TASSC 55 **
+
+56. The general principles relating to the state of mind implied as an element of an offence such as this are well settled. Having regard to s 4(3) of the *Criminal Code*, the principles of criminal responsibility under the Code are not applicable to an offence punishable summarily, except as provided by [s 36](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s36.html) of the [*Acts Interpretation Act* 1931](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/), that is, where the act or omission constituting the summary offence also constitutes a crime punishable on indictment. In the case of an offence under [s 35](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s35.html) of the Act,* *there is no cognate indictable crime. Accordingly, the principles of criminal responsibility will be determined in accordance with the common law: *Gow v Davies* [\[1992\] TASSC 8](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1992/8.html); [\[1992\] 1 Tas R 1.](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%5b1992%5d%201%20Tas%20R%201)
+
+<!-- -->
+
+57. Under the common law, it is presumed that mens rea is required before a person can be held guilty of an offence: *He Kaw Teh v The Queen* [\[1985\] HCA 43](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1985/43.html); [(1985) 157 CLR 523.](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%281985%29%20157%20CLR%20523) However, this presumption can be rebutted by express provision or necessary implication under the terms of the statute creating the offence. In *He Kaw Teh, *Gibbs CJ noted three considerations relevant to the question of whether the presumption has been displaced. They are the express words of the statute, the subject matter with which the statute deals and the question of whether displacement of the presumption will assist in the enforcement of the relevant provision.
+
+<!-- -->
+
+58. In the same case, Brennan J cited the following propositions from the judgment of the Privy Council in *Gammon Ltd v A-G of Hong Kong *[\[1984\] UKPC 17](http://www.bailii.org/uk/cases/UKPC/1984/1984_17.html); [\[1985\] 1 AC 1](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%5b1985%5d%201%20AC%201) at 14:
+
+\"(1) there is a presumption of law that mens rea is required before a person can be held guilty of a criminal offence;
+
+\(2\) the presumption is particularly strong where the offence is \'truly criminal\' in character;
+
+\(3\) the presumption applies to statutory offences, and can be displaced only if this is clearly or by necessary implication the effect of the statute;
+
+\(4\) he only situation in which the presumption can be displaced is where the statute is concerned with an issue of social concern, and public safety is such an issue;
+
+\(5\) even where a statute is concerned with such an issue, the presumption of mens rea stands unless it can also be shown that the creation of strict liability will be effective to promote the objects of the statute by encouraging greater vigilance to prevent the commission of the prohibited act.\"
+
+His Honour went on further to comment on these propositions as follows:
+
+\"The first three propositions correctly emphasise the strength which contemporary authority gives to the presumption that mens rea is an essential element of an offence. The fourth proposition, if I may say so with respect, seems to be too categorical an approach to what is, after all, a question of statutory interpretation. It is not possible to decide that mens rea can be excluded only where the subject matter answers a given description (even so general a description as \'an issue of social concern\'), without regard to the whole of the statutory context.\"
+
+### Defence of involountary action:
+
+1.  The principles applicable to the sort of defence raised by the applicant were set out by Mason CJ, Brennan and McHugh JJ in *R v Falconer *[\[1990\] HCA 49](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1990/49.html); [(1990) 171 CLR 30](http://www7.austlii.edu.au/cgi-bin/LawCite?cit=%281990%29%20171%20CLR%2030) at 40-41, as follows:
+
+*\"The presumption that the acts of a person, apparently conscious, are willed or voluntary is an inference of fact and, as a matter of fact, there must be good grounds for refusing to draw the inference. Generally speaking, grounds for refusing to draw the inference appear only when there are grounds for believing that the actor is unable to control his actions. Although the prosecution bears the ultimate onus of proving beyond reasonable doubt that an act which is an element of an offence charged was a willed act or, at common law, was done voluntarily, \... the prosecution may rely on the inference that an act done by an apparently conscious actor is willed or voluntary to discharge that onus unless there are grounds for believing that the accused was unable to control that act.\" \[Case reference omitted.\]*
+
+## Subjective knowledge as a mental element
+
+I.e. knowing or believing property to be stolen for receive or possess. Belief is enough, need not be proven fact.
+
+Voluntary intoxication can undermine and is relevant to the question of subjective knowledge.
+
+Under the code the court refers to knowledge in two ways: Knowledge is referred to knowledge of an actual fact. Other times it refers to a belief. This belief dimension that is considered in stolen property as the mental element (subjective knowledge -any evidence of intoxication can be relied upon to deny subjective knowledge (*Weiderman*)). Certainty is not needed, just a real belief *Quillerat* & *Martin*
+
+***Quillerat* \[1962\] Tas SR (NC 16)**
+
+This case makes it clear that specific knowledge is a subjective test. One need only believe, knowledge to the extent of certainty is not necessary. Closing ones mind to knowledge is not counted as knowledge, but it may be evidence of it.
+
+***Martin* Serial No 58/1980**
+
+Belief is enough to constitute. It need not be knowledge of an actual certainty, but one needs a real belief that the goods are stolen
+
+Any evidence of intoxication can be relied upon to deny subjective knowledge (*in Attorney General's Reference No 1 of 1996(Weiderman)* )).
+
+# Pleading
+
+## Double jeopardy
+
+**Barnes v Omant \[2019\] TASSC 38 (30 August 2019)**
+
+Pros laid a fraud charge that had no amount \$ stipulated and was a rolled up in a single charge.. Before hearing they notified defence of intent to adjourn sine die and lay fresh indictable complaint with proper particularisation of 9 charges.
+
+At hearing day the matter was listed. Pross sought to adjourn the hearing saying It would never go ahead. Defence objected on basis of finality. Pross argued they would be screwed on double jeopardy if the summary charge was dismissed. Magi denied adjournment and as pross had no evidence., it was dismissed.
+
+They appealed saying it was unjust not to grant adjournment. Crown failed.
+
+***Lusted v Jenkins* \[2010\] TASMC 12**
+
+7\. The principle of double jeopardy is based on the notion that a person should not be prosecuted twice for the same crime. The rational for the rule was stated in the judgment of the majority of the High Court in *Pearce v The Queen* (1994) 194 CLR 610 in a passage endorsed from *Green v United States* [\[1957\] USSC 146:](http://www.worldlii.org/us/cases/federal/USSC/1957/146.html)
+
+There is no statutory authority for withdrawal of a complaint in Tasmania. The nature of the decision made by this court to dismiss the first complaint was, consequently, a determination of nothing other than to allow a substituted complaint. Allowing the prosecution of the second complaint ... does not, in my view, offend any of the principles ... or rationale for the rule.
+
+... the conclusion that the complaint is bad for duplicity does not oblige the court to dismiss the complaint. The alternative courses, including putting the prosecution to an election to remove any embarrassment, are referred to by Kirby J in *Walsh v Tattersall* at 110 and reflected in [s29(5).](http://www.austlii.edu.au/au/legis/tas/consol_act/ja1959119/s29.html) Further, if an election had been compelled on the first complaint it is impossible to determine which facts, if proved, put the defendant in jeopardy of conviction. Even if it were possible that the first complaint may have survived in some more limited form I have concluded that Mr Jenkins cannot take advantage of the dismissal of a complaint that was bad for duplicity as an answer to the later complaint.
+
+## Means of resolution:
+
+### Subsume and dismiss like elements:
+
+**Murray v Tasmania Police \[2022\] TASSC 1 (24 January 2022)**
+
+Para \[16\]
+
+The applicant accepted the magistrate was entitled to do what he did, if it was open to construe the reckless driving element of the aggravated evading police charge as involving the same conduct that constituted the reckless driving charge. The magistrate would have been so entitled because of the rule or principle that prohibits \'double punishment\'. To the extent to which two offences contain common elements, it is wrong to punish an offender twice for the commission of the elements that are common: see *Pearce v The Queen *[\[1998\] HCA 57](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1998/57.html); [(1998) 194 CLR 610](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=%281998%29%20194%20CLR%20610) per McHugh, Hayne and Callinan JJ, *Wood v Major *[\[1992\] TASSC 28](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1992/28.html); [(1992) 3 Tas R 249](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%203%20Tas%20R%20249) at 254, *R v Audino* VSCA \[2007\] 318[\[2007\] VSCA 318](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2007/318.html); , [180 A Crim R 371](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=180%20A%20Crim%20R%20371) and *R v Healey* [\[2008\] VSCA 132](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2008/132.html), [186 A Crim R 433](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=186%20A%20Crim%20R%20433) at [\[27\]](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2008/132.html#para27)- [\[34\]](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2008/132.html#para34).
+
+Para \[17\] It is not necessary for there to be an act which is itself an offence to be an element of the second offence, such as burglary or aggravated burglary; it is sufficient if the conduct, in the circumstances of the case, involves the commission of elements of two offences:* Johnson v The Queen *[\[2004\] HCA 15](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2004/15.html), [78 ALJR 616](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=78%20ALJR%20616), discussed in* Dang v Director of Public Prosecutions *[\[2014\] VSCA 49](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2014/49.html), 43 VR 29 at [\[43\]](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2014/49.html#para43)- [\[49\]](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2014/49.html#para49). In the present case, of course, the commission of one offence is an element of the other. Reckless driving within the meaning of [s 32](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ta192577/s32.html) of the [*Traffic Act*](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ta192577/) is an element of aggravated evading police.
+
+Para \[29\] [Section 31(3)](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/s31.html) of the *[Justices Act](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/)[^\[3\]^](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2022/1.html?context=1;query=%22rsada1970264%20s6a%22;mask_path=#fn3)* would have permitted the magistrate to amend the complaint, had the matter issue then been raised. The applicant would not have been prejudiced, and the applicant conceded that had the question arisen, the magistrate could not reasonably have refused to make the amendment, with counsel putting the concession in terms that in the ordinary course, there would have been a duty to amend the complaint consistent with the facts stated.
+
+## When does jeopardy start?
+
+Not enough for just a charge. Even a Plea of guilty to one of the two charges isn't enough. A court can adjourn "punishment" therefore delaying jeopardy such as with an ASD pending higher charges
+
+See: **Matthew John Hankin v Caroline May Graves \[1996\] TASSC 71; (1996) 5 Tas R 478 (26 June 1996)**
+
+## Duplicity vs Double jepordy 
+
+[Duplicity:]{.underline} 
+
+ a question of form, but nonetheless very important for that. It has a long history and applied with strictness 
+
+[Why do we have this rule?]{.underline} 
+
+Important because it ensures that a conviction on any count in a complaint or indictment is a conviction for one offence only. This requirement enables an accused to plead to each of the individual charges against him/her.  
+
+Further, it enables the court to control the evidence against the accused, and forces the prosecution to make sure the evidence that they lead in relation to each separate charge, is relevant to the charge, and not infringe on tendency and coincidence rules, ensures accurate sentencing, helps in the application of autrefois convict and autrefois acquit (more in double jeopardy) 
+
+\*\*See handout for full list or rationales 
+
+ 
+
+Need to ensure not to confuse duplicity with double jeopardy. Duplicity is a matter of form of the complaint. 
+
+- Duplicity can be latent or patent 
+
+- Latent: when you don't realise there is duplicity until prosecution produce their evidence at trial 
+
+- Patent: when it is clear that they are under 2 charges 
+
+<!-- -->
+
+- Not always an easy rule to apply as sometimes difficult to work out whether the legislation creates a single or more than one offence (particularly difficult for POA --s13(1)(a) *a person in a open to p will not behave in a violet, riotous, offensive or indecent manner*. 
+
+Would they need to prove all those things, or is there potentially 4 separate offences.  
+
+Thus if someone charged under 13(1)(a) and count says charged with offensive behaviour.

@@ -1,0 +1,233 @@
+# One sided phone recordings:
+
+Listening devices act tas
+
+Section 5 -- defence if consented to by one party to protect their "lawful interest"
+
+*Sepulveda v The Queen*.[^\[129\]^](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/journals/UNSWLawJl/2018/7.html?context=1;query=%22lda1991181%20s5%22;mask_path=#fn131) In that case, the NSW Court of Criminal Appeal concluded that protection, in the context of lawful interests, entailed 'defence from harm, danger or evil'.[^\[130\]^](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/journals/UNSWLawJl/2018/7.html?context=1;query=%22lda1991181%20s5%22;mask_path=#fn132)
+
+[[\[129\]]{.underline}](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/journals/UNSWLawJl/2018/7.html?context=1;query=%22lda1991181%20s5%22;mask_path=#fnB131) [[\[2006\] NSWCCA 379]{.underline}](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2006/379.html); [[(2006) 167 A Crim R 108]{.underline}](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%282006%29%20167%20A%20Crim%20R%20108) ('*Sepulveda*'), which involved the clandestine recording of a conversation in which a person accused of child sex abuse admitted his crimes to one of his victims.
+
+[[\[130\]]{.underline}](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/journals/UNSWLawJl/2018/7.html?context=1;query=%22lda1991181%20s5%22;mask_path=#fnB132) Ibid 132 \[120\] (Johnson J), quoting *Udini v Aldo t/as Fine Line Joinery Pty Ltd *[[\[1998\] NSWCC 21]{.underline}](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCC/1998/21.html), \[19\] (Truss J).
+
+*Sepulveda v The Queen*.[^\[129\]^](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/journals/UNSWLawJl/2018/7.html?context=1;query=%22lda1991181%20s5%22;mask_path=#fn131) concerns consideration of the NSW listening devioces act tas
+
+ *[Listening Devices Act 1984](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/nsw/repealed_act/lda1984181/) repealed -- section 5 in that act mirrors our in the legal interest exception*
+
+**TASMC** decision ***MOORE v HARRISON 2018*** (not published but saved in files)
+
+**Legal Argument**
+
+***Listening Devices Act 1991***
+
+Section 5(1)(b) -- cannot record a conversation to which you are a party
+
+If caught under 5(1)(b) it is inadmissible under s 14(1)
+
+Exception to Section 5(1)(b) is contained in s 5(3)
+
+5(3)(a) -- implied consent; or
+
+**5(3)(b)(i) -- reasonably necessary for the protection of the lawful interests of that principal party**
+
+Written decision of your Brother Magistrate Ken Stanton in the matter of ***Moore v Harrison \[2018\] TASMC*** in Launceston. Of I course I accept that this can be of guidance only, and that the Court is no way bound by this decision, but the reasoning and conclusions reached by HH magistrate Stanton in that decision inform my application to admit this evidence today.
+
+Moore v Harrison concerned a recording made by the victim's sister. That recording was said to contain evidence of recent complaint made the sister by the victim of an assault perpetrated by the defendant.
+
+The victim was unaware that a recording was made of the conversation she had with her sister.
+
+IN an application under s38, to CX the victim, based on a PIS recorded by the sister, evidence was given that the reason for making the recording was because she knew, from experience, that the victim would not give an honest account about what happened, to protect the defendant from being punished.
+
+His honour canvased the authorities as to
+
+- *Lawful interests:*
+
+- *Reasonably necessary to protect:*
+
+**I Respectfully refer your honour to Para 20**- where it is seen that protecting the interests of a victim of a serous crime, including family violence, has been found to be a sufficient interest -
+
+**And in fact at At para 29** The HH identified "the relevant lawful interest" in that case as protection from
+
+family violence.
+
+**And again at para 31** -- there was lawful interest in recording the conversation as could not be disputed in a way that oral evidence alone might be
+
+I submit, in principle it is the same interest here, that is, to be protected from family violence in circumstances where there are no witnesses to the violence being perpetrated.
+
+Whether it was "***Reasonably necessary to protect***" that question is canvased from para 33 onwards, it is essentially a balancing act of factors within the circumstances of the particular case
+
+Including the means by which an otherwise lawful recording might be made -- such as getting a warrant -- which I submit was not viable.
+
+Where there is an immediate need to make a recording.
+
+Whether there is an ability to make contemporaneous notes -- I would submit such a proposition in such circumstances is bordering on ludicrous.
+
+And relevant is the nature of the interest being protected, and on page 11, obtaining evidence to protect from family violence is specifically identified.
+
+Even if against me on that submission, I submit the evidence ought to be otherwise admitted under 138(3) of the evidence act And I rely again on the reasoning of HH Magistrate Stanton -- from para \[51\]
+
+Not necessary to read:
+
+**Section 14 Of the listening devices act** does not exclude the evidence because the victim (recorder) who is to give evidence in proceedings did not become aware of the conversation because of the recording. They were a party to the conversation. That's how they became aware of it.
+
+Also look at ***Dimech v Tasmania* \[2016\] TASCCA 3 (2 March 2016)**
+
+# Absence of evidence not terminal 
+
+***Shepperd v Cannell \[2018\] TASSC 12***
+
+**Para 20 is a good rundown on how the failure of a police officer to have no memory of injuries is not extraordinary and not necessarily indicative that they did not exist!**
+
+\[20\] However, there were also several aspects of the evidence upon which the magistrate was entitled to rely as supportive of the complainant\'s version. The existence of the damage within the house was important corroborative evidence. The immediate complaint made by the complainant to the police was also a matter which the magistrate was entitled to regard as supporting the consistency of the complainant\'s version. The complainant had taken photographs of injuries. While these may have provided only limited support, they were consistent with the complainant\'s version. I do not regard the evidence of the police officers, that they did not observe any injuries, as carrying significant probative weight. There was no examination of the police about the extent to which they were looking for injuries or had examined the complainant. There was no evidence of the state of the injuries, in particular the cut lip, at the time the police were present. I would not regard it as particularly exceptional that police may not have been concerned at the time of this visit with matters of forensic importance, such as making and recording observations for later use in court.
+
+## Failure to record reasons in statement 
+
+This is also not terminal. In ***Moore v Knowles*** \[2017\] TASMC 12 there was a question as to the legality of a car search. The searching officer made notes, but omitted to record the basis of the prescribed belief. Court said at para \[31\] that they were busy. Engaged with the defendant, and the conducting the search. They also omitted it from their statement. But at the time of the contemporaneous notes, and the subsequent statement, there was no evidence that the legality of the search was in question.
+
+# Sources of Evidence:
+
+1.  This submission raises the question of the meaning of the phrase "known character proved to the court". Under the [*Evidence Act*](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), evidence of prior offences committed by the defendant could only be admitted in certain circumstances (for example, [ss97](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s97.html), [98](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s98.html) and [110](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s110.html)). If evidence was admissible pursuant to [s110(2)](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s110.html) of the [*Evidence Act*](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), to prove that the defendant was not generally a person of good character, then the hearsay rule, the opinion rule, the tendency rule and the credibility rule would not apply to such evidence. It would follow that in this circumstance, the character of the defendant could be proved on the basis of evidence which included hearsay and opinion evidence, and hence the defendant's general reputation may be relevant to this consideration. However, the preconditions for admission of such evidence under the provisions of the [*Evidence Act*](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/) do not apply in this case. Rather, it is sought to have the evidence admitted by virtue of the operation of [s7(2).](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s7.html) By virtue of the provisions of [s8](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s8.html) of the [*Evidence Act*](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), that Act does not affect the operation of the provisions of any other Act. Hence, [s7](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s7.html) (2) operates independently of the [Evidence Act](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), and makes admissible evidence which would otherwise be inadmissible having regard to the provisions of the [Evidence Act](http://www7.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/).
+
+## Phone downloads (formatting)
+
+Edit in excel -- sort by in box outbox first and colour code. Then sort by inbox numbers and colour code and delate, same outbox delete the irrelevant ones or blacke them out.
+
+Legal Services per E Walsh dated 22 DEC 22 says that section 10 is enough to search content of phones for FV offences. But the basis of their argument was that 8A of the Acts Inter Act says that the purpose of acts should guide interpretation and that not being able to search phones would be contrary to the interests of the act -- namely keeping offenders accountable.
+
+That said, Malcolms argument was that "document" is defined in the Evidence Act and that a device capable of recording things "phone" is a document and can be examined.
+
+## Using phone towers and map plotting with Mobile phone data. 
+
+Wagner (a pseudonym) v The King \[2025\] VSCA 56 (03 April 2025) (Priest, McLeish and Orr JJA)
+
+circumstantial telecommunications evidence said to demonstrate that alleged offender was in vicinity of burglaries and arson at relevant times
+
+--probative value of evidence not outweighed by danger of unfair prejudice -- Limitations of evidence capable of being exposed in cross-examination and addressed by jury direction -- Leave to appeal refused.
+
+Evidence Act 2008 ss 135, 137.
+
+Moore (a pseudonym) v The King (2024) 98 ALJR 1119, applied; Moreno (a pseudonym) v The King (2023) 307 A Crim R 519, referred to.
+
+## Arunta
+
+Can be tendered as admission evidence.
+
+As rebuttal evidence under 106 if it goes to a motive of a witness to lie, or evidence of coercion.
+
+- there is a case where the def has called and sought to use a friend via Arunta to get a vic to lie, can use it against vic privately (private recording with earphones) under s 44. Then after tehir private lsitineing, go though and cx about whether it occurred. Then, and (only if it was denied in cx) you can seek to have them tendered under 106 as evidence of motice or actually lying-- see **Police v Endlay \[2020\] TASMC 13 (9 January 2020)**
+
+***Police v Endlay* \[2020\] TASMC 13 (9 January 2020)**
+
+\[99\]
+
+99. However, [s 106](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s106.html) of the [*Evidence Act*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/) very significantly modifies the common law position here. Essentially [s 106](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s106.html) would permit the admissibility of what would otherwise once have been termed "collateral evidence" which goes only to the credit of a witness. But such evidence is only admissible in rebuttal. That is admissible only *after* the substance of the evidence has been put to the witness and the witness has not agreed with the substance of that evidence.
+
+100. Leave to admit that evidence is not required if the evidence "tends to prove - not "proves" of itself - that the witness has knowingly made a false representation while under an obligation to tell the truth.
+
+101. Here the prosecution assert that the evidence of the Arunta calls is admissible without leave because it submits that the evidence here beyond those calls themselves tends to prove that the complainant lied under oath in court because of the following list of factors:
+
+\(i\) it was accepted by the complainant that she and the defendant's father were in frequent telephone contact during the period that the defendant was remanded in custody on these matters.
+
+\(ii\) it was accepted by the complainant that during those calls with her father-in-law they discussed her allegations against the defendant.
+
+\(iii\) it was accepted by her that during the period that those calls were made that the complainant was aware that the defendant was also in telephone communication with his father from prison.
+
+\(iv\) it was accepted by the complainant that in one of those calls her father-in-law did pass on a request from the defendant to her that she was to deposit funds into his prison phone account to allow him to make calls from the prison.
+
+\(v\) it was accepted by her that she acceded to that request and did place money in that account for the defendant
+
+\(vi\) as noted above the calls themselves in essence reveal a pattern of instructions from the defendant to his father that the complainant was to withdraw her complainant; that she make a statutory declaration to that effect; that she see a private solicitor to advance that; that she assert that she had made her complaint because her pregnancy had made her feel sick and that she was therefore moody and irritable and angry and emotional; that the defendant had never physically assaulted or significantly verbally abused or threatened her and that she had never suffered any physical injury at his hand.
+
+\(vii\) the complainant's admitted actions between 24 October 2019 and her appearance in court to give evidence mirrored those very instructions.
+
+102. So, crucially, even absent any concession by the complainant that she did as directed by the defendant or any other direct evidence that she agreed to do that, it was submitted that I should nevertheless admit the evidence because I do not have to be affirmatively satisfied that she did so, but rather only be satisfied that the above evidence *in toto* "tends" to establish that.
+
+103. In my view, when considered in the light of all the relevant circumstances the evidence of the Arunta calls might well rationally cause me to so find that the complainant knowingly or reckless gave false evidence to me. The combination of making of the calls, their content, the admitted opportunity for those directions to have been conveyed to the complainant by her father in law together with the timing of the things the complainant did which match those directions in those calls so persuade me.
+
+104. For the defence Ms Stewart submitted that I should not do so absent evidence - that is direct evidence - that conversations occurred between the complainant and the defendant's father whereby these instructions were passed on to her. I reject that for the reasons advanced by the prosecution.
+
+105. The evidence which supports a finding that such conversations between the complainant and her father in law did occur and that she then acted in accordance with those directions is circumstantial. However, the circumstances surrounding them in sum satisfy me that such conversations occurred. In my view, it is appropriate to approach this matter as one would approach a case involving circumstantial evidence, i.e. that I should consider the combined weight of all the "strands" (i) to (vii) above (See as recently discussed by Blow CJ in *Allen v Brown* [(2016) TASSC 22).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2016/22.html)
+
+106. On that basis I admitted the evidence of the Arunta calls on the hearing as to the matter of the credit of the complainant pursuant to [s 106(2)(e).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s106.html)
+
+## Body warn cameras:
+
+Amendments to the *Listening Devices Act 1991* and *Police Powers (Surveillance Devices) Act 2006* -- Body Worn Cameras The Surveillance Legislation Amendments (Personal Police Cameras) Act 2018 (The Act) received Royal Assent on Friday 5 October 2018. The Act amends both the *Listening Devices Act 1991 and the Police Powers (Surveillance Devices) Act 2006*, to specifically allow for the use of personal cameras either worn, or held by police officers.
+
+The previous legislative limitations with respect to body worn camera recordings no longer apply. Whilst members of the public may object to a recording taking place, members may use their discretion to lawfully continue an audio visual recording as necessary in the circumstances. Although advisable to do so, police officers in uniform are not required to advise members of the public that they are being recorded. The Act also amends the way in which information captured via a police personal camera can be released.
+
+Whilst subject to normal Right to Information (RTI) and disclosure provisions, the Act introduces specific offences for inappropriately releasing or publishing 'protected information', the definition of which includes body worn camera footage. Members are encouraged to familiarise themselves with the Act, but in particular the amendment to section 33 of the *Police Powers (Surveillance Devices) Act 2006*, which is attached.
+
+## 000 calls
+
+Investigating officer can adduce evidence of RDS 000 calls -- they give evidence that they integrated the police CACS database: "I identified this call entry -- made formal request for the recording -- obtained access to it and recorded to a disc" (
+
+000 Are business records!!
+
+**Tasmania v Dolega \[2016\] TASSC 65**
+
+Para \[34\]
+
+*34 I accept that the recording in question is a document to which the section applies, having regard to the provisions of s 69(1). A voice recording falls within the definition of \"document\" contained in s 3. It would also seem clear that the ambulance service is a \"business\" within the meaning of s 3A(1) of the Act. Finally, it was conceded by the defence that the recording forms part of the records belonging to or kept by the ambulance service in respect of its business, and that the previous representation was made or recorded in the document in the course of, or for the purposes of, the business.*
+
+## FVMS Records
+
+Affidavit -- of FVU -- is to include the relevant incident details from the FVMS -- not the actual report. Redacted copies may be needed to have at hearing in case their production is called upon by defence. from SAH conference 2018)
+
+## Social media 
+
+Cant subpoena FB -- the Australian office does not "hold" any records to be subpoenaed. The docs are "held" by US. Cannot get the info from US.
+
+HOWEVER if there is consent from the party who holds the record -- go to FB settings and go to "download" data. Only useful if it's a complainant etc.
+
+**Can be used as:**
+
+Direct evidence of the offence (i.e. "you're a cunt" is threatening/ menacing for the Cth' harass intimidation charge
+
+### Admission evidence (i.e. FB admission of offence)
+
+ID/ relationship evidence between parties
+
+**How to admit it?**
+
+Best way is to have screen shots referred to/ incorporated / attached to complainant statement identifying it as what they received. With that they can give evidence that the FB id was one they identified as relating to the defendant with supporting characteristics to bolster claim defendant wrote it.
+
+Second best is from a police officer statement outlining the investigation they made and the integrations of FB they made. Referencing screen grabs.
+
+**4 golden pre-admission hurdles to overcome**
+
+Relevance
+
+Authenticity (is it from the def)
+
+Hearsay (EA exclusions)
+
+Prejudice
+
+**Authenticity.**
+
+- ***Australian Competition and Consumer Comm'n v Air New Zealand Ltd (No 1) \[2012\] FCA 1355​***
+
+***ACCC v Air NZ (overturning NAB v Russo)***
+
+Court said that authenticity can be (CAN be) determined on its face alone in order to fall under the business record exception. Court can examine document itself and make own assessment as to authenticity on the reasonable inference available from the document alone per s 58 EA as a question of relevancy.
+
+But for a FB printout, the printout alone may not be sufficient for court to make reasonable inference from printout alone. That is, the document itself needs to be particularly compelling. Print out by itself may be a but week. But arguable!
+
+To help -- it is advisable to have something else to accompany printout. A complainant saying "that is his page, his image, I have spoken with him via that account for years etc." With that, getting historical posts from the def page, like photos of the at events and milestone posts like a birthday, makes it more likely that it is the def account (not so helpful if they claim they have been hacked, but helpful if they deny the ownership of the page/ id).
+
+Note - Section 167 of EA (to be read with 166)
+
+This section allows def to claim document/ representation should be provided so that it can be subjected to forensic assessment by the defence.
+
+**Admissions**
+
+Section 88 -- admissions has pretty low threshold of admissibility
+
+**"Business records" as a means of getting social media**
+
+Business' record should have supported evidence that it is a "business" record.
+
+As an example, CCTV needs to come with a statement from "keeper of cctv" at business id'ing the footage as being from location "a" at time "b" showing "c" given to const. "d".
+
+Only need to consider (business record) as an exception to hearsay. Not required if it is "direct evidence" of an offence.

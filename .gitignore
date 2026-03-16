@@ -2,3 +2,7 @@
 .wrangler
 Local Scraper/.env
 arcanthyr-nexus/
+Set-ExecutionPolicy
+debug_extract.txt
+debug_response.txt
+.claude/

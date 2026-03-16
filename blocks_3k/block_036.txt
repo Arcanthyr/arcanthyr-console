@@ -1,0 +1,205 @@
+## Dangerous Article
+
+**Police Offences Act 1935 - Section 15C -- Dangerous Article**
+
+**Police Offences Act -- Section 3 -- Interpretation**
+
+*dangerous article* includes --
+
+(a) any weapon other than a firearm; and
+
+(b) any article adapted or modified so as to be capable of being used as such a weapon; and
+
+(c) any other article that is intended to be used as such a weapon; and
+
+(d) a knife
+
+#### Possession:
+
+Not defined in POA. "possession" ordinary means "physical custody or control ***Momcilocvic V the Queen 2011 HCA 34***
+
+#### Requisite belief:
+
+Police officer must believe that the defendant is in possession or carries and dangerous article HELD, in the circumstances, to be based on objectively reasonable grounds.
+
+See ***Tasmanian v Hodges 2022 TASSC***. Belief is something more than mere suspicion but less than actual knowledge based on proof. Ther must be grounds for their belief but certainty and proof are not required.
+
+#### 'Dangerous' and 'Dual Purpose'
+
+***Craig v Lowrey* \[2012\] TASMC 41**
+
+12\. The Oxford Dictionary defines "weapon" as "a thing designed for use for inflicting bodily harm or physical damage".
+
+13\. Turning firstly to the three inclusive definitions set out in section 3, it is probably the case that I would find that the machete is a weapon, despite its dual purpose. Its purpose as a weapon worldwide is well known. Terrible injuries and death have flowed from machete attacks. The blade is known to be long, strong and sharp.
+
+14\. However authorities have held that where there is a **dual purpose**, prosecution is required to prove the intended use as a weapon. See *Chadbourne v Ansell *[\[1975\] WAR 104](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1975%5d%20WAR%20104), *Threfall v Panzera* [\[1958\] VicRp 87](http://www.austlii.edu.au/au/cases/vic/VicRp/1958/87.html); [\[1958\] VR 547](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1958%5d%20VR%20547), *Coleman v Zanker* [\[1991\] SASC 3121](http://www.austlii.edu.au/au/cases/sa/SASC/1991/3121.html); [(1992) 58 SASR 7.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%2058%20SASR%207)However these cases deal with different statutory provisions relating to "offensive weapons". This appears to be a higher test than required for part (b) of the definition in this state's Act, where an item is modified so that it is only *capable* of being a weapon. This interpretation would also seem to defeat the work of the "lawful excuse" provision. I do not need to decide this point. The definition is an inclusive one, and therefore the overriding requirement is that the court must be satisfied that it is "a dangerous article" independently of whether or not it falls into the category of a "weapon". This would at face value cover a wider array of items.
+
+15\. The Macquarie dictionary defines "dangerous" as "full of danger or risk; causing danger; perilous; hazardous; unsafe". The Oxford dictionary defines dangerous as "able or likely to cause harm or injury".
+
+#### Dangerous Article (Lawful Excuse)
+
+***Craig v Lowrey* \[2012\] TASMC 41**
+
+20\. The overall effect of the defendant's explanations was that he kept the machete for recreational or farming purposes unrelated to attack or self-defence.
+
+21\. In *Taikato v R* [\[1996\] HCA 28](http://www.austlii.edu.au/au/cases/cth/HCA/1996/28.html) the majority of the High Court in relation to a similar charge discussed the meaning of "lawful purpose". They held that as a general rule interpreting "lawful purpose" in a legislative provision to mean a purpose that is not forbidden, rather than positively authorised by law, is usually preferred. This is because statutes are interpreted in accordance with the presumption that parliament does not take away existing rights, unless it does so expressly or by necessary implication. In this matter it was not argued by prosecution that using the machete for the purposes of a tool, as the defendant describes, was in itself unlawful. It is not prohibited by law and I find that such use would be a lawful activity.
+
+22\. Two decisions of the South Australian Supreme Court assist with the principles to be applied in proving "lawful excuse" in the context of this type of charge. I will set out relevant passages from those decisions.
+
+23\. In *Holmes v Hatton *[18 SASR 412](http://www.austlii.edu.au/cgi-bin/LawCite?cit=18%20SASR%20412) Wells J stated at p418:
+
+It seems to me that the expression "without lawful excuse" obliges a Court to examine all the circumstances that characterize the purpose and reasons for which the weapon is carried, and to determine, as a matter of fact and degree whether, reasonably appraised, those purposes and reasons constitute lawful excuse or not.
+
+His Honour further stated as p419:
+
+> *Where an offensive weapon is carried knowingly, lawful excuse or its absence is ordinarily to be judged by a consideration if the purpose or purposes, or the reason or reasons, for which the weapon is being carried. (If it should be -- and I leave this point for consideration when it directly arises -- that a man may "carry" a weapon within the meaning of the section even where he is unaware that he is carrying it -- for example, where he is helping to carry another's luggage which, unknown to him contains a gun -- absence of purpose or reason and an inadvertent carrying may amount to lawful excuse).*
+>
+> *The purpose or reasons for which an alleged offender was carrying a weapon are to be examined and assessed having regard to the united force of all the circumstances put together. If the sole purpose of reason for which the weapon is carried is plainly unlawful or is other-wise contrary to the section, the carrier cannot claim lawful excuse.*
+>
+> *Where the sole purpose or reason is lawful, there will be lawful excuse. Where there is a duality of purpose or reason, no hard and fast rule can provide a solution. The court, in determining the issue, must, in my opinion, decide a question of fact and degree, and must, in particular, ask whether that which, ex facie and taken in isolation, may be regarded as an unlawful purpose or reason, was, in the circumstances, so transient, so remotely related to the defendant's conduct, so speculative, so unlikely to become translated into action, so subsidiary -- in short, so unimportant or insignificant, as to leave the alleged offender with lawful excuse.*
+>
+> *The foregoing discussion, it will be observed, has omitted any reference to onus of proof. The application of the provision as to onus of proof should cause little difficulty in practice, but occasional cases, in which dual purpose is under examination, may arise where it will be necessary to keep steadily in mind what the defendant is obliged by [s. 15](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s15.html) to prove.*
+>
+> *Plainly, given that all other elements are proved, if only a single purpose or reason is in issue, and if the defendant proves on the balance of probabilities primary facts that, in law, amount to lawful excuse, he will be acquitted. If proof falls short of that, he must be convicted. If the evidence as a whole raises a question of dual purpose or reason, the matter will, to my mind, stand thus. Where the evidence as a whole includes evidence suggesting an unlawful purpose or reason for carrying as well as of a lawful purpose or reason, in order to acquit the defendant the court must find itself persuaded that, having regard to the cogency with which the relevant facts and circumstance are proved by the evidence as a whole, the unlawful purpose or reason was so unimportant and insignificant that there probably was lawful excuse.*
+
+## CLAMPING & HOONING
+
+### Prescribed offences:
+
+Prescribed offences are prescribed and can be found in Regulation 6 of the *Police Offences Regulations* 2014:
+
+[Section 13](http://www.austlii.edu.au/au/legis/tas/consol_act/vata1999150/s13.html) of the [Vehicle and Traffic Act 1999](http://www.austlii.edu.au/au/legis/tas/consol_act/vata1999150/) (drive disqualified) or [section 19A](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/s19a.html) of the [Road Safety (Alcohol and Drugs) Act 1970](http://www.austlii.edu.au/au/legis/tas/consol_act/rsada1970264/) (drive was disqualified) so long as it is a subsequent offence for either. And a speeding offence above 45kmh
+
+Further prescribed offences in s 37K of the ***POA***
+
+**14B. Unlawful entry on land involving use of vehicle**
+
+**15B. Dispersal of persons involving use of vehicle**
+
+**37J. Excessive noise, smoke, &c., from vehicles**
+
+**48. No motor-vehicle race to be held without a permit**
+
+**32. Reckless driving TRAFFIC ACT 1925**
+
+**11A. Evading police POLICE POWERS (VEHICLE INTERCEPTION) ACT 2000**
+
+### Power to clamp and confiscate vehicles:
+
+Power to do so where there is a prescribed offence or UP TO 14 days after the offending (*POLICE OFFENCES ACT 1935 - SECT 37N)*
+
+*The period a vehicle can be clamped or confiscated depends on the offence and how many previous offences. They are stipulated in the subdivisions.*
+
+### Mandatory penalty 
+
+Prescribed offences including a vehicle that are "clamped or confiscated" are subject to a "Special Penalty" (s 37MA POA). There is no discretion and it is above any other penalty found in the ***Sentencing Act***.
+
+The amount of the special penalty is found in Regulation 7 of the *Police Offences Regulations* 2014 **[OR]{.underline}** 2024 Subject to the date.
+
+Offending post 12 December 2024 (when the new regs came in) is charged as 4 penalty units./
+
+Offending pre that is \$600.
+
+### Motor Forfeiture Application.
+
+Where third offence -- app can be made *POLICE OFFENCES ACT 1935 - SECT 37Y)*
+
+**Look at *Perkins v Douglas* \[2010\] TASMC 8 for relevant considerations of the court.**
+
+When preparing for a hearing, get certs of convictions for relevant prescribed offending. Get FFP for this so def can be cross examined on previous driving history in support of the position that the vehicle ought not be returned. Confirm the penalty that was imposed on the conviction that led to the conviction. Not the circumstances of the relevant offending that led to confiscation. The more basic, the less likely that forfeiture will be granted.
+
+If app made by owner (not offender) cx about their knowledge and acquiescence to letting the offender use the car. Did they know that def was unlicenced/ unregistered etc.? Is there a history or pattern of owner allowing def to use car? Did they know they were offending/ likely to offend?
+
+## 37J. Excessive noise, smoke, &c., from vehicles
+
+See **Lane v Kelly \[2010\] TASMC 20**
+
+## Motor Vehicle Stealing -- 
+
+**37B Police offences Act.**
+
+Not like "stealing" in the Code. Need not intend to permanently deprive.
+
+**37B.**   **Motor vehicle stealing**
+
+If serious can be "made a code offence" 37(4)(b)
+
+12 month limitation
+
+- drives or [uses]{.mark}
+
+- a motor vehicle
+
+- without the consent of the owner or registered operator of the vehicle or of some person who is lawfully in charge of the vehicle and has authority to give that consent
+
+- mental element: def must have subjective knowledge that above has not given consent
+
+***Willox v Warren \[1987\] TASSC 74 ***
+
+Para \[4\]
+
+*S. 37B of the Police Offences Act 1935 provides:--*
+
+*"37B--(1) Subject to subsection (2), a person who drives or uses a motor vehicle without the consent of the owner of the vehicle or of some person who is lawfully in charge of the vehicle and has authority to give that consent is guilty of the offence of motor vehicle stealing.*
+
+*(2) Subsection (1) does not apply to or in relation to the driving or use of a motor vehicle by a police officer or an authorized officer acting in the execution of his duty."*
+
+*The essential external elements of this offence are, first, that the defendant drove or used a motor vehicle and, second, that he did so without the consent of the owner or person lawfully in charge of it. To these should be added a mental element, namely that at the time he did so he knew that the owner or person lawfully in charge of it had not given his consent to such use (R. v. Murphy \[1957\] VicRp 75; \[1957\] V.R. 545; Wray v. Robertson \[1970\] Tas.S.R. 253). Stealing on the other hand requires a dishonest taking or conversion with intent to permanently deprive the owner of the thing stolen. [Although the summary offence is described as "stealing", it has that clear generic difference to stealing as defined under the Criminal Code and at common law. It has frequently been said that the offence was introduced to prevent "joy riding"]{.mark} (see Wray v. Robertson (supra) at p.255 and cases there cited).*
+
+**Abandoned?**
+
+Motor vehicle believed abandoned
+
+.
+
+Ref: *Kemp v Shultz*
+
+*Lowe v Radosavljevic*
+
+One case, Magistrate J.P. MORRIS -- (30/3/84) 6/1984 -- Refers to 'Dishonesty'
+
+## False statement:
+
+44A Police Offences Act
+
+Needs to be knowingly false -- exaggeration not enough. Must be about facts -- not law -- must be that an ACT has been done. Saying assaulted me probs not enough. As there is a range of potential meanings in law. He punched me, would be required.
+
+## Willfully obstruct police:
+
+Must be an intent to frustrate as opposed to help. Refusing a direction given amounts to obstruct where police officer trying to arrest or carry out other lawful duty: **Liley v Lowe \[1987\] TASSC 76 (20 March 1987)**
+
+## Stealing:
+
+### Quick differences:
+
+**Stealing is when you take something, robbery is when you take with a threat or actual violence, burg is tress pass (need not take) in any place with intent to commit crime (need not be stealing), agg burg is when you trespass with weapon OR in a place ordinarly used for human habitation OR uses violence or assaults while burg**
+
+**Stealing:**
+
+Take anything capable of being taken with the intent to permanently deprive
+
+***Take*** includes rick, intimidation, mistake of the owner (of known by offender), or by finding (if the owner can reasonably be discovered)
+
+**Robbery/ Stealing by force:**
+
+Stealing with the use of threat or use of violence to person or property, at or around the time of stealing, to get it.
+
+Intent to permanently deprive must exist at time of violence ***Smith-Towns v Tasmania \[2019\] TASCCA 22 (23 December 2019)***
+
+**Burglary:**
+
+***(Not limited to property! It is about location of incident with intent)***
+
+Trespass in a place or conveyance plus an intent to commit a crime.
+
+I think (not 100% but think) that the intent must be a "crime" within the meaning of not a summary offence. See para 15 of **Hurst v Reidy \[2003\] TASSC 107 (30 October 2003)**
+
+**\[15\]** *Counsel for the applicant\'s other submission was that it was reasonably possible that the applicant\'s intention was merely to drive Mr Osok\'s vehicle, which would have amounted to the offence of motor vehicle stealing under the [Police Offences Act 1935](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/), *![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}* [s37B.](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s37b.html) *![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"}* That offence is not a crime. If the applicant entered the vehicle only with that intention, it was not his intention to commit a crime and he could not be found guilty of the crime of burglary, which requires an intention to commit a crime at the time of entry, as one of its elements.*
+
+Ultimtely the judge rejected defence submission because the evidence was enough to say that the def broke into the car with the intent to steal items out of it. Not to just drive it.
+
+**Aggravated Burglary**
+
+Burglary, committed with a weapon; committed with the use or threat of violence **Or** where the trespass is into a place used normally for human habitation.
+
+### Stealing by finding

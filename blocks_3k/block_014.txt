@@ -1,0 +1,153 @@
+## Collecting DNA and Fingerprint evidence 
+
+heyoldpal
+
+**DNA and Fingerprint Evidence**
+
+- Sample site recorded by photograph or by seizing item.
+
+- Item or location is given a barcode/ sample number.
+
+- Sample details are recorded by sampling officer and a barcode is kept in their personal records.
+
+- Sample is sent to Tas Forensic Services (DNA) or to Fingerprint section (TasPol)
+
+**DNA:**
+
+- DNA will result in report making reference to specific barcode numbers
+
+- Call sample taker -- ensure to ask if the sample/ item was given a barcode/ reference number (note, can seek leave to permit officer to refer to their notes to retrieve the number)
+
+- Once link between item/ sample location and barcode reference number is made, analyst can be called.
+
+- Treat as with all expert witnesses -- confirm details of expertise and submit to court that witness is qualified to present expert opinion
+
+- Once expertise established ask them if the prepared a report -- authenticate -- and seek to tender.
+
+- Generally this is enough -- can ask more questions like degradation periods of samples etc. if poignant
+
+It was not possible to determine from DNA analysis alone how, and for how long, DNA has been deposited on an item.
+
+### Fingerprint:
+
+Same same
+
+However, generally no report, just a stat dec so they will need to orally give details and make link to serial/ barcode number
+
+## Bank records warrants for records affidavits
+
+Cops can request copies of bank records by number or name and usually that comes with an affidavit from the respective banks "keeper of the records". You can get that in as is under s 170 of the EA as longs you meet the "author" requirements and service (not just disclosure) requirements on defence under 171-172.
+
+Example of affidavit and warrant on file under business records.
+
+## ID Evidence:
+
+### Dock Identification
+
+***Police v Murtagh* \[2009\] TASMC 05**
+
+\[67\] \... dock identifications are not usually permitted, other than as confirmatory of an acceptable prior out-of-court identification: *Jamal v R [\[2000\] FCA 1195](http://www.austlii.edu.au/au/cases/cth/FCA/2000/1195.html); [(2000) 182 ALR 307](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%282000%29%20182%20ALR%20307)*, *R v Gorham* [\[1997\] SASC 6218](http://www.austlii.edu.au/au/cases/sa/SASC/1997/6563.html); [(1997) 68 SASR 505).](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281997%29%2068%20SASR%20505)
+
+"\[65\] The courts have long adopted the attitude that, in cases in which a witness has not become familiar with the appearance of an accused person by reason of previous knowledge or association and has not seen the accused since the events in question, evidence of identification will not normally be admitted where the purported identification has occurred in circumstances in which the accused is specifically presented to the witness as a person who is suspected of having committed the relevant crime.
+
+### Voice identification evidence/ recognition evidence. 
+
+***Davey v Tasmania \[2020\]* TASCCA** 12 (5 August 2020) \[from para 53 voice recognition opinion evidence\]
+
+Can be admissible as ad hoc opinion evidence.
+
+### Recognition evidence
+
+***Sundram v Bearman \[2020\] TASMC 18 (3 August 2020)***
+
+*137 I direct myself as follows. The Court should be specially cautious before convicting in a case depending on identification or recognition evidence even if there is other evidence:**[^\[110\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn110). Mistakes in identification do occur**[^\[111\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn111). As a result of honest but mistaken identification, innocent people have been convicted**[^\[112\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn112). Even close friends and relatives can be mistaken**[^\[113\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn113). Honest and convincing witnesses may be mistaken**[^\[114\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn114). \"Recognition\" cases can involve as much danger of mistaken identification as cases involving persons first seen at the times of their alleged crimes**[^\[115\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn115). However, recognition evidence will, generally speaking, be more reliable than identification evidence** **strictly so called because, for example, the displacement effect and the 'rogues gallery effect' would not appear to be material.**[^\[116\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/18.html#fn116) Ms Paul's evidence was not directly challenged on the basis that she had made an error in her recognition of Mr Bearman, but his defence necessarily raised that issue.*
+
+### Police ID Evidence:
+
+***YOUNG v LUSTED*** (Crawford CJ) \[2011\] TASSC 22 (BUT see ***Baker v Penneyston*** \[2018\] TASSC 8 (20 February 2018) -- Which undermines it slightly)
+
+\[27\[ No doubt police officers make mistakes, like all of us. Nevertheless, there was no error in taking into account the fact that the witness was a police officer. It was relevant to the probative value of the evidence. The magistrate was justified in having regard to the fact that a police officer who by reason of his rank had obviously had long experience as a police officer, would have greater training and experience for perceiving and remembering the features of a person under observation than many lay persons. The Inspector was likely to have been more aware than a lay person of the need to observe and retain a memory of his observations.
+
+\[29\] For those reasons, I conclude that the magistrate correctly decided to admit the evidence.
+
+\[30\] Although it is not determinative of the question whether the evidence should not have been admitted, I mention that it was not the only evidence that led the magistrate to conclude beyond reasonable doubt that the applicant was the driver of the Falcon. That evidence included the following. When Inspector Hopkins first saw the Falcon on Hobart Road it was approaching him from the direction of Perth, where the applicant lived. It was not long after the Inspector lost sight of the vehicle that the applicant was found nearby and arrested by Constable Greenwood, following which he was placed in the police car. When Constable Greenwood found him he was walking from Hobart Road along Lockhart Street, the route the Falcon had followed not long before when it was followed by the Inspector. The applicant was the owner of the Falcon. Constable Greenwood's description of his physical app
+
+# Voir Dire:
+
+## The Conduct and Management of a Voir Dire
+
+(*Notes for a presentation by the Hon Alan Blow OAM, Chief Justice of Tasmania and Daryl Coates SC, Director of Public Prosecutions, at the Law Society of Tasmania's Criminal Law Conference, 26 February 2016*)
+
+A criminal trial is "deemed to begin when the accused is called upon to plead": Criminal Code , s 351(6).
+
+The court has a discretion as to which party presents evidence first on the voir dire: *R vTurner (No 12)* \[2001\] TASSC 103. However the defence is rarely, if ever, compelled to go first.
+
+Prima facie, all evidence on a voir dire is to be given orally. In practice, counsel very often seek to have questions of admissibility determined wholly or partly "on the papers".
+
+### Evidentiary thresholds:
+
+In proceedings on the voir dire, the burden of proof of a fact is upon the party asserting that fact.
+
+In proceedings on the voir dire, the standard of proof is proof on the balance of probabilities: *Evidence Act*, s 142. See also *Moore v Knowles \[2017\] TASMC* 12
+
+*Moore v Knowles \[2017\] TASMC* 12
+
+> *\[15\] The effect of [s 142](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s142.html) of the [Evidence Act 2001](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/) is that I am to find the facts necessary for deciding a question about the admissibility of evidence, including the exercise of a discretion, on the balance of probabilities. The defendant is alleging impropriety or illegality in the conduct of the search by Constable Morrison in order to have the evidence of what was found on that search excluded pursuant to [s 138.](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s138.html) If the evidence is excluded by [s 138(1)](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s138.html) I then have to exercise a discretion as to whether to admit the evidence in any event. Those matters are clearly within the province of [s 142](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s142.html) of the [Evidence Act 2001](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/). I must therefore determine the facts relevant to those issues on the balance of probabilities.*
+
+If a witness has commenced giving evidence before a jury, and needs to give evidence on the voir dire, that witness must first swear another oath or make another affirmation. That is to say, the voir dire is treated as a separate proceeding, requiring afresh oath or affirmation. The form of oath or affirmation is the same as the form used for evidence before the jury.
+
+If the accused gives evidence on the voir dire, he or she should not be asked whether he or she committed the crime charged, or any question that might tend to in criminate him or her in the crime charged. Such questions do not have to be answered by the accused: *Evidence Act*, s 189(6).
+
+Cross-examination on the voir dire is permissible only in relation to issues that arise on the voir dire. Questions relating to issues that arise on the trial, but not on the voir dire, amount to an abuse of process, and should be disallowed as irrelevant.
+
+## Common matters considered on the voir dire:
+
+There is no limit to the range of admissibility objections that might be determined on the voir dire. Those that are commonly the subject of voir dires include the following:
+
+### Danger of unfair prejudice. 
+
+Evidence may be objected to on the basis that "its probative value is outweighed by the danger of unfair prejudice to the defendant": *Evidence Act*, s 137. In assessing the probative value of the evidence, it must be assumed that the jury will accept the evidence as credible, and that the jury will draw from it every inference favourable to the Crown that is reasonably open: *KMJ v Tasmania* (2011) 20 Tas R 425; *R v Shamouil* (2006) 66 NSWLR 228; *Rv Sood* \[2007\] NSWCCA 214; *R v XY* (2013) 84 NSWLR 363. A different view has been taken in Victoria: *Dupas v The Queen* (2012) 40 VR 182. The High Court reserved a decision on the point: *IMM v The Queen* \[2016\] HCA Trans 8. In the meantime, judges in this State must follow *KMJ*. The reference to a "danger of unfair prejudice" relates to the effect that evidence can have "when the jury are likely to give the evidence more weight than it deserves or when the nature or content of the evidence may inflame the jury or divert the jurors from their task": *Festa v The Queen* (2001) 208 CLR 593, per McHugh J at \[51\]. Prosecutors commonly argue that appropriate directions by the judge to the jury will neutralise or substantially reduce any danger of unfair prejudice. Defence counsel commonly argue that, in the circumstances of the case, that is not likely.
+
+### Tendency and coincidence evidence. 
+
+Objections relating to these types of evidence are particularly common in sexual cases involving multiple complainants. The Crown's contentions as to tendency and/or coincidence evidence are restricted by the contents of the tendency notice or coincidence notice that has to be given in writing to the defence: *Evidence Act*, ss 97(1)(a),98(1)(a). Defence counsel commonly argue that evidence from two or more complainants is not cross-admissible. It may be argued that the evidence is not tendency evidence at all, or not coincidence evidence at all: *Evidence Act*, ss 97,98. Or that the evidence does not have "significant probative value": ss 97(1)(b),98(1)(b). Or that the probative value of the evidence does not substantially outweigh some prejudicial effect that it may have on the defendant: s 101(2). Tendency evidence and/or coincidence evidence has "significant probative value" if it has more than mere relevance and is "important "or "of consequence": *R v Lockyer* (1996) 89 A Crim R 457 at 459; *L v Tasmania* (2006) 15 Tas R 381 at \[31\]. For tendency evidence to be admissible under s 97, there does not have to be evidence of striking similarities between events or circumstances, or even similar behaviour on different occasions: *R v Forward* (2009) 273 ALR 286 at \[38\] and \[125\]; *R v PWD* \[2010\] NSWCCA 209 at \[79\]. Generally, the closer and more particular the similarities, the more likely it is that the evidence will have significant probative value: *BP v The Queen* \[2010\] NSWCCA 303 at \[108\].
+
+### Admissions. 
+
+A judge may refuse to admit evidence of an admission if "having regard to the circumstances in which the admission was made, it would be unfair to a defendant to use the evidence": *Evidence Act*, s 90(b). When s 90 is relied on, defence counsel usually also rely on s 137 (danger of unfair prejudice).
+
+### Evidence improperly or illegally obtained. 
+
+Evidence that was obtained improperly or in contravention of an Australian law, or in consequence of an impropriety or of such a contravention, is not to be admitted "unless the desirability of admitting the evidence outweighs the undesirability of admitting evidence that has been obtained in the way in which the evidence was obtained": *Evidence Act*, s138(1).
+
+The defence bear the burden of proving impropriety or contravention of an Australian law, on the balance of probabilities ***Tasmania v Seabourne \[2010\]*** TASSC 35 per Wood J at \[27\]; ***Acheson v Hibble*** \[2008\] TASSC 42 per Blow J (as his Honour then was) at \[13\]; ***Willis v The Queen*** \[2016\] VSCA 176 at \[104\] and \[110\]-\[117\]
+
+If one of those things is established, the Crown then bears the burden of proving facts warranting the admission of the evidence. When s 138(1) applies, there are eight matters that s138(3) requires the Court to take into account in deciding what is desirable or undesirable. The list is not an exhaustive list. See, for example, *R v Brown* \[2014\] TASSC 18, which concerned non-compliance with a provision of a Commonwealth statute relating to search warrants.
+
+### Freshness of memory. 
+
+Under s 66(2) of the *Evidence Act*, first-hand hearsay evidence of an assertion by a
+
+person who is available as a witness is prima facie admissible "if, when the representation was made, the occurrence of the asserted fact was fresh in the memory of the person who made the representation". Questions of freshness of memory therefore sometimes have to be determined on the voir dire, particularly in relation to "recent complaint "evidence in sexual cases.
+
+## Decisions to be made by counsel 
+
+There are a number of decisions that need to be made by counsel in relation to a voir dire. *Voir dire or no voir dire?* Counsel should consider the likelihood or otherwise of the objection being successful. It may sometimes be preferable to concentrate on the weakness of the prosecution case, rather than on questions of admissibility.
+
+***Timing of the voir dire*.**
+
+Section 361A should be used for long voir dires in order not to inconvenience a jury. It sometimes happens that questions of admissibility are determined under s 361A by a judge in one sittings and, for convenience, the matter is continued as a second trial before another judge in another sittings. This runs the risk that the second judge might disagree with the first judge's determination -- something that seems not yet ever to have happened. A short voir dire between the empanelment and the opening speech can be appropriate, particularly when the outcome of the voir dire will determine whether or not the prosecutor may rely on a piece of evidence that he she would like to refer to in the opening speech. A voir dire that interrupts the proceedings before the jury can be very inconvenient, but there may occasionally be tactical reasons to take a witness by surprise at that stage. There is a risk that the judge and/or jury might be irritated by an avoidable interruption. If the Crown is taken by surprise and therefore seeks an adjournment, it is extremely likely that the judge will grant the adjournment.
+
+***Scope and basis of the objection.***
+
+The scope and basis of the objection need to be identified in order to define and limit the scope of the voir dire, and in order to identify the case that the other side has to meet. Counsel should identify with precision the evidence that is objected to. Usually the evidence will be set out in the Crown papers, and it will be possible to take the judge to the appropriate pages, paragraphs, sentences, and lines. Counsel should also articulate the basis or bases of the objection, and the sections in the *Evidence Act* that are relied upon. These things should be stated in open court: *Director of Public Prosecutions v Lynch* (2006) 16 Tas R 49 at\[16\].
+
+***Oral evidence or a decision on the papers?***
+
+Oral evidence from one or more witnesses is essential if it is not known what a witness will say about a particular point, or if there are facts that one party needs to establish, or to try to establish. Sometimes it is desirable to call undisputed oral evidence on the voir dire so that the evidence can be explained to the trial judge. If counsel for both sides are agreeable to the trial judge basing his or her decision wholly or partly on the papers, it is desirable to be specific as to what statements, proofs, or parts thereof are relied upon.
+
+***Need for a second voir dire in relation to an objection already determined?***
+
+This situation is unusual, but it can arise when a witness gives evidence before the jury that is not the same as the evidence given by that witness on a voir dire: *P v The Queen* \[2002\] TASSC 61; *Tasmania v L* \[2004\]TASSC 86; *L v Tasmania* (2006) 15 Tas R 381 at \[6\].
+
+# Defences (Criminal Responsibility):

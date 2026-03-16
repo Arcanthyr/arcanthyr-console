@@ -1,0 +1,301 @@
+### Abandonment
+
+Property that has been abandoned can not be stolen (see *post ss* 18 -- 24). If property has not been abandoned, but the defendant believes that it has, under the old law he could not be convicted of theft, whether his belief was reasonable or unreasonable : see *R v White* (1912) 7 Cr App. R 266; *Ellerman's Wilson Line Ltd. V Webster* \[1952\] 1 Ll.L.R. 179, D.C. It is submitted that this is still the law. Whether or not a mistake of fact has to be reasonable (see ss 17-4 *et seq.*), there would be no evidence that the defendant was acting dishonestly.
+
+#### Must take reasonable steps to find owner
+
+***Maingay v Charles \[2009\] TASSC 98***
+
+"The respondent\'s stated belief was in effect that he did not believe he could discover the owner by any reasonable means. While there is no stated requirement in s226 that the belief itself be a reasonable one, it would make a nonsense of the legislation were an alleged offender to simply be able to state that he did not hold the requisite belief, notwithstanding that that stated belief might be entirely inconsistent with the surrounding circumstances, and for that statement to be determinative. Of course, the belief referred to in s226 is one that an owner can be discovered by \"reasonable means\". (see below)"
+
+Maingay also sites Alexander Gordon MacDonald \[1983\] 8 A Crim R 248
+
+(The defendant found foreign currency and kept it, and made no attempt to locate an owner and claimed he believed it was abandoned)
+
+In Alexander Gordon MacDonald \[1983\] 8 A Crim R 248, the Court of Criminal Appeal of New South Wales considered how the state of mind of a finder of property is to be established when the finder has volunteered no information pointing to their state of mind at the relevant time. The Court (Lee, Maxwell and Yeldham JJ) observed (at p251):
+
+\"The guilty mind or animus furandi requisite in larceny by finding is thus the belief of the finder that the owner can be found, and unless that belief is established beyond reasonable doubt, a conviction for larceny is not open. The Crown of course carries the onus or proving that belief beyond reasonable doubt, and there is no onus on the accused in any circumstances to prove that he did not have such a belief or that he believed the goods had been abandoned, or that the owner could not be found (May v O\'Sullivan \[1955\] HCA 38; (1955) 92 C.L.R. 654). How then is the requisite belief in the finder to be established when the finder has volunteered no information pointing to the state of his mind at the relevant time, as is the case here? In Russell on Crime
+
+(12 th edition) the learned author, at p1014, states:
+
+"In cases of taking on finding some of the strongest circumstances to rebut the implication that such taking was felonious \...are those which show that \[the taker\] endeavoured to discover the true owner and kept the goods till it might reasonably be supposed that the true owner could not be found. The finders belief, in our view, is to be inferred from the facts and circumstances surrounding the finding and the taking of the goods, and in this respect regard may be had not only to what the finder does in relation to the goods but also what he does not do that might reasonably be regarded as consistent with the actions of an honest man finding goods. Did the finder examine it closely to see if it gave any clue to its owner by name tag or otherwise? What avenues were reasonably open to the finder to locate the owner? A person finding goods may be taken to know that the person who has lost those goods may well retrace his steps with a view to recovering them, and so the leaving of the finders name and address with someone at the place of discovery may be one means of locating the
+
+owner. It is common knowledge in our community, and the finder would know, that the police will receive lost property handed in and take care of it and accordingly the finder would think that the loser might make an enquiry of the police in the area where he believes he may have lost his property. It is common knowledge that newspapers publish ,,lost and found columns. These and perhaps other considerations would ordinarily be present to the mind of an honest person finding property in a suburb of Sydney. Each case nmust be looked at according to its own facts, and the place where the property is found and the nature of the property will, in most instances, readily indicate the avenues that are reasonably open to
+
+find the owner.\"
+
+**Criminal Code Act 1924**
+
+**PART VI - Crimes Relating to Property Chapter XXIV - Stealing Interpretation**
+
+**226. Interpretation**
+
+**(1)** A person who, without the consent of the owner thereof, dishonestly --
+
+**(a)** takes; or
+
+**(b)** being lawfully in the possession thereof, either as a servant of the owner or as a bailee or part owner thereof, converts to his own use or to the use of any person other than the owner --
+
+anything capable of being stolen, with intent permanently to deprive the owner thereof, steals such thing.
+
+**(2)** In this chapter --
+
+**(a)** the term ***takes*** includes obtaining possession --
+
+**(i)** by any trick;
+
+**(ii)** by intimidation;
+
+**(iii)** through a mistake on the part of the owner, if the taker knows of such mistake; or
+
+[**(iv)** by finding, if at the time of the finding the taker believes that the owner can be discovered by reasonable means;]{.mark}
+
+**(b)** the term ***owner*** includes any part owner or person having possession or control of, or a special property in, anything capable of being stolen.
+
+**(3)** A servant who takes anything out of the possession of his master with intent to apply it to his master\'s use, and who so applies it, or who converts anything belonging to his master to his master\'s use, does not steal the thing, although such taking or conversion is wrongful.
+
+### Two mental elements:
+
+### Dishonestly - s226(1) 
+
+  
+
+- The test is both objective and subjective and it is now clear that courts will apply the *Feely* test without the *Ghosh* gloss. This was accepted by the High Court in *Peters* (1998) 192 CLR 493 and *Macleod* (2003) ALJR 1047. In determining dishonesty it is necessary to: 
+
+  
+
+- Identify the knowledge, belief or intent which is said to render the relevant act dishonest; and 
+
+  
+
+- Instruct the jury to decide whether the accused had that knowledge, belief or intent and, if so, to determine whether, on that account, the act was dishonest; and  
+
+  
+
+- Direct the jury that, in determining whether the conduct of D was dishonest, the standard is that of ordinary and decent people? 
+
+  
+
+  
+
+- There is no additional requirement that D realised he or she was dishonest: *Jovanovic.*
+
+### Intent to permanently deprive 
+
+  
+
+- An intent to assume dominion over the goods in such a manner as to deny (take dominion over) *Lowe v Hooke.* and not merely entrench upon the rights of the owner *Holloway* (using but not permanently depriving)
+
+### No limitation period on charges for stealing:
+
+*\[4\] "Stealing is an indictable offence under s 234 of the Code and is not governed by that provision, as it deals with "a simple offence that is not an indictable offence". There is no limit for the bringing of this complaint." **Moore v Howe \[2017\] TASMC 10***
+
+See also section 72C of the *Justices Act*!
+
+## Notice of demand:
+
+Need to have basis to believe occupant of car committed an offence
+
+Can be served on owner or registered operator
+
+"Owner" defined in section 37A of POA. It includes anyone police officer reasonably believes was the driver.
+
+Don't need to prove actual ownership
+
+Can run it on cop alone if they can give evidence of basis of belief (reps made by actual owner not hearsay as per Subremanium rule -- original evidence)
+
+### 37GA POLICE OFFENCES ACT 1935 - SECT 37GA
+
+A police officer may serve a notice of demand on the owner or registered operator 
+
+***Vehicle and Traffic Act 1999***
+
+***3.   Interpretation***
+
+***registered operator*** of a motor vehicle or a trailer means --
+
+\(a\) the person recorded in the register of motor vehicles and trailers as the person responsible for it; or
+
+\(b\) if the registration of a motor vehicle or a trailer has expired, or been cancelled, the person last recorded as the registered operator unless that person has notified the Registrar that he or she is no longer responsible for the motor vehicle or trailer;
+
+### Difference between requirements under s 37G and 37GA:
+
+***Baker v Smith* \[2025\] TASSC 43**
+
+**Facts**
+
+- Baker's vehicle crashed (Wynyard, 18 Mar 2023). Driver left scene.
+
+- Police served Baker (registered owner) with a **driver demand notice** (s 37GA *Police Offences Act 1935*), requiring details of driver/occupant.
+
+- Baker did not comply.
+
+- Magistrate convicted him (Aug 2024). Baker sought review.
+
+------------------------------------------------------------------------
+
+**Issues**
+
+1.  Does s 37G require only an **allegation** of an offence, or officer's **satisfaction** of it?
+
+2.  Was there sufficient proof Baker was the **registered owner**?
+
+3.  Was the notice **invalid/ambiguous** (re: offence details; "driver or occupant" wording)?
+
+4.  Did the officer lack **reasonable belief** an offence occurred?
+
+5.  Did issuing the notice unlawfully abrogate Baker's **right to silence/self-incrimination** (given officer was "99.99% sure" Baker was driver)?
+
+------------------------------------------------------------------------
+
+**Decision**
+
+- **Appeal dismissed** -- conviction upheld.
+
+------------------------------------------------------------------------
+
+**Ratio**
+
+- **s 37G precondition:** only requires an **allegation**, not proof or officer's satisfaction.
+
+- **Separate offences:** s 37G (demand) and s 37GA (notice) each create distinct offences with different penalties.
+
+- **Ownership proof:** admissions and conduct can suffice; certificate of registration not essential.
+
+- **Notice validity:**
+
+  - "Indicate" = general statement of offence, not exact section.
+
+  - Context showed allegation was against **driver**, not occupant → no ambiguity.
+
+- **Reasonable belief:** Magistrate applied wrong test (belief vs allegation), but no miscarriage of justice.
+
+- **Right to silence:** s 37G clearly abrogates it; no implied "necessity" limit.
+
+------------------------------------------------------------------------
+
+**Significance**
+
+- Confirms **low threshold** for valid driver demand: mere allegation is enough.
+
+- Clarifies ownership can be proved by **conduct/admissions**.
+
+- Confirms strict but clear statutory abrogation of silence/self-incrimination rights.
+
+- On review, findings will stand if **reasonably open**.
+
+**Case:** *Baker v Smith* \[2025\] TASSC 43
+
+  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  **Issue**                                       **Applicant's Argument**                                                                                                 **Court's Reasoning / Outcome**
+  ----------------------------------------------- ------------------------------------------------------------------------------------------------------------------------ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  **1. Preconditions (s 37G vs s 37GA)**          Proof required that officer was *satisfied* an offence occurred (s 37GA(1)), not just an allegation.                     Wrong -- s 37G only requires an *allegation* of an offence. Satisfaction standard in s 37GA not imported. Conviction can rest on allegation alone.
+
+  **2. Ownership**                                No proper evidence Baker was registered owner. Body worn footage not enough; should have had registration certificate.   Ownership can be proved by admissions and context. Baker said "yes" when told he was the owner, nodded during reading of notice. Certificate not essential. Finding was reasonably open.
+
+  **3. Validity / Ambiguity of Notice**           Notice invalid: (a) didn't specify exact offence provision (only Act); (b) ambiguous re: "driver or occupant".           "Indicate" (s 37GA(2)(a)) only requires general statement, not exact section. Offence described (driving under influence). Notice + officer's words made clear it related to *driver*. No ambiguity.
+
+  **4. Reasonable Belief**                        Officer admitted he didn't know who driver was, or if under influence → no reasonable basis to issue notice.             Court: only an *allegation* is required. Even if higher "belief" test applied, magistrate's conclusion (based on CCTV, witness info, leaving scene) was open. No miscarriage.
+
+  **5. Rights to Silence / Self-Incrimination**   Notice invalid because officer said he was "99.99% sure" Baker was driver → unnecessary, undermined rights.              Statute expressly abrogates rights in these circumstances. No "necessity" limit implied. Officer's statement = poor wording, but does not invalidate notice.
+
+  **Overall**                                     Conviction unsafe; notice invalid; ownership not proved.                                                                 Conviction stands. Notice valid. Magistrate's findings reasonably open. Applicant's review dismissed.
+  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## Police Offences Amendment Bill 2014 16 of 2014
+
+Clause notes/ second reading/ fact sheet
+
+<http://www.parliament.tas.gov.au/bills/Bills2014/16_of_2014.htm>
+
+## Unlawful Possession of stolen property
+
+### Elements:
+
+- Satisfied beyond reasonable doubt that the defendant had at some point/ or was found by a Police officer in ***possession*** of the goods listed
+
+- Satisfied that the officer, believed, on grounds that I am satisfied were reasonable, that the goods had been stolen or unlawfully obtained
+
+### In possession or "had" in possession 
+
+Section 39 amended by *Police Offences Amendment Act 2014*
+
+Clause 42 of the clause notes states the following (note: no mention in the second reading)
+
+*"Section 39 amended (Possession of stolen property) The clause amends this section so that the belief of a police officer, that a person had possession that property stolen or unlawfully obtained, may exist even after possession or control of that property by the person has passed. The amendment removes the requirement that the belief has to be held during the time the person had possession or control of the property. The belief no longer has to be concomitant with the finding of the person in possession with the property"*
+
+### "Possession" circumstantial evidence only.
+
+**Be careful as to assumptions of possession**
+
+**"recent possession doctrine" does not exist -- it is circumstantial evidence.**
+
+**Roughan v Haines \[2019\] TASMC 7 (25 November 2019)**
+
+*\[17\] Elements (b), (c), (d) and (e) are all circumstantial evidence pointing towards guilt. The so called "doctrine of recent possession" which, if established, presumed guilt and reversed the onus of proof has long been recognised as having no place in modern criminal law: see R v Wanganeen [\[1988\] 50 SASR 433](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1988%5d%2050%20SASR%20433) at 34 to 42; see also Wallis v Tasmania [\[2007\] TASSC 4](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2007/4.html) per Evans J at paragraphs 78 to 80. Therefore, if there is evidence -- as here -- that a defendant was in possession of a lot of property stolen from Begents that is evidence which falls to be considered as circumstantial evidence.*
+
+### Possession 
+
+***Section 1: Interpretation CRIM CODE***
+
+***have in possession*** includes having under control in any place whatever, whether for the use or benefit of the person of whom the term is used or of another person, and although another person has the actual possession or custody of the thing in question;
+
+NOTE -- not a reference to the exact quite ***"have in possession"*** because that phrase of words does not appear exactly anywhere in the act. It would negate the purpose if it were to be limited to that exact phrase.
+
+Possible need not have officer identify basis of belief for each single item listed on complaint... Look at **Unlawful Possession**
+
+*Winwood v Burk* \[2002\] TASSC 54
+
+1.  In the circumstances of this case, it was not necessary that each item be referred to individually before the learned magistrate could be satisfied with respect to the reasonableness of the supposition which Detective Sergeant Burk said he entertained with respect to every item on the list.
+
+### What constitutes possession, custody etc
+
+\"de facto possession and actual control\" and being \"wide enough to include any case where the person alleged to be in possession has hidden the thing effectively so that he can take it into his physical custody whenever he wishes, and where others are unlikely to discover it unless by accident.\")
+
+Williams v. Douglas (1949) 78 C.L.R. 521.
+
+***Biddle v Horton \[2013\] TASMC 1***
+
+\[24\] ... he *had lived there for some time. He clearly controlled the question of entry into the premises in that he answered the door to the police when they knocked. In short, his relationship with the item in question was such that it made his possession of it manifest.* 
+
+***PERNA v POLICE \[2007\] SASC 306***
+
+Held: possession requires consideration of nature and extent of control of goods at relevant time - at relevant time, appellant had complete present personal physical control of property to exlusion of others 
+
+Exceptions/ qualifications:
+
+\[30\] Can be in a public place, if it is hidden or locked, or otherwise only likely to be accessible to the defendant.
+
+\[54\] The appliances were stored in a shed to which Mr Perna had a contractual right of access during business hours. The decision in *Williams v Douglas* demonstrates that the decision in *Moors v Burke* does not mean that a person cannot be in possession of items that are in premises to which the person in question does not have an unrestricted right of access. In *Williams v Douglas* the defendant was a mere lodger, and his entitlement to enter the hotel bathroom was not unlimited. The decision in *Williams v Douglas*also demonstrates that a person can be in possession of an item that is in a place to which other persons have rights of access.
+
+### Possession defined Code principles Apply:
+
+Unlawful is in the Code as well as the POA, so Code principles and definitions apply
+
+Contrast with 15C of POA which has no code parallel. POA doesn't define Possession, but "possession" ordinary means "physical custody or control ***Momcilocvic V the Queen 2011 HCA 34***
+
+**CODE: 258. Receiving stolen property**
+
+\(1\) Any person who, without lawful excuse, receives or has in his possession any stolen property, knowing it to be stolen property, is guilty of a crime.
+
+Charge: Receiving stolen property.
+
+\(2\) For the purposes of the Code, stolen property shall include anything capable of being stolen which has been obtained in this State or elsewhere under circumstances which constitute, or which, if they had occurred in this State would constitute, a crime under any of the provisions of chapters XXIV to XXVII or of this chapter, but shall not include any such thing which, after having been so obtained, has been returned to its owner, or to which any person has acquired a lawful title completed by delivery.
+
+\(3\) In any proceedings under this section --
+
+\(a\) the fact that the accused had in his possession other stolen property which had been obtained as aforesaid within 12 months preceding the date of his alleged crime; and
+
+\(b\) the fact that within 3 years preceding his being charged with the crime the accused had been convicted of a crime under any of the provisions of chapters XXIV to XXVII or of this chapter --
+
+may be given in evidence against the accused in support of the averment of guilty knowledge.
+
+\(4\) The facts mentioned in paragraph (b) of subsection (3) shall not be admissible unless --
+
+\(a\) 7 days\' notice in writing has been given to the accused of the intention to prove such fact; and
+
+\(b\) evidence has previously been given that the stolen property in respect of which the accused is charged was found or had been in his possession.
+
+Section 1 -- Criminal Code
+
+***Interpretation***

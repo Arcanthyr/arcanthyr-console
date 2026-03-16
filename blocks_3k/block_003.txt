@@ -1,0 +1,812 @@
+### 3.8 Search Warrants
+
+#### Search Warrants
+
+**Common Law**
+
+Purpose of a search warrant: Search warrant operates as a control design --imposes an independent judicial officer between official and citizen. That's why at CL you see the initial conservative approach to issue search warrant (and the jealously the CL protects rights of occupiers)
+
+At CL: need to ensure that goods seized during the search were covered by the search warrant (if not, could be sued for trespass to private property)
+
+CL rejected the idea of general warrants (i.e. unspecified warrants to search anytime/anywhere) --because they had been used by the Star Chamber in a very oppressive way.
+
+***George v Rockett*** (1990) 170 CLR 104
+
+HC explaining the purpose of a search warrant
+
+**Statutory extensions**
+
+Have expanded to any offence at all (s5 SW Act TAS), not just re: stolen property.
+
+***Search Warrants Act 1997*** (Tas)
+
+***Crimes Act 1914*** (Cth), s 3E
+
+***Police Offences Act*** 1935 (Tas), s 60
+
+General warrant provision, but confined to searches for stolen property (issued to all PO by the commissioner of police, not issued by an independent judicial officer). They are issued for 6months (and allow police to enter any premises where they have a reasonable believe there may be stolen property).
+
+\*Not HR's compliant (as no safeguard of judicial oversight)
+
+General warrant, couple with Spyke gives PO a pretty free hand at searching shit in Tas. All they need is reasonable belief
+
+#### 3.8.1 Granting a warrant
+
+***George v Rockett (1990) 170 CLR 104***
+
+F: PO had given an application for a warrant to a Qld Magistrate. The application just stated that reasonable grounds for believe that there were documents on premises re: ex-premier.
+
+HC held: this was completely legit. Just need sufficient evidence placed before the magistrate or JP so that they themselves have a RB/Suspicion that the items were on the property.
+
+Purpose of a search warrant: Search warrant operates as a control design --imposes an independent judicial officer between official and citizen. That's why at CL you see the initial conservative approach to issue search warrant (and the jealously the CL protects rights of occupiers)
+
+This gives an indication of what a JO should do when decided whether to issue a warrant.
+
+HC said warrants can only work effectively if the JO brings an independent mind to the application
+
+***\*MacLeod (1991) 61 A Crim R 465***
+
+Applied George v Rockett (Slicer J)
+
+What is required for a valid warrant: not the mind of the applicant, but the mind of the issuing authority. Justice cannot rely on the suspicion/believe of the applicant, must form it themselves.
+
+Applications are usually made on oath, or by affidavit, and must put before the authority sufficient evidence to enable them to form a reasonable believe/suspicion
+
+This case is an example where warrant had no technical defect, however court could not be satisfied on the evidence it had (JPs notebook), that the JP actually did have sufficient evidence before him to form reasonable suspicion/belief.
+
+#### 3.8.2 Disclosure -- what is required of the party seeking a warrant?
+
+There is conflicting authority as to the duty of disclosure on the part of the applicant for the search warrant***. Karina Fisheries v Mitson*** (1990) 26 FCR 473 held that all matters must be disclosed that would affect the issuing of the warrant. However, in ***Lego Australia v Paraggio*** 25/8/94 it was held that only where there has been fraud or misrepresentation will a warrant be struck out for non-disclosure. Most prosecutors believe though that everything relevant should be disclosed in the interests of best practice and conservativeness.
+
+***Karina Fisheries v Mitson*** (1990) 26 FCR 473
+
+Full disclosure by the applicant is required that might effect the making of a decision
+
+**This case focuses on greater privacy**
+
+*"There is a duty of full disclosure of all material facts by the informant seeking a search warrant. This duty stems from the common law tradition of protecting the privacy of individuals against the arbitrary use of the power of entry and search\...." @ 473*
+
+(emphasis added)
+
+***Lego Australia v Paraggio*** (1994) 52 FCR 542
+
+Only fraud or misrepresentation will invalidate a warrant (sooo mixed authority on this point)
+
+This case spec rejects Katrina above --a warrant can be set aside because of fraud and an informant must act in good faith in making an application. The statemnets made must be sufficient to est statute -- the critical q. is not whether the ...
+
+This case is more popular.
+
+There is no general duty of disclosure in making an application for the grant of a search warrant' @ 542
+
+Instead, the Court asked whether the material in the information was sufficient on its face for the purposes of s 10(1) of the Crimes Act?
+
+Contrast approach Karina
+
+Contrast facts ***George v Rockett***
+
+#### 3.8.3 Wording of a Warrant
+
+***NSW v Corbett*** (2007) 230 CLR 606
+
+Sooo....don't need to be technical, but people need to know what the PO are searching for, and that they do have the power to search (which they did in that case)
+
+Degree of precision required in identifying the offence
+
+F. Warrant issued to search for firearms. The particular provision relied upon in the warrant had been repealed though. At first instance it was held that this misstatement of the offence invalidated the warrant. Upheld by the Court of Appeal (NSW) then appealed to HCA.
+
+H. Appeal allowed. Statement of offence in search warrants does not have to have the precision that is required in an indictment. Only require a statement of the nature of the offence so that you can clearly see what the search is for and establish the boundaries of the search.
+
+Here the warrant was clear in stating the nature of the offence and all other details. Repealed provision had been replaced by a very similar provision so you couldn't say that this statement could possibly have given rise to any misapprehension of the police power to search for firearms. So here the similarity of the provisions was crucial.
+
+Faield suciiced of a police officer -- note said police will die -- taken as a threat and a warrant was issued.
+
+The warrant was granted under repeal;ed legislation (valid when made but law reprealed before the warrant executed -- howver, new law had similar wording -- warrant was still ok because there was no error in the application or the process by which it was granted.
+
+Nature of offernce and the object of the se3arch were both described appropriately in the warrant, so it was substantially OK.
+
+***Winston Dean v Graeme Ross White*** \[1996\] TASSC 22
+
+Also relevant for disclosure requirements in addition to wording.
+
+Court found lack of specificity in the premises to be searched -- too broad in its description. The warrant was invalid because it was not limited to one premises and not certain as to which premises answered that description in the warrant,
+
+#### 3.8.4 What is the extent of power granted under a warrant?
+
+***Challenge Plastics v Collector of Customs*** (1993) 115 ALR 149
+
+Read this case:
+
+Concerned customs act warrant s 214.
+
+The requirement of a warrant is prac safeguard against interference of individual rights. Officer must swear under oath to an independent judicial officer before such interference will be granted
+
+s 6(1)(e) ***Search Warrants Act 1997*** (Tas)
+
+Broad power - Allows for non-specified things to be collected and seized in a search.
+
+#### 3.8.5 Execution of a warrant
+
+***Baker v Campbell*** (1983) 153 CLR 52
+
+Re. Legal pro privileged not restricted to judicial proceedings.
+
+App were a firm of lawyers -- warrant said enter anytime and take any docs relating to 5 businesses. The terms of the warrant must be strictly adhered to. Authorised only to do no more than absolutely necessary to satisfy the warrant.
+
+Search warrants and their application to documents protected by legal professional privilege. F. D (police) attempted to seize documents protected by privilege.
+
+H. HCA held that the search warrant did not cover the documents as they were covered by LPP. Legal professional privilege is not simply a rule of evidence; rather it is a fundamental common law human right. So the HCA treat LPP in a very important fashion. Search warrants thus cannot apply to documents covered by LPP. This causes some significant problems in practice.
+
+***Crowley v Murphy*** (1981) 34 ALR 496
+
+Warrant to seize implies warrant to search (phrasing of particular legislative provision)
+
+Lockhart J:
+
+1\. good faith;
+
+2\. power exercised for the purposes for which they're conferred; not ulterior
+
+purpose;
+
+3\. fairly in regard to the circumstances;
+
+4\. exercised having regard to the persons affected by warrant's exercise, including
+
+their rights
+
+5\. officer must strictly follow the directions of the warrant and not exceed the limit of its authority (@ 521)
+
+H. Police cannot go on a **'fishing exercise'** looking for documents when they don't really know what they are looking for.
+
+***Oke v Commr Australian Federal Police*** (2007) 168 A Crim R 503
+
+***\***
+AFP searching a house and the issue was whether they gave an incomplete copy of the search warrant. There were parts missing -- name of the officer, guidleines as to the treatment of claims for legal pro privilege. Did not satisfy statutory requirements so the execution was invalid.
+
+2 princples:
+
+*When handing a warrant over it must be sufficient to satisdy the searchee so that they can acertain its authenticity -- what was supplied was only a draft one -- could not identify the date or anytone, or anything on oits surface to indicate that it was legal.*
+
+Demonstrates the difficulties with the above process.
+
+F. Oke contacted solicitor about police going through documents (including client/solicitor information). Solicitor then spent the rest of the day trying to negotiate with police to not look at documents he alleged were covered by privilege. Persuaded the police to desist in search and entered into written agreement. This solicitor really stood his ground. AFP hadn't exercised the warrant properly and tried to get out of the whole thing by returning the documents. He refused so they dumped them on his doorstep.
+
+H. The warrant was invalid.
+
+***Larsson v Commr of Police for NSW*** (1988) 16 NSWLR 173
+
+Denial of pltf right to enter own basement. Lrg number of tems found in the basement some possibly related to drug use -- others that were not.
+
+They prevented im form going down and locked it to sto\[p him. But they had no authorioty to do so. Warrqant doesn't permit the deprivation of ones home
+
+s 9(2) ***Search Warrants Act 1997*** (Tas).
+
+Does permit temporary cessation and return to searching under a warrant (but only allows one hour-so basically a lunch break), unless they have consent of the occupier
+
+**Search and seizure (Search Warrant Question Template)**
+
+**Valid entry to premises for purpose of search and Seizure**
+
+Common law protection of property is extensive. Fundamental right to private property -- and to exclude others from it -- see for example HCA in *Coco v R*.
+
+According to *Kuru v NSW*, the police have no special powers to gain lawful entry to premises beyond authorisation in the common law or statute. To lawfully enter premises they will require either:
+
+- Consent; or
+
+- A licence or lawful authorisation.
+
+Further, the common law authorises the police to enter premises;
+
+- to prevent a breach of the peace; or
+
+- Make a lawful arrest and then enter and seize items in the possession of the arrestee.
+
+To otherwise gain lawful entry; the police require a ***search warrant***.
+
+**Search warrants**
+
+**Application**
+
+An application for a search warrant should be made in writing by the applicant (but this is not required by the *Search Warrants Act* in Tasmania). It must then be considered by a judicial officer (usually Justice of the Peace or Magistrate).
+
+The general provision most commonly relied upon for an application for a search warrant is contained in s5(1) of the Search Warrants Act:
+
+**5. When search warrants can be issued**
+
+**(1)** An issuing officer may issue a warrant to search premises if the officer is satisfied by information on oath that ***there are reasonable grounds for suspecting that there is, or there will be within the next 72 hours, any evidential material at the premises***.
+
+But, the *Search Warrants* *Act* does not limit or exclude the operation of any other law purporting to grant powers of search, seizure, arrest or detention (s4).
+
+***Duties of issuing officer***
+
+- A warrant can only be issued if the conditions in s5 (above) are satisfied; or the conditions imposed in any other enabling legislation being relied upon.
+
+- Usually require ***reasonable grounds for suspecting*** that the property will be on the premises.
+
+- The nature of the search warrant process is to ***interpose a judicial officer*** between the executive and citizens to act as a control on excessive executive action; the judicial officer acts as a 'fundamental safeguard': *George v Rocket*.
+
+- To make this process effective; the judicial officer is therefore required to ***bring an independent mind to bear on the process***: *George v Rocket*.
+
+- The ***judicial officer*** must therefore ***be satisfied*** that there are ***grounds for issuing the warrant***:
+
+- *MacLeod* and *George v Rocket* confirm that this requires :
+
+  - there be ***objectively reasonable grounds*** for the belief.
+
+  - I.e. was the information ***sufficient to induce the requisite suspicion*** in a ***reasonable person***?
+
+- A suspicion is more than a mere idle wondering (*George v Rocket)*.
+
+- It is clear that the judicial officer cannot simply 'rubber stamp' the application by simply relying on the suspicions of the applicant: *MacLeod*.
+
+- So importantly, it is the ***state of mind of the issuing officer*** which will be the Court's focus: *MacLeod*.
+
+- However, judicial officer is not required to go 'behind the application' to investigate further or seek more information unless there are clear ambiguities or other questions raised by the application: *Beneficial Finance Corp v AFP* and *Jackson v Mijovich*.
+
+***Duties of applicant -- extent of disclosure required***
+
+- Competing authority on this point; argue both ways.
+
+- Compare *Karina Fisheries* and *Lego Australia*.
+
+- The applicant for a warrant should disclose all matters that would affect the issuing of the warrant otherwise it may be invalid: *Karina Fisheries.*
+
+- The search warrant will only be invalid for non-disclosure where there has been some fraud, half-truth or misrepresentation on the part of the applicant: *Lego Australia.*
+
+- But practically, it is good practice to disclose all information.
+
+***Particularity in warrant***
+
+There is a need for sufficient particularity in the application; state the place, name of applicant etc. Also need to describe the nature of the offence so that it can be established what the search is for and to establish boundaries for the search. Some minor errors will be fine though provided the nature of the offence is clear: *NSW v Corbet*.
+
+Come to preliminary conclusion on whether warrant would be struck out as a result of the application.
+
+**Execution of the warrant**
+
+***Has a proper Announcement been made?***
+
+The requirements to make a 'proper announcement' as contained in the arrest cases of *Lippl* and *O'Neil* have been embodied in s19 of the *Search Warrants Act*. As a result;
+
+(1) The police must announce that they are authorised to enter the premises, and give opportunity for person to allow entry.
+
+However, not required to give such an announcement if the police believe on reasonable grounds (see cases in relation to arrest *Rockett*) that immediate entry is required to ensure the safety of any person or the effective execution of the warrant (for instance if they believe evidence is about to be destroyed).
+
+Also note, s8 of the *Search Warrants Act*; requirement to show particulars of the warrant to the occupier of the premises (if present).
+
+***Scope of the search warrant (i.e. seizing items not particularised in the warrant).***
+
+It is clear that the police cannot use a warrant to go on a fishing exercise: *Crowley v Murphy*.
+
+However, whether they can lawfully seize items not mentioned in the warrant will depend on whether the conditions from *Ghani v Jones*, which are now embodied (mostly) in s6 of the *Search Warrants Act*, can be satisfied:
+
+(1) Must relate to a serious offence;
+
+(2) Property must be the fruity of the crime or the means by which it was committed, or material evidence of its commission; and
+
+(3) That the person in possession was involved in the commission of the crime either as a principal or accessory.
+
+In addition:
+
+(4) Police must keep them for no longer that necessary to complete investigations or to preserve as evidence; and
+
+(5) The lawfulness of the police conduct must be judged at the time of the seizure, not by what happens later (hindsight or subsequent events cannot justify the seizure).
+
+Under s6(e) of the *Search Warrants Act* the executing officer can seize any material found on the premises that they believe on reasonable grounds to be either:
+
+- Evidential material in relation to the offence which the warrant relates; or
+
+- Evidential material in relation to another offence.
+
+***Application to legal professional privilege***
+
+Legal professional privilege is a fundamental common law right; therefore search warrants to not apply to documents covered by LPP (see *Baker v Campbell* and s22 *Search Warrants Act*). To override this; must be made ***very clear*** by legislation.
+
+NB practical approach AFP and Law Reform Commission developed; documents bundled up and given to third party to determine if they are, in fact, privileged. Person alleging privileged has four days to establish privileged status. But see *Oke v Commr. AFP* for practical illustration of the difficulties with this process.
+
+**Conclusion**
+
+If warrant is invalid, then the entry is unlawful and all evidence obtained will be at the judge's discretion to exclude it on the basis it was improperly or illegally obtained evidence (s138 of *Evidence Act*).
+
+CCP Part Three: POLICE POWERS OF INVESTIGATION
+
+**[INTERROGATION]{.underline}**
+
+**Everyone as a basic right not to assist the State in investigation of an offence against them**
+
+**1. Right to Silence**
+
+Art 14(3)(g) ICCPR
+
+- right of a person not to be compelled to testify himself or herself or to confess guilt
+
+- [One rationale:]{.underline} it acts as a curb upon the excesses of law enforcement agencies
+
+- Thought to derive in CL from the excesses of the Star Chamber in UK which had the power to 'press' (torture) confessions out of people
+
+- Linked to presumption of innocence and onus of proof BRD on the Crown
+
+- [Scope:]{.underline} Considered in R v Director of Serious Fraud Office, ex parte Smith \[1993\] AC 1 at 30 by Lord Mustal: Right to silence does not cover a single right, rather it consists of a 'bundle of rights' which have a number of different historical sources and motivations:
+
+- 1\. General immunity of everyone to be free from being compelled to answer questions on pain of punishment
+
+- 2\. General immunity of everyone from being compelled to answer question on pain of punishment *that may incriminate them*.
+
+- 3\. Specific immunity possessed by suspects --when being interviewed by law enforcement officials to not answer questions
+
+- 4\. General immunity from being questioned at all when charged with a criminal offence (i.e. once charged, agents should not question them further at all)
+
+- 5\. Trial immunity: from being compelled to answer on pain of punishment at trial
+
+- 6\. Trial immunity for accused: from having adverse inferences drawn against them from refusing to answer questions on trial
+
+- Based on the notion that we all have a right to tell other people to 'mind their own business'
+
+- These 6 instances of Right to Silence are very rigid: only allow for circumstances of oral evidence, thus may not extend to other types of evidence (such as ID parade, photos etc)
+
+> [Other immunities derived from people subject to investigation:]{.underline}
+
+- Derive from CL dislike of the behavior of the Star Chamber (and 'pressing' confessions)
+
+- Adherence to the idea that any evidence obtained by pressure is inherently unreliable
+
+- Expanded to include notions of fair play and a fair trial
+
+- And also desire to minimize risk of unfair trial
+
+[Ground for arguing for the extension of the right to silence in non-oral areas:]{.underline}
+
+*(Collins)*
+
+F: PO expelled drugs from suspects mouth by squeezing his throat.
+
+H: Canadian Court adopted an expanded view of the right to silence --said it infringed right to silence to do this.
+
+*(R v Stillman)*
+
+F: PO forcibly taken an imprint of suspects teeth
+
+H: Conduct was held to infringe the Right to Silence
+
+*(Jalloh v Germany)*
+
+F:
+
+H: Infrigement to force the suspect to swallow a pill to trigger vomiting to prove they have swallowed drugs
+
+**[Right to Silence at Common Law (Rule 1 of the Judges Rule)]{.underline}**
+
+Police have the power to question anyone (whether suspected of committing an offence or not) in relation to an offence. However, anyone who is questioned has the right not to answer
+
+- As this is embodied in Judges Rules, it does not have the force of law. However it is a 'yard stick' by which to judge conduct. Thus any evidence obtained in breach of the Judges Rules can be challenged under s138 or s90 of the UEL
+
+*(Rice v Connelly)*
+
+F: A seen lurking suspiciously in area where many burglary's had occurred. He refused to tell them name, what he was doing etc. They asked him to accompany his to a Station, he refused. Then they arrested him on willful obstruction.
+
+H: not an offence for a person to refuse to cooperate with police in their investigations (i.e. not giving name and address) --does not constitute the offence of obstruction. People probably have a moral or social duty to assist police, but no legal duty.
+
+[Statutory Abrogations of the Right to Silence]{.underline}
+
+*\*Need to read the provisions carefully to work out what their scope is (and what they allow the PO to compel a person to provide --i.e. an offence not to provide information in some circumstances). Usually, it is very narrow, and can only be compelled in narrow circumstances*
+
+*All of the provisions below give police the power to demand name and address (sometimes with extra bits, or in different circumstances)*
+
+*Crimes Act* *1914* (Cth), ss 3UC & 3V
+
+In Cth place, give reason for being there, and proof of ID
+
+*Police Offences Act 1935* (Tas), s 55A (only allows police to compel name and address when PO reasonably suspected of committing an offence under the POA. If refuse or give false, they are obstructing course of judges)
+
+*Misuse of Drugs Act 2001* (Tas), s 31
+
+*Road Safety (Alcohol & Drugs) Act 1970* (Tas), s15(1)
+
+*Australian Security Intelligence Organisation Act 1979* (Cth), s 34L Unlimited provision. Requires people to provide info to proscribed authorities when answering question, pursuant to a questioning warrant. Don't need to be a suspect, and it is an offence not to supply info (max sentence, 5 years)
+
+Some provisions allow police to demand other information/instructions:
+
+*Road Safety (Alcohol & Drugs) Act 1979* (Tas), ss 7A & 8 (submit to a breath test)
+
+*Firearms Act 1996* (Tas), s 134 (if found with a firearm in a public place, they can compel you to hand it over so they can inspect it)
+
+*Misuse of Drugs Act 2001* (Tas), s 31(2) Self incrimination provision: if they find any drugs on your premises, they can demand you supply to them the name of your supplier (and an offence not to do so)
+
+**\**
+
+**\`. Detention for Interrogation**
+
+*Williams* (1986) 161 CLR 278: no authorization of arrest for the purpose of interrogation. This has been problematic for police, and therefore each jurisdiction has enabled legislation which ensure that although not lawful at CL detention post arrest may be lawful under the *Detention and Interrogation Act Tas or Crimes Act (Cth)*.
+
+Following this, each Australian jurisdiction enabled PO to detain lawfully arrested persons for a reasonable time for questioning
+
+Tas provision is the ***Criminal Law (Detention & Interrogation) Act* *1995* (Tas), ss 4(2) & (9).** Gives noime limit, only a reasonable time (guidance as to what this is for relevant case)
+
+***Crimes Act 1914* (Cth), ss 23C, CA, D & DA**
+
+Sets time limit (2 hrs for Children and A &TS, 4 hrs for everyone else). But can only detain for a reasonable period of time, with 4 hours being the max.
+
+*Reasonable time*: judged according to the facts of the case and the guidance of the legislation.
+
+E.g. how long taken to transport the arrestee to police HQs, ID Parade time allowance, allowance to deal with intoxication of the suspect, for participations in forensic procedures.
+
+Once the reasonable time has expired, the obligation to release on police bail, or bring before a justice re emerges.
+
+If suspect is obtained beyond the reasonable time, the detention will be unlawful --thus any evidence obtained during unlawful detention will be deemed invalid (*Williams*) will then apply.
+
+Interrogation to be valid:
+
+1.  Need a properly grounded, lawful arrest
+
+**[2. PROTECTIONS FOR DETAINEES:]{.underline}**
+
+- Judges Rules
+
+- Right to be cautioned (also now has statutory recognition --s139 UEL)
+
+- Communication Rights (with a friend/relative AND a lawyer) s6 Tas, s23G Cth (see *Challander)*
+
+- Interpreter
+
+- Video-recording
+
+- Crimes Act (Cth) protection for minors, Indigenous and TS Islanders.
+
+**Caution**
+
+*CARR* tells us that a right to caution does not exist as such, at CL. However the administrative guidelines of the judges rules require police to do so.
+
+**Right to Communicate**
+
+*R v Challender*
+
+F: Suspect had requested to talk to relative and lawyer and was refused.
+
+H: Info provided after the arrest was prohibited by the act.
+
+*Crimes Act* *1914* (Cth), s 23G -- P
+
+Friend or lawyer may be present in the interview (s23G) --but no equivalent allowance in Tas CL D&I Act
+
+Interpreter
+
+S23N (Cth)
+
+Must not interview a A or TS I without an 'interview friend' present, and must allow suspect time to talk in private with the friend (caveat is something H....if police reasonably of the view that the persons level of education and understanding would mean that they would not be disadvantaged to be interviewed without them)
+
+**Video-Recording**
+
+Any admission of a serious offence must be recorded to be admissible
+
+S85A --considered in *R v Kelly*
+
+Issue: whether the police should have video statements made by the A (after he made off the cuff statements outside the interview room).
+
+Were those statements made to the police during 'official questioning'
+
+HC: (still applies in Tas) It is the period of time when the questioning commences and ceases. Relatively narrow concept in the sense that it only applies to confessions or admissions made during official questions, not to admissions made otherwise. Relatively broad as the requirement to record applies even if not in custody or under arrest. In this case, the questioning ceased when the Sgt said 'we will conclude the interview' and turned off the recording device.
+
+Kirby J dissent: this interpretive approach enabled the police to undermine the purpose of the legislation
+
+CF. *Carr v WA*
+
+Considering the term 'interview'
+
+H: any conversation between a member of the PO and a suspect, was covered by the term 'interview' when in relation to an offence. It didn't matter if the conversation was informal, or initiated by the suspect.
+
+Said the legislation tries to prevent 'verballing' by the police, and this warranted a broad interpretation of 'interview'
+
+*R v Challender*
+
+F: A arrested early in morning, and interviewed late afternoon. Before interview, PO took her outside for smoke and a chat, and told her the types of things they would ask her in the interview. The A made a number of comments about the offences being investigated, and later on tape, the PO asked her about the things she had said earlier, she admitted making the comments
+
+H: The early chat did not constitute 'official questioning' due to *Kelly* thus could not exclude the admissions on the basis they had not been recorded. But, applied s90 of the UEL instead, and said what the PO had done was unfair to the A (as the A may have thought that what she was saying was 'off the record'), and she may not have been aware of her right to silence, and not in a good position to decide whether to exercise the right to silence. Further, said the whole point of the chat was to try and catch the A unaware, and thus undermined her rights.
+
+S85A UEL Exceptions (s85A b-d)
+
+Considered in *R v Browne*
+
+F: PO had not recorded the admissions of the A, but argued they had a reasonable explanation for this as it was not practicable to do so (as at the time the admissions were made, they didn't have a video recorded with them). PO were at A's house for the purpose of detaining him
+
+H: CJ --that's not a reasonable excuse, you should be carrying recording equipment with you because there is a strong chance they will say something.
+
+PO also tried to argue that 'exceptional circumstances' should apply on basis that the making of the admissions was not in dispute, and therefore should be accepted.
+
+CJ: that is not an exceptional circumstance. The court should be very slow to apply the 'exceptional circumstances' exception, and there must be something in the case that takes it out of the ordinary, and that was not the case here.
+
+\*Consider: is it a requirement that the A consent to being recorded??
+
+*Carr*: HC held no implied requirement of consent to the recording. (A caught on surveillance camera making admissions). A had challenged the admissibility of the admissions on basis he had not consented to being recorded.
+
+**[3. POLICE POWERS OF SEARCH AND SEIZURE]{.underline}**
+
+**The Common Law and Human Rights**
+
+CL is informed by decisions like *Coco*
+
+*HC:* every unauthorized entry upon private property is a trespass, the right of a person in possession or entitled to possession of premises to exclude other from those premises being a fundamental common law right.
+
+Thus these rights are considered in relation to the fundamental right of people to exclude others from their property
+
+[Human Rights]{.underline}
+
+**Right to Privacy** (Art 8 ECHR), (Art 17 ICCPR)
+
+- Broad HR, and dynamic/evolving.
+
+- Art 17: meaning of privacy generally is unclear
+
+- Many people treat it as a bundle of different rights that people have:
+
+- Right to control entry onto private premises (territorial privacy)
+
+- Freedom from interference from your personal space (bodily privacy)
+
+- Controlling personal info
+
+- Freedom from surveillance and from interception of one' communications (privacy of communications)
+
+- However, still remains a very contentious HR
+
+- *R v Pohoretsky* \[1987\] 1 SCR 945 per Lamer J at \[5\]: bodily privacy --a violation of the sanctity of a persons body is much more serious than that of his office or home
+
+- *R v Jefferies* \[1994\] 1 NZLR 290 Richardson J: personal search is a restraint on freedom, and an affront to human dignity.
+
+- 
+
+Right to Liberty and Security of the person (Art 9)
+
+- Almost invariably attached to Right to Privacy in HR, but it is a distinct right
+
+**Personal Search**
+
+***Circumstances and extent of search and seizure: common law and statute***
+
+[Common Law]{.underline}
+
+**Right to Privacy**
+
+- Fundamental right
+
+- CL tend to treat territorial privacy as more important than personal (unlike HR, other way around)
+
+- Delineate only 3 circumstances where police can conduct personal search:
+
+- With the consent of the person
+
+- Pursuant to a warrant
+
+- As an incident to a lawful arrest
+
+[Common Law]{.underline}
+
+Personal search is restricted to:
+
+- With consent
+
+- Pursuant to a warrant
+
+- As an incident of a lawful arrest
+
+[Arrest]{.underline}
+
+- *Lindley v Rutter*
+
+- *POA 58B*
+
+- *Crimes Act (Cth) ss3ZE-3ZI*
+
+*[Lindley v Rutter]{.underline}*
+
+> F: Extent of search and what can they search for and seize?
+>
+> H: Restricted search and seizure pursuant to an arrest to situations where the police required reasonable grounds to conduct the search (e.g. dangerous driving, hard to establish why a personal search would be needed)
+
+- **To take items relating to the commission of the offence for which arrested;**
+
+- **To prevent escape;**
+
+- **To protect the safety of the accused prisoner or anyone else, such as the arrestor.**
+
+[POA 58B:]{.underline}
+
+allows PO to search anyone they have in lawful custody (NB: DOES NOT HAVE TO BE UNDER ARREST)
+
+Purpose of the search under this section is similar to CL (i.e. retrieve weapon or any material)
+
+**58B. Search of accused person in custody**
+
+      (1) If a police officer **believes on reasonable grounds** that it is necessary to search a person who is in lawful custody, a police officer may search that person --
+
+\(a\) for the purpose of ascertaining whether there is concealed on that person or in that person\'s clothing a weapon or other article capable of being used to inflict injury or to assist that person to escape from custody; or
+
+(ab) for the purpose of removing into safe keeping any other articles belonging to, or in the possession of, the person; or
+
+\(b\) for the purpose of obtaining evidence relating to the commission of the offence or preventing the loss or destruction of such evidence.
+
+      (2) Subsection (1)(b) does not authorise a police officer to require a person to remove any clothing unless there are reasonable grounds for believing that the removal may provide evidence of the commission of an offence.
+
+      (3) A police officer may take and retain --
+
+\(a\) any weapon or article found as a result of the search under subsection (1)(a); and
+
+\(b\) any article of clothing removed under subsection (2).
+
+      (4) A police officer may use such force as is reasonably necessary for the purposes of exercising powers under this section.
+
+      (5) Nothing in this section prevents a search of a person in lawful custody in any circumstances where it is otherwise lawful to search the person.
+
+Note s58B(1)(ab): for removing into safe keeping any other articles belonging to, or in the possession of the person
+
+*How invasive can it be under s58B?*
+
+Covers frisk and strip searching (if reasonable grounds to believe that removal of clothing would assist in finding an offence)
+
+[*Crimes Act (Cth)* 3ZE-3ZI:]{.underline}
+
+outlines for people under arrest.
+
+Includes:
+
+- frisk search,
+
+- ordinary search (the person and any accessory with them, incl. removal of outer garmets), (if RB carrying evidential material or ceaseable items)
+
+- strip search (required to remove all of clothing, not cavity search) --SS can only be carried out when under arrest, and at a police station and only when reasonable grounds to establish they have on them a 'ceasable item' or evidential material
+
+s3ZH: sets out guidelines for a strip search and 3ZI the rules for doing one:
+
+Safe guards re: strip searches:
+
+- Under arrest
+
+- At police station
+
+- Authorised by Superintendent or higer
+
+- And comply with requirement's under 3ZI (e.g. privacy, same sex PO)
+
+S58B does not have the same restrictions on strip searches as the Cth Crimes Act. Concerns in recent times re: police abuse of power to conduct strip searches.
+
+**Tasmanian Statutory Extensions to Police Powers of Personal Search -- Non Arrest Situations**
+
+These provisions usually require the police suspect or believe on reasonable grounds the person has committed an offence under the relevant legislation.
+
+*Police Offences Act* 1935 (Tas) s 58B
+
+*Police Offences Act* 1935 (Tas), ss 58 & 58A
+
+*Search Warrants Act* 1997 (Tas) s 6(2)(a)
+
+*Family Violence Act* 2004 (Tas), s 10(3)
+
+*Poisons Act 1971* (Tas), ss 90A(1)(b), 90B & 90C
+
+*Police Powers (Public Safety) Act 2005*, ss 18(2) & 22
+
+*Misuse of Drugs Act* 2001 (Tas), ss 29, 30
+
+**Grounds of the Search: Reasonable Grounds to Suspect or Believe**
+
+- Most require a 'reasonable grounds for belief' that a search is necessary. Some terminology is 'reasonable suspicion'.
+
+*Lindley v Rutter* \[1981\] QB 128
+
+- where a person is under arrest then the CL tells us that there are a number of requirements that must be fulfilled.
+
+- 1\) Must be on reasonable grounds to conduct a personal search
+
+- 2\) PO can only take items from you that relate to an offence OR narrower, search for items in relation only to the offence that you have been arrested for
+
+- 3\) PO can take items that may assist in escaping or may injure the arrestee or arrestor
+
+*George v Rockett* (1990) 170 CLR 104
+
+H: 'suspcion' and 'believe' refer to quite different states of mind. Applied UK *Hussein*, where suspicion 'refers to a state of mind that is one of conjecture or surmise, 'I suspect, but cannot prove', But need to point to facts that sufficiently arouse the suspicion. The objective circumstances must be sufficient to ground the suspicion.
+
+'Believe' needs the obj circumstances must point to it even more clearly, but don't need to reach the level of proof.
+
+'an inclination of the mind towards acsenting to, rather than rejecting, a proposition.
+
+*Nguyen v Elliott* (unreported, Supreme Court, Victoria, Hedigan J, No 7540 of 1994, 6 February 1995)
+
+*How the definitions have been applied*
+
+Court considered how they are applied in the context of a personal search
+
+F: PO observing accussed sitting on park bench, and suspected he was in possession of drugs. Many people approached and talked to A, and he was looking suspicious. PO approached him and ask questions, A responded abusively that he was sick of them. PO then invited him to be searched in a private alley. A refused and resisted the search (assaulted the PO trying to search him, and bit the other PO when he came to PO1's aid).
+
+I: was resistance by the A lawful in these circumstances:
+
+Trial Judge: PO did not have a lawful authority to search him --only approached him out of curiosity, no reasonable suspicion or belief. Therefore, the search was unlawful, and his resistance was lawful (thus successfully defended charge of assault)
+
+\*Evidence needed to establish reasonable suspicion or believe:
+
+- Entirely dependent on the facts of each case, but for interest re: Sniffer Dogs:
+
+Sniffer Dogs: The Right to Security of the Person Chapter 7 in Gans et al, *Criminal Process and Human Rights* (Federation Press, 2011) pp 268 -- 270; 273 - 275
+
+- Legislation provides that drug dog behavior is a sufficient ground for suspicion to prompt a search
+
+- Problem: drug dogs are inherently unreliable. At most, accuracy is only 26% of all cases where sniffer dog behavior has prompted search
+
+- For this reason, legislation that allows this could be a breach of HR
+
+- Can depend on the type of dog (reknowned dog in Canada with an almost perfect hit rate)
+
+**Search of Premises**
+
+GR: an occupier may deny access to anyone. There must clear legislative authority to allow someone to override that.
+
+CL Starting point: **(narrow)**
+
+search of premises only permitted when police enter on to premises pursuant to an arrest, or with the consent of owner/occupier, pursuant to a search warrant. Originally at CL, SW only permitted in order to retrieve stolen property.
+
+Extent of search permissible at CL: Dillon and O'Brien
+
+At Genreally extends power s to search premises pursuant to a warrant or pre or post arrest.
+
+*Coco v R* (1994) 179 CLR 427 at pp 435-6 (see also *New South Wales v Ibbett* (2006) 229 CLR 638 *and Kuru v New South Wales* (2008) 246 ALR 260 at \[40\]-\[55\])
+
+No clear unambiguous authorization for police to go on to private premises and install a listening device, therefore the legislation did not allow them to do so.
+
+*Ibbett*: if police do trespass onto private premises, aggravated damages are unacceptable.
+
+*Dillon v O'Brien & Davies* (1887) 16 Cox CC 245 -- warrant for arrest
+
+Where police enter premises to arrest, can search an arrestee and the area immediately around the arrestee (e.g. table/desk) for the same purpose (to find evidence of the offence, secure any items that may be used to effect an escape or cause danger to themselves or someone else)
+
+*Jeffrey v Black* \[1977\] 3 WLR 895
+
+F: police arrest accussed outside own premises, can they then take the accussed to his home to search?
+
+H: That search could not be considered to be a search 'incidental' to an arrest (they should have obtained a search warrant)
+
+So...cant arrest in one location and then take to their home to search it (not considered a search incidental to an arrest)
+
+*Ghani v Jones* \[1970\] 1 QB 693
+
+Vastly increased police power of search from *Dillon v O'Brien* when effecting an arrest or under a search warrant. Why? Probs, parliament was being very slow to expand police investigative tools in this area. Very different to that in Australia (which has always had quite extensive search warrants and search provisions).
+
+Court of Appeal: If the police enter premises lawfully in order to affect an arrest or pursuant to a search warrant, they may search the premises to find evidentiary material in relation to the offence that they are arresting for/search warrant for. If during the course of the search find material about another offence, they may cease those items as well, provided they behave reasonably and don't retain the items ceased for an unreasonable period of time. (confirmed in *Rottman)*
+
+**CL Re: searching a premises when police have entered NOT pursuant to an arrest or search warrant**
+
+In *Ghani* the PO had entered with the consent of the occupier. H: they could search in this circumstances, not only to the offence they were investigating, but any other items they reasonably believed to afford evidence to another arrest. But court imposed 5 pre-conditions on the search and procedure:
+
+1.  RB it is a serious offence evidence
+
+2.  Property was the fruit of the crime , or the means of its commission, or material evidence of its commission
+
+3.  That the person in possession was involved in the crimes as a principle or accessory
+
+4.  The police must keep it for no longer than necessary
+
+5.  The lawfulness of the police conduct is to be judged at the time they conducted the search (not with the value of hindsight)
+
+> (and see *Spyke* but cf with *Challenge Plastics*)
+
+*R (on the application of Rottman) v Commissioner of Police of the Metropolis* \[2002\] 2 All ER 865; \[2002\] 2 WLR 1315 - arrest warrant for extra-jurisdictional offence.
+
+H: where the offence has been committed outside the jurisdiction, this case said the powers under *Ghani* still apply.
+
+*Spyke & Alexander* Tas Unreported Serial No 2 of 1981 BC8171022
+
+Applied *Ghani* and also in s5 and s6 of *Tas Search Warrant Acts* (the aspect of allowing police to cease items of other offences when entering pursuant to a search warrant under that Act) --not a great deal of reason why they are applying *Ghani* (cf. Challenge Plastics which considered the law carefully)
+
+**Declined *Ghani v Jones***
+
+*Challenge Plastics Pty Ltd v Collector of Customs* (1993) 115 ALR 149 per Heerey J at 157-157
+
+Good analysis of the CL (tried to argue the dissent in *Rottman*)
+
+Heery J: police search did not comply with the statutory provision (went beyond this). Then argued that *Ghani* applied to extend powers beyond the statute.
+
+Declined to apply *Ghani* and gave good analysis of CL in UK and Aust and difference between the 2 jurisdictions.
+
+Re Ghani: No search warrant, arrest warrant, arrest, did not involve stolen goods, the extention of the norm made by Ghani is perhaps even more suprising given denning in some other case. The requirement of a warrant is a statutory safeguard to avoid arbitrary interference with personal property. The State wishing to cease property must swear on oath of the need to cease it (protective safeguard between investigators and citizens). Requires a degree of specificity --and courts will scrutinize warrants very carefully to ensure warrants have been complied with. *Ghani* really makes the process of obtaining a search warrant pretty irrelevant, and will no longer apply the safeguards they were designed to do. If *Ghani* is right, state officials are better off without a warrant at all.
+
+*Laurens v Willers* (2002) 131 A Crim R 281 per Heenan J at \[44\]
+
+H: Ghani v Jones giving far too unconfined powers to the police to conduct search, thus preferred to confine the power of search at CL to that of article in relation to the offence for which the police had entered, and the immediate vicinity (CL approach basically)
+
+Consider the *Search Warrant Act* carefully

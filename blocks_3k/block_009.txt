@@ -1,0 +1,177 @@
+## Amendments to complaints at close of case:
+
+Need to show prejudice.
+
+What prejudice:
+
+**Nilsson v McDonald \[2009\] TASSC 1 (16 January 2009)**
+
+SC appeal of prosecutor being granted leave to amend at end of trial -- denied. Magi was fine to allow pross amendment. Def could not demonstrate any prejudice that might follow if not allowed, was gven option to ask further questions and it was clear from the case and from the way it unfilded and even the way def cx that the case was run on the basis of the amendment sought. It was a minor amendment tho
+
+barne
+
+**[(The amendment was allowed in the Magistrate court at the close of the case and was upheld by SC)]{.underline}**
+
+\[5\] *The complaint in respect of the applicant identified the charge laid against her, namely, \"Fail to comply with a direction of a police officer\". It also identified that charge as being a breach of \"Section 15B(2) [Police Offences Act 1935](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/)\". The particulars of the charge were amended during the course of the hearing. The particulars (with the words added by amendment at the hearing underlined) were:*
+
+> *\"You are charged with on the 15th June, 2007 at the Royal Hobart Hospital a public place at Hobart in Tasmania having been directed under the provisions of [subsection 1](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s1.html), to leave that place and not return for a specified period of not less than 4 hours, by Constable PAJAK a police officer who had reasonable grounds for believing you had committed or was likely to commit an offence, [and/or has committed or is likely to commit a breach of the peace]{.underline} and you unlawfully failed to comply with that direction.\"*
+
+...
+
+\[36\] *The learned magistrate permitted the amendment as sought by the prosecutor, expressing himself satisfied that there would be no prejudice to the applicant were the amendment allowed. The learned magistrate specifically queried counsel for the applicant in relation to the nature of any prejudice which might accrue to her client. His Honour pointed out that the evidence led at the hearing demonstrated very clearly that the police officers believed, rightly or wrongly, that there had either already been a breach of the peace or there was likely to be one, having regard to the applicant\'s behaviour as asserted by them. He also pointed out that the cross-examination by counsel had been directed to those issues. His Honour enquired what prejudice the applicant would suffer if, in particular, he permitted her to question witnesses further about any matters that she believed had not been covered already. While admittedly, counsel for the applicant was apparently taken by surprise by the application, she was unable to identify any particular prejudice which might flow to her client. In those circumstances his Honour permitted the amendment.*
+
+\[37\] The applicant\'s written submissions again highlighted a misconception as to what a complaint needed to contain. It was not necessary for the complaint to identify the nature of the offence which might have been said to have been committed. The charge against the applicant was, both prior to and following the amendment, that of failing to obey the direction of a police officer. What was altered by the amendment was the addition of a basis upon which a police officer may have given that direction. The alteration was entirely consistent with the evidence, the applicant\'s counsel and the applicant had heard all the evidence, and the applicant\'s counsel had cross-examined in detail and at length in respect of the reasons the police officer gave for giving a direction to the applicant. There was no suggestion by the applicant\'s counsel that she could have or would have called other witnesses as to the nature of the applicant\'s conduct. In fact, that suggestion was only raised in submissions on the hearing of the review. The learned magistrate heard evidence from other witnesses present at the time of the incidents involving the applicant. There was no application from the applicant\'s counsel for an adjournment to enable her to present evidence from any other persons who might have been in the vicinity and, indeed, the applicant did not identify any specific witnesses who might have been able to give relevant and cogent evidence.
+
+\[38\] I am not satisfied the applicant was in any way prejudiced by the amendment permitted by the learned magistrate. I am satisfied the learned magistrate did not make an error in permitting the amendment and this ground of review should fail.
+
+**Means by which prejudice can be ameliorated:**
+
+**Ford v Tasmania \[2012\] TASSC 34 (8 June 2012)**
+
+\[14\] *Counsel for the applicant did not suggest that the applicant was taken by surprise by the evidence led. However, he submitted that it was clear from the applicant\'s counsel\'s closing submissions that he was proceeding on the basis that this was a case of deprivation of liberty by a grabbing of the wrists, and he was never given an opportunity to address the enlarged case. [The learned magistrate did not invite submissions in reply in relation to the issue. The learned magistrate should have, of his own motion, amended the complaint. The only basis upon which he could have done this was to allow the complainant to be recalled for further cross-examination, and to allow counsel for the applicant to make further submissions]{.mark}. None of this was done. As a consequence the applicant was not afforded natural justice, and the learned magistrate should not have proceeded to conviction.*
+
+## Example of successful application:
+
+**Irons v Moore \[2019\] TASSC 22 (22 May 2019)**
+
+\[25\] The applicant also argued that there was a variance between the particulars of the assault found by the magistrate and those specified in the complaint. It is fair comment that there is a variance. The complaint alleges that the assault took place by grabbing and punching, whereas the evidence permitted a finding that the assault had taken place by hitting and/or pulling the complainant\'s hair.
+
+26. This was not a variance of significance. There is no suggestion that the particulars mis-informed the applicant of the nature of the allegation against him by diverting his attention, for example, to a different incident, or a different offence. The incident in question was clearly identified by the complainant, and addressed by the evidence. The applicant could have been under no misapprehension that what was being alleged against him was that during the course of an argument in the car, he unlawfully assaulted the complainant. The provisions of [s 31(4)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/s31.html) of the [*Justices Act *1959](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/) are applicable, that is, that an objection shall not be taken to a summons in respect of a variance between it and the evidence in support of the complaint, although the justices may adjourn the hearing if the defendant has been prejudiced by the defect or variance. In my view, there was no prejudice to the applicant in this case, and the argument is without merit.
+
+## Example of failure:
+
+**Jerrim v Smith \[2020\] TASMC 6 (7 May 2020)**
+
+It's a fucking high threshold to get to be allowed to do so. Particularly when at the hearing stage.
+
+IN the case an element of the offence was omitted in the initial drafting and the court refused to allow the amendment because the failure to include the element had the effect of aveing to no offence known to law.
+
+It was a bloody harsh outcome. But there is some excellent discussion about grounds upon which an amendment can be made.
+
+Take home though is that once at hearing its bloody hard.
+
+## Oral complaints (lodgement of written complaints following afterhours lock-ups)
+
+**Issue:**
+
+Whether a 7 day time limit applies to the lodgement of a written complaint following an oral one made in an afterhours court? I'd argue that the written complaint need only be lodged at some point prior to the defendant's first appearance to answer the charge. Cathryn McCaffrey and Gavin disagree with me. Your thoughts?
+
+**Relevant Legislation:**
+
+**JUSTICES ACT 1959 - SECT 27**
+
+**27. Proceedings may be commenced by complaint**
+
+\(1\) Subject to subsections (2) and (3), and except as otherwise enacted or prescribed under any enactment, proceedings before justices shall be commenced by a complaint, which may be made or laid by the complainant in person, or by his or her lawyer or other person authorized in that behalf.
+
+\(2\) Where a person has been arrested without a warrant, oral information of the substance of the charge may take the place of a complaint up to the stage of the proceedings at which a complaint is needed for the person charged to plead to it.
+
+**JUSTICES RULES 2003 - REG 17**
+
+**17. Lodgment of complaint**
+
+\(1\) The complainant --
+
+\(a\) may lodge the complaint with a clerk; and
+
+\(b\) must lodge the complaint within 7 days after the complaint is made.
+
+**JUSTICES RULES 2003 - REG 6**
+
+**PART 2 - Complaint and summons Division 1 - Complaint**
+
+**6. Form and making of complaint**
+
+\(1\) A complaint is to be in accordance with Form 1.
+
+\(2\) A complaint must be sworn before a justice.
+
+\(3\) Despite subrule (2), a complaint made by a public officer does not need to be sworn before a justice.
+
+**Argument:**
+
+Regulation 17 of the ***Justices Rules*** states that a complaint may be lodged with a clerk. Further, that a complaint must be lodged within 7 days after the complaint is "*made*"
+
+Regulation 6 prescribes the form and making of a complaint. A complaint is to be made in accordance with "Form 1", and except in the case of Police complaints, must be sworn before a justice.
+
+Section 27(1) of the *Justices Act* states that proceedings cannot be commenced without a complaint. Section 27(2) provides an exception to 27(1) in circumstances where a person has been arrested without a warrant. Here, *oral information of the substance of the charge may temporally substitute a complaint*.
+
+ 
+
+A complaint is not yet "made"
+
+It need not be made until a stage of the proceedings at which a complaint is needed for the person charged to plead to it. At which time it then must conform to the requirements of "Form 1", per Reg 6 of the *Justices Rules*.
+
+## Joinder -
+
+### One matter of complaint (joinder of individual counts in summary complaints)
+
+***Norman Brinkman and Fishpak Pty Ltd v Martin Stephen Dix and P J A Wright \[1997\] TASSC 50; (1997) 6 Tas R 460 (12 May 1997)***
+
+Full Court of the Tas Supreme court held there is no staturotrey bar to different defendatns being heard together where not "accersories." Lack of consnt itself is not a bar. It is a matter of argument.
+
+***Lord Diplock in Reg. v. Merriman*** \[1973J A.C. 584, at p.607, as follows:
+
+\"The rule against duplicity, viz. that only one offence should be charged in any count of an indictment, which is now incorporated in rule 4(1) of Schedule 1 to the Indictments Act 234 TASMANIAN REPORTS \[1989 1915, has always been applied in a practical, rather than in a strictly analytical, way for the purpose of determining what constituted one offence. Where a number of acts of· a similar nature committed by one or more defendants were connected with one another, in the time and place of their commission or by their common purpose, in such a way that they could fairly be regarded as forming part of the same transaction or criminal enterprise, it was the practice, as early as the eighteenth century, to charge them in a single count of an indictment:\'
+
+TH 7-9-18
+
+### Presumptions for and against
+
+**JOINDER**
+
+The relevant section of the *Criminal Code* is section 311, which says (relevantly):
+
+'...charges of more than one crime may be joined in the same indictment, if those charges arise substantially out of the same facts or closely related facts, or are, or form part of, a series of crimes of the same or a similar character. In any other case an indictment shall charge one crime only...'
+
+This section has been considered in many cases, including recently *Tasmania v Oakley* \[2015\] TASSC 12. In that case, Porter J considered the second limb of the section and said:
+
+\[17\]  Under the second limb, not only do the charges need to be ones of crimes of the same or similar character, the charges must be or form part of a series of such crimes. To be, or be part of, a "series", there needs to be a nexus between the offence; a feature of similarity which enables them to be described as a series: Ludlow v Metropolitan Police Commissioner[\[1971\] AC 29](https://iclr.co.uk/pubrefLookup/redirectTo?ref=1971+AC+29) at 38; R v Cranston\[1986\] 1 Qd R 159 at 164; R v Carr [\[2003\] TASSC 123](https://advance.lexis.com/document/?pdmfid=1201008&crid=6e25dd76-a3ac-4f2e-b936-ab93724352ef&pdteaserkey=zdtpk&pditab=allpods&pddocfullpath=%2Fshared%2Fdocument%2Fcases-au%2Furn%3AcontentItem%3A5H66-2TB1-F60C-X4KJ-00000-00&ecomp=zdtpk&earg=sr1&prid=4436ca1d-ceb7-429d-877d-9688f0dd83d6) at \[6\]. The section does not countenance the joinder of counts charging offences which are legally the same or similar in character but which in their factual setting are disparate. What is required is a sufficient correlation to enable the offences to be described as a "series" without straining the word beyond its reasonable meaning:De Jesus v The Queen(1986) 61 ALJR 1 per Dawson J at 9.
+
+**\[**18\]  The second limb calls for the application of a test involving time, place and the other circumstances of the offences, as well as their legal character or category in order to determine whether features of similarity and connection are present to a sufficient degree: R v Cranston at 164. **Generally, the provision should not be given an unduly restrictive meaning**: De Jesus (above) at 9; R v Kray[\[1970\] 1 QB 125](https://iclr.co.uk/pubrefLookup/redirectTo?ref=1970+1+QB+125) at 131.
+
+(emphasis added).
+
+Also relevant is the following:
+
+\[32\]  Section 363 of the Code provides that where two or more persons are charged in the same indictment, the judge may at any time during the trial, direct that the trial of any of them shall be had separately from the trial of the other or others. The law is clear that the prima facie rule is that accused persons jointly charged with committing the same offence should be tried jointly: Webb and Hay v R(1994) 181 CLR 41; R v Demirok\[1976\] VR 244; Leaman v R 9/1987, \[1987\] TASSC 21; Tasmania v Smart [\[2014\] TASSC 52](https://advance.lexis.com/document/?pdmfid=1201008&crid=6e25dd76-a3ac-4f2e-b936-ab93724352ef&pdteaserkey=zdtpk&pditab=allpods&pddocfullpath=%2Fshared%2Fdocument%2Fcases-au%2Furn%3AcontentItem%3A5H66-2TB1-F60C-X4KJ-00000-00&ecomp=zdtpk&earg=sr1&prid=4436ca1d-ceb7-429d-877d-9688f0dd83d6) at \[8\]. The proviso to the rule is the right to a fair trial. The prima facie rule will be departed from where there is a real risk of positive injustice to the accused were there to be a joint trial: R v Alexander and McKenzie (2002) 6 VR 53 at 67 \[31\].
+
+The other recent Tasmanian case which considered section 311 is *Tasmania v Martin (No 2)* \[2011\] TASSC 36, where Porter J noted
+
+\[23\]  Of particular relevance to this case is R v May \[2007\] QCA 333 in which the Court of Appeal considered the joinder of a number of counts relating to the possession of child pornography (counts 16--22) in the indictment, with a number of counts of sexual offences in respect of which the complainant was the accused's daughter (counts 1--15). The statutory provisions under consideration were similar to those in the Code. Holmes JA, with whom Wilson and Philippides JJ agreed, said:
+
+\[34\] Notwithstanding the liberal approach to be taken to joinder under s 567(2), \[R v Collins \[1996\] 1 Qd R 631\] I do not consider that these offences were properly joined. In the first instance, I do not think that counts 1--15 involved offences of the same or similar character as those entailed in counts 16--22. Consideration of whether charges entail a "series of offences of the same or similar character":
+
+"call\[s\] for the administration of a test in which time, place and the other circumstances of the offences as well as their legal character or category are all factors which are considered for the purpose of seeing whether the necessary features of similarity and connection are present": R v Cranston \[1988\] 1 Qd R 159 at 164.
+
+\[35\] These were not offences of the same legal character; nor could they be said to be of similar legal character, in the way that indecent assault and rape might be. But even if one were to interpret the term so broadly as to say that because they were all offences involving sexual abuse of children, they were of similar legal character, it was still necessary that there be some nexus or connection between them in order to establish a series: De Jesus v R (1986) 61 ALJR 1 at 9 per Dawson J. That nexus may be constituted by factual similarity or may be demonstrated by the admissibility of the same evidence in respect of the different offences.
+
+\[36\] As to the first, there was no factual or temporal nexus between these offences, nor was there any practical aspect of their commission which connected them. They did not involve common participants or a common victim or a similar methodology ....'.
+
+## Statutory exceptions 
+
+Drafting of complaints (specifically FV matters) Tom Hogan has found a section of the Evidence Act, 142A which implies that we do not need to include all the exceptions in the body of the complaint. We just need to state what the order was, i.e, you are not to contact ???? directly or indirectly, etc. This has been tried with Magistrate Jago and it did not appear to cause any problems. Please remember this when checking FV files.
+
+# Alternative convictions 
+
+Section 72B of the Justices Act applies where an indictable code offence is heard summarily under the Justices act (i.e. s. 72 etc.).
+
+If the code provides an alternative conviction where facts do not substantiate the primary charge, s. 72B of the Justices act holds that it applies here it is heard summarily too.
+
+# Prosecutorial Duties:
+
+> \[M\]ore than any other lawyer, \[the prosecutor\] must be especially careful to avoid misconduct because as a prosecutor well knows, her comments carry the imprimatur of the government ...[^1]
+>
+> It is true prosecuting counsel ought not to press for a conviction. ... They should 'regard themselves' rather as 'ministers of justice' assisting in its administration than as advocates.[^2]
+>
+> The United States Attorney is the representative not of an ordinary party to a controversy, but of a sovereignty whose obligation to govern impartially is as compelling as its obligation to govern at all, and whose interest, therefore, in a criminal prosecution is not that it shall win a case, but that justice shall be done. As such, he is in a peculiar and very definite sense the servant of the law, the twofold aim of which is that guilt shall not escape or innocence suffer. He may prosecute with earnestness and vigor -- indeed, he should do so. But, while he may strike hard blows, he is not at liberty to strike foul ones. It is as much his duty to refrain from improper methods calculated to produce a wrongful conviction as it is to use every legitimate means to bring about a just one.[^3]
+>
+> It cannot be over-emphasized that the purpose of a criminal prosecution is not to obtain a conviction, it is to lay before a jury what the Crown considers to be credible evidence relevant to what is alleged to be a crime. Counsel have a duty to see that all available legal proof of the facts is presented: it should be done firmly and pressed to its legitimate strength but it must also be done fairly. The role of prosecutor excludes any notion of winning or losing ...[^4]
+>
+> Prosecuting counsel in a criminal trial represents the State. The accused, the court and the community are entitled to expect that, in performing his function of presenting the case against an accused, he will act with fairness and detachment and always with the objectives of establishing the whole truth in accordance with the procedures and standards which the law requires to be observed and of helping to ensure that the accused's trial is a fair one.[^5]
+>
+> Prosecutors are the most powerful players in the criminal justice system, capable of determining who should be charged and with what crimes. The duty to serve as a minister of justice is designed to limit abuse of this power and to compensate for the imbalance of resources that so often places the defense at a disadvantage. Demanding more of prosecutors than of other lawyers also fosters greater confidence in the legitimacy and accuracy of the criminal justice system.[^6]
+
+Dpp Guidelines:
+
+Prosecutors must not inform the court or the defence that the prosecution has evidence supporting an aspect of its case unless they believe on reasonable grounds that such evidence will be available from material already available to them

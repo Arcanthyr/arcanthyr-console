@@ -1,0 +1,482 @@
+## Doli incapax
+
+Applies to youths aged 10-13. Note section 18 states UNDER 14 yo! Not 14 and under.
+
+Questions to ask in interview:
+
+**4.1 Statements/admissions made by the child**
+
+*An admission made by a child will often be sufficient to rebut* doli incapax*. Thomas Crofts (at 187) argues:*
+
+"It has been established that an important source of information for assessing a child's appreciation of the seriousness of the act is what the child says when interviewed by the police. This type of evidence is preferable in as far as it refers directly to a child's appreciation of the act itself and is not drawn from a general analysis of the behaviour and personality of the child."
+
+The classic Australian case on point is the Victorian case of [R (a child) v Whitty]{.underline} (1993) 66 A Crim R 462. In [Whitty's]{.underline} case a child was arrested for shoplifting and when interviewed by police regarding the offence used the words, '*I stole'* (the goods). It was held that the use of these words was evidence of mischievous discretion. The child's language was interpreted to indicate knowledge that the act of stealing was wrong, perhaps in contrast to the words *'I took'*.
+
+However, before an alleged admission could be used as evidence to rebut the presumption of *doli incapax* the usual questions relating to any alleged admission must be asked. Additionally, if the alleged admission was made, is it indicative of the child's understanding at the time of the offence.
+
+(i) Is a child required to make admissions?
+
+Despite the additional obligations placed on the prosecution in order to rebut *doli incapax* a child is still entitled to rely on his or her right to silence.
+
+A child under fourteen should be advised of the additional dangers of making a record of interview. If a child elects to make a record of interview the investigating police are likely to ask questions with the specific intention of rebutting *doli incapax*.
+
+The [NSW Police Service 'Code of Practice']{.underline} at page 33 reminds officers:
+
+*"Remember, when interviewing children between 10 and 14 you need to obtain evidence they knew what they were doing was wrong (as opposed to mischievous or naughty)."*
+
+\(ii\) Can otherwise inadmissible admissions be used to rebut *doli incapax*?
+
+A child should not be put into any worse position than an adult offender and is entitled to attempt to exclude otherwise inadmissible admissions. A quick checklist includes:
+
+(a) Are the admissions caught by s.13 of the [Children (Criminal Proceedings) Act (1987)?]{.underline}
+
+(b) Did the child receive legal advice? See [R v ME , R v LT and R v CE]{.underline} (Unreported, Supreme Court Common Law Division, 3 October 2002)
+
+(c) Are the admissions admissible under Part 3.4 of the [Evidence Act]{.underline}?
+
+(d) Should the admission be excluded under s.90, s.135, s.137 or s.138?
+
+(e) Is the admission caught by s281 of the [Criminal Procedure Act]{.underline}?
+
+<!-- -->
+
+(iii) Are the words attributed to the child 'clear beyond all doubt or contradiction'?
+
+The alleged admissions must show that the child understood that his actions were seriously wrong and not just naughty. If the admissions are equivocal, or ambiguous, then it can be argued that the prosecution has not successfully rebutted the presumption.
+
+It has been suggested in [IPH v. Chief Constable of South Wales]{.underline} it was suggested that the most appropriate way to determine the *doli incapax* issue is for investigating police to ask the child 'did you appreciate that what you did was seriously wrong?' In the absence of such a direct question, the evidence will require the Court to interpret what was the understanding of the child.
+
+Facts of IPH [v. Chief Constable of South Wales]{.underline} \[1987\] Crim LR 42.
+
+An 11-year-old boy was convicted of criminal damage to a van. The van's windows were smashed, the paintwork was scratched and the van was pushed into a pole. The child was interviewed by police. During the interview the child said, "*Yeah, I knew I would damage the truck by pushing it into the pole*". On appeal the Divisional Court said that the admission proved that the child knew that damage would result from the action. The admission did not prove knowledge that the action was seriously wrong as opposed to mischievous or naughty.
+
+(iv) Do the admissions indicate the child's understanding at the time of the alleged offence?
+
+The child's intention must be assessed at the time of committing the offence. Any statements given by a child after the offence may have been tainted or affected by the process. It is arguable that since being arrested, taken to a police station and placed in a dock the child has come to an appreciation that he or she has done something wrong. This understanding may not have been consistent with the child's state of mind at the time of the alleged offence.
+
+#### Evidence soruces to rebut
+
+Admissability of alternativce sources of evidence can be seen in **The King v TT \[2024\] NTSC 62 (18 July 2024)**
+
+## Circumstances not enough
+
+**CASE NOTE -- Doli Incapax: Indicia For / Against Capacity**
+
+**Case**
+
+**TPL v The State of Western Australia \[2025\] WASCA 195**
+
+2025WASCA0195
+
+Court of Appeal (WA)
+
+**Issue (relevant to you)**
+
+Whether the prosecution rebutted the **presumption of incapacity** under **s 29 Criminal Code (WA)** for conduct committed when the accused was aged **10--14**, by proving beyond reasonable doubt that he had the **capacity to know the conduct was seriously wrong by ordinary adult standards**.
+
+------------------------------------------------------------------------
+
+**1. Prosecution-relied indicia of capacity (trial level)**
+
+The trial judge relied heavily on **circumstances of offending**, treating them as "capacity circumstances". These included:
+
+**A. Secrecy / concealment**
+
+- Luring complainants away from others (shed, bins, tents)
+
+- Moving behind objects for concealment
+
+- Acting when others were asleep
+
+- Pretending to be asleep when footsteps were heard
+
+**B. Ruse / deception**
+
+- "Smell my fingers" incident
+
+- Pretending to show something
+
+- Creating games with sexual "rewards"
+
+- Blaming or attempting to shift responsibility if discovered
+
+**C. Warnings / threats**
+
+- Telling complainants not to tell
+
+- Threatening to scream or get them into trouble
+
+- Using force to compel compliance
+
+**D. Sexual knowledge**
+
+- Asking "can I put it in"
+
+- Demonstrating masturbation
+
+- Awareness of sexual mechanics
+
+**E. Planning**
+
+- Repeated offending
+
+- Structured sequences (games, rewards)
+
+- Escalation over time
+
+**Trial judge's inference:**\
+These factors showed foresight, awareness of consequences, and appreciation that the conduct was "seriously wrong".
+
+------------------------------------------------------------------------
+
+**2. Why the Court of Appeal rejected those indicia as insufficient**
+
+The Court's reasoning is extremely important for future cases.
+
+**Core principle (re-stated clearly)**
+
+**Secrecy, force, deception or planning --- even in sexual offending --- do NOT, without more, rebut doli incapax.**
+
+The Court repeatedly emphasised that:
+
+- The question is **capacity to know serious moral wrongness**, not:
+
+  - legal wrongness
+
+  - fear of getting in trouble
+
+  - awareness of rules
+
+  - "naughtiness"
+
+  - ability to manipulate
+
+------------------------------------------------------------------------
+
+**3. Specific indicia the Court said were ambiguous or weak**
+
+**A. Secrecy ≠ moral understanding**
+
+The Court held that concealment may show:
+
+- fear of punishment
+
+- awareness of rules
+
+- desire to avoid trouble
+
+But **does not necessarily show appreciation of serious moral wrongness**.
+
+This follows **RP v The Queen** and **BDO v The Queen**.
+
+**B. Use of force**
+
+The Court expressly rejected the idea that:
+
+- using force against a younger child
+
+- overcoming resistance
+
+- causing distress
+
+necessarily implies understanding of moral autonomy or serious wrongdoing.
+
+Children may:
+
+- know someone doesn't want something
+
+- still not understand *why* it is morally wrong
+
+**C. Ruses and deception**
+
+Deception may show:
+
+- cognitive functioning
+
+- problem-solving ability
+
+But **does not equate to moral development**.
+
+The Court cautioned against equating "cleverness" with capacity.
+
+**D. Sexual knowledge**
+
+Awareness of sexual mechanics or terminology:
+
+- does not prove appreciation of moral wrongness
+
+- does not prove capacity to evaluate harm or ethical boundaries
+
+This was particularly important given the **familial context**.
+
+------------------------------------------------------------------------
+
+**4. Absence of *positive* indicia of capacity (decisive)**
+
+What ultimately sank the prosecution case was **what was missing**, not what was present.
+
+**The Court emphasised the lack of:**
+
+- contemporaneous carers
+
+- teachers
+
+- counsellors
+
+- psychologists
+
+- caregivers
+
+- evidence of moral instruction
+
+- evidence of internalised moral framework
+
+No witness could say:
+
+"At that time, this child understood that this conduct was seriously wrong by adult moral standards."
+
+------------------------------------------------------------------------
+
+**5. Documentary records -- expressly limited probative value**
+
+**School records**
+
+- Poor academic performance
+
+- Behavioural issues
+
+- Some sexualised language
+
+The Court held:
+
+- These **do not establish moral capacity**
+
+- Lack of intellectual disability ≠ capacity
+
+- "Intelligent" was a mischaracterisation
+
+**Child protection records**
+
+- Demonstrated chaos, neglect, trauma
+
+- No evidence of moral guidance or internalised norms
+
+- Actually **supported developmental delay**
+
+------------------------------------------------------------------------
+
+**6. Expert evidence -- key lesson**
+
+Although the trial judge rejected the defence psychologist's opinion, the Court made this critical point:
+
+**Rejecting defence expert evidence does not supply affirmative proof of capacity.**
+
+Once the expert was set aside:
+
+- the State had nothing but circumstances of offending
+
+- that was insufficient as a matter of law
+
+------------------------------------------------------------------------
+
+**7. Net result -- practical indicia framework**
+
+**❌ Insufficient indicia (without more)**
+
+- Secrecy
+
+- Deception
+
+- Ruse
+
+- Force
+
+- Sexual knowledge
+
+- Repetition
+
+- Fear of getting caught
+
+- Awareness of rules
+
+**✅ What would likely be required (not present here)**
+
+- Evidence of moral instruction
+
+- Evidence of ethical reasoning
+
+- Evidence of internalised norms
+
+- Contemporaneous observations of moral understanding
+
+- Evidence child distinguished "seriously wrong" from "naughty"
+
+- Evidence child could appreciate harm in an adult moral sense
+
+------------------------------------------------------------------------
+
+**8. Practical takeaway for you (Tas context)**
+
+This case is **very strong authority** for the proposition that:
+
+**You cannot rebut doli incapax by offence circumstances alone, even where the conduct is extremely serious.**
+
+For prosecutors:
+
+- This sharply limits reliance on "capacity circumstances"
+
+- Requires early thinking about **developmental evidence**
+
+For defence:
+
+- This is a blueprint for attacking inferential reasoning
+
+- Especially where there is trauma, neglect, or instability
+
+# Defences:
+
+## Illegally or improperly obtained s138:
+
+*Tasmania v Bott* \[2015\] TASSC 13
+
+17\. The accused bears the onus of establishing that the evidence was obtained improperly or illegally. If the onus is discharged, it is for the Crown to establish that the desirability of admitting the evidence outweighs the undesirability of admitting it: *R v Salem *[[(1997) 96 A Crim R 421.]{.underline}](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281997%29%2096%20A%20Crim%20R%20421)
+
+***Bunning v Cross* \[1978\] HCA 22; (1978) 141 CLR 54**
+
+Case cites Chief Justice in Reg. v. Ireland [\[1970\] HCA 21](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1970/21.html); (1970) 126 CLR. The Chief Justice there said (1970) 126 CLR at p 335 :\
+\
+*\"Whenever such unlawfulness or unfairness appears, the judge has a discretion to reject the evidence. He must consider its exercise. In the exercise of it, the competing public requirements must be considered and weighed against each other. On the one hand there is the public need to bring to conviction those who commit criminal offences. On the other hand is the public interest in the protection of the individual from unlawful and unfair treatment. Convictions obtained by the aid of unlawful or unfair acts may be obtained at too high a price. Hence the judicial discretion.\"*
+
+*Ireland* \[1970\] HCA 21; (1970) 126 CLR 321
+
+\- Evidence of relevant facts ascertained by unlawful or unfair acts is not for that reason
+
+alone inadmissible
+
+\- The judge will weigh up the value of the evidence against the unlawfulness of the method of obtaining it and decide admissibility
+
+That statement represents the law in Australia; it was concurred in by all other members of the Court in Reg. v. Ireland and has since been applied in a number of Australian cases. Its concluding words echo the sentiments expressed long ago by Knight Bruce V.C. when, in a different yet relevant context, he said, (Pearse v. Pearse [\[1846\] EngR 1195](http://www.worldlii.org/int/cases/EngR/1846/1195.html); (1846) 1 De G & Sm 12 (63 ER 950, at p 957) ):
+
+##### Indicia of admissibility or not
+
+*Bunning v Cross* \[1978\] HCA 22; (1978) 141 CLR 54
+
+\- was there a deliberate disregard of the law by police
+
+\- does the nature of illegality affect the truthfulness of the evidence
+
+\- the ease of which the law might have been complied with in obtaining the evidence
+
+\- seriousness of offence **V** unlawful conduct - does the legislation deliberately intend to narrowly restrict Police powers
+
+**See also s 138.** Evidence Act -  **Discretion to exclude evidence improperly or illegally obtained**
+
+**138.**   **Discretion to exclude evidence improperly or illegally obtained**
+
+(1)  Evidence that was obtained --
+
+\(a\) improperly or in contravention of an Australian law; or
+
+\(b\) in consequence of an impropriety or of a contravention of an Australian law --
+
+is not to be admitted unless the desirability of admitting the evidence outweighs the undesirability of admitting evidence that has been obtained in the way in which the evidence was obtained.
+
+(2)  Without limiting [subsection (1)](https://www.legislation.tas.gov.au/view/html/inforce/current/act-2001-076?query=(((PrintType%3D%22act.reprint%22+AND+Amending%3C%3E%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))+OR+(PrintType%3D%22act.reprint%22+AND+Amending%3D%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))+OR+(PrintType%3D%22reprint%22+AND+Amending%3C%3E%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))+OR+(PrintType%3D%22reprint%22+AND+Amending%3D%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))))+AND+(Title%3D(%22Evidence%22+AND+%22Act%22+AND+%222001%22))&dQuery=Document+Types%3D%22%3Cspan+class%3D%27dq-highlight%27%3EActs%3C%2Fspan%3E%2C+%3Cspan+class%3D%27dq-highlight%27%3EAmending+Acts%3C%2Fspan%3E%2C+%3Cspan+class%3D%27dq-highlight%27%3ESRs%3C%2Fspan%3E%2C+%3Cspan+class%3D%27dq-highlight%27%3EAmending+SRs%3C%2Fspan%3E%22%2C+Search+In%3D%22%3Cspan+class%3D%27dq-highlight%27%3ETitle%3C%2Fspan%3E%22%2C+Where+All+Words%3D%22%3Cspan+class%3D%27dq-highlight%27%3EEvidence+Act+2001%22%3C%2Fspan%3E+%2C+Point+In+Time%3D%22%3Cspan+class%3D%27dq-highlight%27%3E18%2F08%2F2017%3C%2Fspan%3E%22#GS138@Gs1@EN) , evidence of an admission that was made during or in consequence of questioning, and evidence obtained in consequence of the admission, is taken to have been obtained improperly if the person conducting the questioning --
+
+\(a\) did, or omitted to do, an act in the course of the questioning even though he or she knew or ought reasonably to have known that the act or omission was likely to impair substantially the ability of the person being questioned to respond rationally to the questioning; or
+
+\(b\) made a false statement in the course of the questioning even though he or she knew or ought reasonably to have known that the statement was false and that making the false statement was likely to cause the person who was being questioned to make an admission.
+
+(3)  Without limiting the matters that the court may take into account under [subsection (1)](https://www.legislation.tas.gov.au/view/html/inforce/current/act-2001-076?query=(((PrintType%3D%22act.reprint%22+AND+Amending%3C%3E%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))+OR+(PrintType%3D%22act.reprint%22+AND+Amending%3D%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))+OR+(PrintType%3D%22reprint%22+AND+Amending%3C%3E%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))+OR+(PrintType%3D%22reprint%22+AND+Amending%3D%22pure%22+AND+PitValid%3D%40pointInTime(20170818000000))))+AND+(Title%3D(%22Evidence%22+AND+%22Act%22+AND+%222001%22))&dQuery=Document+Types%3D%22%3Cspan+class%3D%27dq-highlight%27%3EActs%3C%2Fspan%3E%2C+%3Cspan+class%3D%27dq-highlight%27%3EAmending+Acts%3C%2Fspan%3E%2C+%3Cspan+class%3D%27dq-highlight%27%3ESRs%3C%2Fspan%3E%2C+%3Cspan+class%3D%27dq-highlight%27%3EAmending+SRs%3C%2Fspan%3E%22%2C+Search+In%3D%22%3Cspan+class%3D%27dq-highlight%27%3ETitle%3C%2Fspan%3E%22%2C+Where+All+Words%3D%22%3Cspan+class%3D%27dq-highlight%27%3EEvidence+Act+2001%22%3C%2Fspan%3E+%2C+Point+In+Time%3D%22%3Cspan+class%3D%27dq-highlight%27%3E18%2F08%2F2017%3C%2Fspan%3E%22#GS138@Gs1@EN) , it is to take into account --
+
+\(a\) the probative value of the evidence; and
+
+\(b\) the importance of the evidence in the proceeding; and
+
+\(c\) the nature of the relevant offence, cause of action or defence and the nature of the subject matter of the proceeding; and
+
+\(d\) the gravity of the impropriety or contravention; and
+
+\(e\) whether the impropriety or contravention was deliberate or reckless; and
+
+\(f\) whether the impropriety or contravention was contrary to or inconsistent with a right of a person recognised by the International Covenant on Civil and Political Rights; and
+
+\(g\) whether any other proceeding, whether or not in a court, has been or is likely to be taken in relation to the impropriety or contravention; and
+
+\(h\) the difficulty, if any, of obtaining the evidence without impropriety or contravention of an Australian law.
+
+#### impropriety
+
+**FW: Tasmania v Thompson \[2022\] TASSC 27 (28 April 2022)**
+
+In *Wilkie v Barnaba *[\[2021\] TASSC 21](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2021/21.html), Wood J observed that what amounts to improper conduct under the section is assessed in accordance with the common law principles explained by the High Court in *Ridgeway v The Queen* [\[1995\] 184 CLR 19.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1995%5d%20184%20CLR%2019) Her Honour noted that this was so held by the New South Wales Court of Criminal Appeal in *Robinson v Woolworths Ltd *[\[2005\] NSWCCA 426](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2005/426.html), [158 A Crim R 546](http://www.austlii.edu.au/cgi-bin/LawCite?cit=158%20A%20Crim%20R%20546), and endorsed by the High Court in *Kadir v The Queen *[\[2020\] HCA 1](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b2020%5d%20HCA%201), [267 CLR 109.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=267%20CLR%20109) Her Honour encapsulated those principles as follows:
+
+\"Improper conduct is \'not criminal but which is quite inconsistent with the minimum standards which a society such as ours should expect and require of those entrusted with powers of law enforcement\': Ridgeway per Mason CJ, Deane and Dawson JJ at 36; Robinson at \[102\]. The stage of impropriety will be reached in the case of conduct which is \'clearly inconsistent\' with minimum standards of acceptable police conduct in all the circumstances: Robinson at \[23\].
+
+Under s 138, impropriety is not about identifying good policing, but identifying the minimum standards we should expect of police officers. Impropriety cannot be shown by demonstrating that the police search fell short of best practice.\"
+
+#### Police impropriety (section 138)
+
+***Barnes v Anderson* \[2020\] TASMC 7 (3 February 2020)**
+
+Blood test
+
+Cop said that blood test would possibly lead to higher reading -- court accepted that this would have impacted free decision of def to elect blood after breathalyser had positive result. Even though was clearly over on breath, may possibly have fallen below limit had blood been take. Court critical of cops giving legal type advice and excluded the breath results and dismissed the charge.
+
+## Example of success under 138
+
+**McLean v Wilkie \[2022\] TASSC 13**
+
+Didn't state "requirement" still allowed under s. 138.
+
+**Tasmania v Hodges \[2022\] TASSC 45 (26 July 2022)**
+
+Illegal entry and search of motel room and def finding drugs
+
+- High probative value -- was entire case
+
+- Trafficking is a serious offence
+
+- Officers were beat cops -- not experienced detectives who should have know better.
+
+- It was a motel room -- not a private residence.
+
+- Once cops realized they fucked up they sought advice and a warrant.
+
+**Wilkie v Barnaba \[2021\] TASSC 21 **
+
+Def spoke poor English and did not understand that electing blood wouldn't see him liable for 2 sperate drink drive charges, so decided not to. At summary hearing it was excluded as unfair. SC said no, it was fair. Not duty to rovide legal advice. Evidence of breath test should be admitted.
+
+**Orr v Johnston \[2014\] TASMC 5**
+
+Didn't give oft before requiring submission to OFA -- still got in under 138
+
+***Moore v Knowles \[2017\] TASMC 12***
+
+## Entrapment
+
+Basically, the HCA says no!
+
+***Ridgeway v R* \[1995\] HCA 66**
+
+MASON CJ, DEANE AND DAWSON JJ
+
+A defence of entrapment?
+
+10\. The question whether the common law of this country recognizes a substantive defence of \"entrapment\" to a charge of a criminal offence has not been directly addressed in any case in this Court. It has, however, been considered on a number of occasions by State Supreme Courts which have consistently and emphatically answered it in the negative (2). Similarly, the courts of England (3), Canada (4) and New Zealand (5) have denied the existence of such a substantive common law defence. The decisions to that effect are not surprising since it is a central thesis of our criminal law that a person who voluntarily and with the necessary intent commits all the objective elements of a criminal offence is guilty of that offence regardless of whether he or she was induced to act by another, whether private citizen or law enforcement officer. And that is so even if the inducement involved criminal conduct on the part of a law enforcement officer. Where that is so, the result is not that the induced person is not guilty of the crime. It is that the law enforcement officer is also guilty of an offence.
+
+Discretionary Exclusion of evidence
+
+15\. At least since Bunning v. Cross (22), it has been \"the settled law in this country\" (23) that a trial judge has a discretion to exclude prosecution evidence on public policy grounds in circumstances where it has been obtained by unlawful conduct on the part of the police. That discretion is distinct from the discretion to exclude evidence of a confessional statement on the grounds that its reception would be unfair to the accused (24). The discretion extends to the exclusion of both \"real\" (or non-confessional) evidence (25) and confessional evidence (26). As Barwick CJ pointed out in Reg. v. Ireland (27), in a judgment with which the other four members of the Court agreed (28), the rationale of the discretion is that convictions obtained by means of unlawful conduct \"may be obtained at too high a price\". In its exercise, a trial judge must engage in a balancing process to resolve \"the apparent conflict between the desirable goal of bringing to conviction the wrongdoer and the undesirable effect of curial approval, or even encouragement, being given to the unlawful conduct of those whose task it is to enforce the law\" (29). The basis in principle of the discretion lies in the inherent or implied powers of our courts to protect the integrity of their processes. In cases where it is exercised to exclude evidence on public policy grounds, it is because, in all the circumstances of the particular case, applicable considerations of \"high public policy\" (30) relating to the administration of criminal justice outweigh the legitimate public interest in the conviction of the guilty.
+
+#####  Tasmanian Authority:
+
+*R v Osborne \[2003\] TASSC 17*
+
+21 The decision in *Ridgeway* states three general principles, namely that:
+
+\(1\) entrapment *per se* does not afford a substantive defence to criminal conduct;
+
+\(2\) evidence obtained by means of \"entrapment\" procedures may be excluded where the commission of the crime was itself brought about by the conduct of officers of the state;
+
+\(3\) evidence obtained during the course of \"entrapment\" procedures might be excluded when those procedures were themselves contrary to law or tainted by impropriety.

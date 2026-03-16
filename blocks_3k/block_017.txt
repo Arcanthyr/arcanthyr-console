@@ -1,0 +1,209 @@
+## Mistake of Law
+
+**(Southern Pross submissions on a driving whilst disqualified case are on file)**
+
+Commonly known as the defence of ignorance and is not a ground for exculpation. It involves a misconception that occurs when a person with complete knowledge of the facts reaches an erroneous conclusion as to their legal effect; an incorrect opinion or inference, arising from a flawed evaluation of the facts.
+
+A mistake of law, as distinct from a mistake of fact, does not generally exculpate the defendant's criminal liability.
+
+Determining what is a mistake of fact and what is a mistake of law is not always straightforward. The process is further complicated when the mistake involves a combination of factual and legal elements. In *Thomas v R* (1937) 59 CLR 279, Dixon J (Latham CJ and Rich J agreeing) drawing on English authorities it concluded that such mixed mistakes should be considered mistakes of fact. However more recently in *Strathfield Municipal Council v Elvy* (1992) NSWLR 745 at 751, Gleeson CJ held that mixed mistakes will not ordinarily constitute mistakes of fact.
+
+In determining this issue the court can may be assisted by *Minear v Rudrum* \[2001\] WASCA 10 where the Court of Appeal dismissed an appeal because the mistake was legal not factual.
+
+In that case the appellant was the holder of a provisional driver licence and issued with a traffic infringement notice resulting in automatic disqualification. The appellant's mother managed the infringement notice on behalf of her son and made enquiries with the traffic infringement section. Here erroneous advice was received to the effect that disqualification would not take effect until the licence was collected.
+
+The appellant relied on such advice and was charged and convicted of driving offences.
+
+On appeal it was held that the cancellation of the licence arose automatically by operation of the law and therefore any mistake he made was one of law. It was accepted that the appellant was advised that his licence remained valid and the honest and reasonable limbs of his claim were (presumably) made out, but dismissed.
+
+The advice he received was advice as to the law and provision of the law remained applicable irrespective of such advice.
+
+*Brooks v Roberts*, unreported, SCt of WA, Library 970072, 17 February 1997 was followed. This involved circumstances where the court failed to impose the minimum statutory period of disqualification and a correction of sentence application was made. The application was not served on the defendant and resulted in the sentence being corrected ex parte. The defendant then drove contrary to the disqualification and it was held his belief as to the validity of his licence could have been based only on his ignorance of the law.
+
+A similar case of *Wroblewski v Starling* \[1987\] WAR 233 was distinguished as that involved particular administrative action that had to be taken to effect the period of driver suspension.
+
+It is submitted that in the present circumstances there was no further action required to be taken to effect the court sanctioned disqualification period. It took effect immediately and any subsequent erroneous action taken by the Registrar of Motor Vehicle, or the advantage the defendant took of that mistake, does not impact upon the validity of the sentence.
+
+A leading case which emphasises the distinction between mistake of law and mistake of fact is the High Court decision of *Ostrowski v Palmer* \[2004\] HCA 30.
+
+The appellant was a fisherman who had sought advice from the Western Australia Fisheries Department as to regulations applicable to rock lobster fishing. He was provided with insufficient information of which he relied upon and was found in breach of an area restriction.
+
+The High Court found the mistake to be one of law and not fact. In particular, Hugh J at paragraph 53 held "it is irrelevant that Mr Palmer's mistake was induced by the conduct of an employee of Fisheries WA. That conduct cannot convert a mistake as to the applicable law into a mistake of fact. If a defendant knows all the relevant facts that constitute the offence and acts on erroneous advice as to the legal effect of those facts, the defendant, like the adviser, has been mistaken as to the law, not the facts".
+
+## Honest and reasonable mistake of fact
+
+It is worth noting as a preliminary issue that in *Hindrum v Lane* \[2014\] Tennant J referred with approval to the comment of Rowland J in the Western Australian case of *Pearce v Stanton* \[1984\] WAR 358 (at 363) to the effect that a consideration of whether in the circumstances a belief is reasonable must also look at the policy behind the relevant statute. The section of the *Road Safety (Alcohol and Drugs) Act 1970* which is the subject of the charge was introduced in 2005 by an amending Act. During the Second Reading Speech introducing the amending Bill, the Minister responsible noted \'the purpose of this Bill is to reform the Act to address the road safety issues associated with people who drive motor vehicles with illicit drugs in their blood, increasing the risk of road trauma on Tasmanian roads.\' It is submitted this purpose should be kept in mind by a Court considering any question of honest and reasonable mistake in relation to the presence of amphetamine in a driver\'s system.
+
+### Defence of honest and reasonable mistake:
+
+Raised by the evidence adduced by the defendant The defendant has no special burden when raising the defence of honest and reasonable mistake, they need only raise the evidentiary burden to satisfy its foundation. . This can occur in the cross examination in prosecution witnesses, though.
+
+Notwithstanding common usage it is strictly not a defence. Rather if held it means prosecution have been unable to establish all of the essential ingredients of the charge.
+
+Once raised by the defendant, the onus is on the prosecuting authority to dispel any doubt that may have been raised by the evidence that the acts performed were a result of honest and reasonable mistake. The standard is beyond reasonable doubt.
+
+The general test is did the defendant have an honest and reasonable mistaken belief in a certain state of things which, if that state of things existed, the defendant's actions would have been innocent.
+
+The belief is based on both a subjective and objective test.
+
+Court in *Hindrum v Lane *[\[2014\] TASFC 5.](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASFC/2014/5.html) The Full Court\'s consideration of the question of the evidentiary burden: All judgments in the Full Court made the point that **the requirement that the belief be reasonable is** a requirement that the belief honestly held by the accused person is a belief held on reasonable grounds, not that the belief itself must be objectively reasonable.** **
+
+Honest (subjective)
+
+Reasonable (mixed -- subjective attributes of specific person in subjective context against an objective standard)
+
+When raised the prosecution must prove beyond reasonable doubt that the applicant did not act pursuant to an honest belief, held on reasonable grounds, in a state of facts which, if true, would render him not guilty of the offence.
+
+### Threshold to raise defence:
+
+The first question to be asked is whether Mr King\'s assertions are sufficient to raise the issue of honest and reasonable mistake. It is submitted this is arguable, given Mr King simply made statements which could not be regarded as evidence, in the sense of admissible evidence, and those statements were untested by cross examination and were unsupported by any other evidence. Furthermore, there was no opportunity for prosecution to test other aspects of Mr King\'s statements which might lead to questions about his credibility.
+
+For example, at one stage in his statement, he referred to unknown persons at the birthday party calling Police. He also referred to his previous assistance to Police on an unidentified matter. Given there were no particulars given about either of those statements, prosecution has been unable to test their veracity.
+
+As then Acting Chief Magistrate Daly said in the analogous case of *Barnes v Fowler* \[2016\] TASMC 8, referring to drinks being spiked, \'\...in order for the evidence on this issue to be sufficient there would need to be something more than the merest of possibilities of an opportunity for such an
+
+occurrence\' (at \[30\]).
+
+In that case, Acting Chief Magistrate Daly, in considering the reasonableness of the defendant\'s belief that she had not taken methylamphetamine, concluded:
+
+*\'there is nothing against which the Court can independently assess the objective reasonableness of the belief asserted by the defendant. The evidence to which the defendant points to show her evidential burden is discharged is vague and, ultimately, bedevilled by a real absence of any details or particulars. The evidence as to her belief remains solely within her own knowledge, untestable against any other material independent facts. In effect, it amounts to mere assertion\' (at* \[32\]).
+
+### "Reasonable"
+
+My summary (but cited in **Hindrum v Lane \[2014\] TASFC 5 (1 July 2014)**
+
+The word \'reasonable\' in honest and reasonable
+
+\(a\) does not involve the hypothetical ordinary or reasonable person test;
+
+\(b\) requires that the belief be that of the accused;
+
+\(c\) requires that the accused\'s belief be objectively reasonable i.e. rational, based on reason, or capable of sustaining belief; and
+
+\(d\) requires the objective reasonableness of the accused\'s belief to be assessed by reference to the subjective circumstances in which the accused was placed, including the accused\'s personal attributes and the information available to him or her at the time.\"
+
+***\"In Mei Ying Su at \[104\], Reeves J said at \[104\]-\[106\]:***
+
+\'\[104\] In the Criminal Code jurisdictions of Queensland, Western Australia and Tasmania, the defence of acting under an honest and reasonable, but mistaken belief, has been said to reflect the common law with \"complete accuracy\": see Thomas at 305 -- 306 per Dixon J and CTM at \[3\] per Gleeson CJ and Gummow, Crennan and Kiefel JJ. Different judges of the Western Australian Court of Appeal (and the Full Court) have described the expression \"honest and reasonable belief\" (in s 24 of the West Australian Criminal Code) in the following terms:
+
+\(a\) \"\...it must be reasonable, which is to say that it must be based on his appreciation of primary objective fact which is in reason capable of sustaining the belief \...\", in GJ Coles & Co Ltd v Goldsworthy \[1985\] WAR 183 at 187 per Burt CJ, Brinsden and Smith JJ;
+
+\(b\) \"\... a reasonable man or woman in the position of the defendant carrying out the same actions in the same circumstances may make the same mistake\", in O\'Brien v Ostrowski \[1999\] WASCA 184 at \[108\] per McKechnie J;
+
+\(c\) \"It is that belief which must be reasonable; ie, in all the circumstances it must have been reasonable for the accused person to hold the belief which, in this case, would render his conduct innocent\"; and \"\... it is the actual belief of the accused with which the section is concerned, in judging reasonableness it will always be necessary to advert to the circumstances as they existed at the time in so far as they were known to the accused\", in BRK v R \[2001\] WASCA 161 at \[34\] and \[36\] per Murray J.
+
+\(d\) \"For there to be an operative mistake under s 24, an accused must have acted under an actual belief in the existence of a state of things (subjective element) and the accused belief must be reasonable (mixed element) \... the mixed element is not wholly objective; reasonableness is not to be judged by the standard of the hypothetical ordinary or reasonable person. The mixed element is a combination of subjective and objective aspects. The requirement that the belief be reasonable imports an objective standard. The subjective aspect is that the reasonableness is to be judged by reference to the personal attributes and characteristics of the accused that are capable of affecting his or her appreciation or perception of the circumstances in which he or she found himself or herself\", in Aubertin v Western Australia (2006) 33 WAR 87; \[2006\] WASCA 229 at \[43\] per McLure JA (with whom Roberts-Smith JA and Buss JA agreed).
+
+\[105\] The Queensland Court of Appeal considered the equivalent expression (in s 24 of the Queensland Criminal Code 1899 (Qld)) in R v Mrzljak (2005) 1 Qd R 308; (2004) 152 A Crim R 315; \[2004\] QCA 420, and described it as requiring:
+
+\(a\) \"\...a consideration of whether there were reasonable grounds for the belief, not what a reasonable person would have believed\" per McMurdo P at \[21\];
+
+\(b\) \"\...that the critical focus is on the offender rather than the theoretical reasonable person. It is the information available to the offender which must determine whether the belief was honest and also was reasonable \...\" per Williams JA at \[53\];
+
+\(c\) that \"\[t\]he section directs attention to the actual belief of the accused; nothing in its language invites reference to the reasonable man\'s putative belief. What must be considered, in my view, is the reasonableness of an accused\'s belief based on the circumstances as he perceived them to be\", per Holmes JA at \[81\].
+
+\[106\] From these authorities it is apparent that the word \"reasonable\" in s 9.2:
+
+\(a\) does not involve the hypothetical ordinary or reasonable person test;
+
+\(b\) requires that the belief be that of the accused;
+
+\(c\) requires that the accused\'s belief be objectively reasonable ie rational, based on reason, or capable of sustaining belief; and
+
+\(d\) requires the objective reasonableness of the accused\'s belief to be assessed by reference to the subjective circumstances in which the accused was placed, including the accused\'s personal attributes and the information available to him or her at the time\'.\"
+
+Hearing not able to proceed on 29/5/19 due to failure of civilian witness to appear. PETRIE had large amount of matter sin list -- as a means of resolving the balance and absolve the need for officers to re-attend for a future hearing, proposal put to TNE evade for PG on DWD. Proposal discussed with investigating officer in court. This was low-level evade and no risk to public safety. Officers happy with course. Phone authorisation confirmed with Acting OIC Jason Lyons
+
+**Smith v Marshall \[2024\] TASMC 12 **
+
+In this decision, court said research on internet chat groups was not reasonable as it was not a legal practitioner or other appropriate authority
+
+### Counters to "reasonable"
+
+As to existing restrictions or sentences:
+
+- Imposed in court where the defendant did appear. It was unequivocally made clear to the defendant
+
+- The assertion that the defendant did not understand the sentence is unreasonable as he was represented by legal counsel and it could be inferred if there was any doubt in his mind he would have sought clarification.
+
+An example:
+
+**Hindrum v Lane \[2014\] TASFC 5 (1 July 2014)**
+
+Fisherman. Pulled lobsters out one at a time. Many years experience. If in doubt on vidual inspection would measure with tape. Police found a lobster 2 mm under the min size. Held it was honest. Not reasonable.
+
+The appellant did not measure every fish he took by the use of a measure. He had a practice of visually inspecting each fish. His experience of many years allowed him to make a fairly accurate assessment by that visual inspection as to whether a fish was legal size or not. If he was in any doubt he would measure. Evidence was given about fish flapping about when they were pulled from the pot to be assessed or actually measured. In the present case quite clearly this fish, if checked, would not have been assessed as obviously over the legal size. At best it had to have fallen into the doubtful category. In those circumstances, had it been measured with a measure, the length would have been less than 110 millimetres. The appellant was a fisherman of many years\' experience. It must be inferred he had measured fish under both difficult and calm conditions. It must also have been inferred he knew the significant consequences of being found with an undersize fish.
+
+The only conclusion open is that he did not measure this fish and that he either did not visually check it, or if he did so, he did it so casually as to not give him an accurate assessment. In those circumstances any belief he might have held cannot be said to have been objectively reasonable.
+
+There are only two possible explanations for the mistake. The first is that the appellant did not measure the lobster at all. The second is that he measured the lobster incorrectly
+
+ If the appellant\'s error was to rely on his estimation rather than measurement, then his belief cannot be said to be objectively reasonable, despite his experience. In this case, a belief based on an incorrect measurement could not be objectively reasonable either. The appellant had an accurate measuring device. He was experienced in measuring and responsible for his own measurement. He had ample opportunity to check his measurement, but said he only ever measured once.
+
+**Smith v Marshall \[2024\] TASMC 12 **
+
+In this decision, court said research on internet chat groups was not reasonable as it was not a legal practitioner or other appropriate authority
+
+### Otherwise lawful
+
+Defence only available of the honest and reasonable mistake of fact would otherwise render the relevant act as LAWFUL. If the act was still unlawful for some other reason, then the defence would not stand (I'm a bit iffy about this...)
+
+**Tasmania v Bell \[2019\] TASSC 34**
+
+Def was charged with supplying to a minor. Tried to claim mistake of fact as to age. No alternative charge available to get conviction for supply generally, if pross failed to win supply to minor. BLOW CJ held that the defence was not open, because even if there was a mistake as to age, the act still breached the supply offence under another section. The act would not have otherwise have been lawful.
+
+## Duress
+
+**Criminal Code Act 1924 -- Section** **20.   When compulsion a defence**
+
+**Tasmania**
+
+**Essential Elements:**
+
+(***Hurley and Murray \[1967\] VR 129)***
+
+1)  There must be a threat of immediate death or grievous bodily harm
+
+- If there is opportunity to report the criminals and place themselves in the protection of authorities, the defence will not succeed.
+
+2)  Accused must be subject TO the threats
+
+- Need not be the subject of the threats -- may be a threat made by a person present at the commission of the offence to harm any person
+
+3)  The person making the threat must be actually present at the commission of the offence.
+
+4)  The accused must believe that the threat will be executed
+
+5)  The offence committed by the accused must not be an 'excepted offence'
+
+- Expressed in the section itself "treason, murder, piracy, offences deemed to be piracy, attempting to murder, rape, forcible abduction, aggravated armed robbery, armed robbery, aggravated robbery, robbery, causing grievous bodily harm, and arson."
+
+6)  The defence will not be available to the accused if he is a party to any association or conspiracy the being a party to which rendered him subject to compulsion.
+
+- Translated: Where defendant joins an association or conspiracy and actually foresaw that they might be the subsequently threated to commit an offence.
+
+**Common Law**
+
+Where there is evidence of duress the onus denying its presence or its influence should rest on the prosecution. That the conduct was not the product of duress then becomes one of the absence of duress in the appropriate sense and one of the "essential elements of criminal responsibility"
+
+Smith J in ***Hurley and Murray \[1967\] VR 129***
+
+I consider the following affirmative proposition may be stated. Where the accused has been required to do the act charged against him
+
+1)  Under threat that death or grievous bodily harm will be inflicted unlawfully upon a human being if the accursed fails to do the act and
+
+2)  The circumstances were such that a person of ordinary firmness would have been likely to yield to the threat n the way the accused did and
+
+3)  The threat was present and continuing, imminent and impending and
+
+4)  The accused reasonably apprehended that the threat would be carried out and
+
+5)  He was induced thereby to commit the crime charged and
+
+6)  That the crime was not murder nor any other crim so heinous so as to be excepted from the doctrine and
+
+7)  The accused di not by fault on his part when free from the duress, expose himself to its application and
+
+8)  He had no means with safety to himself, of preventing the execution of the threat..
+
+> *then the accused, in such circumstances at least, has a defence of duress.*

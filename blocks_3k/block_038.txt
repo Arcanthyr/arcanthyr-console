@@ -1,0 +1,243 @@
+### Reasonably Believed
+
+evidence needs to amount to acceptance by the officer - to the exclusion of other propositions - that the property was stolen or unlawfully obtained at para \[23\] **Lane v Jones \[2012\]**
+
+\-
+
+This question is to be assessed subjectively. I note that the requisite state of mind is something more than mere suspicion.
+
+* Lane v Jones [\[2012\] TASMC 11](http://www.austlii.edu.au/au/cases/tas/TASMC/2012/11.html),* Deputy Chief Magistrate Daly analysed the meaning of this term as it appears in ![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"} [s 39](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s39.html) ![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"}, [Police Offences Act](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/). He concluded that a belief must amount \"to acceptance -- to the exclusion of other propositions --\" that the relevant state of affairs exists. With respect, I agree with His Honour\'s analysis and adopt that test in assessing whether Sergeant Orr held the requisite belief.
+
+***Police v Lea \[2008\] TASMC 1 (29 January 2008)***
+
+*8. The Act, s.39(1) provides that a person must not have possession or control of any property that is reasonably believed by a police officer to have been stolen or unlawfully obtained. The Supreme Court has not dealt with any case charged under the amended provision, which came into force on 17 December 2001.*
+
+*9. In Parker v Wood [\[1993\] TASSC 26](http://www.austlii.edu.au/au/cases/tas/TASSC/1993/26.html), Slicer J dealt with the test applicable to the words \"reasonably believes\" in the Road Safety Alcohol & Drugs Act 1970, s.8. Slicer J stated in relation to that particular requirement, that a the reason that a constable must hold a reasonable belief is to prevent random and capricious exercises of police powers. The Second Reading Speech is of no assistance whatsoever. However, Slicer J's comments are apposite here in relation to police capriciously or unreasonably charging persons under this provision. Slicer J held that the test in relation to the phrase \"reasonably supposes\" is that in George v Rockett [\[1990\] HCA 26](http://www.austlii.edu.au/au/cases/cth/HCA/1990/26.html); [(1990) 170 CLR 104](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281990%29%20170%20CLR%20104?stem=0&synonyms=0&query=poa1935140%20s39) at 112:*
+
+*\"When a statute prescribes that there must be \'reasonable grounds\' for a state of mind - including suspicion and belief - it requires the existence of facts which are sufficient to induce that state of mind in a reasonable person.\"*
+
+*and at p116:*
+
+*\"The objective circumstances sufficient to show a reason to believe something need to point more clearly to the subject matter of the belief, but that is not to say that the objective circumstances must establish on the balance of probabilities that the subject matter in fact occurred or exists: the assent of belief is given on more slender evidence than proof. Belief is an inclination of the mind towards assenting to, rather than rejecting, a proposition and the grounds which can reasonably induce that inclination of the mind may, depending on the circumstances, leave something to surmise or conjecture.\"*
+
+*10. In relation to the degree of suspicion that might be required, in Winwood v Burk [\[2002\] TASSC 54](http://www.austlii.edu.au/au/cases/tas/TASSC/2002/54.html), Underwood J, as he then was, said:*
+
+*In O\'Sullivan v Tregaskis [\[1948\] SASR 12](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1948%5d%20SASR%2012?stem=0&synonyms=0&query=poa1935140%20s39), Napier CJ saidat 16:*
+
+*\"It is manifestly impossible to enumerate or define all the circumstances that may reasonably attract suspicion to the property, but, for this purpose, regard may be had to the nature of the property, to the circumstances in which it has been found, and to the behaviour of the defendant, with respect to it. (Ex parte Patmoy [(1944) 44 SR (NSW) 351](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281944%29%2044%20SR%20%28NSW%29%20351?stem=0&synonyms=0&query=poa1935140%20s39) at p 357; LePoidevin v Hudson [\[1935\] SASR 223](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1935%5d%20SASR%20223?stem=0&synonyms=0&query=poa1935140%20s39), at p 230).*
+
+*Speaking generally, it seems to me that suspicion is commonly, and not unreasonably, incited by the impression of abnormality or incongruity in the thing being in the possession of the person who has it, or in his dealings with it.\"*
+
+*11. In Burnett v Brown [(1929) 24 Tas LR 23](http://www.austlii.edu.au/au/cases/tas/TASLawRp/1929/2.html), Clark J, at 34, said with respect to the Police Act 1905, s16, an earlier Tasmanian enactment similar to s.39:*
+
+*\"The words \'suspicion\' and \'suspect\' convey the idea of doubt and mistrust as much as belief, a doubting and mistrusting inclination to believe. The inclination may exist in various degrees according to the cogency of the evidence, but the idea of doubt and mistrust is always present.\"*
+
+CONTRA
+
+***Rolls v Richardson \[2014\] TASMC 12 (23 May 2014)***
+
+Basically -- refusing to consent to a search is not sufficient grounds, and the belief must be independatly held based on reasonbale investigation. A call from a radio room probs not enough
+
+*\[21\] In my view, the conduct of the defendant after being confronted by police does not amount to reasonable grounds for the requisite belief. He was entitled to refuse to allow police to search him, and entitled to walk away from them. The exercise of such rights is as consistent with innocence as with guilt, and could never form the basis of the belief necessary to carry out an arrest. A contrary conclusion would be entirely inconsistent with the rights which the statutory precondition to the exercise of the power of arrest is intended to protect. Further, the defendant\'s presence in the Mall close to the scene of the alleged crime could not have meant anything without understanding the factual basis of what had occurred. Once again, as pointed out by defence counsel, this information was as consistent with innocence as with guilt.*
+
+*\[22\] The real issue in this case is whether it was reasonable for Sergeant Orr to uncritically accept the bare statement of the radio room operator that a person matching the defendant\'s description had committed a theft, as a basis for the requisite belief.*
+
+*In Cotton v Ramm [\[1976\] 16 SASR 107](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1976%5d%2016%20SASR%20107?stem=0&synonyms=0&query=poa1935140%20s39), Jacobs J dealing with a question of whether or not a police officer believed on reasonable grounds that a driver\'s ability to drive the motor vehicle was impaired, considered the question of whether the officer was entitled to rely upon information received from another officer as to the defendant\'s manner of driving. His Honour said this:*
+
+*\"The least that the police officer concerned should do, before he forms a requisite belief, is to ascertain by enquiry as much as he can of the circumstances that might be relevant to his belief, if the information first supplied is not of itself sufficient, in terms of the statute, to justify the request for a breath test.\"*
+
+*In Hibble v Phegan at \[52\], Zeeman J said:*
+
+*\"A police officer\'s power of arrest has to be exercised by him or her personally, and on the facts known to him or her. The mere direction of a senior officer provides no lawful authority for the making of an arrest by the police officer to whom the direction is given. An arrest is a serious interference with personal liberty. That liberty may not be infringed except by lawful authority. The direction of a senior officer does not provide that lawful authority.\"*
+
+*In this case, Sergeant Orr was not acting in response to a direction from a senior officer. However, she did accept uncritically what in effect amounted to a conclusion or mere allegation on the part of either the radio room operator or some other police officer, that the defendant had committed the theft. She did not inquire as to the circumstances, or the first-hand information upon which the report was based. It is instructive in this case to note that had she done so, she may have been told, that there was no evidence that a theft had taken place and that the conclusion that there had been a theft was based entirely on the unfounded suspicion of Mr Badcock.*
+
+*In my view, the simple statement by the radio room operator that the theft had been committed was not sufficient to induce a state of belief in a reasonable person in the position of the police officer. There was no detail or explanation as to the information upon which this allegation was based. A reasonable person in Sergeant Orr\'s circumstances had no basis to exclude propositions consistent with innocence, for example that the report was based on the unfounded suspicion of another. Had Sergeant Orr been told that the defendant had been seen taking the items then she may well have had reasonable grounds to form the necessary belief. On the other hand, had she been told that the allegation arose merely from Mr Badcock\'s suspicion based on the appearance of the defendant, and his refusal to permit a search, then she would have realised that there was not a sufficient basis for an arrest. Without any explanation at all, the latter proposition could not be excluded.*
+
+*Mr Fairley submitted that Sergeant Orr ought to have investigated the circumstances herself, by going to the shop and speaking to witnesses before carrying out the arrest. I do not believe that she was necessarily required to go to those lengths. There were good reasons for her to act quickly. Belief on reasonable grounds does not equate to proof. Further, the information available would not need to satisfy her of the guilt of the suspect beyond reasonable doubt. The assent of belief is given on more slender evidence than proof. Belief is an inclination of the mind towards assenting to, rather than rejecting, a proposition and the grounds which can reasonably induce that inclination of the mind may, depending on the circumstances, leave something to surmise or conjecture (See George v Rockett, supra). Had the radio room operator explained the circumstances upon which the allegation was based in a way which permitted a reasonable conclusion that the theft had been committed, then there may have been a sufficient basis for the arrest. However, in this case, Sergeant Orr had no information at all upon which to assess the cogency of the bald allegation, and accordingly did not have objectively reasonable grounds for her belief.*
+
+## Trespass
+
+1.  It is well established that any person who enters on private premises, even for a lawful purpose, without the consent of the owner or occupier, is a trespasser. This applies to a police officer: see *Roy v O\'Neill* [\[2020\] HCA 45](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2020/45.html), [385 ALR 187](http://www.austlii.edu.au/cgi-bin/LawCite?cit=385%20ALR%20187) per Keifel CJ at \[11\]. In some circumstances, a consent or licence to enter a property is implied by law. An example is in respect of residential premises, where the law implies a licence to walk to a door, knock on it and, if the door is answered, speak to the person inside. The licence can be revoked at any time at will: *Roy v O\'Neill* per Bell and Gageler JJ at \[34-35\]. **Tasmania v Hodges \[2022\] TASSC 45 (26 July 2022)**
+
+Commercial hotel after checkout
+
+**Tasmania v Hodges \[2022\] TASSC 45 (26 July 2022)**
+
+13. In this case, the issue is complicated by a number of factors, including the nature of the premises and the rights, inter se, of the owners of the apartment and the accused in respect of the accused\'s occupation of the apartment. The prosecutor relies upon an assertion that the accused\'s licence to occupy the apartment had ended at 10am, in accordance with the terms and conditions of his tenancy. It is submitted that, accordingly, he had no right to still be in the room and, therefore, no right to refuse entry by police. I do not accept this argument. Firstly, as already noted, it is not clear that these terms and conditions applied to the agreement between the apartment business and the accused. Further, and in any event, the argument misses the point. Even if it was the case that the accused\'s licence to be on the premises had come to an end at 10am, and that under his contract with the apartment business, he could no longer lawfully exclude its representative from the room, this in itself does not address the authority of the police to enter the room. In the absence of any other lawful basis for entry, the authority of the police to be in the apartment building, and to enter the apartment in question, depended entirely on the express consent of the owner of the apartments, represented in this case by the management, and any lawfully authorised employee. There is no basis for any form of implied licence that would permit the police to enter the apartment, in the absence of such consent.
+
+## Injure Property:
+
+**Damage/ injure property**
+
+**Code parallel offence**
+
+See s 267 of the CODE -- general principles for the Part re: property
+
+See 273 for the specific Code offence
+
+See s 37 Police Offences Act for summary offence
+
+**Criminal Code Act 1924**
+
+**267.**   **Injuries to property**
+
+(1)  Every injury to property which is caused with intent to defraud is unlawful, although caused by the owner of such property.
+
+(2)  No person is justified in causing any injury to property by the fact that he has a partial interest therein.
+
+(3)  An act causing injury to property shall not constitute a crime under this chapter unless it is done wilfully and without claim of right.
+
+**Criminal Code Act 1924**
+
+Version current from 12 December 2017 to date (accessed 20 August 2018 at 11:51)
+
+------------------------------------------------------------------------
+
+**273.**   **Unlawful injuries in general**
+
+Any person who unlawfully destroys or injures any property is guilty of a crime.
+
+Charge:  Unlawfully injuring property.
+
+**POLICE OFFENCES ACT 1935 - SECT 37 Offences relating to property**
+
+**PART IV - Injuries to Property Offences relating to property**
+
+(1)  A person shall not unlawfully destroy or injure any property.
+
+(2)  A person shall not unlawfully and maliciously kill, maim, or wound any animal the property of any other person.
+
+(2A)  A person who contravenes subsection (1) or (2) is guilty of an offence and is liable on summary conviction to a penalty not exceeding 10 penalty units or to imprisonment for a term not exceeding 12 months.
+
+(3)  A person shall not unlawfully remove, displace, deface, obliterate, or conceal any --
+
+\(a\) boundary mark;
+
+\(b\) beacon;
+
+\(c\) survey mark;
+
+\(d\) mark used in setting out any work;
+
+\(e\) milestone or kilometre post;
+
+\(f\) sign post; or
+
+\(g\) notice --
+
+set up or posted by or on behalf of a public authority.
+
+(3A)  A person who contravenes a provision of subsection (3) is guilty of an offence and is liable on summary conviction to a penalty not exceeding 2 penalty units.
+
+(4)  .  .  .  .  .  .  .  .  
+
+(4A)  A person must not unlawfully damage or interfere with any work of a council or any material used or provided for that work.
+
+(5)  A person who contravenes subsection (4A) is guilty of an offence and is liable on summary conviction to a penalty not exceeding one penalty unit.
+
+(6)  A complaint made for the purposes of the [Justices Act 1959](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/) in relation to an offence against subsection (2A) in relation to subsection (1) is to be made within 12 months after the date of the offence.
+
+### Unlawful and wilfully
+
+**Willful:**
+
+*Hodgson* \[1985\] Tas R 75.
+
+ 
+
+Cox J said that wilfully is a word of doubtful import. At common law the word means an "intent" (i.e. to to set fire to the building - specific intent) or subjective recklessness (foreseeing the likelihood of setting fire to the building).
+
+GAV NOTE:
+
+**JOINTLY OWNED PROPERTY**
+
+**Jointly Owned Property**
+
+**Police Offences Act 1935**
+
+**37.**   **Offences relating to property**
+
+(1)  A person shall not unlawfully destroy or injure any property.
+
+(2)  A person shall not unlawfully and maliciously kill, maim, or wound any animal the property of any other person.
+
+(2A)  A person who contravenes [subsection (1)](https://www.legislation.tas.gov.au/view/whole/html/inforce/current/act-1935-044#GS37@Gs1@EN) or [(2)](https://www.legislation.tas.gov.au/view/whole/html/inforce/current/act-1935-044#GS37@Gs2@EN) is guilty of an offence and is liable on summary conviction to a penalty not exceeding 10 penalty units or to imprisonment for a term not exceeding 12 months.
+
+**Criminal Code Act 1924**
+
+**267.**   **Injuries to property**
+
+(1)  Every injury to property which is caused with intent to defraud is unlawful, although caused by the owner of such property.
+
+(2)  No person is justified in causing any injury to property by the fact that he has a partial interest therein.
+
+(3)  An act causing injury to property shall not constitute a crime under this chapter unless it is done wilfully and without claim of right.
+
+**273.**   **Unlawful injuries in general**
+
+Any person who unlawfully destroys or injures any property is guilty of a crime.
+
+Charge:  Unlawfully injuring property.
+
+**NOTE** -- POA Destroy/Injure is a like offence, so the 'code' principals apply. Therefore s 267(2) apples to POA Destroy/Injure Property charges. It is not defence to be a joint owner of property.
+
+**Jointly Owned Property**
+
+Note CODE defence for married parties:
+
+**[Criminal Code Act 1924](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1924-069) 54.**   **Liability of husband and wife for offences committed by either with respect to the other\'s property**
+
+(1)  Except as provided in [subsection (2)](https://www.legislation.tas.gov.au/view/whole/html/inforce/current/act-1924-069#JS1@GS54@Gs2@EN) , no married person shall be convicted of any offence alleged to have been committed by him or her during cohabitation with respect to the property of the other spouse.
+
+(2)  Every such person as aforesaid shall be criminally responsible for any offence committed with respect to any such property when leaving or deserting or about to leave or desert the other spouse; and for any offence committed with intent to defraud any person other than such spouse.
+
+(3)  .  .  .  .  .  .  .  .  
+
+**55.**   **Liability of married persons generally**
+
+Except as hereinbefore expressly provided, a married person incurs the same criminal responsibility in respect of his or her acts and omissions as if such person were unmarried.
+
+Hey,
+
+*Howell v Dakin* TSR 142 (LCA 139/1964)
+
+"The fact that the husband was a joint owner, likewise, affords no defence. Subsection (1) of s. 37 prohibits the unlawful destruction or injury of \"any property\". That this includes property jointly owned by a defendant and another is made plain by the form of subsection (2) of s. 37 which refers specifically to offences in respect of animals \"the property of any other person\". The argument of inconvenience cannot prevail against the plain words of the statute."
+
+**Jointly Owned Property**
+
+NTB v DDB (A-4542-13T2) 9/9/15 (New Jersey Superior Court Appellate Division)
+
+The original trial judge stated;
+
+Under N.J.S.A. 2C:17-3(a)(1), a person is guilty of criminal mischief if he \"purposely or knowingly damages tangible property of ***another***\...\" The trial Judge reasoned that since \"the statute does not prohibit a person from causing damage to their ***own property***\", D.D.B. failed to show that N.T.B. committed an act against the tangible property of ***another***, thereby preluding a finding of criminal mischief.
+
+The Appellate Court concluded that while \"each tenant by the entirety is a tenant in common with the other **during the joint lives of the spouses**\", \"each co-tenant has a **separate and distinct** freehold title and each holds his or her title and interest **independently of the others**.\" In light of this, the Appellate Division determined that N.T.B. and D.D.B. each held a separate and distinct interest in their home and therefore, N.T.B.\'s act of breaking down D.D.B\'s bedroom door did in fact destroy the \"property of another\" (due to D.D.B.\'s undivided interest in the home) and he therefore committed the predicate act of criminal mischief.
+
+The Appellate Division opined that to conclude otherwise would \"permit a spouse to purposely and maliciously totally destroy his or her jointly owned marital home, without sanction, leaving no recourse for the innocent spouse to secure an FRO on the basis of the home\'s ruin.\"
+
+**Jointly Owned Property -- general thoughts in FV matters**
+
+In Tasmania unlike the statue referred to in the US case we do not need to prove that the property was \"tangible property of another\", merely that the act of injuring or destroying property was \"unlawful\".
+
+I would argue that the injury or destruction of property is unlawful if it occurs without permission, and if you don\'t own something outright you do not have permission to do unlawful acts to it.  For example, a person would have implied permission to drive her husband's car to the shop to get some corn chips and avocado dip, but not to smash out the windows when you find out he\'s been screwing the lady over the back fence, a la Tiger Woods\' wife.
+
+## Assault
+
+Thus, an assault may take one of the following forms:
+
+\(a\) an act of intentionally applying force to the person of another directly or indirectly;
+
+\(b\) attempting to apply force to the person of another;
+
+\(c\) threatening (either with intent to threaten or with a realisation that a threat may be perceived) by any gesture to apply force to the person of another; and at the time of the gesture
+
+i had the present ability to apply force to the other person; or
+
+ii caused the other person to believe, on reasonable grounds, that he had the present ability to apply force; and
+
+\(d\) an act of depriving another of his or her liberty.
+
+## Defences
+
+There are a number of defences which would preclude a finding of unlawfulness, including self-defence (Code s 46), punishment of one's child for the purposes of correction (Code s 50) and the use of reasonable force in executing a lawful arrest (Code s 26).

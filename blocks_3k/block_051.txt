@@ -1,0 +1,229 @@
+## Public interest immunity for disclosure
+
+Primacy of protection of informers. See recent HCA case of **Chief Commissioner of Police v Crupi \[2024\] HCA 34 (11 September 2024)**which reiterates *AB (a pseudonym) v CD (a pseudonym)*, \[2018\] HCA 58; (2018) 93 ALJR 59; 362 ALR 1.
+
+"Public knowledge that a source\'s expectations of confidentiality had been breached would certainly undermine the ability of police to recruit informers in future\"
+
+# Indictable offences:
+
+## Fraud.
+
+Charging advice from DPP:
+
+Where the computer-related crime involves fraud a similar approach to stealing as provided by s72 of the Justices Act 1959 should be taken. That is, a summary charge should be preferred where the amount of the alleged computer-related fraud is less than \$20,000 unless:
+
+• the charge involved forms part of a course of conduct or series of crimes which are indictable
+
+• circumstances relating to the alleged offender and/or to the conduct are such that the penalty provision in the lower court would not be adequate
+
+• a co-accused was dealt with on indictment (prosecutors should strive for consistency as between co-offenders unless there are compelling reasons not to
+
+**Commonwealth offence:**
+
+See Cth Code Section 480.4 of the Criminal Code - Dishonestly obtaining or dealing in personal financial information, (in this case it was passwords), (CDPP Charging advice pdf saved in research file)
+
+Seems to be used when they use deceit to elicit information either from vic or otherwise to then use that info to access accounts or get loans such as credit card numbers, verbal passwords and account numbers. It appease thi "personal financial information' is distinct from "personal info such as drivers licence etc).
+
+MUST involve a bank or lending institution or corporation.
+
+JOD V R - \[2009\] NSWCCA 205 (25 08 2009)\
+GILES J ; HALL J ; HULME J ;\
+Identity theft - applicant involved in organised crime syndicate which took over identities of legitimate individuals and entities in order to defraud financial institutions - applicant presenting false documents to open bank accounts in false names, withdraw money from genuine bank accounts or make fraudulent claims in relation to credit cards and bank loans - application of parity principles - offenders charged with different offences not strictly co-offenders having regard to relevant factual and other differences in respective offending - higher objective criminality than co-offender due to his role in syndicate and repeated offending over lengthy period - no disproportion between head sentences imposed on co-offenders - appeal against sentence dismissed\
+Subjects: IDENTITY FRAUD ;\
+Legis. Cons.: FINANCIAL TRANSACTION REPORTS ACT 1988 S24 1 ; CRIMINAL CODE S145.1 5 ; CRIMINAL CODE S480.4 ; CRIMES ACT 1900 NSW S178BA ; CRIMES ACT 1900 NSW S300 2 ;\
+Cases Cons.: LOWE V R - 1984 154 CLR 606 ; POSTIGLIONE V R - 1997 189 CLR 295 ; PHAM MINH TAN V R - 2009 193 ACrimR 220 ; GAO V R - \[2008\] NSWCCA 234 ;\
+Notes: Applicant: Jay Owen Dowling\
+Related Items: R V DOWLING - NSW DISTRICT COURT 20 11 2007\
+View the Judgment
+
+**Key Definitions relating to Fraud**
+
+Found in section
+
+#### Definitions (anecdotal -- not from authority or acts)
+
+To understand what may constitute a fraudulent act, there are some key terms that need to be defined. 
+
+**DECEPTION**
+
+Deception is defined in the Crimes Act 1900 (NSW) as something that you say or do where the act of doing so was conceived and executed to deliberately and intentionally mislead a person (victim). \
+\
+The crimes act provides examples of deception as;
+
+-Deceiving somebody about your intentions.
+
+-Causing a computer to respond in a way that you don't have the proper authority to do so.  Such as accessing somebody else's computer by entering their password without their consent. 
+
+To commit fraud, the deception must be either intended or reckless.\
+\
+Recklessness is where you were aware that what you were doing was possibly deceptive, but you did it anyway. You were, essentially, indifferent to the possibility that your conduct was deceptive.
+
+**DISHONESTY**
+
+Whether the act was dishonest or not is based on the standards of ordinary people and whether the act was known to have been dishonest by the defendant, according to the standards of ordinary people.
+
+Dishonesty is a matter to be decided by the courts. In deciding whether somebody has been dishonest the magistrate or jury, depending on the case, will apply the standards of ordinary people to determine if the conduct was dishonest.
+
+**OBTAINS PROPERTY BELONGING TO ANOTHER**
+
+This is where a person obtains or enables ownership of property belonging to another person or where a third person is induced to do something that results in obtaining, retaining, possessing or controlling the property.  To be found guilty of fraudulently obtaining property belonging to another, the person must have intended to permanently deprive the owner of the property.
+
+**OBTAINING A FINANCIAL ADVANTAGE**
+
+Obtaining a financial advantage is a fraudulent act where a person deceives another to dishonestly obtain a financial advantage for themselves or for someone else.  It can also include inducing a third person to do something that results in obtaining a financial advantage for oneself or another person. 
+
+Obtaining a financial advantage includes where a person causes any financial disadvantage to another or where a third person is induced to do so.  This advantage or disadvantage could be permanent or temporary.
+
+### Charging differences
+
+**OBTAINING GOODS BY FALSE PRETENCES**
+
+**Criminal Code Section 250-4**
+
+EXAMPLES:
+
+Where a person uses a stolen credit card to purchase goods from a business and the transaction occurs between the offender and a staff member.
+
+Where a person pretends to be an employee of a business to obtain goods from a supplier of that business.
+
+**DISHONESTLY ACQUIRING A FINANCIAL ADVANTAGE**
+
+**Criminal Code Section 252A-1/7**
+
+EXAMPLES:
+
+Where a person takes a price sticker off a lower priced item and swaps it with a higher priced item in order to purchase the item for a cheaper price.
+
+Where a person obtains (from a staff member) pre-paid mobile phone credit using a stolen credit card.
+
+Where a person advertises an item for sale on ebay/gumtree and receives funds from the buyer and fails to deliver the item purchased.
+
+**COMPUTER RELATED FRAUD**
+
+**Police Offences Act Section 43A**
+
+EXAMPLES:
+
+Where a person purchases items with a stolen credit card using a \"self-service\" checkout and has no interaction with a staff member.
+
+Where a person uses a stolen ATM card and withdraws cash from an ATM.
+
+Where a person uses a stolen credit card to pay a bill using an automated phone payment system.
+
+Where a person uses a stolen credit card to purchase items online with no communication with an actual person.
+
+## Related supporting provisions 
+
+**CODE: 255A.**   **Evidence relating to intention to deceive or defraud**
+
+On the trial of a person charged with a crime under this Chapter of which an intent to deceive or defraud is an element, it is not necessary to prove an intent to deceive or defraud any particular person.
+
+## Dishonestly acquiring a financial advantage contrary to the Code, s252A.
+
+Nettlefold J in Murphy v R [\[1987\] TASSC 15](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1987/15.html); [(1987) Tas R 178](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281987%29%20Tas%20R%20178) at 184, \"services, money or property amount to a financial advantage\".
+
+Note: as an alternative conviction - A false representation as to the offender\'s intention to pay at a later date, whilst not a false pretence, could constitute a deception for the purposes of a charge of dishonestly acquiring a financial advantage contrary to the Code, s252A.
+
+See ***Tasmania v Clark \[2018\] TASSC 64*** (29 November 2018) - elements and definition of dishonestly acquire financial advantage
+
+## OBTAINING GOODS BY FALSE PRETENCES
+
+## Criminal Code Section 250-4
+
+Need direct evidence form the victim (person induced) that he false representations of the defendant induced them to provide the foods.
+
+Promise as to future conduct is not enough. Must be false at time.
+
+Summary: the Crown does have to prove in each case that the false pretence acted on the people who were delivering them, because if somebody was just giving out goods willy nilly to anybody who came past, that hypothetical situation it may not matter what you called yourself if they\'re prepared to just give them to you and not worried about paying. But of course I suggest in the real world that doesn\'t happen.\" On the basis of the evidence subsequently elicited from the main Crown witness on count 1 it might be suspected that in the real world it does happen.
+
+4\. Prosecuting counsel should heed the advice of the Court of Appeal in Laverty (1970) 54 Cr App R 495 at 497, 498:
+
+\"It is axiomatic that it is for the prosecution to prove that the false representation acted on the mind \... and in the ordinary way, and the Court emphasises this, the matter should be proved by direct evidence. However, it was said in SULLIVAN (1945) 30 Cr App R 132 that the inducement need not be proved by direct evidence, and I quote from the headnote \'If the facts are such that the alleged false pretence is the only reason that could be suggested as having been the operative inducement.\' In the special facts of that case the Court held that the prosecution had given sufficient proof, although they made it very clear that the proper way and the ordinary way of proving the matter was by direct evidence. \... This Court is very anxious not to extend the principle in SULLIVAN (supra) more than is necessary. The proper way of proving these matters is through the mouth of the person to whom the false representation is conveyed \... \"
+
+**Gordon Daniel McLeod v R \[1996\] TASSC 10 (19 March 1996)**
+
+8\. To secure a conviction it was incumbent on the Crown to establish beyond reasonable doubt that by means of a false representation of fact, made by words or otherwise, the appellant obtained the goods from the company or induced the company to deliver them to him (see ss249 and 250). The evidence was inadequate in that regard. The state of the evidence may be compared with that in Clemesha v R [(1978) WAR 193](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281978%29%20WAR%20193) where at 202 Jones J said that \"the signing of the false name certainly could be regarded as a representation of a matter of fact which was false, but that was not an inducing factor; it was a matter of indifference to X whether the name of his supposed hirer was Y or Z\". I agree with Wright J that this case is clearly distinguishable from Michell v R A21/1990
+
+# Compensation orders
+
+**Lusted v Doornbusch \[2011\] TASMC 28 (4 November 2011)**
+
+Where straight forward and simple they can be granted on the spot.
+
+*6. \"The general purpose of the legislation is to provide a summary and inexpensive method of compensating a victim for personal injuries or property damage. In an appropriate case, the legislation provides a convenient means for a victim to avoid instituting separate civil proceedings to recover damages. The legislation is not intended to cater for claims involving complicated or extensive inquiry or investigation; R v Kneeshaw [\[1975\] QB 57](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1975%5d%20QB%2057?stem=0&synonyms=0&query=poa1935140%20s13) at 60, R v Braham [\[1977\] VicRp 11](http://www.austlii.edu.au/au/cases/vic/VicRp/1977/11.html); [\[1977\] VR 104](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1977%5d%20VR%20104?stem=0&synonyms=0&query=poa1935140%20s13) at 110 - 111 and R v Ferrari [\[1997\] QCA 73.](http://www.austlii.edu.au/au/cases/qld/QCA/1997/73.html) If it appears to the court that there is a real issue to be determined, it should decline to make an order and leave the question to be determined by a civil court in accordance with its normal procedures; Landolt [(1992) 63 A Crim R 220](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281992%29%2063%20A%20Crim%20R%20220?stem=0&synonyms=0&query=poa1935140%20s13) and 223.\"\
+\
+7. See also Attorney-General for Tasmania v B [\[2010\] TASCCA 6](http://www.austlii.edu.au/au/cases/tas/TASCCA/2010/6.html) at [\[20\]](http://www.austlii.edu.au/au/cases/tas/TASCCA/2010/6.html#para20) and following. An amount awarded is merely on account of the damages an injured party might recover in a civil court; refer Crawford CJ at \[22\].\
+\
+8. By [s68(6)](http://www.austlii.edu.au/au/legis/tas/consol_act/sa1997121/s68.html) I may exercise the power to make a compensation order \"if the facts sufficiently appear from any evidence or material presented to the court, or from the available documents, together with admissions made by or on behalf of any person in connection with the proposed exercise of the powers\". The evidence or material presented to the court is the evidence given on the trial or material presented during the sentencing hearing. [S68](http://www.austlii.edu.au/au/legis/tas/consol_act/sa1997121/s68.html) makes no provision for the court to conduct a hearing in the nature of a trial to receive further evidence about a claim but it is not bound by the rules of evidence and in a case involving \"loss, destruction or damage to property\" may inform itself in any way it considers appropriate; subs(9).*
+
+# Sentencing
+
+See also FV sentencing above for specific.
+
+**\"Your record indicates a need for a sentence that will act as a deterrent to you"**
+
+### Power to read Facts for Prosecutor (FFP) for sentencing:
+
+Evidence of facts to support charge must be proved by evidence. That evidence can be submitted formally or informally (s 4(2) evidence act or informally under s. 81 of the Sentencing Act. That is the common way in Tas (para \[28\] **Parker v Tasmania \[2019\] TASCCA 16 (8 October 2019)**
+
+## Correcting sentence (sentencing order)
+
+Section 94 sentencing act requires an actual sentence. Dismissal following a plea or finding of guilty under s 7 of the sentencing act is a sentence. But Dismissal following a TNE or otherwise is not.
+
+### DE SIMONI 
+
+**The principal in *R v De Simoni***
+
+*Tasmania v Gladwin* \[2016\] TASSC 64
+
+12\. The principle in *R v De Simoni *[(1980) 147 CLR 383](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281980%29%20147%20CLR%20383), as it has been applied in Tasmania, is that a person may only be punished for the offence of which he or she has been convicted, without regard to circumstances which are the ingredients of a different offence, with which he or she has not been charged or convicted (see *Walsh v The Queen *[\[1996\] TASSC 55](http://www.austlii.edu.au/au/cases/tas/TASSC/1996/55.html); [(1996) 6 Tas R 70).](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281996%29%206%20Tas%20R%2070)* *In *De Simoni, *it was acknowledged that this principle had already been recognised and applied in Tasmania in *Lovegrove v The Queen *[\[1961\] TASStRp 13](http://www.austlii.edu.au/au/cases/tas/TASStRp/1961/13.html); [\[1961\] Tas SR 106.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1961%5d%20Tas%20SR%20106)
+
+In *The Queen v De Simoni* (1981) 147 CLR 383 at 389, Gibbs CJ said:
+
+the general principle that the sentence imposed on an offender should take account of all the circumstances of the offence is subject to a more fundamental and important principle, that no one should be punished for an offence of which he has not been convicted ... The combined effect of the two principles, so far as it is relevant for present purposes, is that a judge, in imposing sentence, is entitled to consider all the conduct of the accused, including that which would aggravate the offence, but cannot take into account circumstances of aggravation which would have warranted a conviction for a more serious offence.
+
+Applies not only to contextual facts that would lead to a more serious charge, but also to lesser charges where there are not overlapping elements. EG: rape may include threats of violence, but it would not be appropriate to charge with assault (by threat) independently, as assault is an element of the rape. So in this instance it would be ol. However, if the facts for the rape also included a breach of PFVO, that should be separately charged offence, and ought not be submitted as being an aggravating circumstance to the Rape. See ***Walsh (1996) 6 Tas R \[93\].***
+
+However, can use uncharged conduct or facts to negate pleas in mitigation! "As to the offending, I am able to take into account that the acts of driving were done in attempt to avoid apprehension, even though that conduct is, or may be, the subject of a different charge: *Banks v Tasmania* \[2019\] TASCCA 1, 31 Tas R 342."
+
+### PROPORTIONALITY AND TOTALITY
+
+The common law principles of proportionality and totality should be considered.
+
+**Proportionality** requires that a sentence should be proportional to the objective circumstances of the offence: Veen v The Queen (No 2)(1988) 164 CLR 465.
+
+**Totality** requires a court in imposing sentences for a number of offences, to ensure the overall sentence is 'just and appropriate' and adequately reflects the overall criminality of all the offences. This principle seeks to ensure both that the sentence imposed for the offences is not crushing and that the sentences imposed for the offences are not lower than they otherwise would have been: R v KM \[2004\[ NSWCCA 65 at \[55\]
+
+## Sentencing considerations
+
+***Garcie v Lusted \[2014\] TASSC 27***
+
+{Para 10\]
+
+Age of offender (youth can include 19 yo)
+
+High public interest youths being rehabilitated
+
+They should be given every reasonable opp to reform rather than exposed to corrupting nature of custody
+
+Rehabilitation prospects outweigh consideration of dteretance punishment or denunciation.
+
+### Delay:
+
+**Palmer v Tasmania \[2024\] TASCCA 6 (5 July 2024)**
+
+> *\[29\] It is well established that delay in an appropriate case can be considered a substantial \"mitigating factor\": R v Todd [\[1982\] 2 NSWLR 517](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1982%5d%202%20NSWLR%20517); Prehn v The Queen [\[2003\] TASSC 55.](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2003/55.html) But is it not mitigatory as such: Director of Public Prosecutions v Allen [\[2017\] TASCCA, 27](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2017/27.html) Tas R 260 at \[19\]. Delay as a mitigating factor fixes on two particular points. The first relates to the anxiety and stress of the offender who waits for a considerable period of time before the determination of the charges. The rationale behind this seems to be that it amounts to a form of punishment. In this case, the Court was asked to infer anxiety and stress from the circumstances. As earlier noted, the appellant made a suicide attempt shortly before his appeal against conviction was to be heard and spent some time in hospital.*
+
+30. *The second basis on which delay can be treated as a significant mitigating factor is where the offender has demonstrated rehabilitation during the period of delay, or at least what has occurred during the period of delay suggests favourable prospects of rehabilitation. See R v Whyte [\[2004\] VSCA 5](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2004/5.html), 7 VR 397 at [\[25\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2004/5.html#para25), R v Pickard [\[2011\] SASCFC 134](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/sa/SASCFC/2011/134.html) at [\[95\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/sa/SASCFC/2011/134.html#para95) and R v SP [\[2004\] ACTCA 16](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/act/ACTCA/2004/16.html) at [\[31\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/act/ACTCA/2004/16.html#para31)- [\[35\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/act/ACTCA/2004/16.html#para35).*
+
+<!-- -->
+
+31. *A review of the authorities reveals two particular points that need to be considered in relation to the question of delay. The first is that the delay must be unnecessary: Pickard (above) at 95, Davidson v Tasmania [\[2018\] TASCCA 9.](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2018/9.html) That is to say, unnecessary in the sense that the resolution of the matter has taken more time than would usually be the situation given the nature of the matter. That involves considerations of the investigations necessary and of the complexity of the prosecution case: Davidson at \[4\] per Wood J.*
+
+<!-- -->
+
+32. *The second point is that for it to be mitigatory, the delay must not be \"self-inflicted\" in the sense of the delay being fairly attributed to the accused where they had absconded from bail, fled the jurisdiction or otherwise avoided being brought to justice. \"A delay must necessarily become of less significance, even to the point of given less credit for rehabilitation established during that period\": R v Whyte (above) at \[25\].*
+
+<!-- -->
+
+33. *Care needs to be exercised in discounting periods where accused persons have exercised their rights: see R v Fahda [\[1999\] NSWCCA 267](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/1999/267.html) per Simpson J (with whom Studdert J agreed). Even in circumstances where it might be said an accused \"can hardly complain of the delay up to committal and from committal to trial when they could have pleaded guilty at any time\", delay is not necessarily treated as totally irrelevant: R v Barker [\[2006\] NSWCCA 20](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2006/20.html) at [\[78\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2006/20.html#para78)- [\[80\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2006/20.html#para80).*

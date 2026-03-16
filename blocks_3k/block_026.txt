@@ -1,0 +1,193 @@
+### "harassing"
+
+Section 4 covers PFVO and FVO definetions of harras-/harassing. It is an exhaustive definition **Cannell v G; G v Cannell \[2018\] TASSC 55 \[para52\]**
+
+**The only mental element is that the def intend the ACT that by virtue of the definition in s 4 constitutes harassing, not the act had any particular effect on the person to be protected.**
+
+60. \"Harass\" in its ordinary sense involves conduct committed with the purpose of causing an effect on the person harassed, eg worry, fear or mental anguish: see *Johnson v Collier*[[(1997) 142 FLR 409.](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%281997%29%20142%20FLR%20409) However, in my view, the provision of an exhaustive definition of \"harassing\", by reference to the actions of the alleged harasser, excludes the need to establish that the actions in question have had any particular effect on the person protected by the order, unless expressly so provided in the definition. It must logically follow that there is no requirement that the defendant intend or otherwise foresee the causation of such an effect.]{.mark} These conclusions are confirmed by the inclusion in some of the defined actions of an express requirement that the action occur in circumstances \"where it is likely\" that there will be some consequence relevant to the protected person. For example, in par (f), it is necessary that the offensive material be left \"where it is likely to be found by, given to or brought to the attention of\" the protected person. There are similar express requirements contained in pars (g) and (h). There would, of course, be no need to include these specific provisions, if an intention to cause or the actual causation of apprehension or fear was already implied in the definition.
+
+<!-- -->
+
+61. This construction is consistent with the subject matter and social purpose of the relevant legislation. The provisions in question are concerned with the establishment of firm and viable processes to ensure the protection of persons, from persons who probably have committed, and will again commit, family violence [(s 16(1)](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s16.html) of the Act). Family violence is recognised as a significant social problem and the Act is directly and expressly directed at dealing with this problem. A family violence order is the primary protective mechanism employed by the Act. [Section 3](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s3.html) provides:
+
+\"In the administration of this Act, the safety, psychological wellbeing and interests of people affected by family violence are the paramount considerations.\"
+
+62. The construction of the Act in respect of the mens rea required for the offence of contravention of an order, will be heavily influenced by this statutory context. However, while these considerations weigh against the presumption in favour of proof of intention to commit the offence, they do not completely displace it. Rather, they fashion and define the required mental element. Although the offence created by [s 35](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s35.html) is summary, the section prescribes heavy penalties. This is also a relevant consideration, one which weighs in favour of the application of the presumption. In my view, the proper balance leads to the conclusion that the requisite mental element is that the defendant must intend to do the act, which by virtue of the definition in [s 4](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s4.html), constitutes \"harassing\". In this case, the relevant act is that defined by par (a), following the complainant. If this mental element is present, then the legislation operates to deem that the person has harassed the person protected by the order and, if the condition is in place, deems that there has been a contravention of the order. A requirement of this nature is consistent with the statutory scheme, is appropriate having regard to the subject matter of the provision, and enables and supports the viable enforcement of a family violence order. It also provides the person subject to the order with a clear understanding of the conduct proscribed by it.
+
+**Cannell v G; G v Cannell \[2018\] TASSC 55 \[para52\]**
+
+In this Act, unless the contrary intention appears --
+
+Section 4 "harassing" means doing any one or more of the following actions in respect of a particular person:
+
+\(a\) following the person;
+
+\(b\) keeping the person under surveillance;
+
+\(c\) loitering outside the residence or workplace of the person;
+
+\(d\) loitering outside a place that the person frequents;
+
+\(e\) entering or interfering with the property of the person;
+
+\(f\) sending offensive material to the person or leaving offensive material where it is likely to be found by, given to or brought to the attention of the person;
+
+\(g\) publishing or transmitting offensive material by electronic or any other means in such a way that the offensive material is likely to be found by, or brought to the attention of, the person;
+
+\(h\) using the internet or any other form of electronic communication in a way that could reasonably be expected to cause the person to be apprehensive or fearful;
+
+\(i\) contacting the person by postal, telephonic, electronic or any other means of communication;
+
+### Following/ Keeping under surveillance
+
+**Sundram v Bearman \[2020\] TASMC 18 (3 August 2020)**
+
+\[154\] Obviously the words* 'following' *or *'keeping under surveillance' *are not actually used in the particulars of count 4 (unlike counts 5 and 7 which specifically allege that Mr Bearman followed Ms Paul). Grammatically, at least, it is difficult to see how the particulars of count 4 could possibly satisfy the term '*following'. *Further, the term *'keeping the person under surveillance'* requires proof (at least) of close observation of the protected person by the defendant; and to be guilty of '*keeping*' another person under surveillance requires that the surveillance be conducted on a continued basis (as distinct from, for example, just looking at someone only once - and only for a short period). Such an interpretation gives meaning to the word *'keeping'* and promotes the purpose and objects of the [*Family Violence Act 2004*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/) generally. Further, it avoids giving the word *'harassing'* too broad a meaning in the broader context within which this particular penal provision of the *[Family Violence Act 2004](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/fva2004158/) *sits.
+
+### Single act
+
+**Howe v S \[2013\] TASMC 33 (29 July 2013)**
+
+{para 13} Harassing means doing any one or more of the following actions in respect of a particular person.
+
+*(i)* Contacting the person by post or telephonic, electronic or any other means of communication.
+
+The reference in the definition to *"any one or more of the following actions"* suggests that a single act might be sufficient. Furthermore, it is appropriate, in my view, to interpret the term having regard to the context in which it is used in the order. The reference to *"threaten, harass, abuse or assault"* suggests that the order is to be understood as providing protection to a person from contact with the respondent which is unwelcome, and might be in various forms or have variable effect.
+
+{para 14} This interpretation is consistent with case authority (see *Daly v Medwell* [(1986) 40 SASR 281](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%281986%29%2040%20SASR%20281), where it was stated that the offence of using a telecommunications service for the purpose of harassing a person could be constituted by a single call or a course of conduct consisting of several calls, depending on the nature and intention of the relevant conduct, per White J at 284, King CJ at 296 and Prior J at 297; see also *Devlin v Cooper* [\[1991\] TASSC 115).](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1991/115.html)
+
+## Significant relationship
+
+VERY HIGH THRESHOLD -- by our standards.. (which considered specific legislation concerning relationship act
+
+Greater focus on shared finances and exclusive cohabitation.
+
+**Wiggins v Public Trustee \[2020\] TASSC 3 (27 February 2020)**
+
+App challenging decision of the public trustee that she was next of kin
+
+Looked at indicia of the relationships act (which also says can decide on anything they like)
+
+Together for 8 years (with a break of 2 in there)
+
+Maintained separate residence but stayed at each others pace and left items there (effectively sharing)
+
+They were sexually active
+
+Separate bank accounts but mutual spending on one another including capital improvements
+
+They went on holidays together
+
+Refereed to themselves as together
+
+Were seen by family as being together
+
+He was an alcohol she did house hold duties for him -- cooking and cleaning
+
+Deciding against -- finances and property were distinct --
+
+No co-habitation -- (despite always sleeping at each others home.
+
+## Interaction with Family Law Act
+
+The *Family Law Amendment (Family Violence and Other Measures) Act 2018* commenced on 31 August 2018.
+
+A copy of the Bill and Explanatory Memorandum can be obtained at https://www.aph.gov.au/Parliamentary_Business/Bills_Legislation/Bills_Search_Results/Result?bId=s1109
+
+**Amendment to Section 68T -- Special provisions relating to proceedings to make an interim (or interim variation of a) family violence order**
+
+Section 68R of the *Family Law Act 1975* provides that a court of a State or Territory which holds jurisdiction under Part VII of the Family Law Act may, when making a family violence order, revive, vary, discharge or suspend a range of family law orders to the extent to which they provide for a child to spend time with a person, to ensure they are consistent with the State or Territory family violence order. Subsection 68R(4) restricts the court's power when making an *interim* family violence order to revival, variation or suspension of a family law order.
+
+Section 68T previously provided that where the court, when making an *interim* family violence order or an *interim variation* of a family violence order, revives, varies or suspends an order, injunction or arrangement under section 68R, that revival, variation or suspension ceases to have effect at the earlier of:
+
+(a) the time the interim order stops being in force; and
+
+(b) the end of the period of 21 days starting when the interim order was made.
+
+The Family Law Amendment (Family Violence and Other Measures) Act has removed the 21 day time limit in paragraph (b) of section 68T and replaced it with:
+
+\(b\) the time specified in the interim order as the time at which the revival, variation or suspension ceases to have effect; and
+
+\(c\) the time the order, injunction or arrangement is affected by an order (however described) made by a court, under section 68R or otherwise, after the revival, variation or suspension.
+
+The amendments require judicial officers to consider whether the revival, variation or suspension should expire on a specific date (and if so, when), or whether it should expire when the interim family violence order expires, or when a court makes an alternative order.
+
+These new provisions strengthen the court's ability to protect children and other vulnerable family members by allowing judicial officers to set timeframes according to the particular circumstances of the case. Relevant considerations when making such a decision may include balancing the safety risks to the child arising from having contact with a parent with the maintenance of the child/parent relationship. These changes are intended to better protect children and other vulnerable family members from violence by reducing the risk that can arise from inconsistent orders applying to a child's contact with an allegedly violent parent.
+
+Judicial officers may only change family law orders under section 68R when they have evidence that was not before the court that made the original order (subsection 68R(3)). Evidence must support a finding that changing the family law order is in the best interests of the child concerned including because the family law order is inconsistent with a family violence order in force, or a person, including the child, has been or is likely to be, exposed to family violence as a result of the operation of that order (subsection 68R(5)).
+
+**Amendment to Section 68P -- Obligation of court making order or granting an injunction under this Act that is inconsistent with an existing family violence order**
+
+Section 68P of the Family Law Act sets out the obligations of a court when making an order, or granting an injunction under the Family Law Act, that is *inconsistent with an existing family violence order*. Subparagraph 68P(2)(c)(iii) requires the court, to the extent to which the order or injunction provides for a child to spend time with a person, or expressly or impliedly requires or authorises a person to spend time with a child, to explain the order or injunction to the person protected by the family violence order (if that person is not the applicant or respondent). In some circumstances, the person protected by the family violence order may be a child. Paragraph 68P(2)(d) sets out the matters that the court must include in the explanation, and notes that the explanation must be in language the person is likely to readily understand.
+
+The Family Law Amendment (Family Violence and Other Measures) Act has inserted three new subsections:
+
+- subsection 68P(2A) provides that the court is not required to provide the explanation mandated by subparagraph 68P(2)(c)(iii) to a child if the court is satisfied that it is in the child's best interests [not]{.underline} to receive an explanation of the order or injunction;
+
+- subsection 68P(2B) provides that the court is not required to include a particular matter otherwise required to be explained by paragraph 68P(2)(d) if the court is satisfied that it is in the child's best interests for the matter not to be included in the explanation; and
+
+- subsection 68P(2C) provides that when determining what is in a child's best interests for the purposes of new subsections 68P(2A) and 69P(2B), the court is required to consider the matters in existing subsection 60CC(2), but is not required (but may choose) to consider the matters listed in existing subsection 60CC(3), despite the requirement in subsection 60CC(1).
+
+In most cases, it will be in a child's best interests to understand how court orders apply to them and their family. However, this may not always be the case. In particular, it may not be in the child's best interests to be exposed to the conflict between their parents to the extent necessary for courts to comply with this requirement. In some cases, such as where the child is an infant, it will not be practical to give an explanation.
+
+The provision is designed to ensure that the information children receive from a court is appropriate and does not expose them to further details of family violence which may result in re-traumatisation.
+
+**Insertion of a new Subdivision G---Short form reasons for decisions relating to interim parenting orders**
+
+The Family Law Amendment (Family Violence and Other Measures) Act has inserted a new section 69ZL - Short form reasons for decisions relating to *interim parenting orders* into the Family Law Act. Section 69ZL provides that a court may give reasons in short form for a decision it makes in relation to an interim parenting order. This provision does not otherwise affect the obligation of a court to give reasons for a decision it makes in relation to any matter arising under this Act.
+
+This amendment implements recommendation 3 of the Family Law Council's 2015 *Interim Report on Families with Complex Needs and the Intersection of the Family Law and Child Protection Systems.* In its report, the Council identified that a practical barrier to state children's or magistrates' courts exercising family law jurisdiction is that the writing of detailed judgments is not the usual practice of these courts. The Council recognised this practical barrier applied similarly for federal family law courts.
+
+Courts are already able to give reasons for any decision in short form, as long as the reasons are adequate. The new provision is not intended to, and should not be read, to limit the courts' existing powers in any way. For example, it should not be implied that courts cannot deliver short form judgments in final proceedings or in proceedings under other Parts of the Act.
+
+**Insertion of a new Section 45A - Summary decrees**
+
+The Family Law Amendment (Family Violence and Other Measures) Act has inserted a new section 45A into the Family Law Act, which strengthens and codifies family law judges' power to dismiss unmeritorious cases and proceedings that are frivolous, vexatious or an abuse of process. While this does not significantly change the existing powers of the courts exercising family law jurisdiction to dismiss proceedings if they have no reasonable prospect of success, the provision is intended to improve court efficiency by providing greater clarity about when applications can be dismissed by the court.
+
+Subsections 45A(1) and (2) allow the court to make a summary decree in favour of one party, in relation to the whole or part of a proceeding, if satisfied that a party has no reasonable prospect of successfully:
+
+- prosecuting the proceedings or part of the proceedings, or
+
+- defending the proceedings or part of the proceedings.
+
+Subsection 45A(3) provides that, for the purposes of the section, in determining whether a defence or proceeding has no reasonable prospect of success, proceedings need not be hopeless or bound to fail.
+
+Subsection 45A(4) empowers the court to dismiss all or part of a proceeding if it is frivolous, vexatious or an abuse of process.
+
+Subsection 45A(5) provides that proceedings or a part of proceedings are not to be considered frivolous, vexatious or an abuse of process just because a related application is made and later withdrawn. This is intended to operate as a safeguard against the court misinterpreting the actions of victims of family violence who are litigants in person, who might make an application and then withdraw it for reasons other than the merits of their case, for example as a result of the power and control dynamics of family violence.
+
+Subsections 45A(6)-(8) provide that:
+
+- the court may make costs orders as it sees fit
+
+- the court may take such action of its own volition, or on the application of a party to the proceedings, and
+
+- the new section does not limit any powers that the court has apart from this section.
+
+Section 45A has general application. Its use is not limited to matters involving allegations of family violence or other particular categories of disadvantage.
+
+Section 118 of the Family Law Act, which deals with frivolous or vexatious proceedings, has been repealed.
+
+**Other amendments**
+
+The Family Law Amendment (Family Violence and Other Measures) Act has also amended the Family Law Act such that:
+
+- state and territory courts can be prescribed by regulations to have the same jurisdiction in family law parenting matters as that held by state and territory courts of summary jurisdiction under Part VII of the Family Law Act. The intent is to enable children's courts to make appropriate orders under the Family Law Act where there are existing proceedings before the court, particularly in child protection matters (see section 69GA).
+
+  - The new provisions allow for the prescription of classes of proceedings in regulations, in which the prescribed court will have Part VII jurisdiction. It also allows for the prescription of rules of court in regulations, to apply when the prescribed court is exercising family jurisdiction.
+
+  - It is a requirement that the Attorney-General consult with the relevant state or territory Minister before a court or any other matter is prescribed.
+
+- courts of summary jurisdiction can hear contested family law property matters without both parties' consent, where the value of the property is up to a new limit to be prescribed in regulations. The new limit will exceed the current value of \$20 000, and different limits can be prescribed for different states and territories (see section 46A).
+
+  - It is a requirement that the Attorney-General consult with the relevant state or territory Minister before a property value is prescribed.
+
+  - Unless or until a new value is prescribed, the current limit of \$20 000 will continue to apply.
+
+- subsection 114(2) of the Family Law Act is repealed. Consequently it is no longer open to the court to make an order relieving a party to a marriage from an obligation to perform marital services or render conjugal rights. The High Court held in *R v L (1991)* 174 CLR 379 that there is no such obligation under Australian law. Section 114(2) has therefore been effectively redundant since that time.
+
+## Section 8 -- financial abuse
+
+Unlike emotional abuse there is no objective test -- there must be evidence of actual intent.
+
+Must be a Course of conduct. Whislt the type of abuse can be only one of the types provided there mist be a course of cundct -- implying more than one act

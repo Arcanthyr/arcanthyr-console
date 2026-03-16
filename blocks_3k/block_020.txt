@@ -1,0 +1,281 @@
+### "Public interest"
+
+"Public interest" and whether the accused is likely to commit other offences (*Burton*)
+
+Where def breach bail on serious matters by committing other serious matters. The public interest is in preventing the def's very high risk (need to demonstrate there is a basis for this) from committing further serious offending.
+
+- *Burton* notes that this factor shouldn't be considered with too much weight.
+
+- Whether the accused has committed offences while on bail before see *R v Appleby & McMahon* (1966) 1 NSWR 35.
+
+The second consideration is the safety of the public and the security of its property "public interest". Subsidiary to this are the character and antecedents of the accused, including any record, particularly any record of offences while on bail. If the offence presently charged had been committed while on bail the strength of the case becomes a factor in this assessment.
+
+**Offences on bail**
+
+- Was the defendant on bail at the time of offending making it suggestive that he will continue?
+
+- Does he have convictions for similar offending?
+
+- Are they violent or abhorrent offences?
+
+- Offences included breaking into people's homes at night?
+
+- Extent of criminal history
+
+*\*
+
+*Victorian R v Gray* \[1977\] VR 225 at 230
+
+It has been stated that "the real point is that the commission of offences whilst on bail indicates contempt for or disregard of the system of law under which bail was granted to the offender suggesting the offender has small regard for the law and little intention of obeying its commands."
+
+**Sowerby v State of Tasmania \[2024\] TASFC 7**
+
+Magistrate fucked up, applying a made up test and determining: \"On balance, I\'m not satisfied that there are compelling circumstances or a carefully structured plan to secure the safety, wellbeing and interest of the affected person, so bail is refused.\"
+
+But SC also held that bail was appropriate.
+
+They did note, that the fact a defendant has previously been granted bail is not the point. It is a fresh consideration each time s. 12 arises.
+
+\[15\] *The appellant intends to defend the indictable assault charge. He is entitled to the presumption of innocence although in assessing the risk he may pose to Ms Williams-Jacques it was proper to take into account the possibility that the allegation may be true. There is likely to be a very substantial delay before the charge is brought to trial. Every instance of violence committed within a relationship or former relationship is to be regarded seriously. However, on the limited information available to this Court, the objective gravity of the crime alleged against the appellant and the absence of a serious record for violent offending meant that there was a real risk of injustice if he were remanded in custody, even if found guilty. Assuming conviction, it is reasonably possible that without bail he would remain in custody awaiting trial for a period well beyond any sentence of imprisonment reasonably proportionate to his crimes. Sometimes that is not an answer to the matters which s 12 requires be addressed. The provision, and the presumption against bail it contains, must be given effect according to its terms. There are very frequently occasions where protection of the safety, wellbeing and interests of an affected person or affected child requires remand of an accused person in custody for a period, sometimes a very lengthy period, even at the risk of injustice. However, in our view, this was not such a case.*
+
+*\[16\] We concluded that, with the imposition of appropriate bail conditions, release of the appellant on bail would not be likely to adversely affect the safety, wellbeing and interests of Ms Williams-Jacques. Whilst on bail between 27 March 2024 and 24 September 2024 the appellant did not breach the terms of his bail or the police family violence order. Nor had he done any other act which suggested a substantial risk to the complainant. The appellant spent six days in custody following his arrest on 21 March 2024 and has been in custody since his arrest on 24 September 2024. Having spent more than seven weeks in custody he must be acutely aware of the likely consequences of future breach and has a strong incentive to comply. Mr Churchill impressed us as a person who will, as a surety, act conscientiously. He has the means to meet the recognizance if called upon and will be in a good position to monitor and supervise the appellant. The appellant will have an additional incentive to comply by reason of his awareness that any breach may mean that Mr Churchill, through no fault of his own, may forfeit a substantial sum.*
+
+### Prior convictions
+
+An accused's prior convictions are relevant in two ways. Prior convictions for similar offences may show that the accused has a propensity to commit crime, and prior convictions for completely different offences may be argued to be relevant because it shows an accused's lack of respect of the law and authority.
+
+Subsequent offending (committed after the principal offence but prior to sentencing for it) is still relevant to the sentencing process. It can mitigate leniency being shown for what would otherwise seem an aberration of behaviour.
+
+### History of turning up or not turning up to court
+
+### Nature and seriousness of charge
+
+### Strength of the prosecution case
+
+### Severity of the penalty that may be imposed. 
+
+This links into "he is unlikely to engage with the criminal justice system -- has little incentive to do so"
+
+- Is he going to jail?
+
+- Is he lily to get a significant penalty or suffer hardship?
+
+- What incentive does he have not appear???
+
+Sometimes an escalating course of conduct comprising of many similar offences will be enough to refuse bail.
+
+If an accused is facing a likely conviction and a long sentence, they have a strong incentive to not turn up at trial, so courts may tend to refuse bail in such cases.
+
+### The probability of Tampering with Prosecution witnesses
+
+If they are family, or in a significant relationship, is there a possibility the defendant will try to exert some emotional control? Probs need something tangible to point to in order to support such a contention (i.e. previous threats, or emotional abuse charges -- evidence of victim's making withdrawal statements)
+
+### Personal circumstances of the defendant
+
+Consider the *Fisher* principles
+
+**Discuss def's personal circumstances (ties to the state) -- likelihood of fleeing or avoiding jurisdiction**
+
+- Where does he live?
+
+- Where does he work?
+
+- Where does his family live?
+
+- Does he have somewhere he can reside where police can monitor him
+
+- Does he have appropriate accommodation
+
+The fewer ties he has to the area, the less likely he is to appear
+
+- Social ties
+
+- Financial position
+
+## Relevant Rules of Evidence for Bail Hearings:
+
+Only the Magistrates Court can deal with breaches. Including breaches of supreme court bail orders *Richardson, Roger v Chatwin, Damien John \[1998\] TASSC 118 (29 September 1998)*
+
+The *Evidence Act* applies to bail hearings per ***s 4 of the Evidence Act***
+
+### Hearsay:
+
+***EVIDENCE ACT 2001 - SECT 75***
+
+**75. Exception: interlocutory proceedings**
+
+In an interlocutory proceeding, the hearsay rule does not apply to evidence if the party who adduces it also adduces evidence of its source.
+
+Hearsay evidence is relevant and admissible for bail purposes (*Re Moles*). The question of hearsay evidence will be one of **weight**: e.g. consider value of an anonymous tip off v witness's account of prior threats.
+
+### Burden of proof 
+
+Bail application is not a formal trial, therefore, evidence and burden of proof rules are not set to as high a standard (*Levy*).
+
+### Tendency evidence:
+
+Tendency rules do not apply to bail hearings: Per section 94 of the *Evidence Act*.
+
+## Seeking Bail conditions/ restrictions:
+
+Courts can also grant conditional bail (*Justices Act*). The o**nus is** on the Crown to affirmatively persuade the court to exercise its discretion. The judge must be satisfied of the necessity to impose conditions and cannot impose general conditions; regard must be had to the circumstances of the case, and the imposition of any conditions must be linked to one of the primary considerations in bail applications (*Levy v Strickland*). A court cannot simply impose **standard conditions** by virtue of the offence (as in Brown -- the judge initially imposed "the usual condition" in relation to not driving with alcohol in his body, for defendant charged with drink driving). Rather, the court must consider the individual circumstances of the case.
+
+*However, an order for bail may be made subject to such other conditions as the judicial officer thinks desirable in the interests of justice: [s 7(4).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ba199441/s7.html) Conditions may serve a number of purposes. They may be directed not only to reducing the risk that the person admitted to bail will abscond. They may also be directed to other matters relevant to the decision to grant or refuse bail, including the risk that a person will use the opportunity of bail to continue to offend, may present a risk to a person or persons, or influence potential witnesses.* ***Tasmania v Wooders \[2022\] TASSC 15 (28 February 2022)***
+
+### Common conditions 
+
+- a surety
+
+- curfew, a
+
+- requirement to report to police,
+
+- an order to stay away from particular people (e.g. Crown witnesses, family in cases of domestic violence) or places,
+
+- an order to live elsewhere,
+
+- prohibitions on driving and alcohol with tests to enforce these or a condition to hand in their driver's license
+
+### Order to stay away from particular people (e.g. Crown witnesses, family in cases of domestic violence) or specific places
+
+**Consider residence or proximity to one another**
+
+At para 22 of JCN, Pearce J said:
+
+*"His own home is quite close to the complainant\'s residence. If he is there, monitoring his movements and conduct would be very difficult. It would achieve little to reduce the risk. His mother\'s home is in Hobart and would increase the physical separation from the complainant. However his presence at that home has not, in the past, prevented breach of the order. Nor does his mother\'s presence seem to prevent breaches. He was at his mother\'s house with the complainant when he was arrested. The circumstances to which I have referred also reduce my confidence in his mother\'s capacity as surety to monitor the respondent\'s behaviour and deter any breach."*
+
+### Prohibitions on driving and alcohol with tests to enforce these
+
+Can/ should only be sought where there are priors/ multiple priors for such offences in the past.
+
+*Brown & Lowe* (1984) Tas.R. 103.
+
+Green J: there are no limitations upon magistrate's discretion in s5, but some must be implied. Although the magistrate must have regard to the public interest of the case, their primary duty is to exercise judicial discretion in respect of the particular application which is before them and to consider whether in the circumstances of the particular case, a condition should be imposed.
+
+## Section 12
+
+### Basic principles 
+
+The family violence creates a presumption against bail: Re S \[2005\] TASSC 89; (2005) 157 A Crim R 451. The onus is on the respondent to displace the presumption: *Olsen v State of Tasmania* \[2005\] TASSC* *40.
+
+### Counter presumption of innocence:
+
+***Para 19 Director of Public Prosecutions (Acting) v J C N \[2015\] TASFC 13***
+
+***His honor, justice Pearce***
+
+"The respondent is entitled to the presumption of innocence in respect to all of the charges. However, in assessing the safety of the complainant if the respondent is released, account should be taken ***of the chance*** that the respondent is guilty of the offences alleged against him."
+
+Submission:
+
+As was His honor's conclusion in this matter, I invite your honor to conclude here, that a person guilty of such conduct as is alleged in this case, poses a continuing risk to the complainant.
+
+### Court must consider each bail application anew. 
+
+It doesn't matter if he has previously been granted bail, and subsequently breached (regardless of the basis of the breach). The court is to consider all matters afresh, not just the most recent offending ***Sowerby v State of Tasmania \[2024\] TASFC 7***
+
+***Sowerby v State of Tasmania \[2024\] TASFC 7***
+
+In a rare occurrence, the Full Court has recently published a written decision in relation to an application for bail, specifically in the context of family violence matters: [Sowerby v State of Tasmania \[2024\] TASFC 7](https://aus01.safelinks.protection.outlook.com/?url=http%3A%2F%2Fwww.austlii.edu.au%2Fcgi-bin%2Fviewdoc%2Fau%2Fcases%2Ftas%2FTASFC%2F2024%2F7.html&data=05%7C02%7Cthomas.hogan%40police.tas.gov.au%7C2b745814b50c48a17a9e08dd0e69e69f%7Ced13a8afa76343dcb114891492b38482%7C0%7C0%7C638682570201554054%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=C47ConSb2y1X7NyOT3Y9j%2F5xHQ5cJ5jVaEEQmcPA4C8%3D&reserved=0)
+
+The case concerned the determination of bail by reference to section 12 of the  Family Violence Act, in the context of the defendant having failed to appear in court on FV matters and having then been arrested on a warrant. Usefully for our purposes, the Court (Pearce J and Porter AJ) noted the following, at \[7\]:
+
+\"We would accept the submission of counsel for the respondent that it was not to the point that the appellant had previously been granted bail. It was for the appellant to satisfy this Court, on the material presented on the hearing of the appeal, that the grant of bail should be made.\"
+
+This statement would appear to be authority for the principle that, in any case where bail is called into question again subsequent to having been granted (by police or by a court, and whether by reason of the defendant having failed to appear or by breaching protective orders, or both), the Court determining the section 12 question is entitled - and indeed required - to consider afresh all of the pending allegations of family violence. I have made submissions previously when in defence that the question is largely confined to fresh allegations, or at least that those allegations should be the focus of the enquiry - I have had some degree of success with this argument, but it would seem there is now clear authority to the contrary.
+
+For completeness, I note that the defendant in the case before the Full Court was granted bail. The judgment makes clear however that this decision was heavily influenced by the absence of any allegations of further FV offending or breaches of protective orders.
+
+### Wishes of the Complainant:
+
+Irrelevant basically.
+
+***DPP v JCN \[2015\] TASFC 13***
+
+**\[Para 20\]**
+
+*"There are a range of possible reasons for the behaviour of a complainant acting in support of a defendant. A court has a duty to consider the interest of persons who may be affected by family violence and if necessary protect them. By doing so it may sometimes act contrary to the wishes of the affected person."*
+
+### Demeanour 
+
+**12(2)(b) Demeanor**
+
+Outward behavior or bearing.
+
+- Have they resisted arrest
+
+- Did they yell?
+
+- Did they flee
+
+- Has the defendant subsequently made contact with the victim whilst avoiding police?
+
+- What were the circumstances surrounding arrest
+
+Example where it was a principal consideration:
+
+It is true, that the defendant himself turned himself in following the incident. But whilst in police custody, the defendant made serious threats to the former partner of Ms. Collins. Whist in the station, in the presence of police, the defendant stated and I quote" I will bash the shit out of him" stating that he would face the consequences once he had done so.
+
+Whilst not directed at the victim, they are indicative of the defendant's demeanour. This man was prepared to make open threats to affect physical violence, even whilst in custody.
+
+The defendant himself, stated to police that he believes that he suffers frim mental health issues, which cause him to snap and become violent
+
+#### Drug/ alcohol use
+
+Remember to bring this to the Court's attention as a relevant "demeanour" consideration as it suggests lowered inhibition, reduced capacity to appreciate orders, erratic and irrational behaviour.
+
+### Children present?
+
+**Consider child/ren at scene:**
+
+- Was there a child?
+
+- Were they present?
+
+- Could they hear?
+
+- Where they assaulted
+
+- Were the subject to the consequences of the offending (i.e. seeing the parents in a state of distress?)
+
+Master, x was born on the 8^th^ of November 2011
+
+- He is said to have been present at both family Violence incidents
+
+- On both occasions witnesses have reported that he was screaming and crying
+
+Under section 13 sub-s (a) the court may consider the defendants may consider the offences to be aggravated.
+
+***Allen v Kerr *\[2009\] TASSC 10, 19 Tas R 132 at \[13\]: Porter AJ**
+
+*\"The reasons that the presence of children is an aggravating factor of some significance are largely self-evident. Violence witnessed by children in the domestic environment not only is distressing (usually the victim is a parent or someone in the place of a parent), but it also serves to desensitise impressionable minds to violence, and to encourage the notion that resort to violence is acceptable.\"*
+
+## The availability of suitable accommodation for the person and any affected person or affected child
+
+A mandatory consideration of the court under s. 12(d).
+
+Has there been previous residential conditions on the defendant that have failed? Submit the presence at te location has not prevented breaches of the respective orders.
+
+Is the proposed address so close to that of the protected party as to be questionable in it's utility of satisfying the court, or alleviating the mental distress of the complainant.
+
+## Surety
+
+**There is a positive duty on a surety:**
+
+**\[14\]...** *The surety is required to take positive steps. It is not enough that the surety does nothing and states that he or she believed the accused would attend trial or abide by conditions: Mokbel v DPP \[2006\] VSC 487; (2006) 14 VR 405 at \[42\] and \[54\]. He or she must take all reasonable steps to ensure compliance: Re Condon \[1973\] VicRp 40; \[1973\] VR 427 at 431. Evidence that reasonable steps were taken will be a factor, although not determinative, in an application for forfeiture. It is generally not enough for a surety to say that there was no complicity or connivance in, or culpability for, the breach: Re Nevil Martin Schoenmakers v Director of Public Prosecutions (above) at 284.* **Tasmania v Wooders \[2022\]).**
+
+### After-Hours Sureties:
+
+The Bench Justices are able to make orders for a recognisance but they would need to be present to agree to the order and conditions, and sign the paperwork. 
+
+The Bench Justices are also able to make an order for a paid surety and there is an agreement in place with Tasmania Police for this payment to be facilitated.  Tasmania Police release the defendant once the deposit has been made at the police station and the bail document has been signed.  Similarly there is an arrangement with Tasmania Police to accept surety payments after hours for orders made during business hours that are not able to be complied with until after hours and Launceston Reception Prison is notified once the payment has been made to enable the release of the defendant.
+
+## Counter "appropriate surety" arguments
+
+Family members not likely to arrest their own family to comply with bail so can argue not appropriate.
+
+Surety Promissory or actual
+
+Promissory not as much weight
+
+Consider whether appropriate or not: Are they likely to arrest in case of breach of cooperate with police??? Can the supervise or monitor the defendant

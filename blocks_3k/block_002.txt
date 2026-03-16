@@ -1,0 +1,321 @@
+# Search:
+
+Not resisting or not saying no to a search does not amount to consent. **Tasmania v Hodges \[2022\] TASSC 45 (26 July 2022)**
+
+Pre-condition to search powers on reasonable belief under MOD is "lawful" entry to private premise. Must have warrant etc. Private premises also held to include hotel room under occupancy in certain circumstances. **Tasmania v Hodges \[2022\] TASSC 45 (26 July 2022)**
+
+## Search of vehicle cars
+
+Can search a "conveyance" without warrant if reasonable belief under s 16 Warrants act tas
+
+## Search of person
+
+Section 58B of the Police Offences Act
+
+Allowed a non-invasive search where defendant already in "lawful custody"
+
+"Lawful Custody" defined in CODE section 106
+
+# Search warrants:
+
+**Re: Phone** -- Phone falls within *Evidence Act* definition of a "document." Can examine contents, but that likely wouldn't extend to external applications. General distinction is what can be examined while phone is in "flight mode." Not sure about changing passwords, but Police can take steps to prevent destruction of evidence (namely putting the phone in flight mode to prevent remote wiping).
+
+### POLICE POWERS OF SEARCH AND SEIZURE
+
+***Scope of the search warrant (i.e. seizing items not particularised in the warrant). *** 
+
+Police can't use a warrant to go on a fishing exercise: ***Crowley v Murphy*.**
+
+  
+
+However, whether they can lawfully seize items not mentioned in the warrant will depend on whether the conditions from ***Ghani v Jones***, which are now embodied (mostly) in s. 6 of the *Search Warrants Act (tas)*, can be satisfied: 
+
+1.  Must relate to a serious offence; 
+
+<!-- -->
+
+2.  Property must be the fruity of the crime or the means by which it was committed, or material evidence of its commission; and 
+
+<!-- -->
+
+3.  That the person in possession was involved in the commission of the crime either as a principal or accessory.  
+
+In addition: 
+
+4.  Police must keep them for no longer that necessary to complete investigations or to preserve as evidence; and 
+
+<!-- -->
+
+5.  The lawfulness of the police conduct must be judged at the time of the seizure, not by what happens later (hindsight or subsequent events cannot justify the seizure).  
+
+Under s6(e) of the *Search Warrants Act* the executing officer can seize any material found on the premises that they believe on reasonable grounds to be either: 
+
+- Evidential material in relation to the offence which the warrant relates; or 
+
+<!-- -->
+
+- Evidential material in relation to another offence.
+
+### 3.3 Common law rights
+
+The only time that search and seizure is permitted is when pursuant to arrest; pursuant to a warrant or with consent.
+
+***Coco v R*** (1994) 179 CLR 427 at pp 435-6 per Mason CJ, Brennan, Gaudron and McHugh JJ
+
+***"Every unauthorized entry upon private property is a trespass, the right of a person in possession or entitled to possession of premises to exclude others from those premises being a fundamental common law right."*** (emphasis added) @ 435
+
+Chapters 7 & 8 in Gans et al, ***Criminal Process and Human Rights*** (Federation Press, 2011)
+
+#### When can you search at common law?
+
+***R v Jefferies*** \[1994\] 1 **NZLR** 290 at 300-301
+
+A police constable in an unmarked police car heard over the police radio that a light blue car had left the scene of an armed robbery. It was the escape vehicle, and believed to be heading in the P.C's direction. Presently, along came a light blue vehicle, which the PC stopped. Conversation between the four men and the PC made it clear that they were being stopped in relation to the armed robbery.
+
+Without asking for consent the PC searched the boot of the car and found \$30,000 worth of marijuana. None of the men were involved in the armed robbery.
+
+Was this search lawful under statute? How did the statute interact with the NZ Bill of Rights? What about at CL powers of search?
+
+Section 60 of the Arms Act gave the PC grounds to search on the reasonable suspicion of weapons being on site. There was a procedural responsibility which was not adhered to -- namely identifying himself. Despite this is it was still held to be lawfully effected.
+
+#### Search and seizure: common law and statute
+
+A search is an examination of a person or property and a seizure is a taking of what is discovered. Seizure under the Fourth Amendment to the United States Constitution also extends to seizure of persons which in New Zealand might more readily \[\*33\] be dealt with under the arbitrary arrest and detention provisions of s 22.
+
+The common law does not recognise a right to search anyone in the absence of an arrest. Nor does it recognise a general right of search on arrest. As an incident to an arrest a police officer may search an accused and take possession of any property tending to show that person\'s guilt (Barnett & Grant v Campbell (1902) 21 NZLR 484). As well as searching for such property the police may search for objects with which a person might do himself or herself or any others injury, or which might be employed to facilitate escape. As Donaldson LJ observed in Lindley v Rutter (1980) 72 Cr App R 1, 6:
+
+\"It is the duty of any constable who lawfully has a prisoner in his charge to take all reasonable measures to ensure that the prisoner does not escape or assist others to do so, does not injure himself or others, does not destroy or dispose of evidence and does not commit further crime such, for example, as malicious damage to property. This list is not exhaustive, but it is sufficient for present purposes. What measures are reasonable in the discharge of this duty will depend upon the likelihood that the particular \[\*34\] prisoner will do any of these things unless prevented. That in turn will involve the constable in considering the known or apparent disposition and sobriety of the prisoner. What can never be justified is the adoption of any particular measures without regard to all the circumstances of the particular case.\"
+
+A personal search is a restraint on freedom and an affront to human dignity. It is exercisable at common law only for good reason. The Courts will examine any claimed justification with great care and generally speaking no one should be required to submit to that restraint unless he or she knows in substance the reason for the search (Brazil v Chief Constable of Surrey \[1983\] 1 WLR 1155, 1162).
+
+Special statutes authorise personal including body searches in particular cases and s 57A of the Police Act 1958 adds to the common law right of search on arrest. It allows for the search and seizure of all money and all or any other property found on or in the possession of a person taken into lawful custody and at a police station or in any other premises or vehicle used for police purposes.
+
+The common law did not allow any entry and search of private property by officers of the \[\*35\] state without permission of the owner or occupier except under a warrant issued by a justice acting on evidence that there was strong cause to believe that stolen goods were concealed there.
+
+#### When can you search at common law?
+
+A District Court Judge, justice or Registrar may issue a search warrant if satisfied that there is reasonable ground for believing that there is present there:
+
+\(a\) Any thing upon or in respect of which any offence punishable by imprisonment has been or is suspected of having been committed; or
+
+\(b\) Any thing which there is reasonable ground to believe will be evidence as to the commission of any such of-fence; or
+
+\(c\) Any thing which there is reasonable ground to believe is intended to be used for the purpose of committing any such offence . . .
+
+Under other specific statutes conditions under which warrants may be issued or warrantless searches undertaken are expressed in quite different ways and there is no single test or criterion running through the legislation.
+
+#### When is a search \"unreasonable\"
+
+A search will be unreasonable if the circumstances giving rise to the search make the search itself unreasonable or if an otherwise initially reasonable search is carried out in an unreasonable manner.
+
+Section 21 is a negative provision in that it is a restraint on governmental action and confers no powers on the government. In particular it does not em-power a \"reasonable\" search.
+
+The test of unreasonableness requires consideration of the values underlying the right and a balancing of the relevant values and public interests involved. As apparent from Entick v Carrington, where the action was for trespass to property, the common law concern was for the protections of property rights: entry on to private property was a trespass and the seizure of property was a conversion. However both in America and Canada privacy values have become an accepted basis for the constitutional protection.
+
+### 3.4 Grounds of the Search: Reasonable Grounds to Suspect or Believe
+
+#### What is reasonable suspicion?
+
+***Lindley v Rutter*** \[1981\] QB 128
+
+A drunken woman was taken to a police station where her bra was taken off. She was arrested -- resisted search -- two officers searched her believing they were under a standing order to search every female prisoner and remove the bra for their own protection.
+
+There is a duty of an officer to have a lawful purpose for search -- a standing order from a senior officer is not enough. There has to be a basis.
+
+Held: If they officer's mind did not apply itself to having a lawful purpose for the search, than the search was unlawful (subjective mindset of officer required level of analysis). There was no legal basis to search her -- standing order not sufficient.
+
+***George v Rockett*** (1990) 170 CLR 104
+
+- *Reasonable suspicion is: the existence of facts which are sufficient to induce that state of mind in a reasonable person.' @ 112*
+
+- *Suspicion is 'a state of conjecture or surmise where proof is lacking' @ 115*
+
+- *'The facts which can reasonably ground a suspicion may be quite insufficient reasonably to ground a belief, yet some factual basis for the suspicion must be shown.' @ 115. (George v Rockett) -- so suspicion is less than a belief.*
+
+See 111 of judgement. Reference and description of the search is the basis of est the boundaries the search powers. There must be specificity in the warrant -- the type of evidence soiught must be detailed
+
+***\*Nguyen v Elliott*** (unreported, Supreme Court, Victoria, Hedigan J, No 7540 of 1994, 6 February 1995)
+
+(Note Tasmanian has a higher standard of reasonable belief than this Vic example)
+
+The act of a suspect kicking out and contacting a police officer , is not out of proportion to the threat of being searched against ones will, and that any bruising which may follow is justified in the circumstances where the it is an unwarranted search.
+
+The subsequent charge for actions following an arrest on this basis is not grounds upon which the def can be held accountable. One cannot be guilty of resiting officer in course of duty when an unwarranted search is clearly not in the course of an officer's duty.
+
+F. Police watching group of Asian youths in park (were known to have been involved in other offences). When they saw the police they behaved suspiciously (i.e. looking around etc). Eventually approached one of the boys and said they wanted to search. He objected. Police persisted and eventually he kicked a police officer (bit one during scuffle). Continued to resist and was then handcuffed and charged him with numerous offences relating to the resistance. No drugs found on him.
+
+H. Accused defended the charges on the grounds that the police were not in the execution of their duty. They had no reasonable basis for the search. TJ and appeal judge agreed. Held that the police had no right to search the young men as there was no reasonable basis for the belief that the youths were in possession of drugs. Accused could thus not be prosecuted for the offences.
+
+But, the only reason the Court of Criminal Appeal upheld the decision was that they said the TJ had a better basis to judge the demeanour of the witnesses. Clear they were reluctant to do this. The whole tenor of the decision is that they wanted to agree with the police.
+
+\****MacLeod*** (1991) 61 A Crim R 465
+
+Issuing officer must be satisfied on info given to them under oath that there is reasonable grounds - subjective standard of the actual officer. Not enough that someone else is satisfied that there is such a suspicion.
+
+**Held**. ***George v Rockett*** was applied by Slicer J here. See para 8-9 for a summary of the law in this area:
+
+• it is the state of mind of the issuing officer that is relevant.
+
+• issuing officer must satisfy himself or herself that the necessary criteria are present
+
+• issuing officer cannot rely merely on the suspicion of the informant
+
+• need for particularity in relation to object and the offence; mere reference to the relevant section is not enough.
+
+***Beneficial Finance Corp v AFP (1991) 31 FCR 523***
+
+H. The issuing officer doesn't have an obligation to go behind the warrant and investigate further (even if incomplete). However, there is an obligation to clear up ambiguities or make enquiries if they have concerns. Also see Jackson v Mijovich (1991) 23 ALD 470.
+
+**Sniffer Dogs: The Right to Security of the Person Chapter 7 in Gans et al, *Criminal Process and Human Rights* (Federation Press, 2011) pp 268 -- 270; 273 - 275**
+
+In Qld, NT and SA, legislation expressly provides that an indication by a drug detection dog of the presence of a drug provides police with a reasonable ground for a search (@ 268)
+
+- Tas doesn't have legislation on this
+
+- Interesting statistics: some dogs have a 90-92% accuracy rate (Chevy, from Canada), whilst others, such as NSW dogs have a reliability rate of 26%.
+
+- However, some behaviours + sniffer dogs will undoubtedly constitute a reasonable ground for a search: consider a man, who upon seeing police with a sniffer dog starts muttering 'fuck fuck fuck' to himself. Reasonable suspicion? (@ 275)
+
+### 3.5 Statutory Powers of search -- premises and person
+
+This section includes powers of search in non-arrest situations. Be careful with the distinction with the standards required: difference between suspicion and belief.
+
+***Crimes Act 1914*** (Cth) ss 3ZE -- 3ZI
+
+***Police Offences Act*** 1935 (Tas), ss 57, 58, 58A, 58B
+
+Poison
+
+Liquor
+
+Accused persons in custody (incidental to arrest)
+
+***Search Warrants Act*** 1997 (Tas) s 6(2)(a)
+
+***Family Violence Act*** 2004 (Tas), s 10(3)
+
+Where family violence in affect, search powers exist.
+
+***Poisons Act 1971*** (Tas), ss 90A(1)(b), 90B & 90C
+
+Premises; vehicle and personal searches conducted in the process of these two searches.
+
+***Police Powers (Public Safety) Act 2005***, ss 18, 19, 22, 23
+
+***Misuse of Drugs Act*** 2001 (Tas), ss 29, 30 (Reasonable belief).
+
+### 3.6 Personal Search
+
+***Lindley v Rutter*** \[1981\] QB 128
+
+Standing orders to search any female person arrested and placed in a cell, and to remove their brassiere.
+
+Was the PC acting in execution of her duty when she searched the defendant, and removed the defendant's brassiere?
+
+Because she formed no state of mind -- no purpose in performing the search, it was unlawful
+
+"So far as searches are concerned, he should appreciate that they involve an affront to the dignity and privacy of the individual. Furthermore, there are degrees of affront involved in such a search. Clearly going through someone's pockets or handbag is less of an affron than a body search. In every case a police officer ordering a search or depriving a prisoner of property should have a very good reason for doing so." Donaldson LJ @ 135
+
+***\*Nguyen v Elliott*** (unreported, Supreme Court, Victoria, Hedigan J, No 7540 of 1994, 6 February 1995)
+
+Two police officers -- one who was 'merely curious' as to whether an Asian youth had drugs on him, rather than having the reasonable suspicion necessary to exercise his statutory power
+
+Unlawful search meant that resistance was permitted, and subsequent arrest was unlawful and resistance was permitted
+
+### 3.7 Search of Premises
+
+***Entick v Carrington*** (1765) 2 Wilson KB 275; (1765) 19 St.T 129
+
+*"The poorest man may in his cottage bid Defiance to all the forces of the crown. It May be frail -- its roof may shake -- the Wind may blow through it -- the storm may Enter -- the rain may enter -- but the king of England cannot enter -- all his force Dares not cross the threshold of the Ruined tenement. So be it -- unless he has Justification by law."*
+
+There is a conflict of authority between the UK and Australia
+
+***Motherland***
+
+***Dillon v O'Brien & Davies*** (1887) 16 Cox CC 245 -- warrant for arrest
+
+Can search property where person is arrested:
+
+"\... it is clear, and beyond doubt, that, at least in cases of treason and felony, constables \... are entitled, upon a lawful arrest by them of one charged \... to take and detain property found in his possession which will form material evidence in his prosecution for that crime\...' @ 249
+
+Applied to misdemeanours as well
+
+[***\*Ghani v Jones*** \[1970\] 1 QB 693]{.mark}
+
+This case represents the 'high water mark'
+
+**Held**. Per Lord Denning: it is settled law that where the police enter premises pursuant to search warrant or pursuant to power of arrest in relation to serious offence; they are entitled to search for and take any goods in relation to that offence. If during the search they find other goods relating to other events they are entitled to seize them as well provided they behave reasonably and detain the goods for no longer than is necessary.
+
+Fivefold test of Lord Denning MR:
+
+***Can seize item when legally on the premises, without the consent of the owner if:***
+
+1\. Reasonable grounds for believing serious offence has been committed
+
+2\. Reasonable grounds for believing the article in question is either the fruit of the crime, the instrument by which the crime is committed, or is material evidence
+
+- Great Train Robbery -- a saucer of milk given to a cat on a farm where the robbers hid
+
+3\. Reasonable grounds to believe that the person in possession of it has himself committed the crime, or is implicated, or is accessory or at any rate his refusal must be quite unreasonable
+
+4\. Must not keep the article nor prevents its removal for any longer than is reasonably necessary to complete their investigations or to preserve it for evidence. If a copy will suffice, a copy.
+
+5\. The lawfulness of the conduct of the police will be judged at the time and not by what happens afterwards
+
+***\*Jeffrey v Black*** \[1977\] 3 WLR 895
+
+Sandwich case: Police officers may not search premises of an arrestee without either a warrant or the consent of the accused, at least for evidence of matters unrelated to the reason for the previous arrest of the accused. There must be a connection with the evidence gathered/ search and the initial charge.
+
+If related the reason for the previous arrest -- tickety boo.
+
+So if search granted, they can search for and take things relating to that, but are not authorised to search for evidence which is unrelated to the offence.
+
+Silent is not consent either.
+
+Case also stands for the principle that whee there is a serious crime; the suspect can have their premises searched -- not for misdemeanours.
+
+They ignored the right of the sandwich thief to refuse entry.
+
+***R (on the application of Rottman) v Commissioner of Police of the Metropolis*** \[2002\] 2 All ER 865; \[2002\] 2 WLR 1315 - arrest warrant for extra-jurisdictional offence.
+
+Applies to extradition arrest warrants.
+
+Dissent very interesting
+
+Procedurally sound to search premises where individual arrested. This means that if they were arrested on site, it does not make sense that another search warrant is needed.
+
+Factually: includes building on premises even where person arrested outside building structure -- another extension: extending Dillon by not being in the immediate vicinity of the arrest
+
+#### Australia
+
+***\*Challenge Plastics Pty Ltd v Collector of Customs*** (1993) 115 ALR 149
+
+***Ghani*** and Lord Denning went too far.Common law powers of search are restricted to: Dillon v O'Brien - being in the possession of a person at the time of his arrest either for a felony or a misdemeanour
+
+[***\*Laurens v Willers*** (2002) 131 A Crim R 281 per Heenan J at \[44\]]{.mark}
+
+Seizure under a search warrant
+
+Basis of common law rights with search: action of trespass based in exclusive possession rights
+
+Here: applicants were in a caravan park to which they had no exclusive possession
+
+Moreover, second common law power of P.O: to seize stolen goods if without violence or harm to the goods of the applicant
+
+- Line of authority away from ***Ghani*** as a principle in Aus.
+
+***\*Tasmania v Woodberry*** \[2012\] TASSC 89
+
+Serious offence where woman stole \$30,000 from business she worked for. Visited by 2 police officers. Not cautioned or warned that she could speak to a lawyer so there was an arrest.
+
+She was taken from her place of business and was told that she would need to accompany them to the house -- she claimed that she was compelled to comply with the search.
+
+The court noted that there was no power of the police to compel her to submit to a search of her house -- in so doing, the police officer ***disregarded her right to refuse entry***. All evidence of the search was excluded. There were other means available to the officers to initiate the search such as consent or getting a search warrant.
+
+***\*[Spyke & Alexander]{.mark}*** Tas Unreported Serial No 2 of 1981 BC8171022
+
+Forged checks on typewriter.
+
+Applied Ghani and also in s5 and s6 of Tas Search Warrant Acts (the aspect of allowing police to sieze items of other offences when entering pursuant to a search warrant under that Act) -- not a great deal of reason why they are applying Ghani (cf. ***Challenge Plastics*** which considered the law carefully)
+
+**\**

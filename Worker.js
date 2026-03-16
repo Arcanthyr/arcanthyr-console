@@ -1307,12 +1307,13 @@ async function handleLegalQuery(body, env) {
     };
   }
 
-  const caseBlocks = chunks.map((c, i) => {
+  const caseBlocks = chunks.map((c) => {
+    const caseName = c.case_name ? `${c.case_name} ` : '';
+    const courtSuffix = c.court && c.court.toLowerCase() !== 'unknown' ? ` (${c.court})` : '';
     const principles = Array.isArray(c.principles) && c.principles.length > 0
       ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
       : "";
-    return `[${i + 1}] ${c.citation} (${c.court?.toUpperCase() || "Unknown court"}, ${c.year || "?"})
-${c.text}${principles}`;
+    return `${caseName}${c.citation}${courtSuffix}\n${c.text}${principles}`;
   }).join("\n\n---\n\n");
 
   const contextBlocks = sectionContext
@@ -1502,9 +1503,10 @@ async function handleLegalQueryWorkersAI(body, env) {
     };
   }
 
-  const caseBlocks = chunks.map((c, i) => {
-    return `[${i + 1}] ${c.citation} (${c.court?.toUpperCase() || "Unknown"}, ${c.year || "?"})
-${c.text}`;
+  const caseBlocks = chunks.map((c) => {
+    const caseName = c.case_name ? `${c.case_name} ` : '';
+    const courtSuffix = c.court && c.court.toLowerCase() !== 'unknown' ? ` (${c.court})` : '';
+    return `${caseName}${c.citation}${courtSuffix}\n${c.text}`;
   }).join("\n\n---\n\n");
 
   const contextBlocks = sectionContext
@@ -1512,10 +1514,10 @@ ${c.text}`;
     : caseBlocks;
 
   const systemPrompt = (sectionContext && hasCases)
-    ? `You are a Tasmanian criminal law assistant. The section text is provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Plain prose only.`
+    ? `You are a Tasmanian criminal law assistant. Quote and explain the section, then discuss only how the provided cases have applied it. Be precise. Plain prose only. Never invent citations.`
     : (sectionContext && !hasCases)
-      ? `You are a Tasmanian criminal law assistant. The section text is provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Plain prose only.`
-      : `You are a Tasmanian criminal law assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. Plain prose only.`;
+      ? `You are a Tasmanian criminal law assistant. Quote and explain the provided section. Do not speculate about case application — state clearly that no cases are yet available. Plain prose only. Never invent citations.`
+      : `You are a Tasmanian criminal law assistant. Answer strictly from the provided case excerpts only. If excerpts are insufficient, say so explicitly. Plain prose only. Never invent citations.`;
 
   const answerNote = (sectionContext && hasCases)
     ? `Quote ${sectionContext.label} in your answer, then discuss how the cases have applied or interpreted it.`
@@ -1527,7 +1529,7 @@ ${c.text}`;
   const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nIMPORTANT: Only cite cases and legislation that appear explicitly in the source material above. Do not generate or recall citations from your training knowledge. If the sources lack specific authority on a point, say so clearly rather than fabricating citations.\n\n${answerNote}` },
+      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If the sources lack authority on a point, say explicitly: "The retrieved sources do not contain sufficient information on this point."\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
     ],
     max_tokens: 800,
   });
@@ -1545,6 +1547,127 @@ ${c.text}`;
     : caseSources;
 
   return { answer, sources, chunk_count: chunks.length, model: "workers-ai" };
+}
+
+/* =============================================================
+   CROSS-REFERENCE AGENT ROUTES
+   ============================================================= */
+async function handleFetchCasesForXref(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const url = new URL(request.url);
+    const offset = parseInt(url.searchParams.get('offset') || '0');
+    const limit = parseInt(url.searchParams.get('limit') || '100');
+    const { results } = await env.DB.prepare(`
+      SELECT citation, authorities_extracted, legislation_extracted
+      FROM cases
+      WHERE authorities_extracted IS NOT NULL
+        AND authorities_extracted != '[]'
+        AND authorities_extracted != ''
+      ORDER BY citation
+      LIMIT ? OFFSET ?
+    `).bind(limit, offset).all();
+    return new Response(JSON.stringify({ ok: true, cases: results || [], count: results?.length || 0 }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}
+
+async function handleWriteCitations(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { rows } = await request.json();
+    if (!rows || rows.length === 0) return new Response(JSON.stringify({ ok: true, inserted: 0 }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+    let inserted = 0;
+    for (const row of rows) {
+      const result = await env.DB.prepare(`
+        INSERT OR IGNORE INTO case_citations (id, citing_case, cited_case, treatment, why, date_added)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(row.id, row.citing_case, row.cited_case, row.treatment || null, row.why || null, row.date_added).run();
+      if (result.meta?.changes > 0) inserted++;
+    }
+    return new Response(JSON.stringify({ ok: true, inserted }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}
+
+async function handleWriteLegislationRefs(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { rows } = await request.json();
+    if (!rows || rows.length === 0) return new Response(JSON.stringify({ ok: true, inserted: 0 }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+    let inserted = 0;
+    for (const row of rows) {
+      const result = await env.DB.prepare(`
+        INSERT OR IGNORE INTO case_legislation_refs (id, citation, legislation_ref, date_added)
+        VALUES (?, ?, ?, ?)
+      `).bind(row.id, row.citation, row.legislation_ref, row.date_added).run();
+      if (result.meta?.changes > 0) inserted++;
+    }
+    return new Response(JSON.stringify({ ok: true, inserted }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}
+
+async function handleFetchCasesByLegislationRef(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { references } = await request.json();
+    if (!references || references.length === 0) {
+      return new Response(JSON.stringify({ ok: true, cases: [] }), {
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
+      });
+    }
+    const results = [];
+    for (const ref of references) {
+      const sectionNum = ref.section_number || ref;
+      const pattern = `% s ${sectionNum}%`;
+      const { results: rows } = await env.DB.prepare(`
+        SELECT DISTINCT c.citation, c.case_name, c.court, c.case_date,
+                        c.holding, c.principles_extracted, c.summary_quality_score,
+                        clr.legislation_ref
+        FROM case_legislation_refs clr
+        JOIN cases c ON c.citation = clr.citation
+        WHERE clr.legislation_ref LIKE ?
+        ORDER BY c.case_date DESC
+        LIMIT 5
+      `).bind(pattern).all();
+      for (const row of (rows || [])) {
+        if (!results.find(r => r.citation === row.citation)) {
+          results.push(row);
+        }
+      }
+    }
+    return new Response(JSON.stringify({ ok: true, cases: results }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
 }
 
 /* =============================================================
@@ -1843,6 +1966,10 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-legislation-for-embedding' && request.method === 'GET') return handleFetchLegislationForEmbedding(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-sections-by-reference' && request.method === 'POST') return handleFetchSectionsByReference(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/mark-legislation-embedded' && request.method === 'POST') return handleMarkLegislationEmbedded(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-cases-for-xref' && request.method === 'GET') return handleFetchCasesForXref(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/write-citations' && request.method === 'POST') return handleWriteCitations(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/write-legislation-refs' && request.method === 'POST') return handleWriteLegislationRefs(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-cases-by-legislation-ref' && request.method === 'POST') return handleFetchCasesByLegislationRef(request, env, corsHeaders);
 
     /* ── ENTRIES ROUTES ───────────────────────────────────────── */
     if (url.pathname.startsWith("/api/entries")) {

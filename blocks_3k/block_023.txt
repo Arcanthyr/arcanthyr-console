@@ -1,0 +1,280 @@
+# Lane v Black \[2013\] TASMC 3 (17 January 2013)
+
+> 17: Mr Black said that *"\... If I am unable to drive I will not be able to obtain alternative employment."* While this may be so, Mr Black did not give any evidence upon which that conclusion or opinion was based. Mr Black did not say that he had consulted with any job agency to assess the labour market for someone with his skills. There was no evidence that Mr Black had made any enquiries whatsoever in relation to alternative employment. Nor was Mr Black asked inchief or under cross-examination, any questions about this assertion. Much of the picture in relation to alternative employment and the applicant's financial position was left to be inferred instead of being the subject of precise evidence.
+
+**Tasmanian RL may not be valid interstate.**
+
+*Vanessa Limbrick and In the matter of an Application for a Restricted Driver Licence *[\[2015\] TASMC 5](https://aus01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.austlii.edu.au%2Fcgi-bin%2Fviewdoc%2Fau%2Fcases%2Ftas%2FTASMC%2F2015%2F5.html&data=05%7C02%7Cthomas.hogan%40police.tas.gov.au%7C2a4ec2d563ea4258698308de376c76e2%7Ced13a8afa76343dcb114891492b38482%7C0%7C0%7C639009136169704716%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=KohO94O62XeUvIHmmxe73wrwCPg%2FZRV1TGpZ4I696tI%3D&reserved=0)
+
+# Misuse of drugs Act
+
+### Section 29. 
+
+Power to search a person where there is a prescribed belief without warrant. S. 29(5) and 30 are pretty broad power up to and including a strip search (but they must be afforded privacy)
+
+**29(1)**
+
+***"Prescribed belief"*** means a reasonable belief that a controlled substance or other thing in relation to which an offence under this Act has been committed is --
+
+(a) in the possession of a person in any place; or
+
+(b) on or in a conveyance in any place; or
+
+(c) on an animal in any place.
+
+Where such belief police can search and detain person or conveyance. Cannot enter private premises to search UNLESS they form the belief after having lawfully entered the premises per s 29(2A).
+
+### Prescribed belief
+
+**Tasmania v Hodges \[2022\] TASSC 45 (26 July 2022) Brett J**
+
+\[28\] *"A belief is something more than mere suspicion, but less than actual knowledge based on proof. There must be grounds for the belief, but certainty and proof are not required."*
+
+This point was made by the High Court in *George v Rockett *[\[1990\] HCA 26](http://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1990/26.html); [(1990) 170 CLR 104](http://www6.austlii.edu.au/cgi-bin/LawCite?cit=%281990%29%20170%20CLR%20104) at 116"
+
+> *\"The objective circumstances sufficient to show a reason to believe something need to point more clearly to the subject matter of the belief, but that is not to say that the objective circumstances must establish on the balance of probabilities that the subject matter in fact occurred or exists: the assent of belief is given on more slender evidence than proof. Belief is an inclination of the mind towards assenting to, rather than rejecting, a proposition and the grounds which can reasonably induce that inclination of the mind may, depending on the circumstances, leave something to surmise or conjecture.\"*
+
+\[29\] *Further, the requirement that the belief be reasonable means that it must be based on reasonable grounds. This question is to be judged by the Court by applying an objective test: Samoukovic v Brown [\[1993\] TASSC 78](http://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1993/78.html), per Zeeman J.*
+
+In ***Hodges***, the basis of the officer's belief was:
+
+- **Intel search showing defendant had drug history.**
+
+- **Demeanour**
+
+- **physical presentation of the defendant -- fidgety, dilated pupils, dry mouth**
+
+Great para at \[35\]: *"Further, I am satisfied that the basis of the belief as articulated by Constable Whelan, which include her initial suspicions, her observations of the physical indicia displayed by the accused, and the information obtained from the police database during the computer search, provided objectively reasonable grounds for her belief. In applying *![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}*** [s 29](http://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/moda2001184/s29.html) ***![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"}*, it should be borne in mind that the provision is intended to provide police with powers, including with respect to the search of vehicles, in operational circumstances in which there may be insufficient time or opportunity to obtain a warrant. The constraint on the exercise of those powers is the possession of a prescribed belief. Because it is a power which it is intended to be used in operational circumstances, the formation of the prescribed belief is likely to be in the type of circumstances described by Constable Whelan, that is, a belief which derives from the incremental accumulation of a number of discrete pieces of information, gathered and mentally processed quickly, eventually coalescing in the relevant belief. Provided the belief is actually held, a further constraint on the exercise of the powers is that it must be held on objectively reasonable grounds, but an assessment of objective reasonableness must take account of the circumstances in which the belief is formed. Having regard to all of the circumstances, I am satisfied that Constable Whelan believed that there was a controlled substance in the vehicle, and this belief was based on objectively reasonable grounds."*
+
+***Orr v Johnston \[2014\] TASMC 5 (27 February 2014)***
+
+Basis of belief was based on the smell, the defendant's appearance and his past knowledge of the defendant. Accepted by the TASSC.
+
+**Admission as to drug without analysis**
+
+Also, accepted that admission of defendant that marijuana was as such, was enough to proive what was found was in fact marijuana despite no analysis. Def admitted it was the drug, that it was his and that he had smoked it earlier in the day and been using it on a regular basis for some time.
+
+Section 31. Power to demand source of supply
+
+## Evidentiary certificate provision:
+
+Analysis certificate of drug test admissible under 177A of Evidence Act -- prima facie evidence. However, must be served on defence 14 days prior to a hearing. Does not extend to RSAD Act as that specifically excludes its operation (S. 29A).
+
+## Quantity:
+
+## Possession amount
+
+Possession of minute barely detectable amount not sufficient. If microscope only then not enough. At very least, must be observable with naked eye. **Williams v R \[1978\] HCA 49**
+
+## Possession 
+
+Extended definition under the Act for drugs ONLY (does not extend to items used for drugs like a pipe). Onus is on defendant. See section 3(3)
+
+## Detection times for oral samples:
+
+**From:** Grist, Miriam (FSST)\
+**Sent:** Wednesday, 23 January 2019 15:45\
+**To:** Lyons, Jason (DPEM)\
+**Subject:** RE: Oral Fluid vs Blood
+
+ 
+
+Hi Jason,
+
+ 
+
+The detection time of drugs in oral fluid is less than that in blood, so that it is more reflective of recent use. So the time frame for detection is shorter. The following are general guidelines, and there may be some small exceptions to the rule.
+
+ 
+
+Detection times for common drugs of abuse in oral fluid:
+
+ 
+
+·        Cannabis -- 24 hours
+
+·        Methylamphetamine -- 3 days
+
+·        Amphetamine -- 72 hours
+
+·        MDMA -- 3 days
+
+·        Morphine -- 7 days
+
+·        Heroin -- 2 days
+
+ 
+
+Thanks,
+
+Miriam
+
+Ice pipe defined in *Poisons act* section 86C
+
+***ice pipe*** means a device that --
+
+\(a\) is capable of being used, or is intended to be used, for the purpose of administering a controlled drug into the body of a person by the drawing or inhaling of smoke, or vapour or fumes, resulting from the heating or burning of the controlled drug in a crystal or powder form; or
+
+\(b\) is intended to be used as such a device but requires adjustment, modification or addition before it is so used; or
+
+\(c\) is of a prescribed class, type or description;
+
+### Section 29 Prescribed belief
+
+### Section 23 Administration of 
+
+#### Meaning of "designed to be used"
+
+### Establishing used or designed to be used:
+
+**Can get evidence directly from cops that they are used that way... BUT (see below)**
+
+***Thomas v Frankcombe, Turton, Medwin and Pears \[2010\] TASMC 6 (16 July 2010)***
+
+*\[3\] "(b) Evidence was given by Sergeant Flude, a police officer involved in seizing the relevant material. His evidence included a description of how the smoking devices, otherwise known by the colloquial name \"bong\", could be used for the purposes of smoking cannabis. His evidence was to the effect that bongs were regularly used by the users of cannabis for that purpose. His evidence also related to how the other items tendered in evidence were also regularly used by cannabis smokers for the smoking administration or taking of cannabis.*
+
+*Such evidence was admitted without objection and was not challenged. I note that such evidence is regularly permitted by courts as direct evidence of the actual observations and experience of the officer concerned, rather than as opinion evidence (see Barker [(1988) 34 A Crim R 141).](http://www6.austlii.edu.au/cgi-bin/LawCite?cit=%281988%29%2034%20A%20Crim%20R%20141)*
+
+*It was clear from the evidence of Sergeant Flude, and seems obvious in any event from my examination of the exhibits, that the smoking devices in question could be used to smoke any substance capable of being inhaled as smoke, whether that substance be legal or illegal. Again that matter during the course of argument did not seem to be the subject of dispute."*
+
+**Need more than just cop...**
+
+*12. I conclude, therefore, that *![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}*** [section 23](http://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/moda2001184/s23.html) ***![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"}* (a) relates only to items which are or have been actually used in connection with the smoking of cannabis or alternatively, have been designed for such use in the sense that they have manufactured or made or are of a design for use in connection with the smoking of cannabis.*
+
+*13. It follows, therefore, that whilst it may not be necessary to go as far as Mr Richardson suggests, by proving the purpose for which the item was designed only by evidence as to what was in the mind of the actual designer when he designed the relevant item, there must at least be some evidence that does permit an inference to be drawn that the item was designed or manufactured for the relevant purpose. I do note that, in my view, it would not be necessary to prove that the purpose in question was the sole or even the principle purpose, of such design or manufacture, provided that the prohibited purpose was among the purposes of the design or manufacture of the item.*
+
+*14. In this case, the evidence permits me only to conclude that smoking devices of the nature of those in evidence, can be and in practice often are, used for the smoking of cannabis. However, as Gavin Duffy J noted in Tysoe v Bucknall the fact that the items are sometimes used in this way does not permit an inference that the item in question was designed or constructed for the purpose of such use. As His Honour said \"things are often used for purposes for which they were not originally designed\". In this regard, Mr Richardson made the point in both cross examination and submissions, that items such as scissors, tobacco paper, cigarette lighters and scales are often used in connection with the administration of controlled drugs, but it would be ludicrous to suggest that those items were designed or manufactured for that purpose. I agree with that submission.*
+
+*15. There is simply no other evidence which touches the question of the purpose for which these items were designed or manufactured. In my view, incidental matters, such as the \"cannabis leaf\" motifs do not assist in respect of this issue.*
+
+# Poisons Act
+
+The reference in the Tas Poison Act to the "Poison list" is reference to the Cth' Therapeutic Goods (Poisons Standard---February 2024) Instrument 2024. It is adopted by section 14 of the Act .
+
+There is a variation to the uniform standard in relation to cannabis under the [**Poisons (Application of Uniform Standard) Order 2021**](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2021-059)
+
+As discussed and for general reference.
+
+Charge of 'Possess Restricted Substance' pursuant to Section 36 of the Poisons Act 1971 and;
+
+Charge of 'Possess Narcotic Substance' pursuant to Section 48 of the Poisons Act 1971
+
+Section 3 -- Interpretation: ***restricted substance*** means a substance that is, for the time being, specified in Schedule 4 to the Poisons List; and ***narcotic substance*** means a substance that is, for the time being, specified in Schedule 8 to the Poisons List;
+
+The poisons list is governed by Federal Legislation - *[Therapeutic Goods (Poisons Standard---February 2023) Instrument 2023](https://aus01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.legislation.gov.au%2FDetails%2FF2023L00067%2FRepeals&data=05%7C01%7Cthomas.hogan%40police.tas.gov.au%7C9993f1d46a8445da4e2a08db50fcee90%7Ced13a8afa76343dcb114891492b38482%7C0%7C0%7C638192819479596769%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=E901cfMOCKTSwoGuagzpqDZAuHZx%2BgYR0VqJxIxRlZ8%3D&reserved=0) --* and updated February every year. In this legislation is found Schedules 1-10 -- being the poisons list.
+
+Of note, most drugs located in a search are either going to be Schedule 4, 8 or a substance found in schedule 1 of the Misuse of Drugs Act 2001.
+
+Drugs found in Schedule 4 -- the appropriate charge is ***Possess restricted substance -- s36 Poisons Act 1971***
+
+Drugs found in Schedule 8 (if not in [Schedule 1 MODA 2001](https://aus01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.legislation.tas.gov.au%2Fview%2Fhtml%2Finforce%2Fcurrent%2Fact-2001-094%23JS1%40EN&data=05%7C01%7Cthomas.hogan%40police.tas.gov.au%7C9993f1d46a8445da4e2a08db50fcee90%7Ced13a8afa76343dcb114891492b38482%7C0%7C0%7C638192819479596769%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&sdata=EXZmb6sD9eIcWIlJLASVeQ0tli7YusGYjJoJazuss6c%3D&reserved=0)) -- the appropriate charge is ***Possess narcotic substance -- s48 Poisons Act 1971***
+
+Obviously if the substance is found in Schedule 1 of the Misuse of Drugs Act 2001 the regular ***possess controlled plant product*** or ***possess controlled drug*** is applicable.
+
+# Youth Justice Act 1997
+
+Psychosocial immaturity and the prefrontal cortex is underdeveloped. That part that leads to impulse control and planning and decision making
+
+Specifically, that those regions associated with emotions and rewards become increasingly active at a time when the brain's control centre, the prefrontal cortex, remains unable to deploy the skills required for weighing complex decisions and regulating behavioural and emotional responses ... Models therefore suggest that risk-taking behaviour during adolescence is the result of the incongruent growth of two essential brain systems, one that matures earlier and acts as a driver for these behaviours, and one that matures later and acts to inhibit them
+
+... Thus, during adolescence emotions and the motivation to achieve rewards increase but the skills that allow young people to exercise impulse control and evaluate risks and rewards are not yet fully developed, potentially resulting in illegal or dangerous behaviours.
+
+Under 10 there is no criminal responsibility. Between 10 and under 14 it is a rebuttable presumption that they do not understand that their conduct is morally wrong.
+
+Youth more likely to commit crimes against property than persons. That includes aggravated burglary. Though, anecdotally that seems to be increasing. Larger proportion of physical assaults being committed.
+
+- Males 5x6 times more likely to commit offences than females.
+
+- Youth are less likely to offend than adults, but are more likely to reoffend.
+
+- 50% of all youth crime in Tasmania is committed by just 50 offenders.
+
+2024 offence outcomes.
+
+  --------------------------------------------------------------------
+  Informal Caution                109                    28%
+  ---------------------- ---------------------- ----------------------
+  Formal Caution                   65                    17%
+
+  Community Conference             36                     9%
+
+  Court                           167                    44%
+
+  Not Proceeded With               4                      1%
+
+                                                
+  --------------------------------------------------------------------
+
+About 50% (45-55 historically) of offences are met with diversion from the court.
+
+## Restorative Justice:
+
+Restorative justice is a facilitated process for people harmed by crime and wrongdoing to talk about the impact of the harm, and for offenders to take responsibility and help repair the damage, with a focus on healing and prevention rather than just punishment.
+
+Legislative preference is to divert where possible. Bars to that are a refusal to accept guilt, or the nature or recurrence of offending make it inappropriate.
+
+Youth must consent to a formal caution or a conference
+
+## Limitation on Joint Charges:
+
+**27.**   **Limitation on joint charge**
+
+[A youth who is under 15 years of age may not be jointly charged with an adult.]{.mark}
+
+**28.**   **Limitation on power of Court to hear joint charge**
+
+(1)  The Court is **not** entitled to hear and determine a charge against a youth if --
+
+[(a) the youth is 15 or more years old; and]{.mark}
+
+[(b) the youth is charged jointly with an adult; and]{.mark}
+
+[(c) the youth and the adult **[both plead not guilty]{.underline}** to the charge.]{.mark}
+
+(2)  If a youth is jointly charged with an adult and the adult or the youth, or both, **plead guilty** to the charge, the Court must hear and determine the charge against the youth **unless** the prosecutor objects.
+
+(3)  If the prosecutor makes an objection under [subsection (2)](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1997-081#GS28@Gs2@EN) , the Court may hear and determine the charge against the youth or determine that the charge is to be transferred to the Supreme Court under [Part VII of the ](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077#HPVII@EN)[Justices Act 1959](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077) .
+
+## Prescribed offences:
+
+These offences are found in the interpretation section of the Act. Qualified by the age of the offender. Note: Despite the wording used in each category of ***prescribed offences*** *(in respect of a youth who **is** less than*...), suggesting that the examination of the age of the offender should be contemporaneous with their presentation in court, it should be read in conjunction with the definition of Youth in the Act, as well. ***Youth*** considers the age at time of offending. The two definitions need to be read together.
+
+## Responsible adult:
+
+Section 3 -- interpretation section.
+
+***responsible adult***, in relation to a youth, means a person who --
+
+\(a\) is a ***nominated adult*** in relation to the youth; or
+
+\(b\) if there is no nominated adult in relation to the youth, a justice of the peace or a person, or a member of a class of persons, approved by the Secretary;
+
+***nominated adult***, in relation to a youth, means an adult who --
+
+\(a\) has had a close association with the youth or has been counselling, advising or aiding the youth; and
+
+\(b\) has not been charged with the offence in respect of which the youth has been taken into custody or is not suspected, by a police officer on reasonable grounds, of being directly or indirectly involved in the commission of that offence; and
+
+\(c\) has been nominated by the youth;
+
+## Penalty matrix
+
+### Pre-Court Diversion 
+
+Informal caution (Youth Caution Action Notice \[YCAN\]
+
+- Not available for assaults.
+
+Formal Caution (administered by a police officer)
+
+Facilitated by Taspol. Have certain powers.
+
+Community conference The Secretary of Communities Tasmania convenes a conference with an administrator, police officer, the youth / carer and the victims can elect to be involved.
+
+COURT:
+
+Pre-senetnce reports provide contextual information of the anticedents and circumstances of the youth to assist the magistrate
+
+Deferal of sentence for up to 12 months
+
+Court ordered community conference on a finding of gui;lt

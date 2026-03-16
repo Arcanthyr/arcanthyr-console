@@ -1,0 +1,187 @@
+### Express and implied threats
+
+Recent HCA authority **The King v Anna Rowan - A Pseudonym \[2024\] HCA 9 (13 March 2024)**
+
+37. The necessity for the accused to be subject to a threat of infliction of the relevant form of harm if the accused fails to commit the acts that constitute the offence charged has been a consistent feature of the consideration of the common law of duress by intermediate courts of appeal in the common law jurisdictions in this country.[**^\[31\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn31)
+
+<!-- -->
+
+38. The nature of the requisite threat is illustrated by the facts of *R v Dawson*[**^\[32\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn32) and *R v Lorenz*.[**^\[33\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn33) In *Dawson*, the accused escaped from prison but led evidence that he did so because he feared for his life after receiving threats from other prisoners. The Full Court held that duress was not open because the threats were not made on the basis that, if he did not escape, he would be subject to violence.[**^\[34\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn34) In *Lorenz*, the accused robbed a supermarket employee with a knife after her de facto partner threatened to kill her if she did not obtain enough money to re-register his car. The accused was pregnant at the time.[**^\[35\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn35) After noting *Hurley* and *Dawson*, Crispin J held that the defence of duress was not available as the accused\'s de facto partner did not direct her to commit the robbery.[**^\[36\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn36)
+
+<!-- -->
+
+39. However, neither *Dawson* nor *Lorenz *suggests that a threat to inflict the relevant form of harm if the accused fails to commit the acts constituting the charge cannot be implied. In *Hurley*, Smith J postulated the scenario of armed men taking possession of a house at gunpoint and sending the accused to commit a crime on their behalf while retaining a hostage such that \"the threat to the hostage\'s life, *whether it is formulated in words or left unsaid*, may be held to be, during the execution of the commission, sufficiently present and continuing, imminent and impending to found the defence of duress\" (emphasis added).[**^\[37\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn37)
+
+<!-- -->
+
+40. The references in *Hurley* to the threat being \"present and continuing, imminent and impending\" do not require that all the conduct relied upon as giving rise to the threat be engaged in immediately prior to the crime being committed. Instead, those statements should be taken as conveying a requirement that the threat conform with the description of the equivalent aspect of duress noted in other cases, namely that the threat be \"operative\"[**^\[38\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn38) or \"effective\"[**^\[39\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn39) at the time the accused committed the acts that constitute the offence charged. The relevant threat does not have to immediately precede the accused\'s criminal act if there was no reasonable opportunity to avoid committing the offence in the meantime (that being the issue raised by element (viii) in *Hurley*).[**^\[40\]^**](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2024/9.html#fn40)
+
+# Parties, Accessories and Principles in the second degree (criminal responsibility)
+
+## Duty to declare basis of alleged criminal liability
+
+In Tangye (1997) 92 A Crim Reports
+
+*The obligation of the Crown Prosecutor in opening the Crown case is not merely to outline the facts which the Crown proposes to establish in evidence. It is also to indicate, in conceptual terms, the nature of the Crown case. This is to assist both the thai judge and counsel for the accused, more so than the jury. It is essential that any doubt about R v Tangye, CCA, 10 April 1997 (1997) (1997) 92 A Crim R 545, 1997 WL 33115907 © Thomson Reuters. 14 the nature of the Crown case, conceptually, be removed at that early stage. If it is not done at that stage, or if there had been some change in its nature since the case was opened, it is vital that it be identified with some precision, in the absence of the jury, before counsel commence their final addresses. It becomes very difficult for the judge sensibly to make alterations to directions already given once it is learnt that the issues are different to those which had been assumed to exist*
+
+## Forms of criminal liability:
+
+A person who contributes to the commission of a crime/offence may in certain circumstances be charged as a principal to that crime/offence - [if it can be shown that the contribution was done or made with knowledge, willingness and a desire to assist]{.underline}.
+
+If the offence constitutes a crime then such a person is charged pursuant to section **3 of the *Criminal* Code, 1924** :
+
+**3. Which parties to crimes to be deemed principals in the first degree**
+
+      (1) Where a crime is committed, each of the following persons is deemed to be a party to, and to be guilty of, the crime, and may be charged with actually committing it:
+
+\(a\) every person who actually commits the crime;
+
+\(b\) every person who does any act or makes any omission for the purpose of enabling or
+
+aiding another person to commit the crime;
+
+\(c\) every person who abets another person in committing the crime;
+
+\(d\) every person who instigates any other person to commit the crime.
+
+      (2) Any person who instigates another to do any act or make any omission of such a nature that, if he had himself done the act or made the omission, the act or omission would have constituted a crime on his part, is guilty of the same crime as if he had himself done the act or made the omission; and may be charged with himself committing that crime.
+
+If the Offence involves a simple offence than such person is charged pursuant to section 73 ***Justices* Act, 1959**
+
+**73. Accessories**
+
+      (1) Subject to any contrary intention in the Act creating the offence, where a simple offence is committed, each of the following persons is deemed to be a party to, and to be guilty of, the offence, and may be charged with actually committing it, namely:
+
+\(a\) a person who actually commits the offence;
+
+\(b\) a person who does any act or makes any omission for the purpose of enabling or aiding another person to commit the offence;
+
+\(c\) a person who abets another person in committing the offence;
+
+\(d\) a person who instigates another person to commit the offence.
+
+   
+
+\(2\) A person who instigates another person to do an act or make an omission of such a nature that, if he had himself done the act or made the omission, the act or omission would have constituted a simple offence on his part, is guilty of the same offence as if he had himself done the act or made the omission, and may be charged with himself committing the offence.
+
+      (3) A person who is alleged to have instigated, aided, or abetted the commission of a simple offence may be convicted upon a complaint charging him with having committed the offence, or upon a complaint charging him with having instigated, aided, or abetted, as the case may be, the commission thereof.
+
+**CODE v COMMON LAW**
+
+There are few, if any, distinctions to be drawn between the Code approach and that of the Common Law. The only unsettled question in both jurisdictions appears to be the role and function of 'willful blindness' in regard to knowledge when helping an offender.
+
+## Aid or abet -- charging 
+
+**Tasmania v Lee \[2006\] TASSC 58 (7 July 2006)**
+
+And:
+
+**R v Darrell Glen Walsh \[1995\] TASSC 19 (3 March 1995)**
+
+If unsure, can declare unsure at outset and that court can find guilty on either basis -- but must be declared at beginning. If defense seek better particulars, particularize potential liability on all basis -- but remember that Justices Act says that a complaint that says principle is not bad if it's proved accessory, and vice- versa.
+
+### AID OR ABET
+
+'Aid' is different to 'abet', but they tend to be used interchangeably in many conversations.
+
+To 'aid' in the commission of a crime involves a conscious positive decision to act in a way which is designed, and which will in fact enable another to commit the crime or offence. Abet still requires knowledge of what is to transpire, but describes an equally conscious positive decision to be present and supportive in a manner that encourages the other to proceed with that which is proposed.
+
+It is a well established fact that "...*merely standing by while a crime is committed will not, of itself, establish guilt*" - Gray (1917) 12 Cr App R 244 as cited by Nettlefold J at 4 in *R v Smith* unreported No 4/1979.
+
+***Giorgianni* (1985) 156 CLR 47**
+
+This case, which dealt with a common law situation of a supervisor directing a driver to drive a defective vehicle leading to a crash, makes clear that parties who are said to aid, abet or instigate an offence, must have full "mens rea" (knowledge of what constitutes the offence) and intend by that contribution, support or urging to enable or facilitate the commission of the offence by the principal.
+
+Requirements:
+
+(i) The commission of the offence by the principal offender;
+
+(ii) That the defendant was present at the time when the offence was committed;
+
+(iii) The defendant knew all the essential facts or circumstances that must be established by the prosecution in order to show the offence was committed by the principal offender;
+
+(iv) That, with that knowledge, he intentionally assisted or encouraged the principle to commit that offence. His intention to assist must be based on that knowledge.
+
+***Arnol* \[1980\] Tas R 222,**
+
+Arnol and six other youths were charged with rape \[Code principles\] and aiding rape arising out of the pack rape of a sixteen-year-old girl. The aiding rape allegation was particularised as holding the victim while others raped her.
+
+EVERETT J stated at 228:
+
+1.  The Jury must be satisfied on evidence admissible against the accused charged with aiding that the crime of rape was committed.
+
+2.  The jury must be satisfied that the particular accused did an act intending that it should aid the principal offender to commit the crime-in this case, rape.
+
+EVERETT J Unreported Judgment No 64/1980 at p2) when he said:
+
+"*The third element is that the jury must be satisfied beyond reasonable doubt that an accused charged with \'aiding\' did the act alleged intending that it should aid the principal offender named in each count to commit the crime of rape. The words \'for the purpose of\' in s3(1)(b) of the Criminal Code mean \'intended\' or \'designed to\'. The word \'purpose\' means \'the action or fact of intending or meaning to do something\'. It is important that the jury should appreciate that the prosecution does not have to prove whether or not any act it is satisfied was done by a person who is charged under s3(1)(b) in fact aided another person to commit the crime. It is the intention of the alleged \'alder\' which is important. Of course, the jury must be satisfied beyond reasonable doubt that the crime in respect of which \'aiding\' is alleged was committed*."
+
+***Truman v Buxton \[2009\] TASSC 96***
+
+**Aid or Abet**
+
+The defendant was convicted of stealing as an aider by being in company with some males who attended two bottleshops whilst they stole some alcohol. The conviction was appealed by defence counsel.
+
+At 12 Tennet J stated;
+
+In *Randall v R; Farmer v R* \[2004\] TASSC 42 at par40, Cox CJ dealt with the concepts of aiding and abetting. He said:
+
+\"40 The concepts of aiding and of abetting, as the learned trial judge acknowledged, can overlap. In respect of aiding, the *Criminal Code, s3,* requires that there be an act done or an omission made for the purpose of enabling or aiding the principal offender to commit the crime. Abetting requires not merely wilful encouragement by the abettor, but the communication of that encouragement to the offender with the consequence that the offender is in fact encouraged. In either case, some active step must be taken with intent to bring about the commission of the crime by the principal offender. In most cases of aiding, some physical act or deliberate omission can be readily identified and in many cases of abetting, the communication of encouragement may take an identifiable physical form such as gestures or spoken words.
+
+In *R v Coney & Ors* (1882) 8 QBD 534, Hawkins J said at 557 - 558:
+
+\'In my opinion, to constitute an aider and abettor some active steps must be taken by word, or action, with the intent to instigate the principal, or principals. Encouragement does not of necessity amount to aiding and abetting, it may be intentional or unintentional, a man may unwittingly encourage another in fact by his presence, by misinterpreted words, or gestures, or by his silence, on non-interference, or he may encourage intentionally by expressions, gestures, or actions intended to signify approval. In the latter case he aids and abets, in the former he does not. It is no criminal offence to stand by, a mere passive spectator of a crime, even of a murder. Non-interference to prevent a crime is not itself a crime. But the fact that a person was voluntarily and purposely present witnessing the commission of a crime, and offered no opposition to it, though he might reasonably be expected to prevent and had the power so to do, or at least to express his dissent, might under some circumstances, afford cogent evidence upon which a jury would be justified in finding that he wilfully encouraged and so aided and abetted.\'
+
+Mere presence, even if it has the effect of encouraging the principal offender to commit the crime and is accompanied on the part of the accomplice by an intention to render assistance, if required, is not sufficient (*R v Jones & Mirrless* (1977) 65 Cr App R 250 at 252; *Roughley v R* (supra) at 12).\"
+
+At 18 Tennet J stated;
+
+This was clearly, on the material before the learned magistrate, not a case of just mere presence of the applicant. It involved his travelling in a car for some distance with the other three males, and knowing they were going to go into bottle shops and steal alcohol. It involved the applicant actually going into the two bottle shops with the other three males, standing nearby in one case in full view while the youth or youths physically took the alcohol and concealed it, remaining with them at Burnie when one of the youths activated an alarm, and then, in each case, leaving the bottle shops with the males and getting into a car with them and the stolen alcohol. The finding by the learned magistrate that the applicant actively participated in these thefts, as opposed to his simply being incidentally present, was, in my view, open to him on the evidence.
+
+Shaw v TSCCA 22 -- at para \[70\] *There is one situation in which a person who intentionally offers encouragement to another person to commit a crime might not be guilty as an abettor. If the person who actually commits the crime is so intent upon committing it that he or she derives no encouragement from the person offering encouragement, then the person offering encouragement will not be deemed guilty as an abettor. Even if the two individuals have reached an understanding that the crime is to be committed, and both are present when it is committed, the person who does nothing but offer unnecessary encouragement will not incur criminal liability pursuant to s 3(1)(c).*
+
+**Tacit agreement:**
+
+*R v Mundy* A58/1966
+
+This is a case where a male was convicted of setting fires as he was in company with another male who during the day drove about setting multiple fires. The defendant was found to be guilty of aiding in the committing of all the offences other than the first one, as he was not aware of what the primary offender was going to do, but after that he was aware and was found to have aided him.
+
+## Instigation or of inciting
+
+Case law Buttle Vs. The Queen (TAS.R.209) - Inciting - Instigates
+
+In summary (Page 219):
+
+The use of words, unaccompanied by an intention, even if said recklessly, could not amount to either the crime by instigation or of inciting the crime.
+
+So my interpretation\.... The intention is what is called into question in this matter and forming the mens rea by the suspect.
+
+As such, what aside from the suspects words alone, can constitute her intent?
+
+In my mind we would need further to substantiate, including a meeting with the outlaw (person) selected to conduct the act/crime or the
+
+exchange of money etc etc
+
+## Common Purpose
+
+## Can apply to "continuing" offences, like possession:
+
+***Shaw v Tasmania \[2022\] TASCCA 2 at para 95***
+
+\[26\] *In so far as counsel for the accused contends for the proposition that an offence, and hence a crime, can only be an act or omission, possession is a state of affairs and not an act or omission and therefore s4, which refers to the commission of a crime, could not apply to a charge of possession, I reject it. The charge in the present case is one of illegal possession of fish. The Act, s264(1), provides that a person guilty of that is guilty of an indictable offence. The definition of \"crime\" in the Code is that it means \"an offence punishable upon indictment\". The Code and the Act have therefore expressly provided for the offence of possession in the particular circumstances alleged here to be a crime.*
+
+**SECTION 4 ONLY APPLES TO "CRIMES"** not summary offences ***Shaw v Tasmania \[2022\] TASCCA 2 at para 95***
+
+Best case to look at is Clarke v Tas.
+
+*In the judgment of Clarke v Tasmania \[2013\] TASCCA 11 Porter J states "It seems to me that the accepted approach in this State is that if two or more persons form a common purpose to commit crime X, and crime Y is committed, the liability of each is to be first assessed under s3, with resort had to s4 if necessary". The essential difference between the two sections is that s3 the test is subjective in that the Defendant must have the full mens rea of the latter crime, while s4 has an objective test provided the latter crime was 'a probable consequence' of carrying out their original unlawful purpose.*
+
+**4. Crimes committed in prosecution of common purpose**
+
+Where 2 or more persons form a common intention to prosecute an unlawful purpose in conjunction with one another, and in the prosecution of such purpose a crime is committed of such a nature that its commission was a probable consequence of the prosecution of such purpose, each of them is deemed to have committed the crime.
+
+We have examined what occurs when persons are principal offenders, or are deemed to be principal offenders because they have aided, abetted or instigated an offence, but what happens when one offender out of a group commits a crime that wasn't planned? For example, if two people set out to commit an armed robbery, and in the course of that robbery one offender kills someone, is the other offender also guilty of murder? What if they didn't want the victim killed?
+
+Section 4 of the *Criminal Code* deals with crimes committed in prosecution of a common purpose. This section essentially states that where two people agree to commit a crime, and in the course of committing that crime another crime is committed by one, then the other is also guilty of that second crime if it was a probable consequence of committing the original crime. Whether the second crime is a probable consequence of the first is assessed objectively, and it is not necessary that the second offender believed that it was probable:
+
+### Unedited notes:

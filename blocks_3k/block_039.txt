@@ -1,0 +1,223 @@
+### No evidence from victim
+
+**Irons v Moore \[2019\] TASSC 22 (22 May 2019)**
+
+In this case the victim was unwilling to give evidence, that is she was 38'ed and only stated she "could not remember" so that all that was in evdiecen was the physical injuries reported by witnesses and the recent complaint evidence to them.
+
+### Defence of necessity 
+
+**Bonde v Ackroyd \[2011\] TASMC 7 (25 May 2011)**
+
+### Defence as to consent 
+
+**Invalid Consent:**
+
+Section 182(4) provides that an assault may be unlawful notwithstanding the V's consent **where four conditions are satisfied:**
+
+**Otherwise unlawful**
+
+The assault is otherwise unlawful: this suggests that it must be also be another offence such as disturbing the peace by fighting contrary to the POA s13(1).
+
+**Injurious to the public**
+
+\- Fist fights and prize fights: (AG Ref No 6/1980; Coney; Jobidon; Holmes)
+
+Sporting contests: Pallante v Stadiums; Jewell (players are deemed to consent to force reasonably expected to happen in the course of the game and not every infringement of the
+
+rules is an assault -- so the question is was application of force within the reasonable contemplation of the players); Emmet v Arnold (did application of force exceed implied
+
+consent);
+
+\-
+
+\- Sadomasochistic practices: Brown, McIntosh, but see Wilson (Branding acceptable which was permitted)
+
+Dangerous exhibitions and rough but well intentioned horseplay: Jones; Aitken and ors, deciding that consent in the context of rough and undisciplined horseplay is a defence
+
+where there is no intention to cause injury.
+
+\-
+
+The assault is injurious to the public; this apparently means not in the public interest which is clearly a policy decision and courts distinguish between:
+
+Consent Summary
+
+Crim Sem 2 Final Page 24
+
+**Injurious to the person assaulted**
+
+There must be some harm to the person. Any harm or injury calculated to interfere with health or comfort. It need not be permanent, but must be more than transient or trifling McCallum
+
+per Burbury CJ
+
+**Involve a breach of the peace**
+
+The assault is a breach of the peace: this is a word which had a technical meaning at common law; fist fights in public are a traditional breach of the peace but the term is wider and
+
+includes situations where there is actual or threatened violence likely to cause harm: Howell; Holmes; Dowell v Higgins; Nicholson v Avon
+
+2.2.3 Whilst the putative victim's consent to the application of force generally affords a defence there are two situations in which an assault will still be unlawful notwithstanding that consent. The first is where it is expressly provided that the victim's consent is immaterial to criminal responsibility. For example, under s 51 of the Code no consent may be given to the infliction of death upon oneself nor to the infliction of an injury likely to cause death. And, per s 127, the consent of a victim under the age of 17 years is no defence to a charge of indecent assault.
+
+2.2.4 The second situation is where the defence of consent is not precluded expressly but the legislation provides an avenue for proving unlawfulness despite the existence of consent. It is this situation with which the current enquiry is concerned. In certain circumstances, the victim's consent is ineffective as an excuse or justification for an assault. The rules which operate to deny the exculpatory effect of consent are set out in s 182(4) of the Code.
+
+Assuming that the victim's consent to the application of force has been given freely within the meaning of s 2A of the Code, s 182(4) specifically provides that the assault is nevertheless still unlawful if each of these four conditions is satisfied: • the act is 'otherwise unlawful'; • the injury is of such a nature, or is done under such conditions as to be injurious to the public; • the act is injurious to the person assaulted; and • the act involves a breach of the peace. The Crown bears the onus of proof in relation to all four matters. It is not sufficient for the Crown to prove one or more of the elements listed above, they must prove all four (Woolmington v DPP \[1935\] AC 462)
+
+## Otherwise unlawful 
+
+2.6.2 There is a degree of uncertainty about when an act will be 'otherwise unlawful' in the context of this section. The condition is unique to Tasmania but it seems likely that it can be linked to Cave J's judgement in Coney's Case. His Honour distinguished between blows struck in anger and those struck in the context of sporting contests where there is no hostile intent and held that the former would amount to both an assault and a breach of the peace and would be, on that ground, unlawful in any case.35 The implication is that, before a consensual assault can be unlawful it must constitute an assault and some other offence as well. This is the sense in which it seems the condition of 'otherwise unlawful' is generally understood in the context of s 182(4). For example, the act could be a breach of s 178 of the Code --- being armed in public; taking part in an affray, s 80; or duelling contrary to s 81. The circumstances in Brown may not constitute 'otherwise unlawful' conduct in this sense, so that, in Tasmania, consent would remain an operative defence to sadomasochistic consensual sexual conduct of the kind engaged in that case. Consent would not be rendered immaterial by s 182(4). 2.6.3 Where the putative victim consents to an application of force, one of the fundamental justifications for the criminalisation of assault no longer applies --- there is no violation of the victim's physical integrity. Arguably, the requirement that the act constitutes another offence supplies the wrongfulness that is otherwise absent.
+
+Injurious to the public
+
+2.6.4 The second hurdle for the Crown is to establish that the assault is injurious to the public. This phrase is not defined in the Code so it may be considered a 'word of doubtful import'. According to established principles for interpreting words in legal Codes, where the meaning of a word (or phrase) is unclear it is permissible to look to the common law for a definition.36 There have been a number of situations where the common law courts have considered the meaning of the phrase 'injurious to the public'. In Coney's Case it was held to mean 'not in the public interest', and this is generally the understanding evident in succeeding cases --- both Attorney-General's Reference (No 6 of 1980) and Brown refer to the infliction of bodily harm 'for no good reason'. The more difficult question that remains is what sorts of activities are or are not in the public interest? As mentioned above, the common law and the Code treat certain activities involving the application of force to another as non-criminal on the basis that they provide some social good --- games and sports, lawful chastisement or correction of children, 37 reasonable surgical interference,38 dangerous exhibitions and 'well-intentioned horseplay'. Activities involving the infliction of bodily harm which fall outside these well-established exceptions, including consensual sadomasochistic practices and at least some forms of intrusive body ornamentation, continue to be judged as injurious to the public.
+
+Injurious to the person assaulted
+
+2.6.5 The origin of the requirement (again unique to Tasmania) that the assault is injurious to the person assaulted is clearly Stephen J's judgment in Coney's Case: When one person is indicted for inflicting personal injury upon another, the consent of the person who sustains the injury is no defence to the person who inflicts the injury, if the injury is of such a nature, or is inflicted under such circumstances, that its infliction is injurious to the public as well as to the person injured.39 2.6.6 Apart from definitional questions about the degree of injury required and some potential arguments about whether only physical injury is contemplated, the requirement that the assault is injurious to the person assaulted is comparatively straight forward. 2.6.7 The phrase 'injurious ... to the person assaulted' is not defined. As 'injurious' is a word of doubtful import the common law can again be used in aid, however there are no cases from any jurisdiction that have interpreted the word in the context of assault. The Oxford English Dictionary defines the verb injure 'as to hurt, harm, damage' and the noun injury as 'hurt or loss caused or sustained by a person or thing, harm, detriment, damage'. However, despite the uncertainty as to its exact meaning the word, injurious or injury to the person must mean that some actual harm must be inflicted on the victim. The dictionary definition suggests that the threshold for harm is quite low and it may be satisfied by establishing mere 'bodily harm'. In Donovan, bodily harm was defined in accordance with its natural meaning as 'any hurt or injury calculated to interfere with health or comfort'.40
+
+Breach of the peace 2.6.8 The final condition that must be established if the Crown is to negate the effect of the victim's consent is that the assault constitutes a breach of the peace. Although this phrase is not defined in the Code, the UK Court of Appeal case of Howell41 provides an authoritative definition. According to Howell a breach of the peace occurs, whenever harm is actually done or is likely to be done to a person or in his presence to his property or a person is in fear of being so harmed through an assault, an affray, a riot, unlawful assembly or other disturbance.42 2.6.9 The essence of a breach of the peace is violence. That the phrase as used in the Code also carries this connotation was confirmed in Nilsson v McDonald where Blow J stated: 'I think it must follow that those words \[ie, 'breach of the peace'\] ... were intended to refer to the common law concept of a breach of the peace. ... There cannot be a breach of the peace ... unless there is violence or a likelihood of violence.'43
+
+Basically never a good defence as "breach of peace" is pretty low threshold.
+
+**R v Holmes \[1993\] TASSC 5 (11 February 1993)**
+
+4\. At all events, those two decisions support the view that at common law in a case such as the present, where the defence does not deny that the accused inflicted violence upon the complainant and does not seek to rely upon self-defence, - and I understand that self-defence is not relied upon, although for obvious reasons I will be including it in the memorandum to the jury and I will be giving them a self-defence direction in due course - then in such circumstances the essential question for the jury is whether they are satisfied beyond reasonable doubt that the blows struck by the accused were likely or were intended by him to cause bodily harm to the complainant. If the jury is so satisfied any consent, whether express or implied, becomes irrelevant in my opinion, and the jury should convict the accused, provided, of course, it is satisfied to the requisite degree of all the other essential elements of the crime of assault.
+
+5\. \"Bodily harm\" in this context has its usual meaning and includes any hurt or injury which interferes with the health or comfort of the complainant. It need not be permanent but it must be more than merely transient or trifling.
+
+...
+
+7\. If the prosecution fails to persuade the jury that bodily harm to the complainant was likely in the circumstances or that the accused did not intend to cause bodily harm by his action, the jury may then consider the question of consent and unless satisfied that the complainant did not consent to the assault alleged, the jury should acquit the accused.
+
+...
+
+11\. It is of course necessary under s182(4) that to be unlawful the actions of the accused must also involve a breach of the peace if consent is present. Constable Slade said he arrested the accused originally for \"using words calculated or likely to cause a breach of the peace\". This of course is not determinative of or even evidence of the fact that a breach of the peace was occurring at the time the police arrived. However whilst the police powers of arrest are limited by the Code, s27(6) and the [Police Offences Act 1935](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/), ![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}** [ss13](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s13.html) **![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"} and [55](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s55.html), so that an officer may only arrest a person committing a breach of the peace or behaving in a manner likely to cause a breach of the peace in certain defined circumstances, the limitation of police powers in no way circumscribes the nature of conduct which may amount to a breach of the peace.
+
+12\. It seems to me to be completely clear that in this case, on any view of the evidence, a breach of the peace must have occurred as a consequence of the evening\'s events if indeed bodily harm was caused to Mrs Cetkovic or was likely to be caused as a result of the accused\'s physical violence towards her. As to what is involved in a breach of the peace, see ***Howell v R (1981) 73 Crim App R 31***. I refer to the accused\'s evidence in this respect at 259-261 where he has clearly assented to the proposition that during the course of the night\'s activities, both he and Mrs Cetkovic fought together.
+
+***Howell v R (1981) 73 Crim App R 31***
+
+Cited in *Cintana v Burgoyne A Crim R 296 at para 13-19*
+
+Broadly speaking, breach of the peace as defined in *Howell* has been generally accepted in Australian common law.
+
+*"There is breach of the peace whenever harm is actually done or is likely to be done to a person or in his presence to his property or a person is in fear of being so harmed through an assault, an affray, a riot, unlawfully assembly or other disturbance."*
+
+## Common intercourse of life s182(3)
+
+Hostility can render innocuous act assault
+
+**Turner v Horan \[2021\] TASSC 16 (16 April 2021)**
+
+16. The applicant contends that the magistrate could only have been satisfied that he hugged Ms Beasley without hostile intent. However, it was not necessary for the prosecution to prove that the applicant applied force with hostility or hostile intent. The operation of s 182(3) was considered in *Boughey v The Queen *(above). At 24, Mason, Wilson and Deane JJ stated:
+
+\"The effect of this provision is to exclude from an \'assault\', for the purposes of the Code, commonplace, intentional but non-hostile acts such as patting another on the shoulder to attract attention or pushing between others to alight from a crowded bus. Such acts are, if committed inoffensively, regarded by the common law as ordinary incidents of social intercourse which do not, without more, constitute battery.\"
+
+17. In a passage also referred to by the applicant, their Honours continued at 25:
+
+\"Where the existence of hostility or hostile intent may be of decisive importance is in a case which would otherwise be of the kind which s 182(3) excludes from \'assault\' for the purposes of the Code in that hostility or hostile intent may convert what would otherwise be unobjectionable as an ordinary incident of social intercourse into battery at common law or an assault for the purposes of the Code. Apart from such cases, however, the absence of such hostility or hostile intent towards the person to whom force is applied neither precludes the intentional application of force to the person of another from constituting battery at common law or assault under the Code nor, of itself, constitutes a justification or excuse for it.\"
+
+## Types:
+
+Assault s 35(1), s 184
+
+Assault under aggregating circumstances s35(2) up to court
+
+Assault in circumstances of aggregation s35(1B) (pregnant)
+
+Aggravated Assault s183 (with intent to commit a crime or escaping)
+
+Aggravated assault with fire arm s183 (s182 + s115 Firearms act with gun)
+
+Indecent assault s35(3) and s127
+
+Assault Police
+
+### Indecent assault
+
+**Police v FRS \[2020\] TASMC 9 (25 May 2020)**
+
+\[71\] The term 'indecent' is not defined in the *Code*. To be regarded as indecent, an act must have a sexual connotation[^\[29\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn29), either because of the area of the body to which the assault is directed, or because the assailant uses the area of his body which would give rise to a sexual connotation in carrying the assault[^\[30\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn30). The behaviour must be unbecoming or offensive to common propriety[^\[31\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn31); an affront to modesty[^\[32\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn32); contrary to community standards of decency according to right minded persons[^\[33\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn33); or offend the ordinary modesty of the average person[^\[34\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn34). Context is an important consideration[^\[35\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/9.html#fn35).
+
+**Elements**
+
+\[46\] The *Code*, ss 182 and 127 require the prosecution to prove, on the hearing of each complaint:
+
+- the defendant;
+
+- by an application of force
+
+- which was voluntary and intentional;
+
+- without the consent of the complainant;
+
+- unlawfully;
+
+- assaulted the complainant;
+
+- in indecent circumstances, as judged by the standards of ordinary and decent people.
+
+**Brazendale v O \[2008\] TASMC 3**
+
+\- indecency has been held to be unseemly, unbecoming or outrageous conduct. It is an act offending against propriety. It is conduct with a sexual connotation;
+
+\- when applying force to the complainant, the defendant must have intended to do it in an indecent manner, judged according to the standards of ordinary reasonable members of the community;
+
+ The area of the body concerned (the area of the chest/breasts particularly) gave rise to a sexual connotation: *R v Harkin* [(1989) 38 A Crim R 296 (NSW](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281989%29%2038%20A%20Crim%20R%20296?stem=0&synonyms=0&query=poa1935140%20s35) CCA) per Lee J (with whom the other members agreed) at 310.
+
+**Collins v Coleman \[2013\] TASMC 19**
+
+**Indecent -- Law**
+
+51. In the context of ![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}** [s.35(3)](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s35.html) **![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"} of the [*Police Offences Act*](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/), the word *'indecent' *has not been the subject of any authoritative statement by the Supreme Court of Tasmania. The offence of assault with indecent intent seems to be peculiar to the Tasmanian jurisdiction. There is, therefore, no guidance to be found in any decision from a superior court of another state. *'Indecent' *is an ordinary English word without a definite legal meaning. Because the legislation does not supply a definition, the word should be given its literal or grammatical meaning in its context[^\[1\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2013/19.html?stem=0&synonyms=0&query=poa1935140%20s35#fn1).
+
+<!-- -->
+
+52. The online edition of the *Oxford English Dictionary *defines *indecent *as follows:
+
+*1. Unbecoming; highly unsuitable or inappropriate (†*to*); contrary to the fitness of things; in extremely bad taste; unseemly.*
+
+*\...*
+
+*3. Offending against the recognized standards of propriety and delicacy; highly indelicate, immodest; suggesting or tending to obscenity.*
+
+53. In the context of a criminal prosecution for assault, the word *"indecent"* has long been used in law to describe acts involving lewdness or sexual connotation: *Crowe v Graham* [\[1968\] HCA 6](http://www.austlii.edu.au/au/cases/cth/HCA/1968/6.html); [(1967-1968) 121 CLR 375](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281967%2d1968%29%20121%20CLR%20375?stem=0&synonyms=0&query=poa1935140%20s35) per Windeyer J at p.390; *R v Harkin* [(1989) 38 A Crim R 296](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281989%29%2038%20A%20Crim%20R%20296?stem=0&synonyms=0&query=poa1935140%20s35) at 301.
+
+<!-- -->
+
+54. [The prosecution case against the defendant was advanced solely on the basis that the defendant's intent was one of sexual indecency. In light of the principles above, the phrase *"indecent intent"* in the present context, requires proof beyond reasonable doubt that the physical acts which constitute the assault were done with the specific intent to arouse or gratify the defendant's sexual desires]{.mark}.
+
+<!-- -->
+
+55. It must be borne in mind that it is the defendant's *intention* accompanying the offending acts which must be proven to be indecent. It is *not* necessary for the prosecution to prove that the acts giving rise to the assault should, of themselves, be indecent.
+
+### Aggravated assault (firearm)
+
+Elements (**Tasmania v Scott \[2025\] TASSC 53 **)
+
+6.  A person commits the crime of aggravated assault if it is proved beyond reasonable doubt that:
+
+\(a\) the accused;
+
+\(b\) by a voluntary act or acts;
+
+\(c\) made a threatening gesture (either with intent to threaten or with a realisation that a threat may be perceived) to apply force to another person by pointing a firearm or toy firearm;
+
+\(d\) at the time of the gesture, the accused used, threatened to use or was carrying a firearm;
+
+\(e\) the accused:
+
+i had the present ability to apply force to the other person; or
+
+ii. caused the other person to believe, on reasonable grounds, that he had the present ability to apply force; and
+
+\(f\) the acts were unlawful; and
+
+\(g\) at the time of the acts, the accused either:
+
+i.  intended to threaten the other person, that is, give some sort of indication that he may use the firearm to apply force; or
+
+<!-- -->
+
+ii. realised that the likely consequence of his actions was that the other person would apprehend that force was being threatened and proceeded regardless of the consequence.
+
+### Elements:

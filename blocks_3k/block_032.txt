@@ -1,0 +1,221 @@
+### Evade Police
+
+NEED TO GET EVIDENCE OF POLICE REASON FOR ATTEMPTED INTERCEPT
+
+People never understand what it's like being cooked for when you're a chef. It's the best thing ever! We just love the fact someone is doing it for us. Even if it's fucking toast, it's amazing. Its just the gesture of it that we love. Honestly, quality doesn't even factor into it. It's just the effort that we apricate it.
+
+**A v Roughan \[2019\] TASSC 17**, particularly at \[11\]-\[16\], Brett J dealt with the meaning of the provision creating this offence, and he set out the applicable principles which are binding on my determination of this case:
+
+.\"Evade police
+
+\[11\] The relevant provision of s 11A(1) is as follows:
+
+\'(1) The driver of a vehicle must not take action to avoid apprehension or interception by a police officer who is exercising his or her powers or performing his or her functions under any Act.\'
+
+\[12\] The submissions of each counsel were based on what was contended to be the proper interpretation of this provision. The starting point of statutory interpretation must be to give legal effect according to the plain and ordinary meaning of the text, read in the context of the surrounding provisions and the legislative scheme: Project Blue Sky Inc v Australian Broadcasting Authority \[1998\] HCA 28; (1998) 194 CLR 355. Although the provision is inelegantly drafted, there does not seem to be any great difficulty in attributing meaning to the simple words contained in s 11A(1). Accordingly, in order to establish the offence of evade police, the prosecution must prove that:
+
+\(a\) the driver of a vehicle;
+
+\(b\) has taken action to avoid apprehension or interception by a police officer;
+
+**(c) who is exercising his or her powers or performing his or her functions under any Act.**
+
+\[13\] The term \'driver\' is defined by s 3 of the Act to mean \'a person having control over the steering, movement or propulsion of a vehicle and includes a person riding a vehicle\'. This definition suggests a clear nexus between the driving of the vehicle and the taking of action to avoid apprehension or interception by a police officer. This conclusion is consistent with the long title of the Act which is as follows:
+
+\'An Act to confer additional powers on police officers to stop and search vehicles and to obtain information concerning the identity of drivers and owners of, and passengers in or on, vehicles used in connection with the commission of certain offences, and to provide for related matters.\'
+
+\[14\] I am not satisfied, however, that the nexus requires the evasion be constituted solely by an act of driving, nor that the evasion and the driving must be contemporaneous and co-extensive. The requirement is that the driver of the vehicle takes action to avoid apprehension or interception. Taking action can involve a single act or a course of conduct. The use of that term without qualification is consistent with a legislative intention to prohibit any form of action which is intended to achieve evasion of a police officer who is acting within the law. The focus is not on the nature or effectiveness of the action, but rather its purpose. It is immaterial that the action is, or is not likely to be successful, in achieving the evasion of the police officer. In the second reading speech which accompanied the amending Act which inserted s 11A into the Act, the then Minister for Police and Emergency Management gave examples of the type of situation in which the section might operate:
+
+\'This provision will apply to situations where a driver becomes aware of a police presence and then takes action to avoid apprehension or interception by a police officer. An example of such an offence includes drivers who turn their vehicle around, or pull over and run from their vehicle, when they are approaching a random breath test site, or drives in such a manner as to attempt to evade, elude and or prevent police from speaking to the driver or occupants.\'
+
+\[15\] Accordingly, provided that the Court is satisfied that the action taken by the driver of a vehicle is for the purpose of avoiding apprehension or interception by a police officer, it is not necessary that the evasion occur by the driving of the vehicle, nor that the vehicle is being driven throughout the act of evasion. It is necessary only that the purpose of the action taken be to avoid apprehension or interception by a police officer. The required nexus between the driving of the vehicle and the taking of action to avoid apprehension or interception will be satisfied if the Court can conclude that the action was taken by a person in his capacity as a driver of the vehicle, but this does not necessarily mean that he or she must actually be driving the vehicle at all times, or even at any time, throughout the evasion. Generally, as a practical consequence of this nexus, some contemporaneity can be expected between the actual driving of the vehicle and the action in question. However, because the taking of action can be constituted by a course of conduct, it is not necessary that the entirety of the relevant action be constituted by the driving of the vehicle. Hence, as in the example given by the Minister in the second reading speech, it would be sufficient if the driver has stopped the vehicle and decamped from it in order to avoid apprehension or interception. It is also possible to contemplate circumstances in which the evasive action commences after the driving has come to an end. An example might be a driver who leaves the scene immediately after an accident, for the purpose of evading apprehension by police who are approaching or already present at the scene, but who prior to the driving coming to an end upon the occurrence of the accident was not evading police.
+
+"\[16\] The requirement that the evasion be of a police officer performing his or her functions under any Act, imports a requirement that the taking of action must be for the purpose of avoiding apprehension or interception by an actual police officer[. **The prosecution must prove that there is a police officer, that he or she is exercising power or performing functions under any Act**]{.mark}, and that it is the apprehension or interception by that police officer that the defendant has taken action to evade. It would not be sufficient, for example, that the person believes that police might be in the area, when that is not actually the case. On the other hand, it is not necessary for that police officer to have formed an intention to, nor be actually attempting to apprehend or intercept the driver. **[The power or function does not necessarily need to relate to the apprehension or interception of the driver]{.mark}. **The requirement that the driver take action to avoid apprehension or interception by the police officer refers to the subjective purpose of the driver, and does not rely upon or circumscribe the intentions of the police officer. **[It must be independently shown that the police officer is exercising powers or functions under an Act and, provided that is shown]{.mark},** it is irrelevant whether the driver has correctly determined that the police officer intends to apprehend or intercept him or her. The offence is established when the driver of the vehicle takes action for the purpose of avoiding apprehension or interception, whether or not that prospect is, in fact, about to occur."
+
+### Passenger:
+
+Moving from driver's seat to passenger seat, and allowing someone else to drive off can still amount to an evade: **Police v Quinn \[2019\] TASMC 4 **
+
+Aggravated Evade Police
+
+Most circumstances that lead to a 2A charge must exist when driver is taking action to avoid WHILST DRIVING.
+
+So, lets say he is driving, Cop lights go on. He pulls over and gets out of the car THEN takes action to evade by running away, it's not an Agg evade for most of the 2A cricumsatnces, as "the ACT" needs to occur WHILST driving.
+
+Unless you can support the contention that the pulling over of the car was part of a course of conduct to evade.
+
+The above was just comments by the chief Magistrate.
+
+### Sentencing submissions for aggravated evade
+
+**Murray v Tasmania Police \[2022\] TASSC 1 **
+
+Para \[55\] The magistrate correctly identified the purpose of the law as one to protect the public against the risk involved in a police pursuit and to facilitate the enforcement of the law. When subs (2A) was inserted into s 11A of the Act, the penalties for a breach of s 11A(1) -- evading police -- were increased. In the second reading speech the Minister noted that evading police had emerged as a significant safety problem for Tasmania Police and the whole Tasmanian community, and referred to the need for there \"to be a more significant deterrent, as drivers should not see any advantage in evading police, and repeat offenders should be discouraged from undertaking a cost-benefit analysis of not stopping\".
+
+Para \[56\] The penalties prescribed by [s 11A(2A)](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ppia2000358/s11a.html) of the *[Police Powers (Vehicle Interception) Act](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ppia2000358/) *are indicative of the Parliamentary view of this type offending. For a first offence the penalty is a fine of not less than 20 penalty units and not more than 100 units, or a term of imprisonment not exceeding three years or both. For a second or subsequent offence the penalty is a fine within the same range or a term of imprisonment for not more than five years, or both. Such legislative changes and the maximum penalties set for a particular offence provide \"legislative guideposts\" to a court, and are matters to which a court should have regard: *Muldrock v The Queen *[\[2011\] HCA 39](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2011/39.html), [244 CLR 120](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=244%20CLR%20120) at [\[27\]](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2011/39.html#para27); *Banks v Tasmania* [\[2019\] TASCCA 1](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2019/1.html), [31 Tas R 342](https://www6.austlii.edu.au/cgi-bin/LawCite?cit=31%20Tas%20R%20342) at [\[33\]](https://www6.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2019/1.html#para33).
+
+#### Illicit drugs or drunk 
+
+Proof of drugs needs to come from blood test! Oral not enough until amendments are made (as of 2019). See Southern Pross notice below:
+
+The creation of the offence of evade police with aggravated circumstances is found in the *Police Powers (Vehicle Interception) Act 2000*. The offence came into effect on 13 September 2017. One of the conditions that meets aggravating circumstances, is that the driver had an illicit drug present in his or her breath or blood in contravention of section 6A of the *Road Safety (Alcohol and Drugs) Act 1970*.
+
+Since that time, amendments to the *Road Safety (Alcohol and Drugs) Act 1970* have come into that allow oral fluid to be taken for drug testing, instead of a blood sample. These amendments were written and came into effect on 3 December 2018, over a year after the amendments creating the offence of evade police with aggravating circumstances came into being. This means the evade offence still requires the driver to have an illicit drug in their breath or blood. It does not cater to an illicit drug located in oral fluid.
+
+Until the *Police Powers (Vehicle Interception) Act 2000* can be amended, members will be required to conduct a blood test if they are looking to charge a driver with Evade (Aggravated Circumstances) if the sole condition they are relying on the driver having an illicit drug in their system. Oral fluid testing can still be conducted as usual for all offences under the *Road Safety (Alcohol and Drugs) Act 1970*.
+
+*Andrew Keane, Inspector, Southern Regional Prosecution Services*
+
+# Road safety RSAD ACT
+
+### Definitions/ interpretation:
+
+### "Near"
+
+***Police v Bentley \[2008\] TASMC 9 (18 December 2008)***
+
+Discuss at or "near" in the context of "at or near scene of accident per s 2(3A). pretty broad. Certainly 100 m was fine
+
+"Near" pushed out to as far as 700m in ***Police v Bentley \[2008\] TASMC 9 (18 December 2008)***
+
+### Drive:
+
+**Barnes v Dale \[2020\] TASMC 17 (7 October 2020)**
+
+Still requires that they had capacity or at least likelihood that they would drive
+
+**Driving:**
+
+***Cooley v Lowe*** \[1984\] Tas R 107
+
+For it to be proven that person was 'driving' a motor vehicle the following matters are to be considered,
+
+- The degree to which the 'driver' was operating the controls of the motor vehicle (steering, brakes etc.)
+
+- The distance travelled.
+
+- The road conditions, (undulations, corners etc.)
+
+- The speed of the vehicle
+
+- If the vehicle was being towed (as in this case), the length of the tow rope, communication (if any) between the vehicles, the manner in which the towed vehicle was steered and stopped
+
+*... "driving"*, requires proof that the person charged *"\...had the capacity to do so, and that there was at least a reasonable possibility, if *not* likelihood, that he would attempt to drive the vehicle and so endanger the public\..." *in accordance with the Full Court decision in *Cooley v Lowe *\[1984\] Tas R 107.[^\[2^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/17.html#fn2)
+
+\[27\] In my view, when parliament amended the extended definition of *"driving"* by introducing s 2(4) and s 2(5), it did not intend to overturn the effect of the Full Court's decision in *Cooley v Lowe*. Indeed the amended definition is entirely consistent with the approach taken in that case.* *This view is reinforced by the nature of the Full Court's reasoning in that case where the Court approved what was said by Morris CJ in *Smith v* *Westell.*[^\[14\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/17.html#fn14) In the relevant passages, the Court emphasised that the words extending the meaning of *"driving"* still require proof of a link between;
+
+a.  The acts or omissions contemplated by the definition provisions; and
+
+b.  The possibility or likelihood that the person will move the vehicle.
+
+**Barnes v Dale \[2020\] TASMC 17 (7 October 2020)**
+
+\[28\] My analysis is that despite the broad and inclusive amended definition in the Act, it remains the case that I am bound to decide this case by asking the questions posed in *Cooley v Lowe*; whether the defendant had the capacity to and that there was at least a reasonable possibility, if not likelihood, that he would attempt to drive the vehicle and so endanger the public. Whether the relationship between the defendant and his motor vehicle can be said to be *"driving"* is a question of fact to be determined in the circumstances of the particular case. I now turn to answer that question.
+
+### DUI
+
+See **Kerr v McLennan \[2011\] TASMC 21 (20 April 2011)**
+
+Whether driver was under the influence to such a degree as to be incapable of exercising proper control of vehicle
+
+**And Police v Brown \[2008\] TASMC 7**
+
+#### Recent Magi decision
+
+***Police v Brown* \[2008\] TASMC 7**
+
+**The law**
+
+\[8\]. The relevant principles applicable in this case are these:
+
+Intoxication -- under the influence
+
+\- The question whether a person is under the influence of intoxicating liquor is a pure question of fact. What must be proved is that the defendant was influenced by intoxicating liquor - that is - that his reactions were affected; *Richardson v Shipp* \[1970\] Tas SR 105, at 112; *R v Burnside* \[1962\] VR 96
+
+\- It is recognised that there are indicia, being certain observable abnormalities of behaviour and certain physical signs, which evidence when a person who has ingested alcohol has become \"influenced\" by alcohol. If there is accepted evidence of sufficient manifestation of these indicia, one is entitled to conclude (in the absence of evidence to the contrary), that the indicia are the effect of the alcohol and that the subject person, no matter what his tolerance to alcohol, is \"under the influence\"; *O'Connor v Shaw* \[1958\] Qd R 384 at 386.
+
+\- The extent of the defendant's intoxication, i.e. whether he is so much under the influence as to be incapable of having proper control of the vehicle, is a question of fact upon which the court must be satisfied beyond reasonable doubt; *Pulleine v Button* \[1948\] SASR 1 at 7.
+
+*Proper control*
+
+\- The standard of \"*proper control\"* is an objective standard, a standard common to drivers as a whole and not to the individual driver. Whether a person is under the influence of intoxicating liquor to the requisite extent must be judged by an objective test. The standard is that control which a driver of ordinary reasonable prudence and ability ought exercise while driving his/her motor vehicle; *Lowe v Suckling* \[1983\] Tas R 116 (NC) N9 (Unrep. 23/1983 at 9), approving *Lysaght v Police* \[1965\] NZLR 405 (CA) (see 409, 414).
+
+\- Actual direct observation of the defendant's lack of ability to control the vehicle is not essential -- the inference may be drawn from his behaviour: *Pulleine v Button (supra)* at 6-7.
+
+\- The court may reach the requisite state of satisfaction upon inferences drawn from evidence other than actual driving; or, notwithstanding evidence of acts of apparently normal driving by the defendant; *Pulleine v Button (supra)* at 7; *Lowe v Suckling (supra).*
+
+### Public road (driveway)
+
+**Brown v Maxwell \[2009\] TASSC 36**
+
+*\[24\] For all of these reasons, I conclude that s6(1) and 6 (2) do not apply only to driving on public streets, but also apply to driving on private land. It was therefore not necessary for the learned magistrate to be satisfied beyond reasonable doubt that the applicant drove on a public street.*
+
+## Timeline of THC
+
+There is a good case of **De Wit v Ali \[2021\] TASMC 10 (2 December 2021),** where Craig Gardner gave evidence that to be detectable weed generally has to be smoked within 6 hours to be at a reportable level.
+
+## Passive ingestion of THC
+
+Craig Gardner from FFST in an email dated 3 Auguste 2018:
+
+Review of the literature suggests that although passive exposure can cause positive results for THC in blood, this is only likely within a few hours of exposure.
+
+THC is rabidly metabolised, an in occasional smokers is typically only detectable for 4-8 hours, dose dependant.
+
+## Prescribed/ prescription THC
+
+The Department of Health's Pharmaceutical Services Branch (PSB) is responsible for administering the *Poisons Act 1971* (Act) and *Poisons Regulations 2018* (Regulations). This includes the maintenance of Tasmania's real-time prescription monitoring (RTPM) systems.
+
+The records of the supply to patients of all Schedule 8 (narcotic) substances and prescribed monitored medicines are sent to PSB by Tasmanian pharmacies. These records show who received, who prescribed, where and when these substances were dispensed. The records of all authorities to prescribe narcotic substances, issued to prescribers under the Act, are also kept on the database.
+
+Schedule 8 medicinal cannabis is a narcotic substance and I can advise there is no record on our RTPM systems of Mr Woodfield being dispensed Schedule 8 medicinal cannabis in Tasmania from community pharmacies.
+
+### Requirements:
+
+See **Smith v Marshall \[2024\] TASMC 12 **
+
+In this decision, court said research on internet chat groups was not reasonable as it was not a legal practitioner or other appropriate authority
+
+Needs to be tassie script from a tassie doc.
+
+## Medications and positive results
+
+Copy on file
+
+**From:** Hogan, Thomas \<<thomas.hogan@police.tas.gov.au>\>\
+**Sent:** Thursday, 9 February 2023 10:42 AM\
+**To:** Gardner, Craig \<<Craig.Gardner@fsst.tas.gov.au>\>\
+**Subject:** Prescribed medication and Meth
+
+Good morning, Craig,
+
+Can you please tell me whether a driver taking the below medications, alone or in combination, in any prescribed quantity, could return a positive result for the presence of Methamphetamine in an analysis of oral fluid?   
+
+Paracetamol + Codeine
+
+Paracetamol + Pseudoephedrine hydrochloride
+
+Diazepam
+
+Citalopram
+
+Oxycodone
+
+**From:** Gardner, Craig \<<Craig.Gardner@fsst.tas.gov.au>\>\
+**Sent:** Tuesday, February 14, 2023 9:41 AM\
+**To:** Hogan, Thomas \<<thomas.hogan@police.tas.gov.au>\>\
+**Subject:** RE: Prescribed medication and Meth
+
+Hi Tom,
+
+None of the listed drugs would lead to a positive methylamphetamine result in a sample of oral fluid analysed by FSST. Pseudoephedrine may produce a roadside positive result on the Drugwipe 5S, but laboratory instrumentation used in the analysis is able to distinguish methylamphetamine from pseudoephedrine.
+
+The presence of methylamphetamine indicates an administration of methylamphetamine.
+
+Regards
+
+**ALSO -- oral advice from Craig -- Lexapro (escitalopram) and Serequel (Quetiapine) will not give positive results either.**
+
+**ALSO -- another email once sent to Ang Phipps Zoloft (sertraline) is way different. and Duromine (phentermine) will give positive lick test but not analysis.**
+
+Also on advice from Juliette Cunningham [CLOMIPRAMINE]{.mark} wont. May lead to

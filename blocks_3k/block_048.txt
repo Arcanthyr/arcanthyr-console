@@ -1,0 +1,259 @@
+### For 38 apps. 
+
+The court may be assisted by submissions in respect the general considerations when determining an exercise of discretional leave, espoused in s. 192:
+
+\(2\) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --
+
+\(a\) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and
+
+> ***These are summary proceedings. The matter is a relatively discreet matter -- I would submit further inquiry would not unduly lengthen the course of proceedings***
+
+\(b\) the extent to which to do so would be unfair to a party or to a witness; and
+
+- ***The prosecution would submit that without the grant of leave, the veracity of the evidence given by this witness, is unlikely to receive any form of challenge by the defence. The question of fariness, I would submit, is one relating to a fair trial to all parties of this contest, to present their case in the best possible light***
+
+- ***A copy of the initial statement, provided by this witness, has previously been disclosed to the defence. Presumably they have been on notice of what, at lease what the Prosecution believed would be the intended evidence of this witness. Such evidence would not be a surprise***
+
+\(c\) the importance of the evidence in relation to which the leave, permission or direction is sought; and
+
+- ***This evidence is not only important, but determinative -- on one account an assault has occurred, on the other not offence has taken place.***
+
+\(d\) the nature of the proceeding; and
+
+- ***These are FV proceedings, these are serious allegations, and it is, in my submission important that all evidence before you is appropriately tested***
+
+\(e\) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence.
+
+- ***The defendant is not compellable -- there are no other means by which this evidence could be presented to the court. The parties are here, and in all other respects the parties can proceed with the hearing - an adjournment would not alter this situation now faced, and would only serve to delay matters further.***
+
+## Section 38
+
+### If a witness refuses to answer a question rely on section 43 of the Justices Act and threaten them with gaol 
+
+**PROCEEDING TO S 38 CROSS-EXAMINATION**
+
+I can cross examine a witness under 38 about a PIS they have made. Starting point is to look at s 43 of the EA.
+
+I do not need to show them anything before hand to do that.
+
+If they deny the making of the PIS I HAVE to put to them the circumstances under which they mae the statement, and draw their attention to the inconsistency under 43(2). Have the statement MFI
+
+Having done this, I can now adduce evidence of the making of the PIS through another witness under s 106 as counter credibility evidence. Once admitted under 106 -- it is then admissible as proof of the representation
+
+### Quick soldiers 5 on PIS s. 38:
+
+Firstly, exhaust your EIC to the fullest extent possible, making notes of departures or omissions. If it becomes obvious during their EIC that they are going to be hostile, continue through, but signal to the court (for the benefit of defence) when a significant inconsistency arises that an application is likely to be forthcoming (this satisfies the notice requirement under s.38(6) -- if you didn't know it was going to happen before the hearing).
+
+Secondly, try to exploit s. 32 if you can. This saves undermining the witnesses' credibility so much (assuming the pre-conditions of s. 32 are met - statement was contemporaneous, truthful etc., fresh in the mind).
+
+If that fails to yield results, make careful note of the inconsistencies between the statement and the evidence.
+
+Make your application, seeking to have the witness excluded.
+
+Ask the court if they wish to hear submissions under s. 192 (they never ever need to, but it makes you look cool showing off you know the law)
+
+Tender the written statement in support of the application (defence usually concede this for the purposes of the application -- except for Richo, coz he is a dick). Point directly to the paragraphs that are inconsistent and seek leave to CX on those portions (courts are sticklers for limiting us, so you need to be clear what you say is inconsistent, and what you want to CX on).
+
+Remember s. 38(3) -- seek leave to CX on credit generally -- there must be a reason for the inconsistency!
+
+Witness is recalled. Put to them the circumstances of the making of the statement and put to them the extent of the inconsistency (this satisfies s. 43 which we may need to come to later).
+
+If they accept the inconsistency, put to them the most favourable evidence (statement or EIC) was the truth.
+
+If they accept that, job done.
+
+If not, go though the whole 38, pointing out all the inconsistencies. Conclude your examination and get the statement in through the officer who took it. You've satisfied s 43 so you can tender it as evidence of a PIC, and because of s. 60 it can be used as evidence of the truth.
+
+If defence or the witness deny ever making the initial out of court statement, you just need to interpose (on the application) to call the officer to whom it was made, Only need to satisfy court on balance of probabilities that a PIS occurred to advance a s38.
+
+So, in short:
+
+Section 32
+
+Section 38
+
+Section 192
+
+Section 43
+
+Section 60
+
+## Precedent for evidence of inconsistent representation being adduced first before unfavourable declaration
+
+### Calling cop first 
+
+In [J v Hamilton \[2007\] TASSC 105 (13 December 2007)](http://classic.austlii.edu.au/cgi-bin/disp.pl/au/cases/tas/TASSC/2007/105.html?stem=0&synonyms=0&query=poa1935140%20s37b) 
+
+Appeal of case that at first instance cop was called to submit interview of witness before the witness gave evidence on basis that prosecutor knew they would be unfavourable. It was to pre-empt need to prove it later. Although consented to by defence, and not an issue of the appeal, it demonstrates at least that it has been done before. Key is that it is only MFI, and otherwise just rely on hearsay exception of maker being available.
+
+Notes:
+
+From obs in court
+
+Let vic go through all of evidence
+
+Signal to court at relevant bit that 38 likely, but then go through right to the end.
+
+Signal 38 and ask vic to be exused
+
+Refer to her statement -- seek to hand it up to "*I wonder if the defence consnets to me handing up a copy of the statement to assist my application* "and specifically point to the inconsistency
+
+If the statement is challenged by defence, submit that the test is balance of probabilities that the statement is ehrs.
+
+If not satisifeid with that, call the police officer to give evidence of the taking of it on the voir dire. Get all the details!!! Everything. Demeanour emotional state, speech clarity. Ask court to accept evidence of officer in the substantive trial as well Voir dire is separate hearing.
+
+Have statement marked for ID
+
+Finish 38 submission -- ask leave to Cross about the making of statement , and point to specific inconsistanct y to be corssed about
+
+Call vic
+
+Ask her to read statement to her self!
+
+Ask her if she can identify the statement?
+
+Ask her if it is her name and signature?
+
+Take it back
+
+Put to her circumstances of making the statement when where etc.
+
+Put to her each inconsistency to her in detail
+
+PUT TO HER SHE DID SAY IT AND!!!!!! THAT IT DID Happen -- need to say it did happen as well as you did tell police, otherwise only goes to credit not to the truth,
+
+If denies making of statement -- tender it through s. 43 (consider ***Aslett v Queen***)
+
+Section 38 Raise application
+
+If needed -- call police officer who took statement
+
+Ask police officer:
+
+Where were you
+
+When?
+
+Observations of witness -- demeanour?
+
+Was a statement taken?
+
+Did you ask questions and were they answered?
+
+Did the witness make un-prompted representations?
+
+Were the recorded in the document?
+
+- Show document to police officer
+
+- Ask if it is there statement at the bottom of the document
+
+- Ask if they observed the maker of the other signature as having been made by the witness
+
+Have statement MFI
+
+Then
+
+Refer to sub-s (b) of 38 -- warning given to defence
+
+Take magi to specific inconsistency location within statement and areas sought to eb CX on. Include surrounding areas, as whilst not directly inconsistent, are required context to the inconsistantcy.
+
+## Test for re-open case:
+
+Discretion to re-open prosecution case when failure to adduce evidence. See for a failed attempt by Pross: **Maher v Maynard \[1991\] TASSC 8**
+
+Must have been unforeseeable that such evidence would come out.
+
+3-8-18
+
+**PROCESS:**
+
+**Section 38**
+
+As soon as the inconsistency arises make note of it, and consider notifying the court that this juncture is approite to signal that such an application is forthcoming (may also help warn defence and satisfy the notice requirement if there was no warning)
+
+Ask the court -- Your honour, I have an application to make pursuant to section 38 of the evidence Act. I seek to make that application in the absence of the witness.
+
+- Have witness excused.
+
+Application made pursuant to s 38(1) sub-para (a) and (c)
+
+It is my submission that the evidence given by this witness, in respect of their observation/ account of the defendant's representation is unfavorable to the Prosecution. Additionally, that the evidence just given is inconsistent with a prior statement made by the witness
+
+In support of that submission, your honour, I'd invite the court to make reference to a statutory declaration made by the witness on the x Date. If I could specifically take your honour too para X of that statement
+
+- show statement
+
+- Take court to point of the inconsistency
+
+Your honour will note in that statement the witness states XXXX
+
+Further, If I may, I would take the court to sub-s 3 of section 38, and seek leave to extend cross-examination beyond the simple fact of the inconsistent statement, but further, to matters of credit as to why the witness has made the inconsistent statement now, in their evidence in Chief.
+
+Relevant to your honoirs determination as to whether the leave ought be granted, are matters enumerated in sub-s 6 of section 38.
+
+Sub para (a) -- Notice was given previously when suspicion arose as to the potential/ or, matter has taken the prosecution by surprise, the application has been made at the first available moment.
+
+Sub para (b) --
+
+The court may be assisted by submissions in respect the general considerations when determining an exercise of discretional leave, espoused in s. 192:
+
+\(2\) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --
+
+\(a\) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and
+
+> ***These are summary proceedings. The matter is a relatively discreet matter -- I would submit further inquiry would not unduly lengthen the course of proceedings***
+
+\(b\) the extent to which to do so would be unfair to a party or to a witness; and
+
+- ***The prosecution would submit that without the grant of leave, the veracity of the evidence given by this witness, is unlikely to receive any form of challenge by the defence. The question of fariness, I would submit, is one relating to a fair trial to all parties of this contest, to present their case in the best possible light***
+
+- ***A copy of the initial statement, provided by this witness, has previously been disclosed to the defence. Presumably they have been on notice of what, at lease what the Prosecution believed would be the intended evidence of this witness. Such evidence would not be a surprise***
+
+\(c\) the importance of the evidence in relation to which the leave, permission or direction is sought; and
+
+- ***This evidence is not only important, but determinative -- on one account an assault has occurred, on the other not offence has taken place.***
+
+\(d\) the nature of the proceeding; and
+
+- ***These are FV proceedings, these are serious allegations, and it is, in my submission important that all evidence before you is appropriately tested***
+
+\(e\) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence.
+
+- ***The defendant is not compellable -- there are no other means by which this evidence could be presented to the court. The parties are here, and in all other respects the parties can proceed with the hearing - an adjournment would not alter this situation now faced, and would only serve to delay matters further.***
+
+If it is a successful application, seek to have witness recalled
+
+You spoke with police?
+
+You made a stat dec?
+
+- Ask witness to see statement
+
+Please read that statement ot yourself -- don't tell the court what it is
+
+Direct witness to read to themselves the relevant section
+
+Please read it carefully to yourself -- take your time and tell me when you're finished reading it.
+
+Can you tell the document is?
+
+It has your signature on it?
+
+That is the statement you made to police that evening?
+
+- Then discuss inconsistency
+
+You told police XYZ
+
+Today in EIC you've said ABC
+
+You'd agree they are two different statements
+
+The first account -- that which was given to police and signed by you as a declaration of the truth of its contents is actually what occurred isn't it --
+
+- If they don't agree -- point to the bits of the statement they do agree to, to accept them
+
+- Then get them to read out loud to the court the part that we want
+
+### Tender the document -- PIS

@@ -1,0 +1,271 @@
+### Execution or performance of duty
+
+**Jones v Krushka \[2021\] TASMC 14 (30 November 2021)**
+
+**"The meaning of "in the execution of his duty"**
+
+138 In order to establish counts 1 and 3 on the complaint it is necessary to establish that S/C Moir is a police officer and at the time he was assaulted he was acting *"in the execution of his duty"*: [*Police Offences Act *1935](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/) [s34B(a)(a)(i).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s34b.html)
+
+139 That is an essential element of the charge. If it is not established, the charge is not proved even if an assault is otherwise established: *Hibble v Phegan & Ors* [\[1997\] TASSC 52](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1997/52.html) per Zeeman J at \[46\].
+
+140 The scope of a police officer's duty was considered by Cosgrove J in *Innes v Weate *[\[1984\] TASRp 3](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASRp/1984/3.html); [\[1984\] Tas R 14.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1984%5d%20Tas%20R%2014) His Honour said at p20:
+
+*"The word "duty" does not refer, to the constable's duty to obey superior officers. It refers to the duty of constables generally -- the duty to prevent and detect crime and to apprehend wrongdoers, to keep the peace, and to protect life and property (i.e. to protect persons from injury and property from damage). In Rice v Connolly [\[1966\] 2 QB 414](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1966%5d%202%20QB%20414), at 419, Lord Parker CJ said:*
+
+*"It is also in my judgment clear that it is part of the obligations and duties of a police constable to take all steps which appear to him necessary for keeping the peace, for preventing crime or for protecting property from criminal injury. There is no exhaustive definition of the powers and obligations of the police, but they are at least those, and the would further include the duty to detect crime and to bring an offender to justice."*
+
+141 His Honour said, at p21, that the duty cannot be stated other than in general terms and that the existence and nature of the duty depends upon a reasonable assessment by the constable of any given situation. That means there is a wide discretion to act swiftly and decisively but the exercise of that discretion is subject to scrutiny by the courts.
+
+142 There is also a well-recognised distinction between acting in the course of duty and acting in the execution of duty: *Coates v R *[\[2001\] TASSC 141](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2001/141.html)* *per Slicer J at \[16\] (with whom Cox CJ agreed at \[1\]). A police officer acts in the course of his or her duty by attending or being at events. That is part of a general duty to keep the peace and ensure compliance with the law. His Honour said, at \[17\]:
+
+*"But his capacity to engage in a particular action is defined by statute or common law powers. It is the nature or form of that particular action or response which constitutes 'execution of duty' rather than 'course of duty. The distinction can be described as being as that between "a shield" and "a sword". In executing a particular duty, he is said to be protected (by way of particular sanction) from obstruction."*
+
+143 In *Tasmania v Gladwin *[\[2016\] TASSC 64](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2016/64.html), Brett J highlighted the distinction between being 'on duty'within the meaning of [s16A](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/sa1997121/s16a.html) of the [*Sentencing Act *1997](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/sa1997121/) and the concept of the *"due execution of his duty"*. His Honour said, at \[22\], that the latter
+
+*"\...is a narrow concept and one which is referable to the nature of the function that the police officer is performing, rather than a temporal consideration."*
+
+144 In considering whether or not the police officer is executing a duty it is irrelevant whether they are on duty or able to be on duty or acting in the course of their duty. What is necessary is to identify the particular duty the police officer is performing and the acts that are being undertaken to execute that duty. The assault must occur while those acts in execution of the identified duty are being performed."
+
+Definition should be considered broadly per Full Court of the FC in ***R v K (1993) ALR 59*** and cited by ***Fairly in Police v Keates \[2016\] TASMC***
+
+**Wilkie v Bennett \[2021\] TASMC 1 (11 January 2021)**
+
+**"Execution of Duty"**
+
+70. The scope of a police officer's duty involves a very wide discretion to (at least) take all steps reasonably necessary to prevent and detect crime, to apprehend wrongdoers, to keep the peace, and to protect life and property[^\[8\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2021/1.html#fn8). In *Innes v Weate**[^\[9\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2021/1.html#fn9) *Cosgrove J held that the duty:
+
+    - \- involves a wide discretion to act swiftly and decisively in the interests of liberty, to intervene when it is properly called for and reasonably carried out;
+
+    - \- arises from the law and is circumscribed by it;
+
+    - \- is to prevent and detect crime, to apprehend wrongdoers, to keep the peace, and to protect life and property, (that is, to protect persons from injury and property from damage);
+
+    - \- includes all steps which appear to him necessary for keeping the peace, for preventing crime or for protecting property from criminal injury; and
+
+    - \- depends upon a reasonable assessment by the constable of the given situation.
+
+71. In *Coleman v Power*[^\[10\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2021/1.html#fn10)* *at \[117\]-\[127\], McHugh J analysed the cases and considerations relating to police officers *"acting in the execution of* \[their\]* duty"*. He observed that provisions such as the [*Police Offences Act 1935*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/), [s34B(1)(a)(ii)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s34b.html) are predicated on the lawfulness of the task being performed by the constable which is said to be connected with her function as a police officer (at \[117\]). McHugh J approved and applied the decision of the Full Court of the Federal Court in *Re K**[^\[11\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2021/1.html#fn11) *in which the court reviewed the authorities on the scope of an officer's duty:
+
+"The effect of all those cases is that a police officer acts in the execution of his duty from the moment he embarks upon a lawful task connected with his functions as a police officer, and continues to act in the execution of that duty for as long as he is engaged in pursuing the task and until it is completed, provided that he does not in the course of the task do anything outside the ambit of his duty so as to cease to be acting therein[^\[12\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2021/1.html#fn12)."
+
+### Found not to be in "execution"
+
+**Hickman v Richmond \[2013\] TASMC 36 (3 July 2013)**
+
+4A Intoxication.
+
+Police did not take reasonable steps, make reasonable inquires as to find a safe place before taking her into custody.
+
+### It is NOT necessary to prove def knowledge of Police officers. 
+
+WHERE THERE IS A POLICE OFFICER ASSAULTED GO UNDER 34B POA not 35.
+
+Under 34B it is Not necessary to prove that D new it was an officer, but mistake available if it were not for that fact the assault would have been lawful. Must still prove that officer was acting in duty.
+
+Taken from **Jones v Bacic \[2013\] TASMC 14 (19 March 2013)**
+
+5.  *On the High Court authority referred to below, I find that it was not necessary for the prosecution to prove that Mr Bacic knew that Senior Constables Jones and Cranefield were police officers.*
+
+<!-- -->
+
+6.  *In the case of The Queen v Reynhoudt [\[1962\] HCA 23](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1962/23.html); [(1962) 107 CLR 381](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281962%29%20107%20CLR%20381), the High Court (Taylor**[^\[1\]^](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2013/14.html#fn1), Menzies**[^\[2\]^](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2013/14.html#fn2) and Owen**[^\[3\]^](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2013/14.html#fn3) JJ; Dixon CJ and Kitto J dissenting) dealt with the [Crimes Act 1958](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/vic/consol_act/ca195882/) (Vict.) [s.40](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/vic/consol_act/ca195882/s40.html), which provided relevantly that*
+
+*Whosoever \... assaults, resists or wilfully obstructs a member of the police force in the due execution of his duty \... shall be guilty of a misdemeanour. *[*^\[4\]^*](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2013/14.html#fn4)
+
+7.  *That provision is not, for present purposes, materially any different to the [Police Offences Act 1935](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/), [s.34B(1)(b)](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s34b.html) to warrant any departure from the principle stated by the High Court in Reynhoudt. That principle is applicable to this charge.*
+
+8.  *The High Court in Reynhoudt approved the full court of the Victorian Supreme Court in Reg v Galvin (No.1) [\[1961\] VicRp 113](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VicRp/1961/113.html); [\[1961\] VR 733](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1961%5d%20VR%20733) and overruled Reg. v Galvin (No.2) [\[1961\] VicRp 114](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VicRp/1961/114.html); [\[1961\] VR 740.](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1961%5d%20VR%20740) In the earlier Galvin case, the full court of the Victorian Supreme Court held that in order to substantiate a charge of assault on a police officer, it was sufficient for the Crown to prove an assault upon a person who was proved to have been at the time of the assault a member of the police force then acting in the due execution of his duty as such. That decision however conceded the right of a person charged with such an offence to exculpate himself by establishing "on the balance of probabilities that he acted reasonably in the bone fide belief, based on reasonable grounds, that the police officer was in fact unlawfully assaulting or otherwise interfering with him\... And that, had the facts been as the accused supposed to be, his own actions would have been lawful and innocent": Reynhoudt per Taylor J at 391.*
+
+*For cases where the principle in Reynhoudt is applied, see R v De Simone [\[2008\] VSCA 216](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2008/216.html) at [\[56\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VSCA/2008/216.html#para56); In DPP v Bone [\[2005\] NSWSC 1239](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWSC/2005/1239.html) at [\[40\]](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWSC/2005/1239.html#para40).*
+
+## Asportation 
+
+False imprisonment vs kidnapping:
+
+*Davis v R \[2006\] NSWCCA 392*
+
+32 It has been stated that what distinguishes kidnapping from false imprisonment is the additional element of asportation , that is, the carrying away of the victim from a place: see eg *Smith v State,* Wisconsin Supreme Court, Orton J, 1885, reported in (1885) 6 *Criminal Law Magazine* 708. Without this element, false imprisonment and kidnapping would be entirely coextensive; see "Kidnapping and the Element of Asportation " (1962) 35 *Southern California Law Review* 212 at 216.
+
+33 However, the** **asportation  did not have to be very great. In *R v Wellard* \[1978\] 3 All ER 161, the appellant had convinced the female victim that he was a police officer and she walked with him to his car and got in it on this basis. At 163 Lawton LJ stated:
+
+As Cairns LJ said in *R v Reid* (\[1972\] 2 All ER 1350 at 1353, \[1973\] QB 299 at 303)\...the essence of the matter is the carrying from a place\...All that has to be proved is the false imprisonment, the deprivation of liberty coupled with a carrying away from the place where the victim wants to be. It may be that in some circumstances the movement would not be sufficient in the estimation of the jury to amount to a carrying away. Every case has to be considered on its own facts. In this case the victim was carried away by the appellant for no less than 100 yards and put into a motor car. In our judgment, there was ample evidence that the victim was carried away from the place where she wanted to be\...
+
+Assault A police officer:
+
+# Firearms Act
+
+Possess stolen firearm -- no need to prove stolen. Averment in complaint sufficient per s 107A
+
+## Extended definitions:
+
+Use, Possess and Sell all have extended definition:
+
+### Use
+
+***use***, in relation to a firearm, means --
+
+\(a\) fire the firearm; or
+
+**[(b) hold it so as to cause a reasonable belief that it will be fired, whether or not it is capable of being fired.]{.mark}**
+
+### Gel blaster
+
+Is a firearm, Can be considered an air rifle and thus could be lawful under a section \[A\] licence. So whilst still a firearm, bot a prohibited one that a licence cannot be issued for (indictable offence) **Tasmania v Milligan (No 2) \[2021\] TASSC 60 (24 November 2021)**
+
+### Firearm disposal 
+
+**FIREARMS Disposal:**
+
+As a prosecutor (non-cop), can only ask for it on conviction for a s 2(B) or Part 5 offence -- otherwise leave it to Firearm services.
+
+**FIREARMS ACT 1996 - SECT 88**
+
+**88. Seizure of firearms if storage requirements not met**
+
+A police officer may seize any firearm, firearm part, ammunition or ordnance that the police officer has reasonable grounds to believe is not being kept in accordance with this Part.
+
+**FIREARMS ACT 1996 - SECT 149**
+
+**149. Disposal of surrendered or seized firearms**
+
+\(1\) A police officer or a person who claims to be the owner of any firearm or ammunition surrendered or seized under this Act may apply to a magistrate for an order under this section.
+
+\(2\) A magistrate may order that the firearm or ammunition--
+
+\(a\) is forfeited to the Crown; or
+
+\(b\) is to be returned to the person claiming to be the owner of the firearm or ammunition; or
+
+\(c\) is to be disposed of in any manner the magistrate determines.
+
+(2A) A magistrate may make an order under subsection (2)(a) if satisfied that --
+
+\(a\) the owner of the firearm or ammunition --
+
+\(i\) is not authorised by or under this Act to be in possession of the firearm or ammunition; and
+
+\(ii\) has failed to provide an alternative method of disposal for the firearm or ammunition within a reasonable time; or
+
+\(b\) the whereabouts of the owner of the firearm or ammunition has not been, and is not likely to be, ascertained by reasonable inquiry; or
+
+\(c\) the owner of the firearm or ammunition has failed to comply with the requirements of this Act in relation to that firearm or ammunition.
+
+(2B) If a person is convicted of an offence against any one or more of the following provisions, the firearm used in relation to the offence is to be forfeited to the Crown:
+
+(a) [section 111](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s111.html);
+
+(b) [section 112](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s112.html);
+
+(c) [section 113(2)](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s113.html);
+
+(d) [section 114](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s114.html);
+
+(e) [section 14B(2A)(a)](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s14b.html) of the [Police Offences Act 1935](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/).
+
+\(3\) If a person is convicted of an offence under Part 5 in respect of which any firearm or ammunition has been seized under [section 88](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s88.html), the court, in addition to imposing any other penalty, may order that the seized firearm or ammunition is forfeited to the Crown.
+
+(3A) Any firearm or ammunition forfeited to the Crown under subsection (3) is to be disposed of as the Commissioner determines.
+
+\(4\) .  .  .  .  .  .  .  .  
+
+\(5\) The Auditor-General is to arrange for an independent audit of all firearms or ammunition disposed of under this Act to be carried out once every year.
+
+\(6\) A report of any audit carried out under subsection (5) is to be tabled in both Houses of Parliament.
+
+\(7\) In this section --
+
+ammunition includes a projectile falling within paragraph (b) of the definition of ordnance in [section 3](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s3.html);
+
+firearm includes a weapon falling within paragraph (a) of the definition of ordnance in [section 3.](http://www.austlii.edu.au/au/legis/tas/consol_act/fa1996102/s3.html)
+
+**FIREARMS ACT 1996 - SECT 3**
+
+**3. Interpretation**
+
+In this Act --
+
+***police*** ***officer*** means a member of the Police Service established under [section 4](http://www.austlii.edu.au/au/legis/tas/consol_act/psa2003149/s4.html) of the [Police Service Act 2003](http://www.austlii.edu.au/au/legis/tas/consol_act/psa2003149/);
+
+**POLICE SERVICE ACT 2003 - SECT 4**
+
+**PART 2 - Police Service Division 1 - Establishment of Police Service 4. Police Service**
+
+\(1\) There is established the Police Service.
+
+\(2\) The Police Service consists of the following ranks:
+
+\(a\) Commissioner;
+
+\(b\) Deputy Commissioner;
+
+\(c\) Assistant Commissioner;
+
+\(d\) Commander;
+
+\(e\) Inspector;
+
+\(f\) Sergeant;
+
+\(g\) Constable;
+
+\(h\) Special Constable;
+
+\(i\) Trainee;
+
+\(j\) Junior Constable;
+
+\(k\) any other rank created under subsection (4).
+
+\(3\) The total number of police officers comprising the Police Service is to be determined by the Minister after considering any recommendation of the Commissioner.
+
+\(4\) The Commissioner or, in the case of a rank of or above the rank of inspector, the Governor may remove or create a rank.
+
+### Firearm amentsty:
+
+Provided for in section 129 of the Act. Applies to possession only.
+
+# Evidence Types
+
+## Circumstantial evidence 
+
+\[8\] Circumstantial evidence is evidence which proves or tends to prove a fact or set of facts from which the fact to be proved may be inferred. Circumstantial evidence can prove a fact beyond reasonable doubt only if all other reasonable hypotheses are excluded. **Doney v R \[1990\] HCA 51; (1990) 171 CLR 207**
+
+Circumstantial evidence pointing towards the guilt of the defendant. In order for such evidence to prove a fact beyond reasonable doubt, that conclusion is only open if all other reasonable hypotheses consistent with innocence are excluded: see *Doney v The Queen* [\[1990\] HCA 51](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1990/51.html); [\[1990\] 171 CLR 207](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1990%5d%20171%20CLR%20207) at 211. Guilt must be the only hypothesis reasonably open.
+
+Any such explanation or hypothesis must be more than fanciful or far-fetched. The hypothesis, to be reasonable, must possess some degree of acceptability or credibility on the evidence before me. (See *Howlett v Budd* [\[2003\] TASSC 49)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2003/49.html)
+
+Even if the court is unconvinced by the evidence of the defendant - being his broad, simple, blanket denial of any knowledge of involvement -- the court must still be satisfied beyond reasonable doubt of the prosecution case before It can convict. As I have said, the defendant bears no onus to advance a reasonable hypothesis consistent with innocence. (See *R v Betancur-Galvis *[\[2003\] NSWCCA 333](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2003/333.html); [\[2003\] 142 A Crim R 527).](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b2003%5d%20142%20A%20Crim%20R%20527)
+
+Circimstatial DNA Evidence:
+
+**Roughan v Haines \[2019\] TASMC 7 (25 November 2019)**
+
+\[15\] In that regard, even if the defendant's evidence itself does not itself create a reasonable doubt, I must necessarily assess the DNA evidence with care. Where DNA material is deposited, and how it is deposited must be considered: see *Fitzgerald v The Queen* [\[2014\] HCA 23](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2014/23.html) as an example, albeit one with a very different factual framework. Here, however, the nature of the sample and its position, and when it was found is such that, absent some other evidence, in my view no reasonable hypothesis consistent with innocence is apparent to me that would cause me to have any reasonable doubt as to the defendant's guilt.
+
+In this it must be steadfastly kept in mind that the Def Haines bears no onus.
+
+### **Circimstantial evidence "long thread"**
+
+**High Court in *R v Edwards *[\[1993\] HCA 63](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1993/63.html); [(1993) 178 CLR 193](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281993%29%20178%20CLR%20193), [68 A Crim R 349](http://www.austlii.edu.au/cgi-bin/LawCite?cit=68%20A%20Crim%20R%20349), a case which deals with post offence conduct in the form of lies:**
+
+The jury do not have to conclude that the accused is guilty beyond reasonable doubt in order to accept that a lie told by him exhibits a consciousness of guilt. They may accept that evidence without applying any particular standard of proof and conclude that, when they consider it together with the other evidence, the accused is or is not guilty beyond reasonable doubt.
+
+**It is considered together**
+
+**Roughan v Haines \[2019\] TASMC 7 (25 November 2019)**
+
+\[17\] In considering that circumstantial evidence against the defendant in this case, I must consider all of it combined, and I must consider "the weight which is to be given to the united force of all the circumstances put together":. See *Belhaven v Stenton Peerage* [\[1875\] 1 APP Cas 278](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1875%5d%201%20AC%20278) at 279 per Lord Cairns as recently approved of by Blow CJ in *Allen v Brown* [\[2016\] TASSC 22](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2016/22.html) at 12; see also *Chamberlain v The Queen* (No 2) [\[1984\] HCA 7](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1984/7.html); [\[1984\] 153 CLR 521](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1984%5d%20153%20CLR%20521) at 535 and 599. As was found to be the correct position by Blow, CJ in *Allen v Brown*, this is a "strands in a cable" and not a case where it is necessary to identify intermediate facts that constitute "indispensable links in a chain of reasoning towards an inference of guilt": see *Shepherd v The Queen* [\[1990\] HCA 56](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1990/56.html); [\[1990\] 170 CLR 573.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1990%5d%20170%20CLR%20573)
+
+### Post-offence conduct as part of circumstantial case
+
+**Pickett v Tasmania \[2022\] TASCCA 12 (20 September 2022)**
+
+*\[44\] These comments and principles should be applied by this Court when considering the significance of the flight evidence. While there were other potential reasons for flight by the appellant, and the evidence of itself could not have supported a finding of guilt, the immediacy and violence of his reaction upon seeing the police cars, and the desperation demonstrated by him during the police chase, were cogent pieces of circumstantial evidence to be taken into account with the other evidence presented by the prosecution. The strength of the circumstantial case will depend upon the combined force of that evidence.*
+
+### Alternative hypothesis consistent with innocence 
+
+For an inference to be reasonable it must rest on something more than mere conjecture. [***R v Baden-Clay***](https://jade.io/article/489654) \[2016\] HCA 35; 258 CLR 308 \[47\].
+
+Circumstances:
+
+1.  Exhibit D4 was a record of some text messages that were found on a mobile telephone that was in the def, McLachlan\'s possession when he was arrested, which was tendered as an exhibit by Jackson, a co-accused.

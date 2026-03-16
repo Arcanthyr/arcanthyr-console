@@ -1,0 +1,223 @@
+## (Record of interview ROI)
+
+**Tasmania v Purkiss & Otto \[2019\] TASSC 45 (27 September 2019)**
+
+Can be excluded on basis of overzeloue intervie tactics. Careful..
+
+24. There have been many reported common law cases in which evidence of admissions and confessions has been excluded because of oppressive questioning, particularly questioning involving undue persistence, cross-examination or scepticism. Many of the cases are referred to in *Cross on Evidence*, 11^th^ Australian edition, at \[33730\]. These cases are useful in determining questions of fairness for the purposes of [s 90](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s90.html) of the [*Evidence Act*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/).
+
+25. In *R v Amad *[\[1962\] VicRp 75](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VicRp/1962/75.html); [\[1962\] VR 545](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1962%5d%20VR%20545), Smith J said, at 548:
+
+\"A person in custody is, by that fact, ordinarily under great stress, and for that reason the law for his protection holds it to be improper to subject him, even after caution, to any form of cross-examination the tendency of which is in fact to extort admissions or to overcome his mental resistance to making admissions.\"
+
+26. In *R v Pritchard *[\[1991\] VicRp 8](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VicRp/1991/8.html); [\[1991\] 1 VR 84](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1991%5d%201%20VR%2084), the Crown had relied at trial on a videotaped interview in which the interviewing officers had made it clear that they did not believe the interviewee. The Victorian Court of Criminal Appeal dismissed an appeal against conviction, but made critical comments about the form of questioning. Crockett, McGarvie and Beech JJ said, at 93:
+
+\"The harm to him \[the applicant\] was that by the form of his questions the police officer was able to convey to the viewer of the tape the undisguised ridicule and derision he entertained about the answers of the applicant given in an endeavour to extricate himself from what obviously were real difficulties. The police would not at the trial have been permitted to express their incredulity or total disbelief in the applicant\'s answers. Why should they be allowed to do so by the form of questions chosen to be put to the applicant which can be, as they were, so vividly reproduced before the jury at trial?\"
+
+27. Several of Inspector Burk\'s questions involve expressions of disbelief in Ms Otto\'s answers and expressions of belief as to her involvement in the killing of her husband. He said things that he would not be allowed to say as a witness at the trial. It would have been unfair to Ms Otto for the jury to have seen and heard the inspector saying the things that I have quoted.
+
+## Defendant relying on Video Interview 
+
+I recon I could argue no need to play if no "admission" exception to hearsay... However, if interview contains ANY admission of anysort, there is an arguable obligation to play the ROI in full:
+
+**SPINKS v L \[2020\] TASMC 5 (4 May 2020)**
+
+"It is hearsay because it records a previous representation admitted to prove the truth the existence of some facts which the defendant intended to assert [(s 59(1))](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s59.html), but it is admissible under the [*Evidence Act *2001](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/) [s 81(2)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s81.html) as an exception to the hearsay rule. The obligation to put the case fairly requires the prosecution to tender the whole of the interview -- 'the good with the bad' ([^\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/5.html#fnB1) *R v Soma* [\[2003\] HCA 13](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2003/13.html); [(2003) 212 CLR 299](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%282003%29%20212%20CLR%20299) at [\[30\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2003/13.html#para30)-[\[31\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2003/13.html#para31))"
+
+### Submission against ROI as the only account from Def
+
+***Police v Quinn \[2019\] TASMC 4 ***
+
+**DECISION OF:** Daly DCM
+
+\[Para 14\] "For the reasons that follow, I have preferred the evidence of the police officers to that of the defendant, where their evidence conflicts. ***The defendant did not testify on oath in court. It was, of course, his right to remain silent in court. No adverse inference may be drawn from that. I assess the weight to be given to his exculpatory statements, where they are in conflict with the evidence the police officers, in light of the fact that his version of events was not given on oath and were untested by cross-examination. I give little weight to that material."***
+
+Hearsay:
+
+### ROI Record of interview must be played in full 
+
+Cannot substitute part or any of the recorded interview just with the transcript as the transcript is not evidence. Failure to do is error. **Baker v Barratt \[2019\] TASSC 28 (4 July 2019) at \[28\]**
+
+**Malcolm CJ and Murray J in R v McCarrol [\[2004\] WASCA 131](http://www.austlii.edu.au/au/cases/wa/WASCA/2004/131.html);** BC200404491 at \[19\]:
+
+The law as to the reception in evidence of a \'mixed\' statement, one containing admissions or declarations against interest by an accused person and one containing exculpatory statements, is clear: Mule v R [\[2004\] WASCA 7](http://www.austlii.edu.au/au/cases/wa/WASCA/2004/7.html); BC200400034 \... Where the prosecution is permitted to tender such a statement, relying upon its confessional qualities, then it is obliged to accept in evidence the exculpatory material which may in turn be relied upon by the accused. All of the statement becomes evidence available to the jury for their consideration, but the admissions and the exculpatory material need not, and indeed probably should not in the generality of cases, be accorded equal weight.
+
+### Double edged sward:
+
+**Jotheeswaran v Barnes \[2019\] TASSC 42 (17 October 2019)**
+
+When a defendant makes admissions in an interview or a statement that is relied upon by the prosecution, any exculpatory assertions in the interview or statement may be relied upon as evidence favourable to the defendant: *R v Higgins *[\[1828\] EngR 201](http://www.worldlii.org/int/cases/EngR/1828/201.html); [(1829) 3 C & P 603](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281829%29%203%20C%20%26%20P%20603), [172 ER 565](http://www.austlii.edu.au/cgi-bin/LawCite?cit=172%20ER%20565); *Jack v Smail *[\[1905\] HCA 25](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/ArgusLawRp/1905/96.html); [(1905) 2 CLR 684](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281905%29%202%20CLR%20684) at 695, 708.
+
+### Formal Caution necessary but notice as a "suspect" not
+
+**FW: Tasmania v Thompson \[2022\] TASSC 27 (28 April 2022)**
+
+*\[11\] "Taken in context, it is clear that His Honour was not seeking to lay down a minimum standard of fairness which requires an interviewee to be told that he or she is a suspect or possible suspect before an interview. The Court was dealing with circumstances in which there had been no caution at all, and his Honour\'s comments were in the context that although a caution may not have been necessary given the stage that the investigation had then reached, informing the accused that he was suspect would have at least alerted him to the seriousness of this position and put him on guard. In my view, it is apparent that his Honour\'s comments presupposed that, irrespective of what else had been said, the administration of a caution would have certainly satisfied the requirements of fairness in the circumstances of that particular case. His Honour also made the point that \"the requirements of fairness are not to be turned into fixed categories\"."*
+
+## Recent complaint evidence (66(2)):
+
+Permissible under s 66 where vic says to someone it happened so long as pre-conditions are met. However, not if they are saying it for the purposes of what will be said in court (i.e. a police formal statement) per s 66(3). So contrast this with a spontaneous representation at the scene.
+
+That means that a statement cant go in as evidence. But a neigbour they complain too, or the police they report to at the scene should be fine.
+
+See para 19 of ***Marysej v McCullough*** \[2018\] TASSC for a god example of the distinction.
+
+\[19\] The evidence of Ms Eberhart of the complainant\'s account of the applicant trying to pull her pants down was evidence of the truth of the complainant\'s assertions: Evidence Act 2001, s 66(2); Papakosmas v The Queen \[1999\] HCA 37, 196 CLR 297. On the same basis, the evidence of the assertions in the conversation with Senior Constable Carr was also evidence of the truth of the facts asserted unless the complainant said what she did for the purpose of indicating the evidence that she would be able to give in a court proceeding: Evidence Act, s 66(3). I think the only reasonable inference was that at the time of that conversation Senior Constable Carr was trying to find out what had happened, and that the complainant was enlightening her, rather than outlining the evidence she could give. It follows that the evidence of the descriptions of events given by the complainant to both Ms Eberhart and Senior Constable Carr was evidence of the truth of the facts asserted.
+
+3^rd^ party wintess s evidence of vic's distress and the account she gave of the defendant's actions is relevant as it tends to corroborate vic's assertions as to def's conduct. Wintess's evidence that vic complained to her about def's conduct is admissible as evidence of the truth of the facts that vic asserted, [*Evidence Act *2001](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), [s 66(2)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s66.html); *Papakosmas v The Queen* [\[1999\] HCA 37](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1999%5d%20HCA%2037), [196 CLR 297.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=196%20CLR%20297)
+
+NOTE -- section 66(3) does not restrict statements going in for PIS!!! Adduced not just as hearsay but also for credit
+
+Prosecution can admit that document on the hearing, not just as evidence of a prior inconsistent statement admittedly made by the complainant, but also as evidence of the truth of the matters asserted in it (See [*Evidence Act*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), [s60).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s60.html) There is abundant evidence that supports the prosecution submission that, once the prior representation is admissible as a prior inconsistent statement it is also admissible by operation of [s 60](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s60.html) as proof of the truth of its content. (See *Neill-Fraser v Tasmania (No2)* [(2019) TASSC 11](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2019/11.html) at par 20 per Brett J)
+
+## Tendency evidence and coincidence evidence
+
+### COINCIDENCE EVIDENCE
+
+**Tasmania v Harris \[2016\] TASSC 47 **
+
+**The approach to coincidence evidence**
+
+29. In *R v Gale; R v Duckworth* [\[2012\] NSWCCA 174](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2012/174.html), [217 A Crim R 487](http://www.austlii.edu.au/cgi-bin/LawCite?cit=217%20A%20Crim%20R%20487), Simpson J, with whom McClellan CJ at CL and Fullerton J agreed, summarised the approach to be adopted in considering the admission of evidence as coincidence evidence at \[30\]-\[31\] in the following way:
+
+\"\[30\] The factual underpinnings of the [s 98](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s98.html) decision to admit or reject coincidence evidence are:
+
+- that there is evidence capable of establishing the occurrence of two or more events; and
+
+- that there is evidence capable of establishing similarities in the two or more events; or
+
+- that there is evidence capable of establishing similarities in the circumstances in which two or more events occurred;
+
+- that there is evidence capable of establishing both similarities in the two or more events and similarities in the circumstances in which the two events occurred.
+
+\[31\] In a case in which it is found that there is such evidence, then, in my opinion, the correct process in the determination of the admission of evidence under [s 98](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s98.html) involves a series of steps, as follows:
+
+- the first step is to identify the \'particular act of a person\' or the \'particular state of mind of a person\' that the party tendering the evidence seeks to prove;
+
+- the second step is to identify the \'two or more events\' from the occurrence of which the party tendering the evidence seeks to prove that the person in question did the \'particular act\' or had the \'particular state of mind\';
+
+- the third step is to identify the \'similarities in the events\' and/or the \'similarities in the circumstances in which the events occurred\' by reason of which the party tendering the evidence asserts the improbability of coincidental occurrence of the events;
+
+- the fourth step is to determine whether \'reasonable notice\' has been given of the intention to adduce the evidence (or, if reasonable notice has not been given, whether a direction under [s 100(2)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s100.html) ought to be given, dispensing with the requirement);
+
+- the fifth step is to make an evaluation whether the evidence will, either by itself or in conjunction with other evidence already given or anticipated, \'have significant probative value\';
+
+- in a criminal proceeding, if it is determined that the evidence would have \'significant probative value\', the sixth step is the determination whether the probative value of the evidence \'substantially outweighs\' any prejudicial effect it may have on the defendant [(s 101(2)).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s101.html)
+
+- the sixth step necessarily involves some analysis both of the probative value of the evidence in question and any prejudicial effect it might have: *R v RN* [\[2005\] NSWCCA 413](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2005/413.html), and a balancing of the two.\"
+
+### Concoction of multiple complainants. 
+
+Another good use of coinceidence evidence is "*that having regard to the similarities in the events and the circumstances in which they are alleged to have occurred, it is improbable that, by coincidence, either child has either concocted or is mistaken about what occurred."*
+
+See para 19 onwards of **Biddle v Smith \[2012\] TASMC 24**
+
+And from \[22\]: *On the other hand, I am satisfied that the evidence in respect of one charge does have significant probative value in the proof of the other, on the basis that it is highly improbable, in my view, that both children would have coincidently either made up or been mistaken about being assaulted by the defendant. My reasons for arriving at this conclusion are as follows:*
+
+*There are a number of similarities between the versions of the children, which make it unlikely that their stories have falsely or mistakenly arisen by coincidence. Those similarities include the following:*
+
+- *The age of the children.*
+
+<!-- -->
+
+- *The fact that the defendant has met the children through the church his wife attends.*
+
+- *That each assault was of a sexual nature.*
+
+- *Each assault was relatively short lived and involved a brief but deliberate application of force by the defendant to the child in question.*
+
+- *That in each case the assault is alleged to have occurred in the context of a game being played by the defendant with the child.*
+
+- *That the defendant has initiated the game in question on each occasion.*
+
+- *A further circumstance of importance which contributes to the improbability of coincidence is that the allegations have been made by each child within two days of the other.*
+
+### Tendency EVIDENCE
+
+Look at **Police v FRS \[2020\] TASMC 9**
+
+4.  By amended notice dated 19 2020 the State gave notice of an intention to adduce tendency evidence: [*Evidence Act* 2001](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/), [s 97(1)(a).](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s97.html) The notice (at para. 2) indicated the State's intention to adduce evidence that the defendant had a tendency to:
+
+    a.  have a sexual interest in and/or engage in sexual contact with his nieces aged approximately 16 years;
+
+        b.  impose himself sexually upon his nieces without seeking or obtaining their consent;
+
+        <!-- -->
+
+        v.  sexually touch his nieces under their clothing;
+
+        <!-- -->
+
+        d.  sexually touch his nieces when they stayed overnight;
+
+        <!-- -->
+
+        e.  sexually touch his nieces when they were in bed; and/or
+
+        <!-- -->
+
+        f.  sexually touch his nieces in circumstances when they were alone.
+
+<!-- -->
+
+5.  The evidence was tendered on both complaints as cross-admissible tendency evidence. The defendant's counsel told the Court that there was no dispute that the evidence was tendency evidence and that there was no objection to its admission. During the course of the trial, AB gave evidence that the defendant massaged her shoulders and moved his hands "a bit too low". It was common ground that this uncharged act was included in the amended tendency notice. The defendant's counsel conceded that the evidence of the uncharged act was admissible as tendency evidence. Even so, prosecuting counsel submitted that the Court should decide whether it is correct to characterise the evidence in question as tendency evidence[^\[1\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn1).
+
+<!-- -->
+
+6.  Tendency evidence is a species of circumstantial evidence[^\[2\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn2). It provides the foundation for an inference that, because a person has a relevant tendency, it is more likely that they acted in a particular way, or had a particular state of mind. It is indirect evidence which allows 'stepping stone' reasoning as follows[^\[3\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn3):
+
+> That
+>
+> \- on an occasion other than the charged occasion, the defendant acted in a particular way;
+>
+> \- it can therefore be inferred that the person had a tendency to act in that way;
+>
+> \- because of that tendency, it can be inferred that on the charged occasion, the person acted in conformity with that tendency.
+>
+> Alternatively, that
+>
+> \- on an occasion other than the charged occasion, the defendant had a particular state of mind;
+>
+> \- it can therefore be inferred that the person had a tendency to have that state of mind;
+>
+> \- because of that tendency, it can be inferred that on the charged occasion, the person's state of mind conformed with that tendency.
+
+7.  The nature of tendency evidence was summarised by the High Court as follows[^\[4\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn4):
+
+Applied to evidence of past conduct, tendency reasoning is no more sophisticated than: he did it before; he has a propensity to do this sort of thing; the likelihood is that he did it again on the occasion in issue.
+
+Tendency reasoning, as courts have long recognised, is not deductive logic. It is a form of inferential or inductive reasoning\...
+
+8.  In *Pattison v Tasmania*^[\[5\]](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn5) ^Wood J observed that the consideration of tendency evidence and the threshold requirements for its admissibility involves four steps. Firstly, the evidence must be properly characterised as tendency evidence. That requirement is satisfied in this case. The evidence is relevant to the issue whether the defendant committed each offence in circumstances where he had a disposition or inclination to be sexually interested in his nieces when aged about 16 and an inclination to act on that sexual interest by sexually touching them^[\[6\]](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn6).^. The particular features of the defendant's alleged sexual misconduct as stated in the tendency notice are sufficient to link the two complaints together and make it more likely that he committed the charged offences[^\[7\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn7).
+
+<!-- -->
+
+1.  Secondly, the evidence must have significant probative value: [s 97(1)(b).](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s97.html) I am satisfied that the evidence satisfies this requirement for the following reasons. The interpretation section of the [*Evidence Act* 2001](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/), [s 3(1)](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s3.html) defines the 'probative value' of evidence as the extent to which the evidence is capable of rationally affecting the assessment of the probability of the existence of the facts in issue. In criminal cases, the facts in issue are the facts which establish the elements of the charge (here -- the ![](media/image3.png){width="0.16666666666666666in" height="0.16666666666666666in"}** indecent assaults **![](media/image4.png){width="0.16666666666666666in" height="0.16666666666666666in"})[^\[8\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn8). The tendency evidence in this case is important in the assessment of the probability of whether the defendant indecently assaulted his two nieces[^\[9\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn9). In *The Queen v Bauer[^\[10\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn10) *the High Court observed that in a multiple complainant sexual offences case (such as this case), where a question arises as to whether evidence that the defendant has committed a sexual offence against one complainant is significantly probative of the accused having committed a sexual offence against another complainant, the logic of probability reasoning dictates that, for evidence of the offending against one complainant to be significantly probative of the offending against the other, there must ordinarily be some feature of or about the offending which links the two together. I am satisfied in this case that such features exist: being those features set out at paragraph 2 of the amended tendency notice (see para \[4\], above).
+
+    10. Thirdly, the probative value of the tendency evidence must outweigh its prejudicial effect: [s 101(2).](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s101.html) The expressions "prejudicial effect" in [s 101](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s101.html), "unfairly prejudicial" in [s 135](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s135.html) and "unfair prejudice" in [s 137](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s137.html), each convey essentially the same idea of harm to the interests of the defendant by reason of a risk that the fact-finder might 'use the evidence improperly in some unfair way' against the defendant[^\[11\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn11). There is no danger of harm or misuse on either of the trials of these complaints[^\[12\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn12) (and it was not submitted that there was).
+
+    <!-- -->
+
+    11. Fourthly* *and finally, in relation to the separate duty of the Court to refuse to admit the evidence if its probative value is outweighed by the danger of unfair prejudice to the defendant, having conducted the evaluative judgment required by [s 137](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s137.html)[^\[13\]^](http://classic.austlii.edu.au/cgi-bin/sinodisp/au/cases/tas/TASMC/2020/9.html?stem=0&synonyms=0&query=%22indecent%20assault%20%22#fn13) I conclude that there is no relevant danger*.*
+
+See also **Biddle v Smith \[2012\] TASMC 24 from pare \[18\]**
+
+One previous act not necessarily enough for a tendency purpose, but the fact there were two separate complainants alleging similar conduct it could be admissible as coincidence evidence. See section 20
+
+### Probative value of tendency evidence
+
+**Brown v Tasmania \[2019\] TASCCA 4**
+
+At para \[54\]
+
+In *McPhillamy v The Queen *[\[2018\] HCA 52](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2018/52.html), [361 ALR 13](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=361%20ALR%2013) at [\[26\]](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2018/52.html#para26), the plurality said:
+
+\"\... assessment of the probative value of tendency evidence requires the court to determine the extent to which the evidence is capable of proving the tendency.\"
+
+The evidence must be capable of proving the tendency, but this can be considered with other evidence such as the presence of the def\'s DNA on the complainant\'s nightie.
+
+### Evidence of tendency can come from future/ subsequent behaviour. 
+
+**Brown v Tasmania \[2019\] TASCCA 4 **
+
+*\[20\] The first thing to notice about the proposed evidence is that it is of events which post-date the crimes. The fact that the tendency evidence relates to events after the alleged conduct in issue does not necessarily mean that the probative value of the evidence is reduced: RH v The Queen [\[2014\] NSWCCA 71](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2014/71.html), [241 A Crim R 1](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=241%20A%20Crim%20R%201) at [\[88\]](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2014/71.html#para88)- [\[130\]](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2014/71.html#para130).*

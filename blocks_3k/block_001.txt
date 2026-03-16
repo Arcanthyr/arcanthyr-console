@@ -1,0 +1,331 @@
+# Index: 
+
+Per direction of Sgt Askew, complaint withdrawn for formal diversion.
+
+## New legislation
+
+**Magistrates Court (Criminal and General Division) Act 2019**
+
+**Restraint Orders Act 2019**
+
+Dying legislation
+
+  -----------------------------------------------------------------------------------------------------------------
+  [Justices Act 1959](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077) (No. 77 of 1959)
+  -----------------------------------------------------------------------------------------------------------------
+
+  -----------------------------------------------------------------------------------------------------------------
+
+  -------------------------------------------------------------------------------------------------------------------------------------------------------
+  [Justices Rules 2003](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2003-184) (No. 184 of 2003)
+  -------------------------------------------------------------------------------------------------------------------------------------------------------
+  [Justices (Review) Rules 2004](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2004-117) (No. 117 of 2004)
+
+  [Justices Amendment (Victim Impact Statement) Rules 2004](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2004-177) (No. 177 of 2004)
+
+  [Justices Amendment (Family Violence) Rules 2005](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2005-018) (No. 18 of 2005)
+
+  [Justices Amendment Rules 2005](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2005-038) (No. 38 of 2005)
+
+  [Justices Amendment Rules (No. 2) 2005](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2005-090) (No. 90 of 2005)
+
+  [Justices Amendment Rules 2006](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2006-138) (No. 138 of 2006)
+
+  [Justices Amendment (Notice to Attend) Rules 2007](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2007-139) (No. 139 of 2007)
+
+  [Justices (Review) Amendment Rules 2008](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2008-114) (No. 114 of 2008)
+
+  [Justices Amendment Rules 2008](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2008-121) (No. 121 of 2008)
+
+  [Justices Amendment Rules 2009](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2009-077) (No. 77 of 2009)
+
+  [Justices Amendment Rules (No. 2) 2009](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2009-150) (No. 150 of 2009)
+
+  [Justices Amendment Rules 2010](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2010-111) (No. 111 of 2010)
+
+  [Justices Amendment Rules 2013](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2013-068) (No. 68 of 2013)
+
+  [Justices Regulations 2013](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2013-105) (No. 105 of 2013)
+
+  [Justices (Restraint Orders) Rules 2013](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2013-106) (No. 106 of 2013)
+
+  [Justices Amendment Rules 2014](https://www.legislation.tas.gov.au/view/html/inforce/current/sr-2014-045) (No. 45 of 2014)
+  -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Interpretation
+
+## Defintitions -- "inclusive"
+
+## Ordinary meaning:
+
+In the absence of a statutory definition it is necessary to give the word its ordinary meaning, and that means "the ordinary meaning conveyed by a provision having regard to its context in the Act and to the purpose or object of the Act (Acts interpretation Act 1931, 8B(3). Recourse may be made to the dictionary meaning "to confirm the interpretation conveyed by the ordinary meaning of the provision" (8B(1)(c) Acts interp Act.
+
+[Can't look at subordinate legislation to interpret powering legislation]{.mark} (***Attorney General v Barnes Tassc 2023)***
+
+# Reckoning of time:
+
+Tasmanian statutory interpretation requires you to *exclude* the day the period is dated from when you reckon a period "dated or reckoned from a given day". *Section 29 of the Acts Interpretation Act 1931 (Tas)* states that a period reckoned from a given day "shall be reckoned exclusively of that day" --- so the first day is excluded from the calculation.
+
+NOTE sentencing orders usually say "commencing on" so it would be inclusive of the same day, as it is express by the court. If it were to say "from x date" then it would be the next day. Confusing. Look at the Acts interp Act.
+
+And Def's are usually given full credit for parts of days served.
+
+Supported by consistent authority in the reckoning of time cases: *Prowse v McIntyre* \[1961\] Tas SR 9 (re exclusion of first day unless statute indicates otherwise).
+
+General principle of law that the law is not concerned with divisions of a day, and fractions of a day are disregarded: *Prowse v McIntyre *[\[1961\] HCA 79](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1961/79.html); [(1961) 111 CLR 264](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281961%29%20111%20CLR%20264); *Forster v Jododex Australia Pty Ltd *[\[1972\] HCA 61](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1972/61.html); [(1972) 127 CLR 421](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281972%29%20127%20CLR%20421) at 446, per Gibbs J. In *Forster*,* *Gibbs J referred to Sir William Grant MR in *Lester v Garland *(1808) 15 VES Jun, at 257 (33 ER, at 752):
+
+# Commissioner for declarations:
+
+Defined in the Oaths Act Tas -- includes Police and Legal Practitioners. Allows us to take stat decs.
+
+Documents must be signed as below:
+
+Section 13 Oaths Act
+
+A commissioner for declarations signing in that capacity is to add after his or her signature --
+
+\(a\) \"commissioner for declarations\"; and
+
+\(b\) his or her title, if qualified as a commissioner under [section 12(2)](https://www.legislation.tas.gov.au/view/whole/html/inforce/current/act-2001-077#GS12@Gs2@EN) .
+
+# Name and address of offender
+
+Failure to provide details as requested by an officer where they have, or are committing offence (reasonable grounds for believing) is an offence and offender can be arrested without warrant per s 55A of POA
+
+# Executing arrest warrants
+
+Execution of Warrant of arrests Governed by section 301 of the CODE. No issue so long as reasonable belief warrant eists and copy given to def as soon as practicable. Note necessary to have it at time of arrest if above complied with.
+
+# Custody and Arrest:
+
+Duties on arrest:
+
+See 301 -- 303 of the CODE
+
+Power of arrest
+
+## Power of arrest without warrant
+
+Section 27 of the Code
+
+Sction 11 of the FV act
+
+Section 55 of the POA
+
+Section 29 MOD Act
+
+### Need to state reason
+
+ The *Criminal Code, *s301(2), provides as follows:
+
+\"**(2)** It is the duty of a person arresting another, whether with or without warrant, to give notice, if practicable, of the process or warrant under which he is acting, or of the cause of the arrest.\"
+
+if it is pointless (i.e. they would not be able to hear the cops) to inform or attempt to inform an arrested person of the cause of the arrest, it is not \"practicable\" to do so within the meaning of s301(2) **Johnson v Reeves \[2004\] TASSC 110 (24 September 2004)**
+
+Very hi standard!!!!! Even the threat of violence against police, or a volitaile sitiaution does not warrant the failure of an explanation for not stating the reasons see **Wilkie v Patterson \[2016\] TASMC 6**
+
+\+
+
+### "Found offending"
+
+**Kim Hibble v Jody William Phegan, Kim Hibble v Dean Mark Jenkins David John Brooks v Leigh Andrew Phegan, Kim Hibble v Kim Maree Ogden, David John Brooks v Andrew David Hulse Files \[1997\] TASSC 52 (20 May 1997)**
+
+*48. The Act, s34B(3) provides the authority for a police officer to arrest without warrant a person committing certain offences, including the offences of resisting and assaulting a police officer in the execution of his duty. Some suggestion was made during the course of argument that this power of arrest is governed by the provisions of the Act, s55. I do not accept that submission because s34B is not a section in respect of which it is \"specially provided\" that a police officer may arrest without warrant a person found offending against that provision. What is provided for by s34B(3) is that a police officer may arrest without warrant a person \"committing\" an offence.*
+
+*49. In the course of argument, considerable reference was made to Lynch v Hargrave [\[1971\] VicRp 11](http://www.austlii.edu.au/au/cases/vic/VicRp/1971/11.html); [\[1971\] VR 99.](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1971%5d%20VR%2099?stem=0&synonyms=0&query=poa1935140%20s13) Relevantly, that case concerned the expression \"found offending\", and, in particular, whether, before it could be said that a person was \"found offending\", it needed to be established objectively that that person in fact was offending or whether it was sufficient that the person finding the alleged offender believed on reasonable grounds that the person was offending. Relying on Trebeck v Croudace [\[1918\] 1 KB 158](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b1918%5d%201%20KB%20158?stem=0&synonyms=0&query=poa1935140%20s13), McInerney J held at 109 - 110:*
+
+*\"Accordingly, I am of the view the power of arrest of a person \'found offending\' is to be regarded as exercisable according to the facts as then known to the member of the police force. Whether or not the person arrested was in fact and in law offending in the relevant time is a matter for subsequent determination of the court.\"*
+
+*50. There is no reason why the same principle should not be applied to the word \"offending\". I do apply it, so that the power conferred by s34B(3) is exercisable whenever a police officer believes, on reasonable grounds, that the relevant person is committing a relevant offence created by s34B. It follows that the lawfulness of the arrests of Leigh Phegan and Hulse is not determined by whether they actually assaulted Lee. The arrests may have been lawful and, accordingly, Rowlands may have been acting in the execution of his duty at relevant times even if the obstruction of Lee was not established.*
+
+*51. Applying Lynch v Hargrave (supra) and the well-established meaning of \"committing\" (see Simmons v Millingen [\[1846\] EngR 275](http://www.worldlii.org/int/cases/EngR/1846/275.html); [(1846) 2 CB 524](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281846%29%202%20CB%20524?stem=0&synonyms=0&query=poa1935140%20s13), [135 ER 1051](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=135%20ER%201051?stem=0&synonyms=0&query=poa1935140%20s13); Hanway v Boultbee [\[1830\] EngR 888](http://www.worldlii.org/int/cases/EngR/1830/888.html); [(1830) 1 M & Rob 15](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281830%29%201%20Macl%20%26%20R%2015?stem=0&synonyms=0&query=poa1935140%20s13), [174 ER 6](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=174%20ER%206?stem=0&synonyms=0&query=poa1935140%20s13); R v Smith [(1876) 14 SCR (NSW) 419)](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281876%29%2014%20SCR%20%28NSW%29%20419?stem=0&synonyms=0&query=poa1935140%20s13) I construe s34B(3) as conferring a power of arrest in those cases:*
+
+*1 where a person is taken flagrente delicto doing the prohibited act;*
+
+*2 where the arresting officer believes on reasonable grounds that a person taken is taken flagrente delicto doing the prohibited act; and*
+
+*3 where a person is taken immediately and in fresh pursuit after being found in either of those circumstances.*
+
+*52. A police officer\'s power of arrest is to be exercised by him or her personally and on the facts known to him or her. The mere direction of a senior officer provides no lawful authority for the making of an arrest by the police officer to whom the direction is given. An arrest is a serious interference with personal liberty. That liberty may not be infringed except by lawful authority. The direction of a senior officer does not provide that lawful authority. Any officer who complied with the direction given by Lee, did so at his peril unless there was some other basis which authorised that officer to make the arrest.*
+
+### Custody defined:
+
+Criminal Law (Detention and Interrogation) Act 1995
+
+**3.**   **Interpretation**
+
+(1)  In this Act, unless the contrary intention appears --
+
+(2)  For the purposes of this Act, a person is in custody if he or she is --
+
+\(a\) under lawful arrest by warrant; or
+
+\(b\) under lawful arrest under [[section 27 of the ](https://www.legislation.tas.gov.au/view/html/inforce/2015-10-13/act-1924-069#GS27@EN)[Criminal Code](https://www.legislation.tas.gov.au/view/html/inforce/2015-10-13/act-1924-069)]{.underline} or a provision of any other Act.
+
+Lawful custody defined in 106 of the CODE
+
+### The duty to give reasons for arrest 
+
+- Except when not practicable see **Johnson v Reeves \[2004\] TASSC 110 for a discussion on this**
+
+When making an arrest a police officer has a duty to inform the person being arrested of the reasons for that arrest. This duty exists at both common law (Christie v Leachinsky \[1947\] AC 573) (which applies to summary offences ((Gow v Davies \[1992\] 1 Tas R 1; Criminal Code Act s 4(3).
+
+))28) and under s 301(2) of the Criminal Code (which applies to indictable offences). This section of the Code provides: (2) It is the duty of a person arresting another, whether with or without warrant, to give notice, if practicable, of the process or warrant under which he is acting or the cause of the arrest.
+
+As can be seen from s 301(2), where it is not 'practicable', there is no duty to inform of the reasons for arrest. Examples of when it might be impracticable to give the reasons for arrest are if the arrestee is blind drunk, if the arrestee is deaf and cannot lip-read or if the arrestee responds with an immediate counterattack or by running away.
+
+Another exception to the rule under the common law is that where the reason for the arrest is obvious, for example if a robber is caught red-handed, it may not be necessary to give the reason for arrest (Christie v Leachinsky \[1947\] AC 573, at 587) . This exception is not mentioned in the Code provision.
+
+Christie v Leachinsky is the principal common law authority explaining this duty. This case discusses the history of the duty, dating it back to at least 1755, and details the two justifications for the duty. The first justification is that being arrested is such a substantial interference with a person's liberty, that it must be justified and that the person being arrested should be informed of that justification. Secondly, informing the arrestee of the reasons for the arrest gives the person the opportunity to offer an explanation to clear themselves and be released as soon as possible.
+
+**The problem defined**
+
+Protections provided by the Act
+
+The rights of citizens who have been arrested are safeguarded by a number of statutory and common law
+
+protections. In Tasmania, the majority of these protections are contained in the Criminal Law (Detention
+
+and Interrogation) Act 1995 (Tas). They include:
+
+\- The requirement that the arrestee be taken before a magistrate or justice as soon as practicable after
+
+arrest unless released unconditionally or released on police bail: s 4(1);
+
+\- The requirement that the arrestee be informed of the right to silence prior to questioning: s 4(5);
+
+\- The requirement that the arrestee be informed of the right to communicate with a friend or relative
+
+and a legal practitioner prior to questioning: s 6(1);
+
+The requirement (subject to s 6(3) and (6)) that the police defer any questioning and investigation to
+
+enable the arrestee to make or attempt to make the communication: s 6(2);
+
+\- The requirement (subject to s 6(3) and (6)) that the police afford the arrestee reasonable facilities to
+
+make the communication: s 6(7);
+
+\- The provision of an interpreter when needed: s 5;
+
+\- The requirement that the arrestee be questioned only for a reasonable time: s 4(2)(a); reasonableness
+
+in this context is determined by the considerations set out in s 4(4);
+
+\- The requirement that the arrestee be taken before a custody officer without delay and placed in the
+
+custody of the custody officer: s 15(1);
+
+\- The requirement that the custody officer perform the duties in relation to the arrestee imposed by s
+
+15(2) and (4); and
+
+\- The requirement that the custody officer ensure that the arrestee is treated in accordance with the
+
+Act: s 16 (1).
+
+**To whom do the Act's protections apply?**
+
+'In custody' under the Criminal Law (Detention and Interrogation) Act
+
+The Criminal Law (Detention and Interrogation) Act affords the protections contained in sections 4-6, 15
+
+and 16 to people who are 'in custody'. Section 3(2) provides that a person is 'in custody' for the purposes
+
+of the Act if he or she is:
+
+\(a\) under lawful arrest by warrant; or
+
+\(b\) under lawful arrest under section 27 of the Criminal Code or a provision of any other Act.
+
+Because the application of the Act depends upon whether a person is under lawful arrest, it is critically
+
+important to determine what exactly is meant by the term, 'under lawful arrest'. The term 'arrest' is not
+
+defined in the Act. In practice, it can often be difficult to ascertain a suspect's precise custodial status.
+
+The case law has distinguished three major custodial categories: (a) persons who are "voluntarily
+
+assisting the police with their enquiries", (b) persons who are under arrest and, (c) in Tasmania, since the
+
+decision of the Tasmanian Court of Criminal Appeal in Sammak2 (followed in Reid and Swan3
+
+) persons
+
+who are in the custody of the police though not under arrest.
+
+**1. Volunteers**
+
+A person who is "voluntarily assisting the police with their inquiries" is not under arrest, either at
+
+common law or under the Act. In fact, such a person is, in the eyes of the law, not detained at all and is at
+
+liberty to leave. Accordingly, it was felt, at the time that the Act was enacted, that volunteers did not need
+
+the protections afforded by sections 4-6 of the Act and, therefore, those protections were not applied to
+
+them.
+
+**2. Under lawful arrest**
+
+In contrast, a person who is under arrest is not free to leave and, where the arrest is lawful, must submit to
+
+the authority of the arrestor. For an arrest to be lawful there must be a power to arrest and an arrest in fact.
+
+Essentially, the latter requires that the police make it clear to the suspect that he or she is no longer free.4
+
+There is no set formula for what must be said and done to effect a lawful arrest. Any form of words may
+
+be used which, in the circumstances of the case, make it clear to the arrestee that he or she is under
+
+compulsion. Where there has been a formal, lawful arrest the protections provided by the Act will clearly
+
+apply to the arrestee. However, at common law, a person may also be found to be under arrest, even if
+
+there has been no formal arrest, if the police behave in such a way as to give him or her reasonable
+
+grounds for believing that he or she is not free to leave.5
+
+It is not clear whether the protections provided
+
+by the Act apply to a person who is under informal arrest in this sense although since the decisions of the
+
+Court of Criminal Appeal in Sammak and of Slicer J in Reid and Swan, there is real doubt that they do.
+
+# Forensic procedure orders:
+
+Application by police (not consented to) under s. 14 of the Act.
+
+Court must consider s. 17 -- public interests:
+
+Considerations:
+
+Child victim -- picture assists in explaining their account
+
+Power to hold in custody pursuant to s. 22 or 23
+
+# Power of entry
+
+**Power to enter premises to effect power of arrest (s26A CODE)**
+
+### Implied licence 
+
+Implied licence to enter driveway or path if no signs to contrary
+
+*Halliday v Nevill*, [\[1984\] HCA 80](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1984/80.html); the majority of the High Court held, and I read from the head note:
+
+\"If the path or driveway leading to the entrance of a suburban dwelling-house is left unobstructed and with entrance gate unlocked and there is no notice or other indication that entry by visitors generally or particularly designated visitors is forbidden or unauthorized, the law will imply a licence in favour of any member of the public to go upon the path or driveway for any legitimate purpose that in itself involves no interference with the occupier\'s possession or injury to the occupier, his guests or his or their property.\"
+
+### Implied licence limited though!
+
+However, in **Tasmania v Lee \[2005\] TASSC 117** it was clarified the It was held that there was an implied licence on the part of the police officer to go onto the driveway or path leading up to the door of the house, and it is implicit from that that there was no power to enter the house itself. To do so without invitation would amount to a trespass.
+
+# Power to seize, seizure 
+
+Potentially a common law power to seize evidence or potential sources of evidence of 3^rd^ parties English case of Ghani v Jones \[1970\] 1 QB 693
+
+Power to seize property from third parties It has become common practice for police to seize mobile phones from bystanders who are recording incidents in which they are not criminally involved. Phones are seized (and sometimes retained for long periods) for the purpose of preserving and downloading the footage for use as evidence. The personal inconvenience to the phone's owner, not to mention the potential interference with their privacy, can be significant.
+
+In Ghani v Jones, Lord Denning held that seizure of property from non-suspects may be justified in some circumstances. However, in order to enliven this power, the person's refusal to hand over the property "must be quite unreasonable". He provided (at pp 1704 and 1705) some hypothetical examples of situations in which a third party would be unreasonable in refusing to allow the police to examine their property. For example, some bank robbers "borrow" a private car and then abandon it by the roadside. Police wish to examine the car for fingerprints; the owner of the car would be unreasonable in refusing to allow them to do so. The seizure of a phone from a bystander was recently considered by Her Honour Magistrate Swain in the NSW Local Court in Police v Ronald Sines; Police v Andrew Love (date of decision 7 July 2017; not published on NSW Caselaw). Mr Love was using his mobile phone to record an altercation between his friend Mr Sines and a police officer. Police asked him to hand over his phone, which he refused to do. Police then tried to seize the phone, and Mr Love threw it on the ground, from where it was retrieved by police. Applying Ghani v Jones, her Honour held (at paras 118-119 of her judgment) that the police officer had the power to seize the phone because: 3 Power to seize property (including from third parties) 61315787 Police powers to search and seize mobile phones page 8
+
+• police had reasonable grounds to believe that the offence of assaulting police had been committed; • assaulting police in the execution of their duty is a serious offence; • "the police had reasonable grounds for believing that the phone contained material which could prove the serious offence alleged", as Mr Love appeared to have filmed the incident; • although Mr Love was not criminally involved in the assault police, "the police had reasonable grounds to believe that Mr Love's refusal was unreasonable"; and • the phone would not be kept for any longer than reasonably necessary, as the police officer told Mr Love that his phone would be returned after any footage was downloaded. Her Honour did not elaborate on why Mr Love's refusal to hand over his phone may have been unreasonable. It is also questionable whether she correctly applied the test set down by Lord Denning. Needless

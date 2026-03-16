@@ -1,0 +1,189 @@
+### Relationship evidence
+
+Standard objection:
+
+Objection -- prejudicial questioning/ relevance/ tendency
+
+Response:
+
+- Response was admissible as context/ relationship evidence.
+
+Relevant as it is part of the Factual matrix- puts specific complaint in context as offending behaviour that is escalating -- not submitted to go so far as tendency.
+
+In *Gipp v R* (1998) 194 CLR 106, Gaudron J said that the test in *Pfennig* applied to relationship evidence, Callinan J agreed. McHugh and Hayne JJ said it was not propensity evidence whilst Kirby J said it may be tendency evidence but in any event it was admissible.
+
+I think with relationship evidence the important point to remember is that it can take many different forms and there are many different reasons why you might want to lead it.
+
+If you are leading it merely to prove the accused had sex with the complainant in the past and therefore he had sex on this occasion, that is clearly tendency evidence.
+
+However, it may also occur in some of the following forms:
+
+1.  In the context of a marriage, evidence of a bad relationship between the accused and his deceased wife may be led to prove he had a motive to murder her: *Wilson v R* (1970) 123 CLR 334. Clearly, the relationship evidence is not being led to prove tendency.
+
+2.  It may be led to show why a complainant acquiesced to sexual intercourse. If the accused had regularly committed acts of violence upon the complainant in the past then such evidence could be led to prove:
+
+    (a) That on this occasion the complainant was not consenting to sex;
+
+    (b) The accused had knowledge that the complainant was not consenting to sex. Again, the evidence is being led for a non-tendency purpose;
+
+    (c) To explain why the complainant behaved in the manner she did or why she did not complain, etc. Again, a non-tendency reasoning.
+
+    (d) To show the complainant's version of events is more capable of belief when seen in the context of what the complainant says was her sexual relationship with the accused.
+
+        Authority for this type of evidence does not fall within the exclusion provisions of Part 6 of the Act: *Conway v R* 98 FCR 204 (Full Court of the Federal Court) at 233; *R v Lock* (1997) 91 A Crim R 336; *Roach v R* 242 CLR 610 at pp 624-5; *WFS v R* (2011 33 VR 406.
+
+#### P v Tasmania \[2009\] TASSC 81 (11 September 2009)
+
+Relationship evidence:
+
+Not being relied upon as tendency evidence, but relationship evidence which could help the jury to evaluate evidence of what happened at the time of the alleged offence.
+
+Relevant evidence is defined under s 55(1)
+
+That which if accepted could rationally affect directly or indirectly the assessment of the probability of the existence of a fact in issue in the proceeding.
+
+Relationship assists the court as it places actions and conduct in context and to assist the court assess the evidence of a persons action
+
+Relationship evidence can be used to explain why a non-consenting person acts in a way in which they were consenting.
+
+Relationship evidence may explain a statement or an event that would otherwise appear curious or unlikely. It may cut down or bolster the plausibility of something that a witness has said.
+
+In the absence of relationship evidence the victims account of what otherwise would have been presented as a single and apparently isolated act might have been regarded as difficult to believe.
+
+A victim, for instance may express no surprise at the actions of the defendant; may make no protest to a criminal act directed towards them, behaving, rather as if it was a common occurrence (which I'm leading it is).
+
+If a victim was not permitted to say as such, a victim's evidence may seem hard to believe.
+
+**Motive**
+
+Motive may or may not be tendency evidence. If, for example, the motive for killing somebody is theft or to avoid them telling police about a crime the person has committed, this is not tendency evidence.
+
+However, if the motive is a sexual interest or indecent passion towards a certain class of people then that is likely to be characterised as tendency evidence: *HML v R* supra; *Riseley v R* \[1970\] Tas R 1; *Tasmania v Martin (No. 2)* supra at \[66\]-\[68\]; *Patterson v Tasmania* supra at \[65\].
+
+Prior conduct directed towards an individual may be characterised as motive if it shows a person is attracted to or has a sexual interest in a person: *Leonard v R* (2006) 67 NSWLR 545 per Hodgson JA at \[49\]-\[52\]. The distinction between motive and tendency is a fine one. However, given the recent High Court decision in *Bauer v R,* that makes such evidence admissible as tendency evidence, in respect of a single complainant case, irrespective of the fact that the acts are of a different nature is, in practice, likely to make the distinction an academic one.
+
+Evidence of implements that suggest a person carries out a drug business, such as a stash, scales or fire arms, is circumstantial evidence that a person may have knowledge of a drug or an intention to sell a drug and such reasoning is not tendency or propensity reasoning. This is the case even where the Crown is not conducting its case on the basis of a *Giretti* count (*Giretti v R* (1986) 24 A Crim R 112) or that the implements can be linked to the actual case alleged in the indictment: *R v Falzon* \[2018\] HCA 29 at \[40\]-\[44\].
+
+***Res gestae* or evidence forming part of a relevant transaction**
+
+Evidence of acts, even discredited ones, may be admissible if they form an integral part of a chain of events and without which would lead to the evidence being unintelligible or not easily understood. Such evidence is not led for a tendency purpose but rather to explain what happened. Such evidence was admissible at common law and not excluded as propensity evidence: *O'Leary v R* (1946) 73 CLR 566; *Harriman v R* (1989) 167 CLR 590 per McHugh J at 628; *Lyons v R* (1992) 1 Tas R 193 per Wright J at 197-8.
+
+The principle has not been excluded by the Uniform Evidence Act. Such evidence is relevant because it could rationally affect (directly or indirectly) the assessment of the probability of a fact in issue and thus it satisfies the test of relevance. It is not excluded by ss 97 and 98 of the Act because it is being used for a non-tendency purpose: *R* *v Adam* (1999) 106 A Crim R 510 at \[25\]-\[31\]; *Samadi v R* (2008) 192 A Crim R 251 per Beazley JA at \[49\]-\[61\].
+
+Often such evidence will be closely connected in time with the alleged offence. However, this is not necessarily always the case. In *R v FDP* (2008) 74 NSWLR 645, the NSW Court of Criminal Appeal said at \[36\]-\[37\] --
+
+> In our opinion the evidence of what occurred on 16 July and the making of the ADVO was clearly relevant to what occurred thereafter, including the incident on 2 August. It was an example of background or context evidence that explained why the parties did what they did and said what they did both before and on the 2 August. It set the scene for the incident that gave rise to the charges. For example, the evidence explained why the appellant could not have direct contact with the complainant or the children and the arrangements that had to be made for his access to the children through the complainant's parents.
+>
+> It is the type of evidence that was recognised at common law in a series of cases including *O'Leary v The King* (1946) 73 CLR 566; *Wilson v The Queen* (1970) 123 CLR 334 and *Harriman v The Queen* (1989) 167 CLR 590. Such evidence has been admitted as evidence either of the relationship between the accused and some other person or of a connected series of events, such that what occurred at one particular point in time in that relationship or in that series of events was relevant to a determination of what occurred at another point in time when the offence was committed. This type of evidence continues to be admissible under the *Evidence Act: R v Quach* (2002) 137 A Crim R 345
+
+On occasions there will be an overlap between transactional evidence, relationship and motive.
+
+**Section 137 of the Act**
+
+Although evidence that may be caught ordinarily by the tendency rule but is tendered for another purpose is not caught by the exclusion rules of ss 97, 98 and 101 of the Act the provisions of s 137 of the Act apply.
+
+Section 137 provides:
+
+> In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.
+
+Probative value again must be assessed at its highest and similarly to s 101 of the Act, it is only unfair prejudice that is relevant. It should be noted that s 137 does not provide a judge with a discretion. It is an evaluation that requires a judge to exclude the evidence if the probative value is not outweighed by the dangers of unfair prejudice to the defendant: *DPP v Lynch* \[2006\] TASSC 89.
+
+**Unfair prejudice vs prejudice**
+
+Crawford CJ: ***Neill-Fraser v Tasmania*** \[2012\] TASCCA 2 \[184\]
+
+There is a difference. All evidence that may tend to convict is prejudicial. What is meant by unfair prejudice is that the jury may use the evidence to make a decision on an improper, perhaps emotional basis. If there is a real risk that the evidence may be misused by the jury in some way, then it may be unfairly prejudicial.
+
+*Papakosmas v The Queen *(1999) 196 CLR 297 at \[91\].
+
+\"**137 Exclusion of prejudicial evidence in criminal proceedings**
+
+In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.\"
+
+1.  Evidence is not unfairly prejudicial because it makes it more likely that the accused will be convicted. As Hunt CJ at CL said in *R v BD *[(1997) 94 A Crim R 131](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281997%29%2094%20A%20Crim%20R%20131), 139:
+
+\"The prejudice to which each of the sections \[ss 135, 136 and 137\] refers is *not* that the evidence merely tends to establish the Crown case; it means prejudice which is unfair because there is a real risk that the evidence will be misused by the jury in some unfair way.\"
+
+**Onus of proof**
+
+Normally a jury does not have to be satisfied beyond reasonable doubt about a piece of evidence unless it is an indispensable link in proving guilt: *Shepherd v R* (1990) 170 CLR 573; *Edwards v R* (1993) 178 CLR 193.
+
+However, at common law, a jury must at least be satisfied beyond reasonable doubt in respect of tendency or propensity evidence: *HML v R* supra.
+
+But not every piece of evidence that goes to prove the tendency has to be proved beyond reasonable doubt: *BBH v R* supra at \[167\]-\[168\].
+
+The reason for this at common law was the high test of admissibility of tendency and coincidence evidence. Such a direction should not be given under the Uniform Evidence Act, unless it is apprehended that in the particular circumstance of the case there is a significant possibility of the jury reading the uncharged acts as an indispensable link in their chain of reasoning to guilt: *Bauer v R* supra at \[86\]. Otherwise, as with any other piece of circumstantial evidence, the jury must be satisfied of it.
+
+**Notice**
+
+It is sufficient notice to refer to the Crown papers where it is readily identified to say such evidence will be used for a tendency purpose: *R v AB* \[2001\] NSWCCA 496.
+
+In *Martin v R* \[2002\] NSWCCA 337 at \[91\] -
+
+> The purpose of a reg6(2) notice is first, to ensure that attention is given to specific conduct and the circumstances of the conduct, and secondly, to enable the person whose conduct is in question to meet the tendency evidence. The purpose is linked with the decision upon probative value to be made by the Court, since only with knowledge of specific conduct and the circumstances of the conduct can a proper assessment be made of the probative value of the evidence in relation to the conduct alleged in the trial.
+
+A tendency notice should explicitly identify the fact or facts in issue upon which the tendering party asserts the evidence bears. It should also explicitly identify the tendency sought to be proved: *Gardiner v R* (2006) 162 A Crim R 233.
+
+In respect of coincidence evidence, a properly drafted coincidence notice requires the identification of two or more related events, the person whose conduct or state of mind is the subject of the proposed evidence, whether the evidence is tendered to prove the person did a particular act and, if so, what the act was, or if to prove a state of mind, what the state of mind was: *R v Zhang* supra at 534-535.
+
+It is important to remember that admissibility of the evidence will be judged against what the tendency notice states the tendency is. It is not for the court to think of other tendencies which may make the evidence admissible: *McPhillamy v R* supra per Elderman J at \[32\].
+
+The failure to provide an adequate notice means the tendency evidence will be inadmissible or could lead to a miscarriage of justice: *Patterson v Tasmania* supra per Wood J at \[120\]-\[131\].
+
+A tendency notice that expresses a tendency of a high level of generality may not establish anything more than relevance where a tendency expressed at a level of particularity will more likely be a requirement: *Hughes v R* supra at \[64\].
+
+**Tendency and coincidence evidence adduced by the defence**
+
+Clearly an accused person can raise a hypothesis that somebody else committed the crime and can lead evidence to that effect: *Re Van Beelen* (1974) 9 SASR 163.
+
+In doing so an accused may wish to raise tendency evidence regarding another person or coincidence reasoning between two events to show somebody else may have committed the crime. This typically occurs in, but is not limited to, cases where there are co-accused.
+
+Such evidence will be inadmissible unless it complied with ss 97 or 98 of the Act. However, the further restriction in s 101 does not apply because the evidence is not adduced by the prosecution. However, the discretionary rejection (particularly applicable in joint trials) still applies (s 135 of the Act).
+
+Thus, for the evidence to be admissible it must have significant probative value. However, in the context of the defence case, the question is whether it shows a reasonable possibility that somebody else may have committed the offence or, in a circumstantial case, whether it raises a hypothesis consistent with the accused's innocence as distinct from that of the prosecution, that the evidence supports that the accused did, in fact, commit the offence.
+
+At common law where an accused seeks to rely on tendency evidence in respect to identity, there has to be shown a significant connection between a fact in issue and the tendency evidence: *Duffy v R* \[1979\] FCA 83; *Cheney v R* \[1991\] FCA 37; *Beamish v R* \[2005\] WASCA 62.
+
+In *Cheney v R* supra, Von Doussa J said at \[19\] --
+
+> In Duffy v R \[1979\] FCA 83; (1979) 39 FLR 315 at 347-50 a Full Court of this Court considered the admissibility of evidence which the accused at trial sought to lead as \"similar fact\" evidence. At p 348 the Court said:
+>
+> "Evidence of similar facts is admissible to prove a fact in issue when the connexion between the alleged similar fact and the fact in issue is so close or immediate that in the common experience of mankind the fact in issue is likely to have occurred if the similar fact occurred. An allegation of a mere similarity between the way in which a person performs a particular task on one occasion and the way in which he is alleged to have performed it on another does not, at least in the generality of cases, show the kind and degree of connexion between the occasions which is essential to the admission of evidence of the former occasion as a similar fact to prove the way in which the task was performed on the latter occasion."
+>
+> In my opinion, where the issue is one of the identity, "similar fact" evidence to be admissible at the calling of the accused must be evidence which demonstrates a sufficient degree of similarity between the circumstances surrounding the crime charged and the circumstances of the other event to give rise to the real possibility, based on common experience of human affairs, that the person who committed the crime charged was the person responsible for the other event. In addition, of course, it would be necessary for the accused to lead evidence to the effect that the person responsible for the other event was not the accused.
+
+It has to be logically probative of the issue: *Unsworth v R* TASSC 63 per Underwood J at \[17\].
+
+Where an accused seeks to raise a reasonable hypothesis consistent with innocence, it must possess some degree of acceptability or credibility and not be fanciful, incredible, non-tenable, remote or tenuous. It must not be based on a view that is irrational, absurd or ridiculous. To raise a reasonable hypothesis, the evidence must support that hypothesis, not merely leave it open: *East v Repatriation Commission* (1987) 16 FCR 517; *Burke v R* (1997) 96 A Crim R 334 per Malcolm CJ at 336 and Walsh J at 353. There must be some evidence to support the hypothesis: *Mickelburg v R* supra at 303.
+
+In *R v Baden Clay* (2016) 258 CLR 308; \[2016 HCA 35, the High Court said at \[47\]:
+
+> For an inference to be reasonable, it "must rest upon something more than *mere conjecture*. The bare possibility of innocence should not prevent a jury from finding the prisoner guilty, if the inference of guilt is the only inference open to reasonable men upon a consideration of all the facts in evidence" (emphasis added). Further, "in considering a circumstantial case, *all of the circumstances* established by the evidence are to be considered and weighed in deciding whether there is an inference consistent with innocence reasonably open on the evidence" (emphasis added). The evidence is not to be looked at in a piecemeal fashion, at trial or on appeal.
+
+D G Coates SC
+
+21 February 2019
+
+### Example Tendency notice:
+
+**Police v FRS \[2020\] TASMC 9 (25 May 2020)**
+
+a.  have a sexual interest in and/or engage in sexual contact with his nieces aged approximately 16 years;
+
+    a.  impose himself sexually upon his nieces without seeking or obtaining their consent;
+
+    <!-- -->
+
+    i.  sexually touch his nieces under their clothing;
+
+    <!-- -->
+
+    a.  sexually touch his nieces when they stayed overnight;
+
+    <!-- -->
+
+    a.  sexually touch his nieces when they were in bed; and/or
+
+    <!-- -->
+
+    a.  sexually touch his nieces in circumstances when they were alone.

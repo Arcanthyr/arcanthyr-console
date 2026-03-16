@@ -1,0 +1,217 @@
+## Fitness to Plead
+
+*Criminal Justice (mental Impairment)* Act 1999
+
+8. Unfitness to stand trial
+
+\(1\) A person is unfit to stand trial for an offence if, because the person\'s mental processes are disordered or impaired or for any other reason, the person is --
+
+\(a\) unable to understand the nature of the charge; or
+
+\(b\) unable to plead to the charge or to exercise the right of challenge; or
+
+\(c\) unable to understand the nature of the proceedings; or
+
+\(d\) unable to follow the course of the proceedings; or
+
+\(e\) unable to make a defence or answer the charge.
+
+\(2\) Notwithstanding [subsection (1)(e)](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=21%2B%2B1999%2BGS8%40Gs1%40Hpe%40EN%2B20110922000000;histon=;prompt=;rec=10;term=#GS8@Gs1@Hpe@EN), a person is not unfit to be tried if the only reason that the person is unable to make a defence or answer a charge is that he or she is suffering from memory loss.
+
+DPP Guidelines
+
+Fitness to stand trial
+
+A person is presumed fit to stand trial unless upon investigation it is established on the balance of probabilities that he or she is unfit.
+
+Such investigation can be commenced by the court, of its own initiative, by the defendant or by the prosecutor at any time after a person is charged. Before such investigation is undertaken it must appear to the court that there is a real and substantial question as to fitness to stand trial.
+
+Therefore, if a prosecutor becomes aware of matters that would raise a question as to fitness to stand trial, there lies an obligation to raise it with the defendant's counsel or, if unrepresented, with the court. Ordinarily, the fitness issue will be raised by the defendant's counsel.
+
+In these circumstances, a prosecutor should consider the following:
+
+• whether there is a reasonable prospect of conviction on each or any of the charges
+
+• whether a report has been obtained from a suitably qualified expert providing an opinion on the defendant's fitness to stand trial which addresses the criteria set out in s8
+
+• whether the report addresses the likelihood of the defendant becoming fit to stand trial during the next 12 months
+
+The real and substantial question as to a defendant's fitness to stand trial only arises if one of the five criteria laid out in s8 is reasonably open. The issue of whether a defendant is fit to stand trial should be left to a jury unless no reasonable jury, properly instructed, could find the accused was not fit to be tried. (Kesavarajah v R (1994) 181 CLR 230 per Mason CJ, Toohey & Gaudron JJ at 244)
+
+In some circumstances it will be readily apparent that the defendant is unfit to stand trial. However, where the issue of fitness is unclear an independent assessment may be required.
+
+In determining whether it is appropriate to obtain an independent assessment of the defendant, a prosecutor should prepare a memorandum outlining the reasons for such a course of action. The consent of the Director or Deputy Director is required before an independent expert opinion is sought for that purpose.
+
+Where fitness to stand trial is an issue requiring investigation, the principles discussed by Smith J in R v Presser \[1958\] VR 45 at 48; \[1958\] ALR 248 cited with approval in Ngatayi v R (1980) 147 CLR 1 at 8, are of consequence when considering the criteria laid out in s8
+
+#### Special hearing 
+
+In circumstances where a defendant is found not fit to stand trial and after the court has determined whether the defendant is likely to become fit to stand trial in the next 12 months, it must proceed to hold a special hearing.
+
+A special hearing is to be conducted in the same manner as a criminal trial, as the defendant is taken to have pleaded not guilty to the offence (s16).
+
+In criminal proceedings the determination will be made by a jury (s15)
+
+## Offender\'s withdrawal of guilty plea
+
+#  Leave to withdraw plea of guilty
+
+**Tasmania**
+
+**ALSO**
+
+**these are most recent Tas authority\~!\~!!**
+
+*Tasmania v Chatters \[2017\] TASSC 73 (3 April 2017)*
+
+**And**
+
+*[Tasmania v Chatters (No 2) \[2017\] TASSC 74 (16 August 2017)]{.mark}* per Bret J
+
+**Withdrawing guilty plea**
+
+The principles applicable when leave is sought to withdraw a plea of guilty were summarised in *R v Wilkinson* [\[2009\] NSWSC 323](http://www.austlii.edu.au/au/cases/nsw/NSWSC/2009/323.html); [\[2009\] 195 A Crim R 20.](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%5b2009%5d%20195%20A%20Crim%20R%2020?stem=0&synonyms=0&query=fva2004158%20s9) Those principles include the following:
+
+- \(a\) The court has a discretion to allow a person to withdraw a plea of guilty prior to conviction;
+
+- \(b\) The onus lies on the applicant to demonstrate that leave should be granted. An application to withdraw a plea of guilty is to be approached with caution, bordering on circumspection;
+
+- \(c\) A plea of guilty itself is a cogent admission of the ingredients of the offence; and
+
+- \(d\) On an application for leave to withdraw a plea of guilty, the question is not guilt or innocence as such, but the integrity of the plea of guilty. A plea of guilty constitutes an admission of all of the elements of the offence. A conviction entered on the basis of such a plea will not be set aside unless it can be shown that a miscarriage of justice has occurred, and this will normally only arise when the accused person does not understand the nature of the charge, or did not intend by his plea to admit his guilt to it.
+
+In *Day v Police* [\[2005\] SASC 200](http://www.austlii.edu.au/au/cases/sa/SASC/2005/200.html), Gray J noted that where a plea of guilty has been entered following legal advice, a withdrawal will only be warranted *"where it has been established that there has been a mistake, misunderstanding or improper inducement and there exists a substantial issue to be tried"*. The mistake or misunderstanding must relate to a lack of understanding by the defendant of his legal rights.
+
+***Howe v S \[2013\] TASMC 33***
+
+Magistrate M Brett Delivered on: 29 July 2013
+
+PARA \[4\]. The principles applicable when leave is sought to withdraw a plea of guilty were summarised ***in R v Wilkinson \[2009\] 195 A Crim R 20***. Those principles include the following:
+
+\(a\) The court has a discretion to allow a person to withdraw a plea of guilty prior to conviction;
+
+\(b\) The onus lies on the applicant to demonstrate that leave should be granted. An application to withdraw a plea of guilty is to be approached with caution, bordering on circumspection;
+
+\(c\) A plea of guilty itself is a cogent admission of the ingredients of the offence; and
+
+\(d\) On an application for leave to withdraw a plea of guilty, the question is not guilt or innocence as such, but the integrity of the plea of guilty.
+
+A plea of guilty constitutes an admission of all of the elements of the offence. A conviction entered on the basis of such a plea will not be set aside unless it can be shown that a miscarriage of justice has occurred, and this will normally only arise when the accused person does not understand the nature of the charge, or did not intend by his plea to admit his guilt to it.
+
+PARA \[5\]. ***In Day v Police \[2005\] SASC 200***, Gray J noted that where a plea of guilty has been entered following legal advice, a withdrawal will only be warranted "where it has been established that there has been a mistake, misunderstanding or improper inducement and there exists a substantial issue to be tried". The mistake or misunderstanding must relate to a lack of understanding by the defendant of his legal rights.
+
+PARA \[6\]. On behalf of the defendant, Mr Doyle submits that the basis upon which leave ought be granted to withdraw the pleas of guilty is that, in respect of each charge, the particulars alleged as to the matter of complaint are insufficient as a matter of law to support the allegation contained in the charge that the defendant has committed a breach of the relevant order. Accordingly, he submits, it would amount to a miscarriage of justice to leave in place pleas of guilty in circumstances where it cannot be said that the defendant has by his plea of guilty admitted allegations which amount in law to an offence.
+
+PARA \[7\]. If he is right about this in respect of each matter, then that would, in my view, be a proper basis upon which to set aside the plea of guilty and substitute a plea of not guilty. It would amount to a clear miscarriage of justice to leave a plea of guilty in place in such circumstances.
+
+PARA \[8\]. However, I would also make the point that if the particulars alleged in the charge are sufficient in law to support the allegation that there has been a breach of the relevant Police Family Violence Order, then in my view, there is, in this case, no other proper basis upon which to allow the plea of guilty to be withdrawn. In his affidavit, the defendant does not dispute that the basic factual matters contained in the particulars alleged to support each charge are, in fact, true. Furthermore, in circumstances where he entered the pleas after having been legally represented in respect of the charges for some months, and had deliberately instructed his counsel to seek leave to change pleas from a plea of not guilty to a plea of guilty after receiving advice, it would be impossible to say that the plea of guilty was not intended to be an unequivocal admission of the facts alleged in each charge. It can be inferred that he would have understood the effect of changing his plea from one of not guilty to guilty. In those circumstances, if the facts alleged in the charge amount to the offence alleged, then the pleas of guilty should stand
+
+**\**
+
+**Historical:**
+
+[Once an unequivocal guilty plea is entered at trial, it may only be withdrawn by leave of the court. Leave may be granted at any time before the matter is disposed of by sentence or otherwise: *De Kruiff v Smith* \[1971\] VR 761; *Maxwell* (1996) 184 CLR 501.]{.mark}
+
+If a jury verdict of guilty has been consequent on a change of plea to guilty during trial, the trial judge may allow a further change of plea after verdict and set aside the verdict: *Clouter *(1859) 8 Cox CC 237; *Griffiths *(1977) 137 CLR 293; *Drew* \[1985\] 2 All ER 1061; *Webb & Hay* (1992) 64 A Crim R 38 (SC SA).
+
+**Circumstance where court will grant leave**
+
+An application for leave to withdraw a guilty plea should be granted if its refusal may result in a miscarriage of justice: *McNally* \[1954\] 1 WLR 933; Collins 26/11/1984 CCA Vic; *Middap *(1989) 43 A Crim R 362.
+
+In *Boag *(1994) 73 A Crim R 35 (CCA NSW), Hunt CJ at CL recognised at 37 the following situations where a miscarriage may occur if an offender was not permitted to withdraw his or her guilty plea:
+
+> A miscarriage of justice may occur in many different situations if a prisoner is not permitted to withdraw his plea of guilty. Such a miscarriage will be established not only where the applicant did not appreciate the nature of the plea which he had entered but also, for example, if there was no evidence upon which he could have been convicted, or if he had not intended to admit that he was guilty or if his plea had been induced by fraud or threats or other impropriety, when he would not otherwise have pleaded guilty. ... there must be shown to be some circumstance which indicates that the plea of guilty was not really attributable to a genuine consciousness of guilt.
+
+In *Webb & Hay* (1992) 64 A Crim R 38 (SC SA), the Court allowed an offender to withdraw his guilty plea after finding that the offender had always intended to plead not guilty to a murder charge. He did not enter a guilty plea until after the trial began and contrary to legal advice. The offender had been overborne by threats while in custody and an indirect reference had been made regarding that threat the day before he pleaded guilty. The Court regarded those matters, together with the very serious nature of the charge, as very compelling reasons for granting the offender leave to withdraw his guilty plea.
+
+[The onus is on the offender to demonstrate the existence of a miscarriage of justice:* Boag* (1994) 73 A Crim R 35 (CCA NSW).]{.mark}
+
+The considerations the court should take into account will vary with the circumstances of a case: *Dodd* (1981) 74 Cr App R 50; *Ex parte Rowland* \[1983\] 3 All ER 689; *Clayton* (1984) 35 SASR 232; *Drew* \[1985\] 2 All ER 1061; *Sagiv* (1986) 22 A Crim R 73 (CCA NSW); *Roach* (1990) 54 SASR 491; *Webb & Hay *(1992) 64 A Crim R 38 (SC SA); *Boag* (1994) 73 A Crim R 35 (CCA NSW).
+
+Circumstance where court will refuse leave
+
+[Where an offender has made a deliberate and fully informed choice to plead guilty and has recognised his or her own guilt, the court will generally refuse leave to withdraw a guilty plea: *Sagiv* (1986) 22 A Crim R 73 (CCA NSW) at 80; *Boag* (1994) 73 A Crim R 35 (CCA NSW) at 39.]{.mark}
+
+It is also difficult to withdraw a guilty plea after it has been entered; [generally, a plea entered deliberately and on an informed basis must be considered final. ***Maxwell v The Queen*** (1996) 184 CLR 501.]{.mark}
+
+20-7-18
+
+# Complaints
+
+## Complaint on oath
+
+Power comes from s 32(b)(iii) of the Justices Act to issue a warrant where allegation supported on oath (affidavit).
+
+Complaint on oath must be in accordance with specific form (Form 2) in the Justices Rules per r. 15.
+
+## Indictable and summary FV offences. 
+
+DPP guidelines:
+
+It is not uncommon for an accused person to be charged with an indictable crime and a number of related summary offences. Where possible, all charges should be included on the one complaint. Police Prosecution Services should be directed that at the time of a plea being entered to any indictable matter all other associated charges are to be adjourned sine die to avoid separation of conduct.
+
+## Interstate connected offending (which jurisdiction) 
+
+**Criminal Law (Territorial Application) Act 1995**
+
+Needs to be a nexus with Tas.
+
+Offence occurs when "act" is committed, not when injury occurs (i.e. when the call is made in breach of an order, not when the voicemail is heard).
+
+Use Tas time, not interstate time.
+
+For DVO's see s. 17 **Domestic Violence Orders (National Recognition) Act 2016**
+
+## Withdrawing complaints
+
+Indictable only where please have not been entered.
+
+**Hibble v Langmaid \[2012\] TASMC 7 **
+
+## Difference between particulars of the complaint and the evidence revealed in the hearing of the matter
+
+Court has power to delete paragraphs or additional acts of more than one are specified in a complaint. An example being a complaint nominating a number of different types of actions that amounted to Harass for the purposes of a breach condition charge. One of the particulars was accepted the others were not and the court used s 31 to simply delete the others and find the charge proven on the single proved example. ***Cannell v G; G v Cannell \[2018\] TASSC 55 (para 53)***
+
+*Irons v Moore* \[2019\] TASSC 22 Brett J
+
+\[25\] The applicant also argued that there was a variance between the particulars of the assault found by the magistrate and those specified in the complaint. It is fair comment that there is a variance. The complaint alleges that the assault took place by grabbing and punching, whereas the evidence permitted a finding that the assault had taken place by hitting and/or pulling the complainant\'s hair.
+
+\[26\] This was not a variance of significance. There is no suggestion that the particulars mis-informed the applicant of the nature of the allegation against him by diverting his attention, for example, to a different incident, or a different offence. The incident in question was clearly identified by the complainant, and addressed by the evidence. The applicant could have been under no misapprehension that what was being alleged against him was that during the course of an argument in the car, he unlawfully assaulted the complainant. **The provisions of s 31(4) of the *Justices Act* 1959** are applicable, that is, that an objection shall not be taken to a summons in respect of a variance between it and the evidence in support of the complaint, although the justices may adjourn the hearing if the defendant has been prejudiced by the defect or variance. In my view, there was no prejudice to the applicant in this case, and the argument is without merit.
+
+### Counter 
+
+Court unlikely to amend the particulars under [s 31](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/s31.html) of the [*Justices Act* 1959](https://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ja1959119/) where such an amendment without notice to the defendant would create an incurable unfairness at this point in the proceedings given the manner in which this case has been run. That is, at the end of the hearing where there is a significant difference.
+
+### Amendments
+
+Conditioned upon it refernceing a wrong, but still valid law or regulation. Cf **Constable Julie McCullough v Bronwyn Marie Auksorius \[2025\] TASMC 4** below
+
+*Malahoff v White* Cox J. TAS SC 37/1991
+
+In my opinion the offence charged in the amended complaint was of the same 'pith and substance' as that in the original complaint. The *actus reus* was the same act of driving on the same occasion, coupled with the fact of disqualification, pursuant to a court order. The fact that that disqualification was imposed under different Acts or that the offence might attract different sanctions, did not in my view effect any change in the quality of effect of the essential elements of the charge.
+
+A justice or a magistrate is entitled to allow an amendment to a complaint even if it may be outside the statute of limitations from the time the offence was committed, for the following reasons;
+
+- Justices/magistrates are not required to dismiss complaints by reason of unmeritorious technical reasons
+
+- As long as there is no injustice to or prejudice against the defendant
+
+- Complainu can be changed to a different offence as long as the *pith and substance* of the charge remains constant
+
+- As long as the complaint is not defective to point of not disclosing an offence, or there being a variance between the complaint and the evidence to support it.
+
+### Can make amendment even if out of time
+
+***Barnes v Hovington* \[2015\] TASSC**
+
+Pith and Substance -- Porter J, "No injustice is done where the amendment results in a defendant facing a charge which is the same in pith and substance to that originally faced or is a cognate one; that is allied in nature or akin in quality. Injustice or unfairness may nonetheless arise, depending on the stage of the proceedings at which the application to amend is made."
+
+*Carlson v Wilkie* \[2018\] TASSC 1
+
+The victim's name is not an element of the crime of assault.
+
+### Cannot amend a bad complaint tho
+
+**Constable Julie McCullough v Bronwyn Marie Auksorius \[2025\] TASMC 4**
+
+Complaint referenced repealed regulations instead of current ones. As the complaint referenced law that did not exist at the time was generated, it was a "bad complaint" as opposed to a "good complaint" under Malahoff as the particularised offence was still an existing offence.

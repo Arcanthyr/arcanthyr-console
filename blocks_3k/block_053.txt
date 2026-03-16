@@ -1,0 +1,299 @@
+## Home Detention
+
+**Briefing on Home Detention and Electronic Monitoring**
+
+**Basics**
+
+The amendments to the *Sentencing Act 1997* will come into force on 14 December 2018. From this date onwards the court will have to power to order an assessment for an order for electronic monitoring and home detention.
+
+An order for electronic monitoring and home detention can be made where, if not for the order, the offender would otherwise have served a custodial sentence. The Magistrate is not required to state the duration of the custodial sentence s/he would have imposed (it is not a substitute sentence).
+
+The maximum duration for an order is 18 months.
+
+The offender will be subject to home detention for the duration of the order. They will be permitted to leave the home only within certain times for approved activities. Approved activities include, for example, employment, education, training, rehabilitation courses. The weekly schedule will be pre-planned to allow for travel time to and from approved activities.
+
+The perimeters of the permitted area in the home are not necessarily defined by the boundaries of the property and can be narrowed by Community Corrections. This may be the case where the property is, for example, a large rural property. The perimeters of the permitted area may be set to only those necessary for the day to day use of the property.
+
+The device can be paired with a 'victim alert device' which will alert the monitoring unit when the device enters a certain radius of the victim device. This is similar to the family violence devices used by police. The victim devices are activated by the victim pressing two buttons on the device, which then sends an alert and activates the GSP and 2 way communications. Community Corrections will be taking over the administration of these once their monitoring and compliance unit is fully established.
+
+The system uses a combination of 'active' and 'passive' monitoring. This means that the devices are always recording the data (passive) but are only in 'active' mode at certain times. A device may be in active mode where an offender is travelling to and from an approved activity and the monitoring and compliance unit wish the monitor their travel. A device may be switched to active mode at any time.
+
+**The device**
+
+The electronic monitoring system is supplied by 'Buddy', a UK company.
+
+The device is fitted to the offender's ankle. Each device pairs with a Radio Frequency beacon which is installed in the house. When the device is in range of the beacon it pairs with the beacon. When the device goes out of range of the RF beacon it switches to GPS. If the GPS fails the device can pair to telephone towers or Wi-Fi.
+
+The battery life of the devices will vary depending on whether it is in active (GPS -- away from the home) or passive (RF -- within the home) monitoring mode. The device can be charged by attaching a small battery pack to it. The battery pack transfers the charge to the device, without the need for the offender to attach the device to a charger. The battery pack can then be removed from the device and recharged.
+
+It will be a condition of the order that the offender charge the device once a day. The offender will have no way of knowing the battery level of their device. There are two battery alerts for the devices that will be sent to the monitoring unit. When the battery reaches, e.g. %30 and when the battery reaches, e.g. 10%. The offender will not be aware of the alerts. The monitoring unit can notify the offender and request that the charge the device.
+
+**Assessments**
+
+Assessments take 6 weeks and are done in two parts -- assessment of the offender and assessment of the home.
+
+The assessment of the offender is essentially a pre-sentence report to determine whether the offender is a suitable candidate for home detention. The assessment will make clear to the offender what the impact of the order is, and ensure that they understand and believe they can comply with the order. It has been suggested that home detention may not be suitable for those with mental health issues who may find compliance with the strict routines and schedules particularly difficult.
+
+The assessment of the home involves assessing whether the home is suitable for detention. This involves ensuring that the device works in the home and ensuring the home has appropriate facilities. The assessor can obtain information from housing services to ensure that, for example, a lease of a house to be used for detention is not going to expire or be terminated before the end of the period of detention.
+
+In other jurisdictions, there are restrictions on the types of offences for which such orders are available (for example violent offences, sex offences). Here, there are no such limitations. The limitations relate to whether the home is appropriate. For example, in violent offences (particularly family violence offences), if the victim lives at the home proposed for detention then it will not be suitable. An order may still be made if a suitable alternative address can be identified.
+
+All co-residents of the home must consent to the home being used for the detention. All co-residents are required to submit to a police check. If co-residents have a criminal record this does not automatically preclude an order being made as the power remains discretionary. If the co-residents do not consent to the home being used for the detention the offender will not be informed that the co-residents withheld consent (they will be told that the home was deemed unsuitable).
+
+After an assessment is made, this information is provided to the court and the Magistrate exercises their discretion in whether or not to make the order.
+
+**The order**
+
+If the Magistrate makes an order for home detention and electronic monitoring the offender must proceed immediately to Community Corrections to be fitted with the device. At the pre-sentence assessment stage the assessor will obtain all the information required for the first week's schedule from the next court date. This ensures that the offender does not have any interruption in, for example, employment, while waiting for their first probation appointment. This process may change if there are a high number of offenders being assessed for orders but few orders made.
+
+The offender will meet regularly with their probation officer, and engage with a detailed case management process.
+
+**Monitoring and Compliance**
+
+Community Corrections will be responsible for monitoring and compliance. The monitoring unit will be based at Hobart Community Corrections. This unit will be responsible for monitoring the whole of the State. Compliance will be in partnership with Community Corrections and Police. The majority of compliance issues can be resolved remotely. Most alerts relate to innocuous alerts such as low batteries or offenders running slightly off schedule. These can be resolved by the compliance unit calling the offender on their phone. It is a requirement of the order that the offender carry their mobile phone at all times and answer their phone when called.
+
+The devices are programmed with the following triaged alerts:
+
+1.  Exclusion zone -- this zone is set by the Court and is generally a small zone relating to a particular place or person
+
+2.  Buffer zone -- this zone is set by Community Corrections and creates a buffer around the exclusion zone. It is wider than the exclusion zone to enable Community Corrections to respond before the issue becomes critical (i.e. once the offender has entered the exclusion zone it is likely already too late to respond adequately).
+
+3.  Inclusion zone
+
+4.  Staff duress -- used where staff have activated their 'duress' signal on their devices
+
+5.  Strap alert -- activates where an offender is attempting to tamper with or remove the device
+
+6.  Low battery 30% - offender will not be aware of the alert and will not be told at what level these are programmed at
+
+7.  Low battery 20% - offender will not be aware of the alert and will not be told at what level these are programmed at
+
+8.  No communication -- where the device is not pairing with the RF beacon
+
+9.  No location
+
+10. Radio Frequency removal -- this is triggered if the RF beacon in the home is removed.
+
+11. Interest zone -- this zone is set by Community Corrections and can be to monitor areas of interest to identify if the offender is frequenting particular addresses or locations
+
+All offenders will begin with a high level of case management and monitoring. Depending on their progress this will decrease. The offender will not be aware of the level of active or passive monitoring.
+
+**Breaches**
+
+There is not strict rule for consequences of breaches. It will depend on the nature of the breach and the circumstances of the offender. The probation officer and case management team will have a high degree of discretion. Minor breaches such as forgetting to charge the battery or missing a curfew due to circumstances outside the offenders control will not result in any significant consequences. Significant breaches may result in termination of the order. In the event that the order is terminated a custodial sentence is not automatically enlivened. However, given that the intention to impose a custodial sentence is a precondition to making an order, it is likely that a custodial sentence would be imposed.
+
+**Changes to the *Sentencing Act 1997* (Tas)**
+
+**Prepared by April Van der Meer**
+
+**3/01/2019**
+
+**Overview**
+
+Recent changes to the *Sentencing Act* came into force on 14 December 2018. The changes introduced two new sentencing options: home detention orders (s 7 (c)) and community corrections orders (s 7 (d)). The changes also removed probation orders and community service orders as sentencing options.
+
+Provisions relating to Home Detention Orders are contained in Part 5A of the *Sentencing Act*.
+
+Provisions relating to Community Correction Orders are contained Part 5B of the *Sentencing Act*.
+
+**Home Detention orders**
+
+Section 42AC of the Act allows a court to make a home detention order. A court can only make an order if it considers that it would be appropriate, in all the circumstances, to make the order (s 42AC(2)(a)). A court can make a home detention order if it convicts an offender and considers that it would otherwise have sentenced the offender to a period of imprisonment (this can include a suspended period of imprisonment) (s 42AC(1)).
+
+A home detention order is not imposed as a substitute sentence for a period of imprisonment, it is a sentencing option in its own right.
+
+A home detention order can run for a period of 18 months (s 42AF(2)).
+
+A home detention order must specify the premises that will be the premises at which the offender must reside during the order (s 42AC(5).
+
+A court can make more than one home detention order, and can make a home detention order in relation to a an offender who is already subject to another home detention order, a community correction order or a community service order (s 42AC(4)). However, the total of operation period of multiple home detention orders cannot exceed 18 months (s 42AF(3)).
+
+It is a core condition of a home detention order that the offender submit to electronic monitoring unless the court determines, and specifies, that there are suitable reasons for the offender not to be required to submit to electronic monitoring (s 42AD(2)). In the second reading speech, the minister listed potential reasons electronic monitoring may not be required as: where an offender is highly unlikely to breach a condition of their order, or because of immobility or illness they are unable to leave their premises.
+
+An order may specify different times for different days of the week during which an offender is required to be at the relevant premises (s 42AD(3)). An offender is not required to be at the relevant premises if they are seeking urgent medical treatment or it would be dangerous to remain on the premises (s 42AD(4)(a) and (b)).
+
+With approval of a probation officer or prescribed officer, an offender is able to leave the premises to engage in activities such as employment, education or rehabilitation programs (s 42AD(4)(c)).
+
+A home detention order can commence on the day it is made or an a later day specified in the order (s 42AG).
+
+A police officer can arrest an offender if the police officer believes on reasonable grounds that the offender has breached, is breaching, or is about to breach, a condition of the order (s 42AL(4)).
+
+[Pre-conditions]{.underline}
+
+There are a number of pre-conditions to the making of a home detention order:
+
+- The offender must undertake a pre-sentence report to consider whether they are suitable for home detention (s42AC(2)(b));
+
+- The offender must consent to the order being made (s 42AC(2)(c));
+
+- The court must be satisfied that the residence is suitable for a home detention order (s 42AC(2)(d);
+
+- Each adult who resides at the premises (other than in a group premises) must consent to the order being made (s 42AC(2)(e);
+
+- If the relevant offence is a family violence offence, a violent offence, or a sexual offence, a home detention order cannot be made if the victim of the offence is to, or is likely to, reside during all or part of the period, at the relevant address (s 42AC(3)(a);
+
+- The Court cannot make an order if it is of the opinion that there is a significant risk that the offender may commit a violent offence, or sexual offence, during the intended period of the order (s 42AC(3)(b).
+
+[Core conditions]{.underline}
+
+Home detention orders must be subject to a number of core conditions. These are listed in s 42AD(1) of the Act. The conditions are numerous, and without listing them in their entirety, include conditions that:
+
+- The offender must not commit an offence that is punishable by imprisonment (s 42AD(1)(a);
+
+- The offender must reside at the relevant premises, and must be at that premises during times specified in the order except for a relevant reason (s 42AD(1)(b) and (c));
+
+- The offender must permit a police officer, probation officer or prescribed officer to enter the premises (s 42AD(1)(d);
+
+- The offender must permit a police officer to conduct a search of the premises, conduct a frisk search of the offender, and take a sample of any substance found on the premises or on the person of the offender (s 42AD(1)(e);
+
+This section contains other core conditions relating to an offenders required interactions with probation officers and conditions relating to electronic monitoring.
+
+[Special conditions]{.underline}
+
+Section 42AE of the Act contains special conditions that may be included in an order. Section 42AE(1)(d) allows the court to include any condition that it considers appropriate for the purpose of reducing the likelihood of the offender re-offending during the period of the order.
+
+If an offender fails to comply with a special condition, the Court may issue a warrant to arrest the offender.
+
+[Applications to vary or cancel]{.underline}
+
+Conditions relating to varying or cancelling a home detention order are contained in s 42AH of the Act.
+
+An offender or an authorised person can apply to the court that made the order for the order to be varied or cancelled (s 42AH(1). The Court must consider the extent to which the offender has complied with the order (s 42AH(7)).
+
+In order to vary or cancel an order, the Court must be satisfied that either:
+
+- Changes to the offender's circumstances since the making of the order have rendered the offender unable to comply with one or more of the conditions of the order; or
+
+- The offender is no longer willing or able to comply with the order; or
+
+- It is otherwise appropriate to do so (s 42AH(6)).
+
+On hearing an application to vary or revoke an order the Court can vary an order by:
+
+- Adding, removing or altering a special condition of the order;
+
+- Altering the operational period of the order, the relevant premises or the relevant times the offender must be present at the premises;
+
+- Altering the times during which the offender must submit to electronic monitoring or revoking a condition requiring the offender to submit to electronic monitoring (s 42AH(4)(a)).
+
+A court can cancel the home detention order, and any other order in respect of the offences, and deal with the offender in any manner in which the court could deal with the offender if they had just been found guilty of the offence (ss 42AH(4)(b) and (c)).
+
+A court can refuse to vary or cancel a home detention order (S 42AH(4)(d).
+
+[Breach of a condition of an order]{.underline}
+
+Provisions relating to the breach of the conditions of an order are contained in s 42AI of the Act.
+
+An authorised person can apply to the Court for the Court to vary or cancel the order if it appears to them that the offender has breached a condition of the order.
+
+On hearing an application, a court can vary, cancel or confirm a home detention order in much the same way as explained above in relation to applications under s 42AH of the Act.
+
+If the Court finds that the offender has breached a condition of the order by committing an offence, the Court must deal with the application as if it were an application under s 42AJ (breach of condition of home detention order where offender found guilty of offence) even if the application was not brought under that section (s 42AI(6)).
+
+[Breach of condition of an order by committing an offence.]{.underline}
+
+Provisions relating to the breach of an order by committing further offences are contained in s 42AJ of the Act.
+
+If the Court finds an offender guilty of an offence, an authorised person can make an oral application while the offender is before the court for the court to vary or cancel a home detention order (s 42AJ(1).
+
+If the new offence is not punishable by imprisonment, the Court can deal vary, cancel or confirm a home detention order in much the same was as explained above in relation to applications under ss42AH or 42AI of the Act (s42AJ(4)).
+
+If the new offence is punishable by imprisonment, the Court must cancel the home detention order and, if appropriate, any other order and impose a sentence as if it had just found the offender guilty of the offence (s 42AJ(5)).
+
+However, if the Court is satisfied that there are exceptional circumstances, it must confirm, vary or cancel the order in the manner mentioned above (s 42AJ(6)).
+
+**Community Correction Orders**
+
+Section 42AN of the Act allows a court to make a community correction order. An order can be made with or without recording a conviction (s 7(d)). This sentencing option was introduced to replace probation orders and community service orders. In the second reading speech, the minister states that community correction orders are likely to be imposed in a broader range of circumstances than either community service orders or probation orders.
+
+Section 27Y of the Act provides that the court may not impose any new community service orders. Section 36B of the Act provides that the court may not impose any new probation orders.
+
+The Court has discretion as to when to impose a community correction order, but the Act stipulates that it may be appropriate to impose a community correction order where a court would otherwise have sentenced an offender to a wholly or partly suspended period of imprisonment (s 42AN(2)).
+
+The Court must specify the period during which the offender must comply with an order, and an order cannot be specified to be more than 3 years (s 42AQ)). The Court must also specify when the operational period of the order commences (s 42AR).
+
+A police officer can arrest an offender if the police officer believes on reasonable grounds that the offender has breached, is breaching, or is about to breach, a condition of the order by leaving, or attempting to leave, the State (s 42AY(3)).
+
+There is no requirement in the Act that the offender undertake a pre-sentence report before the imposition of a community correction order.
+
+In the relevant report (Phasing Out of Suspended Sentences (2016)), the Sentencing Advisory Council noted that Community Correction Orders have been used in Victoria for relatively serious offences including armed robbery, aggravated burglary and intentionally causing serious harm amongst numerous other offences. It recommends that community correction orders in Tasmania should also be able to be used for relatively serious offences, as is reflected in the statement in s 42AN(2) that they can be used where the Court would otherwise have imposed a suspended period of imprisonment.
+
+[Core Conditions]{.underline}
+
+An order is subject to a number of core conditions, these are contained in s 42AO of the Act.
+
+An offender must not:
+
+- Commit an offence punishable by imprisonment;
+
+- Leave or remain outside Tasmania without permission of a probation officer.
+
+An offender must:
+
+- Report to a probation officer as specified in the order and as required by the probation officer;
+
+- Comply with reasonable and lawful directions of a probation officer or supervisor;
+
+- Notify a probation officer of any change in address or employment.
+
+[Special Conditions]{.underline}
+
+An order can be subject to a number of special conditions. These are listed in s 42AP of the Act. The Court can impose any condition that it thinks appropriate (s 42AP(n)).
+
+The Court MUST include a special condition that either the offender submit to the supervision of a probation order in accordance with s 42AP(1)(c) of the Act or perform community service in accordance with s 42AP(1)(d) of the Act (s 42AP(2)).
+
+The maximum hours of community service that can be imposed is 240 (S42AS).
+
+A special condition can run for the whole, or any part of the operational period of the order (s 42AP(3)). For example, an offender may be subject to less stringent conditions as the order progresses.
+
+[Application to vary or cancel]{.underline}
+
+Provisions relating to an application to vary or cancel an order are contained in s 42AU of the Act.
+
+An offender or an authorised person can apply to the court that made the order for the order to be varied or cancelled (s 42AU(1)). The Court must consider the extent to which the offender has complied with the order (s 42AU(7)).
+
+The Court may cancel an order where an offender has completed community service (s 42AU(4)(d)).
+
+Except where community service has been completed, in order to vary or cancel an order, the Court must be satisfied that either:
+
+- Changes to the offender's circumstances since the making of the order have rendered the offender unable to comply with one or more of the conditions of the order; or
+
+- The offender is no longer willing or able to comply with the order; or
+
+- It is otherwise appropriate to do so (s 42AU(6)).
+
+On hearing an application to vary or cancel an order, the Court may:
+
+- Vary the order by adding, removing, or altering a special condition or altering the operational period of the order;
+
+- Cancel the order and, if appropriate, and other order in respect of the offence, and deal with the offender as if the court had just found the offender guilty of the offence;
+
+- Refuse to vary or cancel the order (ss 42AU(4)(a), (b), (c) and (e).
+
+[Breach of condition of an order]{.underline}
+
+The provisions relating to a breach of a condition of an order are contained in s 42AV of the Act.
+
+An authorised person can apply to the Court under this section if it appears to them that the offender has breached a condition of the order (s 42AV(1)).
+
+If the Court finds that the offender has breached a condition of the order, it must either:
+
+- Confirm the order;
+
+- Vary the order by adding, removing or altering a special condition or extending the operational period;
+
+- Cancel the order, and if appropriate, any other order, and deal with the offender in respect of the offence as if it had just found the offender guilty of that offence (s 42AV(4)).
+
+The court can deal with the offender as if they had just found them guilty of the offence whether or not the order is still in force (s 42AV(4)(e)).
+
+If the Court finds that the offender has breached a condition of the order by committing an offence, the Court must deal with the application as if it were an application under s 42AW (breach of condition of community correction order where offender found guilty of offence) even if the application was not brought under that section (s 42AV(6)).
+
+[Breach of condition of an order by committing an offence]{.underline}
+
+Provisions relating to the breach of an order by committing further offences are contained in s 42AW of the Act.
+
+If a court hears an application under this section, it must proceed in much the same way as mentioned above in relation to an application under s 42AV of the Act.
+
+**Further**
+
+As a side note, in the sections of the Act relevant to home detention orders and community corrections orders, there are multiple references to section 23A of the Act. This section was discussed in the second reading speech of the bill, intending to limit the circumstances in which suspended sentences could be imposed. The section does not seem to have been included in the amendments, so I would think that references to section 23A in the legislation can ignored.

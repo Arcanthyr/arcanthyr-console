@@ -1,0 +1,235 @@
+## THE PREROGATIVE "TO PROSECUTE OR NOT TO PROSECUTE"
+
+The following are extracts from the Summary Prosecutions Manual, <http://intranet.police.tas.gov.au:8888/dpem/index.php?id=2158>
+
+- Case evaluation must be made at each stage of bringing an action. ***(p. 50)***
+
+- A decision not to proceed may be pragmatic, compassionate or recognise that the allegation is not born out by the evidence , or is countered by a well substantiated defence - if the pursuit of justice is the goal, then a decision to discontinue a prosecution is not necessarily a failure. ***(p. 51)***
+
+- Having satisfied himself or herself that the evidence is sufficient to justify the institution or continuation of a prosecution, the prosecutor must then consider whether, in light of the provable facts and the whole of the surrounding circumstances, the public interest requires a prosecution to be pursued. It is not the rule that all offence brought tot the attention of the authorities must be prosecuted. ***(p. 51)***
+
+Within Part 8.10 of the Police Manual (<http://hbtapp9v.police.tas.gov.au:81/TPM/>) there are guidelines as to the decision of whether to procrute/ not prosecute:
+
+**8.10 Decisions to Prosecute/Not to Prosecute**
+
+(1)    Tasmania Police will prosecute offenders where there exists a [reasonable prospect of conviction]{.mark}.
+
+(2)    The criteria for not prosecuting, although there exists a reasonable prospect of conviction include:
+
+(a)     technical breaches of the law;
+
+\(b\)     trivial contraventions of the law;
+
+(c)     vexatious, oppressive and malicious prosecutions;
+
+(d)     prosecutions that would attract ridicule, or bring the law into contempt;
+
+(e)     unreasonable delay has occurred in bringing a prosecution;
+
+(f)      where the mental condition of the offender suggests treatment rather than prosecution; and
+
+(g)     any other proper consideration.
+
+#### DPP GUIDELINES 
+
+The initial consideration in the exercise of the discretion to prosecute is whether the evidence is sufficient to justify the institution or continuation of a prosecution (s310(4) of the Criminal Code). A prosecution should not be instituted or continued unless there is admissible, substantial and reliable evidence that a criminal offence known to the law has been committed by an identifiable person.
+
+However, application of the reasonable prospect of conviction test dispassionately, after due deliberation by a person experienced in weighing the available evidence, is the best way of seeking to avoid the risk of prosecuting an innocent person and the useless expenditure of public funds. When evaluating the evidence, regard should be had to the following matters:
+
+- Are there grounds for believing the evidence may be excluded bearing in mind the principles of admissibility at common law and under statute?
+
+- If the case depends in part on admissions by the accused, are there any grounds for believing that they are of doubtful reliability having regard to the age, intelligence and apparent understanding of the accused?
+
+- Does it appear that a witness is exaggerating, or that his or her memory is faulty or contaminated, or that the witness is either hostile or friendly to the accused, or may be otherwise unreliable?
+
+- Has a witness any apparent motive for telling less than the whole truth?
+
+- Are there matters which might properly be put to a witness by the defence to attack his or her credibility? • If identity is likely to be an issue, how cogent and reliable is the evidence of those who purport to identify the accused?
+
+- Is there is anything which causes suspicion that a false story may have been concocted?
+
+- Are all the necessary witnesses available and competent to give evidence pursuant to s18 of the Evidence Act 2001?
+
+- Where child witnesses are involved, are they competent to give evidence pursuant to the Evidence Act 2001?
+
+### Public interest 
+
+Having satisfied himself or herself that the evidence is sufficient to justify the institution or continuation of a prosecution, the prosecutor must then consider whether, in the light of the provable facts and the whole of the surrounding circumstances, the public interest requires a prosecution to be pursued. It is not the rule that all offences brought to the attention of the authorities must be prosecuted. Public interest does not equate to the level of public interest in an individual person or a particular matter.
+
+The factors which can properly be taken into account in deciding whether the public interest requires a prosecution will vary from case to case. While many public interest factors militate against a decision to proceed with a prosecution, there are public interest factors which operate in favour of proceeding with a prosecution (e.g. the seriousness of the offence, the need for deterrence). In this regard, generally speaking, the more serious the offence the less likely it will be that the public interest will not require that a prosecution be pursued.
+
+Factors which may arise for consideration in determining whether the public interest requires a prosecution include:
+
+- the seriousness or, conversely, the triviality of the alleged offence or that it is of a \"technical\" nature only
+
+- any mitigating or aggravating circumstances
+
+- the youth, age, intelligence, physical health, mental health or special infirmity of the alleged offender, a witness or victim
+
+- the alleged offender\'s antecedents and background
+
+- the staleness of the alleged offence
+
+- the degree of culpability of the alleged offender in connection with the offence
+
+- the obsolescence or obscurity of the law
+
+- whether the prosecution would be perceived as counter-productive, for example, by bringing the law into disrepute
+
+- the availability and efficacy of any alternatives to prosecution
+
+- the prevalence of the alleged offence and the need for deterrence, both personal and general
+
+- whether the consequences of any resulting conviction would be unduly harsh and oppressive
+
+- whether the alleged offence is of considerable public concern
+
+- the risk to the public in not proceeding
+
+- any entitlement of the victim or other person or body to criminal compensation, reparation or forfeiture if prosecution action is taken
+
+- the likelihood of a confiscation order being made against the alleged offender's property upon conviction
+
+- the attitude of the victim of the alleged offence to a prosecution
+
+- where the victim does not wish to proceed, the likely effect on the victim in forcing him or her to give evidence. Also, conversely, the future risk to the victim, family members and the public in not proceeding.
+
+- the likely length and expense of a trial
+
+- whether the alleged offender is willing to co-operate in the investigation or prosecution of others, or the extent to which the alleged offender has done so
+
+- the likely outcome in the event of a finding of guilt having regard to the sentencing options available to the court
+
+- whether the alleged offence is triable only on indictment
+
+- whether the alleged offender has already been sentenced for other offences and the likelihood of the imposition of an additional penalty having regard to the totality principle
+
+- The applicability of and weight to be given to these and other factors will depend on the particular circumstances of each case.
+
+As a matter of practical reality, the proper decision in many cases will be to proceed with a prosecution if there is sufficient evidence available to justify a prosecution. Although there may be public interest factors present in a particular case, often the proper decision will be to proceed with a prosecution and for those factors to be put to the court at sentence in mitigation. Nevertheless, where the offence is not so serious as to plainly require prosecution, or where the victim does not wish to proceed, the prosecutor should always apply his or her mind to whether the public interest requires a prosecution to be pursued.
+
+Vehicle recovered. No damage. Little inconvenience to victims. Victims required to travel from FOSTER. Content for matter to drop. FSST required from to attend in person from HOBART. Unwilling retired police witness. Not in public interest to proceed.
+
+## Disclosure:
+
+Kirby J adopted the following statement of Lord Hope in R v Brown 226 in 1998 as representing an accurate statement ofthe law in Australia:
+
+*The prosecution is not obliged to lead evidence which may undermine the Crown case, but fairness requires that material in its possession which may undermine the Crown case is disclosed to the defence. \[T\]he prosecution is not obliged to lead the evidence of witnesses who are likely in its opinion to be regarded by the judge or jury as incredible or unreliable. Yet fairness requires that material in its possession which may cast doubt on the credibility or reliability of those witnesses whom it chooses to lead must be disclosed.*
+
+\[1998\] AC 367 at 377 quoted by kirby J (2005) 224 CLR 125 at 153.
+
+As was highlighted in 2004 in R v lf241 by Lord Bingham: Fairness ordinarily requires that any material held by the prosecution which weakens its case or strengthens that ofthe defendant, if not relied on as part of its formal case against the defendant, should be disclosed to the defence. Bitter experience has shown that miscarriages of justice may occur where such material is withheld from disclosure. The golden rule is that full disclosure ofsuch material should be made. R v H \[2004\] 1 All ER 1269 at 1277.
+
+### Tas case eon disclosure requirements:
+
+Might be higher than currently practiced
+
+**Example where held we should have done more:**
+
+***Robertson v Reardon \[2025\] TASSC 21***
+
+It was an evade and drug drive charge. ID was in issue as was a defence alabi.
+
+"The evidence was necessary, in my view, to unfold the narrative and give a complete account of the events upon which the prosecution was based"
+
+In this case there were issues about the defendant's account that were arguably supported by evidence not shown/ played in court or disclosed.
+
+However there was no discussion about the issues concerning matters covered by a evidentiary certificate. Obviously they are different.
+
+## Model Rules of Professional Conduct and Practice
+
+20.7 A prosecutor must call as part of the prosecution\'s case all witnesses:
+
+20.7.1 whose testimony is admissible and necessary for the presentation of the whole picture;
+
+20.7.2 whose testimony provides reasonable grounds for the prosecutor to believe that it could provide admissible evidence relevant to any matter in issue;
+
+20.7.3 whose testimony or statements were used in the course of any committal proceedings; and
+
+20.7.4 from whom statements have been obtained in the preparation or conduct of the prosecution\'s case, unless:
+
+\(a\) the opponent consents to the prosecutor not calling a particular witness;
+
+\(b\) the only matter with respect to which the particular witness can give admissible evidence has been dealt with by an admission on behalf of the accused; or
+
+\(c\) the prosecutor believes on reasonable grounds that the administration of justice in the case would be harmed by calling a particular witness or particular witnesses to establish a particular point already adequately established by another witness or other witnesses,
+
+provided that:
+
+the prosecutor is not obliged to call evidence from a particular witness, who would otherwise fall within Rules 20.7.1-20.7.4, if the prosecutor believes on reasonable grounds that the testimony of that witness is plainly unreliable by reason of the witness being in the camp of the accused;
+
+the prosecutor must inform the opponent as soon as practicable of the identity of any witness whom the prosecutor intends not to call on any ground within (a), (b) and (c), together with the grounds on which the prosecutor has reached that decision; and
+
+\(iii\) the prosecutor must call any witness whom the prosecutor intends not to call on the ground in (i) if the opponent requests the prosecutor to do so for the purpose of permitting the opponent to cross-examine that witness.
+
+*R v Apostilides* 15 A Crim R (1984) 88
+
+The Crown prosecutor had declined at trial to call two witnesses whose veracity he had cause to doubt. The Court of Appeal ordered a new trial finding that a substantial miscarriage of justice may have occurred.
+
+The High Court set out \[*extracted from Head notes*\] a number of propositions which apply to the conduct of a criminal trial.
+
+(i) The Crown Prosecutor alone bears the responsibility of deciding whether a person will be called as a witness for the Crown;
+
+(ii) The Trial judge may, but is not obliged to question the prosecutor in order to discover the reasons which lead the prosecutor to decline to call a particular person. He is not called upon to adjudicate the sufficiency of those reasons.
+
+(iii) Whilst at the close Crown case the trial judge may properly invite the prosecutor to reconsider such a decision and to have regard to the implications as then appear to the judge at that stage of the proceedings, he cannot direct the prosecutor to call a particular witness.
+
+(iv) When charging the jury, the trial judge may make such comment as he then thinks to be appropriate with respect to the effect which the failure of the prosecutor to call a particular person as a witness would appear to have on the course of the trial. No doubt, that comment, if any, will be affected by such information as to the prosecutor's reasons for his decision as the prosecutor thinks proper to divulge.
+
+(v) Save in the most exceptional circumstances, the trial judge should not himself call a person to give evidence.
+
+(vi) A decision of the prosecutor not to call a particular witness will only constitute a ground for setting aside a conviction if, when viewed against the conduct of the trial taken as a whole, it is seen to give rise to a miscarriage of justice.
+
+The High Court in ***Weissensteiner v R* (1993)** 178 CLR 217 ( cited with approval in *Howlett v Budd* \[2003\] TASSC 49) that:
+
+\"*If the question concerns the calling by the defence of a witness other than the accused, it will also be necessary to recall that the prosecutor \'has the responsibility of ensuring that the Crown case is presented with fairness to the accused\' and in many cases would be expected to call the witness in question as part of the case for the prosecution. And, if the question concerns the failure of the prosecution to call a witness whom it might have been expected to call, the issue is not whether the jury may properly reach conclusions about issues of fact but whether, in the circumstances, the jury should entertain a reasonable doubt about the guilt of the accused*.\"
+
+![](media/image1.png)
+
+![](media/image2.png)
+
+# WITNESSES -- PROSECUTION OBLIGATION
+
+The prosecutor \"has the responsibility of ensuring that the Crown case is presented with fairness to the accused" and in many cases would be expected to call the witness in question as part of the case for the prosecution*. Richardson v The Queen (1974) 131 CLR 116* at 119 per Barwick CJ, McTiernan and Mason JJ. See also *R v Apostilides* (1984) 154 CLR 563
+
+***R v Apostilides* 15 A Crim R (1984) 88**
+
+The Crown prosecutor had declined at trial to call two witnesses whose veracity he had cause to doubt. The Court of Appeal ordered a new trial finding that a substantial miscarriage of justice may have occurred.
+
+The High Court set out \[*extracted from Head notes*\] a number of propositions which apply to the conduct of a criminal trial.
+
+(vii) The Crown Prosecutor alone bears the responsibility of deciding whether a person will be called as a witness for the Crown;
+
+(viii) The Trial judge may, but is not obliged to question the prosecutor in order to discover the reasons which lead the prosecutor to decline to call a particular person. He is not called upon to adjudicate the sufficiency of those reasons.
+
+(ix) Whilst at the close Crown case the trial judge may properly invite the prosecutor to reconsider such a decision and to have regard to the implications as then appear to the judge at that stage of the proceedings, he cannot direct the prosecutor to call a particular witness.
+
+(x) When charging the jury, the trial judge may make such comment as he then thinks to be appropriate with respect to the effect which the failure of the prosecutor to call a particular person as a witness would appear to have on the course of the trial. No doubt, that comment, if any, will be affected by such information as to the prosecutor's reasons for his decision as the prosecutor thinks proper to divulge.
+
+(xi) Save in the most exceptional circumstances, the trial judge should not himself call a person to give evidence.
+
+(xii) A decision of the prosecutor not to call a particular witness will only constitute a ground for setting aside a conviction if, when viewed against the conduct of the trial taken as a whole, it is seen to give rise to a miscarriage of justice.
+
+## Tas DPP Guidelines 
+
+Prosecutors have a duty to call all witnesses whose testimony is necessary for the presentation of the whole picture, to the extent that it can be presented by admissible and available evidence, unless they form the view that the interests of justice would be prejudiced rather than served by calling a witness. The fact that a witness will give an account inconsistent with the prosecution case is not sufficient reason for not calling that witness. In those circumstances, a witness should only not be called where there is clear, objective material that all admissible accounts by that witness lack any credibility (see *R v Ashton, Farmer & Randall* \[2003\] TASSC 140 at \[29\]).
+
+Where a prosecutor decides not to call a witness in these circumstances, the reasons should be recorded in writing and placed on the file. Without limiting the circumstances where a witness will not be called, they may include where an issue is not in dispute and other witnesses have already given evidence regarding that issue, the failure to call a witness is consented to by counsel for the accused, or where a witness is unavailable. Other considerations may include the physical and mental health of a witness. Where possible when a decision has been made not to call a witness that witness should be made available to the defence.
+
+## Credibility of prosecution witnesses
+
+There is, however, no obligation upon the prosecution to go out into the world and investigate matters that might reflect upon the credibility of prosecution witnesses and to then disclose those matters (see *Tasmania v Farhat* \[2017\] TASSC 42 at \[16\]).
+
+## Failure to Call a Witness
+
+### Material witnesses need to be called:
+
+***Darren John Burston v David John Brook*s \[1996\] TASSC 152 (2 December 1996)**
+
+17\. *I have mentioned that a number of witnesses who might have been expected to have been called by the respondent, namely the manager of the Saloon Bar and some four police officers, were not called by him and no explanation was given for this failure. Counsel who appeared for the applicant before the learned magistrate raised this matter in his opening address but the learned magistrate made no mention of it in his reasons. When spoken to in the charge room, the applicant made it quite clear that he did not consider that he had done anything wrong. On the prosecution version of events, the applicant\'s altercation with the manager was the catalyst which led to subsequent events. The respondent\'s failure to call her is mystifying and on the face of it suggests a quite inappropriate conduct of the prosecution. I consider that in summary prosecutions the prosecutor has the same duties as to the calling of witnesses as that held to be appropriate in relation to Crown counsel in Richardson v R [\[1974\] HCA 19](http://www.austlii.edu.au/au/cases/cth/HCA/1974/19.html); [(1974) 131 CLR 116](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281974%29%20131%20CLR%20116?stem=0&synonyms=0&query=poa1935140%20s13) and R v Apostolides [\[1984\] HCA 38](http://www.austlii.edu.au/au/cases/cth/HCA/1984/38.html); [(1984) 154 CLR 563.](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=%281984%29%20154%20CLR%20563?stem=0&synonyms=0&query=poa1935140%20s13)*
+
+[CONTRAST HOWEVER WITH]{.mark}: ***Martin v Visser* \[2000\] TASSC 173 (20 December 2000)**
+
+Where it was not until the defence led there case where it became apparent that arguably material witnesses were not called.
+
+\[23\] *The charge was of disorderly conduct in St John Street, out of sight of the hotel. The event which was the immediate precipitant of the applicant\'s arrest occurred out of sight of the hotel. In the course of receiving the submission of the applicant\'s counsel in this regard, the learned magistrate commented \"what, you think that a sledge hammer should be used to crack a nut, you\'re saying everybody in sight should be called as a witness\" and \"I think that\'s making a bit much of it really, to suggest that people like that should have been called\"*

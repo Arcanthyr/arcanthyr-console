@@ -1,0 +1,335 @@
+### Further flow chart
+
+Options
+
+1\. Alternative version
+
+2\. Can\'t remember anything (and/or drugged) a
+
+3\. Not swear oath
+
+4\. Swear oath but not give evidence
+
+**Alternative version --- s 38(1)(c)**
+
+**SET UP BASIS FOR APPLICATION**
+
+- Did anything else happen?
+
+- Do you remember talking to police?
+
+- Do you remember making a statement \[But if witness denies making a statement, need to stop here and call evidence on the *voir dire\]*
+
+- Did you sign it, as true and correct?
+
+*Show document*
+
+**MAKE APPLICATION AND ASK THAT THE WITNESS BE RELIEVED**
+
+**LEAVE APPLICATION TO PROCEDD ON S.38 BASIS:**
+
+- *YH, the witness has just given evidence that...*
+
+- *She made a prior inconsistent statement to police on*...\[Take to relevant paragraph or simply read it? Indicate what date it was signed\]
+
+- *I seek leave to cross-examine as to:*
+
+<!-- -->
+
+- **the prior inconsistent statement;**
+
+- **AND matters relevant only to her credibility** (e.g. they are now back together, the witness does not want the D to go to prison, threats or intimidation\...)
+
+ADDRESS ***S 38(6) FACTORS***
+
+- **Notice** was given to my learned friend on ... of my intention to seek leave;
+
+- The matters on which. and the extent to which, the witness has been. or is likely to be, **questioned by another party\"**
+
+ADDRESS ***S 192 FACTORS:***
+
+A)  The extent to which to do so would be **likely to add unduly** to, or to shorten, the **length of the hearing;** and
+
+- *It will lengthen the hearing but not unduly*
+
+B)  The extent to which to do so would be **unfair** to a party or to a witness; and
+
+- *Purpose is to provide Ms Whiley with an opportunity to admit she made a statement to police, and then admit that the statement is true. Secondly, it is to satisfy the requirements of s 43(2), if recourse to that statement is necessary.*
+
+- As far as I understand the Defence case, it is not that they intend to put an alternative course to the witness but instead to, and therefore, it would be unfair to them to grant leave because they would not challenge the statement in cross-examination. Can test the truthfulness about his memory or illicit evidence about drug taking to cast doubt on the truthfulness of what she said to police.
+
+- Unfair to prosecution to not allow it to use a mechanism clearly provided for by the act (s 43).
+
+- If not memory, not no value, as value to lay ground-work for s 43 (prosecution) or to reliability of statement (defence).
+
+C)  the **importance of the evidence** in relation to which the leave, permission or direction is sought; and
+
+- The evidence is very important. It is open to YH to argue that Ms Whiley told the truth immediately after the alleged assault, and that later changed her story to protect the Defendant who is her husband.
+
+D)  the **nature of the proceeding;** and
+
+- While it is a summary offence, it is not a trivial offence.
+
+- Involves a serious assault on the person, in her home.
+
+E)  the power of the court, if any, to **adjourn** the hearing or to make another order or to give a direction in relation to the evidence.
+
+- Evidence is crucial to the prosecution case
+
+- Need not be a motive to give untruthful evidence, but important to explore it here.
+
+- Contemporaneous, more probably reliable
+
+- Other unfairness?
+
+**PROCEEDING TO S 38 CROSS-EXAMINATION**
+
+***If in an Oral statement to police:***
+
+- Police attended your address on \.... didn\'t they?
+
+- And when they arrived they asked you what had happened?
+
+- You told them you had not seek your ex partner, Andrew Whiley in a number of weeks and that he had appeared unexpectedly while you were asleep on the couch?
+
+***If in a Statutory declaration made by witness:***
+
+- Did you make a statement to police on \...?
+
+- Put when ...\[aka fresh in mind\]
+
+- Sign it?
+
+- Sign it, declaring, contents of it were true, and correct?
+
+- Told them that \[put allegation\]
+
+- And he **DID DO** \[put allegation\] ***\[Browne v Dunn\]***
+
+- Can you remember discussing what happened with police?
+
+- Do you remember making a statement to police in the form of a statutory declaration?
+
+- Did you make one \[ie on the day of the offence\]
+
+- Do you remember being asked to read it?
+
+- And sign and date it if it was true and correct?
+
+- Did you sign it?
+
+- \[Seek leave\]
+
+- Show document
+
+- Is that your name and address at the top of the page?
+
+- Is that your signature at the bottom of the page?
+
+- Is that the date next to your signature and is that the date you signed the statutory declaration?
+
+- When you signed it, did you sign the document believing its contents to be true and correct.
+
+- \[Take witness to paragraph and ask them to read it to themselves.
+
+- 1 will now ask you again, do you now remember what happened that day?
+
+**RESULT-AFTER CROSS EXAMINATION**
+
+1\. If they Adopt statement - **move on.**
+
+2\. Accept they Told that to police but:
+
+it didn\'t actually happen --- **move on;** or
+
+I don\'t remember what happened --- **move on.**
+
+N,B, Have established a weak PF case. Hearsay says not admissible to prove fact asserted (ie did punch). But relevant to credibility (as now conceded evidence is different to what said in past) (KB, s 103 and 106(c) will not preclude evidence). Therefore, it is relevant to a non-hearsay purpose (credibility purpose) and under s 60 (hearsay purpose that assault occurred),
+
+3\. Agree they made the prior statement, but does **not accurately record** what they told police or **cannot remember what told police, MFI and TENDER.**
+
+**4.** Deny or not remember making a statement. **MFI and TENDER.**
+
+**BE Live to 137 UNFAIR PREJUDICE**
+
+*Section 137. Exclusion of prejudicial evidence in criminal proceedings*
+
+*in a criminal proceeding the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.*
+
+Claimed loss of memory (which even if rejected, did not necessarily lead to acceptance of the truth of the prey reps) precluded detailed cross-examination as to the facts asserted and that adversely affected the probative value of the representations.
+
+Not making a genuine attempt Section 38(1)(b)
+
+Remember event but deny unlawful conduct (section (b) not make a genuine attempt
+
+*"We had an argument but nothing else happened\'.*
+
+**SET UP BASIS FOR S 38 APPLICATION**
+
+- *Did anything else happen?*
+
+Seek Leave --- Not genuine attempt ie WITNESS IS UNFAVOURABLE
+
+- *YH, the witness has given evidence that \...*
+
+- *This not genuine attempt as present because \...expect to be in her knowledge as ...*
+
+- *Seek to cross-examine her on matters regarding her credibility including whether*:
+
+  - Lying as have reconcile and not want to get in trouble
+
+  - Why --- put to her the reason as to the fabrication which relates to her credibility
+
+  - Harder to resume relationship if convicted
+
+- *Can you remember discussing what happened with police?*
+
+- *Do you remember making a statement to police in the form of a statutory declaration?*
+
+- *Did you make one* \[ie on the day of the offence\]
+
+- *Do you remember being asked to read it?*
+
+- *And sign and date it if it was true and correct?*
+
+- *Did you sign it?*
+
+- \[Seek leave\] *Show document*
+
+- *Is that your name and address at the top of the page?*
+
+- *Is that your signature at the bottom of the page?*
+
+- *Is that the date next to your signature and is that the date you signed the statutory declaration?*
+
+- *When you signed it, did you sign the document believing its contents to be true and correct*,\[Take witness to paragraph and ask them to read it to themselves\]
+
+- *I will now ask you again, do you now remember what happened that day? Check from Jodie\'s notes when to seek leave in the part above.*
+
+### Section 42
+
+If the witness is clearly in the defence camp, and 38 is required, make an app under s 42 (leading questions) to prevent the CX from merely putting things to them. There is no liklyhood of facts coming out if they are clearly in enemny camp
+
+**Police v Endlay \[2020\] TASMC 13 (9 January 2020)**
+
+\[108\]"As to her credit and reliability I also observe that I place no weight on her answers to questions asked of her in cross-examination proper by Ms Stewart. Those questions were entirely leading. While the asking of leading questions in cross-examination is permissible and obviously in many cases quite common, in this case it was plain that the complainant was a partisan witness who was entirely favourable to the defence case. She was effectively a defence witness. To use the words of Mr Gillies in "The Law of Evidence in Australia" at page 126 in giving her answers to those questions she functioned as "a mere echo of counsel"."
+
+### Tendering PIS as evidence of fact
+
+Through Police officer
+
+- Get evidence from officer that victim read it. Amount of time; whether any amendments were made; that they signed the section about it being a truthful statement
+
+## Section 32
+
+**Refreshing memory:**
+
+- Must be a contemporaneous document
+
+- Document must have been made or verified by the witness
+
+- Be prepared to show the document to the witness
+
+Chain of questions to satisfy essential preconditions of refreshing memory:
+
+Ask witness if after the event they made a note of what was said:
+
+- How long after did you make the note?
+
+- Where did you make the note?
+
+- When you made the note, were the words still first in your memory?
+
+- How did you make the notes?
+
+- Did the notes accurately record your memory at the time?
+
+- It has been x months since the incident?
+
+- Are you able to recall what was said at the time?
+
+- Are you able to produce those notes?
+
+- DO you seek leave of the court to refer to those notes to refresh your memory as to what was said?
+
+Section 32(1) of the evidence act provides that a witness may use a document to revive their memory, if the court gives leave. Section 32(2) provides the considerations the court should consider.
+
+Rely on this section if a witness says that they cannot remember, or if I know that they have forgotten something that was in their statement.
+
+- Can you remember anything else
+
+- Is there anything that would help you remember (why yes! I did a statement).
+
+- Do you have that statement with you (why yes, I do)
+
+- When was that statement made? (when I was interviewed by police shortly after the event)
+
+First question establishes that memory is exhausted. The second question that there is a document that would revive the witnesses' memory. The third question establishes that it is the original and the 4^th^ that it was made why the matter was still fresh in the memory of the maker.
+
+32(2) allows a witness, given leave, to actually read aloud from the statement.
+
+\-\-\--
+
+Section 32 -- read statement
+
+Consider using if the witness genuinely cant remember what happened -- given the course of time that has passed since it happened. Need to ensure 192 has been considered and the pre-conditions in 32 (recall otherwise or not; make sure the statement was made at the time
+
+Need to ensure the court is statisfied the statement was made at the time and was agreed by the witness as being true (may need to get police officer who took it at the time to give evidence on voir dier
+
+Had witness highlighted portions, let them read it to themselves, then take it back and then ask them the question.
+
+### Procedure
+
+Get what the witness does remember through EIC
+
+No problems memory generally
+
+Satisfied exhausted memory (s 2(a))
+
+Fresh in memory OR (s 2(b)(i))
+
+Found by the witness to be accurate (5 2(b)(ii))
+
+Leave under s 192
+
+\- Evidence important and relates to a fundamental particular
+
+**Factors:**
+
+*32. **Attempts to revive memory in court***
+
+*(1)A witness, in the course of giving evidence, must not use a document to try to revive his or her memory about a fact or opinion unless the court gives leave.*
+
+*(2) Without limiting the matters that the court may take into account in deciding whether to give leave, it is to take into account ---*
+
+*(a) whether the witness will be able to recall the fact or opinion adequately without using the document; and*
+
+*(b) whether so much of the document as the witness proposes to use is, or is a copy of, a document that ---*
+
+*(i) was written or made by the witness when the events recorded in it were fresh in his or her memory; or*
+
+*(ii) was, at such a time, found by the witness to be accurate.*
+
+*(3) If a witness, while giving evidence. has used a document to try to revive his or her memory about a fact or opinion, the witness, with the leave of the court, may read aloud as part of his or her evidence so much of the document as relates to that fact or opinion.*
+
+*(4) The court, on the request of a party, is to give any directions it thinks fit to ensure that so much of the document as relates to the proceeding is produced to that party.*
+
+## Section 66(3) 
+
+Contemplation of court proceedings -
+
+- Representation by a person who is available, by s 60, becomes admissible as to the truth of the assertion.
+
+- Defence object on the basis of s 66 (3) and the representation was made for the purpose of indicating the evidence she would give in an Australian proceeding
+
+This was dealt with by *Saunders* \[2004\] TASSC 95 par 60, where Crawford said that reference to s (3) is clearly a reference to the maker, not who heard the representation (also in Esposito --- Wood J).
+
+Case is not so clear where person at the scene makes a representation to a police officer
+
+who just arrived and is trying to find out what happened --- ie it may be to make a complaint
+
+or to assist officer who has just arrested someone.
+
+Therefore, it is significant what the purpose of the maker is. Reasonable to infer she was not prepared to make a statement as scared, she did not perceive that representation she gave was an account she might be able to give in a court proceeding. No basis for concluding at the time the purpose was for indicating what evidence she would give at Court proceedings.
+
+Clear SC authority it is a reference to the purpose of the maker not the person who heard the representation.

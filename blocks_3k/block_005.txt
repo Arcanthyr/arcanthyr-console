@@ -1,0 +1,375 @@
+## Provision of interpreter 
+
+Provided for under s5 of the Criminal Law (Detention & Interrogation) Act 1995 (Tas).
+
+See also Tas v Stojakovic \[2008\] TASSC 48 about it and the Victorian case of: DPP v Viel & Vocaj \[2024\] VCC 336 (21 March 2024)
+
+Tas pol "interviewing guidelines" state that interp must be obtained.
+
+Also see VtV v R \[2012\] VSCA 213 about hearsay implications and requirement to summons interp
+
+**Police Powers of Search**
+
+*International Covenant on Civil and Political Rights;* Article 17
+
+**Personal Search**
+
+The common law recognises the right to privacy should not be interfered with except for in extreme circumstances.
+
+Thus, at common law, a lawful search and seizure can only
+
+- occur pursuant to a warrant;
+
+- incident to a lawful arrest; or
+
+- with consent.
+
+*Lindley v Rutter* \[1981\] QB 128 (**CR**)
+
+**F**. Involved a woman being searched including the removal of underwear etc.
+
+**H**. Held that the police had not basis for a lawful search, particularly to remove underwear. Appeal thus allowed and convictions quashed. Must not simply act on orders to search or seize, must consider the circumstances of the actual case to determine if the accused is doing anything that indicates a search may be necessary. Police argued that 'standing orders' required all females in custody had to remove bra. But she had done nothing to indicate she may self harm.
+
+Restated the common law position (above). Further, they held that the powers of search in relation to arrest only extend to:
+
+(1) obtaining evidence
+
+(2) Prevent the destruction of evidence
+
+(3) to locate items that may assist the accused to escape or commit further crime (i.e. to find a weapon that may help them escape)
+
+(4) to search for items that may be used to inflict self harm.
+
+So police powers of search are restricted to situations where they have a specific reasons to search a particular individual. Policies or 'standing orders' for particular classes of arrestee will not be a sufficient reason.
+
+Note that we these principles now have statutory force:
+
+*Police Offences Act* 1935 (Tas.), s 58B.
+
+***Search of accused person in custody***
+
+***(1)** If a police officer believes on reasonable grounds that it is necessary to search a person who is in lawful custody, a police officer may search that person --*
+
+***(a)** for the purpose of ascertaining whether there is concealed on that person or in that person\'s*
+
+*clothing a weapon or other article capable of being used to inflict injury or to assist that person to*
+
+*escape from custody; or*
+
+***(ab)** for the purpose of removing into safe keeping any other articles belonging to, or in the possession*
+
+*of, the person; or*
+
+***(b)** for the purpose of obtaining evidence relating to the commission of the offence or preventing the*
+
+*loss or destruction of such evidence.*
+
+***(2)** [[Subsection (1)(b)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=44%2B%2B1935%2BGS58B%2FGs1%2FHpb%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS58B@Gs1@Hpb@EN) does not authorise a police officer to require a person to remove any clothing unless there are reasonable grounds for believing that the removal may provide evidence of the commission of an offence.*
+
+***(3)** A police officer may take and retain --*
+
+***(a)** any weapon or article found as a result of the search under [[subsection (1)(a)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=44%2B%2B1935%2BGS58B%2FGs1%2FHpa%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS58B@Gs1@Hpa@EN); and*
+
+***(b)** any article of clothing removed under [[subsection (2)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=44%2B%2B1935%2BGS58B%2FGs2%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS58B@Gs2@EN).*
+
+***(4)** A police officer may use such force as is reasonably necessary for the purposes of exercising powers under this section.*
+
+***(5)** Nothing in this section prevents a search of a person in lawful custody in any circumstances where it is otherwise lawful to search the person.*
+
+*Nguyen v Elliot* 6^th^ February 1995 VicSC
+
+**F**. Police watching group of Asian youths in park (were known to have been involved in other offences). When they saw the police they behaved suspiciously (i.e. looking around etc). Eventually approached one of the boys and said they wanted to search. He objected. Police persisted and eventually he kicked a police officer (bit one during scuffle). Continued to resist and was then handcuffed and charged him with numerous offences relating to the resistance. No drugs found on him.
+
+**H**. Accused defended the charges on the grounds that the police were not in the execution of their duty. They had no reasonable basis for the search. TJ and appeal judge agreed. Held that the police had no right to search the young men as there was no reasonable basis for the belief that the youths were in possession of drugs. Accused could thus not be prosecuted for the offences.
+
+But, the only reason the Court of Criminal Appeal upheld the decision was that they said the TJ had a better basis to judge the demeanour of the witnesses. Clear they were reluctant to do this. The whole tenor of the decision is that they wanted to agree with the police.
+
+Note the inroads into these principles; for example the *Misuse of Drugs Act* 2001 (Tas) ss29 & 30 provides that police can stop and search a person provided they have reasonable grounds for suspecting someone possesses a controlled substance. Search is thus made permissible without an arrest.
+
+Also note the *Crimes Act* 1914 (Cth) ss3ZE-3ZI (covers frisk searches, ordinary searches and strip searches).
+
+**Medical Examinations, Fingerprinting and Photographs**
+
+Uniform legislation (*Forensic Procedures Act 2000* (Tas)) in this area gives the police very wide powers to obtain forensic samples from suspects and people charged with offences. Deals with two kinds of procedures; ***intimate*** and ***non-intimate***.
+
+Non-intimate procedures can be performed with consent or on order of senior police officer (i.e. Sergeant or above).
+
+Intimate procedures require informed consent or order of judicial officer.
+
+***Non-intimate:***
+
+- Taking blood
+
+- Swabs (saliva)
+
+- Hair samples (non-pubic)
+
+- Nail clippings
+
+- Scrapings from under nails
+
+- Chemical washes
+
+- Finger prints
+
+- Hand prints
+
+- Foot prints
+
+- Photographs
+
+- Etc
+
+***Intimate:***
+
+- Examinations of genital areas
+
+- Cavity searches
+
+- Pubic hair samples
+
+- Genital impressions.
+
+See also *Crimes Act* 1914 (Cth) ss.3ZJ-3ZL.
+
+**Search of Premises**
+
+The common law protection of property is extensive. For example held in *Coco v R* (1994) 179 CLR 427 at 435-6 the court held that every unauthorised entry to private property is a trespass and it is the right of property owners to exclude (this is a fundamental common law right).
+
+Courts will therefore narrowly construe statutory authority to enter premises. Also, any statutory authority in that regard must be clearly expressed (*unmistakable and unambiguous language*). The presumption is that in the absence of express provision to the contrary the legislature did not intend to permit otherwise tortuous conduct. Therefore at common law, search of premises without consent is usually confined to searches pursuant to a ***search warrant*** or ***incidental to arrest***.
+
+*Family Violence Act 2004* (Tas), s 10
+
+**Power of police to enter certain premises**
+
+**(1)** A police officer may, without warrant, and using such force as is necessary, enter and remain on premises for such period as he or she considers reasonably necessary to prevent family violence --
+
+**(a)** at the request of a person who apparently resides on the premises; or
+
+**(b)** if the officer reasonably suspects that family violence is being, has been or is likely to be committed
+
+on those premises.
+
+**(2)** A police officer who enters premises under [[subsection (1)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=67%2B%2B2004%2BGS10%2FGs1%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS10@Gs1@EN) may --
+
+**(a)** arrest, without warrant, any person on those premises to facilitate the issue of a PFVO, or the
+
+making of an application for an FVO, in respect of that person; and
+
+**(b)** remain on those premises in order to conduct a risk screening, safety audit or forensic examination
+
+with such assistance as is necessary and reasonable in the circumstances.
+
+**(3)** A police officer who enters premises under [[subsection (1)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=67%2B%2B2004%2BGS10%2FGs1%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS10@Gs1@EN) may, without warrant --
+
+**(a)** search any person on those premises whom the officer reasonably suspects of having in his or her
+
+possession any object which the police officer reasonably suspects has been used, or may be used, to
+
+commit a family violence offence or has been created in the commission of a family violence offence;
+
+and
+
+**(b)** search those premises for the presence of any such object; and
+
+**(c)** seize and retain any such object.
+
+**(4)** If a police officer reasonably suspects that a person has committed family violence and in so acting has used or created an object, the officer may, without warrant and using such force as is necessary --
+
+**(a)** enter any premises on which the officer reasonably suspects that the object may be found; and
+
+**(b)** search those premises for the object; and
+
+**(c)** search any person who the officer reasonably suspects has possession of the object; and
+
+**(d)** seize and retain the object; and
+
+**(e)** arrest, without warrant, any person on those premises to facilitate the issue of a PFVO, or the
+
+making of an application for an FVO, in respect of that person.
+
+**(5)** Where a police officer reasonably suspects that --
+
+**(a)** a person has committed, or is likely to commit, family violence; and
+
+**(b)** the person is in possession or control of a firearm --
+
+the police officer may enter premises, without warrant and using such force as is reasonably necessary
+
+in the circumstances, in order to search for and seize the firearm.
+
+**(6)** On an application made by a police officer or by any person who claims to be the owner of an object seized and detained under [[subsection (3)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=67%2B%2B2004%2BGS10%2FGs3%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS10@Gs3@EN), [[(4)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=67%2B%2B2004%2BGS10%2FGs4%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS10@Gs4@EN) or [[(5)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=67%2B%2B2004%2BGS10%2FGs5%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#GS10@Gs5@EN), a court may order that the object --
+
+**(a)** be forfeited to the Crown; or
+
+**(b)** be destroyed; or
+
+**(c)** be returned to the owner; or
+
+**(d)** be otherwise disposed of in such manner as the court thinks fit.
+
+**(7)** If a police officer reasonably suspects that a person has committed family violence, the officer, without warrant and using such force as is reasonably necessary in the circumstances, may --
+
+**(a)** enter any premises on which the officer reasonably suspects the person may be found; and
+
+**(b)** search those premises for the person; and
+
+**(c)** arrest the person.
+
+**(8)** In this section --
+
+**\"object\"** means any matter, material or thing and includes firearms.
+
+*Misuse of Drugs Act 2001* (Tas), s32
+
+**Power to pursue suspect onto private property**
+
+Where:
+
+**(a)** a police officer reasonably believes that a person has committed an offence under this Act; and
+
+**(b)** the person flees from the police officer\'s presence while the police officer, or another police officer,
+
+is trying to arrest the person or exercise another power under this Act in relation to the person; and
+
+**(c)** the police officer, or another police officer, immediately pursues the person and the pursuit
+
+continues without interruption; and
+
+**(d)** during the pursuit the person enters a private residence or another place that is not a public place
+
+the pursuing police officer may, ***without warrant*** and using no more force than is reasonably necessary for the purpose, enter the private residence or other place notwithstanding that it is not a public place.
+
+*New South Wales v Ibbett* (2006) 229 CLR 638 (above)
+
+**H**. This case demonstrated the lengths the court will go to in order to protect the above principles. If the police enter private premises without consent the courts will not be reluctant to award aggravated damages to send a clear message to the executive.
+
+*Kuru v New South Wales* \[2008\] HCA 26 at \[40\]-\[55\]
+
+**H**. High Court re-stated a number of the key principles in this area.
+
+(1) A person who enters the land of another must justify that entry by showing either that the entry was with the consent of the occupier or that the entrant had lawful authority to enter.
+
+(2) Except in cases provided for by the common law and by statute, police officers have no special rights to enter land.
+
+(3) Authority to enter land may be revoked and that, if the authority is revoked, the entrant no longer has authority to remain on the land but must leave as soon as is reasonably practicable.
+
+(4) A police officer may enter premises to *prevent* a breach of the peace, but not to investigate whether a breach of the peace has or will occur.
+
+The common law originally confined search of premises (without consent) to searches pursuant to warrant or incidental to lawful arrest. *Dillon v O'Brian* shows that the personal search of an arrestee extends to the immediate area around the person (table in front of them or car they are in). The question is; how far can that search extend?
+
+*Ghani v Jones* \[1970\] 1 QB 693
+
+*This case represents the 'high water mark'*
+
+**H**. Per Lord Denning: it is settled law that where the police enter premises pursuant to search warrant or pursuant to power of arrest in relation to serious offence; they are entitled to search for and take any goods in relation to that offence. If during the search they find other goods relating to other events they are entitled to seize them as well provided they behave reasonably and detain the goods for no longer than is necessary.
+
+Police can gain lawful entry, so long as they reasonable believe:
+
+(1) that a serious offence has been committed;
+
+(2) that the property was the fruit of the crime or the means by which it was committed, or material evidence of its commission;
+
+(3) that the person in possession was involved in its commission either as a principal or accessory;
+
+Further:
+
+(4) the police must keep it for no longer than necessary to complete their investigations or preserve it for evidence;
+
+(5) The lawfulness of the police conduct must be judged at the time of the seizure, not by what happens later (i.e. hindsight and subsequent events cannot justify the seizure).
+
+To *some* extent *Ghani* has been enacted in Tasmania.
+
+*Jeffrey v Black* \[1977\] 3 WLR 895
+
+**H**. police cannot arrest someone in one location and then trot them off to another location to search that location. This is not a search incidental to arrest.
+
+**Search Warrants**
+
+Search Warrants Act 1997 (Tas)
+
+A search warrant is a document which authorises an invasion of private premises without permission of the owner or occupier. Seeks to interpose a judicial officer between the executive officer who will conduct the search and the private citizen. So they act as a control against excessive executive action. The police must justify or provide a basis for the search.
+
+Original common law approach was to only grant search warrants for stolen property. Judicial officer had to be satisfied that particular stolen property was on the premises; both had to be described with particularity. Also couldn't seize goods not covered by the warrant; i.e. the common law rejected 'general warrants': see *Entick v Carrington* (1765) 19 St.T 129.
+
+However, this position has now been wound back (see *Ghani v Jones*) provided the five conditions are met (see *Search Warrants Act*). Also, s60 of the *Police Offences Act* abrogates the common law regarding general warrants.
+
+*Police Offences Act 1935* (Tas), s60
+
+**Commissioner\'s warrant**
+
+**(1)** It shall be lawful for the Commissioner to issue to any police officer a general warrant, in the appropriate form set forth in [[Schedule II]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=44%2B%2B1935%2BJSII%2FEN%2B20081016000000;histon=;prompt=;rec=;term=#JSII@EN), authorizing such officer to search for stolen property.
+
+**(2)** Every such warrant shall be signed by the Commissioner personally, and shall remain in force, unless sooner revoked, for 6 months from the date thereof, or for such shorter period, if any, as may be specified therein, and shall authorize the officer therein named to exercise the powers therein set forth.
+
+**(3)** The Commissioner, at any time, may revoke any general warrant issued by him.
+
+**Duties of the applicant and issuing officer in relation to search warrants**
+
+*Spyke* Tas Unreported 2/1981
+
+*George v Rockett* (1990) 170 CLR 104 (**CR**)
+
+**F**. Rocket obtained a search warrant to search George's office (solicitor). Wanted documents (bundles of pages). Argued it was unlawful as the belief wasn't held by the justice at the time that any evidence was held which would actually assist at trial.
+
+**H**. Need to show supporting facts that the evidence will assist at trial. The judicial officer cannot just 'rubber stamp it'. Need reasonable grounds to grant the warrant (not the justice himself though, just that it could be held on the facts).
+
+So you have to make the search warrant mean something. If it is to interpose a judicial officer between police and individual then you will only achieve this if the Justice actually brings their mind to the question of whether or not to grant the warrant.
+
+Won't be a lawfully issued warrant unless the judicial officer is ***satisfied that there are grounds for issuing the warrant***. This requires the police to produce information which is capable of satisfying the judicial officer.
+
+HCA held that a suspicion is more than a mere idle wondering. It is a positive feeling or apprehension amounting to a slight opinion. So must be afforded evidence that provides reasonable grounds for giving this belief.
+
+*MacLeod* (1991) 61 A.Crim.R. 465
+
+**H**. *George v Rockett* was applied by Slicer J here. See para 8-9 for a summary of the law in this area:
+
+- it is the state of mind of the issuing officer that is relevant.
+
+- issuing officer must satisfy himself or herself that the necessary criteria are present
+
+- issuing officer cannot rely merely on the suspicion of the informant
+
+- need for particularity in relation to object and the offence; mere reference to the relevant section is not enough.
+
+*Beneficial Finance Corp v AFP* (1991) 31 FCR 523
+
+**H**. The issuing officer doesn't have an obligation to go behind the warrant and investigate further (even if incomplete). However, there is an obligation to clear up ambiguities or make enquiries if they have concerns. Also see *Jackson v Mijovich* (1991) 23 ALD 470.
+
+*NSW v Corbett* \[2007\] HCA 32
+
+*Degree of precision required in identifying the offence*
+
+**F**. Warrant issued to search for firearms. The particular provision relied upon in the warrant had been repealed though. At first instance it was held that this misstatement of the offence invalidated the warrant. Upheld by the Court of Appeal (NSW) then appealed to HCA.
+
+**H**. Appeal allowed. Statement of offence in search warrants ***does not have to have the precision that is required in an indictment***. Only require a statement of the ***nature of the offence*** so that you can clearly see what the search is for and establish the boundaries of the search.
+
+Here the warrant was clear in stating the nature of the offence and all other details. Repealed provision had been replaced by a very similar provision so you couldn't say that this statement could possibly have given rise to any misapprehension of the police power to search for firearms. So here the similarity of the provisions was crucial.
+
+There is conflicting authority as to the duty of disclosure on the part of the applicant for the search warrant. *Karina Fisheries v Mitson* (1990) 26 FCR 473 held that ***all matters must be disclosed*** that would affect the issuing of the warrant. However, in *Lego Australia v Paraggio* 25/8/94 it was held that only where there has been fraud or misrepresentation will a warrant be struck out for non-disclosure. Most prosecutors believe though that everything relevant should be disclosed in the interests of best practice and conservativeness.
+
+*Crowley v Murphy* (1981) 34 ALR 496
+
+**H**. Police cannot go on a '***fishing exercise***' looking for documents when they don't really know what they are looking for.
+
+*Baker v Campbell* (1983) 153 CLR 52 (**CR**)
+
+*Search warrants and their application to documents protected by legal professional privilege*
+
+**F**. D (police) attempted to seize documents protected by privilege.
+
+**H**. HCA held that the search warrant did not cover the documents as they were covered by LPP. Legal professional privilege is not simply a rule of evidence; rather it is a ***fundamental common law human right***. So the HCA treat LPP in a very important fashion. Search warrants thus cannot apply to documents covered by LPP. This causes some significant problems in practice.
+
+After Baker, AFP and law reform commission developed new approach to deal with privileged documents. Settled on an approach that results in all documents being sent to independent person for safe keeping while the person claiming privilege then has four days to show that the documents are truly covered by privilege.
+
+*Oke v Commr Australian Federal Police* \[2007\] FCA 27
+
+*Demonstrates the difficulties with the above process.*
+
+**F**. Oke contacted solicitor about police going through documents (including client/solicitor information). Solicitor then spent the rest of the day trying to negotiate with police to not look at documents he alleged were covered by privilege. Persuaded the police to desist in search and entered into written agreement. This solicitor really stood his ground. AFP hadn't exercised the warrant properly and tried to get out of the whole thing by returning the documents. He refused so they dumped them on his doorstep.
+
+**H**. The warrant was invalid.
+
+A warrant is executed when everything that can lawfully be done, has been done: *Larsson v Commr of Police for NSW* (1988) 16 NSWLR 173, Also see s9 of the *Search Warrants Act* which deals with cessations.
+
+See also *Crimes Act* 1914 (Cth), s 3E - 3UK.

@@ -1,0 +1,297 @@
+# Extradition:
+
+Seek a remad order under service and execution act
+
+Look at originating jurisdiction for presumptions for/against bail as this can be used to support opposing bail
+
+See one drive for examples and forms.
+
+Notes from court:
+
+Warrant in first instance as less persuasive effect to oppose bail then a warrant for failing to appear (fleeing the jurisdiction)
+
+Bail question?
+
+Be sure to check there is no impediment or restrictions that might frustrate or prevent his extradition from the state of Tasmania.
+
+Priors
+
+Introduction of the existence of warrant
+
+the charges that gave rise to the substantial matter
+
+Reading of the alleged facts
+
+Circumstances of which the warrant was issued including
+
+Service and Execution Act CTH -- does not require the tas court to have regard to original jurisdiction principles -- NEED TO look at that Act (Tas procedufre is to be followed! Not interstate principles of bail - -- could probably sill submit there is no obligation to do so, but that there may be a higher threshold to be considered before bail is granted.
+
+**Court notes for extradition couple:**
+
+**IDENTIFY THE PARTIES**
+
+Your honour both parties were apprehended today by officers of Tasmania Police. During their investigation, it was revealed that the parties are both the subject of interstate arrest warrants:
+
+Mr. Clayton Tierny having failed to appear at the Local Court of NSW at Sutherland on the 8^th^ of May,
+
+Ms. Jedde Maloney, having failed to appear at the Local Court of NSW at Parramater on the 4^th^ of April. Addtionally, Ms. Maloney was on Parole with a balance of 3 months and 2 days remaining of her sentence, at the time, and I understand, that her failing to appear amounted to an offence in that State, and a subsequent breach of her parole order . As a consequence, there was a revocation order made, and a warrant for apprehensions and detention was issued on the 18^th^ of April by the NSW Parole Authority
+
+Pursuant to the Commonwealth ***Service and Execution of Process Act 1992*** I tender copies of those warrants, executed earlier this evening.
+
+> **TENDER COPIES**
+
+You honour, the exaction of interstate warrants is provided for under **PART 5** of that same Act.
+
+Section 83, sub-s (14), paragraph (a) empowers a justice of the peace to adjourn these proceedings and remand the defendants on bail, or in such custody as the justice of the peace specifies, for the period of the adjournment.
+
+It is my application that these proceedings be adjourned until 14:15 tomorrow, that the defendants be held in remand, to appear by video link at that time.
+
+The defendant's will be the subject of extradition hearings
+
+**Ensure:**
+
+There needs to be a full detailed itinerary of movements from within Tas, out of Tas, and every step until in another jurisdictions court. Flight details and names of interstate officers etc**.\**
+
+**Section 3: Interpretation**
+
+***magistrate***,
+
+except in sections 57 and 67, includes:
+
+\(a\) a justice of the peace who has power to issue warrants under a law of the State in which the justice holds that office; and
+
+\(b\) a person who is appointed under section 120 of the Magistrates' Court Act 1989 of Victoria as a bail justice or is a bail justice because of holding a prescribed office within the meaning of section 121 of that Act.
+
+***person under restraint*** means a person who:
+
+\(a\) is on bail; or
+
+\(b\) has been conditionally released from prison (whether on parole, licence, work release, home detention or otherwise) before the end of a term of imprisonment to which he or she has been sentenced; or
+
+\(c\) is subject to the supervision of another person under a probation order; or
+
+\(d\) is serving a period of home detention or a term of imprisonment by way of periodic detention; or
+
+\(e\) is subject to:
+
+\(i\) a community service order; or
+
+\(ii\) a community based order; or
+
+\(iii\) an attendance order; or
+
+\(iv\) a work and development order; or
+
+\(v\) any other restriction on his or her movements, imposed by law or by order of a court, that is inconsistent with the person complying with a subpoena served on the person under this Act;
+
+but does not include a person who is in prison.
+
+## Documents to provide court
+
+The attached is self-explanatory and Jodie sets it out below. I think it is a good idea which will make extraditions that little easier. I have saved it to the Forms folder, please use it for future extraditions.
+
+I have attached a copy of the Memorandum of Order used for applications for Extradition that may be of use to your Staff bringing these types of matters to court. In the past Prosecutors have handed up a typed copy of the order component of this document which has been of great benefit in expediting the matter in court. Just thought it might help, give me a call if I can help with anything else.
+
+**[Below is the written order you should prepare and give to the court]{.underline}**
+
+**[MEMORANDUM OF ORDER.]{.underline}**
+
+In the Court of Petty Sessions held at Devonport.
+
+DEFENDANT: JOHN BOB SMITH
+
+**That** John Bob SMITH (DOB ...........), a prisoner in your custody and upon an application for Extradition to the State of Queensland
+
+**[ORDER OF THE COURT]{.underline}**
+
+Under Section 83(8)(b) of the *Service and Execution of Process Act,* IT IS ORDERED
+
+That the said John Bob Smith is to be taken into the Custody of Tasmania Police and Detective Sergeant Mark John Corry, Criminal Investigation, and conveyed from the State of Tasmania on 25^th^ June, 2008 to the State of Queensland, to appear at Court at Caboolture Magistrates Court, 30 King Street Caboolture at 2:15pm on Friday the 27^th^ June, 2008.
+
+[DATED]{.underline} this 25^th^ June, 2008
+
+[MAGISTRATE]{.underline}
+
+[DEVONPORT]{.underline}
+
+# Police as Prosecutors 
+
+**JUSTICES ACT**
+
+**38.**   **Representation of parties by counsel, &c.**
+
+(1)  A complainant may, in person or by the complainant\'s lawyer, conduct his or her case and examine and cross-examine witnesses.
+
+(2)  A defendant must, in person or by the defendant\'s lawyer, be admitted to make his or her full answer and defence to the complaint and to examine and cross-examine witnesses.
+
+(3)  If the complainant is a public officer, the complainant may, in person or by the complainant\'s lawyer or another public officer, conduct his or her case and examine and cross-examine witnesses.
+
+(4)  With the consent of the justices, a police officer may conduct the case of any complainant, and examine and cross-examine witnesses.
+
+# Court Procedure
+
+## Challenging Adjournments
+
+### Where defendant doesn't have a lawyer and keeps seeking an adj
+
+Dietrich is the HC case about adjournments and miscarriage of justice if serious/ complicated matters proceed without legal counsel through no fault of the accused. Its been considered in a number of by TASSC. There is a good line in Robinson v Lane \[2011\] TASSC 70 "would result in the legal system grinding to a halt". Robinson v Lane 2011 TASSC 70 has a good summary of what accused would have to show and in that case Magistrate was not held to have made appealable error.
+
+***Robinson v Lane 2011 TASSC 70***
+
+Crazy woman insisted on a hearing despite a precious contest mention saying shed just get a fine. Unable to get a lawyer after that as LA funding didn't extend to fine only likely outcomes. There were a number of adjournments. She commenced the hearing and then found some challenges in the course of CX and EIC but Magi Mollard said no adj, crack on. Sha appealed because representing herself and claimed unable to run a case to same standard as a lawyer and she had mental health issues. TASSC ruled the magi was ok in doing what he did.
+
+\[22\] *"It is not incumbent on a magistrate, in my view, where there is no apparent impediment to an unrepresented litigant conducting their case, to make exhaustive enquiries as to possible impediments before a hearing is even embarked upon. If such an impediment becomes obvious during the course of a hearing, the magistrate might then adjourn to address it. In this case, that is what the learned magistrate said he would do if necessary."*
+
+\[24\] *"As to her suggestion that a normal lay person would have difficulty presenting the same sort of defence as a lawyer, were any court to decline to hear a matter simply because a litigant was unrepresented and might not present a case in the same manner as a lawyer, would result in the legal system grinding to a halt."*
+
+## Adjournments
+
+Basic principle is that where a party seeks an adjournment which will create no injustice to the other side and which can adequately be remedied by an appropriate order for costs, then it seems to me that unless there are compelling reasons, such as manoeuvring or deliberate dilatoriness or inaction, ordinarily the discretion of justices to grant an adjournment ought not be exercised adversely to the party applying for it.
+
+***Hammilton v Litteljohn \[2006\] TASSC 109***
+
+*21 James v Williams; Ex parte James \[1967\] Qd R 496 was a case of appellate review of a refusal to grant an adjournment of the hearing of a complaint in circumstances very similar to the present matter, except that in James, the defendant sought an order that the case be dismissed when the prosecution was not ready to proceed. Hart J said, at 501 - 502:*
+
+*\"If a defendant who has been served with a summons to appear on a certain day attends at Court on that day ready to answer the complaint, and the complainant is not then ready to proceed, then, if nothing else appears, the prima facie order to be made would be to adjourn the hearing and to require the complainant to pay the expenses of the defendant - the costs thrown away. If justice can be done by adjourning the case and ordering payment of costs, there is no justification for dismissing the complaint where the bona fides of the complainant is not challenged.\"*
+
+*22 As Bowen LJ observed in Cropper v Smith (1884) 26 Ch D 700 at 710, \"Courts do not exist for the sake of discipline, but for the sake of deciding matters in controversy \...\". It is apparent that in the present case that is just what the learned magistrate was attempting to do by refusing the application for an adjournment and by dismissing the complaint, namely, discipline the prosecution. It is clear that his discretion miscarried when he refused to grant the application for an adjournment and this miscarriage resulted in the order of dismissal being made. He fell into error in that he failed to take into account, or adequately take into account:*
+
+*(i) the public interest in the prosecution and trial of charges such as those brought against the respondent;*
+
+*(ii) the reason for Mr Miller\'s inability to proceed with the hearing was due to inadvertent error;*
+
+*(iii) the application for an adjournment was not opposed by the respondent;*
+
+*(iv) the respondent did not claim that he would suffer any prejudice if an order of adjournment was made, nor was any such prejudice apparent;*
+
+*(v) the order of dismissal was not sought by either of the parties to the litigation before the learned magistrate.*
+
+*23 The learned magistrate also erred in placing too much weight upon:*
+
+*(i) what he described as \"case management\";*
+
+*(ii) the right of the courts to \"properly run\" the business in the courts; and*
+
+*(iii) the need to achieve timely disposition of the complaint*.
+
+## Costs
+
+[See **Department of Police and Emergency Management v Jones \[2007\] TASSC 107**]{.mark}
+
+Cost orders in criminal matters
+
+***Costs in Criminal Cases Act 1976, Section 4***
+
+**4. Costs of successful defendant**
+
+      **(1)** Subject to this Act, where a person having been charged with an offence is discharged from the proceedings in respect thereof, that is to say, where --
+
+**(a)** he is acquitted of the offence;
+
+**(b)** the complaint charging him with the offence is dismissed or withdrawn; or
+
+**(c)** he is discharged upon an indictment for the offence --
+
+the court having the conduct of the proceedings may, upon the application of the defendant, order that he be paid in respect of his defence such costs as it thinks just and reasonable.
+
+      **(2)** The court, in deciding whether to grant costs and the amount of any costs granted, shall have regard to all relevant circumstances and in particular to the following:
+
+**(a)** Whether the proceedings were brought and continued in good faith;
+
+**(b)** Whether proper steps were taken to investigate any matter coming to, or within, the knowledge of any person responsible for bringing or continuing the proceedings;
+
+**(c)** Whether the investigation into the offence was conducted in a reasonable and proper manner;
+
+**(d)** Whether the evidence as a whole would support a finding of guilt but the defendant is discharged from the proceedings on a technical point;
+
+**(e)** Whether the defendant is discharged from the proceedings because he established (either by the evidence of witnesses called by him or by cross examination of witnesses for the prosecution or otherwise) that he was not guilty.
+
+      **(3)** No defendant shall be granted costs by reason only of the fact that he is acquitted of an offence, the complaint charging him with an offence is dismissed or withdrawn, or he is discharged upon an indictment.
+
+      **(4)** No defendant shall be refused costs by reason only of the fact that the proceedings were properly brought and continued.
+
+      **(5)** No defendant shall be refused costs by reason only of the fact that in the investigation of the offence with which he had been charged he remained silent or refused to assist in respect thereof.
+
+Costs in Criminal Cases Act 1976, Section 5
+
+**5. Costs of convicted defendant**
+
+Where a defendant is convicted but the court is of the opinion that the charge involved a difficult or important point of law and that in the special circumstances of the case it is proper that he should receive costs in respect of the arguing of that point of law, the court may order that he be paid such costs as it thinks just and reasonable.
+
+***R v Freshney* TSR 126 \[1977\]**
+
+Cost in Criminal Cases
+
+The *Cost in Criminal Cases Act 1976* by Section 4 provides for coast to be awarded in the courts discretion to defendants not prosecuted to conviction and for some matters to be considered and others not, to be bars in exercising that discretion
+
+- The discretion is not to be fettered
+
+- None of the matters considered is to be conclusive
+
+- The court should refrain as far as possible from expressing or hinting at any view as to the guilt or innocence of the applicant
+
+- The grant of power to award costs is to be construed in the context of the enactment against the background of the prior law
+
+- The rules that criminal trials are for many reasons not to be equiparated to civil trials and that acquitted persons are not entitled to costs remain subject only to the act
+
+- To award cost a positive reason must be shown, other than an acquittal, whether or not based on an error, inefficiency or irregularity, to give an applicant a just claim on the public for his costs
+
+## Stay of proceedings:
+
+Stay of proceedings defined as: ***The permanent or temporary discontinuance of an action, by order of the court.*** Magistrates do not have an implied power to stay proceedings. Tasmania authority ***Lillico v McKenna (1995) 5 Tas R 147. They can dismiss them however. Which is not the same thing***
+
+It is the accepted position that the Magistrates Courts do not have an inherent jurisdiction to stay proceedings, (*Visser v Hodgetts *[\[2002\] TASSC 44](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2002/44.html), [10 Tas R 422)](http://www.austlii.edu.au/cgi-bin/LawCite?cit=10%20Tas%20R%20422)
+
+## Course of hearings (course of proceedings)
+
+Defendant need not give evidence first. ***RPS v The Queen \[2000\] HCA 3 3 February 2000 S116/1998***
+
+*\[84\] Hunt CJ at CL in the Court of Criminal Appeal stated what the true position was in these terms: \"Before turning to the appellant\'s argument ... it should be pointed out that the law does not say that the accused person must be called to give evidence before any other witnesses. It has often been said that it is desirable that he be called first, as he perforce will be present when other witnesses give evidence before him and the comment may be made that he has tailored his own evidence to fit in with theirs. The judge was correct when he said that it is customary to call the accused first (if he is to be Callinan J 32. called at all), but he was wrong to say that he must be.\" (emphasis in original*
+
+### Closing submissions 
+
+Rule 35 of the Justices rules says that:
+
+If defendant gives evidence then they make first closing.
+
+If they don't, pross goes first.
+
+# Giving evidence by phone or audio/ visual link
+
+Can be done!
+
+Section 67 of the Justices Rules.
+
+Is to be done in accordance with Evidence (Audio and Audio Visual Links) Act 1999 ;
+
+10B of that act explains process for putting documents to a witness remotely.
+
+# Mental states/ intent
+
+12.5 In Australia, criminal offences are generally characterised in one of three ways:
+
+• mens rea offences---the prosecution must prove a physical element (actus reus) and a mental element (mens rea);
+
+• strict liability offences---the prosecution is not required to prove fault, but there is a defence of reasonable mistake available;5 and
+
+• absolute liability offences---proof of fault is not required and no defences are available.6
+
+*R v Hodgson* \[1985\] TASSC 40
+
+***\"\... in law it is clear that the word \'intention\' like the word \'malice\' covers all consequences whatever which the doer of the act foresees as likely to result from it, whether he does the act with an actual desire of producing them or only in recklessness as to whether they ensue or not.\"***
+
+### Voluntary and Intentional:
+
+Intention -- Relates to the **act** not the outcome of the act. the act must exist in idea before it exists in fact.
+
+Prescribed in s 13 of the Code
+
+**13. Intention and motive**
+
+\(1\) No person shall be criminally responsible for an act, unless it is voluntary and intentional; nor, except as hereinafter expressly provided, for an event which occurs by chance.
+
+\(2\) Except as otherwise expressly provided, no person shall be criminally responsible for an omission, unless it is intentional.
+
+\(3\) Any person who with intent to commit an offence does any act or makes any omission which brings about an unforeseen result which, if he had intended it, would have constituted his act or omission some other offence, shall, except as otherwise provided, incur the same criminal responsibility as if he had effected his original purpose.
+
+\(4\) Except where it is otherwise expressly provided, the motive by which a person is induced to do any act or make any omission is immaterial.

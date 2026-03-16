@@ -1,0 +1,299 @@
+# Restraint Orders
+
+CAN NOT POLICE BAIL breach of restraint orders. Section 34 of the Justices ACT does NOT apply per s 106I
+
+**Restraint Order Breach Hearings:**
+
+Need to tender evidence of RO -- use cert of conviction/ court order under s. 178 of the evidence Act
+
+**"Breach of the peace defined"**
+
+As noted earlier, breach of the peace is not an offence, but instead it is the basis for the execution of the common law power which prevents public disorder. Furthermore, breach of the peace is one element of other public order offences such as unlawful assembly or riot.
+
+In attempting to establish what breach of the peace entails, we can turn to the leading authority of the concept which can be found in *R v Howell*, where Watkins LJ in the English Court of Appeal, defined breach of the peace in the following way:
+
+***"There is breach of the peace whenever harm is actually done or is likely to be done to a person or in his presence to his property or a person is in fear of being so harmed through an assault, an affray, a riot, unlawfully assembly or other disturbance."***
+
+*R v Howell \[1981\] 3 All ER 383*
+
+Cited in *Cintana v Burgoyne A Crim R 296 at para 13-19*
+
+Broadly speaking, breach of the peace as defined in *Howell* has been generally accepted in Australian common law.
+
+**106E. Procedure in relation to hearing and determining applications under this Part**
+
+\(1\) Except as otherwise provided by this Act or ordered by justices --
+
+> \(a\) an application under this Part is to be heard and determined --
+>
+> \(i\) in open court; and
+>
+> \(ii\) in the same manner, as nearly as practicable, as a complaint for a simple offence; and
+>
+> \(b\) a person who makes an application under this Part is to be treated, as nearly as practicable, as a complainant.
+
+(1A) At the hearing of an application under this Part, the following persons may conduct the applicant\'s or respondent\'s case and examine and cross-examine witnesses:
+
+> \(a\) the applicant or respondent;
+>
+> \(b\) a lawyer who represents the applicant or respondent;
+>
+> \(c\) a police officer who represents the applicant or respondent.
+
+(1B) If a police officer could, if available as a witness, give direct oral evidence of a fact in his or her professional capacity in the hearing of an application under this Part, the statutory declaration of the police officer in relation to that fact and made in support of the application is, subject to subsection (1C) , admissible as evidence of the fact in the hearing, notwithstanding that the police officer may be available as a witness.
+
+(1C) A statutory declaration referred to in subsection (1B) is not admissible as evidence in the hearing of an application under this Part if the justices, having regard to all the circumstances, are of the opinion that the representation in the statutory declaration ought not to be admitted without being tested by cross-examination.
+
+(1D) The representation of a medical practitioner in a document tending to establish a fact is admissible as evidence of the fact in the hearing of an application under this Part, notwithstanding that the medical practitioner may be available as a witness, if--
+
+> \(a\) the medical practitioner, in his or her professional capacity, could give direct oral evidence of the fact in the hearing; and
+>
+> \(b\) the justices, having regard to all the circumstances, are of the opinion that justice does not require that the representation be tested by cross-examination.
+
+[(2) If the justices hearing an application under this Part are satisfied that --]{.mark}
+
+> [(a) a sealed copy of the application has been served on the respondent to the application; or]{.mark}
+>
+> [(b) reasonable attempts have been made to serve a sealed copy of the application on the respondent --]{.mark}
+>
+> [they may proceed in the absence of the respondent and may --]{.mark}
+>
+> [(c) make the order sought in the application or such other order as they consider necessary; or]{.mark}
+>
+> [(d) issue a warrant for the apprehension of the respondent.]{.mark}
+
+\(3\) If the parties to an application under this Part consent, justices may make an order under this Part in accordance with the terms consented to by the parties.
+
+\(4\) At any time in proceedings under this Part, the justices may determine that it is appropriate that those proceedings be heard and determined by the Magistrates Court (Youth Justice Division) or the Magistrates Court (Children\'s Division) and may transfer the proceedings to that court.
+
+\(5\) If proceedings are transferred to the Magistrates Court (Youth Justice Division) or the Magistrates Court (Children\'s Division) under subsection (4) , that court has jurisdiction to hear and determine those proceedings
+
+**EIC of witnesses can be given by affidavit**
+
+**JUSTICES (RESTRAINT ORDERS) RULES 2013 - REG 8**
+
+**Hearing of applications**
+
+(1)  At the hearing of an application under Part XA of the Act, except the hearing of an application under section 106GA(1) of the Act, evidence may be given by affidavit.
+
+(2)  A person who made an affidavit for the purposes of subrule (1) is not required to attend the hearing of the application unless a party to the proceedings, or the justice hearing the proceedings, so requires.
+
+(3)  By notice in writing given to the person who made an affidavit for the purposes of subrule (1) , a party to the proceedings may require that the person attend the hearing for cross-examination and, if the person fails to attend, the court may --
+
+\(a\) refuse to allow the affidavit to be used; or
+
+\(b\) allow the affidavit to be used on any conditions the court thinks fit; or
+
+\(c\) adjourn the proceedings until the person attends for cross-examination.
+
+**Oaths Act 2001**
+
+**3.**   **Interpretation**
+
+In this Act --
+
+***affidavit*** includes --
+
+\(a\) any affirmation, statutory declaration or other declaration; and
+
+\(b\) any acknowledgment, examination or attestation; and
+
+\(c\) for the purpose of [[section 7]{.underline}](https://www.legislation.tas.gov.au/view/html/inforce/current/act-2001-077#GS7@EN) , any deposition or statement made by an informant or a complainant;
+
+**106I.**   **Contravention of restraint order, &c.**
+
+(1)  Where a person in respect of whom a restraint order, interim restraint order or telephone interim restraint order, as made, varied or extended has effect contravenes or fails to comply with the order, that person is guilty of an offence and is liable on summary conviction to a fine not exceeding 10 penalty units or to imprisonment for a period not exceeding 6 months.
+
+(2)  Where a police officer has reasonable cause to suspect that a person has committed an offence under [[subsection (1)]{.underline}](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077#GS106I@Gs1@EN) , he may, without warrant, arrest and detain that person and may, for the purpose of arresting and detaining such a person, enter, by force if necessary, any premises on which he has reasonable cause to believe that person is present and search those premises for that person.
+
+(3)  [[Section 34]{.underline}](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077#GS34@EN) does not apply to a person arrested and detained under [[subsection (2)]{.underline}](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077#GS106I@Gs2@EN) .
+
+**106J.**   **Power of justices to make orders under this Part at hearing of complaint for offence**
+
+Where, upon the hearing of a complaint for an offence punishable summarily, justices are satisfied on the balance of probabilities as to the matters set out in [[section 106B]{.underline}](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077#GS106B@EN) [[(1)]{.underline}](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1959-077#GS106B@Gs1@EN) , they may make an order under this Part in addition to any other order which they may make.
+
+# DVO ACT:
+
+**Domestic Violence Orders (National Recognition) Act 2016**
+
+Proclaimed on the **25-11-17** *(Proclamation under the Domestic Violence Orders (National Recognition) Act 2016)*
+
+(second reading speech on file)
+
+**For - registered orders prior to this:**
+
+Interstate order registered under section 27 on 7-9-17 valid until 29-8-19. That was order was made on an application lodged on her behalf by Tasmania Police
+
+Once registered, the order has the same effect as an order made under the Family Violence Act 2004 and can be enforced as if it were a tas fvo(section 28)
+
+Section 29 states that an app to vary can be made under the prescriptions of section 20 (as if it was always a tas order).
+
+Section 35 -- concerning breaches, states at sub-s 4, that a breach of a registered order is to be treated under the same provisions.
+
+THIS WAS THE CASE prior to the introduction of thr National recognition act --
+
+Meaning of "external family violence order" was once other states, now only NZ orders
+
+Under new act -- local dvo is defined as an FVO made under the act (as opposed to definition of FVO under FV act which is only an order made under s 16. The DVO is broader. Local DVO includes registered order prior to FV and DVO intro and amendment.
+
+CHARGE: Breach of a Registered External Family Violence Order
+
+BREACH OF: Section 35(1) of the Family Violence Act, 2004
+
+Particulars:
+
+On the 7^th^ of September 2017 in the Magistrates Court in Devonport, Tasmania, an order for the registration of an external Family violence order under section 27 of the Family Violence Act 2004 was made on application 85227/2017, which included in that order
+
+## Does not automatically apply to interstate DVOs made prior to intro of DVO Act
+
+Under Tas legislation, enforceability of interstate orders prior to the commencement of our DVO Act is limited to orders defined as "recognised" in that jurisdiction. Unless from Victoria, prior interstate orders need to be "declared." Victoria is unique in that their definition of "recognised DVO" includes all prior ones. This is different to what amounts to a "recognised DVO" in all other states.
+
+## Making of new order when interstate DVO exists 
+
+Messages received
+
+### How to make a new IFVO whilst not "revoking" interstate order. 
+
+Effect would be that Tas IFVO supersedes interstate order. If IFVO lapses, than interstate order remains.
+
+- Section 10 defines ***recognised*** DVOs
+
+- Section 10(1)(b) includes ***interstate*** DVOs
+
+- Section 6 defines types of interstate DVOs (and included as few interim orders)
+
+- Section 13 says new ***recognised*** DVO supersedes ***comparable*** DVO
+
+- 13(8) defines comparable DVO as one involving same parties
+
+  - NEW DVO DOES NOT SUPERSEDE where effect would be to exclude protection for a person on original order
+
+  - Section 14 allows local DVO to be made on application whether or not there is a recognised one in force from another jurisdiction
+
+- Tas PFVO -- DOES NOT supersede an interstate DVO made by a court!!!!!!!! For all other court orders, the mos recent in time prevails, generally.
+
+## No averment provision for interstate DVO
+
+AFTER REVIEW (2 Sep 22), I now disagree with the below -- Section 17 of the DVO(NR) Act say that a non-local can be dealt with as a local. That means that a breach of non-local act is dealt with under s. 35(1) of the FVO act. Because it is now dealt with under s35(1), it enlivens s.35(3) -- the averment provision. Notice is still required, but dealt with as per below with a certificate from another state.
+
+Section 35(3) of the* Family Violence Ac*t (Tas) says, among other things:
+
+ 
+
+**\"*In any proceedings for an offence under s 35*** (which is what we charge interstate order breaches under), ***an allegation in the complaint is evidence that an FVO has been made against the person charged with an offence; that the order was in force at the time of the alleged contravention and that the condition alleged to have been breached formed part of the FVO.\"***
+
+ 
+
+The point of this sub-section was to save us the hassle of having to prove a valid order in every complaint for a breach.
+
+ 
+
+***\"FVO\"*** is specifically used in the sub-section.
+
+ 
+
+***\"FVO\"*** is defined int the *Family Violence Ac*t (TAS) as \"***an FVO made under section 16 of the Family Violence Act (Tas)\"***
+
+ 
+
+So, I don't think we can rely on this evidentiary provision in the *FV Act (Tas)* because this is a QLD DVO\...
+
+ 
+
+Recourse then to the *Domestic Violence Orders (National Recognition*) Act\...
+
+ 
+
+The relevant sections are ss 4, 10, 15, 16, 17 and 31 of the DVO Act
+
+* *
+
+**Section 4:** Interpretation section  
+
+ 
+
+**Section 10(b):** Recognises interstate DVOs made in participating Jurisdiction (QLD is one such jurisdiction)
+
+ 
+
+**Section 15(3):** Says that a recognised DVO is enforceable when the defendant is ***properly notified*** of the making of the DVO under the law of the jurisdiction it was made (QLD)
+
+ 
+
+**Section 16(2):** Defines "***properly notified***" in the context of interstate DVOs. Basically it requires compliance with the requirements of the State's legislation under which the order was made (QLD). In Tas it would have to be served or made in the defendant\'s presence. I imagine most other States are the same. 
+
+ 
+
+**Section 17(1):** Says that where there is a breach of a recognised, enforceable, DVO, it can be enforced as if it were a breach of an FVO under the *FV Act* (Tas).
+
+ 
+
+**Section 31(1):** Evidentiary provision as to "***proper notification***". Basically, it says that an authorised officer under another jurisdiction\'s legislation can produce a certificate to the effect that the making of a DVO has been ***properly notified*** under the laws of that jurisdiction. The certificate is evidence of the matter contained in it.
+
+ 
+
+**Section 31(4):** says that if the certificate is signed by a person purporting to be an authorised officer that. in itself, is evidence that they were an authorised officer.
+
+ 
+
+**Section 31(5):** defined authorised officer in another jurisdiction as being "...a person (whether or not designated as an authorised officer) who is authorised under the law of another jurisdiction to issue a certificate certifying that the making or variation of a DVO has been properly notified under the law of that jurisdiction"
+
+ 
+
+So, to prove ***proper notification*** of an interstate DVO we need to identify that jurisdictions authorised officers, and get a certificate from them.
+
+ 
+
+BUT, even if we do that, the *DVO Act* only provides an evidentiary provision to the effect of proving that the interstate DVO was ***properly notified***.
+
+ 
+
+WHAT WE ARE STILL MISSING, is an equivalent to section 35(3) of our *FV Act*. That is, an evidentiary provision as to the validity, conditions, and force of the DVO at the time of offending. 
+
+My reading is that we would need admissible evidence from the court of the specific jurisdiction to prove this, and that we can\'t simply rely on the averment in the complaint, as we do with local orders. 
+
+Rene576@yahoo.com
+
+## Interpretation of interstate conditions
+
+Need to look at interstate legislation. Can't rely on Tas. Per s. 19(2) DVO act
+
+No reasonable prospect of conviction. "Enter" and "approach" not satisfied on narrower interpretations applicable to ROs. Def has significant mental health issues. No incidents in previous 12 months.
+
+# Driving:
+
+***Cooley v Lowe***
+
+For it to be proven that person was 'driving' a motor vehicle the following matters are to be considered,
+
+- The degree to which the 'driver' was operating the controls of the motor vehicle (steering, brakes etc.)
+
+- The distance travelled.
+
+- The road conditions, (undulations, corners etc.)
+
+- The speed of the vehicle
+
+- If the vehicle was being towed (as in this case), the length of the tow rope, communication (if any) between the vehicles, the manner in which the towed vehicle was steered and stopped
+
+*... "driving"*, requires proof that the person charged *"\...had the capacity to do so, and that there was at least a reasonable possibility, if *not* likelihood, that he would attempt to drive the vehicle and so endanger the public\..." *in accordance with the Full Court decision in *Cooley v Lowe *\[1984\] Tas R 107.[^\[2^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/17.html#fn2)
+
+\[27\] In my view, when parliament amended the extended definition of *"driving"* by introducing s 2(4) and s 2(5), it did not intend to overturn the effect of the Full Court's decision in *Cooley v Lowe*. Indeed the amended definition is entirely consistent with the approach taken in that case.* *This view is reinforced by the nature of the Full Court's reasoning in that case where the Court approved what was said by Morris CJ in *Smith v* *Westell.*[^\[14\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/17.html#fn14) In the relevant passages, the Court emphasised that the words extending the meaning of *"driving"* still require proof of a link between;
+
+a.  The acts or omissions contemplated by the definition provisions; and
+
+b.  The possibility or likelihood that the person will move the vehicle.
+
+**Barnes v Dale \[2020\] TASMC 17 (7 October 2020)**
+
+\[28\] My analysis is that despite the broad and inclusive amended definition in the Act, it remains the case that I am bound to decide this case by asking the questions posed in *Cooley v Lowe*; whether the defendant had the capacity to and that there was at least a reasonable possibility, if not likelihood, that he would attempt to drive the vehicle and so endanger the public. Whether the relationship between the defendant and his motor vehicle can be said to be *"driving"* is a question of fact to be determined in the circumstances of the particular case. I now turn to answer that question.
+
+##### "Public street" 
+
+[***Traffic Act 1925***](https://www.legislation.tas.gov.au/view/html/inforce/current/act-1925-038)
+
+***public street*** means any street, road, lane, thoroughfare, footpath, bridge, or place open to or used by the public, or to which the public have or are permitted to have access, whether on payment of a fee or otherwise;
+
+victim is mentally unwell. Does not wish to proceed given progress in treatment. Def has plead to majority of offending and the most serious matters.
+
+# Police Powers (Vehicle Interception) Act 2000

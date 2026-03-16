@@ -1,0 +1,205 @@
+## Legal professional privilege 
+
+**Newsletter - TerraLex Connections - 13 December 2017**
+
+Legal professional privilege can protect against disclosure of documents.
+
+ 
+
+**Quick links**
+
+- [Scope and source of legal professional privilege](https://www.landers.com.au/insights/publications/international/legal-professional-privilege-under-australian-law/#scope)
+
+- [Application of legal professional privilege](https://www.landers.com.au/insights/publications/international/legal-professional-privilege-under-australian-law/#application)
+
+- [Exceptions to privilege](https://www.landers.com.au/insights/publications/international/legal-professional-privilege-under-australian-law/#exception)
+
+- [Enforcing privilege](https://www.landers.com.au/insights/publications/international/legal-professional-privilege-under-australian-law/#enforcing)
+
+- [Tips for practitioners](https://www.landers.com.au/insights/publications/international/legal-professional-privilege-under-australian-law/#Tips)
+
+For privilege to apply it is necessary to show a communication was confidential, and that its dominant purpose was for the purpose of obtaining legal advice or for actual or anticipated litigation.
+
+Privilege may be able to be enforced via an injunction to restrain unauthorised use of privileged communications or via court processes during litigation.
+
+There are a number of exceptions to legal professional privilege, including waiver, statutory exclusions and improper or illegal conduct. Clients and practitioners should be aware of these exceptions to dispute claims of privilege by opposing parties, and to ensure that their own privileged communications do not fall within an exception.
+
+Parties should be particularly careful in relation to waiver of privilege as this can be implied where a party acts inconsistently with the maintenance of confidentiality.
+
+The Commonwealth of Australia and five of the country\'s eight states and territories have enacted legislation relating to legal professional privilege, all of which are largely identical and reflect common law protections.^1^
+
+Both common law and statute recognise two types of privilege: legal advice privilege and litigation privilege.
+
+Legal advice privilege protects \"confidential communications\" between a client and a lawyer where confidential documents prepared by a client, lawyer or a third party are made or prepared for the dominant purpose of providing legal advice.
+
+Litigation privilege protects confidential communications and documents prepared for the dominant purpose of actual or anticipated proceedings.
+
+The litigation protection applies to communications between a client and their lawyer and may also apply to certain categories of communications between a lawyer and a third party.
+
+The Evidence Acts govern whether evidence can be adduced or admitted into evidence in a proceeding where client legal privilege may apply to that evidence. The common law provides the same protection but also protects against a broader range of compulsory actions to produce documents, including in pre-trial processes such as discovery and, in certain circumstances, claims for production by regulators.
+
+Privilege is not limited to documents, but applies to all communications between lawyers and clients which meet the dominant purpose test and confidentiality requirements set out below. Furthermore, privilege will attach to some documents which do not pass between a lawyer and client. This includes notes made by the client which record communications with the lawyer. Similarly it attaches to work by a lawyer for the benefit of the client, such as memos and chronologies, even if not given to the client.
+
+However, documents already in existence which are later provided to a legal advisor for the purpose of providing legal advice will not attract privilege.
+
+Both the common law and the Evidence Acts in Australia require that a communication or document be made or produced for the \"dominant purpose\" of providing legal advice or actual or anticipated legal proceedings in order to attract privilege.^2^
+
+The onus of proving the dominant purpose of a document or communication lies with the party claiming privilege. If a document would have been brought into existence regardless of an intention to seek legal advice, it will not be privileged.
+
+Where a document or communication contains both legal and non-legal advice, the portion containing legal advice will be privileged and the non-legal advice will not be. Non-legal advice includes advice that is purely commercial or of a public relations character.^3^
+
+A communication must have been made confidentially to attract privilege. The Evidence Acts define a confidential communication as one in which there was an \"express or implied obligation not to disclose its contents\". This means that where a communication is made in front of a third party, privilege will likely not apply.
+
+**In-house lawyers**
+
+Privilege can attach to communications between an in-house lawyer and their employer, provided that the communication is made in confidence and the lawyer is acting in their professional capacity.^4^ There is a risk that privilege may not apply to communications with an in-house lawyer who is not sufficiently independent or who also has a non-legal role closely linked with their legal role.
+
+**Third parties (including experts)**
+
+Only litigation privilege (not legal advice privilege) can attach to communications with third parties, such as experts.
+
+Generally when an expert is confidentially briefed for an opinion in relation to anticipated litigation this will attract privilege. However, where a party seeks to rely on an expert report in litigation, this will waive privilege over the instructions given and the documents referred to or relied upon within the expert\'s report.
+
+There are a number of exceptions to privilege, including waiver, statutory exclusions and illegal or improper conduct.
+
+Waiver of privilege occurs when the party claiming privilege acts inconsistently with the maintenance of the confidentiality of the communication.^5^
+
+Waiver can be express or implied. Where waiver is implied it will not be relevant whether the party intended to waive privilege. Instead the test is whether it would be unfair or misleading to allow a party to maintain privilege despite the inconsistent action.^6^Simply stating that legal advice exists will not be sufficient to waive privilege.
+
+Waiver may also occur where the holder of the privilege puts his or her state of mind in issue. For example, where a party alleges in a proceeding that they undertook a particular action based on legal advice provided, they have put their state of mind at issue in the proceeding. It will then be relevant to consider the factors that the party was aware of at the time of the representation, including any legal advice which had been received.
+
+Inadvertent disclosure may not result in a waiver of privilege as long as the party who committed the error acts promptly upon realising their error.^7^
+
+In some circumstances, disclosure to a third party will not waive privilege if that party has a sufficiently close interest in the litigation or advice. Where parties share the same lawyer or have sufficiently close interests they will have joint privilege or common interest privilege. For example communications between an insurer and an insured may have common interest privilege.
+
+A recent restatement by the Victorian Supreme Court of principles relating to waiver is found in *Lamers v Lamer*s \[2017\] VSC 165.
+
+This case concerned a dispute between the plaintiff and his uncle in relation to a farming property and promises about the business that the uncle allegedly made to his nephew, including that he would be made the appointer of a trust and have shares in a trustee company transferred to him on his uncle\'s death . The defendants filed an affidavit of documents and then a later supplementary affidavit.
+
+A claim for privilege was made with respect to the supplementary affidavit. It became apparent that some documents over which privilege had not been sought in the first affidavit were the same documents that had been the subject of claims for privilege in the second affidavit.
+
+The defendants tried to address this question by saying select documents produced voluntarily in the first affidavit were not really privileged. Unfortunately the court went further and said that, it would be necessary to inspect documents listed in the second affidavit which would otherwise be privileged in order to properly understand the documents voluntarily produced. Waiver had occurred and the plaintiff was entitled by the Victorian Evidence Act to inspect otherwise privileged documents or parts of documents relating to a disposal of shares and ownership of the disputed assets to enable a proper understanding of other documents that had already been given to the plaintiff.
+
+Privilege does not apply to communications made for the purpose of facilitating illegal or improper purposes. This applies regardless of whether or not the lawyer was a party to, or even aware of, the improper purpose.
+
+A recent example of where privilege was excluded in such circumstances is found in Aucare Dairy Pty Ltd v Huang \[2017\] FCA 746. The Federal Court found that, as there was a strong case that the respondents had engaged in fraudulent conduct, communications with their lawyers in the course of that conduct were not privileged. The applicants did not contend that the respondent\'s solicitors had knowledge of or participated in the fraud and did not need to do so to succeed in their application.
+
+In this case two companies, Aucare and Noyier were parties to a joint venture agreement pursuant to which a third company, APD was incorporated as the JV vehicle and each of Aucare and Noyier had to contribute to 50% to the project. A fourth company, Great Vision was to supply equipment to APD for the ventures proposed baby milk factory.
+
+Ms Huang was a director of APD, Noiyer and Great Vision. It was alleged that, when it became apparent that APD was insolvent, Great Vision had removed equipment from APD\'s premises and sold those assets to another company at under value.
+
+The court found a strong prima facie case that the respondents took steps to place legal ownership and control of assets outside the reach of APD. It also found a strong prima facie case that wrongful and fraudulent conduct took place with the assistance of the respondents\' lawyers.
+
+For these reasons the court ordered that a number of documents be produced for which privilege was claimed, largely correspondence between Ms. Huang (or her de facto) and her lawyers.
+
+Privilege can be removed or altered by legislation. For example section 192 of the *Australian Securities and Investments Act 2001*(Cth) abrogates legal professional privilege.^8^
+
+Where a party is threatening the disclosure of privileged information it may be possible to obtain an injunction seeking to restrain the disclosure.
+
+Additionally, during the course of litigation, privilege can be used as a basis for refusing requests from another party to provide privileged documents during pre-trial procedures or during a trial. Privilege can also be used to combat attempts by other parties to have a court admit privileged communications which have been obtained despite the privileged status of those documents.
+
+Privilege also provides a basis for withholding information from regulators in some situations. Whether this is possible and the necessary steps will depend on the specific regulator and the circumstances in which the information has been requested. For example, privilege can in some instances be used as a method for withholding privileged documents from for production for some compulsory notices issued by Australia\'s corporate regulator, the Australian Securities and Investments Commission (**ASIC**).
+
+Where a regulator such as the Australian Competition and Consumer Commission or ASIC conduct a raid to seize documents, they may or may not be permitted to take privileged documents.
+
+1.  When giving verbal advice, make sure that only those people who are necessary are present to ensure that there is the necessary confidentiality for privilege to apply.
+
+2.  Advising a third party about the contents of advice may waive privilege.
+
+3.  When acting as in-house counsel, legal advice should not be mixed with comments about strategic or operational matters. All advice given by in-house counsel must be independent of their employer to be privileged. Documents merely stating a partisan company position without independent thought will not be privileged.
+
+4.  Legal advice which forms part of or an attachment to Board papers may not be privileged and nor will notes made about what non-lawyers have said at a board meeting when they discuss legal advice received. To get around this issue, a legal advisor should attend in person at any board meeting to advise its members and then prepare a record of that meeting to give directly to the board members to confirm the advice provided.
+
+5.  Unless an expert is formally retained by a lawyer for the express purpose of assisting a lawyer to give advice and has all communications necessary for their work with the lawyer, it should be assumed that any communications between clients and experts, and any documents created by them may not be privileged. For this reason it is good to get lawyers involved early on during any investigations. Where a lawyer is engaged to investigate for the purpose of potential litigation the investigation will be privileged.
+
+6.  If an expert\'s advice is relied on in any proceeding the communications with them or to them will likely not be privileged, nor will the expert\'s notes and draft documents.
+
+7.  It is often not possible to refuse to provide documents to a regulator. If documents are produced, it should be done together with an express statement (or if possible an agreement) that the documents are confidential and privileged and the provision of the documents does not amount to any waiver.
+
+8.  Be wary of provision of large volumes of documents in commercial transactions such as via data rooms and the like. Provision of documents in such circumstances can amount to a waiver of privilege.
+
+9.  Be careful when producing documents to avoid a waiver of privilege in other documents. If a party produces a letter from a lawyer about a transaction which says \"as set out in my previous letter\" there may well be a waiver of privilege in that previous letter even if it is privileged.
+
+## Charge negotiation (plea bargaining)
+
+DPP Guidelines:
+
+A proposal should not be entertained by the prosecution unless:
+
+• the charges to be proceeded with bear a reasonable relationship to the nature of the criminal conduct of the accused
+
+• those charges provide an adequate basis for an appropriate sentence in all the circumstances of the case
+
+• there is evidence to support the charges
+
+Any decision whether or not to agree to a proposal advanced by the defence, or to put a counter-proposal to the defence, must take into account all the circumstances of the case and other relevant considerations including:
+
+• whether the accused is willing to co-operate in the investigation or prosecution of others, or the extent to which the accused has done so
+
+• whether the sentence that is likely to be imposed if the charges are varied as proposed would be appropriate for the criminal conduct involved (taking into account such matters as whether the accused is already serving a term of imprisonment)
+
+• the desirability of prompt and certain resolution of the case
+
+• the accused's antecedents
+
+• the strength of the prosecution case
+
+• the likelihood of adverse consequences to witnesses
+
+• in cases where there has been a financial loss to the State or any person, whether the accused has made restitution or arrangements for restitution
+
+• the need to avoid delay in the resolution of other pending cases • the time and expense involved in a trial and any appeal proceeding
+
+• the views of the investigating police officers
+
+• the views of the victim or others significantly affected
+
+In no circumstances should the prosecution entertain a proposal if the accused maintains his or her innocence **with respect to a charge or charges to which the accused has offered to plead guilty**
+
+# Judicial Bias
+
+Apprehension of bias
+
+Make an application to disqualify themselves from the hearing upon the grounds of perceived bias
+
+The learned magistrate's view of the defendant might have been affected as a result of the private communications she had from him
+
+Livesey v NSW Bar Association 1983 151 CLR 288 at 293-294
+
+*A judicial officer should not sit to hear a case if in all the circumstances the parties or the public might entertain a reasonable apprehension that he might not bring an impartial and unprejudiced mind to the resolution of the question involved in it*
+
+### Test is concerned with pre-judgment, not pre-disposition 
+
+**Baker v Barratt \[2019\] TASSC 28 (4 July 2019)**
+
+The requisite standard required of a judicial officer is breached if, in the eyes of that fair minded lay observer, a decision-maker proceeds to determination of a question by reference to something other than the evidence which is led. Such pre-judgment will amount to actual bias. In the context of *apprehended *bias, what is required to be shown is that in the eyes of the fair minded lay observer there is the appearance of such a pre-judgment because of the identified matter, in this case the familial relationship with the complainant\'s employer. It must be demonstrated by an applicant that not only is there the appearance of that pre-judgment, but circumstances which suggest that it is incapable of being swayed by evidence or argument. The test is concerned with pre-judgment, not pre-disposition. The matter is expressed succinctly in *Minister for Immigration and Multi-cultural Affairs v Jia Legeng* [\[2001\] HCA 17](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2001/17.html), [205 CLR 507](http://www.austlii.edu.au/cgi-bin/LawCite?cit=205%20CLR%20507) at [\[71\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2001/17.html#para71)- [\[72\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2001/17.html#para72) by Gleeson CJ and Gummow J:
+
+\... The state of mind described as bias in the form of prejudgment is one so committed to a conclusion already formed as to be incapable of alteration, whatever evidence or arguments may be presented. Natural justice does not require the absence of any predisposition or inclination for or against an argument or conclusion \...\".
+
+### The test for perceived bias:
+
+\[para 21 -- 22 Kirkland v Tippett \[2000\] TASSC 94\]
+
+Whether an informed and fair minded observer, armed with the knowledge that the magistrate had previously represented the defendant, would reasonably apprehend that the leaned magistrate might not bring an impartial and unprejudicial mind to bear on the determination of the very same matter in which her honor represented the def
+
+The hypothetical fair minded observer would have no idea what communications took place between her honor and the defendant
+
+The observer would have little choice but to reasonably apprehend that the learned magistrate might not bring an impartial and unprejudiced mind to bear.
+
+## Apparent bias
+
+**Dictionary :**
+
+ap·par·ent
+
+əˈperənt/
+
+*adjective*
+
+***seeming real or true, but not necessarily so.***
+
+\[para 20 Kirkland v Tippett \[2000\] TASSC 94\]
+
+A denial of natural justice by way of apparent bias is an error of law within the meaning of the *Justices act 1959*, s107(4)
+
+Schreuder v Australian Securities Commission (1996) 6 TAS R 223 at 233) (as cited at para 20 in Kirkland)

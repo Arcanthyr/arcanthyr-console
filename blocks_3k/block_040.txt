@@ -1,0 +1,204 @@
+### Threat by gesture:
+
+Def threatened by gesture to apply force to the person of the, that def had, or caused vic to believe on reasonable grounds that he had, the present ability to apply such force
+
+**Either: (R v Vallance 1960 at para 101)**
+
+[Threatening by any gesture to apply such force to the person of another if the assaulter has present ability to effect his purpose; or]{.mark} By threatening by any gesture to apply such force to the person of another if the assaulter causes the assaultee to believe on reasonable grounds that he has present ability to effect his purpose.
+
+**Unlawful.**
+
+Is an inherent element which must be proven on the prosecution case
+
+***Emmet v Arnold* \[2006\] TASSC 5**
+
+*\[12\] A magistrate may not find a charge of assault under [s35(1)](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s35.html) proven without being satisfied beyond reasonable doubt of every element of that offence. It is therefore necessary not just to be satisfied beyond reasonable doubt that there has been an intentional application of force, but also to be satisfied beyond reasonable doubt that the application of force was unlawful.*
+
+**Bonde v Maney \[2018\] TASSC 23 (17 May 2018)**
+
+7.  The mental elements of assault were considered by me in *Tasmania v Oates *[\[2017\] TASSC 39.](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2017/39.html) Although I was considering assault as defined by s 182 of the *Criminal Code*, my conclusions are apposite to a charge of common assault under [s 35(1)](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s35.html) of the [*Police Offences Act *1935](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/). Assault under this provision is not defined by the [*Police Offences Act*](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/). However, by virtue of [s 36](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s36.html) of the [*Acts Interpretation Act *1931](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/), the definition of assault contained in s 182 of the Code is applicable to the offence of assault under the [*Police Offences Act*](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/).
+
+<!-- -->
+
+8.  Accordingly, in the case of an assault which is alleged to have been committed by the application of force to the person of another, the elements which must be proved by the prosecution are:
+
+\(a\) that the accused has applied force to the person of another, directly or indirectly;
+
+\(b\) by the commission of an act which is voluntary and intentional;
+
+\(c\) that the act is committed with the intention of applying force to the person of another or with subjective foresight that this will occur and proceeding with the act nonetheless (the *Vallance* state of mind).
+
+**Argument that There is no need to specify the type of effect "i.e. threatning gesture.) it might have on the victim. Can simply state them all in the alternative.**
+
+**JUSTICES ACT 1959 - SECT 30**
+
+**30. Statement of offences, &c.**
+
+\(1\) Any complaint, summons, warrant, or other document that is laid, issued, or made for the purpose of, or in connection with, proceedings before justices shall be sufficient if it --
+
+\(a\) describes the matter of complaint with which the defendant is charged or of which he is convicted in ordinary language, avoiding as far as possible the use of technical terms and without necessarily stating all the essential elements of the matter of complaint; and
+
+\(b\) contains such particulars as will give reasonable information of the nature of the matter complained of.
+
+\(2\) Where an enactment constituting a simple offence or breach of duty states --
+
+\(a\) the offence or breach of duty to be doing or omitting to do --
+
+\(i\) any one of any different acts in the alternative; or
+
+\(ii\) any act in any one of different capacities or with any one of different intentions; or
+
+\(b\) any part of the offence or breach of duty in the alternative --
+
+the acts, omissions, capacities, intentions, or other matters stated in the alternative in the enactment may be stated in the alternative in a complaint for that simple offence or breach of duty.
+
+**182.**   **Definition of assault**
+
+Attempting or ***threatening by any gesture to apply such force to the person of another*** if the person making the attempt or threat ***has***, or causes the other to believe on reasonable grounds that he has, ***present ability to effect his purpose***
+
+***Thornton v The Queen* (1984) 14Tas R 113**
+
+\[para 9\] In addition to the requirement that the act must be unlawful, the ingredients of the two forms of the crime created by s 182(1) which were left to the jury are:
+
+- 1 
+
+  - (a) the act of threatening by any gesture,
+
+Threaten
+
+**Green CJ.**
+
+\[para 15\] ***Thornton v The Queen* (1984) 14Tas R 113**
+
+*"... In the other general sense of the word a gesture would only be a threat if it were done with an intention to actually apply force or to induce an apprehension in another that force is about to be applied. In my view, the word as used in s 182(1) should be given the latter connotation."*
+
+- (b) to apply force to the person of another directly or indirectly,
+
+- (c) if the person making the threat has present ability to effect his purpose; or
+
+<!-- -->
+
+- 2 
+
+  - (a) the act of threatening by any gesture, (s 13 intentional
+
+  - (b) to apply force to the person of another directly or indirectly,
+
+  - (c) if the person making the threat causes the other person to believe on reasonable grounds that he has present ability to effect his purpose.
+
+Green CJ: In *Thornton v The Queen* Serial No 81/1984 ((1959-1995) [14 Tas R 113)](http://classic.austlii.edu.au/cgi-bin/LawCite?cit=14%20Tas%20R%20113?stem=0&synonyms=0&query=poa1935140%20s34b), a decision of the Court of Criminal Appeal, I held that an essential ingredient of the crime of assault by a threatening gesture is that the act must be done with an intention that the victim should thereby be induced to apprehend that the actor is about to apply force directly or indirectly to the person of the victim. I did not find it necessary to express an opinion as to whether, in the alternative, it would be sufficient to prove that the act was done with foresight that the probable consequence of the act would be to induce in the victim an apprehension that force was about to be applied to him. Although the other members of the Court did not find it necessary to express a concluded view as to precisely what were the mental ingredients of this form of assault, there was no suggestion in any of the judgments, nor is there any suggestion in the Code itself, that an intention to actually apply force is an ingredient of the crime of assault when it takes the form of a threat by a gesture to apply force.
+
+**Mental element for both:**
+
+\[21\] *"In my view, an essential ingredient of the crime of assault when it takes either of the forms to which I have referred above, is that the act which constitutes the threatening gesture must be done with the intention that the victim should thereby be induced to apprehend that the actor is about to apply force directly or indirectly to the person of the victim. As the learned trial judge did not give the jury any directions about the mental element of the crime, [I find it unnecessary to express an opinion as to whether, in the alternative, it would be sufficient to prove that the act was done with foresight, that the probable consequence of the act would be to induce in the victim an apprehension that force was about to be applied to him."]{.mark}*
+
+\[Para 30\] **Cosgrove J. "...** But in my opinion an action cannot amount to a threat (ie, a message of impending harm) unless it was intended as such, or was perceived as such by the person or persons to whom it was apparently directed."
+
+### No Temporal connection required:
+
+There is NO temporal requirement of immediacy of the threat of application of the force (can threaten to stab tomorrow, so long as at the time the threat is made the def has a knife in his hands etc) , only that the victim believes that the defendant has the present ability to effect his purpose when the threat is made, namely applying force directly or indirectly to the other person. It need not be a threat of immediate force). ***Lees v Visser*** \[2000\] TASSC 3"
+
+*25 Section 182(1) contains no express requirement referable to a threat of immediate force. What is prescribed is \"threatening by any gesture to apply \... force to the person of another, (directly or indirectly) if the person making the \... threat causes the other to believe on reasonable grounds that he has present ability to effect his purpose\". A temporal element is introduced into the offence insofar as the section expressly requires that the complainant must believe that the accused has present ability to effect his purpose. That requirement is understandable. In the absence of such a belief, the apprehension caused to the complainant by the threat is likely to be significantly reduced. Whilst the requirement that the complainant believe that the accused has the present ability to effect his purpose may suggest the need for some proximity between the time of the threat and the time when the force is to be applied, this falls a long way short of requiring that the threatened force must be imminent.*
+
+*26 The complainant must believe that the accused has a present ability to achieve his purpose, that is, directly or indirectly applying force to the complainant. No limit is expressly placed on the time when the force is to be applied. I can find no justification in the language used for extending the requirement that the complainant\'s belief be that the accused \"has, present ability to effect his purpose\" to encompass and impose a requirement that the purpose itself is to be effected immediately. Such an extension would be artificial and illogical. The gravamen of the offence is the accused\'s threat by gesture to apply force to the complainant and the complainant\'s belief referable to the same. I can see no reason for confining the offence to threats of immediate force. In some circumstances a threat of force at a time subsequent to the threat can be more intimidating and distressing than a threat of immediate force.*
+
+*27 Had Parliament intended to confine the offence to threats of immediate force, it would have been easy to manifest that intention by inserting the word \"immediate\" into the section so that it read: \"threatening by any gesture to apply such force immediately to the person of another\". In the absence of language such as this, I am unpersuaded that the words used should be embellished by the addition of a requirement that the threatened force be immediate force.*
+
+*28 As it is not necessary that the threatened force be immediate force, grounds 1 and 1A must fail. Insofar as it was necessary to do so, the learned magistrate made findings about the force the applicant intended the complainant to apprehend and the complainant\'s state of mind referable to that force. The learned magistrate inferred that the applicant intended to convey to the complainant that he would be subject to violence from the applicant by the use of a firearm if he did not pay the applicant. That finding is consistent with the evidence. In relation to the complainant\'s mental state, the learned magistrate said that he had no reason to doubt the complainant\'s evidence of his feelings and his perceptions of what the applicant did and said. It is clear from that finding, together with other findings, that the learned magistrate was satisfied to the requisite standard that the complainant believed that the applicant had the present ability to effect his purpose. There was ample evidence to support the findings and I agree with them.*
+
+### State of mind of the victim:
+
+Present ability to apply force OR causes V to believe on reasonable grounds that they have that ability.
+
+Can be an assault if victim believes on reasonable grounds that the D can carry out the threat.
+
+### Can a defendant be held responsible for an intentional act, done reckless of the probable consequence being that it was induce an apprehension that force would be applies (subjective recklessness).
+
+### Taken from \[para 20\] of Tasmania v Oates \[2017\] TASSC 39 (1 June 2017)
+
+"*Thornton v The Queen *![http://www.austlii.edu.au/images/displeft.png](media/image3.png){width="0.16527777777777777in" height="0.16527777777777777in"}** [[(1984) 14 Tas R 113.]{.underline}](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281984%29%2014%20Tas%20R%20113) **![http://www.austlii.edu.au/images/dispright.png](media/image4.png){width="0.16527777777777777in" height="0.16527777777777777in"} That case concerned the mental element relevant to an assault constituted by an attempt or threat by gesture to apply force to the person of another. It was held by two members of the Court of Criminal Appeal, Green CJ and Cox J (as he then was), that such a crime does require a mental element additional to the requirement for a voluntary and intentional act, in particular an intention to induce another to apprehend that force was to be applied. However, it is clear that the reasoning which led to this conclusion was based on the inherent effect of the formulation of the words used in the section, in particular, that there be an attempt or a threat. Green CJ declined to express an opinion as to whether \"in the alternative it would be sufficient to prove that the act was done with foresight, that the probable consequence of the act would be to induce in the victim an apprehension that force was about to be applied to him\". This would indicate that, although his Honour considered a mental element to be inherent in the relevant act of making a threat, it does not follow that that mental element requires proof of a specific intent, and subjective foresight may be sufficient.
+
+Cox J expressed this sentiment with more clarity at \[39\]:
+
+\"I agree that there is no occasion for this Court to have recourse to the common law when it is determining the elements of assault as defined by s 182(1). As presently advised, I see no reason to read into that definition the need for a specific intention to cause the victim to apprehend force where the assault takes the form of a threatening gesture any more than the High Court in *Vallance v The Queen* [[\[1961\] HCA 42]{.underline}](http://www.austlii.edu.au/au/cases/cth/HCA/1961/42.html); [[(1961) 108 CLR 56]{.underline}](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281961%29%20108%20CLR%2056?query=%2214%20Tas%20R%20113%22) found the need for such a specific intention to inflict a wound in relation to the crime created by s 172.\"
+
+### No need to actually intend to apply force: only to create an apprehension or belief in the mind of the victim:
+
+### Wood v Beach \[1985\] TASSC 39 (20 August 1985)
+
+**GREEN CJ**
+
+\[Para 7\] If when he was making his ruling the learned magistrate was intending to refer to assault by a threatening gesture then, with respect, he was in error because an intention to actually apply force is not an ingredient of that form of assault. In *Thornton v The Queen* Serial No 81/1984 ((1959-1995) ![http://www.austlii.edu.au/images/displeft.png](media/image3.png){width="0.16527777777777777in" height="0.16527777777777777in"}** [[14 Tas R 113)]{.underline}](http://www.austlii.edu.au/cgi-bin/LawCite?cit=14%20Tas%20R%20113) **![http://www.austlii.edu.au/images/dispright.png](media/image4.png){width="0.16527777777777777in" height="0.16527777777777777in"}, a decision of the Court of Criminal Appeal, I held that an essential ingredient of the crime of assault by a threatening gesture is that the act must be done with an intention that the victim should thereby be induced to apprehend that the actor is about to apply force directly or indirectly to the person of the victim. I did not find it necessary to express an opinion as to whether, in the alternative, it would be sufficient to prove that the act was done with foresight that the probable consequence of the act would be to induce in the victim an apprehension that force was about to be applied to him. Although the other members of the Court did not find it necessary to express a concluded view as to precisely what were the mental ingredients of this form of assault, there was no suggestion in any of the judgments, nor is there any suggestion in the Code itself, that an intention to actually apply force is an ingredient of the crime of assault when it takes the form of a threat by a gesture to apply force.
+
+## What is subjective recklessness? 
+
+*Vallance* state of mind in respect of assault was accepted as correct by Evans J in *Beechey v McDonald* [[\[2010\] TASSC 47.]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2010/47.html) At [[\[9\]]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASSC/2010/47.html#para9), his Honour said:
+
+The mental element that must be established in order to convict an offender of assault by the application of force is either that the offender intentionally applied force to the complainant, or that [the offender foresaw the likelihood that he or she might do so and proceeded regardless of that consequence]{.mark}; *Wilkinson v R *43/1985, Nettlefold J, at 4, and *Vallance v R* [[\[1961\] HCA 42]{.underline}](http://www.austlii.edu.au/au/cases/cth/HCA/1961/42.html); [[(1961) 108 CLR 56.]{.underline}](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281961%29%20108%20CLR%2056?query=%2214%20Tas%20R%20113%22) Adopting and adapting the words of Neasey J, agreed with by Underwood and Crawford JJ, as they then were, in *R v Bennett* [[\[1990\] TASRp 6]{.underline}](http://www.austlii.edu.au/au/cases/tas/TASRp/1990/6.html); [[\[1990\] Tas R 72]{.underline}](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1990%5d%20Tas%20R%2072?query=%2214%20Tas%20R%20113%22), at 81, what the prosecution must prove is actual intent to apply force or subjective recklessness. Negligence, falling short of recklessness, is insufficient; *Vallance *(supra), Kitto J at 64.\"
+
+Thornton complaint:
+
+STEPHEN GRANT THORNTON at East Devonport in Tasmania on or about the 10th day of August 1983 unlawfully assaulted Garry David Storay, Denise Cathleen Steers, Paul Marshall Paterson, Christine King, Shaun Storay and Luke Steers by firing a rifle several times in quick succession into a dwelling house in which he knew there to be persons present and in which there were then present the said Garry David Storay, Denise Cathleen Steers, Paul Marshall Paterson, Christine King, Shaun Storay and Luke Steers."
+
+### Assessment:
+
+The dominant consideration for assault and whether it should also be indictable is the seriousness of injuries. There were no physical injuries but serious potential for both the victim and other road users. The allegation is that the vehicle was effectively used as a weapon, and but for his actions she had the present ability to affect force. From the unreported decisions of Thornton and Wood v Beach the mental element is over and above the voluntary and intention act required in s13(1), being that the 'specific intention to induce such apprehension is an essential ingredient'. The Crown would have to get over any suggestion that it was a 'prank' and that perhaps her attention to was simply to annoy him or alert him to her presence as opposed have him consider he was about to be hit by her vehicle. (Eg in Thornton where the accused was firing the gun at the house simply to make some noise.) To conviction the jury would have to be satisfied she had the intention to cause 'requisite fear or apprehension' of force. This is of course not an element for the offence of dangerous driving.
+
+Whether the mental element could include recklessness has been left open, but generally the approach in Thornton has been considered positively recently in Wood v White \[2016\] TASSC 76, Tasmania v Oates \[2017\] TASSC 39.
+
+### Negligence vs sub-recklessness 
+
+Negligence not enough! Needs to be subjective recklessness. Example of negligence not sub-reck: **Barnes v Henri \[2017\] TASMC 14**
+
+## Assault police 
+
+#### Elements:
+
+Cited in **Hickman v Richmond \[2013\] TASMC 36 (3 July 2013)**
+
+The elements of the offence of assaulting a police officer in the execution of duty are that:
+
+a.  the defendant;
+
+<!-- -->
+
+b.  intentionally kicked
+
+<!-- -->
+
+c.  Constable Clark
+
+<!-- -->
+
+d.  to the face - either
+
+    i.  directly or
+
+    <!-- -->
+
+    ii. subjectively recklessly as to whether her leg or foot would strike Constable Clark's face; and
+
+<!-- -->
+
+e.  at the material time, Constable Clark was acting in the execution of her duty.
+
+#### Sentencing submission 
+
+"police are entitled to expect to be supported and reinforced by court orders in sentence of matters"
+
+In *Derrico v McKenna* 39/1980, Green CJ said of this offence:
+
+\"Offences of this kind must be regarded seriously and a court imposing a sentence in respect of them should be mindful of the fact that the work of police officers frequently exposes them to the risk of violence and should impose sentences which vindicate and reinforce the authority of police officers as the executive agents of the law. However, those considerations do not involve the consequence that the usual principles of sentencing do not apply to such offences, nor that in such cases a court which is considering sentence is relieved of its obligation to consider the particular circumstances of each individual offender and of each offence.\"
+
+## Roughley v Rigall \[1996\] TASSC 82 (29 July 1996)
+
+The court upheld the appropriateness of the submission :
+
+Police officers are called upon at times to expose themselves to threats to their own lives in the line of duty and where, as here, they have responded, the court should act in aid of them to encourage them in their duty and\
+to offer protection to them when they do so. Anything less than an actual custodial term would be wholly unresponsive.\"
+
+## Dunford v Fletcher \[1991\] TASSC 154
+
+## 
+
+Which also looked at the appropriateness of prison for offences against police offences.

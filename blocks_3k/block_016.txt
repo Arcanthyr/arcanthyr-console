@@ -1,0 +1,193 @@
+## No Right to a speedy trial! 
+
+Para \[18\] ***Lillico v McKenna (1995) 5 Tas R 147***
+
+Counsel for the applicant principally relied on the judgment of McHugh JA in Aboud v Attorney-General (NSW) (supra) but neither counsel adverted to the fact that the basic premise upon which his Honour proceeded, namely that there is a common law right to a speedy trial, was rejected by the High Court in Jago v District Court of New South Wales [\[1989\] HCA 46](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1989/46.html); [(1989) 168 CLR 23.](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281989%29%20168%20CLR%2023) The right is to a fair trial as distinct from a speedy trial, although in particular circumstances a trial which is long delayed may cease to be capable of being a fair trial.
+
+19\. The test of unfairness which is relevant involves a balancing process between the interests of the applicant on the one hand and the interests of the community, which has an interest in seeing that those who commit offences are brought to trial, on the other hand (Jago v District Court of New South Wales (supra) at 33, 49-50). To dismiss a complaint because any subsequent trial would be unfair is to provide a defendant with an extreme remedy and one which should only be provided in very limited circumstances. I find it difficult to conceive of circumstances where that remedy ought to be provided in a case such as the present where, at least in relation to the complaints other than complaint 2181/1985, delay and prejudice have arisen in circumstances where they would not have arisen had the applicant not sought to evade the criminal process.
+
+## Insanity
+
+### Diagnosis alone not enough
+
+**Tasmania v Scott \[2025\] TASSC 53**
+
+**17:** I am satisfied that bipolar disorder is a mental disease within the meaning of s 16 and that Mr Scott was afflicted with that condition when he pointed the toy gun at the complainant. I direct myself in accordance with the comments of King CJ in *R v Radford *[(1985) 42 SASR 266](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%281985%29%2042%20SASR%20266), as approved by Mason CJ, Brennan and McHugh JJ in *R v Falconer *[\[1990\] HCA 49](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1990/49.html); 171 CLR 30 at 53. However, the existence of a mental disease by itself does not excuse an accused person. In *Hitchens* *v The Queen* [\[1962\] TASStRp 6](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASStRp/1962/6.html); [\[1962\] Tas SR 35](https://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1962%5d%20Tas%20SR%2035) , the Court of Criminal Appeal comprising Burbury CJ, Crisp and Cox JJ said at 49:
+
+\"It was for the accused affirmatively to establish to the satisfaction of the jury that upon the balance of probabilities he by reason of mental disease was not criminally responsible for his acts. For the mere existence of mental disease would not excuse him from criminal responsibility. Nor was it sufficient for him to prove that his alleged crime was the product of mental disease in the sense that it would not have occurred but for the existence of the disease. \...The law prescribes additional criteria to be established by evidence as a condition of criminal responsibility. An act may be a crime although the mind of a person who does it is affected by mental disease if such disease does not in fact produce upon his mind one of the results prescribed by the law as tests of criminal responsibility.\" (Citations removed)
+
+Insanity limbs
+
+See **Tasmania v Scott \[2025\] TASSC 53** for critical look at 16(1)(a)(ii) and 16(10(b).
+
+#### Mental Impairment (insanity) procedure 
+
+**Process on finding of not guilty on grounds of insanity:**
+
+See ***Bonde v Weate* \[2017\] TASMC 11**
+
+Need s. 33 and 34 reports under *Criminal Justice (mental impairment) Act*
+
+## Automatism
+
+***Wilson v Judges \[2025\] TASSC 10***
+
+Latest decision with best summary!
+
+Bit rough:
+
+Court affirms high threshold. Presumtion vol and intentional act but medical evidence can displace presumption. Not necessary for defence to prove underlying circumstances that caused the state, just the opinion that something else caused it. It is then for the prosecution to prove beyond reasonbale dount that whatever alt source there was didn't happen, or could only be attributed to vol intoxication -- which negates the defence.
+
+Court said: "Having raised a reasonable possibility that the applicant\'s actions were not voluntary and intentional and that the state which led to that outcome was attributable to a concussion from a head injury, the prosecution had the onus of excluding that possibility, thereby leaving self-induced intoxication as the only reasonable explanation. The prosecution did not discharge that onus. For example, it did not call any contrary medical evidence, nor did it attempt to demonstrate the negative of the proposition concerning the head injury, that is that the bruised eye was not explained by her suffering a head injury prior to committing the relevant actions."
+
+***R v Falconer***
+
+Automatism as a Defence -- Onus and Burdon of Proof
+
+In this case the defendant killed her husband (separated) after being raped by him, she claimed at the time she was in a state of non-insane automatism, claiming to not remember the killing.
+
+Automatism raises a defence of unsoundness of mind or insanity unless the malfunction was,
+
+1\) transient,
+
+2\) caused by physical or psychological trauma unlikely to have been withstood by
+
+an ordinary person, and
+
+3\) not prone to reoccur
+
+Proof of this exemption would entitle an acquittal under s23 of the Criminal Code (WA)
+
+Whilst the ultimate burden lies with the Crown of proving every element essential in the crime, nevertheless in order to prove that the act was voluntary act, the Crown is entitled to rely on the *presumption* that every man has sufficient mental capacity to be responsible for his crimes, and if the defence wish to displace that presumption they must give some evidence from which the contrary may be reasonably inferred
+
+- A defence of insanity or unsoundness of mind need only be proved on the balance of probabilities, but the accused bears the onus of proving it.
+
+**Morrison v Bonde \[2016\] TASSC 7 (18 February 2016)**
+
+1.  Mason CJ, Brennan and McHugh JJ in *R v Falconer *[\[1990\] HCA 49](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1990/49.html); [(1990) 171 CLR 30](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=%281990%29%20171%20CLR%2030) at 40-41, as follows:
+
+\"The presumption that the acts of a person, apparently conscious, are willed or voluntary is an inference of fact and, as a matter of fact, there must be good grounds for refusing to draw the inference. Generally speaking, grounds for refusing to draw the inference appear only when there are grounds for believing that the actor is unable to control his actions. Although the prosecution bears the ultimate onus of proving beyond reasonable doubt that an act which is an element of an offence charged was a willed act or, at common law, was done voluntarily, \... the prosecution may rely on the inference that an act done by an apparently conscious actor is willed or voluntary to discharge that onus unless there are grounds for believing that the accused was unable to control that act.
+
+**Lusted v Kingston \[2016\] TASMC 1 (27 January 2016)**
+
+Was made out for sleepwalking.
+
+Defence relied heavily on the medical evidence of a respiratory and sleep expert
+
+### Not able to remember (automatism)
+
+**Voluntary and Intentional Act**
+
+*Bonde v Morrison* \[2015\] TASMC 9
+
+(the paragraphs are poorly numbered, this is paragraph 23 when you count them)
+
+The defendant's claimed lack of memory of the events in question is also raised by Mr Wright as a reason for having a doubt that the defendant's actions were voluntary and intentional. However *R v Falconer* [[\[1990\] HCA 49]{.underline}](https://mail.connect.tas.gov.au/owa/redir.aspx?C=ccV0kIcp-jcUpktPqKpB9oilrF8J6D3Z-JK0XpqmR_Ltx6S37qLUCA..&URL=http%3a%2f%2fwww.austlii.edu.au%2fau%2fcases%2fcth%2fHCA%2f1990%2f49.html); [[(1990) 171 CLR 30]{.underline}](https://mail.connect.tas.gov.au/owa/redir.aspx?C=vIOQnfygRzbeMYQQm4lRIT8tvKG5Byh501FORFqHBgztx6S37qLUCA..&URL=http%3a%2f%2fwww.austlii.edu.au%2fcgi-bin%2fLawCite%3fcit%3d%25281990%2529%2520171%2520CLR%252030) is authority for the proposition that the defendant is presumed to have acted in a voluntary and intentional manner in the absence of evidence to the contrary, and that this presumption will only be displaced if there is credible evidence which raises a reasonable possibility that his actions were not so
+
+### Unconsciousness
+
+***Bonde v Morrison* \[2015\] TASMC 9**
+
+Unconsciousness argued by defence. It failed as there were indicia of being cognisant such as talking, Glasgow scale, and yelling phrases that inherently required contextual understanding such as "I don't consent to medical treatment" etc.
+
+## \"de minimis non curat lex\"
+
+***An abbreviated form of the Latin Maxim de minimis non curat lex, "law is not concerned with small things." A legal doctrine by which a court refuses to consider trifling things. In a lawsuit, the de minimis doctrine is applied by a court to avoid resolving trivial matters that are not worthy of judicial scrutiny. Its application sometimes leads to an action being dismissed, especially when the only redress being sought is for a nominal sum, such as a dollar. When appropriate, the appellate courts also use the de minimis doctrine.***
+
+The maxim is not applicable to criminal proceedings. - ***Harrison v Moore* [\[2018\] TASSC 53 (19 October 2018)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2018/53.html) -- Tasmanian Supreme Court**
+
+## Self defence:
+
+### Applies to summary/ non-code matters as well! 
+
+Despite adage that code principles apply only to like offences, Blow CJ says otherwise
+
+**Tasmania v Milligan \[2021\] TASSC 59 (24 November 2021) (Para 10)**
+
+### Must be raised:
+
+**Irons v Moore \[2019\] TASSC 22 (22 May 2019)**
+
+1.  It is well established that in a case involving a jury, the issue of self-defence will only be left for the jury\'s consideration where [it is raised as a reasonable possibility on the evidence]{.mark} \"and the accused raises the question\": *Viro v The Queen *[(1978) 141 CLR 88](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281978%29%20141%20CLR%2088) at 95, per Barwick CJ. However, where the question is raised as an issue, then the onus will be on the prosecution to negative the reasonable possibility of lawful self-defence beyond reasonable doubt: *Walsh v The Queen* [\[1993\] TASSC 91.](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1993/91.html)
+
+<!-- -->
+
+15. The same principles will apply in a summary hearing before a magistrate: *Hindrum v Lane* [\[2014\] TASFC 5.](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASFC/2014/5.html) In particular, the magistrate will not be required to consider the issue of self-defence unless it is raised as a reasonable possibility on the evidence, and in that event the prosecution will have the onus of excluding that possibility beyond reasonable doubt.
+
+### Higher burden on def when no other evidence to support defence
+
+**Irons v Moore \[2019\] TASSC 22 (22 May 2019)**
+
+In this case the victim was unwilling to give evidence, that is she was 38'ed and only stated she "could not remember" so that all that was in evdiecen was the physical injuries reported by witnesses and the recent complaint evidence to them.
+
+On appeal the def said given it was a circumsytantial case, the magi could nto have rulled out self-defence as there was no evidence to exclude it and cirumatntial ases require not uity when there are reasonable hytpothes consistant with innocence.
+
+Howerve, the appeal court said technically there was no one else OTHER than the defendant who could espouse on what had occurred. The vic did not remember, and as such there was an evidneitaryy onus on the def to provide evidence in support of self-fence. As a result the appeal court rulled that t
+
+> \"If there were facts which explained or contradicted the evidence against the accused, they were facts which were within the knowledge only of the accused and thus could not be the subject of evidence from any other person or source.\"
+
+1.  The court relied upon the following passage from *Weissensteiner v The Queen *[\[1993\] HCA 65](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1993/65.html); [(1993) 178 CLR 217](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281993%29%20178%20CLR%20217) at 227-228, per Mason CJ, Deane and Dawson JJ:
+
+> \"\... in a criminal trial, hypotheses consistent with innocence may cease to be rational or reasonable in the absence of evidence to support them when that evidence, if it exists at all, must be within the knowledge of the accused.\"
+
+21. this is not a case where the complainant has not been heard from. The complainant was called by the prosecution to give evidence, and her sworn testimony was that she could not remember the relevant events. She maintained this version under cross-examination from the prosecutor. This evidence was not challenged by the applicant\'s counsel. In fact, the applicant\'s counsel did not cross-examine the complainant at all.
+
+22. Further, the previous representations of the complainant were in evidence as part of the prosecution case and were admissible as proof of the truth of the facts asserted in them. It is true that the assertion of an assault was vague, but when taken together with the evidence of the injuries and the hair seen by Mr and Mrs Warner, the representations were capable of establishing the case that an assault had been perpetrated by the applicant. In the face of this evidence, the applicant offered no explanation at all for the manner in which the injuries had been caused, nor did his counsel cross-examine the complainant with respect to the matters contained in her out-of-court representations. It was not suggested to her that she did not say these things to Mr and Mrs Warner, or that the facts asserted were not true. It was not positively put to her that circumstances had occurred which were consistent with the lawful application of force.
+
+23. It is true that the magistrate expressed the view that the complainant was \"not making a genuine attempt to give evidence\". However, the point is that the applicant did not challenge her assertion under oath that she could not recall the relevant events. In that circumstance, he was the only person able to explain the application of force, that was otherwise accepted as fact by the magistrate, on the basis of self-defence or some other circumstance that would render the force lawful. For this reason, the evidential onus remained on the applicant and had not been discharged by him.
+
+24. In the light of the evidence that force had been applied by the applicant to the complainant and in the absence of any contradictory or explanatory evidence from the applicant, I am satisfied that the application of force in lawful self-defence was not available to the magistrate as a reasonable possibility or hypothesis consistent with innocence. It was not incumbent on the magistrate to consider and exclude self-defence or some other basis of lawful use of force. In the circumstances, it was reasonably open to the magistrate to conclude that the applicant had applied force to the complainant and that such force had been applied unlawfully.
+
+Complainant
+
+### Raising it:
+
+Once raised, the Prosecution has to prove beyond reasonable doubt it was not self-defence.
+
+It is well established that in a case involving a jury, the issue of self-defence will only be left for the jury\'s consideration where it is raised as a reasonable possibility on the evidence \"and the accused raises the question\": *Viro v The Queen* (1978) 141 CLR 88 at 95, per Barwick CJ. However, where the question is raised as an issue, then the onus will be on the prosecution to negative the reasonable possibility of lawful self-defence beyond reasonable doubt: *Walsh v The Queen* \[1993\] TASSC 91.
+
+The same principles will apply in a summary hearing before a magistrate: *Hindrum v Lane* \[2014\] TASFC 5. In particular, the magistrate will not be required to consider the issue of self-defence unless it is raised as a reasonable possibility on the evidence, and in that event the prosecution will have the onus of excluding that possibility beyond reasonable doubt.
+
+### Can pre-empt self-defence
+
+A PRE-EMPTIVE RESORT TO SELF-DEFENCE
+
+***Wright v Tasmania \[2005\] TASSC 113; BC200509811***
+
+Blow, J:
+
+\[17\] A person who believes he or she is about to be attacked does not necessarily have to wait for the assailant to strike the first blow or fire the first shot. Circumstances may justify the use of pre-emptive force in self-defence. See Beckford v R \[1988\] AC 130; R v Lawrie \[1986\] 2 Qd R 502 at 505
+
+### An attacker cannot rely upon claim of self-defense 
+
+(SELF-DEFENCE IN RESPONSE TO A SITUATION OF LAWFULLY APPLIED FORCE)
+
+***Viro v. The Queen \[1978\] HCA 9; (1978) 141 CLR 88***
+
+Gibbs J. pointed out that self-defence is not a defence available to the original aggressor in a conflict either when the original victim uses lawful force to resist him or when the original victim uses unlawful force but the original aggressor does not believe on reasonable grounds that it is necessary to do what he did to defend himself.
+
+He said (at pp.116-117):
+
+*\" If, therefore, one man makes a violent attack upon another with intent to rob him, and the man attacked defends himself, using no more force than is reasonably necessary, the original assailant cannot be said to be acting in self-defence in trying to overcome the other\'s resistance, since that resistance was lawful. However, if the original assailant has desisted from his attack, and his intended victim no longer needs to defend himself, and can not reasonably believe that he is still in danger, but nevertheless takes the offensive and out of anger or revenge himself becomes the attacker, the original assailant is not obliged to let himself be killed or injured without any attempt at resistance. Nevertheless, in such a case it is difficult to see how, as a matter of fact, the conduct of the aggressor, which commences as a criminal assault with an intent to commit a serious crime, can become transmuted in split seconds into lawful self-defence, unless the aggressor has clearly broken off his attack. In such circumstances the fact that he did not retreat when he had the opportunity to do so assumes a special significance.\"*
+
+### TEST:
+
+**(***Walsh v R* [\[1993\] TASSC 91.](https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1993/91.html))
+
+Subjective -- mind of the person claiming the defense
+
+Objective -- in the subjective circumstances was the force used unreasonable
+
+**Cretu v Negri \[2012\] TASMC 12 (26 April 2012)**
+
+Para 9 and 10
+
+9\. S46 involves a subjective and an objective test. The subjective test involves two questions, whether the accused was acting in self-defence when he used force, and what were the circumstances as he believed them to be which might be taken into account. Thus the court is required to place itself in the position of the defendant and ascertain his belief as to the danger. The question is whether he genuinely and honestly believed that force was necessary. He may be mistaken but the test is genuineness of belief not reasonableness. Although the reasonableness or unreasonableness of the belief is material to the question of whether the belief was held at all. If the belief was in fact held its unreasonableness so far as guilt or innocence is concerned is neither here nor there. If I am satisfied beyond reasonable doubt that the defendant did not believe the circumstances required the use of force in defence of himself then the issue goes no further.
+
+10\. The second requirement of s46 is determined objectively, and that is whether the force used was in the circumstances as the defendant believed them to be reasonable to use. The prosecution must satisfy me beyond reasonable doubt that a reasonable person would consider the amount of force used was unreasonable judged against the circumstances as the defendant believed them to be. In determining whether the amount of force used in self-defence or defence of another was reasonable or excessive I must take into account the fact that a person may be in a stressful situation with little or no time to think. A defendant is not required to weigh the amount of force used nicely. A person who believes he or she is about to be attacked, or someone else is about to be attacked, does not necessarily have to wait for the assailant to strike the first blow. Circumstances may justify the use of pre-emptive force in self-defence .
+
+## Defence of property 
+
+Section 39 of the CODE
+
+See R v McKay \[1957\] VR 560 (look for tas citations)

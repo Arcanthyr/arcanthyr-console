@@ -1,0 +1,293 @@
+## Opinion of vic in FV sentencing 
+
+For mitigation it means nothing.
+
+**Brown v Jones \[2021\] TASSC 58 (22 November 2021)**
+
+Porter AJ citing among others DPP(Acting) v JCN -- the attitude's of the complainant with respect to forgiveness carries little weight.
+
+\[31\] As to the attitude of the complainant, to the extent it was suggested it was one of forgiveness, it carries little weight: *Director of Public Prosecutions v Chatters* [\[2011\] TASCCA 8](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2011/8.html), [21 Tas R 26](http://www.austlii.edu.au/cgi-bin/LawCite?cit=21%20Tas%20R%2026) at [\[60\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2011/8.html#para60), *Menichelli v Tasmania* [\[2009\] TASSC 111](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2009/111.html), [19 Tas R 299](http://www.austlii.edu.au/cgi-bin/LawCite?cit=19%20Tas%20R%20299) at [\[16\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2009/111.html#para16). In both cases reference was made to *R v Palu *[\[2002\] NSWCCA 381](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2002/381.html), [134 A Crim R 174](http://www.austlii.edu.au/cgi-bin/LawCite?cit=134%20A%20Crim%20R%20174) in which the New South Wales Court of Appeal said the attitude of the victim cannot be allowed to interfere with the proper exercise of the sentencing discretion. The Court went on to say that sentencing proceedings are not a private matter between the victim and the offender, and that a serious crime as a wrong committed against the community at large and the community itself is entitled to retribution. See also *R v Burton *[\[2008\] NSWCCA 128](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2008/128.html) at [\[102\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2008/128.html#para102)--\[106\].
+
+32 That matter of established principle has particular application in cases of family violence. I would respectfully agree with the following comments of Pearce J (with whom Blow CJ and Tennent J agreed) in *Director of Public Prosecutions (Acting) v JCN* [\[2015\] TASFC 13](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASFC/2015/13.html) at [\[20\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASFC/2015/13.html#para20):
+
+\"The response to family violence is often complex. Family violence offences are not uncommonly accompanied by support of a perpetrator by a victim and reluctance on the part of the victim to assist a criminal prosecution. That is so for a range of possible factors including fear and a wish to preserve relationships, even dysfunctional and violent ones, for the sake of loyalty, affection, companionship, economic and domestic support. Sometimes those motivations are misguided but persist nevertheless. As a result, victims sometimes act in a way that seems to an objective observer to be incongruence and difficult to understand.\"
+
+## 29A
+
+Where declaration made, there must be an FVO, either new or extant.
+
+### Court Considerations (as discussed by Magi Edwards). 
+
+In relation to the declarations under s29A and the associated provisions, Her Honour noted that the statutory threshold is *not a high one*. Both sides should identify when this is triggered and be in a position to address the Court as to whether a declaration is warranted. Section 29A(3) identifies the matters to which the Court is to have regard, but gives a wide scope to that enquiry, noting that s29A(3)(d) allows the Court to look at any other matter which it considers to be relevant.
+
+**Her Honour provided a (non-exhaustive) list of matters that she will look at, noting that other Magistrates may consider different factors to be relevant, as follows:**
+
+- Gravity and seriousness of the matters on which the defendant is currently being sentenced.
+
+- Risk factors (prior matters, any reports available relating to the defendant).
+
+- Antecedents -- in particular, the gravity of any previous, like offending.
+
+- Whether there is, or has been, more than a single complainant -- a propensity to behave violently in a relationship elevates the risk.
+
+- Escalation in offending.
+
+- Persistence in offending, especially if previous sentences have failed to deter the defendant.
+
+- Personal circumstances.
+
+- Any recognition or insight by the defendant into their behaviour.
+
+- Any attempt to hide the offending conduct.
+
+- A lack of remorse, e.g. if the matter proceeded to hearing.
+
+Her Honour clarified that, from her perspective, she considers the threshold can be met by three (or more) offences being dealt with at court on the same day, even in the absence of prior matters (provided the offences themselves have occurred on different dates). Her Honour also indicated she would be receptive to submissions regarding the length of a declaration, or a further declaration by way of an effective extension (if an existing serial family violence perpetrator is being sentenced for new offending); also to deferring the question of whether to make the declaration or not, if defence are seeking the opportunity to demonstrate rehabilitation.
+
+(Crafty submission to make when there are significant priors to support a 29A:
+
+*"Sentences of imprisonment for offences of violence have not acted as a deterrent. As the sentencing judge observed, the appellant was not to be sentenced for his previous offences, but his record of violent offending demonstrated that the assaults under consideration were \"not aberrations committed out of character\". In addition, as previous sentences of imprisonment have not deterred the appellant from committing violent offences, personal deterrence was an important factor in sentencing."*
+
+### Relevant cases referred to by Magi Edwards:
+
+**Miller v McCullogh \[2024\] TASSC 61 (11 November 2024)**
+
+**Held:** Def had taken appreciable rehabilitation steps between sentencing and offending, but given severity of physical violence in a FV context, appeal against term of imprisonment was rejected.
+
+**Facts:** Def charged with multiple assaults -- non strangulation holding of neck, and emotional abuse. Def had priors for assault against vic, assault generally and breaching orders. Had PG before pre-set hearing date and had vol engaged in counselling to address issues before sentencing.
+
+*\[29\] As highlighted by counsel for the respondent, the maximum penalty for the Family Violence Act offence is two years\' imprisonment. The other three all attract a maximum of 12 months. The applicant had prior convictions for violence, the most recent in April 2020 which led to a suspended prison term. When considering his earlier offending, in particular the family violence offences in 2019, it might be thought that the applicant may have been motivated to seek assistance with his mental health and alcohol abuse issues before being charged in August 2023 with the present matters, and his relationship ending as a result of his conduct.*
+
+*\[30\] In any event, the fact remains that he did seek assistance both in relation to his mental health and specifically his alcohol abuse. Those rehabilitation attempts were pursued until he was remanded in custody on 22 April 2024. That fact and the potential continued rehabilitation efforts were not matters that had no significance in the sentencing process. Additionally, the applicant was entitled to some, but in the circumstances no great, credit for his pleas of guilty. The magistrate accepted an expression of remorse but treated it as a \"late development\". No doubt that was prompted by the initial pleas of not guilty and the very late change. Remorse seems first to have been expressed to Dr Little and given the developing insight in the sessions with him, it is reasonable to accept that it was then genuine.*
+
+**Palmer v Tasmania \[2024\] TASCCA 6 (5 July 2024)**
+
+## 13A Presence of children in sentencing 
+
+the presence and involvement of the children was \"obviously\" an aggravating factor. It caused great upset and no doubt ongoing anguish. Living arrangements were altered and the children\'s routine no doubt disrupted. As to this factor, I venture to repeat what I said in 
+
+*Allen v Kerr *[\[2009\] TASSC 10](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2009/10.html), [19 Tas R 132](http://www.austlii.edu.au/cgi-bin/LawCite?cit=19%20Tas%20R%20132) at [\[13\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2009/10.html#para13): Porter AJ
+
+\"The reasons that the presence of children is an aggravating factor of some significance are largely self-evident. Violence witnessed by children in the domestic environment not only is distressing (usually the victim is a parent or someone in the place of a parent), but it also serves to desensitise impressionable minds to violence, and to encourage the notion that resort to violence is acceptable.\"
+
+## FVO Applications:
+
+### Indefinite FVO (and 18+)
+
+LA SAH were successful in obtaining an indefinite IFVO with an adult child on the order. This was in Launceston
+
+Matter No. 70285/2017 (Peter Geoffrey HUBBARD)
+
+Circumstances were unusual. Below are the notes from Kate Hughs:
+
+**The circumstances:**
+
+- The family violence was severe (mainly physical abuse against both the applicant and the 2 children);
+
+- The family violence against the Applicant occurred throughout the duration of their relationship -- which was almost 20 years;
+
+- When we originally made the FVO Application, the eldest child was 17 years old, but by the time of the hearing he had turned 18. The other child was 7;
+
+- The IFVO was originally issued in April 2017 and included both of the children.
+
+ 
+
+**[I will provide you with some arguments / things that worked in our favour:]{.underline}**
+
+- **The 18 year old child gave evidence** -- the 18 year old essentially provided evidence that he was terrified of his father and it causes him distress just seeing him, and that he wanted nothing further to do with him. The 18 year old also made reference to the other child (his 7 year old brother) who he said had similar views of wanting an Order to remain in place. I made submissions that there is nothing to say that an adult child cannot be included on an Order -- he was under 18 when the Application was made, and a number of FV incidents occurred when he was under the age of 18. He also gave evidence that he feels safer knowing there was an Interim Order in place. The Magistrate also asked him whether he wanted to see his father at all -- his answer was no;
+
+- **The Applicant's parents both gave evidence** -- and they both have Restraint Orders against the Respondent;
+
+- **The Respondent's demeanour** -- this matter went to Court on a number of occasions, before several magistrates. On almost every occasion, the respondent would "act out" in Court. The hearing was in front of Magistrate Brown and the matter had been in front of him several times previously. In his decision, Magistrate Brown commented about the Respondent's concerning behaviour;
+
+- **Family Court Orders were in place** -- these were finalised in June 2017 -- the Applicant was given sole parental responsibility of the children (no time spent with the Respondent)- used the argument that a judge in the FCC has already decided that the Respondent spending no time with the 2 children were in the children's best interests -- and that there is an absolute restriction on the Respondent spending time with the children, and that it is unusual for a Court to order sole parental responsibility;
+
+- **Breaching Orders**: The Respondent had previously breached Orders and been charged with common assault;
+
+- **Breaches of the IFVO**: The Respondent was charged with breaching the IFVO. There were a few, but the most unusual method (recognised by Magistrate Brown in his decision) was that the Respondent threatened the Applicant via internet banking deposits;
+
+- **Texts/Facebook posts**: The Respondent sent threatening and abusive text messages to the Applicant and her father, and regularly posted about the Applicant on Facebook. The threats were directed at the entire family;
+
+- **The Respondent did not give evidence and had no witnesses**;
+
+- **The Respondent's mental health **-- The Respondent has anxiety and depression -- Applicant believes he doesn't take prescribed mediation. She had concerns that he had undiagnosed mental health issues. Under the Family Court Order he could apply to spend time with the children upon filing an affidavit from a qualified psychologist.
+
+ 
+
+**[The decision:]{.underline}**
+
+In his decision, Magistrate Brown referred to s16 (2) of the FVA and the words "*any other person*" -- and that "any other person" can be protected by an Order. He noted the distinction between "any other person" and how this is different to an "affected child" or "affected person". Magistrate Brown focused on the intention & primary purpose of the Act -- to protect those affected by FV.
+
+ 
+
+Magistrate Brown noted that the 18 year old had clearly been affected by FV, and that there is a strong established nexus between him and the Applicant -- he was an affected child when the Application was made, and he could now be considered as "any other person" under the legislation.
+
+ 
+
+Magistrates Brown decision in making an indefinite Order was mostly based on the following:
+
+-          The length of the relationship;
+
+-          The nature of the relationship;
+
+-          In light of the breaches (some of which he pleaded guilty to that morning and was sentenced accordingly);
+
+-          The Respondent's demeanour in Court and during the hearing
+
+ 
+
+Magistrate Brown determined that an Order was necessary until a further Order is made (indefinitely).
+
+ 
+
+I think the fact that the 18 year old gave evidence really helped our case -- without that, I'm not sure if it would have been made indefinite or not!
+
+### Court not obligated to make an IFVO. 
+
+It should not be rubber stamped by mere presence of an application. **Franklin v Burke \[2022\] TASSC 59 (2 September 2022)**
+
+### Revocation/ variation
+
+### "Substantial change"
+
+Section 20 of the Act prevents the court from granting leave for an application to be heard unless satisfied there has been **substantial** change in circumstances since the last order was made or varied (s 20(3)). This includes Police with respect to extensions.
+
+Substantial defined?? Certainly significant.
+
+The section does not permit the court to go behind the decision making of the existing order -- all facts that existed at the time should be taken to have been considered. That is simply because the defendant argues it was not considered at the time the original order is irrelevant -- there must be a SUBSTANTIAL change since the order was made.
+
+### IFVO
+
+Court may make an IFVO at any stage without need to recourse of the considerations in s 16.
+
+**Section 23**
+
+\(1\) can make an IFVO on a whim at any stage in proceedings of an FVO app
+
+\(3\) Leave not required to vary or to extend IFVO
+
+\(4\) Can be made or changed without the other person being there (no service requirements of IFVO or original FVO app)
+
+Remember! When making submissions about whether the IFVO is to be made.
+
+**3. Objects of Act**
+
+**In the administration of this Act, the safety, psychological wellbeing and interests of people affected by family violence are the paramount considerations.**
+
+### Ex Parte orders
+
+**Section 31 (7)**
+
+Court can make final order in the absence of the respondent if satisfied a sealed copy has been served, or that reasonable attempts have been made to serve a sealed copy of the application on the respondent.
+
+They can also issue a warrant for the arrest of the respondent.
+
+**Lacroix v Lacroix \[2015\] TASSC 42**
+
+\[para 21\] *"must make actual attempt to serve"*
+
+### Service of Orders 
+
+Per s 25 - Defendant taken to be served and order taken to be of effect immediately if they were present in court, or from the moment they were personally served.
+
+***Must be personally served!!! Acts interpretations act doesn't apply as it requires "Personal" service (i.e. is directing a type of service which is contrary to 29AB of the AI Act***
+
+**ACTS INTERPRETATION ACT 1931 - SECT 29AB**
+
+**29AB. Service of notices and other documents**
+
+\(1\) If an Act authorizes, requires or permits a notice or other document to be served on a person, whether the expression \"serve\" , \"deliver\" , \"give\" or \"send\" or any other expression is used, without directing it to be served in a particular manner, the notice or document may be served --
+
+\(a\) on a natural person --
+
+\(i\) by giving it to the person; or
+
+\(ii\) by leaving it at, or sending it by post to, the person\'s residential or postal address or place or address of business or employment whichever is last known to the server of the notice or other document; or
+
+\(b\) on any other person by leaving it at, or sending it by post to, the person\'s principal or registered office or principal place of business.
+
+\(2\) Nothing in subsection (1) --
+
+\(a\) affects the operation of any other law that authorizes or requires the service of a notice or document otherwise than as provided by that subsection; or
+
+\(b\) affects the power of a court or person acting judicially to authorize service of a notice or document otherwise than as provided in that subsection.
+
+**ACTS INTERPRETATION ACT 1931 - SECT 30**
+
+**30. Effecting service by post**
+
+\(1\) Where any Act, including this Act, authorizes or requires any notice or other document to be given, sent, served, or delivered by post, such giving, sending, serving, or delivery shall be deemed to be effected by properly addressing, prepaying, and posting the document as a letter, and, unless the contrary is proved, shall be deemed to have been effected at the time when the letter would be delivered in the ordinary course of post.
+
+\(2\) When an Act authorizes or requires any notice or other document to be given, sent, served, or delivered by registered post, the giving, sending, serving, or delivery thereof shall be deemed to be effected by properly addressing, prepaying, and posting the notice or document as a letter --
+
+\(a\) duly registered; or
+
+\(b\) unless the contrary intention appears in that Act, sent by means of the certified mail service --
+
+as provided by the postal regulations as in force for the time being, and, unless the contrary is proved, shall be deemed to have been effected at the time when the letter would be delivered in the ordinary course of post.
+
+\(3\) Except where otherwise provided any such letter as aforesaid may be addressed to the usual or last known address of the person to whom it is to be sent.
+
+### Consent orders
+
+**Marriage v Tasmania Police \[2020\] TASMC 4 (6 April 2020)**
+
+This case is actually about MPES Act. But consideres the construction of a similar "consent" provision in the context of whether it is an independent power, is still rely on a "head" provision requiring the court being satisfied as to certain matters. See para 3 onwards.
+
+**Whether consent order requires requisite belief???**
+
+Magistrate Jago suggested in court that the power to make an FVO under s 22 is predicated on the satisfaction of the requisite belief prescribed in s 16.
+
+Relevant legislation:
+
+FAMILY VIOLENCE ACT 2004 - SECT 16
+
+16. Family violence orders
+
+\(1\) A court may make an FVO if satisfied, on the balance of probabilities, that --
+
+\(a\) a person has committed family violence; and
+
+\(b\) that person may again commit family violence.
+
+     
+
+\(2\) An FVO may include such conditions as the court considers are necessary or desirable to prevent the commission of family violence against an affected person or to protect any other person named in the order.
+
+     
+
+\(3\) Without limiting the nature of the conditions which may be included in an FVO, the court may require the person against whom the FVO is to be made to do one or more of the following:
+
+\(a\) vacate premises, not enter premises, or only enter premises on certain conditions, whether or not that person has a legal or equitable interest in the premises;
+
+\(b\) not possess firearms specified in the order or forfeit or dispose of any firearms in his or her possession.
+
+FAMILY VIOLENCE ACT 2004 - SECT 22
+
+22. FVO by consent
+
+     
+
+\(1\) A court may make an FVO in terms consented to by the parties.
+
+     
+
+\(2\) In making an FVO by consent, the court may record that the person against whom the order is made does not admit any of the matters alleged in the application for that order.
+
+Argument:
+
+Section 16 permits the court, if satisfied on the balance of probabilities that family violence has, and is again likely to occur, to make an FVO.
+
+Section 22 permits the court to make an FVO in terms consented to by the parties, without admission of the matters alleged in the application.
+
+If a magistrate believes that family violence has, and is again likely to occur, the consent or otherwise of the parties is, in my mind, completely irrelevant. The court is directed by the paramount objectives of the Act to ensure the welfare of affected parties by whatever conditions necessary.
+
+Furthermore, as a civil application, if the Magistrate has reached the requisite belief under s 16 on the balance of probabilities that family violence has, and will again occur, then the admission or otherwise of the defendant is similarly irrelevant. The court has already satisfied itself that such events will/ have occurred.
+
+For these reasons I would suggest that s 22 must be an independent power, divorced from the requirements of s 16, allowing the court to make an FVO without the need to form the requisite belief where the terms of the application are consented to by the parties.
+
+## Jurisdiction 
+
+Applicatrions have to be made and heard in lower court only. Only a court (court is defined as lower court -- so when it says court read magi) can make an order. Supreme court can only make s 36 orders. Cannot hear apps (section 36 says court OR judge).
+
+Therefore a prob arises if a protected party or

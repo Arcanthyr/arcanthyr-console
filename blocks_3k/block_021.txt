@@ -1,0 +1,239 @@
+### Contra section 12 surety arguments:
+
+R v Barrett is a 1985 SA decision referring to the 1843 Uk judgment of the queen v badger. It is a common law principle applied in the context of a presumption in favour of bail
+
+Neither contemplated or considered the introduction of the Family violence act. However violent a departure from common law principles it may be, Section 12 is binding. The court must be satisfied as to the safety and wellbeing of the complainant. The surety's capacity to, pay, alone, should the defendant act contrary to that requirement, is inherently insufficient to discharge that requirement. It is the "supervision" of a defendant by proposed surety that can satisfy the court's, and in that question, the character and antecedents of the proposed surety are not only relevant, but necessary considerations. The court is effectively placing it's trust in the surety/ it's entitled to consider if that trust is appropriately placed.
+
+At para 22 of JCN, Pearce J said:
+
+*"His own home is quite close to the complainant\'s residence. If he is there, monitoring his movements and conduct would be very difficult. It would achieve little to reduce the risk. His mother\'s home is in Hobart and would increase the physical separation from the complainant. However his presence at that home has not, in the past, prevented breach of the order. Nor does his mother\'s presence seem to prevent breaches. He was at his mother\'s house with the complainant when he was arrested. The circumstances to which I have referred also reduce my confidence in his mother\'s capacity as surety to monitor the respondent\'s behavior and deter any breach."*
+
+At para 14 of ***Tasmania v Wooders \[2022\] TASSC 15***
+
+*A person who provides a recognizance has an important role, not to be entered into lightly. He or she is, unlike the Court, in a position to supervise obedience to the order and the conditions. A surety undertakes a real and substantial obligation to ensure that the person admitted to bail appears when required and complies with the conditions, and must understand the obligations of the accused and the consequences of breach.*
+
+\[15\] *Secondly, the recognizance also serves to motivate the person released on bail to comply by the assurance that, if they fail to appear or breach a condition, the person who agreed to provide the recognizance will suffer the forfeiture. The accused must know that, if he or she breaks the trust that has been placed in them by a surety, often a family member or friend, the surety will suffer: Mokbel v DPP. The object is to dissuade an accused from breach because of the adverse consequences which might otherwise flow to a surety.*
+
+## Estreatment applications against Sureties
+
+Applications to be made under section 20 of the *Bail Act.* (Section 19 applies to def who deposit funds on their own behalf.)
+
+**Tasmania v Wooders \[2022\] TASSC 15 (28 February 2022)**
+
+**See also Tasmania v Wooders \[2023!\] TASSC**
+
+The terms of [s 20](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ba199441/s20.html) are to be distinguished from [s 19](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ba199441/s19.html) which, as I interpret it, applies to a sum deposited by a person admitted to bail with a condition imposed under [s 7(5)(a)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ba199441/s7.html) to secure compliance with the terms of his or her own bail. In such a case, on conviction for breach, a court \"must\" order forfeiture of the full sum deposited unless the convicted person demonstrates \"excessive hardship to that person or the dependants of that person\" not relieved by allowing payment by instalments, or satisfies the court that it is otherwise just to order forfeiture of part only.
+
+#### Unfairness is a part-and-parcel of being a surety:
+
+Cited in **Tasmania v Wooders \[2022\]).**
+
+In R v Crown Court at Maidenstone; ex parte Lever \[1995\] 2 All ER 35, Hoffman LJ said at 41:
+
+*\"It follows that in one sense the system has unfairness built into it. It may result in persons entirely innocent having to suffer on account of the wrongdoing of another. The courts rely upon the moral pressure which this prospect should apply to the mind of the accused. But the pressure would evaporate if judges were not willing, as a general rule, to harden their hearts against a plea of lack of culpability when it turns out that the surety\'s trust in the accused was misplaced.\"*
+
+*\[16\] As a result, even if a surety does as much as reasonably can be expected, the deterrent effect of a recognizance as it applies to the person released on bail will only work if sureties lose a substantial amount of the sum deposited or promised in the event of breach: R v Agius.*
+
+*In general terms however, a court should take care in attributing significant weight to considerations of financial hardship. To do so would discourage proper consideration of provision of the surety in the first place, would undermine the importance of understanding the genuineness of the surety and would reduce the incentive to discourage breach.*
+
+*22 The overriding consideration is maintenance of the integrity of the bail system by emphasis on the purposes to be served by provision of surety, the importance of the obligation it imposes and the consequence of breach. For that reason the greater part of the recognizance should be forfeited.*
+
+***R v AGIUS \[2012\] SASC 136 (16 July 2012)***
+
+*Held: Alerting authorities is not in itself sufficient to deny forfeiture -- deterrence of person released on bail is an important consideration -- hardship is not ordinarily a sufficient reason to reduce forfeiture but there were special reasons in this case -- application allowed -- monetary sums estreated but amounts of forfeiture reduced.*
+
+### Mitigating factors:
+
+Nature of the breaches - where primary duty to attend court is complied with, but only some secondary condition breached, then generally only a portion of the amount be taken (see para 22)
+
+### Wide discretion on Magi's as to if and how much they take.
+
+*In this State, the provisions of the Bail Act do not expressly guide or limit the discretion to order forfeiture of the amount of a recognizance. A judge may order forfeiture of the whole amount, or such part as the judge \"considers appropriate\". It is plain enough that legislation in those terms confers discretion* (\[13\] **Tasmania v Wooders \[2022\]).**
+
+## Applications to revoke bail:
+
+Court can revoke bail on own motion pursuant to section 25 bail act If there is a PG or found guilty.
+
+Arguably can do it on own motion whenever a defendant appears on an order for adjronment under 25 too, but its arguable.
+
+Otherwise, app to be made under s 24. Section 24 requires it be in the prescribed manner. The bail regulations (under regulation 10) require that to be in a specific form and supported by an affidavit).
+
+NOTE: the wording of s. 25 says they need to be present in order to make the order. There is no specific or general power under the bail act to issue a warrant on a respondent defendant if they don't answer to the notice of the application however:
+
+The answer Julia came up with is recourse to r. 62 of the *Justices Rules*, arguing that it would be a necessary modification of Part 4 that "*summons*" should be read interchangeably with "*application*."
+
+Sub 3 of rule 34 is what convinced me she was on a winner. On what other basis would a Magi have power to dismiss an app if no one turned up?
+
+## Applications to vary bail:
+
+**Application to vary bail (under s 23):**
+
+Where an app (not an oral app at a mention date/ etc) is made it must be supported by statement of affidavit per CMagi Practice direction:
+
+Practice Direction 6 of 2020
+
+Applications for Bail and to Vary Bail Introduction and Background Pursuant to Section 23 of the Bail Act 1994 a person charged with an offence, breach of duty or subject to an application for a restraint order may at any time during the proceedings make application to the Magistrates Court in the prescribed form for bail or to vary bail conditions in respect of that charge or application. Requirement for Supporting Documentation Upon lodgement of an application for bail or to vary bail an affidavit/statutory declaration in support of the application detailing reasons for seeking bail or change in bail conditions is required to be filed with the application. In respect of an application to vary bail, the variations sought should also be detailed. Filing of an affidavit/statutory declaration ensures that all parties are provided notice of the reasons for the application being made. Prescribed Form -- Bail Regulations 2014 -- Annexure A"
+
+## Failure to answer call
+
+If called in court and refusing to accept name, as in the case of Soc Citz, court can issue warrant for failure to appear. **Gandini v Tasmania Police \[2021\] TASSC 17 (19 April 2021)**
+
+**DPP v JCN \[2015\] TASFC 13**
+
+**Recent FULL Court of the TAS SUPREME COURT (per justice Pearce with whom all agreed)**
+
+**\[Para 20\]**
+
+*There are a range of possible reasons for the behaviour of a complainant acting in support of a defendant.*
+
+*A court has a duty to consider the interest of persons who may be affected by family violence and if necessary protect them. By doing so it may sometimes act contrary to the wishes of the affected person*
+
+Defendant has shown a disregard for the law and contempt for the force of court orders.
+
+***Maingay v Seabourne* \[2009 \] TASSC 67 (19 August 2009)**
+
+13 Many of the offences for which the respondent appeared were committed while the respondent was on bail. These included both some of the family violence matters and dishonesty matters. In Wisniewski v Tasmania \[2007\] TASSC 25, Crawford J (as he then was) said at par10:
+
+\"A continuation of criminal conduct after having been charged and bailed is frequently regarded by courts as a matter of aggravation. It shows utter contempt for the law and authority. In R v Devine (No 2) 56/1998, Slicer J at 2 referred to it as being aggravating because it shows persistency of conduct. Professors Fox and Freiberg in Sentencing -- State and Federal Law in Victoria, 2nd ed, observed at 289, \'the fact that the offender has repeated the offence previously charged while entrusted to remain in the community adds markedly to the gravity of the offence\'. \... If an offender manifests a continuing attitude of disobedience of the law, \'retribution, deterrence and protection of society may all indicate that a more severe penalty is warranted\'. Veen v R (No 2) \[1988\] HCA 14; (1988) 164 CLR 465 at 477.\"
+
+14 As to the family violence matters, the respondent breached a police family violence order by committing a serious assault upon Ms Deering five months to the day after that order was put in place for her protection. Whether Ms Deering may have approached the respondent on this occasion was quite irrelevant to the seriousness of the breach. As to the offences which followed the making of the second police family violence order for her protection, if indeed Ms Deering approached the respondent and thus instigated the breaches by approaching him, that would be a factor relevant to sentence. However, it could have no relevance favourable to the respondent in the case of a breach involving a threatening message sent by text.
+
+15 As to the family violence offences relating to Ms Smith, these occurred at a time when the respondent had been through the process of there being orders obtained against him, and breaching them, with Ms Deering. Notwithstanding that, the respondent breached another police family violence order by committing a serious assault upon Ms Smith and followed it up with significant abuse to her. That Ms Smith may have continued, at the time of sentencing, to be in a relationship with the respondent, in no way reduces his culpability.
+
+16 As to the offences of dishonesty, again particularly in 2008, the respondent continued to offend on a regular basis, more than once while he was on bail for earlier matters. The overwhelming inference to be drawn from the respondent\'s behaviour was that he treated police family violence orders and bail orders with contempt. This is further supported by the respondent\'s attitude to appearing for sentence. The respondent pleaded guilty to a number of offences which involved his failure to appear before the court in respect of both the dishonesty and family violence matters. Notwithstanding that, when he was bailed to appear before the learned magistrate for sentencing in December 2008, he failed to appear. As a consequence, sentencing was delayed for approximately three months.
+
+17 A further factor relied on by counsel for the State as an aggravating factor was the value of the property and services, the subject of the respondent\'s dishonesty offences. Many thousands of dollars were involved.
+
+***criminal proceeding*** means a prosecution for an offence and includes --
+
+**(a)** a proceeding for the committal of a person for trial or sentence for an offence; and
+
+**(b)** a proceeding relating to bail --
+
+**4. Courts and proceedings to which Act applies**
+
+**(1)** This Act applies to all proceedings in a Tasmanian court including proceedings that --
+
+**(a)** relate to bail; or
+
+**(b)** are interlocutory proceedings or proceedings of a similar kind; or
+
+**(c)** are heard in chambers; or
+
+**(d)** subject to [[subsection (2)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS4@Gs2@EN), relate to sentencing.
+
+**PART 6 - Tendency and coincidence**
+
+**94. Application of Part**
+
+**(1)** This Part does not apply to evidence that relates only to the credibility of a witness.
+
+**(2)** This Part does not apply so far as a proceeding relates to bail or sentencing.
+
+**(3)** This Part does not apply to evidence of --
+
+**(a)** the character, reputation or conduct of a person; or
+
+**(b)** a tendency that a person has or had --
+
+if that character, reputation, conduct or tendency is a fact in issue.
+
+**95. Use of evidence for other purposes**
+
+**(1)** Evidence that under this Part is not admissible to prove a particular matter must not be used to prove that matter even if it is relevant for another purpose.
+
+**(2)** Evidence that under this Part cannot be used against a party to prove a particular matter must not be used against the party to prove that matter even if it is relevant for another purpose.
+
+**96. Failure to act**
+
+A reference in this Part to doing an act includes a reference to failing to do that act.
+
+**97. Tendency rule**
+
+**(1)** Evidence of the character, reputation or conduct of a person, or a tendency that a person has or had, is not admissible to prove that a person has or had a tendency (whether because of the person\'s character or otherwise) to act in a particular way, or to have a particular state of mind unless --
+
+**(a)** the party seeking to adduce the evidence gave reasonable notice in writing to each other party of the party\'s intention to adduce the evidence; and
+
+**(b)** the court thinks that the evidence will, either by itself or having regard to other evidence adduced or to be adduced by the party seeking to adduce the evidence, have significant probative value.
+
+**(2)** [[Subsection (1)(a)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS97@Gs1@Hpa@EN) does not apply if --
+
+**(a)** the evidence is adduced in accordance with any directions made by the court under [[section 100]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS100@EN); or
+
+**(b)** the evidence is adduced to explain or contradict tendency evidence adduced by another party.
+
+**98. Coincidence rule**
+
+**(1)** Evidence that 2 or more events occurred is not admissible to prove that a person did a particular act or had a particular state of mind on the basis that, having regard to any similarities in the events or the circumstances in which they occurred, or any similarities in both the events and the circumstances in which they occurred, it is improbable that the events occurred coincidentally unless --
+
+**(a)** the party seeking to adduce the evidence gave reasonable notice in writing to each other party of the party\'s intention to adduce the evidence; and
+
+**(b)** the court thinks that the evidence will, either by itself or having regard to other evidence adduced or to be adduced by the party seeking to adduce the evidence, have significant probative value.
+
+**(2)** [[Subsection (1)(a)]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS98@Gs1@Hpa@EN) does not apply if --
+
+**(a)** the evidence is adduced in accordance with any directions made by the court under [[section 100]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS100@EN); or
+
+**(b)** the evidence is adduced to explain or contradict coincidence evidence adduced by another party.
+
+**99. Requirements for notices**
+
+Any notice under [[section 97]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS97@EN) or [[98]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS98@EN) is to be given in accordance with any regulations or rules of court made for the purposes of this section.
+
+**100. Court may dispense with notice requirements**
+
+**(1)** The court, on the application of a party, may direct that the tendency rule is not to apply to particular tendency evidence despite the party\'s failure to give notice under [[section 97]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS97@EN).
+
+**(2)** The court, on the application of a party, may direct that the coincidence rule is not to apply to particular coincidence evidence despite the party\'s failure to give notice under [[section 98]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS98@EN).
+
+**(3)** The application may be made either before or after the time by which the party would, apart from this section, be required to give, or to have given, the notice.
+
+**(4)** In a civil proceeding, the party\'s application may be made without notice of it having been given to one or more of the other parties.
+
+**(5)** The direction --
+
+**(a)** is subject to such conditions, if any, the court thinks fit; and
+
+**(b)** may be given either at or before the hearing.
+
+**(6)** Without limiting the court\'s power to impose conditions under this section, those conditions may include one or more of the following:
+
+**(a)** a condition that the party give notice of its intention to adduce the evidence to a specified party or to each other party, other than a specified party;
+
+**(b)** a condition that the party give such notice only in respect of specified tendency evidence or all tendency evidence that the party intends to adduce, other than specified tendency evidence;
+
+**(c)** a condition that the party give such notice only in respect of specified coincidence evidence or all coincidence evidence that the party intends to adduce, other than specified coincidence evidence.
+
+**101. Further restrictions on tendency evidence and coincidence evidence adduced by the prosecution**
+
+**(1)** This section only applies in a criminal proceeding and so applies in addition to [[sections 97]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS97@EN) and [[98]{.underline}](http://www.thelaw.tas.gov.au/tocview/content.w3p;cond=;doc_id=76%2B%2B2001%2BAT%40EN%2B20161012000000;histon=;inforequest=;pdfauthverid=;prompt=;rec=0;rtfauthverid=;term=;webauthverid=#GS98@EN).
+
+**(2)** Tendency evidence about a defendant, or coincidence evidence about a defendant, adduced by the prosecution cannot be used against the defendant unless the probative value of the evidence substantially outweighs any prejudicial effect it may have on the defendant.
+
+**(3)** This section does not apply to tendency evidence that the prosecution adduces to explain or contradict tendency evidence adduced by the defendant.
+
+**(4)** This section does not apply to coincidence evidence that the prosecution adduces to explain or contradict coincidence evidence adduced by the defendant.
+
+Hew stayed first night on 6 NOV 18
+
+Had furniture and car earlier (stayed at Emma's on 5^th^)
+
+Paid first on 8 NOV 18
+
+Last payment on 11 APR 19 -- 14 days takes to morning of 25
+
+Minus 2 days for unpaid 6^th^ and 7^th^ equals 23^rd^. worst case \$20.
+
+Rachel fine until 25^th^ April -- last payment 11 APR 19.
+
+divisional
+
+# Mental health treatment order
+
+Two types
+
+Ones from the court process and ones for civilians (who might incidentally have court matters at or about the time)
+
+For civilians, people can be taken into protective custody (pursuant to s17 MH Act) by a cop or medical officer for an "assessment" order. They have to be assessed within about 24 hours of appearing at the centre and can then be held for up to 72 hours (per Mental Health Act).
+
+They can then be held under a "treatment order" for up to 6 months if found appropriate by the mental health tribunal. However, they are subject to 60 day reviews.
