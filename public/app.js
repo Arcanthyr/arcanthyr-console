@@ -564,6 +564,7 @@ async function updateLegalSyncStatus() {
 }
 
 async function performLegalSearch(offset = 0) {
+  if (!legalResults) return;
   // Reset to first page on a new search (offset = 0), or use provided offset for pagination
   legalCurrentOffset = offset;
   const query = legalSearchInput ? legalSearchInput.value.trim() : "";
