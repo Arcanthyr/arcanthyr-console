@@ -665,6 +665,11 @@ function renderCases(response) {
                 ${principles.map(p => `<li>${p.principle || p}</li>`).join("")}
               </ul>
             </div>` : ""}
+          ${c.procedure_notes ? `
+            <details style="margin-top:8px;">
+              <summary style="font-size:0.75rem;color:var(--text-dim);cursor:pointer;">Procedure Notes</summary>
+              <div class="procedure-notes" style="margin-top:6px;font-size:0.8rem;color:var(--text-mid);white-space:pre-wrap;">${c.procedure_notes}</div>
+            </details>` : ""}
           ${legChips}
           ${c.url ? `<a href="${c.url}" target="_blank" class="btn ghost small" style="margin-top:8px;">View on AustLII ↗</a>` : ""}
         </div>
