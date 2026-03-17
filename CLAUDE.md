@@ -1,5 +1,5 @@
 # CLAUDE.md — Arcanthyr Session File
-*Updated: 16 March 2026 · Supersedes all prior versions*
+*Updated: 17 March 2026 · Supersedes all prior versions*
 *Full architecture reference → CLAUDE_arch.md (in repo — read when needed, do NOT upload every session)*
 
 ---
@@ -30,49 +30,56 @@
 
 ---
 
-## SYSTEM STATE — 16 March 2026 (end of session)
+## SYSTEM STATE — 17 March 2026 (end of session)
 
 | Component | Status |
 |---|---|
-| Qdrant `general-docs-v2` | 2,645 points (legislation + secondary_source complete) · embed pass complete 17 Mar 2026 |
+| Qdrant `general-docs-v2` | 1,272 legislation points clean · secondary_source re-ingest in progress · embed pass pending |
 | Embedding model | `argus-ai/pplx-embed-context-v1-0.6b:fp32` (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 `cases` | 8 rows — 2026 scrape batch (TASSC 1–6, TASFC 1–2) · metadata backfilled |
-| D1 `secondary_sources` | 1,137 rows · enriched=1 (enriched_text backfilled from master_corpus parts) · embedded=0 (embed pass running) |
+| D1 `cases` | 8 rows — 2026 scrape batch · metadata backfilled |
+| D1 `secondary_sources` | 1,138 rows expected (re-ingest in progress) · embedded=0 · backfill pending |
 | D1 `legislation` | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
 | D1 `case_citations` | 5 rows · 1 case processed |
 | D1 `case_legislation_refs` | 5 rows · 1 case processed |
-| Worker.js | Deployed (ddfc6d22) |
+| Worker.js | UPSERT deployed (17a7b2c4) — INSERT OR IGNORE replaced |
+| ingest_corpus.py | Nested bracket citation fix applied — was truncating citations containing [year] |
+| generate_manifest.py | Added to repo — generates corpus_manifest.json (1,138 chunks, ground truth) |
+| backfill_enriched_text.py | Rewritten — reads corpus_manifest.json, matches by (source_file, chunk_index) not re-derived citation |
+| retrieval_baseline.sh | Created locally + deployed to VPS (~/retrieval_baseline.sh) |
 | enrichment_poller.py | In repo + VPS · category in Qdrant payload |
 | server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 + /process-document + /ingest-status LIVE |
 | xref_agent.py | Built + validated · INSERT OR IGNORE idempotency confirmed |
-| Phase 5 | VALIDATED — citation discipline live, hallucination reduced |
-| Frontend | Dark Gazette theme · UI overhaul briefs 1–6 ALL DEPLOYED · process-document UI live |
-| Console document upload | BUILT — /process-document + /ingest-status in server.py · Worker proxy routes live · ingest.html UI live |
+| Phase 5 | VALIDATED — citation discipline live |
+| Frontend | Dark Gazette theme · all UI briefs deployed · process-document UI live |
 | VPS env vars | OPENAI_API_KEY + WORKER_URL confirmed live in agent-general container |
 
 ---
 
 ## IMMEDIATE NEXT ACTIONS
 
-1. **Retrieval tuning — tendency evidence and doctrine chunks** — concept search implemented but tendency evidence chunks not surfacing in Phase 5 responses despite being in Qdrant at score 0.66. Raw search returns correct chunks but Claude dismisses them as insufficient. Investigate Phase 5 prompt vs raw chunk content mismatch. Priority watch: Q7 (tendency), Q8 (propensity), Q10 (corroboration), Q12 (hostile witness), Q13 (tendency objection).
+1. **Complete re-ingest + backfill + embed pass** — part1 ingest running. After part1 completes: switch INPUT_FILE to part2, run ingest_corpus.py again. Then run backfill_enriched_text.py (reads manifest, outputs SQL, execute via wrangler). Then run embed pass on VPS inside container with --loop flag. Post-embed: run 3 validation SQL checks (count=1138, enriched_text null=0, duplicate ids=0) then run retrieval_baseline.sh.
 
-2. **Corpus gap — procedural/scripted content** — Q12 (hostile witness steps), Q14 (leading questions) confirmed missing. Blocks 027, 020, 008 stripped during ChatGPT enrichment. Needs separate re-ingest via Procedure Prompt. See CLAUDE_arch.md RAG Workflow.
+2. **Retrieval tuning — tendency evidence and doctrine chunks** — tendency chunks were missing due to citation truncation bug (now fixed). After re-ingest verify tendency content surfaces in Phase 5 responses. Priority watch: Q3, Q4, Q7, Q8, Q10, Q12, Q13, Q14 from baseline script.
 
-3. **Retrieval baseline script** — build curl loop script on VPS to run all 15 questions automatically rather than manual console runs. Saves significant time across tuning iterations.
+3. **Category fragmentation normalisation** — non-standard category values remain: Evidentiary guidance, Parties, Accessories and Principles, Defence - Duress, practitioner note, practitioner working document, case note, legislative reference, statutory note, procedural document. Full normalisation pass after retrieval validated.
 
-4. **Pre-scraper gate — char-based windowing fix** — replace Worker.js `fullText[8000:28000]` with scored overlapping window pipeline. Model upgrade: `summarizeCase()` to `@cf/qwen/qwen3-30b-a3b-fp8`. See CLAUDE_arch.md Workers AI inventory. Test against 3 flagged cases before opening scraper.
+4. **Corpus gap — procedural/scripted content** — Q12 (hostile witness steps), Q14 (leading questions) confirmed missing. Blocks 027, 020, 008 stripped during ChatGPT enrichment. Needs separate re-ingest via Procedure Prompt.
 
-5. **Commit uncommitted files** — server.py changes (filter, concept search, type field), docker-compose.yml env vars, CLAUDE_arch.md updates.
+5. **Pre-scraper gate — char-based windowing fix** — replace Worker.js `fullText[8000:28000]` with scored overlapping window pipeline. Model upgrade: `summarizeCase()` to `@cf/qwen/qwen3-30b-a3b-fp8`. Test against 3 flagged cases before opening scraper.
+
+6. **Commit uncommitted files** — ingest_corpus.py, generate_manifest.py, backfill_enriched_text.py, retrieval_baseline.sh, worker.js, CLAUDE.md, CLAUDE_arch.md.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Category fragmentation** — several non-standard category values remain in D1 secondary_sources. Full normalisation pass deferred until post-retrieval testing. See CLAUDE_arch.md.
-- **Char-based windowing** — Worker.js case extraction uses fixed char slices. Will miss reasoning in long judgments. Scraper PAUSED until fixed.
-- **process-document "both" mode** — prompt_mode="both" currently runs Master Prompt only. Procedure Prompt second pass not yet implemented.
-- **python-docx / striprtf** — not yet installed in agent-general container. DOCX and RTF uploads will return a clear error until installed: `docker exec agent-general pip install python-docx striprtf --break-system-packages`
+- **Category fragmentation** — non-standard category values in D1 secondary_sources. Normalisation pass deferred until post-retrieval testing.
+- **Char-based windowing** — Worker.js case extraction uses fixed char slices. Scraper PAUSED until fixed.
+- **process-document "both" mode** — prompt_mode="both" runs Master Prompt only. Procedure Prompt second pass not yet implemented.
+- **python-docx / striprtf** — not installed in agent-general container. DOCX/RTF uploads will error until: `docker exec agent-general pip install python-docx striprtf --break-system-packages`
+- **Worker.js filename case** — wrangler warns about Worker.js vs worker.js. Rename to lowercase when convenient.
+- **Qdrant payload field** — secondary source type filter uses `type` field (value: `secondary_source`), NOT `source_type`. Ghost points from pre-type-field era (236) deleted 17 Mar 2026.
 
 ---
 
@@ -98,7 +105,7 @@
 - Reset embedded=0 across all secondary_sources, deleted stale Qdrant secondary_source vectors (940 points removed)
 - Embed pass restarted on VPS via nohup — running overnight
 
-## RECENT CHANGES — 17 Mar 2026
+## RECENT CHANGES — 17 Mar 2026 (morning)
 
 - Embed pass complete: 2,645 points in Qdrant (all secondary_source chunks embedded)
 - enrichment_poller: fixed OLLAMA_URL/QDRANT_URL localhost issue — must run inside container
@@ -112,6 +119,18 @@
 - CLAUDE_arch.md: added Component Notes section (enrichment_poller, Workers AI inventory)
 - Retrieval testing: 15 baseline questions run — 3 pass, 4 partial, 7 fail (see next actions)
 - Workers AI model upgrade planned: summarizeCase() → @cf/qwen/qwen3-30b-a3b-fp8 (deferred)
+
+## RECENT CHANGES — 17 Mar 2026 (evening)
+
+- Root cause of missing corpus chunks identified: nested bracket citation truncation bug in ingest_corpus.py metadata regex — citations containing [year] were truncated, causing ID collisions and silent DROP via INSERT OR IGNORE. ~85 chunks affected including all tendency evidence doctrine.
+- ingest_corpus.py: regex fix applied — `(.*?)` → `((?:[^\[\]]|\[[^\[\]]*\])*)` in extract_metadata
+- Worker.js: INSERT OR IGNORE → UPSERT with ON CONFLICT DO UPDATE. embedded=0 always reset on conflict. Deployed version 17a7b2c4.
+- generate_manifest.py: new script — parses both corpus files, outputs corpus_manifest.json with id/heading/category/body_length/raw_text_hash per chunk. Ground truth for ingest validation.
+- backfill_enriched_text.py: rewritten to read corpus_manifest.json and match by (source_file, chunk_index) — eliminates citation re-derivation misalignment risk.
+- retrieval_baseline.sh: 15-question automated curl loop — deployed to VPS at ~/retrieval_baseline.sh
+- D1 secondary_sources: wiped for clean re-ingest (1,137 old rows deleted)
+- Qdrant: secondary_source vectors deleted (type=secondary_source filter), 236 ghost points deleted (no type field), 1,272 legislation points confirmed clean
+- corpus_manifest.json: 1,138 chunks (317 part1 + 821 part2), 4 legitimate short chunks identified
 
 ---
 

@@ -1030,11 +1030,18 @@ async function handleUploadCorpus(body, env) {
     text = atob(text);
   }
 
-  // Record in D1 secondary_sources — INSERT OR IGNORE skips duplicate citations silently
+  // Record in D1 secondary_sources — upsert on conflict so re-ingest overwrites stale rows
   await env.DB.prepare(`
-    INSERT OR IGNORE INTO secondary_sources
+    INSERT INTO secondary_sources
     (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
     VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 0, 0, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      raw_text = excluded.raw_text,
+      title = excluded.title,
+      category = COALESCE(excluded.category, secondary_sources.category),
+      enriched_text = excluded.enriched_text,
+      enriched = excluded.enriched,
+      embedded = 0
   `).bind(citation, source || citation, doc_type || null, text, new Date().toISOString(), category ?? 'doctrine').run();
 
   return { citation, chunks_stored: 0, message: "Corpus chunk recorded in D1." };
