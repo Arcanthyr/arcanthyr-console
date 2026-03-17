@@ -132,7 +132,7 @@ async function fetchCaseContent(url, preloadedHtml = null) {
       .replace(/<[^>]+>/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
-      .substring(0, 50000);
+      .substring(0, 500000);
 
     return { full_text: textContent };
   } catch (error) {
