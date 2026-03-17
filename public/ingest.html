@@ -53,9 +53,32 @@
     <section class="card">
       <div class="row space">
         <h2 class="h2">Upload Case</h2>
-        <button id="toggleUploadBtn" class="btn ghost small">Upload</button>
+        <div class="row" style="gap:6px;">
+          <button id="toggleUploadBtn" class="btn ghost small">Upload</button>
+          <button id="toggleFetchUrlBtn" class="btn ghost small">Fetch from URL</button>
+        </div>
       </div>
       <p class="sub" style="margin-top:6px;">Paste case text from AustLII or upload a PDF for AI extraction.</p>
+
+      <!-- Fetch from URL form -->
+      <div id="fetchCaseUrlForm" style="display:none;" class="upload-panel">
+        <label class="label">AustLII or Jade URL</label>
+        <input type="text" id="fetchCaseUrl" class="search-input" style="margin-top:6px;"
+          placeholder="https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2024/42.html" />
+
+        <label class="label" style="margin-top:12px;">
+          Citation
+          <span style="color:var(--text-dim);font-weight:normal;"> — optional for AustLII URLs (auto-detected from path)</span>
+        </label>
+        <input type="text" id="fetchCaseCitation" class="search-input" style="margin-top:6px;"
+          placeholder="[2024] TASSC 42" />
+
+        <div class="row" style="margin-top:12px;">
+          <button id="fetchCaseUrlBtn" class="btn">Fetch &amp; Process</button>
+          <button id="cancelFetchUrlBtn" class="btn ghost small">Cancel</button>
+        </div>
+        <div id="fetchUrlOutput" class="output" style="margin-top:12px;display:none;"></div>
+      </div>
 
       <div id="uploadCaseForm" style="display:none;" class="upload-panel">
         <div class="case-dropzone" id="caseDropzone">
@@ -271,6 +294,37 @@
     }
     toggleForm('toggleLegislationUploadBtn', 'uploadLegislationForm');
     toggleForm('toggleSecondaryUploadBtn', 'uploadSecondaryForm');
+    toggleForm('toggleFetchUrlBtn', 'fetchCaseUrlForm');
+
+    document.getElementById('cancelFetchUrlBtn').addEventListener('click', () => {
+      document.getElementById('fetchCaseUrlForm').style.display = 'none';
+    });
+
+    document.getElementById('fetchCaseUrlBtn').addEventListener('click', async () => {
+      const url      = document.getElementById('fetchCaseUrl').value.trim();
+      const citation = document.getElementById('fetchCaseCitation').value.trim();
+      const out      = document.getElementById('fetchUrlOutput');
+      if (!url) { out.style.display = 'block'; out.textContent = 'URL is required.'; return; }
+      out.style.display = 'block';
+      out.textContent = 'Fetching and processing… this may take up to 2 minutes';
+      try {
+        const body = { url };
+        if (citation) body.citation = citation;
+        const r = await fetch('/api/legal/fetch-case-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        const res = data.result;
+        out.textContent = `✓ ${res.case_name} (${res.citation}) — saved as ID ${res.id}`;
+        document.getElementById('fetchCaseUrl').value = '';
+        document.getElementById('fetchCaseCitation').value = '';
+      } catch (err) {
+        out.textContent = `✗ Failed: ${err.message}`;
+      }
+    });
 
     document.getElementById('cancelLegislationBtn').addEventListener('click', () => {
       document.getElementById('uploadLegislationForm').style.display = 'none';

@@ -862,6 +862,41 @@ async function handleUploadCase(body, env) {
 }
 
 
+async function handleFetchCaseUrl(body, env) {
+  const { url, citation: citationIn, case_name, court } = body;
+  if (!url) throw new Error("url is required");
+
+  const allowed = url.includes('austlii.edu.au') || url.includes('jade.io');
+  if (!allowed) throw new Error("Only austlii.edu.au and jade.io URLs are permitted");
+
+  const { html, status } = await handleFetchPage({ url });
+  if (status !== 200) throw new Error(`Fetch failed with HTTP ${status}`);
+
+  const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const content = contentMatch ? contentMatch[1] : html;
+  const plainText = content
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 500000);
+
+  if (!plainText) throw new Error("No text content extracted from URL");
+
+  // Resolve citation — use provided value, else parse AustLII URL path
+  let citation = citationIn;
+  if (!citation) {
+    const m = url.match(/\/([A-Za-z]+)\/(\d{4})\/(\d+)\.html/i);
+    if (m) citation = `[${m[2]}] ${m[1].toUpperCase()} ${m[3]}`;
+  }
+  if (!citation) throw new Error("citation required — could not be auto-detected from URL");
+
+  const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
+  const abbrevMatch = citation.match(/\]\s+([A-Za-z]+)\s+\d/);
+  const resolvedCourt = court || (abbrevMatch && courtMap[abbrevMatch[1]]) || 'supreme';
+
+  return processCaseUpload(env, plainText, citation, case_name || null, resolvedCourt);
+}
+
 async function handleReprocessCase(body, env) {
   const { citation } = body;
   if (!citation) throw new Error("Missing required field: citation");
@@ -1557,8 +1592,9 @@ async function handleLegalQueryQwen(body, env) {
    ============================================================= */
 async function handleFetchPage(body) {
   const { url } = body;
-  if (!url || !url.includes('austlii.edu.au')) {
-    throw new Error('Invalid or disallowed URL — only austlii.edu.au is permitted');
+  const allowed = url && (url.includes('austlii.edu.au') || url.includes('jade.io'));
+  if (!allowed) {
+    throw new Error('Invalid or disallowed URL — only austlii.edu.au and jade.io are permitted');
   }
   const response = await fetch(url, {
     headers: {
@@ -2058,6 +2094,7 @@ export default {
         else if (action === "legal-query-qwen" && request.method === "POST") result = await handleLegalQueryQwen(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
+        else if (action === "fetch-case-url" && request.method === "POST") result = await handleFetchCaseUrl(body, env);
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });
       } catch (err) { return json({ error: err.message }, 500); }
