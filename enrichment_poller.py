@@ -471,7 +471,7 @@ def get_embedding(text: str) -> list[float]:
     resp = requests.post(
         f'{OLLAMA_URL}/api/embeddings',
         json={'model': EMBED_MODEL, 'prompt': text},
-        timeout=180
+        timeout=30  # was 180 — fail fast, don't hang the loop
     )
     resp.raise_for_status()
     return resp.json()['embedding']
@@ -719,6 +719,7 @@ def run_embedding_pass(batch: int) -> dict:
             if verified:
                 ok_ids.append(chunk_id)
                 log.info(f'[EMBED]   ✓ Embedded and verified')
+                print(f"[embed] OK: {chunk_id}", flush=True)  # heartbeat
             else:
                 log.warning(f'[EMBED]   ⚠ Point not found after 5 verify attempts — leaving embedded=0 for retry')
                 errors += 1
