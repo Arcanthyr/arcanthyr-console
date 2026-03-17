@@ -34,7 +34,7 @@
 
 | Component | Status |
 |---|---|
-| Qdrant `general-docs-v2` | 1,508 points (legislation + cases only) · secondary_source embed pass in progress |
+| Qdrant `general-docs-v2` | 2,645 points (legislation + secondary_source complete) · embed pass complete 17 Mar 2026 |
 | Embedding model | `argus-ai/pplx-embed-context-v1-0.6b:fp32` (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
 | D1 `cases` | 8 rows — 2026 scrape batch (TASSC 1–6, TASFC 1–2) · metadata backfilled |
@@ -55,23 +55,15 @@
 
 ## IMMEDIATE NEXT ACTIONS
 
-1. **Retrieval testing** — run all 15 baseline questions via Arc Console. Priority watch: Q7 (tendency), Q10 (corroboration), Q12 (hostile witness), Q13 (tendency objection). Full question list in CLAUDE_arch.md.
+1. **Retrieval tuning — tendency evidence and doctrine chunks** — concept search implemented but tendency evidence chunks not surfacing in Phase 5 responses despite being in Qdrant at score 0.66. Raw search returns correct chunks but Claude dismisses them as insufficient. Investigate Phase 5 prompt vs raw chunk content mismatch. Priority watch: Q7 (tendency), Q8 (propensity), Q10 (corroboration), Q12 (hostile witness), Q13 (tendency objection).
 
-2. **Category normalisation pass** — after retrieval testing confirms corpus working:
-   - Several fragmented category values remain (see CLAUDE_arch.md for full list)
-   - Do NOT normalise until retrieval testing complete
+2. **Corpus gap — procedural/scripted content** — Q12 (hostile witness steps), Q14 (leading questions) confirmed missing. Blocks 027, 020, 008 stripped during ChatGPT enrichment. Needs separate re-ingest via Procedure Prompt. See CLAUDE_arch.md RAG Workflow.
 
-3. **Pre-scraper gate — fix char-based windowing in Worker.js** — REQUIRED before running scraper at volume:
-   - Current `fullText[8000:28000]` slice misses reasoning sections in longer TASSC/TASCCA judgments
-   - Replace with heading-boundary split (same logic as split_legal_doc.py)
-   - Test against these 3 cases before opening scraper tap:
-     - TASCCA 2021/12: `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/2021/12.html`
-     - TASSC 2018/62: `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2018/62.html`
-     - TASMC 2016/14: `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2016/14.html`
+3. **Retrieval baseline script** — build curl loop script on VPS to run all 15 questions automatically rather than manual console runs. Saves significant time across tuning iterations.
 
-4. **Delete `Arc v 4/master_corpus.md`** — only after retrieval testing confirms new corpus working.
+4. **Pre-scraper gate — char-based windowing fix** — replace Worker.js `fullText[8000:28000]` with scored overlapping window pipeline. Model upgrade: `summarizeCase()` to `@cf/qwen/qwen3-30b-a3b-fp8`. See CLAUDE_arch.md Workers AI inventory. Test against 3 flagged cases before opening scraper.
 
-5. **Commit uncommitted files** — check git status for anything outstanding after retrieval testing.
+5. **Commit uncommitted files** — server.py changes (filter, concept search, type field), docker-compose.yml env vars, CLAUDE_arch.md updates.
 
 ---
 
@@ -105,6 +97,21 @@
 - Wrote and ran backfill_enriched_text.py — parsed master_corpus_part1+2, wrote 1,137 UPDATEs via SQL file, 1,131 rows populated
 - Reset embedded=0 across all secondary_sources, deleted stale Qdrant secondary_source vectors (940 points removed)
 - Embed pass restarted on VPS via nohup — running overnight
+
+## RECENT CHANGES — 17 Mar 2026
+
+- Embed pass complete: 2,645 points in Qdrant (all secondary_source chunks embedded)
+- enrichment_poller: fixed OLLAMA_URL/QDRANT_URL localhost issue — must run inside container
+- docker-compose.yml: added OLLAMA_URL and QDRANT_URL to agent-general environment block
+- enrichment_poller: confirmed --loop flag exists — correct invocation documented in SESSION RULES
+- tmux: used to background embed loop — session name 'embed' (now killed, pass complete)
+- server.py: added legislation schedule noise filter (type=legislation AND text<200 chars)
+- server.py: added concept-based second-pass search (extract_legal_concepts + second Qdrant query)
+- server.py: added type field to chunk payload
+- server.py: concept search uses limit=top_k*2, results capped at top_k after re-ranking
+- CLAUDE_arch.md: added Component Notes section (enrichment_poller, Workers AI inventory)
+- Retrieval testing: 15 baseline questions run — 3 pass, 4 partial, 7 fail (see next actions)
+- Workers AI model upgrade planned: summarizeCase() → @cf/qwen/qwen3-30b-a3b-fp8 (deferred)
 
 ---
 
