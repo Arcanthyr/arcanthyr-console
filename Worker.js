@@ -29,7 +29,7 @@ function rateLimit(key, max, windowMs) {
    ============================================================= */
 const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 
-async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 600) {
+async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   const response = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
     messages: [
@@ -430,22 +430,22 @@ async function saveCaseToDb(env, caseData, summary) {
   `).bind(
     id,
     caseData.citation,
-    caseData.court,
+    caseData.court ?? null,
     `${(caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1]}-01-01`,
-    caseData.case_name,
-    summary.judge,
-    summary.parties,
+    summary.case_name ?? null,
+    summary.judge ?? null,
+    summary.parties ?? null,
     caseData.url || "",
     caseData.full_text || "",
-    summary.facts,
-    summary.issues,
-    summary.holding,
+    summary.facts ?? null,
+    summary.issues ?? null,
+    summary.holding ?? null,
     JSON.stringify(summary.holdings || []),
-    JSON.stringify(summary.principles),
+    JSON.stringify(summary.principles || []),
     JSON.stringify(summary.legislation || []),
     JSON.stringify(summary.key_authorities || []),
     new Date().toISOString(),
-    summary.summary_quality_score
+    summary.summary_quality_score ?? 0
   ).run();
 
   for (const principle of summary.principles) {
