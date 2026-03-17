@@ -402,6 +402,12 @@ These are now set in the `agent-general` environment block in `docker-compose.ym
 
 > Do NOT do a global model string replace — query handler and journal functions need independent evaluation.
 
+### Workers AI — Qwen3 extraction issue (17 Mar 2026)
+
+`@cf/qwen/qwen3-30b-a3b-fp8` was deployed as replacement for `@cf/meta/llama-3.1-8b-instruct` in `callWorkersAI()`. Model confirmed working in CF playground but returns reasoning preamble before JSON output. Fix deployed: regex extraction `raw.match(/\{[\s\S]*\}/)` in `callWorkersAI` return value strips preamble and returns JSON only. If extraction still fails after this fix, revert model to `@cf/meta/llama-3.1-8b-instruct` — windowing architecture is model-agnostic.
+
+`budget_tokens: 0` added to `env.AI.run` call — disables thinking mode. Confirmed not suppressing reasoning in playground, but kept as belt-and-braces.
+
 ### Qdrant payload field names
 
 - Secondary source type filter: field = `type`, value = `secondary_source` (NOT `source_type`)

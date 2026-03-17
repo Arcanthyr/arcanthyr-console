@@ -32,12 +32,15 @@ const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   const response = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
+    budget_tokens: 0,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
   });
-  return (response.response || "").trim();
+  const raw = (response.response || "").trim();
+  const jsonMatch = raw.match(/\{[\s\S]*\}/);
+  return jsonMatch ? jsonMatch[0] : raw;
 }
 
 /* =============================================================
@@ -289,12 +292,12 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       // ── Single pass ────────────────────────────────────────────────────
       console.log(`Summarising ${caseData.citation} (single pass, ${fullText.length} chars)`);
       const userContent = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nCase text:\n${fullText.substring(0, CHUNK_THRESHOLD)}`;
-      raw = await callWorkersAI(env, singlePassPrompt, userContent, 2000);
+      raw = await callWorkersAI(env, singlePassPrompt, userContent, 4000);
       console.log(`AI response: ${raw?.length || 0} chars`);
 
       const cleaned = raw.replace(/```json|```/g, "").trim();
       const summary = JSON.parse(cleaned);
-      if (!summary.facts || !summary.holdings) throw new Error("Incomplete AI response");
+      if (!summary.facts || (!summary.holding && !summary.holdings)) throw new Error("Incomplete AI response");
 
       return _buildSummary(summary, null, caseData.citation);
 
@@ -304,7 +307,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
 
       // Pass 1: opening section → facts, issues, case_name
       const p1Content = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nCase text (opening section):\n${fullText.substring(0, PASS1_CHARS)}`;
-      raw = await callWorkersAI(env, pass1Prompt, p1Content, 800);
+      raw = await callWorkersAI(env, pass1Prompt, p1Content, 2000);
       console.log(`Pass 1 response: ${raw?.length || 0} chars`);
       const pass1 = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
@@ -317,7 +320,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
         const windowEnd = Math.min(windowStart + WINDOW_SIZE, fullText.length);
         const windowText = fullText.substring(windowStart, windowEnd);
         const p2Content = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nIssues identified:\n${issuesList}\n\nReasoning section:\n${windowText}`;
-        raw2 = await callWorkersAI(env, pass2Prompt, p2Content, 2000);
+        raw2 = await callWorkersAI(env, pass2Prompt, p2Content, 4000);
         console.log(`Pass 2 window [${windowStart}-${windowEnd}]: ${raw2?.length || 0} chars`);
         try {
           const parsed = JSON.parse(raw2.replace(/```json|```/g, "").trim());
@@ -1993,7 +1996,7 @@ export default {
           // URL pattern: /api/legal/library/delete/{docType}/{id}
           const parts = action.replace("library/delete/", "").split("/");
           const docType = parts[0];
-          const docId = parts.slice(1).join("/");
+          const docId = decodeURIComponent(parts.slice(1).join("/"));
           result = await handleLibraryDelete(docType, docId, env);
         }
         else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);

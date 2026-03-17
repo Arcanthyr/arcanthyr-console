@@ -1,5 +1,5 @@
 # CLAUDE.md — Arcanthyr Session File
-*Updated: 17 March 2026 · Supersedes all prior versions*
+*Updated: 17 March 2026 (evening) · Supersedes all prior versions*
 *Full architecture reference → CLAUDE_arch.md (in repo — read when needed, do NOT upload every session)*
 
 ---
@@ -11,138 +11,113 @@
 | Read this file first | Always |
 | Diagnose from actual output | Before recommending any fix |
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler command |
-| enrichment_poller | Run inside container only with --loop flag: `docker compose exec -d agent-general python3 /app/src/enrichment_poller.py --loop` · Env vars set in docker-compose.yml — no overrides needed after agent-general restart · `docker exec` won't have env vars set |
+| Always specify terminal | Every command must state: which terminal (VS Code, PowerShell, SSH/VPS) AND which directory |
+| enrichment_poller | Run inside container only with --loop flag: `docker compose exec -d agent-general python3 /app/src/enrichment_poller.py --loop` · Must cd ~/ai-stack first · Env vars set in docker-compose.yml |
 | git commits | `git add -A`, `git commit`, `git push origin master` — separately, no `&&` |
 | Pre-deploy check | Verify upload list shows only `public/` files — if `.env` or `.git` appear, stop |
 | wrangler d1 | Must run from `Arc v 4/` directory · always add `--remote` for live D1 |
-| PowerShell limits | No `&&`, no heredoc `<<'EOF'`, no `grep` (use `Select-String`) |
+| PowerShell limits | No `&&`, no heredoc `<<'EOF'`, no `grep` (use `Select-String`), no `head` (use `Select-Object -First N`) |
 | CC brief pattern | Ask CC to read files and report state BEFORE making changes |
 | CC cannot run Python | Windows Store stub blocks it — run Python in PowerShell terminal directly |
 | CC vs SSH | CC for local file edits · SSH terminal for VPS runtime commands |
+| Long-running scripts | Run directly in PowerShell terminal — CC too slow (confirmed: part2 ingest, embed pass) |
 | Context window | Suggest restart proactively when conversation grows long |
 | D1 database name | `arcanthyr` (binding: `DB`, ID: `1b8ca95d-b8b3-421d-8c77-20f80432e1a0`) |
-| Component quirks | Any known operational limitation, gotcha, or non-standard invocation for any component must be documented in CLAUDE_arch.md under a "Component Notes" section — not just user-facing bugs |
+| Component quirks | Document in CLAUDE_arch.md Component Notes section |
+| Pasting into terminal | Never paste wrangler output back into terminal — type commands fresh |
 
 **Tooling:**
 - **Claude.ai** — architecture, planning, debugging, writing CLAUDE.md, code review
 - **Claude Code (VS Code)** — file edits, terminal commands, git, wrangler deploys
-- **PowerShell** — SSH to VPS, scp transfers
+- **PowerShell / SSH** — VPS runtime commands, long-running Python scripts
 
 ---
 
-## SYSTEM STATE — 17 March 2026 (end of session)
+## SYSTEM STATE — 17 March 2026 (evening)
 
 | Component | Status |
 |---|---|
-| Qdrant `general-docs-v2` | 1,272 legislation points clean · secondary_source re-ingest in progress · embed pass pending |
+| Qdrant `general-docs-v2` | ~1,800+ points — embed pass running (target ~2,410) |
 | Embedding model | `argus-ai/pplx-embed-context-v1-0.6b:fp32` (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 `cases` | 8 rows — 2026 scrape batch · metadata backfilled |
-| D1 `secondary_sources` | 1,138 rows expected (re-ingest in progress) · embedded=0 · backfill pending |
+| D1 `cases` | 9 rows — 2026 scrape batch + TASMC test case |
+| D1 `secondary_sources` | 1,138 rows · enriched_text backfilled · embedded=0 · embed pass running |
 | D1 `legislation` | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
 | D1 `case_citations` | 5 rows · 1 case processed |
 | D1 `case_legislation_refs` | 5 rows · 1 case processed |
-| Worker.js | UPSERT deployed (17a7b2c4) — INSERT OR IGNORE replaced |
-| ingest_corpus.py | Nested bracket citation fix applied — was truncating citations containing [year] |
-| generate_manifest.py | Added to repo — generates corpus_manifest.json (1,138 chunks, ground truth) |
-| backfill_enriched_text.py | Rewritten — reads corpus_manifest.json, matches by (source_file, chunk_index) not re-derived citation |
-| retrieval_baseline.sh | Created locally + deployed to VPS (~/retrieval_baseline.sh) |
-| enrichment_poller.py | In repo + VPS · category in Qdrant payload |
-| server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 + /process-document + /ingest-status LIVE |
-| xref_agent.py | Built + validated · INSERT OR IGNORE idempotency confirmed |
+| Worker.js | Qwen3-30b deployed · regex JSON extraction · budget_tokens=0 · raw_text cap 500k · UPSERT · decodeURIComponent delete fix |
+| summarizeCase() | Two-pass window loop · pass1=2000 tokens · pass2=4000 tokens · single=4000 tokens |
+| Workers AI model | `@cf/qwen/qwen3-30b-a3b-fp8` — extraction failing (Pass 1 response: 0 chars) · UNRESOLVED — next session |
+| ingest_corpus.py | Nested bracket citation fix applied |
+| generate_manifest.py | In repo · 1,138 chunks ground truth |
+| backfill_enriched_text.py | Reads corpus_manifest.json · matches by (source_file, chunk_index) |
+| backfill_enriched_text.sql | Generated · executed · 1,138 rows updated |
+| execute_backfill.py | Written · use --file approach via wrangler not batch subprocess |
+| validate_ingest.ps1 | In arcanthyr-console\ · run from Arc v 4\ |
+| retrieval_baseline.sh | On VPS at ~/retrieval_baseline.sh |
+| enrichment_poller.py | Running in background via docker compose exec -d |
+| server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 + concept search LIVE |
 | Phase 5 | VALIDATED — citation discipline live |
-| Frontend | Dark Gazette theme · all UI briefs deployed · process-document UI live |
+| Frontend | Dark Gazette theme · delete button decodeURIComponent fix deployed |
 | VPS env vars | OPENAI_API_KEY + WORKER_URL confirmed live in agent-general container |
 
 ---
 
 ## IMMEDIATE NEXT ACTIONS
 
-1. **Complete re-ingest + backfill + embed pass** — part1 ingest running. After part1 completes: switch INPUT_FILE to part2, run ingest_corpus.py again. Then run backfill_enriched_text.py (reads manifest, outputs SQL, execute via wrangler). Then run embed pass on VPS inside container with --loop flag. Post-embed: run 3 validation SQL checks (count=1138, enriched_text null=0, duplicate ids=0) then run retrieval_baseline.sh.
+1. **Fix Qwen3 extraction — Pass 1 response: 0 chars** — regex fix deployed but unconfirmed. Fresh session: restart wrangler tail, delete TASMC case, re-upload, check tail for actual error. If still failing revert to `@cf/meta/llama-3.1-8b-instruct` — windowing architecture is model-agnostic.
 
-2. **Retrieval tuning — tendency evidence and doctrine chunks** — tendency chunks were missing due to citation truncation bug (now fixed). After re-ingest verify tendency content surfaces in Phase 5 responses. Priority watch: Q3, Q4, Q7, Q8, Q10, Q12, Q13, Q14 from baseline script.
+2. **Confirm embed pass complete** — SSH to VPS: `curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool | grep points_count` — target ~2,410 points.
 
-3. **Category fragmentation normalisation** — non-standard category values remain: Evidentiary guidance, Parties, Accessories and Principles, Defence - Duress, practitioner note, practitioner working document, case note, legislative reference, statutory note, procedural document. Full normalisation pass after retrieval validated.
+3. **Run retrieval baseline** — SSH to VPS: `bash ~/retrieval_baseline.sh` — 15 questions, check Q3, Q4, Q7, Q8, Q10, Q12, Q13, Q14 for tendency evidence and doctrine chunks.
 
-4. **Corpus gap — procedural/scripted content** — Q12 (hostile witness steps), Q14 (leading questions) confirmed missing. Blocks 027, 020, 008 stripped during ChatGPT enrichment. Needs separate re-ingest via Procedure Prompt.
+4. **Retrieval tuning** — tendency chunks were missing due to citation truncation bug (now fixed). Verify tendency content surfaces in Phase 5 responses after re-ingest.
 
-5. **Pre-scraper gate — char-based windowing fix** — replace Worker.js `fullText[8000:28000]` with scored overlapping window pipeline. Model upgrade: `summarizeCase()` to `@cf/qwen/qwen3-30b-a3b-fp8`. Test against 3 flagged cases before opening scraper.
+5. **Category normalisation** — non-standard values remain. Full normalisation pass after retrieval validated.
 
-6. **Commit uncommitted files** — ingest_corpus.py, generate_manifest.py, backfill_enriched_text.py, retrieval_baseline.sh, worker.js, CLAUDE.md, CLAUDE_arch.md.
+6. **Corpus gap — procedural/scripted content** — Q12, Q14 confirmed missing. Blocks 027, 020, 008 need re-ingest via Procedure Prompt. Raw source files in `rag_blocks/` on local machine.
+
+7. **Pre-scraper gate — windowing fix validated** — scraper still PAUSED. Open scraper only after Qwen3 extraction confirmed working (or reverted to Llama).
+
+8. **Commit uncommitted files** — ingest_corpus.py, generate_manifest.py, backfill_enriched_text.py, execute_backfill.py, validate_ingest.ps1, retrieval_baseline.sh, Worker.js, CLAUDE.md, CLAUDE_arch.md.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Category fragmentation** — non-standard category values in D1 secondary_sources. Normalisation pass deferred until post-retrieval testing.
-- **Char-based windowing** — Worker.js case extraction uses fixed char slices. Scraper PAUSED until fixed.
+- **Qwen3 extraction failing** — Pass 1 response 0 chars. Regex fix deployed, unconfirmed. May need Llama revert.
+- **Category fragmentation** — non-standard category values in D1 secondary_sources. Deferred until post-retrieval testing.
+- **Char-based windowing** — Worker.js case extraction window loop now implemented. raw_text cap raised to 500,000 chars.
 - **process-document "both" mode** — prompt_mode="both" runs Master Prompt only. Procedure Prompt second pass not yet implemented.
-- **python-docx / striprtf** — not installed in agent-general container. DOCX/RTF uploads will error until: `docker exec agent-general pip install python-docx striprtf --break-system-packages`
-- **Worker.js filename case** — wrangler warns about Worker.js vs worker.js. Rename to lowercase when convenient.
-- **Qdrant payload field** — secondary source type filter uses `type` field (value: `secondary_source`), NOT `source_type`. Ghost points from pre-type-field era (236) deleted 17 Mar 2026.
+- **python-docx / striprtf** — not installed in agent-general container. DOCX/RTF uploads will error.
+- **Worker.js filename case** — wrangler warns about Worker.js vs worker.js. Rename when convenient.
+- **Library delete button** — decodeURIComponent fix deployed. Test confirmed working.
+- **Cases with null case_name/facts** — don't render in library UI (hidden). Delete via wrangler d1 directly.
 
 ---
 
-## RECENT CHANGES — 16 Mar 2026 (morning)
+## CHANGES THIS SESSION — 17 March 2026
 
-- Full Hogan on Crime corpus re-ingest: 1,138 chunks → D1 → Qdrant (embed pass complete, 2,404 pts)
-- Category normalised: `legal doctrine` → `doctrine` (99 rows updated)
-- app.js: null guard added to `performLegalSearch` — safe on all pages
-- UI overhaul briefs 1–6 all deployed (Dark Gazette theme, Ingest page, Axiom Relay, legislation search, View fix)
-- server.py: `/process-document` and `/ingest-status` routes built and deployed
-- Worker.js: `/api/ingest/upload-document` and `/api/ingest/status/:jobId` proxy routes added
-- ingest.html + app.js: drag-and-drop document upload UI with progress polling
-- CF WAF fixes: base64 encoding for corpus uploads, User-Agent header added to post_chunk_to_worker()
-- Citation sanitisation fix in split_chunks_from_markdown()
-- VPS: OPENAI_API_KEY + WORKER_URL added to docker-compose.yml and .env
-- RAG Workflow document updated to v2 (GPT mini quirks, 3k blocks, automated pipeline, console upload architecture, legislation enrichment removed)
-
-## RECENT CHANGES — 16 Mar 2026 (evening)
-
-- Retrieval validation: 15 questions scored against old and new corpus — hallucination eliminated, corpus gaps identified (Q7, Q9, Q10, Q12, Q13, Q14)
-- Discovered enriched_text was NULL across all 1,137 secondary_source rows — vectors were built from empty text
-- Wrote and ran backfill_enriched_text.py — parsed master_corpus_part1+2, wrote 1,137 UPDATEs via SQL file, 1,131 rows populated
-- Reset embedded=0 across all secondary_sources, deleted stale Qdrant secondary_source vectors (940 points removed)
-- Embed pass restarted on VPS via nohup — running overnight
-
-## RECENT CHANGES — 17 Mar 2026 (morning)
-
-- Embed pass complete: 2,645 points in Qdrant (all secondary_source chunks embedded)
-- enrichment_poller: fixed OLLAMA_URL/QDRANT_URL localhost issue — must run inside container
-- docker-compose.yml: added OLLAMA_URL and QDRANT_URL to agent-general environment block
-- enrichment_poller: confirmed --loop flag exists — correct invocation documented in SESSION RULES
-- tmux: used to background embed loop — session name 'embed' (now killed, pass complete)
-- server.py: added legislation schedule noise filter (type=legislation AND text<200 chars)
-- server.py: added concept-based second-pass search (extract_legal_concepts + second Qdrant query)
-- server.py: added type field to chunk payload
-- server.py: concept search uses limit=top_k*2, results capped at top_k after re-ranking
-- CLAUDE_arch.md: added Component Notes section (enrichment_poller, Workers AI inventory)
-- Retrieval testing: 15 baseline questions run — 3 pass, 4 partial, 7 fail (see next actions)
-- Workers AI model upgrade planned: summarizeCase() → @cf/qwen/qwen3-30b-a3b-fp8 (deferred)
-
-## RECENT CHANGES — 17 Mar 2026 (evening)
-
-- Root cause of missing corpus chunks identified: nested bracket citation truncation bug in ingest_corpus.py metadata regex — citations containing [year] were truncated, causing ID collisions and silent DROP via INSERT OR IGNORE. ~85 chunks affected including all tendency evidence doctrine.
-- ingest_corpus.py: regex fix applied — `(.*?)` → `((?:[^\[\]]|\[[^\[\]]*\])*)` in extract_metadata
-- Worker.js: INSERT OR IGNORE → UPSERT with ON CONFLICT DO UPDATE. embedded=0 always reset on conflict. Deployed version 17a7b2c4.
-- generate_manifest.py: new script — parses both corpus files, outputs corpus_manifest.json with id/heading/category/body_length/raw_text_hash per chunk. Ground truth for ingest validation.
-- backfill_enriched_text.py: rewritten to read corpus_manifest.json and match by (source_file, chunk_index) — eliminates citation re-derivation misalignment risk.
-- retrieval_baseline.sh: 15-question automated curl loop — deployed to VPS at ~/retrieval_baseline.sh
-- D1 secondary_sources: wiped for clean re-ingest (1,137 old rows deleted)
-- Qdrant: secondary_source vectors deleted (type=secondary_source filter), 236 ghost points deleted (no type field), 1,272 legislation points confirmed clean
-- corpus_manifest.json: 1,138 chunks (317 part1 + 821 part2), 4 legitimate short chunks identified
+- Corpus re-ingest complete: 1,138 chunks (317 part1 + 821 part2) → D1 · 0 FAILs · 0 duplicates
+- validate_ingest.ps1: created in arcanthyr-console\ · all checks passed
+- backfill_enriched_text.sql: generated and executed via wrangler --file · 1,138 rows updated
+- execute_backfill.py: written · --file approach confirmed working
+- Worker.js: Qwen3-30b model · window loop pass2 · raw_text cap 500k · budget_tokens=0 · regex JSON extraction · decodeURIComponent delete fix · token limits raised (pass1=2000, pass2/single=4000)
+- summarizeCase() token limits: all raised from 600/800 to 2000/4000
+- enrichment_poller: embed pass running on VPS · ~1,800 points in Qdrant
+- Library delete button: decodeURIComponent fix deployed and confirmed working
 
 ---
 
 ## FUTURE ROADMAP
 
-- **Console document upload — procedure prompt pass** — process_blocks.py currently runs Master Prompt only. Add Procedure Prompt second pass for mixed blocks.
-- **Cloudflare Browser Rendering /crawl endpoint** — available on Free plan (Account ID: def9cef091857f82b7e096def3faaa25). Potential use: Tasmanian Supreme Court sentencing remarks, Law Reform Commission reports, Bar Association publications. NOT suitable for AustLII. Implementation: Worker cron → POST to /crawl → poll job ID → fetch Markdown → split → process_blocks.py → upload → embed. Build only after primary corpus validated and scraper running at volume.
-- **BM25 improvements** — proper scoring + hybrid ranking with semantic scores.
-- **Console status indicator** — show enriched/embedded progress per document after upload.
-- **Qwen3 UI toggle** — add third button to model toggle once Qwen validated.
+- **Console document upload — procedure prompt pass** — process_blocks.py runs Master Prompt only. Add Procedure Prompt second pass.
+- **Cloudflare Browser Rendering /crawl endpoint** — available Free plan. For Tasmanian Supreme Court sentencing remarks etc. NOT AustLII.
+- **BM25 improvements** — proper scoring + hybrid ranking.
+- **Console status indicator** — show enriched/embedded progress per document.
+- **Qwen3 UI toggle** — add third button once Qwen validated.
 - **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
-- **Nightly cron for xref_agent.py** — after scraper is actively running.
+- **Nightly cron for xref_agent.py** — after scraper active.
 - **Stare decisis layer** — surface treatment history from case_citations.
 - **Animated sigil** — swap `sigil.jpg` for `sigil.gif` if rotating GIF produced.
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal, stale authority detection, query expansion, procedural sequence assembly, bulk enrichment audit.
