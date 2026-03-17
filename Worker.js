@@ -29,24 +29,31 @@ function rateLimit(key, max, windowMs) {
    ============================================================= */
 const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 
-const procedurePassPrompt = `You are reviewing a Tasmanian court judgment for practitioner-relevant procedural content.
+const procedurePassPrompt = `You are reviewing a Tasmanian court judgment for in-court procedural content relevant to criminal law practitioners.
 
-Extract any of the following if present: tactical workflows, step-by-step procedural sequences, scripted examination questions, in-court procedural notes, submission templates, or practitioner annotations.
+Extract any of the following if present:
+- Voir dire proceedings (how conducted, what evidence taken, ruling made)
+- Evidence admissibility rulings (the sequence of objection, argument, and determination)
+- Hostile witness applications under s 38 Evidence Act 2001 (Tas)
+- Tendency or coincidence evidence rulings (how the application was made and determined)
+- Contested facts hearings at sentencing
+- Any other in-court procedural sequence described in enough detail to be useful to a practitioner
+
+For each item found, output a Markdown chunk with:
+- A heading describing the procedure (e.g. ## Voir Dire — Admissibility of Record of Interview)
+- The sequence of steps as they occurred, in plain language
+- The outcome/ruling
+- Any practical notes a practitioner would find useful (e.g. what arguments succeeded, what the judge required)
+
+Metadata below each heading:
+[CATEGORY: procedure]
+[TYPE: voir dire / admissibility ruling / hostile witness / tendency evidence / contested facts / procedural sequence]
+[TOPIC: one-line description]
+[CONCEPTS: 5-8 plain-language search terms a practitioner would use]
 
 If the judgment contains no such content, output exactly: NO PROCEDURE CONTENT
 
-Otherwise, format what you find as structured Markdown chunks. For each chunk:
-- Use a heading describing the procedure (e.g. ## Hostile Witness — s 38 Application Workflow)
-- Preserve step sequences as numbered lists
-- Preserve any scripted questions exactly as written
-- Keep informal/practitioner language — do not sanitise
-- Add metadata below the heading:
-  [CATEGORY: procedure]
-  [TYPE: procedure / script / checklist / annotation]
-  [TOPIC: one-line description]
-  [CONCEPTS: 5-8 plain-language search terms]
-
-Output only the Markdown chunks. No preamble, no summary, no commentary.`;
+Output only the Markdown chunks or NO PROCEDURE CONTENT. No preamble, no commentary.`;
 
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   const result = await env.AI.run(WORKERS_AI_MODEL, {
