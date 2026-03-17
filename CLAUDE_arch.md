@@ -424,17 +424,22 @@ These are now set in the `agent-general` environment block in `docker-compose.ym
 ### ingest_corpus.py
 
 - INPUT_FILE is hardcoded — must be manually changed between part1 and part2 runs
-- Located at: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\ingest_corpus.py`
+- Located at: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\ingest_corpus.py` (NOT inside Arc v 4/)
+- PROCEDURE_ONLY flag (line 8) — when True, filters procedure chunks only and appends [procedure] suffix to all citations
+- Section-aware splitting: preserves master/procedure block type from <!-- block_NNN --> separators
 - Dedup logic: repeated citations get [2], [3] suffixes in encounter order
-- Minimum body length check: chunks under 100 chars are logged as warnings but still ingested
+- Minimum body length check: chunks under 100 chars logged as warnings but still ingested
+- DESTRUCTIVE UPSERT WARNING: upload-corpus uses ON CONFLICT DO UPDATE which resets embedded=0 and wipes enriched_text on any citation collision. Never re-run against already-ingested citations. Master chunks must never be re-ingested via this script.
 
 ### master_corpus files
 
-- master_corpus_part1.md: 317 chunks, 705,516 bytes
-- master_corpus_part2.md: 821 chunks, 1,524,842 bytes
-- Location: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\` (and duplicate in `Arc v 4\`)
+- master_corpus_part1.md: 317 chunks total (32 master + 285 procedure), 705,516 bytes
+- master_corpus_part2.md: 821 chunks total (214 master + 607 procedure), 1,524,842 bytes
+- Procedure chunks ingested 18 March 2026: 892 total (285 part1 + 607 part2)
+- All procedure citations have [procedure] suffix to distinguish from master corpus citations
+- Location: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\` (and duplicate in Arc v 4\)
 - NOT on VPS — local Windows only
-- Total corpus: 1,138 chunks
+- Total corpus after procedure ingest: ~2,030 chunks
 
 ### corpus_manifest.json
 
@@ -446,9 +451,11 @@ These are now set in the `agent-general` environment block in `docker-compose.ym
 ### retrieval_baseline.sh
 
 - Location: VPS `~/retrieval_baseline.sh`
-- Usage: `KEY=your_nexus_key bash ~/retrieval_baseline.sh`
-- Runs 15 baseline questions, prints top 3 chunks per question with scores
+- Auth: requires `X-Nexus-Key` header — value from `grep NEXUS_SECRET_KEY ~/ai-stack/.env`
+- Field name: uses `query_text` (not `query`) — if "query_text is required" error: `sed -i 's/\\"query\\":/\\"query_text\\":/' ~/retrieval_baseline.sh`
+- File creation: use PowerShell `@' ... '@ | Out-File -Encoding utf8` then SCP to VPS — do not paste bash heredoc directly into SSH terminal (truncates)
 - Run after every embed pass or server.py change to validate retrieval quality
+- Results in ~/retrieval_baseline_results.txt
 
 ### Worker.js — filename casing
 
