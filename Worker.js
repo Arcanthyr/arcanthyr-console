@@ -29,6 +29,25 @@ function rateLimit(key, max, windowMs) {
    ============================================================= */
 const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 
+const procedurePassPrompt = `You are reviewing a Tasmanian court judgment for practitioner-relevant procedural content.
+
+Extract any of the following if present: tactical workflows, step-by-step procedural sequences, scripted examination questions, in-court procedural notes, submission templates, or practitioner annotations.
+
+If the judgment contains no such content, output exactly: NO PROCEDURE CONTENT
+
+Otherwise, format what you find as structured Markdown chunks. For each chunk:
+- Use a heading describing the procedure (e.g. ## Hostile Witness — s 38 Application Workflow)
+- Preserve step sequences as numbered lists
+- Preserve any scripted questions exactly as written
+- Keep informal/practitioner language — do not sanitise
+- Add metadata below the heading:
+  [CATEGORY: procedure]
+  [TYPE: procedure / script / checklist / annotation]
+  [TOPIC: one-line description]
+  [CONCEPTS: 5-8 plain-language search terms]
+
+Output only the Markdown chunks. No preamble, no summary, no commentary.`;
+
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   const result = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
@@ -178,6 +197,24 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   const finalCaseData = { ...caseData, case_name: finalCaseName };
 
   const id = await saveCaseToDb(env, finalCaseData, summary);
+
+  // ── Procedure pass ────────────────────────────────────────────────
+  let procedureNotes = null;
+  try {
+    const procResponse = await callWorkersAI(env, procedurePassPrompt, caseText.slice(0, 80000));
+    const procText = (procResponse || "").trim();
+    if (procText && procText !== "NO PROCEDURE CONTENT") {
+      procedureNotes = procText;
+    }
+  } catch (e) {
+    console.error("[procedure pass] failed:", e.message);
+  }
+
+  if (procedureNotes) {
+    await env.DB.prepare(
+      `UPDATE cases SET procedure_notes = ? WHERE citation = ?`
+    ).bind(procedureNotes, citation).run();
+  }
 
   try {
     fetch("https://nexus.arcanthyr.com/ingest", {
