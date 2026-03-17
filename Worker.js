@@ -30,15 +30,24 @@ function rateLimit(key, max, windowMs) {
 const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
-  const response = await env.AI.run(WORKERS_AI_MODEL, {
+  const result = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
-    budget_tokens: 0,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
     ],
   });
-  const raw = (response.response || "").trim();
+
+  // DEBUG — remove after first confirmed working upload
+  console.log("WorkersAI raw result:", JSON.stringify(result, null, 2));
+
+  const raw = (
+    result?.choices?.[0]?.message?.content?.trim() ||
+    result?.choices?.[0]?.text?.trim() ||
+    result?.response?.trim() ||
+    ""
+  );
+
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   return jsonMatch ? jsonMatch[0] : raw;
 }
