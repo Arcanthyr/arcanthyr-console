@@ -27,8 +27,10 @@ function rateLimit(key, max, windowMs) {
 /* =============================================================
    WORKERS AI HELPER
    ============================================================= */
+const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
+
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 600) {
-  const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+  const response = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
     messages: [
       { role: "system", content: systemPrompt },
@@ -197,16 +199,17 @@ async function summarizeCase(env, caseData) {
   // ─── ARCHITECTURE NOTE ────────────────────────────────────────────────────
   // Extraction uses a two-pass strategy for long judgments:
   //   Pass 1 (first 12,000 chars): metadata, facts, issues, case_name
-  //   Pass 2 (chars 8,000–22,000): principles, holdings, legislation, authorities
+  //   Pass 2 (chars 8,000–end): overlapping 20,000-char windows, 2,000-char overlap
   // For shorter judgments (<= 22,000 chars) a single pass covers everything.
   // The text sent to Llama has already been boilerplate-stripped and whitespace-
   // compressed by austlii_scraper.py before upload, maximising signal per char.
   // ─────────────────────────────────────────────────────────────────────────
 
-  const CHUNK_THRESHOLD = 22000; // single-pass up to this length
-  const PASS1_CHARS = 12000;     // metadata/facts window
-  const PASS2_START = 8000;      // reasoning section start (overlap intentional)
-  const PASS2_END = 28000;       // reasoning section end
+  const CHUNK_THRESHOLD = 22000;  // single-pass up to this length
+  const PASS1_CHARS     = 12000;  // metadata/facts window
+  const PASS2_START     = 8000;   // reasoning window start
+  const WINDOW_SIZE     = 20000;  // each reasoning window size
+  const WINDOW_OVERLAP  = 2000;   // overlap between windows to avoid split mid-sentence
 
   // ── Shared prompt fragments ───────────────────────────────────────────────
   const PRINCIPLES_SPEC = `
@@ -305,14 +308,41 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       console.log(`Pass 1 response: ${raw?.length || 0} chars`);
       const pass1 = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
-      // Pass 2: reasoning section → principles, holdings, legislation, authorities
+      // Pass 2: overlapping windows from PASS2_START to end of text
       const issuesList = Array.isArray(pass1.issues) ? pass1.issues.join("\n") : (pass1.issues || "");
-      const p2Content = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nIssues identified:\n${issuesList}\n\nReasoning section:\n${fullText.substring(PASS2_START, PASS2_END)}`;
-      raw2 = await callWorkersAI(env, pass2Prompt, p2Content, 2000);
-      console.log(`Pass 2 response: ${raw2?.length || 0} chars`);
-      const pass2 = JSON.parse(raw2.replace(/```json|```/g, "").trim());
+      const pass2Results = [];
+      let windowStart = PASS2_START;
 
-      return _buildSummary(pass1, pass2, caseData.citation);
+      while (windowStart < fullText.length) {
+        const windowEnd = Math.min(windowStart + WINDOW_SIZE, fullText.length);
+        const windowText = fullText.substring(windowStart, windowEnd);
+        const p2Content = `Citation: ${caseData.citation}\nCourt: ${caseData.court}\n\nIssues identified:\n${issuesList}\n\nReasoning section:\n${windowText}`;
+        raw2 = await callWorkersAI(env, pass2Prompt, p2Content, 2000);
+        console.log(`Pass 2 window [${windowStart}-${windowEnd}]: ${raw2?.length || 0} chars`);
+        try {
+          const parsed = JSON.parse(raw2.replace(/```json|```/g, "").trim());
+          pass2Results.push(parsed);
+        } catch (e) {
+          console.error(`Pass 2 window [${windowStart}-${windowEnd}] parse failed:`, e.message);
+        }
+        if (windowEnd >= fullText.length) break;
+        windowStart = windowEnd - WINDOW_OVERLAP;
+      }
+
+      // Merge pass2 results — concat principles and legislation, take first non-null holding
+      const mergedPrinciples = pass2Results.flatMap(r => r.principles || []);
+      const mergedLegislation = [...new Set(pass2Results.flatMap(r => r.legislation || []))];
+      const mergedHolding = pass2Results.find(r => r.holding)?.holding || null;
+
+      const syntheticPass2 = {
+        holdings: pass2Results.flatMap(r => r.holdings || []),
+        holding: mergedHolding,
+        principles: mergedPrinciples,
+        legislation: mergedLegislation,
+        key_authorities: pass2Results.flatMap(r => r.key_authorities || []),
+      };
+
+      return _buildSummary(pass1, syntheticPass2, caseData.citation);
     }
 
   } catch (error) {
@@ -1548,7 +1578,7 @@ async function handleLegalQueryWorkersAI(body, env) {
       : `Cite the case citation when relying on a specific case.`;
 
   // ── Step 3: Workers AI inference ─────────────────────────────
-  const response = await env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+  const response = await env.AI.run(WORKERS_AI_MODEL, {
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If the sources lack authority on a point, say explicitly: "The retrieved sources do not contain sufficient information on this point."\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
