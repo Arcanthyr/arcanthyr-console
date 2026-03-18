@@ -766,6 +766,7 @@ def run_case_chunk_embedding_pass(batch: int = 10) -> dict:
             'chunk_id':    chunk_id,
             'citation':    chunk.get('citation', ''),
             'chunk_index': chunk.get('chunk_index', 0),
+            'case_name':   chunk.get('case_name') or '',
             'text':        embed_text[:1000],
             'type':        'case_chunk',
             'source':      'AustLII',

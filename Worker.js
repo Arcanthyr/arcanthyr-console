@@ -2225,7 +2225,10 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-case-chunks-for-embedding' && request.method === 'GET') {
       const batch = parseInt(url.searchParams.get('batch') || '10');
       const { results } = await env.DB.prepare(
-        `SELECT id, citation, chunk_index, chunk_text FROM case_chunks WHERE done = 1 AND embedded = 0 LIMIT ?`
+        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, c.case_name
+ FROM case_chunks cc
+ LEFT JOIN cases c ON c.citation = cc.citation
+ WHERE cc.done = 1 AND cc.embedded = 0 LIMIT ?`
       ).bind(batch).all();
       return new Response(JSON.stringify({ chunks: results }), { headers: corsHeaders });
     }

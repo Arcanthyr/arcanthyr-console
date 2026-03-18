@@ -13,7 +13,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Diagnose from actual output | Before recommending any fix |
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler/npx command |
 | Always specify terminal | Every command must state: which terminal (VS Code, PowerShell, SSH/VPS) AND which directory |
-| enrichment_poller | Run inside tmux WITHOUT -d flag (tmux is the backgrounding mechanism): attach to tmux session first, then run command in foreground, then Ctrl+B D to detach · Must `cd ~/ai-stack` first · Do NOT use -d with docker compose exec inside tmux |
+| enrichment_poller | Runs as permanent Docker service `enrichment-poller` (restart: unless-stopped) — no tmux required · poller auto-restarts on crash/reboot · check logs: `docker compose logs --tail=20 enrichment-poller` |
 | git commits | `git add -A`, `git commit`, `git push origin master` — separately, no && |
 | Pre-deploy check | Verify upload list shows only `public/` files — if `.env` or `.git` appear, stop |
 | wrangler d1 | Must run from `Arc v 4/` directory · always add `--remote` for live D1 |
@@ -25,6 +25,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Context window | Suggest restart proactively when conversation grows long |
 | D1 database name | arcanthyr (binding: DB, ID: 1b8ca95d-b8b3-421d-8c77-20f80432e1a0) |
 | Component quirks | Document in CLAUDE_arch.md Component Notes section |
+| qdrant-general host port | Host-side port is 6334 (not 6333) — docker-compose maps 127.0.0.1:6334->6333/tcp · always curl localhost:6334 from VPS host |
 | Pasting into terminal | Never paste wrangler output back into terminal — type commands fresh · Never paste PS prompt prefix into terminal |
 | Rogue d file | Delete with `Remove-Item "c:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\d"` if it reappears — commit deletion |
 | server.py auth | All direct calls to localhost:18789 require header `X-Nexus-Key` · Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env` on VPS · "unauthorized" = missing or wrong key |
@@ -45,6 +46,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | BM25_FTS_ENABLED | Kill switch in server.py — set False to disable FTS5 pass. SCP + force-recreate container. No wrangler deploy needed. |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
 | Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · runs on Windows only (VPS IP blocked) |
+| PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -67,7 +69,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
 | worker.js | Deployed 44f54c6b — max_tokens 2,000 (Claude + Qwen3 query handlers) · handleAxiomRelay() added |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
-| enrichment_poller.py | Extended with run_case_chunk_embedding_pass() · batch=50 · sleep=15 · running in tmux |
+| enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
 | server.py | Triple-pass hybrid retrieval: semantic + in-memory BM25 + D1 FTS5 · RRF blend · BM25_FTS_ENABLED=True |
 | Retrieval | Triple-pass hybrid LIVE — semantic (Qdrant) + in-memory BM25 (2,032 docs) + FTS5 (2,031 docs) → RRF |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
@@ -78,6 +80,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Axiom Relay backend | handleAxiomRelay() written + wired — session 4 |
 | Scraper progress file | Recreated — ready to resume at TASSC 2024 (2025 courts marked done) |
 | Reconcile | D1 and Qdrant in sync — confirmed 18 Mar 2026 |
+| qdrant-general host port | 6334 (host) → 6333 (container) |
 
 ---
 

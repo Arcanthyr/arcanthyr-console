@@ -34,26 +34,23 @@
 
 **Nexus health check port is 18789** — always curl `http://localhost:18789/health` after restart.
 
-**Correct poller invocation — ALWAYS attach to tmux first, run command in foreground, then Ctrl+B D:**
+**enrichment-poller is now a permanent Docker service (added session 5):**
+The poller runs as a dedicated container with `restart: unless-stopped`. No tmux required.
+
+Start/restart:
 ```bash
-tmux attach -t poller
-# inside tmux pane:
-cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop
-# then Ctrl+B D to detach
+cd ~/ai-stack
+docker compose up -d enrichment-poller
 ```
 
-If tmux session doesn't exist, create it first:
+Check logs:
 ```bash
-tmux new-session -d -s poller
-tmux attach -t poller
-# then run command as above
+docker compose logs --tail=50 enrichment-poller
 ```
 
-Do NOT use `tmux send-keys` to launch the poller — it fires into the wrong context and runs in the main shell, not inside tmux. The process then dies when SSH disconnects. Confirmed session 4.
+The service uses the same image as agent-general, same volume mount (`./agent-general/src:/app/src`), and reads `OLLAMA_URL` + `QDRANT_URL` from environment. Changes to enrichment_poller.py take effect immediately — no rebuild needed.
 
-Do NOT use `-d` with `docker compose exec` inside tmux — it detaches the process silently and tmux session dies. Tmux is the backgrounding mechanism; the exec should run in the foreground inside tmux.
-
-**The poller reads `OLLAMA_URL` (not `OLLAMA_HOST`).**
+Do NOT run the poller manually via `docker compose exec` anymore — the service handles it.
 
 **agent-general container env vars (docker-compose.yml):** `NEXUS_SECRET_KEY`, `WORKER_URL` (= `https://arcanthyr.com`), `OPENAI_API_KEY` (required for `/process-document` GPT calls), `OLLAMA_URL`, `QDRANT_URL`. If `OPENAI_API_KEY` is missing, `/process-document` jobs will fail at the enriching step.
 
@@ -631,6 +628,7 @@ All 6 briefs executed and deployed. Frontend work complete. Session 4 additional
 - **Dead letter queue** — for chunks that fail max_retries. Low priority.
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested.
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal.
+- **Two-stage case chunk retrieval** — second parallel Qdrant search filtered to `type=case_chunk`, threshold 0.35, top 4, merged into RRF blend before context assembly. Prevents case chunks losing to corpus on semantic score due to dense transcript text. Server.py change only — no Worker deploy needed.
 - **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references. Do AFTER cross-reference agent design confirmed.
 - **Auto-populate legislation metadata on upload** — Claude API reads filename/first page.
