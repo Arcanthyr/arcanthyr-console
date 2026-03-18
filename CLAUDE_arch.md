@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 March 2026 (end of session 4). Upload every session alongside CLAUDE.md.*
+*Updated: 18 March 2026 (end of session 5). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -97,38 +97,41 @@ New rows land with `enriched=0`. Poller's embed pass only picks up `enriched=1, 
 
 ---
 
-## RETRIEVAL ARCHITECTURE (v3 — SESSION 3)
+## RETRIEVAL ARCHITECTURE (v4 — SESSION 5)
 
-Triple-pass hybrid retrieval with Reciprocal Rank Fusion (RRF). Replaces the previous score=0.0 BM25 append hack.
+Two separate retrieval layers — Worker.js and server.py are distinct:
 
-```
-User query
-    ↓
+**Layer 1 — Worker.js handleLegalQuery (primary user-facing)**
+Calls server.py /search → gets semantic + case chunk results
+Runs in-memory BM25 against secondary_sources corpus (~2,032 docs)
+Calls /api/pipeline/fts-search (D1 FTS5) for keyword pass
+RRF blend (k=60) across all three passes
+Returns blended chunks to Claude API (primary) / Workers AI Qwen3 (fallback)
+
+**Layer 2 — server.py search_text() (called by Worker)**
+
 Pass 1 — Semantic: Qdrant cosine similarity (pplx-embed-context-v1)
          top 6, min score 0.45, re-ranked by court hierarchy within 0.05 band
-    ↓
-Pass 2 — In-memory BM25: scored against all embedded secondary_sources (~2,032 docs)
-         cached in server.py memory · built on first query · invalidated on ingest
-         TTL 10 minutes · k1=1.5, b=0.75 · top 10 candidates
-    ↓
-Pass 3 — D1 FTS5: SQLite FTS5 full-text search over secondary_sources_fts
-         porter tokenizer · all 2,031 rows · via Worker /api/pipeline/fts-search
-         gated by BM25_FTS_ENABLED flag in server.py
-    ↓
-RRF Blend: Reciprocal Rank Fusion (k=60) across all three passes
-           rrf_score = sum(1/(k+rank)) · deduped by citation · sorted desc
-    ↓
-Concept search: second-pass re-embed of extracted legal terms (runs before BM25/RRF)
-    ↓
-BM25 section fetch: explicit section references from query text → D1 legislation sections
-                   appended after RRF blend · not subject to score threshold
-    ↓
-Context assembly → Claude API (primary) / Workers AI Qwen3 (fallback)
-```
 
-**Kill switch:** `BM25_FTS_ENABLED = True` in server.py — set False to disable FTS5 pass. SCP server.py to VPS + force-recreate container. No wrangler deploy needed.
+Pass 2 — Concept search: second-pass re-embed of extracted legal terms
+         adds candidates above 0.45 threshold
 
-**BM25 corpus cold start:** ~2s delay on first query after container restart while corpus builds. Subsequent queries use cached corpus.
+Pass 3 — BM25 section fetch: explicit section references → D1 legislation sections
+         appended with score=0.0, not subject to score threshold
+
+Pass 4 — BM25 case-law fetch: cases citing referenced legislation
+         appended with score=0.0
+
+Pass 5 — Case chunk second-pass (NEW session 5):
+         Qdrant filtered to type=case_chunk · threshold 0.15 · top 4
+         Merged before return · catches dense transcript text that loses semantic race at 0.45
+
+CRITICAL architectural facts:
+- RRF blend is in Worker.js — NOT server.py
+- server.py has no RRF, no in-memory BM25 corpus, no FTS5
+- Case chunks only exist in Qdrant — invisible to BM25/FTS5 passes in Worker.js
+- Case chunk second-pass in server.py is the only mechanism that surfaces case chunks
+- Kill switch: BM25_FTS_ENABLED flag is in Worker.js (not server.py)
 
 ---
 
@@ -351,6 +354,15 @@ Write using Python (not PowerShell Out-File) to avoid encoding issues.
 ---
 
 ## COMPONENT NOTES
+
+### backfill_case_chunk_names.py
+
+- Location: `arcanthyr-console\backfill_case_chunk_names.py` (local) · `/home/tom/backfill_case_chunk_names.py` (VPS)
+- Run from VPS only — fetches cases via Worker API (`https://arcanthyr.com/api/legal/library?type=cases`), updates Qdrant at `localhost:6334`
+- Field mapping: `result.cases[].ref` → citation · `result.cases[].title` → case_name
+- Re-run after any bulk case ingestion to backfill case_name into existing Qdrant payloads
+- Do NOT run from Windows — Qdrant port 6334 is localhost-only on VPS
+- Root cause of session 5 incident: original script used external IP (blocked) + npx subprocess (not on VPS)
 
 ### enrichment_poller.py
 

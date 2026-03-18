@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 18 March 2026 (end of session 4) · Supersedes all prior versions
+Updated: 18 March 2026 (end of session 5) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -47,6 +47,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
 | Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · runs on Windows only (VPS IP blocked) |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
+| server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
+| SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
+| backfill scripts | Must run on VPS — fetch D1 data via Worker API (not wrangler subprocess), hit Qdrant via localhost:6334 |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -55,23 +58,23 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 18 March 2026 (end of session 4)
+## SYSTEM STATE — 18 March 2026 (end of session 5)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 3,457 points (embed pass COMPLETE) · 2,032 secondary + 1,272 legislation + 153 case chunks |
+| Qdrant general-docs-v2 | 3,481 points · 2,032 secondary + 1,272 legislation + 177 case chunks |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
 | D1 cases | 13+ rows — includes [2021] TASCCA 12 (Neill-Fraser) · enriched=1 · deep_enriched=1 |
-| D1 case_chunks | 153 chunks for [2021] TASCCA 12 · all done=1 · all 153 embedded |
+| D1 case_chunks | 177 chunks · all done=1 · all embedded=1 · full payload confirmed (chunk_id, citation, case_name, text, type, source) |
 | D1 secondary_sources | 2,032 total (incl. sentencing first offenders chunk) · all enriched=1 · all embedded |
 | D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer, full corpus populated |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| worker.js | Deployed 44f54c6b — max_tokens 2,000 (Claude + Qwen3 query handlers) · handleAxiomRelay() added |
+| worker.js | Deployed 4e2b2dcf — Case C prompt updated · LEFT JOIN cases on fetch-case-chunks-for-embedding |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
 | enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
-| server.py | Triple-pass hybrid retrieval: semantic + in-memory BM25 + D1 FTS5 · RRF blend · BM25_FTS_ENABLED=True |
-| Retrieval | Triple-pass hybrid LIVE — semantic (Qdrant) + in-memory BM25 (2,032 docs) + FTS5 (2,031 docs) → RRF |
+| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk second-pass (Qdrant 0.15, type=case_chunk, top 4) · RRF/FTS5 lives in Worker.js not here |
+| Retrieval | Case chunk two-stage pass LIVE (session 5) · Worker.js handles RRF/BM25/FTS5 blend · server.py handles semantic + case chunk second-pass |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
 | Frontend | Dark Gazette theme · Library pills · category display · UI briefs 1–6 complete · max_tokens fix deployed |
 | process-document "both" | FIXED — runs Master + Procedure prompts per block |
@@ -81,6 +84,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Scraper progress file | Recreated — ready to resume at TASSC 2024 (2025 courts marked done) |
 | Reconcile | D1 and Qdrant in sync — confirmed 18 Mar 2026 |
 | qdrant-general host port | 6334 (host) → 6333 (container) |
+| Prompts | Claude Case C (worker.js) + Qwen3 (server.py) — updated to reason from raw judgment text, not refuse when no clean doctrinal statement present |
 
 ---
 
@@ -112,9 +116,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 1. **Run the scraper** — PowerShell, `arcanthyr-console\Local Scraper\` directory: `python austlii_scraper.py` · Run during business hours (08:00–18:00 AEST) · Monitor CF dashboard for neuron usage · Scraper resumes at TASSC 2024 (progress file set)
 
-2. **Test Neill-Fraser case retrieval** — ask console: "What is the test for fresh and compelling evidence under s 402A?" + "What is the significance of DNA secondary transfer?" + "What must prosecution establish re DNA evidence?" — Q1 and Q3 passing; Q2 (DNA secondary transfer) pending — those 13 case chunks were embedded, re-test now
+2. **Commit session 5 changes** — `git add -A`, `git commit -m "Session 5: case chunk two-stage retrieval + prompt fix + case_name payload"`, `git push origin master` — separately, no &&
 
-3. **Commit CLAUDE.md / CLAUDE_arch.md updates** — after copying updated files into `Arc v 4/`
+3. **Copy updated CLAUDE.md + CLAUDE_arch.md into `Arc v 4/`** and commit
 
 ---
 
@@ -130,8 +134,22 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **ingest_corpus.py block separator format** — PowerShell Out-File adds BOM and corrupts `<!-- block_NNN procedure -->` separators. Always use Python to write corpus files. Confirmed session 4.
 - **TASSC 2024 cases 3, 8, 9, 10** — uploaded with HTTP 0 (timeout) in previous scraper run. Zero rows in D1 — will be re-attempted when scraper resumes.
 - **Scraper progress file** — lives at `arcanthyr-console\Local Scraper\scraper_progress.json` · if missing, scraper restarts from TASSC 2025. Recreate manually if lost (see CLAUDE_arch.md scraper config).
+- **Case chunk dedup in search_text()** — uses internal `_id` field (chunk_id). If corpus chunks ever gain a `chunk_id` field, dedup logic needs review.
+- **Case chunk second-pass threshold 0.15** — intentionally low for dense transcript text. Monitor for false positives as case corpus grows.
+- **RRF/BM25/FTS5 architecture** — lives in Worker.js handleLegalQuery, NOT server.py. Previous CLAUDE.md description was wrong.
 
 ---
+
+## CHANGES THIS SESSION (session 5) — 18 March 2026
+
+- case_name added to case chunk Qdrant payload — worker.js LEFT JOIN cases on fetch-case-chunks-for-embedding + enrichment_poller.py metadata dict updated
+- 177 case chunks reset to embedded=0 and re-embedded with full payload — previous embed pass had stored empty payloads (root cause: original embed ran before case_name field existed; backfill via PUT wiped remaining fields)
+- backfill_case_chunk_names.py rewritten — runs on VPS, fetches D1 data via Worker API, hits Qdrant at localhost:6334 · original script failed: used external IP (port 6334 blocked) and npx subprocess (not on VPS)
+- Two-stage case chunk retrieval added to server.py — second Qdrant pass filtered to type=case_chunk, threshold 0.15, top 4, merged before return
+- Prompt fix — Claude Case C (worker.js line 1563) and Qwen3 (server.py) updated: reason from raw judgment text, don't refuse when no clean doctrinal statement present
+- Neill-Fraser retrieval — Q1 ✅ Q2 ✅ Q3 ✅ all passing post-fix
+- Architecture clarification confirmed — RRF/in-memory BM25/FTS5 blend is in Worker.js handleLegalQuery only · server.py is semantic + BM25 append + case chunk second-pass
+- worker.js deployed 4e2b2dcf · server.py SCPed to VPS + agent-general force-recreated
 
 ## CHANGES THIS SESSION (session 4) — 18 March 2026
 
