@@ -1676,9 +1676,14 @@ async function handleLegalQueryWorkersAI(body, env) {
       { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If the sources lack authority on a point, say explicitly: "The retrieved sources do not contain sufficient information on this point."\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
     ],
     max_tokens: 800,
+    budget_tokens: 0,
   });
 
-  const answer = response?.response || "No response from model.";
+  const answer =
+    response?.choices?.[0]?.message?.content?.trim() ||
+    response?.choices?.[0]?.text?.trim() ||
+    response?.response?.trim() ||
+    "No response from model.";
 
   // ── Step 4: Return ───────────────────────────────────────────
   const seen = new Set();
