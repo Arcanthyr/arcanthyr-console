@@ -1194,13 +1194,41 @@ async function handleCaseFile(file) {
     } else {
       throw new Error('PDF.js library not loaded');
     }
-    document.getElementById('uploadCaseText').value = extractedText.trim();
-    autoFillCaseMetadata(extractedText);
-    const caseDropzone = document.getElementById('caseDropzone');
-    if (caseDropzone) {
-      const orig = caseDropzone.innerHTML;
-      caseDropzone.innerHTML = '<div class="dropzone-text" style="color:var(--green);">✓ Text extracted successfully</div>';
-      setTimeout(() => { caseDropzone.innerHTML = orig; }, 3000);
+
+    if (extension === 'pdf' && (!extractedText || !extractedText.trim())) {
+      // PDF.js returned empty — scanned PDF, fall back to OCR via Worker
+      const caseDropzone = document.getElementById('caseDropzone');
+      if (caseDropzone) caseDropzone.innerHTML = `<div class="dropzone-text">⏳ Extracting ${file.name} via OCR (may take 10-20s)…</div>`;
+      const ab = await file.arrayBuffer();
+      const bytes = new Uint8Array(ab);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+      const b64 = btoa(binary);
+      const r = await fetch('/api/legal/extract-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pdf_base64: b64 })
+      });
+      if (!r.ok) throw new Error(`OCR server error: ${r.status}`);
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      const ocrText = (data.result || data).text;
+      document.getElementById('uploadCaseText').value = ocrText.trim();
+      autoFillCaseMetadata(ocrText);
+      if (caseDropzone) {
+        const orig = caseDropzone.innerHTML;
+        caseDropzone.innerHTML = '<div class="dropzone-text" style="color:var(--green);">✓ Text extracted via OCR</div>';
+        setTimeout(() => { caseDropzone.innerHTML = orig; }, 3000);
+      }
+    } else {
+      document.getElementById('uploadCaseText').value = extractedText.trim();
+      autoFillCaseMetadata(extractedText);
+      const caseDropzone = document.getElementById('caseDropzone');
+      if (caseDropzone) {
+        const orig = caseDropzone.innerHTML;
+        caseDropzone.innerHTML = '<div class="dropzone-text" style="color:var(--green);">✓ Text extracted successfully</div>';
+        setTimeout(() => { caseDropzone.innerHTML = orig; }, 3000);
+      }
     }
   } catch (error) {
     console.error('Error extracting text:', error);
@@ -1226,6 +1254,10 @@ function autoFillCaseMetadata(text) {
 
   const citationMatch = header.match(/\[(\d{4})\]\s+(TAS(?:SC|MC|CCA|FC))(?:\s+(\d+))?/) ||
     text.match(/\[(\d{4})\]\s+(TAS(?:SC|MC|CCA|FC))(?:\s+(\d+))?/);
+  console.log('autoFillCaseMetadata called');
+  console.log('header:', header?.substring(0, 200));
+  console.log('citationMatch:', citationMatch);
+  console.log('header hex:', header.substring(0, 100).split('').map(c => c.charCodeAt(0).toString(16)).join(' '));
   if (citationMatch) {
     const citation = citationMatch[3]
       ? `[${citationMatch[1]}] ${citationMatch[2]} ${citationMatch[3]}`
@@ -1244,9 +1276,13 @@ function autoFillCaseMetadata(text) {
 
   const courtEl = document.getElementById('uploadCourt');
   if (courtEl) {
-    if (text.includes('Court of Criminal Appeal') || text.includes('TASCCA')) courtEl.value = 'cca';
+    const headerSnippet = text.substring(0, 500);
+    if (headerSnippet.includes('Court of Criminal Appeal') || headerSnippet.includes('TASCCA')) courtEl.value = 'cca';
+    else if (headerSnippet.includes('Magistrates') || headerSnippet.includes('TASMC') || headerSnippet.includes('TAMagC')) courtEl.value = 'magistrates';
+    else if (headerSnippet.includes('Supreme Court') || headerSnippet.includes('TASSC')) courtEl.value = 'supreme';
+    else if (text.includes('Court of Criminal Appeal') || text.includes('TASCCA')) courtEl.value = 'cca';
+    else if (text.includes('Magistrates') || text.includes('TASMC') || text.includes('TAMagC')) courtEl.value = 'magistrates';
     else if (text.includes('Supreme Court') || text.includes('TASSC')) courtEl.value = 'supreme';
-    else if (text.includes('Magistrates') || text.includes('TAMagC') || text.includes('TASMC')) courtEl.value = 'magistrates';
   }
 }
 
