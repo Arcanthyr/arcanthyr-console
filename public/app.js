@@ -657,7 +657,15 @@ function renderCases(response) {
         <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:6px;">${c.court} · ${year}</div>
         <div class="legal-item-body">
           ${c.facts && c.facts !== "AI extraction failed" ? `<p><strong>Facts:</strong> ${c.facts}</p>` : ""}
-          ${c.holding && c.holding !== "AI extraction failed" ? `<p><strong>Holding:</strong> ${c.holding}</p>` : ""}
+          ${(() => {
+            const h = c.holding && c.holding !== "AI extraction failed" ? c.holding : null;
+            if (h) return `<p><strong>Holding:</strong> ${h}</p>`;
+            try {
+              const arr = JSON.parse(c.holdings_extracted || "[]");
+              if (arr.length > 0) return `<p><strong>Holding:</strong> ${arr.slice(0, 2).map(x => x.holding || x).join(" · ")}</p>`;
+            } catch {}
+            return "";
+          })()}
           ${principles.length > 0 ? `
             <div style="margin-top:6px;">
               <span style="color:var(--text-dim);font-size:0.75rem;">Principles:</span>
@@ -1216,11 +1224,14 @@ function autoFillCaseMetadata(text) {
   // Only search the first 1500 chars (header) to avoid picking up cited cases
   const header = text.substring(0, 1500);
 
-  const citationMatch = header.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/) ||
-    text.match(/\[(\d{4})\]\s+(TASSC|TAMagC|TASCCA|TASMC)\s+(\d+)/);
+  const citationMatch = header.match(/\[(\d{4})\]\s+(TAS(?:SC|MC|CCA|FC))(?:\s+(\d+))?/) ||
+    text.match(/\[(\d{4})\]\s+(TAS(?:SC|MC|CCA|FC))(?:\s+(\d+))?/);
   if (citationMatch) {
+    const citation = citationMatch[3]
+      ? `[${citationMatch[1]}] ${citationMatch[2]} ${citationMatch[3]}`
+      : `[${citationMatch[1]}] ${citationMatch[2]}`;
     const el = document.getElementById('uploadCitation');
-    if (el) el.value = citationMatch[0];
+    if (el) el.value = citation;
   }
 
   // Note: case name from the form is just a hint — Llama will extract the real name.

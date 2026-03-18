@@ -1004,6 +1004,14 @@ async function handleReprocessCase(body, env) {
    Proxies base64 PDF to nexus/extract-pdf endpoint for
    server-side pdfminer extraction. Keeps nexus key off browser.
    ============================================================= */
+function extractCitationFromText(text) {
+  const match = text.match(/\[(\d{4})\]\s+(TAS(?:SC|MC|CCA|FC))(?:\s+(\d+))?/);
+  if (match) {
+    return match[3] ? `[${match[1]}] ${match[2]} ${match[3]}` : `[${match[1]}] ${match[2]}`;
+  }
+  return null;
+}
+
 async function handleExtractPdf(body, env) {
   const { pdf_base64 } = body;
   if (!pdf_base64) throw new Error("Missing pdf_base64 field");
@@ -1018,7 +1026,8 @@ async function handleExtractPdf(body, env) {
   if (!r.ok) throw new Error(`Nexus extraction failed: ${r.status}`);
   const data = await r.json();
   if (data.error) throw new Error(data.error);
-  return { text: data.text, chars: data.chars };
+  const citation = extractCitationFromText(data.text);
+  return { text: data.text, chars: data.chars, citation };
 }
 
 /* =============================================================
