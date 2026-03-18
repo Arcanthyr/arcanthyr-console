@@ -185,8 +185,8 @@ async function fetchCaseContent(url, preloadedHtml = null) {
 async function processCaseUpload(env, caseText, citation, caseName, court) {
   if (!caseText || !citation) throw new Error("Missing required fields: caseText and citation");
 
-  const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(citation).first();
-  if (exists) throw new Error(`Case ${citation} already exists in database`);
+  const exists = await env.DB.prepare("SELECT id, enriched FROM cases WHERE citation = ?").bind(citation).first();
+  if (exists && exists.enriched === 1) throw new Error(`Case ${citation} already exists and is fully processed`);
 
   const caseData = {
     citation,
@@ -204,6 +204,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   const finalCaseData = { ...caseData, case_name: finalCaseName };
 
   const id = await saveCaseToDb(env, finalCaseData, summary);
+  await env.DB.prepare(`UPDATE cases SET enriched = 1 WHERE citation = ?`).bind(citation).run();
 
   // ── Procedure pass ────────────────────────────────────────────────
   let procedureNotes = null;
