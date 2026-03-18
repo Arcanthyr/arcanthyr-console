@@ -870,7 +870,7 @@ def run_legislation_embedding_pass(batch: int = 5) -> dict:
 def main():
     parser = argparse.ArgumentParser(description='Arcanthyr enrichment/embedding poller')
     parser.add_argument('--mode',  choices=['enrich', 'embed', 'both', 'reconcile'], default='both')
-    parser.add_argument('--batch', type=int, default=10)
+    parser.add_argument('--batch', type=int, default=50)
     parser.add_argument('--loop',  action='store_true', help='Run continuously (60s sleep between passes)')
     parser.add_argument('--status', action='store_true', help='Print pipeline status and exit')
     args = parser.parse_args()
@@ -906,7 +906,7 @@ def main():
         while True:
             run_once()
             log.info('[POLLER] Sleeping 60s...')
-            time.sleep(60)
+            time.sleep(15)
     else:
         run_once()
 

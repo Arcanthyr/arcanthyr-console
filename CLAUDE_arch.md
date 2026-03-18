@@ -62,7 +62,7 @@ VPS enrichment_poller.py (manual or cron):
                    → also runs legislation embedding pass automatically
   --mode both      → enrich then embed in sequence
   --mode reconcile → diffs D1 embedded=1 vs Qdrant chunk_ids → resets missing to embedded=0
-  --loop           → runs continuously (60s sleep between passes)
+  --loop           → runs continuously (15s sleep between passes)
   --status         → prints pipeline counts and exits
 ```
 
@@ -88,7 +88,7 @@ New rows land with `enriched=0`. Poller's embed pass only picks up `enriched=1, 
 
 ---
 
-## ASYNC JOB PATTERN — DESIGN DECISION (18 March 2026)
+## ASYNC JOB PATTERN — LIVE (deployed 18 March 2026, session 2)
 
 **Problem:** fetch-case-url and PDF case uploads timeout on large judgments. Worker has 30s wall-clock limit. summarizeCase() runs up to 6 sequential Workers AI calls on large judgments.
 
@@ -107,13 +107,20 @@ Rejected alternatives (do not revisit without new information):
 4. Frontend: show "queued" status, poll for completion
 5. Add `restart: unless-stopped` to agent-general in docker-compose.yml
 
+**LIVE implementation:**
+- Queue name: `arcanthyr-case-processing`
+- **METADATA message:** Pass 1 (first 8k chars) → one Workers AI call → writes `case_name`, `judge`, `parties`, `facts`, `issues`, `enriched=1` to D1 → splits full `raw_text` into 3k-char chunks → writes to `case_chunks` table → enqueues one CHUNK message per chunk → `ack()`
+- **CHUNK message:** reads `chunk_text` from `case_chunks` → one Workers AI call → writes `principles_json`, sets `done=1` → checks `COUNT(*) WHERE done=0` for this citation → if 0, merges all chunk results → writes `principles_extracted`, `holdings_extracted`, `legislation_extracted`, `authorities_extracted`, `deep_enriched=1` to `cases` → `ack()`
+- **Frontend:** polls `/api/legal/case-status` — `enriched=1` set after Pass 1 (fast metadata, seconds), `deep_enriched=1` set after merge completes (background, minutes)
+- **No wall-clock risk:** each queue consumer execution makes exactly one Workers AI call
+
 **Scope of timeout problem:**
 - Secondary sources ✅ already async via poller — no issue
 - Legislation ✅ fine for Tasmanian Acts — no issue
 - Scraper ⚠️ silently loses large judgments (HTTP 0 errors confirmed in March scraping)
-- Console case upload ⚠️ same timeout problem
+- Console case upload ⚠️ same timeout problem — now fixed via queue fan-out
 
-**Gate:** Do not reopen scraper until Cloudflare Queues pattern is built and confirmed working.
+**Gate:** Do not reopen scraper until retrieval baseline re-run post embed pass confirmed.
 
 ---
 
@@ -307,7 +314,11 @@ docker compose exec agent-general python3 /app/src/enrichment_poller.py --mode e
 
 **Modes:** `--mode enrich`, `--mode embed`, `--mode both`, `--mode reconcile`, `--loop`, `--status`
 
-**Cases enrichment path: NOT YET BUILT** — poller currently handles `secondary_sources` only. Cases are enriched inline in the Worker via Workers AI. Async case enrichment requires Cloudflare Queues (see ASYNC JOB PATTERN section).
+**Cases enrichment path:** handled by Cloudflare Queue consumer (Worker), not the poller. METADATA message → Pass 1 metadata + chunk split. CHUNK messages → per-chunk principle extraction → merge. See ASYNC JOB PATTERN section.
+
+**`run_case_chunk_embedding_pass(batch=10)`** — added 18 March 2026 (session 2). Fetches `case_chunks WHERE done=1 AND embedded=0` via `GET /api/pipeline/fetch-case-chunks-for-embedding`. Embeds `chunk_text` via Ollama pplx-embed. Upserts to Qdrant `general-docs-v2` with payload `{ chunk_id, citation, chunk_index, type: 'case_chunk', source: 'AustLII' }`. Marks embedded via `POST /api/pipeline/mark-case-chunks-embedded`. Runs automatically in `--mode embed` and `--mode both`, after secondary sources pass and before legislation pass.
+
+**Default batch:** 50 · **Loop sleep:** 15 seconds (updated 18 March 2026 session 2)
 
 ### Workers AI (Cloudflare) — model and usage inventory
 
@@ -357,9 +368,19 @@ const answer =
 ### cases D1 schema notes
 
 - PK is `id` (TEXT) — citation with spaces replaced by hyphens
-- Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded`
+- Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched`
 - `procedure_notes` — Markdown chunks from procedurePassPrompt. NULL if no relevant procedure found.
+- `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete and merge writes merged principles/holdings/legislation/authorities to `cases`
 - Cases with null `case_name` or `facts` are hidden in library UI
+
+### case_chunks D1 schema
+
+- `id TEXT PRIMARY KEY` — format: `{citation}__chunk__{N}` (e.g. `[2018] TASSC 62__chunk__0`)
+- Full column list: `id, citation, chunk_index, chunk_text, principles_json, done, embedded`
+- `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
+- `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
+- `UNIQUE(citation, chunk_index)` constraint — INSERT OR IGNORE safe to retry
+- Created 18 March 2026 (session 2)
 
 ### ingest_corpus.py
 
@@ -404,6 +425,14 @@ const answer =
 - Affected rows reset to `embedded=0` automatically — poller re-embeds with clean text
 - Check scope first: `SELECT COUNT(*) FROM secondary_sources WHERE raw_text LIKE '%.underline%'`
 - 131 rows cleaned 18 Mar 2026. Re-run if new Word-derived chunks ingested.
+
+### Worker.js — callWorkersAI() and splitIntoChunks()
+
+**`callWorkersAI()` — `reasoning_content` fallback (added 18 March 2026, session 2)**
+If `choices[0].message.content` is null or empty, falls back to `choices[0].message.reasoning_content` before falling through to `choices[0].text` and `result.response`. Fixes Qwen3 thinking-mode responses where the model outputs to `reasoning_content` instead of `content`. All callers benefit.
+
+**`splitIntoChunks(text, chunkSize=3000)` — utility function (added 18 March 2026, session 2)**
+Splits judgment text into fixed-size character chunks for queue fan-out. Used by the METADATA queue handler to split `raw_text` into `case_chunks` rows. Default chunk size 3,000 chars. No overlap (each CHUNK message is independent; context provided via case metadata injected into the Workers AI prompt).
 
 ### Worker.js — filename casing
 
