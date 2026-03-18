@@ -1189,6 +1189,11 @@ async function handleUploadCorpus(body, env) {
       embedded = 0
   `).bind(citation, source || citation, doc_type || null, text, new Date().toISOString(), category ?? 'doctrine').run();
 
+  await env.DB.prepare(
+    `INSERT INTO secondary_sources_fts (rowid, source_id, title, raw_text)
+     SELECT rowid, id, title, raw_text FROM secondary_sources WHERE id = ?`
+  ).bind(citation).run();
+
   return { citation, chunks_stored: 0, message: "Corpus chunk recorded in D1." };
 }
 
@@ -1245,6 +1250,9 @@ async function handleLibraryDelete(docType, id, env) {
 
   // ── Step 2: Delete from D1 ───────────────────────────────────
   await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
+  if (docType === 'secondary') {
+    await env.DB.prepare(`DELETE FROM secondary_sources_fts WHERE source_id = ?`).bind(id).run();
+  }
 
   // ── Step 3: Delete all Qdrant vectors for this citation ──────
   try {
@@ -2168,6 +2176,20 @@ export default {
         await env.DB.prepare(`UPDATE case_chunks SET embedded = 1 WHERE id = ?`).bind(id).run();
       }
       return new Response(JSON.stringify({ ok: true, count: chunk_ids.length }), { headers: corsHeaders });
+    }
+
+    if (url.pathname === '/api/pipeline/fts-search' && request.method === 'POST') {
+      const { query, limit = 10 } = await request.json();
+      if (!query) return new Response(JSON.stringify({ error: 'query required' }), { status: 400, headers: corsHeaders });
+      const sanitised = query.replace(/['"*()]/g, ' ').trim();
+      const { results } = await env.DB.prepare(
+        `SELECT source_id, title, bm25(secondary_sources_fts) AS bm25_score
+         FROM secondary_sources_fts
+         WHERE secondary_sources_fts MATCH ?
+         ORDER BY bm25_score
+         LIMIT ?`
+      ).bind(sanitised, limit).all();
+      return new Response(JSON.stringify({ results }), { headers: corsHeaders });
     }
 
     if (url.pathname === '/api/pipeline/bm25-corpus' && request.method === 'GET') {
