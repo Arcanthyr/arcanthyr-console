@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 18 March 2026 (end of session 5) · Supersedes all prior versions
+Updated: 18 March 2026 (end of session 6) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -58,14 +58,14 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 18 March 2026 (end of session 5)
+## SYSTEM STATE — 18 March 2026 (end of session 6)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 3,481 points · 2,032 secondary + 1,272 legislation + 177 case chunks |
+| Qdrant general-docs-v2 | 3,481+ points · growing — embed pass running on 2024 case chunks |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | 13+ rows — includes [2021] TASCCA 12 (Neill-Fraser) · enriched=1 · deep_enriched=1 |
+| D1 cases | 13+ rows — includes [2021] TASCCA 12 (Neill-Fraser) · enriched=1 · deep_enriched=1 · 10 x TASSC 2024 cases ingested (cases 1-10) · all deep_enriched=1 |
 | D1 case_chunks | 177 chunks · all done=1 · all embedded=1 · full payload confirmed (chunk_id, citation, case_name, text, type, source) |
 | D1 secondary_sources | 2,032 total (incl. sentencing first offenders chunk) · all enriched=1 · all embedded |
 | D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer, full corpus populated |
@@ -73,7 +73,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | worker.js | Deployed 4e2b2dcf — Case C prompt updated · LEFT JOIN cases on fetch-case-chunks-for-embedding |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
 | enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
-| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk second-pass (Qdrant 0.15, type=case_chunk, top 4) · RRF/FTS5 lives in Worker.js not here |
+| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk second-pass (Qdrant 0.15, type=case_chunk, top 4) · RRF/FTS5 lives in Worker.js not here · 1,259-line version SCPed to VPS session 6 |
 | Retrieval | Case chunk two-stage pass LIVE (session 5) · Worker.js handles RRF/BM25/FTS5 blend · server.py handles semantic + case chunk second-pass |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
 | Frontend | Dark Gazette theme · Library pills · category display · UI briefs 1–6 complete · max_tokens fix deployed |
@@ -114,11 +114,13 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## IMMEDIATE NEXT ACTIONS
 
-1. **Run the scraper** — PowerShell, `arcanthyr-console\Local Scraper\` directory: `python austlii_scraper.py` · Run during business hours (08:00–18:00 AEST) · Monitor CF dashboard for neuron usage · Scraper resumes at TASSC 2024 (progress file set)
+1. **Scraper running via Windows Task Scheduler** — fires daily 8am AEST automatically
 
-2. **Commit session 5 changes** — `git add -A`, `git commit -m "Session 5: case chunk two-stage retrieval + prompt fix + case_name payload"`, `git push origin master` — separately, no &&
+2. **Embed pass running** — 415 case chunks queued (TASSC 2024 batch 1)
 
-3. **Copy updated CLAUDE.md + CLAUDE_arch.md into `Arc v 4/`** and commit
+3. **Commit session 6 changes** — `git add -A`, `git commit -m "Session 6: scraper test + task scheduler + server.py deploy"`, `git push origin master` — separately
+
+4. **Copy updated CLAUDE.md + CLAUDE_arch.md into `Arc v 4/`** and commit
 
 ---
 
@@ -139,6 +141,15 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **RRF/BM25/FTS5 architecture** — lives in Worker.js handleLegalQuery, NOT server.py. Previous CLAUDE.md description was wrong.
 
 ---
+
+## CHANGES THIS SESSION (session 6) — 18 March 2026
+
+- server.py 1,259-line version SCPed to VPS + agent-general force-recreated
+- Scraper test run — 10 x TASSC 2024 cases ingested, all HTTP 200, all deep_enriched=1
+- Progress file restored — 2025 courts marked done, resumes at TASSC 2024/11
+- Windows Task Scheduler configured — run_scraper.bat fires daily at 8am AEST
+- Business hours gate confirmed working via Task Scheduler test
+- MAX_CASES_PER_SESSION confirmed 100, business hours gate confirmed restored
 
 ## CHANGES THIS SESSION (session 5) — 18 March 2026
 

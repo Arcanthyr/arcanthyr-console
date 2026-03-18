@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 March 2026 (end of session 5). Upload every session alongside CLAUDE.md.*
+*Updated: 18 March 2026 (end of session 6). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -313,7 +313,8 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - Proxy: `arcanthyr.com/api/legal/fetch-page` — routes via Cloudflare edge (VPS IP blocked)
 - Upload timeout: 120s (acceptable now that Worker returns immediately via Queues)
 - **Gate CLEARED session 4: (1) Cloudflare Queues async pattern confirmed, (2) retrieval baseline 15/15 complete**
-- **Progress file:** `arcanthyr-console/Local Scraper/scraper_progress.json` — recreated session 4 with 2025 courts marked done. TASSC 2024 will run from case 1 (re-attempting timed-out cases 3, 8, 9, 10).
+- **Progress file:** `arcanthyr-console/Local Scraper/scraper_progress.json` — 2025 courts marked done, resumes at TASSC 2024/11 (cases 1–10 ingested session 6).
+- **Automation:** Windows Task Scheduler fires run_scraper.bat daily at 8am AEST
 
 **Scraping workflow:**
 ```
@@ -354,6 +355,16 @@ Write using Python (not PowerShell Out-File) to avoid encoding issues.
 ---
 
 ## COMPONENT NOTES
+
+### Windows Task Scheduler — scraper automation
+
+- Task name: Arcanthyr Scraper
+- Triggers: Daily at 8:00 AM AEST
+- Action: runs run_scraper.bat in Local Scraper/ directory
+- run_scraper.bat: `cd /d "...Local Scraper" && python austlii_scraper.py`
+- Business hours gate in scraper handles time window — task fires daily, gate exits if outside 08:00–18:00
+- Exit code 2 = business hours gate fired (normal/expected outside hours)
+- Python: resolved via batch file wrapper (WindowsApps sandboxing blocked direct python.exe path)
 
 ### backfill_case_chunk_names.py
 
