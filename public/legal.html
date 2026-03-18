@@ -450,16 +450,34 @@
       const viewBtn = row.doc_type === 'legislation'
         ? `<button class="btn ghost small" onclick="viewLegislation(${JSON.stringify(row.title || row.id)})">View</button>`
         : '';
+      const pill = (label, green) =>
+        `<span style="font-family:'DM Mono',monospace;font-size:0.68rem;color:${green ? 'var(--accent)' : 'var(--text-dim)'}">⬤ ${label}</span>`;
+      let statusPills = '';
+      if (row.doc_type === 'case') {
+        const parts = [];
+        if (row.enriched) parts.push(pill('Pass 1', false));
+        if (row.deep_enriched) parts.push(pill('Deep', true));
+        if (row.chunk_count > 0) parts.push(`<span style="font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--text-dim)">chunks: ${row.chunks_embedded}/${row.chunk_count} embedded</span>`);
+        statusPills = parts.join(' ');
+      } else if (row.doc_type === 'secondary') {
+        const parts = [];
+        if (row.enriched) parts.push(pill('Enriched', false));
+        if (row.embedded) parts.push(pill('Embedded', true));
+        statusPills = parts.join(' ');
+      } else if (row.doc_type === 'legislation') {
+        statusPills = row.embedded ? pill('Embedded', true) : pill('Not embedded', false);
+      }
       return `
         <div class="lib-item">
           <div class="lib-item-title" title="${row.title || row.ref || row.id}">${row.title || row.ref || row.id}</div>
           <div class="lib-item-meta">
-            ${row.court ? `<span>${courtAbbrev(row.court)}</span>` : ''}
+            ${row.doc_type === 'secondary' ? (row.category ? `<span>${row.category.toUpperCase()}</span>` : '') : (row.court ? `<span>${courtAbbrev(row.court)}</span>` : '')}
             <span>${fmtDate(row.processed_date)}</span>
             ${viewBtn}
             <button class="delete-btn" data-type="${row.doc_type}" data-id="${row.id}"
               onclick="deleteDocument(this)">Delete</button>
           </div>
+          ${statusPills ? `<div style="margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;">${statusPills}</div>` : ''}
         </div>`;
     }
 

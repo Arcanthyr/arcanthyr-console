@@ -1200,19 +1200,22 @@ async function handleLibraryList(env) {
     env.DB.prepare(`
       SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
              processed_date, summary_quality_score, 'case' AS doc_type,
-             LENGTH(raw_text) AS raw_size
+             LENGTH(raw_text) AS raw_size, enriched, deep_enriched,
+             (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation) AS chunk_count,
+             (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation AND embedded = 1) AS chunks_embedded
       FROM cases ORDER BY processed_date DESC
     `).all(),
     env.DB.prepare(`
       SELECT id, id AS ref, title, jurisdiction AS court, current_as_at AS date,
              processed_date, NULL AS summary_quality_score, 'legislation' AS doc_type,
-             LENGTH(raw_text) AS raw_size
+             LENGTH(raw_text) AS raw_size, embedded
       FROM legislation ORDER BY processed_date DESC
     `).all(),
     env.DB.prepare(`
       SELECT id, id AS ref, title, source_type AS court, date_added AS date,
              date_added AS processed_date, NULL AS summary_quality_score,
-             'secondary' AS doc_type, LENGTH(raw_text) AS raw_size
+             'secondary' AS doc_type, LENGTH(raw_text) AS raw_size,
+             enriched, embedded, category
       FROM secondary_sources ORDER BY date_added DESC
     `).all(),
   ]);
