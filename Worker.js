@@ -69,6 +69,7 @@ async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
 
   const raw = (
     result?.choices?.[0]?.message?.content?.trim() ||
+    result?.choices?.[0]?.message?.reasoning_content?.trim() ||
     result?.choices?.[0]?.text?.trim() ||
     result?.response?.trim() ||
     ""
@@ -2338,7 +2339,7 @@ export default {
 
           // Pass 1 — metadata/facts/case_name from first 8k chars
           const pass1System = `You are a legal research assistant. Extract metadata from the opening of this Australian court judgment. Output ONLY valid JSON: { "case_name": "", "judge": "", "parties": "", "facts": "", "issues": [] }`;
-          const pass1Raw = await callWorkersAI(env, pass1System, row.raw_text.slice(0, 8000), 800);
+          const pass1Raw = await callWorkersAI(env, pass1System, row.raw_text.slice(0, 8000), 1500);
           const pass1Cleaned = (pass1Raw || '').replace(/```json|```/g, '').trim();
           let pass1 = { case_name: null, judge: null, parties: null, facts: null, issues: [] };
           try { pass1 = JSON.parse(pass1Cleaned); } catch (e) {}
