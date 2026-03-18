@@ -2269,7 +2269,7 @@ export default {
           const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt. Output ONLY valid JSON: { "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}], "holdings": [], "legislation": [], "key_authorities": [{"name": "", "treatment": "", "why": ""}] }. If no legal content is present output { "principles": [], "holdings": [], "legislation": [], "key_authorities": [] }.`;
 
           const userContent = `${context}\n\nExcerpt:\n${row.chunk_text}`;
-          const raw = await callWorkersAI(env, systemPrompt, userContent, 1000);
+          const raw = await callWorkersAI(env, systemPrompt, userContent, 1500);
           const cleaned = (raw || '').replace(/```json|```/g, '').trim();
 
           let extracted = { principles: [], holdings: [], legislation: [], key_authorities: [] };
