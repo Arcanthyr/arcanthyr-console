@@ -858,10 +858,12 @@ async function handleUploadCase(body, env) {
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   court = court || courtMap[court_hint] || 'supreme';
   if (encoding === 'base64') case_text = atob(case_text);
-  await env.CASE_QUEUE.send({ type: 'upload', case_text, citation, case_name, court });
-  await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, enriched, embedded) VALUES (?, ?, ?, ?, 0, 0)`)
-    .bind(crypto.randomUUID(), citation, court, `${(citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1]}-01-01`)
+  const caseId = crypto.randomUUID();
+  const caseYear = (citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1];
+  await env.DB.prepare(`INSERT OR REPLACE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
+    .bind(caseId, citation, court, `${caseYear}-01-01`, case_text)
     .run();
+  await env.CASE_QUEUE.send({ citation });
   return { queued: true, citation };
 }
 
@@ -898,10 +900,12 @@ async function handleFetchCaseUrl(body, env) {
   const abbrevMatch = citation.match(/\]\s+([A-Za-z]+)\s+\d/);
   const resolvedCourt = court || (abbrevMatch && courtMap[abbrevMatch[1]]) || 'supreme';
 
-  await env.CASE_QUEUE.send({ type: 'url', plainText, citation, case_name: case_name || null, court: resolvedCourt });
-  await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, enriched, embedded) VALUES (?, ?, ?, ?, 0, 0)`)
-    .bind(crypto.randomUUID(), citation, resolvedCourt, `${(citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1]}-01-01`)
+  const caseId = crypto.randomUUID();
+  const caseYear = (citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1];
+  await env.DB.prepare(`INSERT OR REPLACE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
+    .bind(caseId, citation, resolvedCourt, `${caseYear}-01-01`, plainText)
     .run();
+  await env.CASE_QUEUE.send({ citation });
   return { queued: true, citation };
 }
 
@@ -2219,10 +2223,11 @@ export default {
 
   async queue(batch, env) {
     for (const msg of batch.messages) {
-      const { type, plainText, case_text, citation, case_name, court } = msg.body;
-      const text = type === 'url' ? plainText : case_text;
+      const { citation } = msg.body;
       try {
-        await processCaseUpload(env, text, citation, case_name, court);
+        const row = await env.DB.prepare(`SELECT raw_text, case_name, court FROM cases WHERE citation = ?`).bind(citation).first();
+        if (!row || !row.raw_text) throw new Error(`No raw_text in D1 for ${citation}`);
+        await processCaseUpload(env, row.raw_text, citation, row.case_name, row.court);
         msg.ack();
       } catch (e) {
         console.error(`Queue processing failed for ${citation}: ${e.message}`);
