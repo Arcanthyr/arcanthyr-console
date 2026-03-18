@@ -746,6 +746,55 @@ async function handleClarifyAgent(body, env) {
   return { done: false, question, draft: null };
 }
 
+async function handleAxiomRelay(body, env) {
+  const { entries, focus } = body;
+  if (!entries || !entries.length) return { report: "No entries to relay." };
+
+  const entryLines = entries.map((e, i) => `[${i}] [${(e.tag || "note").toUpperCase()}] ${e.text}`).join("\n");
+  const focusNote = focus ? `\nFocus area: ${focus}` : "";
+
+  // Stage 1 — decompose entries into surface/intent/constraint
+  const stage1System = `You are a strategic decomposition engine. For each numbered entry, extract:
+- surface: what is literally stated (1 sentence)
+- intent: the underlying goal or need (1 sentence)
+- constraint: what is blocking, limiting, or creating tension (1 sentence)
+Output ONLY a JSON array: [{"id":0,"surface":"...","intent":"...","constraint":"..."},...]
+No preamble. No commentary. Valid JSON only.`;
+  const stage1Raw = await callWorkersAI(env, stage1System, `Entries:${focusNote}\n${entryLines}`, 900);
+
+  // Stage 2 — identify tensions and opportunities across the decomposed entries
+  const stage2System = `You are a systems analyst. Given decomposed entries, identify exactly 3 tensions or leverage opportunities across them.
+Format EXACTLY as:
+TENSION_1
+[1-2 sentences]
+TENSION_2
+[1-2 sentences]
+TENSION_3
+[1-2 sentences]
+No other text.`;
+  const stage2Raw = await callWorkersAI(env, stage2System, `Decomposed entries:${focusNote}\n${stage1Raw}`, 400);
+
+  // Stage 3 — produce final relay report
+  const stage3System = `You are the Axiom Relay — a strategic synthesis engine. Produce a final report using EXACTLY these four sections:
+
+SIGNAL
+[2-3 sentences: the dominant pattern or core theme across all entries]
+
+LEVERAGE POINT
+[2-3 sentences: the single highest-value intervention or decision point]
+
+RELAY ACTIONS
+[3 concrete numbered actions, each under 15 words]
+
+DEAD WEIGHT
+[1-2 sentences: what should be dropped, deprioritised, or stopped]
+
+No other text. No preamble.`;
+  const stage3Raw = await callWorkersAI(env, stage3System, `Tensions identified:${focusNote}\n${stage2Raw}\n\nOriginal entries:\n${entryLines}`, 1200);
+
+  return { report: stage3Raw };
+}
+
 /* =============================================================
    API HANDLERS
    ============================================================= */
@@ -1541,7 +1590,7 @@ ${answерNote}`;
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
+      max_tokens: 2000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     }),
@@ -1710,7 +1759,7 @@ async function handleLegalQueryWorkersAI(body, env) {
       { role: "system", content: systemPrompt },
       { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If the sources lack authority on a point, say explicitly: "The retrieved sources do not contain sufficient information on this point."\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
     ],
-    max_tokens: 800,
+    max_tokens: 2000,
     budget_tokens: 0,
   });
 
@@ -2081,6 +2130,7 @@ export default {
         else if (action === "next-actions") result = await handleNextActions(body, env);
         else if (action === "weekly-review") result = await handleWeeklyReview(body, env);
         else if (action === "clarify-agent") result = await handleClarifyAgent(body, env);
+        else if (action === "axiom-relay") result = await handleAxiomRelay(body, env);
         else return json({ error: `Unknown AI action: ${action}` }, 404);
         return json({ result });
       } catch (err) { return json({ error: err.message }, 500); }

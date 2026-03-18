@@ -81,6 +81,7 @@ body {
   height: auto;
   margin-bottom: 28px;
   opacity: 0.88;
+  background: var(--bg);
 }
 
 .sigil-nav {
@@ -89,6 +90,7 @@ body {
   opacity: 0.82;
   display: block;
   flex-shrink: 0;
+  background: var(--bg);
 }
 
 /* --- Nav ---------------------------------------------------- */
@@ -126,7 +128,7 @@ nav.site-nav a.btn {
   display: block;
   width: 40px;
   height: 1px;
-  background: var(--blue);
+  background: var(--border-heavy);
   margin: 14px auto 0;
   opacity: 0.6;
 }
@@ -267,7 +269,7 @@ select.search-input {
   color: var(--text-dim);
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-family: 'DM Mono', monospace;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 0.625rem;
   font-weight: 400;
   letter-spacing: 0.1em;
@@ -282,9 +284,9 @@ select.search-input {
 }
 
 .chip.active {
-  background: var(--blue-dim);
-  border-color: rgba(58, 106, 154, 0.4);
-  color: var(--blue);
+  background: var(--surface-raise);
+  border-color: var(--border-heavy);
+  color: var(--text-mid);
 }
 
 /* --- Filter summary ---------------------------------------- */
@@ -332,9 +334,9 @@ button,
 
 button:hover,
 .btn:hover {
-  background: var(--blue-dim);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--surface-raise);
+  border-color: var(--border-heavy);
+  color: var(--text);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
@@ -347,9 +349,9 @@ button:active,
 
 button.active,
 .btn.active {
-  background: var(--blue-dim);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--surface-raise);
+  border-color: var(--border-heavy);
+  color: var(--text);
 }
 
 button:disabled,
@@ -370,8 +372,8 @@ button.ghost,
 button.ghost:hover,
 .btn.ghost:hover {
   background: transparent;
-  color: var(--blue);
-  border-color: var(--blue);
+  color: var(--text-mid);
+  border-color: var(--border-heavy);
   transform: translateY(-1px);
   box-shadow: none;
 }
@@ -412,9 +414,9 @@ button.ai-btn:hover {
 }
 
 .btn-primary:hover {
-  background: var(--blue-dim);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--surface-raise);
+  border-color: var(--border-heavy);
+  color: var(--text);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
@@ -470,7 +472,7 @@ button.ai-btn:hover {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--blue);
+  color: var(--text);
   margin-bottom: 6px;
   margin-top: 14px;
 }
@@ -909,7 +911,7 @@ nav.site-nav { animation: page-in 0.3s ease both; }
   border-radius: 4px;
   color: var(--text-dim);
   cursor: pointer;
-  font-family: 'DM Mono', monospace;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 0.65rem;
   padding: 2px 8px;
   height: auto;

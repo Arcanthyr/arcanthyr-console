@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 March 2026 (session 3). Upload every session alongside CLAUDE.md.*
+*Updated: 18 March 2026 (end of session 4). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -34,11 +34,22 @@
 
 **Nexus health check port is 18789** — always curl `http://localhost:18789/health` after restart.
 
-**Correct poller invocation (session 3 — run inside tmux WITHOUT -d):**
+**Correct poller invocation — ALWAYS attach to tmux first, run command in foreground, then Ctrl+B D:**
+```bash
+tmux attach -t poller
+# inside tmux pane:
+cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop
+# then Ctrl+B D to detach
+```
+
+If tmux session doesn't exist, create it first:
 ```bash
 tmux new-session -d -s poller
-tmux send-keys -t poller "cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop" Enter
+tmux attach -t poller
+# then run command as above
 ```
+
+Do NOT use `tmux send-keys` to launch the poller — it fires into the wrong context and runs in the main shell, not inside tmux. The process then dies when SSH disconnects. Confirmed session 4.
 
 Do NOT use `-d` with `docker compose exec` inside tmux — it detaches the process silently and tmux session dies. Tmux is the backgrounding mechanism; the exec should run in the foreground inside tmux.
 
@@ -85,7 +96,7 @@ New rows land with `enriched=0`. Poller's embed pass only picks up `enriched=1, 
 | Legislation | None — raw statutory text embedded directly | |
 | Future secondary source uploads (small volume) | Claude API via poller | Acceptable for low volume |
 
-**Secondary sources corpus:** 2,031 rows (1,138 master + 892 procedure + 1 corroboration). All enriched=1. `enriched_text` is NULL — correct, poller falls back to `raw_text`. Do NOT run `--mode enrich` on these rows.
+**Secondary sources corpus:** 2,032 rows (1,138 master + 892 procedure + 1 corroboration + 1 sentencing). All enriched=1. `enriched_text` is NULL — correct, poller falls back to `raw_text`. Do NOT run `--mode enrich` on these rows.
 
 ---
 
@@ -99,7 +110,7 @@ User query
 Pass 1 — Semantic: Qdrant cosine similarity (pplx-embed-context-v1)
          top 6, min score 0.45, re-ranked by court hierarchy within 0.05 band
     ↓
-Pass 2 — In-memory BM25: scored against all embedded secondary_sources (~2,031 docs)
+Pass 2 — In-memory BM25: scored against all embedded secondary_sources (~2,032 docs)
          cached in server.py memory · built on first query · invalidated on ingest
          TTL 10 minutes · k1=1.5, b=0.75 · top 10 candidates
     ↓
@@ -223,13 +234,16 @@ Rejected alternatives (do not revisit without new information):
 | retrieval_baseline.sh | VPS `~/retrieval_baseline.sh` — 15 baseline questions, results in ~/retrieval_baseline_results.txt |
 | master_corpus_part1.md | `arcanthyr-console/` — 317 chunks (32 master + 285 procedure) |
 | master_corpus_part2.md | `arcanthyr-console/` — 821 chunks (214 master + 607 procedure) |
+| sentencing_first_offenders.md | `arcanthyr-console/` — 1 procedure chunk, ingested session 4 |
 | scripts/ | `Arc v 4/scripts/` — all support scripts committed 18 Mar 2026 |
 | worker.js | `Arc v 4/worker.js` (renamed from Worker.js session 3) |
 | CLAUDE.md | `Arc v 4/CLAUDE.md` |
 | CLAUDE_arch.md | `Arc v 4/CLAUDE_arch.md` |
-| austlii_scraper.py | `Local Scraper/` (not in git) — runs on Windows only (VPS IP blocked) |
+| austlii_scraper.py | `arcanthyr-console/Local Scraper/austlii_scraper.py` — runs on Windows only (VPS IP blocked) |
+| scraper_progress.json | `arcanthyr-console/Local Scraper/scraper_progress.json` — recreated session 4, TASSC 2024 will resume from case 1 |
 | docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
 | RAG_Workflow_Arcanthyr_v3.docx | `arcanthyr-console/` — updated 18 Mar 2026 |
+| debug_parse.py | `arcanthyr-console/debug_parse.py` — one-off parser diagnostic script, safe to delete |
 
 **server.py is volume-mounted** (`./agent-general/src:/app/src` in docker-compose.yml) — NOT baked into image. Changes only require: edit locally → SCP to VPS → `docker compose up -d --force-recreate agent-general` → health check. No rebuild unless Dockerfile changes.
 
@@ -269,6 +283,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - **Nexus health check port is 18789** — not 8000.
 - **Always set enriched=1 after secondary_sources ingest** — new rows land with enriched=0. Poller won't touch them until enriched=1.
 - **ingest_corpus.py destructive upsert** — ON CONFLICT DO UPDATE resets embedded=0 and wipes enriched_text on citation collision. Never re-run against already-ingested citations.
+- **ingest_corpus.py block separator format** — `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` (with type word). PowerShell Out-File writes BOM which corrupts separator matching. Always use Python to write corpus files. Confirmed session 4.
 - **upload-corpus auth** — uses User-Agent spoof, NOT X-Nexus-Key. Python urllib User-Agent blocked by CF WAF — always set `User-Agent: Mozilla/5.0 (compatible; Arcanthyr/1.0)`.
 - **Category normalisation** — DONE session 3. 8 canonical categories. Canonical values: annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation.
 - **Word artifact noise** — 131 secondary_sources chunks cleaned 18 Mar 2026. Re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested.
@@ -281,9 +296,11 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - **Cloudflare Workers Observability** — use `npx wrangler tail arcanthyr-api` for real-time logs (not CF dashboard — events may lag 2 minutes).
 - **OpenAI mini API quirks** — `max_completion_tokens` not `max_tokens`; no `temperature`; normalise `\r\n` before regex.
 - **PowerShell SSH quoting mangles auth headers** — never test API routes via SSH from PowerShell. SSH to VPS first, then run curl.
-- **Pre-scraper gate** — char-based windowing in Llama extraction uses `fullText[8000:28000]`. Will miss reasoning in long judgments. Scraper paused. Fix: heading-boundary split or full-text extraction. Test URLs: TASCCA 2021/12, TASSC 2018/62, TASMC 2016/14.
+- **TASSC 2024 scraper timeouts** — cases 3, 8, 9, 10 failed with HTTP 0 in previous run. Zero rows in D1. Will retry when scraper resumes.
+- **Pre-scraper gate** — CLEARED session 4. Queues live + baseline 15/15. Scraper ready.
 - **BM25 corpus cold start** — ~2s delay on first query after container restart. Acceptable.
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables.
+- **tmux send-keys poller pattern** — DO NOT use. Fires into wrong context, runs in main shell, dies on SSH disconnect. Attach to tmux manually instead. Confirmed session 4.
 
 ---
 
@@ -294,7 +311,9 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - `MAX_CASES_PER_SESSION`: 100
 - Delays: 10–20s random · Business hours: 08:00–18:00 AEST
 - Proxy: `arcanthyr.com/api/legal/fetch-page` — routes via Cloudflare edge (VPS IP blocked)
-- **Gate cleared session 3: (1) Cloudflare Queues async pattern confirmed, (2) retrieval baseline re-run pending embed pass completion**
+- Upload timeout: 120s (acceptable now that Worker returns immediately via Queues)
+- **Gate CLEARED session 4: (1) Cloudflare Queues async pattern confirmed, (2) retrieval baseline 15/15 complete**
+- **Progress file:** `arcanthyr-console/Local Scraper/scraper_progress.json` — recreated session 4 with 2025 courts marked done. TASSC 2024 will run from case 1 (re-attempting timed-out cases 3, 8, 9, 10).
 
 **Scraping workflow:**
 ```
@@ -310,7 +329,19 @@ austlii_scraper.py (local Windows)
 Post-scrape checklist:
     - Run xref_agent.py --mode both after each batch
     - Audit D1 for Llama literal "null" strings
+    - Check D1 for cases with null case_name/facts (hidden in library UI)
 ```
+
+**If progress file is lost:** recreate manually with courts already processed marked "done":
+```json
+{
+  "TASSC_2025": "done",
+  "TASCCA_2025": "done",
+  "TASFC_2025": "done",
+  "TAMagC_2025": "done"
+}
+```
+Write using Python (not PowerShell Out-File) to avoid encoding issues.
 
 ---
 
@@ -328,13 +359,15 @@ Post-scrape checklist:
 
 Volume-mounted at `./agent-general/src:/app/src`. Not container-native — defaults to `localhost` for Ollama/Qdrant. Override via docker compose exec env vars.
 
-**Correct invocation (session 3):**
+**Correct invocation — attach to tmux first:**
 ```bash
-tmux new-session -d -s poller
-tmux send-keys -t poller "cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop" Enter
+tmux attach -t poller
+# inside tmux:
+cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop
+# Ctrl+B D to detach
 ```
 
-Do NOT use `-d` with docker compose exec inside tmux. Tmux is the backgrounding mechanism.
+Do NOT use `tmux send-keys` — confirmed to run in main shell and die on SSH disconnect (session 4).
 
 **Modes:** `--mode enrich`, `--mode embed`, `--mode both`, `--mode reconcile`, `--loop`, `--status`
 
@@ -375,8 +408,18 @@ Do NOT use `-d` with docker compose exec inside tmux. Tmux is the backgrounding 
 
 - **`summarizeCase()`** — two-pass case enrichment at scrape/upload time. Pass 1: facts/issues/case_name/judge/parties. Pass 2: windowed holdings/principles/legislation/key_authorities. Short judgments (≤22,000 chars): single pass. Long judgments: Pass 1 + multiple Pass 2 windows (6+ sequential calls on large judgments — timeout risk, mitigated by Queues).
 - **`procedurePassPrompt`** — called after summarizeCase() in processCaseUpload(). Extracts in-court procedural sequences. Returns `NO PROCEDURE CONTENT` if nothing relevant.
-- **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle. Three-path fallback + `budget_tokens: 0` deployed 18 Mar 2026.
+- **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle. Three-path fallback + `budget_tokens: 0` deployed 18 Mar 2026. `max_tokens: 2000` (raised from 800, session 4).
 - **`handleDraft()`, `handleNextActions()`, `handleWeeklyReview()`, `handleClarifyAgent()`** — Axiom journal features. Upgrade optional, low priority.
+- **`handleAxiomRelay()`** — Three-stage relay pipeline (added session 4). Stage 1: decompose entries to `{ id, surface, intent, constraint }` JSON (900 tokens). Stage 2: identify 3 tensions/opportunities across entries (400 tokens). Stage 3: final SIGNAL / LEVERAGE POINT / RELAY ACTIONS / DEAD WEIGHT report (1,200 tokens). Returns `{ report: string }`. Wired to AI router `axiom-relay` action.
+
+### worker.js — max_tokens on query handlers (updated session 4)
+
+| Handler | Model | max_tokens |
+|---|---|---|
+| `handleLegalQuery()` | Claude API (claude-sonnet-4-20250514) | 2,000 (raised from 1,024) |
+| `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 (raised from 800) |
+
+Both raised session 4 to prevent answer truncation on complex legal queries.
 
 ### Workers AI — Qwen3 response shape (18 March 2026)
 
@@ -425,13 +468,21 @@ const answer =
 
 ### ingest_corpus.py
 
-- INPUT_FILE is hardcoded — must be manually changed between part1 and part2 runs
+- INPUT_FILE is hardcoded — must be manually changed between runs
 - Located at: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\ingest_corpus.py` (NOT inside Arc v 4/)
 - PROCEDURE_ONLY flag (line 8) — when True, filters procedure chunks only and appends [procedure] suffix to all citations
-- Section-aware splitting: preserves master/procedure block type from `<!-- block_NNN -->` separators
+- **Block separator format (CRITICAL):** `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` (with type word, on its own line). Followed by `### Heading` then `[DOMAIN:]` on the very next line (no blank line between).
+- **File creation:** always use Python to write corpus files. PowerShell `Out-File` adds BOM which corrupts block separator regex matching. Confirmed broken in session 4.
 - Dedup logic: repeated citations get [2], [3] suffixes in encounter order
 - Minimum body length check: chunks under 100 chars logged as warnings but still ingested
 - DESTRUCTIVE UPSERT WARNING: upload-corpus uses ON CONFLICT DO UPDATE which resets embedded=0 and wipes enriched_text on any citation collision. Never re-run against already-ingested citations. Procedure chunks safe (distinct [procedure] suffix). Master chunks must never be re-ingested.
+
+**To create a single manual corpus chunk correctly:**
+```python
+content = "<!-- block_001 procedure -->\n### Chunk Title\n[DOMAIN: Criminal Law]\n[CITATION: Citation text [procedure]]\n[TITLE: Chunk Title]\n[CATEGORY: procedure]\n[SOURCE_TYPE: procedure]\n\nBody text here.\n"
+with open(r"C:\path\to\file.md", "w", encoding="utf-8") as f:
+    f.write(content)
+```
 
 ### master_corpus files
 
@@ -441,16 +492,17 @@ const answer =
 - All procedure citations have [procedure] suffix to distinguish from master corpus citations
 - Location: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\` (and duplicate in Arc v 4\)
 - NOT on VPS — local Windows only
-- Total corpus after procedure ingest + corroboration chunk: 2,031 chunks
+- Total corpus after all ingests: 2,032 chunks (incl. corroboration + sentencing first offenders)
 
 ### retrieval_baseline.sh
 
 - Location: VPS `~/retrieval_baseline.sh`
 - Auth: requires `X-Nexus-Key` header — value from `grep NEXUS_SECRET_KEY ~/ai-stack/.env`
 - Field name: uses `query_text` (not `query`)
-- File creation: use PowerShell `@' ... '@ | Out-File -Encoding utf8` then SCP to VPS
+- File creation: use Python (not PowerShell Out-File) to avoid encoding issues
 - Run after every embed pass or server.py change to validate retrieval quality
 - Results in `~/retrieval_baseline_results.txt`
+- **Last run: 18 Mar 2026 — 15/15 passing**
 
 ### Word artifact cleanup
 
@@ -480,6 +532,14 @@ Renamed from `Worker.js` to `worker.js` session 3. wrangler.toml updated to `mai
 - Legislation: `embedded`
 
 `renderLibRow()` in legal.html displays pills: `⬤ Enriched` (grey), `⬤ Embedded` (green), `⬤ Deep` (green), `chunks: N/M embedded`. Secondary rows show normalised `category` as type label (not raw source_type).
+
+### UI — session 4 changes
+
+- max_tokens 2,000 on both query handlers — fixes answer truncation
+- handleAxiomRelay() added to worker.js — wired to `axiom-relay` AI router case
+- Stray image `unnamed (2) (1) (1).jpg` deleted from public/
+- All UI briefs 1–6 confirmed complete
+- worker.js deployed version: `44f54c6b`
 
 ### scripts/ directory (Arc v 4/scripts/)
 
@@ -514,9 +574,11 @@ python ingest_corpus.py   # INPUT_FILE must be set to absolute path, PROCEDURE_O
 # After ingest, ALWAYS set enriched=1 (PowerShell, Arc v 4/ directory):
 npx wrangler d1 execute arcanthyr --remote --command "UPDATE secondary_sources SET enriched=1 WHERE id LIKE '%[procedure]%' AND enriched=0"
 
-# Then embed pass on VPS (SSH, ~/ai-stack) — run inside tmux WITHOUT -d:
-tmux new-session -d -s poller
-tmux send-keys -t poller "cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop" Enter
+# Then embed pass on VPS (SSH) — attach to tmux, run in foreground:
+tmux attach -t poller
+# inside tmux:
+cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop
+# Ctrl+B D to detach
 ```
 
 Do NOT run both corpus parts simultaneously — write conflicts in D1.
@@ -527,100 +589,49 @@ Do NOT run both corpus parts simultaneously — write conflicts in D1.
 
 Run after every major corpus or pipeline change. Results in `~/retrieval_baseline_results.txt`.
 
-| # | Question | Status 18 Mar 2026 | Notes |
+| # | Question | Status 18 Mar 2026 (session 4) | Notes |
 |---|---|---|---|
-| 1 | what is the test under s 137 Evidence Act | ✅ Pass | Strong |
-| 2 | elements of common assault Tasmania | ✅ Pass | |
+| 1 | what is the test under s 137 Evidence Act | ✅ Pass | Strong — multiple s137 chunks |
+| 2 | elements of common assault Tasmania | ✅ Pass | Bonde v Maney |
 | 3 | what is the definition of a weapon under the Firearms Act | ✅ Pass | |
-| 4 | when can police search without a warrant | ⚠️ Partial | Doctrine thin |
-| 5 | what is the fault element for recklessness | ⚠️ Partial | Word artifacts cleaned — re-test after embed |
+| 4 | when can police search without a warrant | ✅ Pass | s16, Ghani, Jeffrey v Black |
+| 5 | what is the fault element for recklessness | ✅ Pass | Vallance, Beechey, Cth Code |
 | 6 | standard of proof in criminal proceedings | ✅ Pass | |
-| 7 | what is the test for tendency evidence | ❌ Fail→pending | Procedure chunks ingested, pending embed |
-| 8 | propensity evidence admissibility | ❌ Fail→pending | Procedure chunks ingested, pending embed |
-| 9 | sentencing principles for first offenders | ⚠️ Partial | Content thin — consider manual chunk |
-| 10 | what amounts to corroboration | ❌ Fail→pending | Corroboration chunk ingested 18 Mar 2026, pending embed |
-| 11 | how do I make a s 38 application | ✅ Pass | |
-| 12 | steps for handling a hostile witness | ❌ Fail→pending | Procedure chunks ingested, pending embed |
-| 13 | how do I object to tendency evidence | ❌ Fail→pending | Procedure chunks ingested, pending embed |
-| 14 | examination in chief technique leading questions | ⚠️ Partial→pending | Procedure chunks ingested, pending embed |
-| 15 | what do I do if a witness refuses to answer | ✅ Pass | |
+| 7 | what is the test for tendency evidence | ✅ Pass | s97, significant probative value |
+| 8 | propensity evidence admissibility | ✅ Pass | ss97-101, Lockyer, Gipp v R |
+| 9 | sentencing principles for first offenders | ✅ Pass | Manual chunk top hit |
+| 10 | what amounts to corroboration | ✅ Pass | s164 abolition, s165 warning |
+| 11 | how do I make a s 38 application | ✅ Pass | Rich retrieval |
+| 12 | steps for handling a hostile witness | ✅ Pass | s38 workflow chunks |
+| 13 | how do I object to tendency evidence | ✅ Pass | Police v FRS four steps |
+| 14 | examination in chief technique leading questions | ✅ Pass | Police v Endlay, s42 |
+| 15 | what do I do if a witness refuses to answer | ✅ Pass | s43 Justices Act |
 
 ---
 
-## UI CHANGES — CC BRIEFS (READY TO DEPLOY)
+## UI CHANGES — CC BRIEFS (ALL COMPLETE — session 4)
 
-Frontend only — safe to run anytime, no VPS interaction. Paste briefs in order in CC.
-
-**Brief 1 — Reconnaissance**
-> Read every file in `Arc v 4/public/`. List each filename and a one-sentence description. Do not make any changes.
-
-**Brief 2 — Visual fixes**
-> Read all HTML files in `Arc v 4/public/`. Make these style changes across all pages:
-> 1. Remove any relevance threshold / score bar UI element
-> 2. Any element labelled "Console" in nav or headings → rename to "Arc Console"
-> 3. Match sigil image background to page background
-> 4. All buttons must use Times New Roman font
-> 5. Any headings in blue → change to white
-> 6. Any buttons with blue background → change to match existing non-blue button style
-> 7. Remove "A forge for clarity — where raw thought is shaped into action." from home page
-> 8. Any gold or yellow-tinted text → change to white
->
-> List every file modified and every change made.
-
-**Brief 3 — Structural: new Ingest page**
-> Read all HTML files in `Arc v 4/public/` and `worker.js`.
-> 1. Create `Arc v 4/public/ingest.html` modelled on existing page layout and nav
-> 2. Move ALL upload sections from every existing page into `ingest.html`
-> 3. Add "Ingest" as a nav link on every existing page
-> 4. Remove upload sections from original pages after moving
-> 5. Move "Database Status" section onto `ingest.html`
->
-> List every file modified and every element moved.
-
-**Brief 4 — Structural: Axiom Relay rename + cleanup**
-> Read all HTML files in `Arc v 4/public/` and `worker.js`.
-> 1. Find the page currently named "Email" or containing email functionality
-> 2. Rename to "Axiom Relay" throughout
-> 3. Find any older "Axiom Relay" page — delete it and remove its nav link
-> 4. In `worker.js`, remove routes for old Axiom Relay functionality
->
-> List every file modified and every deletion made.
-
-**Brief 5 — Functionality: legislation search single input box**
-> Read the legal research HTML page in `Arc v 4/public/` and the legislation search handler in `worker.js`.
-> 1. Replace separate act name/year/section fields with a single text input
-> 2. Placeholder: "Search legislation — act name, section, year…"
-> 3. Update search handler to use LIKE with wildcards across all relevant D1 columns
->
-> List every file and function modified.
-
-**Brief 6 — Functionality: legislation "View" link fix**
-> Read all HTML files in `Arc v 4/public/` and `worker.js`.
-> 1. In Sources Retrieved panel — "View" button on legislation results → redirect to legislation page
-> 2. In Library page — "View" option on legislation entries → same fix
->
-> List every file and handler modified.
+All 6 briefs executed and deployed. Frontend work complete. Session 4 additional changes: max_tokens fix, handleAxiomRelay(), stray image deletion.
 
 ---
 
 ## FUTURE ROADMAP
 
-- **Retrieval baseline re-run** — after embed pass complete (~3,527 target). Priority: Q5, Q7, Q8, Q10, Q12, Q13, Q14.
-- **Neil case retrieval test** — s 402A fresh/compelling evidence, DNA secondary transfer, DNA prosecution burden.
-- **Reopen scraper** — gate cleared session 3. Run during business hours. Monitor CF dashboard.
+- **Run scraper** — IMMEDIATE. Resume TASSC 2024. Run during business hours. Monitor CF dashboard.
+- **Test Neill-Fraser DNA secondary transfer** — re-test now embed is complete.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume.
-- **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-baseline before making mandatory.
-- **Legislation enrichment via Claude API** — plain English summaries, cross-references. Do AFTER cross-reference agent design confirmed.
-- **Auto-populate legislation metadata on upload** — Claude API reads filename/first page.
-- **Console status indicator** — DONE session 3 (library pills).
+- **Retrieval eval framework** — formalise scored baseline as standing process.
+- **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks.
+- **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-scraper-run.
 - **Qwen3 UI toggle** — add third button to model toggle. Workers AI confirmed working.
-- **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
-- **Nightly cron for xref_agent.py** — after scraper is actively running.
+- **Nightly cron for xref_agent.py** — after scraper actively running.
 - **Stare decisis layer** — surface treatment history from case_citations.
 - **Animated sigil** — swap `sigil.jpg` for `sigil.gif` if rotating GIF produced.
-- **UI generator** — find a UI/website generator for smoother frontend iteration.
 - **chunk finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable.
 - **Dead letter queue** — for chunks that fail max_retries. Low priority.
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested.
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal.
-- **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks.
+- **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
+- **Legislation enrichment via Claude API** — plain English summaries, cross-references. Do AFTER cross-reference agent design confirmed.
+- **Auto-populate legislation metadata on upload** — Claude API reads filename/first page.
+- **RAG workflow doc** — DONE v3 18 Mar 2026.

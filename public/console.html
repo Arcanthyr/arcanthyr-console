@@ -84,19 +84,6 @@
     }
     .source-actions { margin-top: 6px; }
 
-    .score-badge {
-      display: inline-flex;
-      align-items: center;
-      height: 18px;
-      padding: 0 6px;
-      background: var(--blue-dim);
-      color: var(--blue);
-      border-radius: 3px;
-      font-size: 0.6rem;
-      letter-spacing: 0.06em;
-      border: 1px solid rgba(58, 106, 154, 0.2);
-    }
-
     .court-badge {
       display: inline-flex;
       align-items: center;
@@ -135,30 +122,6 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       border: 1px solid rgba(58, 106, 154, 0.2);
-    }
-
-    .threshold-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .threshold-row label {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      letter-spacing: 0.06em;
-    }
-    .threshold-row input[type="range"] {
-      flex: 1;
-      min-width: 120px;
-      accent-color: var(--blue);
-    }
-    .threshold-val {
-      font-size: 0.72rem;
-      color: var(--text-mid);
-      font-family: 'DM Mono', monospace;
-      min-width: 36px;
     }
 
     .chunk-count {
@@ -213,7 +176,7 @@
     }
     .model-toggle button.active {
       background: var(--surface-raise);
-      color: var(--blue);
+      color: var(--text);
     }
     .model-toggle button:first-child { border-right: 1px solid var(--border-heavy); }
   </style>
@@ -344,9 +307,6 @@
     function renderSource(s) {
       const isLeg = s.court === 'legislation';
       const cClass = s.court || 'unknown';
-      const score = (s.score != null && s.score < 1)
-        ? `<span class="score-badge">score ${Number(s.score).toFixed(3)}</span>` : '';
-
       let summaryHtml = '';
       if (s.summary) {
         const SHORT = 600;
@@ -372,7 +332,6 @@
         <div class="row" style="gap:6px;flex-wrap:wrap;">
           <span class="source-citation">${s.citation}</span>
           <span class="court-badge ${cClass}">${courtLabel(s.court)}</span>
-          ${score}
         </div>
         <div class="source-meta">${s.year ? `<span>${s.year}</span>` : ''}</div>
         ${summaryHtml}
