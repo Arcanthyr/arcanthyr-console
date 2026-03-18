@@ -203,27 +203,24 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   const finalCaseName = summary.case_name || caseData.case_name;
   const finalCaseData = { ...caseData, case_name: finalCaseName };
 
+  // ── Write D1 immediately — before procedure pass or nexus ─────────
   const id = await saveCaseToDb(env, finalCaseData, summary);
   await env.DB.prepare(`UPDATE cases SET enriched = 1 WHERE citation = ?`).bind(citation).run();
 
   // ── Procedure pass ────────────────────────────────────────────────
-  let procedureNotes = null;
   try {
     const procResponse = await callWorkersAI(env, procedurePassPrompt, caseText.slice(0, 80000));
     const procText = (procResponse || "").trim();
     if (procText && procText !== "NO PROCEDURE CONTENT") {
-      procedureNotes = procText;
+      await env.DB.prepare(
+        `UPDATE cases SET procedure_notes = ? WHERE citation = ?`
+      ).bind(procText, citation).run();
     }
   } catch (e) {
     console.error("[procedure pass] failed:", e.message);
   }
 
-  if (procedureNotes) {
-    await env.DB.prepare(
-      `UPDATE cases SET procedure_notes = ? WHERE citation = ?`
-    ).bind(procedureNotes, citation).run();
-  }
-
+  // ── Nexus ingest (fire-and-forget) ───────────────────────────────
   try {
     fetch("https://nexus.arcanthyr.com/ingest", {
       method: "POST",
@@ -482,8 +479,8 @@ async function saveCaseToDb(env, caseData, summary) {
     INSERT OR REPLACE INTO cases
     (id, citation, court, case_date, case_name, judge, parties, url, raw_text, facts, issues, holding,
      holdings_extracted, principles_extracted, legislation_extracted, authorities_extracted,
-     processed_date, summary_quality_score)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     processed_date, summary_quality_score, enriched)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     id,
     caseData.citation,
@@ -502,7 +499,8 @@ async function saveCaseToDb(env, caseData, summary) {
     JSON.stringify(summary.legislation || []),
     JSON.stringify(summary.key_authorities || []),
     new Date().toISOString(),
-    summary.summary_quality_score ?? 0
+    summary.summary_quality_score ?? 0,
+    1
   ).run();
 
   for (const principle of summary.principles) {
@@ -2223,15 +2221,19 @@ export default {
   },
 
   async queue(batch, env) {
+    console.log(`[queue] batch received, ${batch.messages.length} messages`);
     for (const msg of batch.messages) {
       const { citation } = msg.body;
+      console.log(`[queue] processing citation: ${citation}`);
       try {
         const row = await env.DB.prepare(`SELECT raw_text, case_name, court FROM cases WHERE citation = ?`).bind(citation).first();
         if (!row || !row.raw_text) throw new Error(`No raw_text in D1 for ${citation}`);
+        console.log(`[queue] raw_text found, length: ${row.raw_text.length}`);
         await processCaseUpload(env, row.raw_text, citation, row.case_name, row.court);
+        console.log(`[queue] processCaseUpload complete for ${citation}`);
         msg.ack();
       } catch (e) {
-        console.error(`Queue processing failed for ${citation}: ${e.message}`);
+        console.error(`[queue] failed for ${citation}: ${e.message}`);
         msg.retry();
       }
     }
