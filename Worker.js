@@ -182,18 +182,30 @@ async function fetchCaseContent(url, preloadedHtml = null) {
 /* =============================================================
    CASE PROCESSING
    ============================================================= */
+function splitIntoChunks(text, chunkSize = 3000) {
+  const chunks = [];
+  let i = 0;
+  while (i < text.length) {
+    chunks.push(text.slice(i, i + chunkSize));
+    i += chunkSize;
+  }
+  return chunks;
+}
+
 async function processCaseUpload(env, caseText, citation, caseName, court) {
   if (!caseText || !citation) throw new Error("Missing required fields: caseText and citation");
 
   const exists = await env.DB.prepare("SELECT id, enriched FROM cases WHERE citation = ?").bind(citation).first();
   if (exists && exists.enriched === 1) throw new Error(`Case ${citation} already exists and is fully processed`);
 
+  const truncatedText = caseText.length > 100000 ? caseText.substring(0, 100000) : caseText;
+
   const caseData = {
     citation,
     case_name: caseName || citation, // hint only — Llama will override
     court: court || "unknown",
     year: citation.match(/\[(\d{4})\]/)?.[1] || new Date().getFullYear().toString(),
-    full_text: caseText,
+    full_text: truncatedText,
     url: "",
   };
 
@@ -862,7 +874,7 @@ async function handleUploadCase(body, env) {
   await env.DB.prepare(`INSERT OR REPLACE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
     .bind(caseId, citation, court, `${caseYear}-01-01`, case_text)
     .run();
-  await env.CASE_QUEUE.send({ citation });
+  await env.CASE_QUEUE.send({ type: 'METADATA', citation });
   return { queued: true, citation };
 }
 
@@ -904,7 +916,7 @@ async function handleFetchCaseUrl(body, env) {
   await env.DB.prepare(`INSERT OR REPLACE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
     .bind(caseId, citation, resolvedCourt, `${caseYear}-01-01`, plainText)
     .run();
-  await env.CASE_QUEUE.send({ citation });
+  await env.CASE_QUEUE.send({ type: 'METADATA', citation });
   return { queued: true, citation };
 }
 
@@ -2139,6 +2151,20 @@ export default {
     if (url.pathname === '/api/pipeline/write-citations' && request.method === 'POST') return handleWriteCitations(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/write-legislation-refs' && request.method === 'POST') return handleWriteLegislationRefs(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-cases-by-legislation-ref' && request.method === 'POST') return handleFetchCasesByLegislationRef(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-case-chunks-for-embedding' && request.method === 'GET') {
+      const batch = parseInt(url.searchParams.get('batch') || '10');
+      const { results } = await env.DB.prepare(
+        `SELECT id, citation, chunk_index, chunk_text FROM case_chunks WHERE done = 1 AND embedded = 0 LIMIT ?`
+      ).bind(batch).all();
+      return new Response(JSON.stringify({ chunks: results }), { headers: corsHeaders });
+    }
+    if (url.pathname === '/api/pipeline/mark-case-chunks-embedded' && request.method === 'POST') {
+      const { chunk_ids } = await request.json();
+      for (const id of chunk_ids) {
+        await env.DB.prepare(`UPDATE case_chunks SET embedded = 1 WHERE id = ?`).bind(id).run();
+      }
+      return new Response(JSON.stringify({ ok: true, count: chunk_ids.length }), { headers: corsHeaders });
+    }
 
     /* ── INGEST ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ingest/")) {
@@ -2223,17 +2249,136 @@ export default {
   async queue(batch, env) {
     console.log(`[queue] batch received, ${batch.messages.length} messages`);
     for (const msg of batch.messages) {
-      const { citation } = msg.body;
-      console.log(`[queue] processing citation: ${citation}`);
+      const { type, citation, chunk_index } = msg.body;
       try {
-        const row = await env.DB.prepare(`SELECT raw_text, case_name, court FROM cases WHERE citation = ?`).bind(citation).first();
-        if (!row || !row.raw_text) throw new Error(`No raw_text in D1 for ${citation}`);
-        console.log(`[queue] raw_text found, length: ${row.raw_text.length}`);
-        await processCaseUpload(env, row.raw_text, citation, row.case_name, row.court);
-        console.log(`[queue] processCaseUpload complete for ${citation}`);
-        msg.ack();
+        if (type === 'CHUNK') {
+          // Process one chunk — one Workers AI call
+          const row = await env.DB.prepare(
+            `SELECT chunk_text FROM case_chunks WHERE citation = ? AND chunk_index = ?`
+          ).bind(citation, chunk_index).first();
+          if (!row) throw new Error(`No chunk found for ${citation} index ${chunk_index}`);
+
+          const caseRow = await env.DB.prepare(
+            `SELECT case_name, court, facts, issues FROM cases WHERE citation = ?`
+          ).bind(citation).first();
+
+          // Summary-augmented context — pass case metadata to each chunk extraction
+          const context = caseRow ? `Case: ${citation}\nFacts: ${caseRow.facts || ''}\nIssues: ${caseRow.issues || ''}` : `Case: ${citation}`;
+
+          const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt. Output ONLY valid JSON: { "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}], "holdings": [], "legislation": [], "key_authorities": [{"name": "", "treatment": "", "why": ""}] }. If no legal content is present output { "principles": [], "holdings": [], "legislation": [], "key_authorities": [] }.`;
+
+          const userContent = `${context}\n\nExcerpt:\n${row.chunk_text}`;
+          const raw = await callWorkersAI(env, systemPrompt, userContent, 1000);
+          const cleaned = (raw || '').replace(/```json|```/g, '').trim();
+
+          let extracted = { principles: [], holdings: [], legislation: [], key_authorities: [] };
+          try { extracted = JSON.parse(cleaned); } catch (e) { console.error(`[queue] JSON parse failed chunk ${citation}/${chunk_index}`); }
+
+          await env.DB.prepare(
+            `UPDATE case_chunks SET principles_json = ?, done = 1 WHERE citation = ? AND chunk_index = ?`
+          ).bind(JSON.stringify(extracted), citation, chunk_index).run();
+
+          // Check if all chunks done — if so, merge
+          const pending = await env.DB.prepare(
+            `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0`
+          ).bind(citation).first();
+
+          if (pending.cnt === 0) {
+            // Merge all chunk results
+            const chunks = await env.DB.prepare(
+              `SELECT principles_json FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
+            ).bind(citation).all();
+
+            const allPrinciples = [], allHoldings = [], allLegislation = new Set(), allAuthorities = [];
+            for (const chunk of chunks.results) {
+              try {
+                const data = JSON.parse(chunk.principles_json || '{}');
+                if (data.principles) allPrinciples.push(...data.principles);
+                if (data.holdings) allHoldings.push(...data.holdings);
+                if (data.legislation) data.legislation.forEach(l => allLegislation.add(l));
+                if (data.key_authorities) allAuthorities.push(...data.key_authorities);
+              } catch (e) {}
+            }
+
+            // Deduplicate authorities by name
+            const seenAuth = new Set();
+            const dedupedAuth = allAuthorities.filter(a => {
+              if (seenAuth.has(a.name)) return false;
+              seenAuth.add(a.name);
+              return true;
+            });
+
+            await env.DB.prepare(`
+              UPDATE cases SET
+                principles_extracted = ?,
+                holdings_extracted = ?,
+                legislation_extracted = ?,
+                authorities_extracted = ?,
+                deep_enriched = 1
+              WHERE citation = ?
+            `).bind(
+              JSON.stringify(allPrinciples),
+              JSON.stringify(allHoldings),
+              JSON.stringify([...allLegislation]),
+              JSON.stringify(dedupedAuth),
+              citation
+            ).run();
+            console.log(`[queue] merge complete for ${citation} — ${allPrinciples.length} principles`);
+          }
+          msg.ack();
+
+        } else {
+          // METADATA message — Pass 1 + split + enqueue chunks
+          const row = await env.DB.prepare(
+            `SELECT raw_text, case_name, court FROM cases WHERE citation = ?`
+          ).bind(citation).first();
+          if (!row || !row.raw_text) throw new Error(`No raw_text in D1 for ${citation}`);
+
+          console.log(`[queue] METADATA pass for ${citation}, length: ${row.raw_text.length}`);
+
+          // Pass 1 — metadata/facts/case_name from first 8k chars
+          const pass1System = `You are a legal research assistant. Extract metadata from the opening of this Australian court judgment. Output ONLY valid JSON: { "case_name": "", "judge": "", "parties": "", "facts": "", "issues": [] }`;
+          const pass1Raw = await callWorkersAI(env, pass1System, row.raw_text.slice(0, 8000), 800);
+          const pass1Cleaned = (pass1Raw || '').replace(/```json|```/g, '').trim();
+          let pass1 = { case_name: null, judge: null, parties: null, facts: null, issues: [] };
+          try { pass1 = JSON.parse(pass1Cleaned); } catch (e) {}
+
+          // Write Pass 1 results + set enriched=1
+          await env.DB.prepare(`
+            UPDATE cases SET
+              case_name = ?,
+              judge = ?,
+              parties = ?,
+              facts = ?,
+              issues = ?,
+              enriched = 1
+            WHERE citation = ?
+          `).bind(
+            pass1.case_name || null,
+            pass1.judge || null,
+            pass1.parties || null,
+            pass1.facts || null,
+            Array.isArray(pass1.issues) ? pass1.issues.join('; ') : (pass1.issues || null),
+            citation
+          ).run();
+
+          // Split full raw_text into chunks and write to case_chunks
+          const chunks = splitIntoChunks(row.raw_text);
+          console.log(`[queue] splitting ${citation} into ${chunks.length} chunks`);
+
+          for (let i = 0; i < chunks.length; i++) {
+            const chunkId = `${citation}__chunk__${i}`;
+            await env.DB.prepare(`
+              INSERT OR IGNORE INTO case_chunks (id, citation, chunk_index, chunk_text, done, embedded)
+              VALUES (?, ?, ?, ?, 0, 0)
+            `).bind(chunkId, citation, i, chunks[i]).run();
+            await env.CASE_QUEUE.send({ type: 'CHUNK', citation, chunk_index: i });
+          }
+          console.log(`[queue] enqueued ${chunks.length} CHUNK messages for ${citation}`);
+          msg.ack();
+        }
       } catch (e) {
-        console.error(`[queue] failed for ${citation}: ${e.message}`);
+        console.error(`[queue] failed type=${type} ${citation}: ${e.message}`);
         msg.retry();
       }
     }

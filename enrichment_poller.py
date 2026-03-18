@@ -736,6 +736,79 @@ def run_embedding_pass(batch: int) -> dict:
     return {'processed': len(chunks), 'ok': len(ok_ids), 'errors': errors}
 
 
+def run_case_chunk_embedding_pass(batch: int = 10) -> dict:
+    """
+    Fetch up to `batch` case_chunks where done=1 and embedded=0,
+    embed via pplx-embed, upsert to Qdrant, mark embedded=1 via Worker route.
+    """
+    log.info(f'[CASE-EMBED] Fetching up to {batch} case chunks ready for embedding...')
+    resp = requests.get(
+        f'{WORKER_URL}/api/pipeline/fetch-case-chunks-for-embedding',
+        params={'batch': batch},
+        headers={'X-Nexus-Key': NEXUS_SECRET_KEY},
+        timeout=15
+    )
+    resp.raise_for_status()
+    chunks = resp.json().get('chunks', [])
+
+    if not chunks:
+        log.info('[CASE-EMBED] No case chunks ready for embedding.')
+        return {'processed': 0, 'ok': 0, 'errors': 0}
+
+    log.info(f'[CASE-EMBED] Got {len(chunks)} chunks to embed.')
+    ok_ids = []
+    errors = 0
+
+    for i, chunk in enumerate(chunks, 1):
+        chunk_id    = chunk['id']
+        embed_text  = chunk.get('chunk_text', '')
+        metadata    = {
+            'chunk_id':    chunk_id,
+            'citation':    chunk.get('citation', ''),
+            'chunk_index': chunk.get('chunk_index', 0),
+            'text':        embed_text[:1000],
+            'type':        'case_chunk',
+            'source':      'AustLII',
+        }
+
+        log.info(f'[CASE-EMBED] {i}/{len(chunks)} chunk_id={chunk_id}')
+
+        try:
+            vector = get_embedding(embed_text)
+            upsert_qdrant(chunk_id, vector, metadata)
+
+            verified = False
+            for attempt in range(1, 6):
+                if verify_qdrant_point(chunk_id):
+                    verified = True
+                    break
+                if attempt < 5:
+                    time.sleep(1)
+            if verified:
+                ok_ids.append(chunk_id)
+                log.info(f'[CASE-EMBED]   ✓ Embedded and verified')
+                print(f"[case-embed] OK: {chunk_id}", flush=True)
+            else:
+                log.warning(f'[CASE-EMBED]   ⚠ Point not found after 5 verify attempts — leaving embedded=0 for retry')
+                errors += 1
+        except Exception as e:
+            log.error(f'[CASE-EMBED]   ✗ Error: {e}')
+            errors += 1
+
+    if ok_ids:
+        mark_resp = requests.post(
+            f'{WORKER_URL}/api/pipeline/mark-case-chunks-embedded',
+            headers=NEXUS_HEADERS,
+            json={'chunk_ids': ok_ids},
+            timeout=15
+        )
+        mark_resp.raise_for_status()
+        log.info(f'[CASE-EMBED] Marked {len(ok_ids)} chunks as embedded=1 in D1')
+
+    log.info(f'[CASE-EMBED] Pass complete: {len(ok_ids)} ok, {errors} errors')
+    return {'processed': len(chunks), 'ok': len(ok_ids), 'errors': errors}
+
+
 def run_legislation_embedding_pass(batch: int = 5) -> dict:
     """Embed legislation sections. Fetches by Act, embeds each section, marks Act embedded when done."""
     url = f"{WORKER_URL}/api/pipeline/fetch-legislation-for-embedding?batch={batch}"
@@ -825,6 +898,7 @@ def main():
             run_enrichment_pass(args.batch)
         if args.mode in ('embed', 'both'):
             run_embedding_pass(args.batch)
+            run_case_chunk_embedding_pass(batch=args.batch)
             run_legislation_embedding_pass(batch=args.batch)
 
     if args.loop:
