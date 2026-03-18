@@ -300,13 +300,42 @@
       document.getElementById('fetchCaseUrlForm').style.display = 'none';
     });
 
+    function pollCaseStatus(citation, out, onDone) {
+      const INTERVAL = 5000;
+      const TIMEOUT  = 3 * 60 * 1000;
+      const started  = Date.now();
+      const timer = setInterval(async () => {
+        if (Date.now() - started > TIMEOUT) {
+          clearInterval(timer);
+          out.textContent = 'Processing is taking longer than expected — check Library shortly';
+          if (onDone) onDone();
+          return;
+        }
+        try {
+          const r = await fetch(`/api/legal/case-status?citation=${encodeURIComponent(citation)}`);
+          const data = await r.json();
+          if (data.status === 'done') {
+            clearInterval(timer);
+            out.textContent = `✓ ${citation} processed successfully`;
+            if (onDone) onDone();
+          } else if (data.status === 'error') {
+            clearInterval(timer);
+            out.textContent = `✗ Error processing ${citation}`;
+            if (onDone) onDone();
+          }
+        } catch (_) { /* network blip — keep polling */ }
+      }, INTERVAL);
+    }
+
     document.getElementById('fetchCaseUrlBtn').addEventListener('click', async () => {
       const url      = document.getElementById('fetchCaseUrl').value.trim();
       const citation = document.getElementById('fetchCaseCitation').value.trim();
       const out      = document.getElementById('fetchUrlOutput');
+      const btn      = document.getElementById('fetchCaseUrlBtn');
       if (!url) { out.style.display = 'block'; out.textContent = 'URL is required.'; return; }
       out.style.display = 'block';
-      out.textContent = 'Fetching and processing… this may take up to 2 minutes';
+      out.textContent = 'Fetching…';
+      btn.disabled = true;
       try {
         const body = { url };
         if (citation) body.citation = citation;
@@ -318,11 +347,14 @@
         const data = await r.json();
         if (data.error) throw new Error(data.error);
         const res = data.result;
-        out.textContent = `✓ ${res.case_name} (${res.citation}) — saved as ID ${res.id}`;
+        const cite = res.citation;
+        out.textContent = `Queued — processing ${cite}…`;
         document.getElementById('fetchCaseUrl').value = '';
         document.getElementById('fetchCaseCitation').value = '';
+        pollCaseStatus(cite, out, () => { btn.disabled = false; });
       } catch (err) {
         out.textContent = `✗ Failed: ${err.message}`;
+        btn.disabled = false;
       }
     });
 

@@ -1007,6 +1007,40 @@ document.getElementById("cancelUploadBtn")?.addEventListener("click", () => {
   document.getElementById("uploadOutput").style.display = "none";
 });
 
+function pollUploadCaseStatus(citation, uploadOutput) {
+  const INTERVAL = 5000;
+  const TIMEOUT  = 3 * 60 * 1000;
+  const started  = Date.now();
+  const btn      = document.getElementById("uploadCaseBtn");
+  const timer = setInterval(async () => {
+    if (Date.now() - started > TIMEOUT) {
+      clearInterval(timer);
+      uploadOutput.textContent = "Processing is taking longer than expected — check Library shortly";
+      uploadOutput.className = "output";
+      if (btn) btn.disabled = false;
+      return;
+    }
+    try {
+      const r = await fetch(`/api/legal/case-status?citation=${encodeURIComponent(citation)}`);
+      const data = await r.json();
+      if (data.status === "done") {
+        clearInterval(timer);
+        uploadOutput.textContent = `✓ ${citation} processed successfully`;
+        uploadOutput.className = "output";
+        if (btn) btn.disabled = false;
+        await updateLegalSyncStatus();
+        performLegalSearch();
+        showToast("Case processed");
+      } else if (data.status === "error") {
+        clearInterval(timer);
+        uploadOutput.textContent = `✗ Error processing ${citation}`;
+        uploadOutput.className = "output";
+        if (btn) btn.disabled = false;
+      }
+    } catch (_) { /* network blip — keep polling */ }
+  }, INTERVAL);
+}
+
 document.getElementById("uploadCaseBtn")?.addEventListener("click", async () => {
   const citation = document.getElementById("uploadCitation").value.trim();
   const caseName = document.getElementById("uploadCaseName").value.trim();
@@ -1021,30 +1055,25 @@ document.getElementById("uploadCaseBtn")?.addEventListener("click", async () => 
     return;
   }
 
-  uploadOutput.textContent = "Processing case with AI… this may take up to 60 seconds";
+  uploadOutput.textContent = "Submitting…";
   uploadOutput.className = "output loading";
   uploadOutput.style.display = "block";
   document.getElementById("uploadCaseBtn").disabled = true;
 
   try {
     const result = await legalUploadCase(caseText, citation, caseName, court);
-    // result.case_name now comes from Llama extraction
-    uploadOutput.textContent = `✓ Successfully processed: ${result.citation}\nCase name: ${result.case_name}\n\nExtracted ${result.summary.principles.length} legal principles.\n\nCase added to database and searchable now.`;
-    uploadOutput.className = "output";
-    setTimeout(() => {
-      document.getElementById("uploadCitation").value = "";
-      document.getElementById("uploadCaseName").value = "";
-      document.getElementById("uploadCaseText").value = "";
-      uploadCaseForm.style.display = "none";
-      toggleUploadBtn.textContent = "Show Upload";
-    }, 4000);
-    await updateLegalSyncStatus();
-    performLegalSearch();
-    showToast("Case uploaded and processed");
+    const cite = result.citation;
+    uploadOutput.textContent = `Queued — processing ${cite}…`;
+    uploadOutput.className = "output loading";
+    document.getElementById("uploadCitation").value = "";
+    document.getElementById("uploadCaseName").value = "";
+    document.getElementById("uploadCaseText").value = "";
+    pollUploadCaseStatus(cite, uploadOutput);
   } catch (err) {
     uploadOutput.textContent = "Upload failed: " + err.message;
     uploadOutput.className = "output";
-  } finally { document.getElementById("uploadCaseBtn").disabled = false; }
+    document.getElementById("uploadCaseBtn").disabled = false;
+  }
 });
 
 let _legalSearchDebounce = null;

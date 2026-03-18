@@ -858,7 +858,11 @@ async function handleUploadCase(body, env) {
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   court = court || courtMap[court_hint] || 'supreme';
   if (encoding === 'base64') case_text = atob(case_text);
-  return processCaseUpload(env, case_text, citation, case_name, court);
+  await env.CASE_QUEUE.send({ type: 'upload', case_text, citation, case_name, court });
+  await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, enriched, embedded) VALUES (?, ?, ?, ?, 0, 0)`)
+    .bind(crypto.randomUUID(), citation, court, `${(citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1]}-01-01`)
+    .run();
+  return { queued: true, citation };
 }
 
 
@@ -894,7 +898,11 @@ async function handleFetchCaseUrl(body, env) {
   const abbrevMatch = citation.match(/\]\s+([A-Za-z]+)\s+\d/);
   const resolvedCourt = court || (abbrevMatch && courtMap[abbrevMatch[1]]) || 'supreme';
 
-  return processCaseUpload(env, plainText, citation, case_name || null, resolvedCourt);
+  await env.CASE_QUEUE.send({ type: 'url', plainText, citation, case_name: case_name || null, court: resolvedCourt });
+  await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, enriched, embedded) VALUES (?, ?, ?, ?, 0, 0)`)
+    .bind(crypto.randomUUID(), citation, resolvedCourt, `${(citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1]}-01-01`)
+    .run();
+  return { queued: true, citation };
 }
 
 async function handleReprocessCase(body, env) {
@@ -2100,6 +2108,14 @@ export default {
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
         else if (action === "fetch-case-url" && request.method === "POST") result = await handleFetchCaseUrl(body, env);
+        else if (action === "case-status" && request.method === "GET") {
+          const citation = url.searchParams.get('citation');
+          if (!citation) return new Response(JSON.stringify({ error: 'citation required' }), { status: 400, headers: corsHeaders });
+          const row = await env.DB.prepare(`SELECT enriched, embedded, enrichment_error FROM cases WHERE citation = ?`).bind(citation).first();
+          if (!row) return new Response(JSON.stringify({ status: 'not_found' }), { headers: corsHeaders });
+          const status = row.enrichment_error ? 'error' : row.enriched ? 'done' : 'processing';
+          return new Response(JSON.stringify({ status, enriched: row.enriched, embedded: row.embedded, error: row.enrichment_error }), { headers: corsHeaders });
+        }
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });
       } catch (err) { return json({ error: err.message }, 500); }
@@ -2199,5 +2215,19 @@ export default {
 
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(runDailySync(env));
+  },
+
+  async queue(batch, env) {
+    for (const msg of batch.messages) {
+      const { type, plainText, case_text, citation, case_name, court } = msg.body;
+      const text = type === 'url' ? plainText : case_text;
+      try {
+        await processCaseUpload(env, text, citation, case_name, court);
+        msg.ack();
+      } catch (e) {
+        console.error(`Queue processing failed for ${citation}: ${e.message}`);
+        msg.retry();
+      }
+    }
   },
 };

@@ -13,5 +13,15 @@ database_id = "1b8ca95d-b8b3-421d-8c77-20f80432e1a0"
 [ai]
 binding = "AI"
 
+[[queues.producers]]
+binding = "CASE_QUEUE"
+queue = "arcanthyr-case-processing"
+
+[[queues.consumers]]
+queue = "arcanthyr-case-processing"
+max_batch_size = 1
+max_batch_timeout = 0
+max_retries = 2
+
 [triggers]
 crons = ["0 2 * * *"]
