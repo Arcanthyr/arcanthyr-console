@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 18 March 2026 (end of session 2) · Supersedes all prior versions
+Updated: 18 March 2026 (end of session 3) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -13,7 +13,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Diagnose from actual output | Before recommending any fix |
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler/npx command |
 | Always specify terminal | Every command must state: which terminal (VS Code, PowerShell, SSH/VPS) AND which directory |
-| enrichment_poller | Run inside container only with --loop flag: `docker compose exec -d agent-general python3 /app/src/enrichment_poller.py --loop` · Must `cd ~/ai-stack` first · Env vars set in docker-compose.yml |
+| enrichment_poller | Run inside tmux WITHOUT -d flag (tmux is the backgrounding mechanism): `tmux new-session -d -s poller && tmux send-keys -t poller "cd ~/ai-stack && docker compose exec -e OLLAMA_URL=http://ollama:11434 -e QDRANT_URL=http://qdrant-general:6333 agent-general python3 /app/src/enrichment_poller.py --loop" Enter` · Must `cd ~/ai-stack` first · Do NOT use -d with docker compose exec inside tmux |
 | git commits | `git add -A`, `git commit`, `git push origin master` — separately, no && |
 | Pre-deploy check | Verify upload list shows only `public/` files — if `.env` or `.git` appear, stop |
 | wrangler d1 | Must run from `Arc v 4/` directory · always add `--remote` for live D1 |
@@ -41,7 +41,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Queue message types | METADATA → Pass 1 + split + enqueue chunks · CHUNK → one Workers AI call per chunk + merge when all done |
 | D1 no citation column | secondary_sources PK is `id` (TEXT) — no `citation` column. Never query `WHERE citation =`. |
 | callWorkersAI fix | reasoning_content fallback added — if content is null, falls back to reasoning_content before text. Fixes Qwen3 thinking mode responses. |
-| poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds (increased from 10/60 this session for faster embed) |
+| poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
+| BM25_FTS_ENABLED | Kill switch in server.py — set False to disable FTS5 pass. SCP + force-recreate container. No wrangler deploy needed. |
+| Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -50,29 +52,34 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 18 March 2026 (end of session 2)
+## SYSTEM STATE — 18 March 2026 (end of session 3)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | ~2,910 points (embed pass running) · target ~3,303 secondary/legislation + 153 Neil case chunks pending |
+| Qdrant general-docs-v2 | ~3,148 points (poller running in tmux) · target ~3,527 (366 secondary + 13 Neil chunks remaining) |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
 | D1 cases | 13+ rows — includes [2021] TASCCA 12 (Neill-Fraser) · enriched=1 · deep_enriched=1 |
-| D1 case_chunks | 153 chunks for [2021] TASCCA 12 · all done=1 · ~30 embedded (poller running) |
-| D1 secondary_sources | 2,031 total · all enriched=1 · embedded=1 |
+| D1 case_chunks | 153 chunks for [2021] TASCCA 12 · all done=1 · 140/153 embedded · 13 remaining |
+| D1 secondary_sources | 2,031 total · all enriched=1 · 1,665 embedded · 366 remaining |
+| D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer, full corpus populated |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| Worker.js | Deployed 9599e2f5 — chunked case pipeline + callWorkersAI reasoning_content fix |
+| Worker.js | Deployed a8feddde — BM25 corpus route + FTS search route + library status pills + worker.js rename |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
-| enrichment_poller.py | Extended with run_case_chunk_embedding_pass() · batch=50 · sleep=15 |
-| server.py | pplx-embed + general-docs-v2 + threshold 0.45 + BM25 + concept search LIVE |
+| enrichment_poller.py | Extended with run_case_chunk_embedding_pass() · batch=50 · sleep=15 · running in tmux |
+| server.py | Triple-pass hybrid retrieval: semantic + in-memory BM25 + D1 FTS5 · RRF blend · BM25_FTS_ENABLED=True |
+| Retrieval | Triple-pass hybrid LIVE — semantic (Qdrant) + in-memory BM25 (1,665 docs) + FTS5 (2,031 docs) → RRF |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
-| Frontend | Dark Gazette theme · fetch-case-url async with polling · PDF upload async with polling |
+| Frontend | Dark Gazette theme · Library pills (enriched/embedded/deep_enriched/chunks) · category display clean |
+| process-document "both" | FIXED — runs Master + Procedure prompts per block |
+| Category normalisation | DONE — 8 canonical categories |
+| RAG workflow doc | Updated to v3 (18 Mar 2026) |
 
 ---
 
-## RETRIEVAL BASELINE — 18 March 2026 (pre-procedure embed re-run pending)
+## RETRIEVAL BASELINE — 18 March 2026 (re-run pending embed completion)
 
-Re-run baseline after embed confirms ~3,303 points + Neil chunks embedded.
+Re-run baseline after embed confirms ~3,527 points.
 
 | Q | Question | Result | Notes |
 |---|---|---|---|
@@ -96,73 +103,68 @@ Re-run baseline after embed confirms ~3,303 points + Neil chunks embedded.
 
 ## IMMEDIATE NEXT ACTIONS
 
-1. **Confirm embed pass complete** — SSH, `~/ai-stack`: `curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool | grep points_count` — target ~3,303 + 153 Neil chunks = ~3,456
+1. **Confirm embed pass complete** — SSH, `~/ai-stack`: `curl -s http://localhost:6334/collections/general-docs-v2 | python3 -m json.tool | grep points_count` — target ~3,527
 
-2. **Re-run retrieval baseline** — SSH: `bash ~/retrieval_baseline.sh` — after embed confirms. Check Q5, Q7, Q8, Q10, Q12, Q13, Q14.
+2. **Test Neil case retrieval** — ask console: "What is the test for fresh and compelling evidence under s 402A?" + "What is the significance of DNA secondary transfer?" + "What must prosecution establish re DNA evidence?" — should hit case_chunk vectors.
 
-3. **Test Neil case retrieval** — ask console: "What is the test for fresh and compelling evidence under s 402A?" + "What is the significance of DNA secondary transfer?" + "What must prosecution establish re DNA evidence?" — should hit case_chunk vectors.
+3. **Re-run retrieval baseline** — SSH: `bash ~/retrieval_baseline.sh` — after embed confirms. Check Q5, Q7, Q8, Q10, Q12, Q13, Q14.
 
-4. **Category normalisation** — deferred until post-retrieval testing.
+4. **Reopen scraper** — gate cleared (Queues live, baseline re-run). Run during business hours. Monitor neuron usage in CF dashboard.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **server.py type filter** — `type: 'case_chunk'` not yet in server.py retrieval filter/weight logic. Add alongside `secondary_source` and `legislation` types when next editing server.py.
-- **fetch-case-url timeout** — FIXED via Cloudflare Queues. Large judgments now process via fan-out chunk pipeline.
-- **Scraper silently loses large judgments** — FIXED via Cloudflare Queues. Gate cleared for scraper reopening (pending retrieval baseline re-run).
-- **Procedure Prompt second pass in summarizeCase()** — IMPLEMENTED and validated.
-- **Category fragmentation** — non-standard category values in D1 secondary_sources. Deferred.
-- **process-document "both" mode** — prompt_mode="both" runs Master Prompt only. Not yet fixed.
+- **chunk finish_reason: length** — ~5-10% of CHUNK messages produce truncated JSON. Acceptable loss. Consider increasing CHUNK max_tokens further (currently 1,500).
+- **merge fires multiple times** — idempotent but slightly wasteful. Low priority.
+- **process-document "both" mode** — FIXED session 3.
 - **python-docx / striprtf** — not installed in agent-general container. DOCX/RTF uploads will error.
-- **Worker.js filename case** — wrangler warns about Worker.js vs worker.js. Rename when convenient.
 - **Cases with null case_name/facts** — don't render in library UI. Delete via wrangler d1 directly.
 - **Q9 sentencing first offenders** — thin corpus. Consider targeted manual chunk.
-- **Q5 recklessness (Vallance)** — cleaned this session. Re-test after embed.
-- **Word artifact noise** — 131 secondary_sources chunks cleaned 18 Mar 2026. Re-run gen_cleanup_sql.py if new Word-derived chunks ingested.
-- **restart: unless-stopped on agent-general** — not yet added to docker-compose.yml. Low effort, high value.
-- **chunk JSON parse failures** — some CHUNK messages hit finish_reason: length and produce truncated JSON. Logged as parse errors, chunk contributes 0 principles but pipeline continues. Acceptable loss rate (~5-10%).
-- **merge fires multiple times** — done=0 count check is idempotent but merge UPDATE runs once per completed chunk after all chunks done. No corruption but slightly wasteful. Low priority fix.
+- **Word artifact noise** — 131 chunks cleaned 18 Mar 2026. Re-run gen_cleanup_sql.py if new Word-derived chunks ingested.
+- **BM25 corpus builds on first query** — ~2s delay on cold start after container restart. Acceptable.
+- **FTS5 export limitation** — `npx wrangler d1 export` does not support databases with virtual tables. Drop FTS table, export, recreate if backup needed.
+- **category in library UI** — source_type display label fixed session 3. Now shows normalised category value.
 
 ---
 
-## CHANGES THIS SESSION (session 2) — 18 March 2026
+## CHANGES THIS SESSION (session 3) — 18 March 2026
 
-- Cloudflare Queues async pattern built and deployed — fetch-case-url + upload-case both queued
-- Chunked case pipeline built — METADATA + CHUNK queue handler, fan-out, merge logic
-- case_chunks D1 table created
-- deep_enriched column added to cases table
-- Two new pipeline routes: fetch-case-chunks-for-embedding + mark-case-chunks-embedded
-- enrichment_poller.py extended with run_case_chunk_embedding_pass()
-- callWorkersAI reasoning_content fallback fixed — Qwen3 thinking mode now handled
-- Pass 1 token limit increased from 800 to 1500
-- Poller batch increased to 50, sleep reduced to 15 seconds
-- Neill-Fraser [2021] TASCCA 12 successfully ingested — case_name/judge/facts/principles all populated
-- splitIntoChunks() utility function added to Worker.js
-- Producer queue messages updated to { type: 'METADATA', citation } format
+- Worker.js renamed to worker.js — wrangler warning resolved
+- process-document "both" mode fixed — runs Master + Procedure prompts per block, time.sleep(1.5) between
+- Category normalisation — 8 canonical categories, 2,031 rows normalised
+- Library status pills — enriched/embedded/deep_enriched/chunk counts + category display
+- In-memory BM25 corpus — bm25_tokenize, bm25_build_corpus, bm25_query, rrf_blend in server.py
+- RRF hybrid retrieval — Reciprocal Rank Fusion replaces score=0.0 BM25 append hack
+- /api/pipeline/bm25-corpus Worker route — returns embedded secondary_sources for corpus build
+- D1 FTS5 virtual table — secondary_sources_fts, porter tokenizer, 2,031 rows, full corpus
+- /api/pipeline/fts-search Worker route — sanitised MATCH query, returns bm25_score
+- FTS5 sync — ingest and delete routes updated to maintain FTS table
+- Triple-pass hybrid pipeline — semantic + in-memory BM25 + FTS5 → RRF, all three firing
+- BM25_FTS_ENABLED flag — kill switch for FTS5 pass in server.py
+- RAG workflow doc v3 — complete rewrite reflecting current architecture
 
 ---
 
 ## FUTURE ROADMAP
 
-- **Re-run retrieval baseline** — after embed pass completes. Priority: Q5, Q7, Q8, Q10, Q12, Q13, Q14.
-- **server.py case_chunk type** — add case_chunk to retrieval type handling in server.py.
-- **Reopen scraper** — gate cleared (Queues live). Run during business hours. Monitor neuron usage in CF dashboard.
-- **Extend scraper to HCA/FCAFC** — after async pattern confirmed working at volume.
+- **Re-run retrieval baseline** — after embed pass complete. Priority: Q5, Q7, Q8, Q10, Q12, Q13, Q14.
+- **Test Neil case retrieval** — s 402A, DNA secondary transfer, DNA prosecution burden.
+- **Reopen scraper** — gate cleared. Run during business hours. Monitor CF dashboard.
+- **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume.
 - **Retrieval eval framework** — formalise scored baseline as standing process.
 - **Q9 sentencing first offenders** — thin corpus. Consider targeted manual chunk.
-- **RAG workflow doc update** — update RAG_Workflow_Arcanthyr_v2.docx.
-- **Cloudflare Browser Rendering /crawl** — available Free plan. For Tasmanian Supreme Court sentencing remarks.
-- **BM25 improvements** — proper scoring + hybrid ranking.
-- **Console status indicator** — show enriched/embedded/deep_enriched progress per document.
+- **RAG workflow doc** — DONE v3 18 Mar 2026.
+- **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks.
+- **BM25 improvements** — D1 FTS5 now live as Phase B. Consider wiring as mandatory third source post-baseline.
+- **Console status indicator** — DONE session 3 (library pills).
 - **Qwen3 UI toggle** — add third button once Qwen validated.
 - **Nightly cron for xref_agent.py** — after scraper active.
 - **Stare decisis layer** — surface treatment history from case_citations.
 - **Animated sigil** — swap sigil.jpg for sigil.gif if rotating GIF produced.
-- **restart: unless-stopped on agent-general** — add to docker-compose.yml.
-- **chunk finish_reason: length** — increase CHUNK max_tokens from 1000 to reduce JSON truncation.
-- **Dead letter queue** — add DLQ for chunks that fail max_retries. Low priority.
-- **Category normalisation** — doctrine vs legal doctrine. Post-retrieval testing.
-- **Qwen3 model upgrade in summarizeCase()** — already on Qwen3-30b. No action needed.
+- **chunk finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable.
+- **Dead letter queue** — for chunks that fail max_retries. Low priority.
+- **Category normalisation** — DONE session 3.
 - **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested.
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal.
+- **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-baseline.
