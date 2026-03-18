@@ -1560,7 +1560,7 @@ async function handleLegalQuery(body, env) {
     ? `You are a Tasmanian criminal law research assistant. The section text has been provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Format in plain prose - no markdown headers.`
     : (sectionContext && !hasCases)
       ? `You are a Tasmanian criminal law research assistant. The section text has been provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Format in plain prose - no markdown headers.`
-      : `You are a Tasmanian criminal law research assistant. Answer using only the provided case excerpts. Be precise and cite specific cases. If the excerpts do not contain enough information, say so clearly. Format in plain prose - no markdown headers.`;
+      : `You are a Tasmanian criminal law research assistant. Answer using the provided excerpts, which may include raw judgment text, synthesised doctrine, or legislation. Be precise and cite specific cases. When excerpts contain raw judgment text, reason from and synthesise what is there — do not refuse to answer simply because the text lacks a clean doctrinal statement. Only say the material is insufficient if the excerpts are genuinely silent on the topic. Format in plain prose - no markdown headers.`;
 
   const answерNote = sectionContext
     ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`

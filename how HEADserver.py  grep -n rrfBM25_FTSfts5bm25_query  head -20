@@ -1,0 +1,10 @@
+[33m7fd7291[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m Add case_name to case chunk Qdrant payload + backfill script
+[33mbd2a5c5[m fix: OCR fallback for scanned PDFs, citation auto-extract, court detection priority
+[33m8777e56[m fix: citation auto-extraction handles citations without trailing number
+[33mc3c6e3f[m Session 4: max_tokens 2k, handleAxiomRelay, sentencing chunk, baseline 15/15
+[33m62e0b42[m Update session docs — CLAUDE.md + CLAUDE_arch.md session 3 state
+[33m27e7027[m FTS5 third retrieval pass + BM25_FTS_ENABLED flag + rrf three-way blend
+[33mffef81e[m Phase B: D1 FTS5 table + fts-search route + ingest/delete sync
+[33m46c8901[m BM25 in-memory corpus + RRF hybrid retrieval + bm25-corpus Worker route
+[33m370adf7[m Library UI: status pills, category display, source_type fix, wrangler.toml rename
+[33ma807f89[m Increase CHUNK max_tokens 1000→1500 to reduce JSON truncation
