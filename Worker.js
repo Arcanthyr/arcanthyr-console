@@ -2170,6 +2170,13 @@ export default {
       return new Response(JSON.stringify({ ok: true, count: chunk_ids.length }), { headers: corsHeaders });
     }
 
+    if (url.pathname === '/api/pipeline/bm25-corpus' && request.method === 'GET') {
+      const { results } = await env.DB.prepare(
+        `SELECT id, title, raw_text, category FROM secondary_sources WHERE embedded = 1`
+      ).all();
+      return new Response(JSON.stringify({ rows: results }), { headers: corsHeaders });
+    }
+
     /* ── INGEST ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ingest/")) {
       if (!rateLimit(`${ip}:ingest`, 10, 60_000)) return json({ error: "Ingest rate limit exceeded." }, 429);
