@@ -135,7 +135,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **TASSC 2024 cases 3, 8, 9, 10** — uploaded with HTTP 0 (timeout) in previous scraper run. Zero rows in D1 — will be re-attempted when scraper resumes.
 - **Scraper progress file** — lives at `arcanthyr-console\Local Scraper\scraper_progress.json` · if missing, scraper restarts from TASSC 2025. Recreate manually if lost (see CLAUDE_arch.md scraper config).
 - **Case chunk dedup in search_text()** — uses internal `_id` field (chunk_id). If corpus chunks ever gain a `chunk_id` field, dedup logic needs review.
-- **Case chunk second-pass threshold 0.15** — intentionally low for dense transcript text. Monitor for false positives as case corpus grows.
+- **Case chunk second-pass threshold 0.15** — gated on case reference detection (citation pattern or "v " in query). Only fires for case-specific queries. Safe to scale.
 - **RRF/BM25/FTS5 architecture** — lives in Worker.js handleLegalQuery, NOT server.py. Previous CLAUDE.md description was wrong.
 
 ---
