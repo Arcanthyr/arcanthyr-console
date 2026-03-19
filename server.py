@@ -357,62 +357,47 @@ def search_text(body):
         print(f"[+] BM25 cases: added {added_cases} cases citing referenced legislation")
 
     # ── Case chunk second-pass retrieval ────────────────────────────────────
-    # Only runs when query references a specific case — prevents false positives
-    # at scale as case corpus grows.
-    import re as _re
-    _citation_pattern = _re.compile(
-        r'\[\d{4}\]\s*(TASSC|TASCCA|TASFC|TASMC|HCA|FCAFC|FCA|VSC|NSWSC)\s*\d+',
-        _re.IGNORECASE
-    )
-    _case_keywords = ['v ', ' v. ']
-    _query_lower = query_text.lower()
-    _case_query_detected = (
-        bool(_citation_pattern.search(query_text)) or
-        any(kw in _query_lower for kw in _case_keywords)
-    )
-    if not _case_query_detected:
-        print(f"[*] Case chunk pass skipped — no case reference detected in query")
-    else:
-        try:
-            case_chunk_response = client.query_points(
-                collection_name=COLLECTION,
-                query=query_vector,
-                query_filter=Filter(
-                    must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
-                ),
-                limit=4,
-                score_threshold=0.15,
-                with_payload=True,
-            )
-            existing_ids = {c.get("_id") for c in chunks if "_id" in c}
-            added_case_chunks = 0
-            for hit in case_chunk_response.points:
-                payload = hit.payload or {}
-                chunk_id = payload.get("chunk_id", "")
-                if chunk_id and chunk_id in existing_ids:
-                    continue
-                chunks.append({
-                    "score":        round(hit.score, 4),
-                    "citation":     payload.get("citation", "unknown"),
-                    "case_name":    payload.get("case_name", ""),
-                    "court":        payload.get("court", ""),
-                    "year":         payload.get("year", ""),
-                    "text":         payload.get("text", ""),
-                    "summary":      payload.get("summary", ""),
-                    "outcome":      payload.get("outcome", ""),
-                    "principles":   payload.get("principles", []),
-                    "legislation":  payload.get("legislation", []),
-                    "chunk":        payload.get("chunk_index", 0),
-                    "total_chunks": payload.get("total_chunks", 1),
-                    "type":         "case_chunk",
-                    "_id":          chunk_id,
-                })
-                existing_ids.add(chunk_id)
-                added_case_chunks += 1
-            if added_case_chunks:
-                print(f"[+] Case chunk pass: added {added_case_chunks} case chunks (threshold 0.15)")
-        except Exception as e:
-            print(f"[!] Case chunk pass error: {e}")
+    # Runs on every query — low threshold (0.15) with type filter keeps noise low.
+    try:
+        case_chunk_response = client.query_points(
+            collection_name=COLLECTION,
+            query=query_vector,
+            query_filter=Filter(
+                must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
+            ),
+            limit=4,
+            score_threshold=0.15,
+            with_payload=True,
+        )
+        existing_ids = {c.get("_id") for c in chunks if "_id" in c}
+        added_case_chunks = 0
+        for hit in case_chunk_response.points:
+            payload = hit.payload or {}
+            chunk_id = payload.get("chunk_id", "")
+            if chunk_id and chunk_id in existing_ids:
+                continue
+            chunks.append({
+                "score":        round(hit.score, 4),
+                "citation":     payload.get("citation", "unknown"),
+                "case_name":    payload.get("case_name", ""),
+                "court":        payload.get("court", ""),
+                "year":         payload.get("year", ""),
+                "text":         payload.get("text", ""),
+                "summary":      payload.get("summary", ""),
+                "outcome":      payload.get("outcome", ""),
+                "principles":   payload.get("principles", []),
+                "legislation":  payload.get("legislation", []),
+                "chunk":        payload.get("chunk_index", 0),
+                "total_chunks": payload.get("total_chunks", 1),
+                "type":         "case_chunk",
+                "_id":          chunk_id,
+            })
+            existing_ids.add(chunk_id)
+            added_case_chunks += 1
+        if added_case_chunks:
+            print(f"[+] Case chunk pass: added {added_case_chunks} case chunks (threshold 0.15)")
+    except Exception as e:
+        print(f"[!] Case chunk pass error: {e}")
     # ── End case chunk pass ─────────────────────────────────────────────────
 
     return chunks
