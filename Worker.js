@@ -67,6 +67,13 @@ async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   // DEBUG — remove after first confirmed working upload
   console.log("WorkersAI raw result:", JSON.stringify(result, null, 2));
 
+  if (result?.error) {
+    throw new Error(`Workers AI error: ${result.error} (code: ${result.code ?? 'unknown'})`);
+  }
+  if (result?.code === 4006) {
+    throw new Error(`Workers AI neuron cap exceeded (4006)`);
+  }
+
   const raw = (
     result?.choices?.[0]?.message?.content?.trim() ||
     result?.choices?.[0]?.message?.reasoning_content?.trim() ||
@@ -2385,6 +2392,10 @@ export default {
 
           let extracted = { principles: [], holdings: [], legislation: [], key_authorities: [] };
           try { extracted = JSON.parse(cleaned); } catch (e) { console.error(`[queue] JSON parse failed chunk ${citation}/${chunk_index}`); }
+
+          if (!extracted.principles?.length && !extracted.holdings?.length) {
+            throw new Error(`Empty extraction for chunk ${citation}/${chunk_index} — retrying`);
+          }
 
           await env.DB.prepare(
             `UPDATE case_chunks SET principles_json = ?, done = 1 WHERE citation = ? AND chunk_index = ?`

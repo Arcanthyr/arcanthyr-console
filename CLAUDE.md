@@ -52,6 +52,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
 | backfill scripts | Must run on VPS — fetch D1 data via Worker API (not wrangler subprocess), hit Qdrant via localhost:6334 |
+| Retrieval diagnostics | First step always: `docker compose logs --tail=50 agent-general` on VPS — skip message visible immediately |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -75,8 +76,8 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | worker.js | Locally updated session 7 (orderedChunks, labels, prompt fix) — NOT YET DEPLOYED · last deployed: 2658f6f0 (citation filter only, superseded by local changes) · DEPLOY FIRST NEXT SESSION |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
 | enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
-| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk second-pass (Qdrant 0.15, type=case_chunk, top 4) · RRF/FTS5 lives in Worker.js not here · 1,259-line version on VPS |
-| Retrieval | Case chunk two-stage pass LIVE · Worker.js handles RRF/BM25/FTS5 blend · server.py handles semantic + case chunk second-pass · OUTSTANDING: Neill-Fraser DNA chunks scoring 0.4915 but displaced by RRF blend — investigate next session |
+| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk pass UNCONDITIONAL (Qdrant 0.15, type=case_chunk, top 4) · NO RRF · NO in-memory BM25 · NO FTS5 — these were documented in session 3 but never deployed |
+| Retrieval | Case chunk pass UNCONDITIONAL (session 8 fix) · Worker.js calls /search, takes results verbatim, assembles context · NO RRF blend in Worker.js · /api/pipeline/bm25-corpus and /api/pipeline/fts-search routes exist but are DEAD — nothing calls them |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
 | Frontend | Dark Gazette theme · Library pills · category display · UI briefs 1–6 complete · max_tokens fix deployed |
 | process-document "both" | FIXED — runs Master + Procedure prompts per block |
@@ -218,6 +219,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Monitor scraper** — Task Scheduler firing daily 8am AEST. Check scraper.log for progress.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume.
 - **Retrieval eval framework** — formalise scored baseline as standing process.
+- **Extend retrieval baseline** — add 2-3 natural language case queries without citation patterns (e.g. "Neill-Fraser DNA secondary transfer") to catch gate/threshold issues early
 - **RAG workflow doc** — DONE v3 18 Mar 2026.
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks.
 - **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-scraper-run.

@@ -97,41 +97,29 @@ New rows land with `enriched=0`. Poller's embed pass only picks up `enriched=1, 
 
 ---
 
-## RETRIEVAL ARCHITECTURE (v4 — SESSION 5)
+## RETRIEVAL ARCHITECTURE (v5 — SESSION 8, confirmed against live code)
 
-Two separate retrieval layers — Worker.js and server.py are distinct:
+CRITICAL: Session 3 RRF/BM25/FTS5 work was documented as complete but was
+never deployed. Neither worker.js nor server.py contain RRF, in-memory BM25,
+or FTS5 blend logic. The /api/pipeline/bm25-corpus and /api/pipeline/fts-search
+Worker routes exist but are dead — nothing calls them during query handling.
 
-**Layer 1 — Worker.js handleLegalQuery (primary user-facing)**
-Calls server.py /search → gets semantic + case chunk results
-Runs in-memory BM25 against secondary_sources corpus (~2,032 docs)
-Calls /api/pipeline/fts-search (D1 FTS5) for keyword pass
-RRF blend (k=60) across all three passes
-Returns blended chunks to Claude API (primary) / Workers AI Qwen3 (fallback)
+**Actual pipeline — Worker.js handleLegalQuery:**
+- Calls server.py /search
+- Takes nexusData.chunks verbatim — no reordering, no blending
+- Assembles context and passes to Claude API (primary) / Workers AI Qwen3 (fallback)
+- handleLegalQueryWorkersAI only: citation detection → case_chunk sort to front + cap 2 secondary sources + [CASE EXCERPT]/[ANNOTATION] labels
 
-**Layer 2 — server.py search_text() (called by Worker)**
+**Actual pipeline — server.py search_text():**
+Pass 1 — Semantic: Qdrant cosine (pplx-embed), top 6, min score 0.45, court hierarchy re-rank within 0.05 band
+Pass 2 — Concept search: second-pass re-embed of extracted legal terms, adds candidates above 0.45
+Pass 3 — BM25 section fetch: explicit section references → D1 legislation sections, score=0.0
+Pass 4 — BM25 case-law fetch: cases citing referenced legislation, score=0.0
+Pass 5 — Case chunk pass (UNCONDITIONAL — session 8): Qdrant filtered to type=case_chunk, threshold 0.15, top 4, merged with dedup. Runs on every query — no gate.
 
-Pass 1 — Semantic: Qdrant cosine similarity (pplx-embed-context-v1)
-         top 6, min score 0.45, re-ranked by court hierarchy within 0.05 band
-
-Pass 2 — Concept search: second-pass re-embed of extracted legal terms
-         adds candidates above 0.45 threshold
-
-Pass 3 — BM25 section fetch: explicit section references → D1 legislation sections
-         appended with score=0.0, not subject to score threshold
-
-Pass 4 — BM25 case-law fetch: cases citing referenced legislation
-         appended with score=0.0
-
-Pass 5 — Case chunk second-pass (NEW session 5):
-         Qdrant filtered to type=case_chunk · threshold 0.15 · top 4
-         Merged before return · catches dense transcript text that loses semantic race at 0.45
-
-CRITICAL architectural facts:
-- RRF blend is in Worker.js — NOT server.py
-- server.py has no RRF, no in-memory BM25 corpus, no FTS5
-- Case chunks only exist in Qdrant — invisible to BM25/FTS5 passes in Worker.js
-- Case chunk second-pass in server.py is the only mechanism that surfaces case chunks
-- Kill switch: BM25_FTS_ENABLED flag is in Worker.js (not server.py)
+**Diagnostic rule:** empty or unexpected results → first check:
+`docker compose logs --tail=50 agent-general`
+Skip/error messages are logged per-pass and visible immediately.
 
 ---
 
@@ -164,7 +152,7 @@ Rejected alternatives (do not revisit without new information):
 |---|---|---|---|
 | GET | `/health` | inline | Returns `{"status":"ok"}` — no auth |
 | POST | `/ingest` | `ingest_text()` | Embed + upsert chunk to Qdrant · sets _bm25_corpus["dirty"]=True |
-| POST | `/search` | `search_text()` | Triple-pass hybrid retrieval: semantic + BM25 + FTS5 → RRF |
+| POST | `/search` | `search_text()` | Five-pass retrieval: semantic + concept search + BM25 section fetch + BM25 case-law fetch + case chunk pass (unconditional) |
 | POST | `/query` | `query_qwen()` | search + Qwen3 inference |
 | POST | `/extract-pdf` | `extract_pdf_text()` | pdfminer only |
 | POST | `/extract-pdf-ocr` | `extract_pdf_text_ocr()` | pdfminer + OCR fallback |
