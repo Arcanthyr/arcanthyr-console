@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 March 2026 (end of session 6). Upload every session alongside CLAUDE.md.*
+*Updated: 19 March 2026 (end of session 7). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -313,14 +313,24 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - Proxy: `arcanthyr.com/api/legal/fetch-page` — routes via Cloudflare edge (VPS IP blocked)
 - Upload timeout: 120s (acceptable now that Worker returns immediately via Queues)
 - **Gate CLEARED session 4: (1) Cloudflare Queues async pattern confirmed, (2) retrieval baseline 15/15 complete**
-- **Progress file:** `arcanthyr-console/Local Scraper/scraper_progress.json` — 2025 courts marked done, resumes at TASSC 2024/11 (cases 1–10 ingested session 6).
-- **Automation:** Windows Task Scheduler fires run_scraper.bat daily at 8am AEST
+- **Progress file:** `arcanthyr-console/Local Scraper/scraper_progress.json` — 2025 courts marked done · NO per-case resume — file only stores `{court}_{year}: "done"` or absent · scraper always starts from case 1 for any unfinished court/year · re-uploading already-ingested cases is harmless (upsert)
+- **Automation:** Windows Task Scheduler fires `C:\Users\Hogan\run_scraper.bat` daily at 8am AEST (local path required — OneDrive path causes Launch Failure)
+
+**extract_text() pipeline (session 7 — current):**
+1. BeautifulSoup: remove script/style/nav/header/footer tags
+2. Extract judgment div or body
+3. Get plain text
+4. `_strip_boilerplate()` — remove AustLII navigation patterns
+5. **Header truncation (NEW session 7):** find first occurrence of `COURT :` or `CITATION :` marker; truncate everything before it. If neither found, leave unchanged.
+6. `_strip_noise_lines()` — remove navigation keyword lines
+7. `_deduplicate_orders()` — remove duplicate ORDERS block
+8. `_compress_whitespace()` — normalise blank lines and spaces
 
 **Scraping workflow:**
 ```
 austlii_scraper.py (local Windows)
     → fetches AustLII HTML via arcanthyr.com/api/legal/fetch-page proxy
-    → strips HTML to plain text locally
+    → strips HTML to plain text locally (extract_text() pipeline above)
     → derives citation from URL structure
     → POSTs raw text + citation + court_hint to /api/legal/upload-case
         → Worker: METADATA queue message → Pass 1 metadata + chunk split
@@ -360,7 +370,7 @@ Write using Python (not PowerShell Out-File) to avoid encoding issues.
 
 - Task name: Arcanthyr Scraper
 - Triggers: Daily at 8:00 AM AEST
-- Action: runs run_scraper.bat in Local Scraper/ directory
+- Action: runs `C:\Users\Hogan\run_scraper.bat` — MUST be local path (not OneDrive) or Task Scheduler gives Launch Failure error
 - run_scraper.bat: `cd /d "...Local Scraper" && python austlii_scraper.py`
 - Business hours gate in scraper handles time window — task fires daily, gate exits if outside 08:00–18:00
 - Exit code 2 = business hours gate fired (normal/expected outside hours)
@@ -428,7 +438,7 @@ Do NOT use `tmux send-keys` — confirmed to run in main shell and die on SSH di
 
 - **`summarizeCase()`** — two-pass case enrichment at scrape/upload time. Pass 1: facts/issues/case_name/judge/parties. Pass 2: windowed holdings/principles/legislation/key_authorities. Short judgments (≤22,000 chars): single pass. Long judgments: Pass 1 + multiple Pass 2 windows (6+ sequential calls on large judgments — timeout risk, mitigated by Queues).
 - **`procedurePassPrompt`** — called after summarizeCase() in processCaseUpload(). Extracts in-court procedural sequences. Returns `NO PROCEDURE CONTENT` if nothing relevant.
-- **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle. Three-path fallback + `budget_tokens: 0` deployed 18 Mar 2026. `max_tokens: 2000` (raised from 800, session 4).
+- **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle. Three-path fallback + `budget_tokens: 0` deployed 18 Mar 2026. `max_tokens: 2000` (raised from 800, session 4). Session 7: citation-aware context assembly added — when citation pattern detected AND case chunks present: (1) sort case_chunk entries first; (2) cap secondary sources at 2; (3) prefix each block `[CASE EXCERPT]` or `[ANNOTATION]`. System prompt updated with CASE EXCERPT / ANNOTATION guidance. NOT YET DEPLOYED — apply `npx wrangler deploy` at start of session 8.
 - **`handleDraft()`, `handleNextActions()`, `handleWeeklyReview()`, `handleClarifyAgent()`** — Axiom journal features. Upgrade optional, low priority.
 - **`handleAxiomRelay()`** — Three-stage relay pipeline (added session 4). Stage 1: decompose entries to `{ id, surface, intent, constraint }` JSON (900 tokens). Stage 2: identify 3 tensions/opportunities across entries (400 tokens). Stage 3: final SIGNAL / LEVERAGE POINT / RELAY ACTIONS / DEAD WEIGHT report (1,200 tokens). Returns `{ report: string }`. Wired to AI router `axiom-relay` action.
 
@@ -651,7 +661,7 @@ All 6 briefs executed and deployed. Frontend work complete. Session 4 additional
 - **Dead letter queue** — for chunks that fail max_retries. Low priority.
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested.
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal.
-- **Two-stage case chunk retrieval** — second parallel Qdrant search filtered to `type=case_chunk`, threshold 0.35, top 4, merged into RRF blend before context assembly. Prevents case chunks losing to corpus on semantic score due to dense transcript text. Server.py change only — no Worker deploy needed.
+- **RRF displacement of case chunks** — PRIORITY. Case chunks only participate in semantic pass (server.py). BM25/FTS5 passes (Worker.js) are secondary-source only. RRF blends all three — secondary source BM25/FTS5 hits accumulate rank contributions that outpace case chunks appearing only in semantic pass, even when case chunks score ~0.49. Need to either boost case_chunk RRF contribution or add explicit score-weighted pass.
 - **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references. Do AFTER cross-reference agent design confirmed.
 - **Auto-populate legislation metadata on upload** — Claude API reads filename/first page.

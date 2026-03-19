@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 18 March 2026 (end of session 6) · Supersedes all prior versions
+Updated: 19 March 2026 (end of session 7) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -46,6 +46,8 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | BM25_FTS_ENABLED | Kill switch in server.py — set False to disable FTS5 pass. SCP + force-recreate container. No wrangler deploy needed. |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
 | Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · runs on Windows only (VPS IP blocked) |
+| Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (upsert). |
+| run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
@@ -58,33 +60,33 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 18 March 2026 (end of session 6)
+## SYSTEM STATE — 19 March 2026 (end of session 7)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 3,481+ points · growing — embed pass running on 2024 case chunks |
+| Qdrant general-docs-v2 | 3,481+ points (stable — no new embed pass this session) |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | 13+ rows — includes [2021] TASCCA 12 (Neill-Fraser) · enriched=1 · deep_enriched=1 · 10 x TASSC 2024 cases ingested (cases 1-10) · all deep_enriched=1 |
-| D1 case_chunks | 177 chunks · all done=1 · all embedded=1 · full payload confirmed (chunk_id, citation, case_name, text, type, source) |
-| D1 secondary_sources | 2,032 total (incl. sentencing first offenders chunk) · all enriched=1 · all embedded |
-| D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer, full corpus populated |
+| D1 cases | ~9 rows — 4 junk cases deleted ([2004] TASSC 84, [2018] TASSC 62, [2016] TASMC 14, [2024] TASSC 6) · [2021] TASCCA 12 (Neill-Fraser) reingested clean · all enriched=1 · deep_enriched=1 |
+| D1 case_chunks | 152 chunks (Neill-Fraser reingested clean) · all done=1 · all embedded=1 |
+| D1 secondary_sources | 2,032 total · all enriched=1 · all embedded |
+| D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| worker.js | Deployed 4e2b2dcf — Case C prompt updated · LEFT JOIN cases on fetch-case-chunks-for-embedding |
+| worker.js | Locally updated session 7 (orderedChunks, labels, prompt fix) — NOT YET DEPLOYED · last deployed: 2658f6f0 (citation filter only, superseded by local changes) · DEPLOY FIRST NEXT SESSION |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
 | enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
-| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk second-pass (Qdrant 0.15, type=case_chunk, top 4) · RRF/FTS5 lives in Worker.js not here · 1,259-line version SCPed to VPS session 6 |
-| Retrieval | Case chunk two-stage pass LIVE (session 5) · Worker.js handles RRF/BM25/FTS5 blend · server.py handles semantic + case chunk second-pass |
+| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk second-pass (Qdrant 0.15, type=case_chunk, top 4) · RRF/FTS5 lives in Worker.js not here · 1,259-line version on VPS |
+| Retrieval | Case chunk two-stage pass LIVE · Worker.js handles RRF/BM25/FTS5 blend · server.py handles semantic + case chunk second-pass · OUTSTANDING: Neill-Fraser DNA chunks scoring 0.4915 but displaced by RRF blend — investigate next session |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
 | Frontend | Dark Gazette theme · Library pills · category display · UI briefs 1–6 complete · max_tokens fix deployed |
 | process-document "both" | FIXED — runs Master + Procedure prompts per block |
 | Category normalisation | DONE — 8 canonical categories |
 | RAG workflow doc | Updated to v3 (18 Mar 2026) |
 | Axiom Relay backend | handleAxiomRelay() written + wired — session 4 |
-| Scraper progress file | Recreated — ready to resume at TASSC 2024 (2025 courts marked done) |
+| Scraper | Task Scheduler FIXED — run_scraper.bat moved to C:\Users\Hogan\run_scraper.bat · fires daily 8am AEST · AustLII header truncation fix applied to extract_text() |
 | Reconcile | D1 and Qdrant in sync — confirmed 18 Mar 2026 |
 | qdrant-general host port | 6334 (host) → 6333 (container) |
-| Prompts | Claude Case C (worker.js) + Qwen3 (server.py) — updated to reason from raw judgment text, not refuse when no clean doctrinal statement present |
+| Prompts | Qwen3 (handleLegalQueryWorkersAI) — updated to reason from raw judgment text · CASE EXCERPT / ANNOTATION framing added |
 
 ---
 
@@ -114,13 +116,13 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## IMMEDIATE NEXT ACTIONS
 
-1. **Scraper running via Windows Task Scheduler** — fires daily 8am AEST automatically
+1. **Deploy worker.js** — orderedChunks + label + prompt changes applied locally but NOT deployed. Run `npx wrangler deploy` from `Arc v 4/` first thing next session.
 
-2. **Embed pass running** — 415 case chunks queued (TASSC 2024 batch 1)
+2. **Investigate RRF displacement** — Neill-Fraser case chunks score 0.4915 semantically but are displaced by RRF blend. Case chunks are invisible to BM25/FTS5 passes (secondary source only). Likely cause: RRF ranks secondary source BM25/FTS5 hits ahead of case chunks that only appear in semantic pass. Possible fix: boost case_chunk rank in RRF, or add case chunk score directly to RRF contribution.
 
-3. **Commit session 6 changes** — `git add -A`, `git commit -m "Session 6: scraper test + task scheduler + server.py deploy"`, `git push origin master` — separately
+3. **Monitor scraper** — Task Scheduler firing daily 8am AEST from `C:\Users\Hogan\run_scraper.bat`. Check `arcanthyr-console\Local Scraper\scraper.log` for progress.
 
-4. **Copy updated CLAUDE.md + CLAUDE_arch.md into `Arc v 4/`** and commit
+4. **Copy updated CLAUDE.md + CLAUDE_arch.md into `Arc v 4/`** and commit (this session's commit)
 
 ---
 
@@ -139,8 +141,23 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Case chunk dedup in search_text()** — uses internal `_id` field (chunk_id). If corpus chunks ever gain a `chunk_id` field, dedup logic needs review.
 - **Case chunk second-pass threshold 0.15** — gated on case reference detection (citation pattern or "v " in query). Only fires for case-specific queries. Safe to scale.
 - **RRF/BM25/FTS5 architecture** — lives in Worker.js handleLegalQuery, NOT server.py. Previous CLAUDE.md description was wrong.
+- **RRF displacement of case chunks** — case chunks only appear in semantic pass (server.py). BM25/FTS5 passes in Worker.js are secondary-source only. RRF blends all three — secondary source BM25/FTS5 hits can outrank semantically-retrieved case chunks even at score 0.49. Investigate next session.
+- **worker.js session 7 changes not deployed** — orderedChunks/label/prompt fix applied locally. Last deployed version 2658f6f0 uses filteredChunks (drops secondary sources entirely for citation queries — superseded). Deploy at start of session 8.
+- **Scraper no per-case resume** — progress file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. CLAUDE.md session 6 note "resumes at TASSC 2024/11" was incorrect.
 
 ---
+
+## CHANGES THIS SESSION (session 7) — 19 March 2026
+
+- **Task Scheduler fixed** — run_scraper.bat moved to `C:\Users\Hogan\run_scraper.bat` (local, not OneDrive) — fixes Launch Failure error
+- **worker.js: citation-aware context assembly** — handleLegalQueryWorkersAI rewritten: (1) reorder — case_chunk entries sorted before secondary_source; (2) cap — max 2 secondary sources when citation query + case chunks present; (3) type labels — `[CASE EXCERPT]` / `[ANNOTATION]` prefix on each context block
+- **worker.js: prompt fix** — Qwen3 system prompt updated to reason from raw judgment text rather than refuse; CASE EXCERPT / ANNOTATION framing added
+- **worker.js: NOT YET DEPLOYED** — changes applied locally, last deployed version 2658f6f0 (filteredChunks approach, now superseded)
+- **Scraper: AustLII header truncation** — `extract_text()` now strips everything before first `COURT :` or `CITATION :` marker — removes navigation/boilerplate from scraped text
+- **Junk cases deleted** — [2004] TASSC 84, [2018] TASSC 62, [2016] TASMC 14, [2024] TASSC 6 (no HTML / corrupt)
+- **Neill-Fraser reingested** — [2021] TASCCA 12 reingested clean · 152 chunks in Qdrant · all embedded=1
+- **CLAUDE.md corrected** — scraper has no per-case resume; progress file only stores "done" or absent; session 6 note "resumes at TASSC 2024/11" was wrong
+- **Outstanding issue** — Neill-Fraser DNA chunks scoring 0.4915 semantically but displaced by RRF blend — architectural investigation deferred to session 8
 
 ## CHANGES THIS SESSION (session 6) — 18 March 2026
 
@@ -196,8 +213,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## FUTURE ROADMAP
 
-- **Run scraper** — IMMEDIATE. Resume TASSC 2024. Run during business hours. Monitor CF dashboard.
-- **Test Neill-Fraser DNA secondary transfer** — Q2 was pending embed; re-test now embed is complete.
+- **Deploy worker.js** — IMMEDIATE next session. orderedChunks + label + prompt fix not yet deployed.
+- **Investigate RRF displacement** — case chunks scoring ~0.49 but displaced by secondary source BM25/FTS5 RRF contribution. Likely need to boost case_chunk rank in RRF blend or add direct score weighting.
+- **Monitor scraper** — Task Scheduler firing daily 8am AEST. Check scraper.log for progress.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume.
 - **Retrieval eval framework** — formalise scored baseline as standing process.
 - **RAG workflow doc** — DONE v3 18 Mar 2026.
