@@ -68,12 +68,12 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Qdrant general-docs-v2 | 3,481+ points (stable — no new embed pass this session) |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | ~9 rows — 4 junk cases deleted ([2004] TASSC 84, [2018] TASSC 62, [2016] TASMC 14, [2024] TASSC 6) · [2021] TASCCA 12 (Neill-Fraser) reingested clean · all enriched=1 · deep_enriched=1 |
-| D1 case_chunks | 152 chunks (Neill-Fraser reingested clean) · all done=1 · all embedded=1 |
+| D1 cases | 29 rows · 22 deep_enriched=1 · 7 pending (2026 cases — deep_enriched=0, awaiting neuron reset) · scraper resuming TASSC 2024/11 at noon 20 Mar |
+| D1 case_chunks | 651 chunks · all done=1 · all embedded=1 · zero empty enrichment |
 | D1 secondary_sources | 2,032 total · all enriched=1 · all embedded |
 | D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| worker.js | Locally updated session 7 (orderedChunks, labels, prompt fix) — NOT YET DEPLOYED · last deployed: 2658f6f0 (citation filter only, superseded by local changes) · DEPLOY FIRST NEXT SESSION |
+| worker.js | Deployed session 8 · version c5f8101c · orderedChunks + [CASE EXCERPT]/[ANNOTATION] labels + Qwen3 prompt fix + Workers AI 4006 error handling |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
 | enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
 | server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk pass UNCONDITIONAL (Qdrant 0.15, type=case_chunk, top 4) · NO RRF · NO in-memory BM25 · NO FTS5 — these were documented in session 3 but never deployed |
@@ -147,6 +147,19 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. CLAUDE.md session 6 note "resumes at TASSC 2024/11" was incorrect.
 
 ---
+
+## CHANGES THIS SESSION (session 8) — 20 March 2026
+
+- **worker.js deployed** — session 7 changes now live (orderedChunks, [CASE EXCERPT]/[ANNOTATION] labels, Qwen3 prompt fix) · version 84d42ffc
+- **Case chunk pass gate removed** — pass now runs unconditionally on every query · no citation pattern required · Neill-Fraser DNA retrieval confirmed working · server.py SCPed to VPS + agent-general force-recreated
+- **Workers AI error handling** — callWorkersAI() now throws on result.error or code 4006 · CHUNK handler throws on empty extraction → msg.retry() fires · prevents silent hollow enrichment on neuron cap
+- **DST fix** — austlii_scraper.py is_business_hours() now uses zoneinfo Australia/Hobart · was hardcoded UTC+10, Tasmania currently UTC+11 · caused 8am Task Scheduler trigger to be rejected
+- **Scraper rescheduled to noon** — Task Scheduler trigger moved from 8am to 12pm · neurons reset at 11am Hobart (midnight UTC) · one hour buffer before scraper fires
+- **MAX_CASES_PER_SESSION confirmed 100** — was temporarily set to 10 for session 6 test run · already restored to 100
+- **Architecture docs corrected** — session 3 RRF/BM25/FTS5 work documented as complete but never deployed · Worker.js and server.py confirmed against live code · dead routes identified · CLAUDE_arch.md retrieval section replaced with v5 (confirmed)
+- **Cloudflare git integration disconnected** — was auto-deploying on every push from root directory, failing because worker.js is in Arc v 4/ · manual wrangler deploy confirmed as correct workflow
+- **Retrieval baseline** — extend with 2-3 natural language case queries without citation patterns added to roadmap
+- **All committed** · fe4d059 (session 7 worker deploy) · 58d0d25 (session 8 changes)
 
 ## CHANGES THIS SESSION (session 7) — 19 March 2026
 
@@ -222,6 +235,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Extend retrieval baseline** — add 2-3 natural language case queries without citation patterns (e.g. "Neill-Fraser DNA secondary transfer") to catch gate/threshold issues early
 - **RAG workflow doc** — DONE v3 18 Mar 2026.
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks.
+- **Scraper noon schedule** — Task Scheduler set to 12pm daily · neurons reset 11am Hobart · do not move earlier without checking neuron reset time
+- **Neuron cap monitoring** — at 100 cases/day with large judgments (100+ chunks each) cap may be hit · if recurring, consider moving to Workers Paid ($5/month) or GPT-4o mini (~$0.05/day) for chunk enrichment
+- **Cloudflare git integration** — disconnected session 8 · deploy manually via wrangler only
 - **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-scraper-run.
 - **Qwen3 UI toggle** — add third button to model toggle. Workers AI confirmed working.
 - **Nightly cron for xref_agent.py** — after scraper actively running.
