@@ -1721,7 +1721,23 @@ async function handleLegalQueryWorkersAI(body, env) {
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
   const nexusData = await nexusRes.json();
   const chunks = (nexusData.chunks || []).filter(c => !(c.court === null && c.year === null && typeof c.citation === 'string' && !c.citation.match(/^\[\d{4}\]/)));
-  const hasCases = chunks.length > 0;
+  const citationQuery = /\[\d{4}\]/.test(query);
+  const hasCaseChunks = chunks.some(c => c.type === 'case_chunk');
+  let orderedChunks = (citationQuery && hasCaseChunks)
+    ? [...chunks].sort((a, b) => {
+        if (a.type === 'case_chunk' && b.type !== 'case_chunk') return -1;
+        if (a.type !== 'case_chunk' && b.type === 'case_chunk') return 1;
+        return 0;
+      })
+    : chunks;
+  if (citationQuery && hasCaseChunks) {
+    let annotationCount = 0;
+    orderedChunks = orderedChunks.filter(c => {
+      if (c.type !== 'case_chunk') { annotationCount++; return annotationCount <= 2; }
+      return true;
+    });
+  }
+  const hasCases = orderedChunks.length > 0;
 
   // ── Step 1b: Section query detection ─────────────────────────
   let sectionContext = null;
@@ -1731,7 +1747,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   }
 
   // ── Step 2: Build context ────────────────────────────────────
-  if (chunks.length === 0 && !sectionContext) {
+  if (orderedChunks.length === 0 && !sectionContext) {
     return {
       answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
       sources: [],
@@ -1740,10 +1756,11 @@ async function handleLegalQueryWorkersAI(body, env) {
     };
   }
 
-  const caseBlocks = chunks.map((c) => {
+  const caseBlocks = orderedChunks.map((c) => {
     const caseName = c.case_name ? `${c.case_name} ` : '';
     const courtSuffix = c.court && c.court.toLowerCase() !== 'unknown' ? ` (${c.court})` : '';
-    return `${caseName}${c.citation}${courtSuffix}\n${c.text}`;
+    const label = c.type === 'case_chunk' ? '[CASE EXCERPT]' : '[ANNOTATION]';
+    return `${label} ${caseName}${c.citation}${courtSuffix}\n${c.text}`;
   }).join("\n\n---\n\n");
 
   const contextBlocks = sectionContext
@@ -1754,7 +1771,7 @@ async function handleLegalQueryWorkersAI(body, env) {
     ? `You are a Tasmanian criminal law assistant. Quote and explain the section, then discuss only how the provided cases have applied it. Be precise. Plain prose only. Never invent citations.`
     : (sectionContext && !hasCases)
       ? `You are a Tasmanian criminal law assistant. Quote and explain the provided section. Do not speculate about case application — state clearly that no cases are yet available. Plain prose only. Never invent citations.`
-      : `You are a Tasmanian criminal law assistant. Answer strictly from the provided case excerpts only. If excerpts are insufficient, say so explicitly. Plain prose only. Never invent citations.`;
+      : `You are a Tasmanian criminal law assistant. Answer from the provided case excerpts. When excerpts contain raw judgment text, summarise and reason from the court's reasoning and findings directly — do not refuse if no clean doctrinal statement is present. CASE EXCERPT blocks contain primary source judgment text — draw your answer primarily from these. ANNOTATION blocks provide supplementary practitioner context. Plain prose only. Never invent citations.`;
 
   const answerNote = (sectionContext && hasCases)
     ? `Quote ${sectionContext.label} in your answer, then discuss how the cases have applied or interpreted it.`
@@ -1766,7 +1783,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   const response = await env.AI.run(WORKERS_AI_MODEL, {
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If the sources lack authority on a point, say explicitly: "The retrieved sources do not contain sufficient information on this point."\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
+      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If a source contains raw judgment text, extract and summarise the court's reasoning and findings directly from that text. Only note a gap if no relevant material is present at all.\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
     ],
     max_tokens: 2000,
     budget_tokens: 0,
@@ -1780,7 +1797,7 @@ async function handleLegalQueryWorkersAI(body, env) {
 
   // ── Step 4: Return ───────────────────────────────────────────
   const seen = new Set();
-  const caseSources = chunks
+  const caseSources = orderedChunks
     .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
     .map(c => ({ citation: c.citation, court: c.court, year: c.year, score: c.score, summary: c.summary || "" }));
 
@@ -1788,7 +1805,7 @@ async function handleLegalQueryWorkersAI(body, env) {
     ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
     : caseSources;
 
-  return { answer, sources, chunk_count: chunks.length, model: "workers-ai" };
+  return { answer, sources, chunk_count: orderedChunks.length, model: "workers-ai" };
 }
 
 /* =============================================================
