@@ -1639,50 +1639,6 @@ ${answерNote}`;
   return { answer, sources, chunk_count: chunks.length, model: "claude" };
 }
 
-/* =============================================================
-   LEGAL QUERY — Qwen3 via nexus /query
-   Mirrors handleLegalQuery but routes to nexus for local inference.
-   ============================================================= */
-async function handleLegalQueryQwen(body, env) {
-  const { query, top_k, score_threshold } = body;
-  if (!query || !query.trim()) throw new Error("query field required");
-
-  const nexusRes = await fetch("https://nexus.arcanthyr.com/query", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Nexus-Key": env.NEXUS_SECRET_KEY,
-    },
-    body: JSON.stringify({
-      query_text: query.trim(),
-      top_k: top_k || 6,
-      score_threshold: score_threshold || 0.45,
-    }),
-  });
-
-  if (!nexusRes.ok) throw new Error(`Nexus query failed: ${nexusRes.status}`);
-  const nexusData = await nexusRes.json();
-
-  if (!nexusData.ok) throw new Error(nexusData.error || "Nexus query error");
-
-  const chunks = nexusData.chunks || [];
-  const hasCases = chunks.length > 0;
-  const answer = nexusData.answer || "No response from model.";
-
-  // Deduplicated source list — same shape as handleLegalQuery
-  const seen = new Set();
-  const sources = chunks
-    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
-    .map(c => ({
-      citation: c.citation,
-      court: c.court,
-      year: c.year,
-      score: c.score,
-      summary: c.summary || "",
-    }));
-
-  return { answer, sources, chunk_count: chunks.length };
-}
 
 /* =============================================================
    FETCH-PAGE PROXY
@@ -2214,7 +2170,6 @@ export default {
         else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
-        else if (action === "legal-query-qwen" && request.method === "POST") result = await handleLegalQueryQwen(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
         else if (action === "fetch-case-url" && request.method === "POST") result = await handleFetchCaseUrl(body, env);

@@ -45,5 +45,29 @@ run_query 13 "tendency notice objection voir dire"
 run_query 14 "leading questions examination in chief"
 run_query 15 "family violence evidence complainant credibility"
 
+# Q16 — Natural language, no citation, tests case chunk pass at 0.15 threshold
+echo "Q16: neill-fraser dna secondary transfer"
+RESULT=$(curl -s -X POST http://localhost:18789/search \
+  -H "Content-Type: application/json" \
+  -H "X-Nexus-Key: $KEY" \
+  -d '{"query_text": "neill fraser dna secondary transfer"}')
+echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); chunks=d.get('chunks',[]); print(f'  chunks: {len(chunks)}'); [print(f'  [{c.get(\"score\",0):.4f}] {c.get(\"source\",\"\")[:80]}') for c in chunks[:4]]"
+
+# Q17 — Doctrine question, no section reference
+echo "Q17: self-defence honest belief mistake of fact"
+RESULT=$(curl -s -X POST http://localhost:18789/search \
+  -H "Content-Type: application/json" \
+  -H "X-Nexus-Key: $KEY" \
+  -d '{"query_text": "self-defence honest belief mistake of fact"}')
+echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); chunks=d.get('chunks',[]); print(f'  chunks: {len(chunks)}'); [print(f'  [{c.get(\"score\",0):.4f}] {c.get(\"source\",\"\")[:80]}') for c in chunks[:4]]"
+
+# Q18 — Procedural rights, natural language, tests procedure corpus
+echo "Q18: what happens if an accused person refuses to give evidence"
+RESULT=$(curl -s -X POST http://localhost:18789/search \
+  -H "Content-Type: application/json" \
+  -H "X-Nexus-Key: $KEY" \
+  -d '{"query_text": "what happens if an accused person refuses to give evidence"}')
+echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); chunks=d.get('chunks',[]); print(f'  chunks: {len(chunks)}'); [print(f'  [{c.get(\"score\",0):.4f}] {c.get(\"source\",\"\")[:80]}') for c in chunks[:4]]"
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Done."

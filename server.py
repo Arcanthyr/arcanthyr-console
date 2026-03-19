@@ -18,6 +18,7 @@ INGEST_JOBS = {}  # job_id -> { status, total_blocks, block_current, chunks_pars
 
 # Court hierarchy for re-ranking (higher = more authoritative)
 COURT_HIERARCHY = {
+    "hca":         4,
     "cca":         3,
     "fullcourt":   3,
     "supreme":     2,
@@ -357,7 +358,7 @@ def search_text(body):
         print(f"[+] BM25 cases: added {added_cases} cases citing referenced legislation")
 
     # ── Case chunk second-pass retrieval ────────────────────────────────────
-    # Runs on every query — low threshold (0.15) with type filter keeps noise low.
+    # Runs on every query — threshold 0.35 filters noise while preserving relevant case chunks.
     try:
         case_chunk_response = client.query_points(
             collection_name=COLLECTION,
@@ -366,7 +367,7 @@ def search_text(body):
                 must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
             ),
             limit=4,
-            score_threshold=0.15,
+            score_threshold=0.35,
             with_payload=True,
         )
         existing_ids = {c.get("_id") for c in chunks if "_id" in c}
@@ -395,7 +396,7 @@ def search_text(body):
             existing_ids.add(chunk_id)
             added_case_chunks += 1
         if added_case_chunks:
-            print(f"[+] Case chunk pass: added {added_case_chunks} case chunks (threshold 0.15)")
+            print(f"[+] Case chunk pass: added {added_case_chunks} case chunks (threshold 0.35)")
     except Exception as e:
         print(f"[!] Case chunk pass error: {e}")
     # ── End case chunk pass ─────────────────────────────────────────────────
