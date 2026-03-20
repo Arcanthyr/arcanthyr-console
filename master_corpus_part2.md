@@ -3603,3 +3603,3431 @@ Thus, an assault may take one of the following forms:
 [DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924] [SECTION: s 26] [CITATION: Defences Overview] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Defences precluding unlawful assault findings] [CONCEPTS: defences, self-defence, reasonable force, criminal responsibility]
 
 There are a number of defences which would preclude a finding of unlawfulness, including self-defence (Code s 46), punishment of one's child for the purposes of correction (Code s 50), and the use of reasonable force in executing a lawful arrest (Code s 26).
+
+<!-- block_039 master -->
+
+# No evidence from victim
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Evidence from victim unwilling to give testimony] [CONCEPTS: victim evidence, physical injuries, witness statements, criminal proceedings] [CITATION: hoc-b039-m001-no-evidence-from-victim] [ACT: None] [CASE: Irons v Moore [2019] TASSC 22]
+
+In this case the victim was unwilling to give evidence, that is she was 38'ed and only stated she "could not remember" so that all that was in evidence was the physical injuries reported by witnesses and the recent complaint evidence to them.
+
+# Defence of necessity
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Legal framework for defence of necessity] [CONCEPTS: necessity, legal defence, criminal law] [CITATION: hoc-b039-m002-defence-of-necessity] [ACT: None] [CASE: Bonde v Ackroyd [2011] TASMC 7]
+
+***No content available for the defence of necessity.***
+
+# Invalid Consent to Assault
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Conditions under which consent does not negate unlawfulness] [CONCEPTS: assault, consent, unlawful acts, public interest, breach of peace] [CITATION: hoc-b039-m003-invalid-consent] [ACT: Code of Tasmania] [CASE: None]
+
+Section 182(4) provides that an assault may be unlawful notwithstanding the V's consent **where four conditions are satisfied:**
+
+**Otherwise unlawful**
+
+The assault is otherwise unlawful: this suggests that it must also be another offence such as disturbing the peace by fighting contrary to the POA s13(1).
+
+**Injurious to the public**
+
+\- Fist fights and prize fights: (AG Ref No 6/1980; Coney; Jobidon; Holmes)
+
+Sporting contests: Pallante v Stadiums; Jewell (players are deemed to consent to force reasonably expected to happen in the course of the game and not every infringement of the rules is an assault -- so the question is was the application of force within the reasonable contemplation of the players); Emmet v Arnold (did application of force exceed implied consent);
+
+\- Sadomasochistic practices: Brown, McIntosh, but see Wilson (Branding acceptable which was permitted)
+
+Dangerous exhibitions and rough but well-intentioned horseplay: Jones; Aitken and ors, deciding that consent in the context of rough and undisciplined horseplay is a defence where there is no intention to cause injury.
+
+The assault is injurious to the public; this apparently means not in the public interest which is clearly a policy decision and courts distinguish between:
+
+**Injurious to the person assaulted**
+
+There must be some harm to the person. Any harm or injury calculated to interfere with health or comfort. It need not be permanent, but must be more than transient or trifling (McCallum per Burbury CJ).
+
+**Involve a breach of the peace**
+
+The assault is a breach of the peace: this is a word which had a technical meaning at common law; fist fights in public are a traditional breach of the peace but the term is wider and includes situations where there is actual or threatened violence likely to cause harm: Howell; Holmes; Dowell v Higgins; Nicholson v Avon.
+
+Whilst the putative victim's consent to the application of force generally affords a defence, there are two situations in which an assault will still be unlawful notwithstanding that consent. The first is where it is expressly provided that the victim's consent is immaterial to criminal responsibility. For example, under s 51 of the Code no consent may be given to the infliction of death upon oneself nor to the infliction of an injury likely to cause death. And, per s 127, the consent of a victim under the age of 17 years is no defence to a charge of indecent assault.
+
+The second situation is where the defence of consent is not precluded expressly but the legislation provides an avenue for proving unlawfulness despite the existence of consent. It is this situation with which the current enquiry is concerned. In certain circumstances, the victim's consent is ineffective as an excuse or justification for an assault. The rules which operate to deny the exculpatory effect of consent are set out in s 182(4) of the Code.
+
+Assuming that the victim's consent to the application of force has been given freely within the meaning of s 2A of the Code, s 182(4) specifically provides that the assault is nevertheless still unlawful if each of these four conditions is satisfied: • the act is 'otherwise unlawful'; • the injury is of such a nature, or is done under such conditions as to be injurious to the public; • the act is injurious to the person assaulted; and • the act involves a breach of the peace. The Crown bears the onus of proof in relation to all four matters. It is not sufficient for the Crown to prove one or more of the elements listed above; they must prove all four (Woolmington v DPP [1935] AC 462).
+
+# Conditions of "Otherwise Unlawful"
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Clarification of 'otherwise unlawful' acts in context of consent] [CONCEPTS: lawful assault, sporting contests, Coney's Case, unlawful acts] [CITATION: hoc-b039-m004-otherwise-unlawful] [ACT: Code of Tasmania] [CASE: Coney's Case, Brown]
+
+There is a degree of uncertainty about when an act will be 'otherwise unlawful' in the context of this section. The condition is unique to Tasmania but it seems likely that it can be linked to Cave J's judgement in Coney's Case. His Honour distinguished between blows struck in anger and those struck in the context of sporting contests where there is no hostile intent and held that the former would amount to both an assault and a breach of the peace and would be, on that ground, unlawful in any case. The implication is that, before a consensual assault can be unlawful it must constitute an assault and some other offence as well. This is the sense in which it seems the condition of 'otherwise unlawful' is generally understood in the context of s 182(4). For example, the act could be a breach of s 178 of the Code --- being armed in public; taking part in an affray, s 80; or duelling contrary to s 81. The circumstances in Brown may not constitute 'otherwise unlawful' conduct in this sense, so that, in Tasmania, consent would remain an operative defence to sadomasochistic consensual sexual conduct of the kind engaged in that case. Consent would not be rendered immaterial by s 182(4). 
+
+Where the putative victim consents to an application of force, one of the fundamental justifications for the criminalisation of assault no longer applies --- there is no violation of the victim's physical integrity. Arguably, the requirement that the act constitutes another offence supplies the wrongfulness that is otherwise absent.
+
+# Injurious to the Public
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Definition of public injury in consent considerations] [CONCEPTS: public interest, common law, Criminal Code, bodily harm] [CITATION: hoc-b039-m005-injurious-to-the-public] [ACT: None] [CASE: Coney's Case, Attorney-General's Reference (No 6 of 1980), Brown]
+
+The second hurdle for the Crown is to establish that the assault is injurious to the public. This phrase is not defined in the Code so it may be considered a 'word of doubtful import'. According to established principles for interpreting words in legal Codes, where the meaning of a word (or phrase) is unclear it is permissible to look to the common law for a definition. There have been a number of situations where the common law courts have considered the meaning of the phrase 'injurious to the public'. In Coney's Case it was held to mean 'not in the public interest', and this is generally the understanding evident in succeeding cases --- both Attorney-General's Reference (No 6 of 1980) and Brown refer to the infliction of bodily harm 'for no good reason'. The more difficult question that remains is what sorts of activities are or are not in the public interest? As mentioned above, the common law and the Code treat certain activities involving the application of force to another as non-criminal on the basis that they provide some social good --- games and sports, lawful chastisement or correction of children, reasonable surgical interference, dangerous exhibitions and 'well-intentioned horseplay'. Activities involving the infliction of bodily harm which fall outside these well-established exceptions, including consensual sadomasochistic practices and at least some forms of intrusive body ornamentation, continue to be judged as injurious to the public.
+
+<!-- block_039 procedure -->
+
+### Case Authority: Irons v Moore \[2019\] TASSC 22
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Irons v Moore (2019)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case where victim unwilling to give evidence] [CONCEPTS: victim evidence, consent, physical injuries, witness statements, evidence law]
+In this case the victim was unwilling to give evidence, that is she was 38'ed and only stated she "could not remember," so that all that was in evidence was the physical injuries reported by witnesses and the recent complaint evidence to them.
+
+### Case Authority: Bonde v Ackroyd \[2011\] TASMC 7
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION:] [CITATION: Bonde v Ackroyd (2011)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case regarding defence of necessity] [CONCEPTS: defence, necessity, criminal responsibility, case law, assailant behaviour]
+
+### Legal Doctrine: Section 182(4) - Invalid Consent Conditions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION: s 182(4)] [CITATION: Invalid Consent Conditions] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Conditions under which V's consent may be deemed immaterial] [CONCEPTS: consent, assault, public interest, unlawful act, breach of peace]
+Section 182(4) provides that an assault may be unlawful notwithstanding the victim's consent where four conditions are satisfied:
+- The assault is otherwise unlawful: must also be another offence such as disturbing the peace by fighting contrary to the POA s 13(1).
+- The assault is injurious to the public: refers to actions not in the public interest, with clear policy implications.
+- There must be some harm to the person: any harm or injury that interrupts health or comfort (McCallum per Burbury CJ).
+- The assault involves a breach of the peace: understood to mean traditional and wider situations of actual or threatened violence.
+
+### Case Authority: Woolmington v DPP \[1935\] AC 462
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Woolmington v DPP (1935)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Proving conditions of invalid consent] [CONCEPTS: burden of proof, assault, consent, Crown case, legal precedent]
+The Crown bears the onus of proof in relation to all four matters. It is not sufficient for the Crown to prove one or more of the elements listed above; they must prove all four.
+
+### Case Authority: R v Holmes \[1993\] TASSC 5
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION:] [CITATION: R v Holmes (1993)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Relevance of consent in assault cases] [CONCEPTS: assault, consent, bodily harm, jury instruction, legal standards]
+1. At all events, those two decisions support the view that at common law in a case such as the present, the essential question for the jury is whether they are satisfied beyond reasonable doubt that the blows struck by the accused were likely or were intended by him to cause bodily harm to the complainant.
+2. "Bodily harm" in this context has its usual meaning and includes any hurt or injury which interferes with the health or comfort of the complainant.
+6. If the prosecution fails to persuade the jury that bodily harm to the complainant was likely in the circumstances or that the accused did not intend to cause bodily harm by his action, the jury may then consider the question of consent.
+
+### Case Authority: Howell v R (1981) 73 Crim App R 31
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Howell v R (1981)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Definition of breach of the peace] [CONCEPTS: breach of peace, violence, criminal process, legal definitions, assault]
+According to Howell a breach of the peace occurs whenever harm is actually done or is likely to be done to a person, or in his presence to his property, or if a person is in fear of being so harmed through an assault, an affray, a riot, unlawful assembly or other disturbance.
+
+### Case Authority: Turner v Horan \[2021\] TASSC 16
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Turner v Horan (2021)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Hostility in assault and social interaction] [CONCEPTS: assault, hostility, social interaction, legal interpretation, non-hostile acts]
+16. The applicant contends that the magistrate could only have been satisfied that he hugged Ms Beasley without hostile intent. However, it was not necessary for the prosecution to prove that the applicant applied force with hostility or hostile intent.
+
+### Case Authority: Police v FRS \[2020\] TASMC 9
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION:] [CITATION: Police v FRS (2020)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Definition of indecency in assault] [CONCEPTS: indecent assault, consent, legal standards, community standards, sexual connotation]
+The term 'indecent' is not defined in the Code. To be regarded as indecent, an act must have a sexual connotation either because of the area of the body to which the assault is directed, or because the assailant uses the area of his body which would give rise to a sexual connotation in carrying the assault. The behaviour must be unbecoming or offensive to common propriety.
+
+### Case Authority: Brazendale v O \[2008\] TASMC 3
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION:] [CITATION: Brazendale v O (2008)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Standards for judging indecency] [CONCEPTS: indecency, sexual connotation, assault, legal interpretations, community standards]
+Indecency has been held to be unseemly, unbecoming or outrageous conduct. It is conduct with a sexual connotation; when applying force, the defendant must have intended to do it in an indecent manner.
+
+### Case Authority: Collins v Coleman \[2013\] TASMC 19
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION:] [CITATION: Collins v Coleman (2013)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Discussion of legal meanings of indecency] [CONCEPTS: indecency, assault, sexual intent, legislative interpretation, community decency]
+The word "indecent" should be given its literal or grammatical meaning in its context. In a criminal prosecution for assault, "indecent" has long been used in law to describe acts involving lewdness or sexual connotation.
+
+### Case Authority: Tasmania v Scott \[2025\] TASSC 53
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924 (Tas)] [SECTION:] [CITATION: Tasmania v Scott (2025)] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Elements of aggravated assault with a firearm] [CONCEPTS: aggravated assault, firearm, legal elements, threatening gesture, assault law]
+A person commits the crime of aggravated assault if it is proved beyond reasonable doubt that:
+(a) the accused;
+(b) by a voluntary act or acts;
+(c) made a threatening gesture to apply force to another person by pointing a firearm or toy firearm;
+(d) at the time of the gesture, the accused used, threatened to use or was carrying a firearm;
+(e) the accused had the present ability to apply force to the other person or caused the other person to believe that he had that ability;
+(f) the acts were unlawful;
+(g) at the time of the acts, the accused either intended to threaten the other person or realised that the likely consequence of his actions would lead to apprehension of force.
+
+<!-- block_040 master -->
+
+# Definition and Elements of Assault by Gesture
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: the test is the application of force through threatening gesture] [CONCEPTS: assault, threatening gesture, unlawful force, present ability, subjective recklessness] [CITATION: hoc-b040-m001-assault-by-gesture-definition] [ACT: Police Offences Act 1935] [CASE: R v Vallance 1960, Emmet v Arnold [2006], Bonde v Maney [2018]]
+
+Def threatened by gesture to apply force to the person of the victim, that the defendant had, or caused the victim to believe on reasonable grounds that he had, the present ability to apply such force. Threatening by any gesture to apply such force to the person of another if the assaulter has present ability to effect his purpose; or by threatening by any gesture to apply such force to the person of another if the assaulter causes the assaultee to believe on reasonable grounds that he has present ability to effect his purpose. Unlawful is an inherent element which must be proven in the prosecution case.
+
+*Emmet v Arnold* [2006] TASSC 5:
+
+A magistrate may not find a charge of assault under [s35(1)](http://www.austlii.edu.au/au/legis/tas/consol_act/poa1935140/s35.html) proven without being satisfied beyond reasonable doubt of every element of that offence. It is therefore necessary not just to be satisfied beyond reasonable doubt that there has been an intentional application of force, but also to be satisfied beyond reasonable doubt that the application of force was unlawful.
+
+*Bonde v Maney* [2018] TASSC 23 (17 May 2018):
+
+The mental elements of assault were considered in *Tasmania v Oates* [2017] TASSC 39. Although I was considering assault as defined by s 182 of the *Criminal Code*, my conclusions are apposite to a charge of common assault under [s 35(1)](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s35.html) of the *Police Offences Act 1935*. Assault under this provision is not defined by the *Police Offences Act*. However, by virtue of [s 36](http://www9.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/aia1931230/s36.html) of the *Acts Interpretation Act 1931*, the definition of assault contained in s 182 of the Code is applicable to the offence of assault under the *Police Offences Act*.
+
+Accordingly, in the case of an assault which is alleged to have been committed by the application of force to the person of another, the elements which must be proved by the prosecution are:
+
+(a) that the accused has applied force to the person of another, directly or indirectly;
+
+(b) by the commission of an act which is voluntary and intentional;
+
+(c) that the act is committed with the intention of applying force to the person of another or with subjective foresight that this will occur and proceeding with the act nonetheless (the *Vallance* state of mind).
+
+<!-- block_040 procedure -->
+
+### Threat by Gesture - Definition and Elements
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935 (Tas)] [SECTION: s 35(1)] [CITATION: Police Offences Act 1935 (Tas) s 35(1) - Definition of Threat by Gesture] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Definition and elements of threat by gesture in assault] [CONCEPTS: threat by gesture, assault, elements of assault, Tasmania, unlawful threat]
+
+Def threatened by gesture to apply force to the person of the victim if the defendant had, or caused the victim to believe on reasonable grounds that he had, the present ability to apply such force.
+
+### Mental Elements of Assault - Case Law Analysis
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935 (Tas)] [SECTION: s 35(1)] [CITATION: Police Offences Act 1935 (Tas) s 35(1) - Mental Elements Case Law Reference] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Applicable case law discussing the mental elements of assault] [CONCEPTS: mental elements, assault, case law, Tasmania, recklessness]
+
+The mental elements of assault were considered by me in *Tasmania v Oates* [2017] TASSC 39. The requirement is not just that there has been an intentional application of force, but also that the application of force was unlawful.
+
+### Proving Unlawfulness in Assault Cases
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935 (Tas)] [SECTION: s 35(1)] [CITATION: Police Offences Act 1935 (Tas) s 35(1) - Proving Unlawfulness] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Discussion on the necessity of proving unlawfulness in assault cases] [CONCEPTS: unlawful, assault, elements of offense, prosecution necessity, Tasmania]
+
+Is an inherent element which must be proven in the prosecution case. A magistrate may not find a charge of assault under s 35(1) proven without being satisfied beyond reasonable doubt of every element of that offence.
+
+### Legislative Reference for Statement of Offences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Justices Act 1959 (Tas)] [SECTION: s 30] [CITATION: Justices Act 1959 (Tas) s 30 - Statement of Offences] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Legislative reference for statement of offences under the Justices Act 1959] [CONCEPTS: Justices Act, statement of offences, legal requirements, Tasmania, ordinary language]
+
+Any complaint, summons, warrant, or other document laid for proceedings shall be sufficient if it describes the matter of complaint in ordinary language, avoiding technical terms.
+
+### Definition of Assault in Tasmania v Oates
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code (Tas)] [SECTION: s 182] [CITATION: Criminal Code (Tas) s 182 - Definition of Assault] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Definition of assault in the context of Tasmania v Oates] [CONCEPTS: definition of assault, Tasmania, Criminal Code, threat by gesture, legal interpretation]
+
+Assault is defined as attempting or threatening by gesture to apply such force to another if the person making the attempt has, or causes the other to believe on reasonable grounds that he has, present ability to effect his purpose.
+
+### Subjective Recklessness in Assault Cases
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code (Tas)] [SECTION: s 182] [CITATION: Criminal Code (Tas) s 182 - Subjective Recklessness] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Analysis of subjective recklessness in assault cases] [CONCEPTS: subjective recklessness, assault, mental element, criminal responsibility, Tasmania]
+
+Can a defendant be held responsible for an intentional act, done reckless of the probable consequence being that it would induce an apprehension that force would be applied?
+
+### Assessment Factors for Seriousness of Assault Offences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Various] [SECTION: N/A] [CITATION: General Considerations - Assessment Factors] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Assessment factors for determining the seriousness of assault offenses] [CONCEPTS: assault, seriousness, mental element, injuries, Tasmania]
+
+The dominant consideration for assault and whether it should also be indictable is the seriousness of injuries. The allegation is that a vehicle was effectively used as a weapon.
+
+### Elements of Assaulting a Police Officer
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935 (Tas)] [SECTION: s 35(1)] [CITATION: Police Offences Act 1935 (Tas) s 35(1) - Elements of Assaulting Police Officer] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Elements of assaulting a police officer in the execution of duty] [CONCEPTS: assaulting police, elements, execution of duty, Tasmania, intentional act]
+
+The elements of the offence of assaulting a police officer in execution of duty are that:
+- a. the defendant;
+- b. intentionally kicked
+- c. Constable Clark
+- d. to the face, either i. directly or ii. subjectively recklessly as to whether her leg or foot would strike Constable Clark's face; and
+- e. at the material time, Constable Clark was acting in the execution of her duty.
+
+### Sentencing Considerations for Assaulting Police Officers
+[DOMAIN: Tasmanian Criminal Law] [ACT: Various] [SECTION: N/A] [CITATION: Sentencing Considerations for Assaulting Police Officers] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Sentencing considerations for assaulting police officers] [CONCEPTS: sentencing, assault police, legal expectations, authority, Tasmania]
+
+"Offences of this kind must be regarded seriously and a court imposing a sentence in respect of them should be mindful of the fact that the work of police officers frequently exposes them to the risk of violence."
+
+<!-- block_041 master -->
+
+# Meaning of "in the execution of his duty" in Police Offences
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: test for police officers acting in execution of duty] [CONCEPTS: assault, police officer, execution of duty, statutory interpretation, reasonable assessment] [CITATION: hoc-b041-m001-execution-of-duty] [ACT: Police Offences Act 1935] [CASE: Jones v Krushka [2021] TASMC 14]
+
+138 In order to establish counts 1 and 3 on the complaint it is necessary to establish that S/C Moir is a police officer and at the time he was assaulted he was acting *"in the execution of his duty"*: [*Police Offences Act 1935* [s34B(a)(a)(i).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/poa1935140/s34b.html)
+
+139 That is an essential element of the charge. If it is not established, the charge is not proved even if an assault is otherwise established: *Hibble v Phegan & Ors* [\[1997\] TASSC 52](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/1997/52.html) per Zeeman J at \[46\].
+
+140 The scope of a police officer's duty was considered by Cosgrove J in *Innes v Weate* [\[1984\] TASRp 3](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASRp/1984/3.html); [\[1984\] Tas R 14.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1984%5d%20Tas%20R%2014) His Honour said at p20:
+
+*"The word 'duty' does not refer, to the constable's duty to obey superior officers. It refers to the duty of constables generally -- the duty to prevent and detect crime and to apprehend wrongdoers, to keep the peace, and to protect life and property (i.e. to protect persons from injury and property from damage). In Rice v Connolly [\[1966\] 2 QB 414](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1966%5d%202%20QB%20414), at 419, Lord Parker CJ said:*
+
+*"It is also in my judgment clear that it is part of the obligations and duties of a police constable to take all steps which appear to him necessary for keeping the peace, for preventing crime or for protecting property from criminal injury. There is no exhaustive definition of the powers and obligations of the police, but they are at least those, and they would further include the duty to detect crime and to bring an offender to justice."*
+
+141 His Honour said, at p21, that the duty cannot be stated other than in general terms and that the existence and nature of the duty depends upon a reasonable assessment by the constable of any given situation. That means there is a wide discretion to act swiftly and decisively, but the exercise of that discretion is subject to scrutiny by the courts.
+
+142 There is also a well-recognised distinction between acting in the course of duty and acting in the execution of duty: *Coates v R* [\[2001\] TASSC 141](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2001/141.html) *per Slicer J at \[16\] (with whom Cox CJ agreed at \[1\]). A police officer acts in the course of his or her duty by attending or being at events. That is part of a general duty to keep the peace and ensure compliance with the law. His Honour said, at \[17\]:*
+
+*"But his capacity to engage in a particular action is defined by statute or common law powers. It is the nature or form of that particular action or response which constitutes 'execution of duty' rather than 'course of duty'. The distinction can be described as being as that between 'a shield' and 'a sword'. In executing a particular duty, he is said to be protected (by way of particular sanction) from obstruction."*
+
+143 In *Tasmania v Gladwin* [\[2016\] TASSC 64](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2016/64.html), Brett J highlighted the distinction between being 'on duty' within the meaning of [s16A](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/sa1997121/s16a.html) of the [*Sentencing Act 1997*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/sa1997121/) and the concept of the *"due execution of his duty"*. His Honour said, at \[22\], that the latter
+
+*"\...is a narrow concept and one which is referable to the nature of the function that the police officer is performing, rather than a temporal consideration."*
+
+144 In considering whether or not the police officer is executing a duty it is irrelevant whether they are on duty or able to be on duty or acting in the course of their duty. What is necessary is to identify the particular duty the police officer is performing and the acts that are being undertaken to execute that duty. The assault must occur while those acts in execution of the identified duty are being performed.
+
+145 Definition should be considered broadly per Full Court of the FC in ***R v K (1993) ALR 59*** and cited by ***Fairly in Police v Keates \[2016\] TASMC***.
+
+<!-- block_041 procedure -->
+
+### Chunk 1: Tactical workflow for establishing "in the execution of duty" in Jones v Krushka
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Jones v Krushka - Tactical Workflow] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Workflow for proving execution of duty] [CONCEPTS: execution of duty, police officer assault, legal obligation, Tasmania police, combatting crime]  
+To establish counts 1 and 3 on the complaint in **Jones v Krushka**, the following steps must be followed:  
+1. Confirm that S/C Moir is a police officer.  
+2. Determine if S/C Moir was acting "in the execution of his duty" at the time of the assault.  
+3. Collect evidence to show that if the execution of duty is not established, the charge is not proved, regardless of whether an assault is otherwise established.
+
+### Chunk 2: Case authority citation from Hibble v Phegan & Ors on essential elements of charges
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Hibble v Phegan - Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Essential elements of charges] [CONCEPTS: essential elements, assault, legal precedent, Tasmania case law, proof of charges]  
+In **Hibble v Phegan & Ors** [1997] TASSC 52 per Zeeman J at [46], it’s reinforced that establishing the police officer's action "in the execution of his duty" is an essential element of the charge.
+
+### Chunk 3: Case authority citation from Innes v Weate on police officers' duty
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Innes v Weate - Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Police officers’ duty definition] [CONCEPTS: police duty, crime prevention, detection obligations, legislative commentary, Innes v Weate]  
+In **Innes v Weate** [1984] TASRp 3, Cosgrove J articulated that the "duty" of a constable is not limited to following orders but encompasses preventing and detecting crime, keeping peace, and protecting life and property.
+
+### Chunk 4: Practitioner commentary on police officer discretion per Innes v Weate
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Commentary on Discretion - Innes v Weate] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Police officer’s discretion] [CONCEPTS: police discretion, legal interpretation, situational assessment, judicial commentary, Innes v Weate]  
+Cosgrove J stated that there exists a wide discretion for a constable to act swiftly in response to situations, emphasizing the dependence of the exercise of duty on reasonable assessments by the constable in any given scenario.
+
+### Chunk 5: Definition of scope of police duty as stated by Brett J in Tasmania v Gladwin
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Tasmania v Gladwin - Scope of Police Duty] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Scope of police duty] [CONCEPTS: police duty, judicial interpretation, execution of duty, Tasmania cases, Brett J commentary]  
+In **Tasmania v Gladwin**, Brett J noted the distinction between being "on duty" under s16A of the Sentencing Act and the narrower concept of "due execution of his duty," which is based on the function performed rather than mere temporal status.
+
+### Chunk 6: Case authority from Coates v R distinguishing 'course of duty' from 'execution of duty'
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Coates v R - Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Duty definitions in policing] [CONCEPTS: course of duty, execution of duty, policing definitions, Coates v R, legal interpretations]  
+Coates v R [2001] TASSC 141 per Slicer J distinguished between 'acting in the course of duty' and 'execution of duty,' explaining that the latter involves particular actions as defined by legal powers.
+
+### Chunk 7: Summary of principles regarding police actions and executing duties from Coleman v Power
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Coleman v Power - Principles on Police Actions] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Police officer's execution of duty] [CONCEPTS: police duty, execution principles, Coleman v Power, legal framework, case reasoning]  
+In **Coleman v Power**, McHugh J emphasized the lawful performance of tasks relating to a police officer's functions, which underpin the execution of duty.
+
+### Chunk 8: Commentary on the requirement of proving police officers' existence in assault cases
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act 1935] [SECTION: 34B] [CITATION: Jones v Bacic - Knowledge Requirement] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Knowledge of police officer status in assault] [CONCEPTS: officer status, assault cases, Jones v Bacic, legal obligations, prosecution requirements]  
+Per **Jones v Bacic** [2013] TASMC 14, the prosecution need not prove that the accused knew the assaulted individuals were police officers, provided it can be established that the officer was acting in duty.
+
+### Chunk 9: Legal mention of High Court’s Reynhoudt principles regarding knowledge of police officer assault
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act 1958] [SECTION: 40] [CITATION: Reynhoudt - High Court Principle] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Reynhoudt principles] [CONCEPTS: Reynhoudt, legal principles, knowledge in assault, police officer assault, judicial precedents]  
+The principle set forth in **Reynhoudt** established that knowledge of the victim's status as a police officer is not necessary to validate the assault charge if lawful action was taken.
+
+### Chunk 10: Tactical distinction between false imprisonment and kidnapping via Davis v R 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act 1958] [SECTION: 40] [CITATION: Davis v R - False Imprisonment vs Kidnapping] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Distinction between false imprisonment and kidnapping] [CONCEPTS: false imprisonment, kidnapping, legal definitions, asportation, case law]  
+From **Davis v R** [2006] NSWCCA 392, kidnapping differs from false imprisonment by the element of asportation, requiring movement of the victim from their desired location.
+
+### Chunk 11: Definition of asportation as an element distinguishing kidnapping from false imprisonment
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act 1958] [SECTION: 40] [CITATION: Asportation Definition - Distinction] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Definition of asportation in kidnapping context] [CONCEPTS: asportation, legal terminology, kidnapping definition, false imprisonment, Tasmania law]  
+As stated, asportation must occur for an act to qualify as kidnapping and it does not need to be a large movement but must involve taking the victim away.
+
+### Chunk 12: Summary of legal definitions and distinctions regarding firearms possession and use
+[DOMAIN: Tasmanian Criminal Law] [ACT: Firearms Act 1996] [SECTION: 107A] [CITATION: Firearms Definitions - Legal Summary] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Firearms possession distinctions] [CONCEPTS: firearms law, possession definitions, illegal firearms, definitions, Tasmania firearms legislation]  
+As per the Firearms Act 1996, definitions of use, possess, and sell extend to include circumstances where a person can be seen to be holding a firearm suggestively indicating potential use.
+
+### Chunk 13: Overview of acetylene confinement in regard to possession of stolen firearms
+[DOMAIN: Tasmanian Criminal Law] [ACT: Firearms Act 1996] [SECTION: 107A] [CITATION: Stolen Firearms - Acetylene Confinement Summary] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Handling stolen firearms] [CONCEPTS: firearm possession, stolen property, illegal firearms, case assessments, Tasmania laws]  
+Referring to provisions under s 107A, it is outlined that proof of a firearm being stolen is not necessary when bringing charges against a person for possession.
+
+### Chunk 14: Circumstantial evidence principles outlined in case law including Doney v R
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: 8] [CITATION: Circumstantial Evidence - Doney v R] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Principles of circumstantial evidence] [CONCEPTS: circumstantial evidence, proof standards, reasonable doubt, Doney v R, Tasmania case law]  
+**Doney v R** [1990] HCA 51 highlights that all reasonable hypotheses inconsistent with guilt must be excluded to prove facts beyond reasonable doubt using circumstantial evidence.
+
+### Chunk 15: Analysis framework for circumstantial evidence interpreted in Roughan v Haines
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: 8] [CITATION: Roughan v Haines - Circumstantial Evidence Analysis] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Circumstantial evidence assessment] [CONCEPTS: circumstantial evidence, defendant rights, courtroom procedures, reasonable doubt, Roughan v Haines]  
+Assessment of circumstantial evidence arising from **Roughan v Haines** requires considering the cumulative weight of all evidence presented.
+
+### Chunk 16: Summarized principles on post-offence conduct in circumstantial evidence from Pickett v Tasmania 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: 8] [CITATION: Pickett v Tasmania - Post-Offence Conduct] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Significance of flight evidence] [CONCEPTS: post-offence conduct, flight evidence, circumstantial evidence, Pickett v Tasmania, courtroom implications]  
+Evidence of fleeing from police can indicate consciousness of guilt as noted in **Pickett v Tasmania**, but such evidence must be weighed with all other presented particulars.
+
+### Chunk 17: Alternative hypothesis consistent with innocence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: 8] [CITATION: Alternative Hypothesis - R v Baden-Clay] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Reasonableness of hypotheses] [CONCEPTS: reasonable hypotheses, judicial interpretations, criminal defence, Tasmania law, burden of proof]  
+In **R v Baden-Clay**, for an inference to be an alternative to guilt, it must be based on credible evidence rather than mere speculation.
+
+<!-- block_042 master -->
+
+# Lies as Consciousness of Guilt: Evidentiary Requirements
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: requirements for using lies as evidence of guilt] [CONCEPTS: lies, consciousness of guilt, Edwards direction, evidence, jury instructions] [CITATION: hoc-b042-m001-lies-consciousness-of-guilt] [ACT: None] [CASE: Shaw v Tasmania]
+
+Before you can use this evidence against the defendant, you must be satisfied of a number of matters. Unless you are satisfied of all these matters, then you cannot use the evidence against the defendant. First, you must be satisfied that the defendant has told a deliberate untruth. There is a difference between the mere rejection of a person’s account of events and a finding that the person has lied. In many cases, where there appears to be a departure from the truth, it may not be possible to say that a deliberate lie has been told. The defendant may have been confused; or there may be other reasons which would prevent you from finding that he has deliberately told an untruth.
+
+As a general rule an Edwards ((1993) 178 CLR 193) direction should only be given if the prosecution contends that a lie is evidence of guilt, in the sense that it was told because “the accused knew that the truth would implicate him in (the commission) of the offence”: Edwards, 211, 363, as explained in Zoneff (2000) 200 CLR 234. See also R v Hennig [2010] QCA 244 and R v Sheppard [2010] QCA 342. Courts of Appeal have warned of the need for circumspection and care in the use of this direction: Brennan [1999] 2 Qd 529, 531; Walton and Hannan [2001] QCA 309 [61]; R v Dykstra [2011] QCA 175 [13]. See Chang (2003) 7 VR 236 as to the circumstances where an Edwards direction should be given concerning post-offence conduct, particularly flight and concealment, where that conduct is relied upon by the prosecution as evidence of guilt or is likely to be used by the jury as such. See Direction No. 48. An Edwards direction may be required if there is a risk of misunderstanding on the part of the jury as to the use of lies notwithstanding the prosecution has not relied on the lie as showing a consciousness of guilt: Zoneff at 244 [16]. If there is a risk of confusion as to the way the prosecution puts its case, the trial judge should inquire of the prosecutor as to the way the case is being put: Zoneff at 244 [17], R v Frank [2010] QCA 150 at [41]. However, an Edwards direction will only be required in these circumstances where there is a real danger that the jury will wrongly conclude that the lie is evidence of guilt: Dhanhoa v R (2003) 217 CLR 1.
+
+Secondly, you must be satisfied that the lie is concerned with some circumstance or event connected with the offence. You can only use a lie against the defendant if you are satisfied, having regard to those circumstances and events, that it reveals a knowledge of the offence or some aspect of it.
+
+Thirdly, you must be satisfied that the lie was told because the defendant knew that the truth of the matter would implicate him in the commission of the offence and not of some lesser offence. The defendant must be lying because he is conscious that the truth could convict him. There may be reasons for the lie apart from a realisation of guilt. People sometimes have an innocent explanation for lying.
+
+The judge should direct attention to any innocent explanation that may account for the telling of a lie. For example; in an attempt to bolster up a just cause, or out of shame, or out of a wish to conceal embarrassing or disgraceful behaviour. A lie may be told out of panic, or confusion, or to escape an unjust accusation, to some other person or to avoid a consequence extraneous to the offence. If a lesser offence is open or charged then the judge should tell the jury that they cannot use it as a consciousness of guilt because the lie was told to conceal involvement in the lesser offence.
+
+If you accept that a reason of this kind is the explanation for the lie, then you cannot use it against the defendant. You can only use it against the defendant if you are satisfied that he lied out of a realisation that the truth would implicate him in the offence. If the lie is relied upon to materially support (corroborate) the evidence of a particular witness, e.g., an accomplice, a prison informant, etc., the jury should be directed that the statement must be clearly shown to be a lie by evidence other than that of the witness to be corroborated. In such an eventuality, the judge should precisely identify the evidence (independent of the witness whose evidence is said to be supported by the lie) which shows that the defendant has lied.
+
+If the lie relied upon by the prosecution is the only evidence against the defendant, or is an indispensable link in a chain of evidence necessary to prove guilt, then the following direction must be given. Finally, in this case, the alleged lie is the only evidence against the defendant, or is a critical fact in the prosecution’s circumstantial case against him. Before you can use the lie against the defendant, you must be satisfied beyond reasonable doubt not only that he lied but also that he lied because he realised that the truth would implicate him in the offence.
+
+#### Example of it
+
+**Whittaker v Tasmania [2006] TASSC 26 from para 11 has some discussion**
+
+***Shaw v Tasmania [2022] TASCCA 2 (7 March 2022)***
+
+**Evidence of Edwards-style lies, relied upon as demonstrating a consciousness of guilt**
+
+136 At the trial the Crown contended that the appellant had told a number of lies after the fire. It relied on *Edwards v The Queen* [[1993] HCA 63](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1993/63.html); [(1993) 178 CLR 193](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281993%29%20178%20CLR%20193), contending that there was independent evidence that assertions made by the appellant were lies, and that his lies were told because he knew that the truth would implicate him in the crimes charged.
+
+137 The CCTV evidence, together with the evidence of the correct time at which the first firefighters arrived, established that the appellant and his companions left the house at 5.58pm. However, there was evidence that the appellant told many witnesses that he had left earlier than that. One firefighter, Mr Suhr, gave evidence that he spoke to both Mr Wells and the appellant, and that one of them said they had left at 5.30pm. In the statutory declaration that he made on the night of the fire, the appellant said that he left between 5.30 and 5.45pm. Mr Paramanathan gave evidence that the appellant said he left at approximately 5.30. The appellant told Mr Brent Mills that he had been away from the property between 5.30pm and 6.45pm. In his police interview on 14 July 2016 the appellant said twice that he left at about 5.30 to 5.45pm. The appellant told Ms Webb that he left the house between 5.30 and 5.45pm. The only stated reason for the appellant and Mr Wells leaving the property was that they had to pick up the woman at the airport, whose flight was due to arrive at or after 6.30pm. The Crown contended that the appellant, who had left the property at 5.58pm, repeatedly asserted that he had left significantly earlier because truthful information would put him at the scene of the fire at the time it started.
+
+138 The Crown contended that the appellant lied about not knowing whether his insurance policy was current. As we have said, he phoned Coles Insurance on the night of the fire at 7.18pm and enquired whether his insurance was up to date. A police officer was present for at least part of that conversation. However, there was evidence of the phone call on 17 June, ten days before the fire, when the appellant made sure his premium payments were up to date. On 17 June, Coles Insurance wrote to him advising that his next payment would be due on 15 July. The letter was tendered as an exhibit. It was reasonable to infer that the appellant would have received it before the fire. The Crown contended that he must have known at the time of the fire that his policy was current, and feigned ignorance in order to create an impression of innocence.
+
+### Inference of guilt in failure to give evidence
+
+Looks like it can be made where there is only a circumstantial case.
+
+There are some cases in which evidence (or an explanation) contradicting an apparently damning inference to be drawn from proven facts could come only from the accused. In the absence of such evidence or explanation, the jury may more readily draw the conclusion which the prosecution seeks.
+
+The use to which the appellant's failure to give evidence may be put is correctly restricted to the strengthening of an inference of guilt from the facts proved. The jury is told not to use the appellant’s failure to give evidence unless relevant facts 'can be easily perceived to be in his knowledge'. This additional requirement, which follows a decision of the Court of Criminal Appeal of Queensland in Reg v Whinfield, ensures that the drawing of an inference of guilt will not be assisted by an accused's failure to give evidence unless it is reasonable to expect some denial, explanation or answer by the accused to the prima facie case made against him.
+
+Court in Weissensteiner. There, the prosecution case was that the accused's guilt was to be inferred from circumstances, particularly the unexplained disappearance of those whom it was alleged he had murdered, and his possession of the boat and equipment which they owned and from which they had disappeared while on a voyage with the accused. The majority of the Court held that the trial judge in that case had made no error by directing the jury that they could more safely draw the inferences which the prosecution alleged should be drawn "when the accused elects not to give evidence of relevant facts which can be easily perceived to be in his knowledge."
+
+NOTE the above does not apply if the facts said to be in the defendant's knowledge assist him in only one or some of a number of charges against him on the same indictment. Can't say he has an obligation to get up there in the box and subject himself to hell of cross-examination against all matters, when he can only defend himself against one or some. **Weissensteiner (1993) 178 CLR 217**
+
+### A recent Tas example:
+
+**Pickett v Tasmania [2022] TASCCA 12 (20 September 2022)**
+
+Defendant was jointly charged. He appealed conviction on the basis that no jury could exclude hypotheses consistent with evidence. The defendant did not give evidence. The Court discussed the implication of the defendant having failed to provide evidence to support a contrary hypothesis.
+
+"In my view, these principles are relevant to the circumstances of this case, at least in respect of the hypothesis advanced by the appellant's counsel. The improbability and highly coincidental nature of any innocent involvement of the accused with the other men in the period intervening between their departure from the property after the crimes and their arrival at Campania meant that if there was such an explanation, the facts relevant to it must be solely within the knowledge of the appellant. The lack of evidence to support such an explanation tells against regarding the explanation as rational or reasonable."
+
+### Limited to inferences of fact
+
+*B v Visser* [2000] TASSC 141
+
+Cannot be used to infer "state of mind"
+
+"In the absence of authority to the contrary, I think it is appropriate that I follow the Queensland Court of Criminal Appeal in Hocking. I hold that the Weissensteiner principle has no application in relation to the drawing of inferences as to an accused person’s state of mind, as distinct from inferences of guilt drawn from circumstantial evidence, and that the learned magistrate erred in law in regarding Weissensteiner as applicable to this case."
+
+# No Case Arguments
+
+No Case to Answer - the Test
+
+The classic test as to whether or not a defendant has a case to answer is that expressed in *May v O’Sullivan* [[1955] HCA 38](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/1955/38.html); [(1955) 92 CLR 654](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281955%29%2092%20CLR%20654) at 658:
+
+"When at the close of the case for the prosecution, a submission is made that there is 'no case to answer', the question to be decided is not whether on the evidence as it stands the defendant ought to be convicted, but whether on the evidence as it stands he could lawfully be convicted. This is really a question of law."
+
+**No case on a circumstantial case:**
+
+In a case involving circumstantial evidence, the test is not, 'whether' there is evidence which, if accepted, would provide evidence of each element of the charge' as held in *Doney v The Queen* ((1990) 171 CLR 207) or 'whether upon the whole of the evidence it would be open to the jury to be satisfied beyond reasonable doubt that the accused was guilty' as stated by Ipp J in *R v Morris* (1997) 98 A Crim R 408 at 416-17.
+
+The principle to be applied in a circumstantial case was stated by King CJ in *Case Stated by DPP (No 2 of 1993) ('DPP (No 2)')* at 327:
+
+If the case depends upon circumstantial evidence, and that evidence, if accepted, is capable of producing in a reasonable mind a conclusion of guilt beyond reasonable doubt and thus is capable of causing a reasonable mind to exclude any competing hypothesis as unreasonable, there is a case to answer.
+
+His Honour further stated that there is no case to answer, only if the evidence is not capable in law of supporting a conviction. In relation to circumstantial cases, His Honour said at 327:
+
+In a circumstantial case that implies that even if all the evidence for the prosecution were accepted and all inferences most favourable to the prosecution which are reasonably open were drawn, a reasonable mind could not reach a conclusion of guilt beyond reasonable doubt, or to put it another way, could not exclude all hypotheses consistent with innocence, as not reasonably open on the evidence.
+
+When considering a no case submission, the function of the judge, as stated by King CJ in *DPP (No 2)*, is not to choose between the inferences which are reasonably open to the jury and neither is it to decide whether any possible hypothesis consistent with innocence is reasonably open on the evidence. A judge's only concern is whether a reasonable mind could reach a conclusion of guilt beyond reasonable doubt and therefore exclude any competing hypothesis as not reasonably open on the evidence.
+
+Ipp J in *R v Morris* stated, "where the case is based on circumstantial evidence, the Magistrate is required to take into account all inferences most favourable to the prosecution which could be reasonably drawn from the primary facts."
+
+Explaining the meaning of the term 'evidence not capable in law', and citing *Peacock* (1911) 13 CLR 69, Ining CJ said at 327:
+
+If the evidence cannot exclude any reasonable hypothesis consistent with innocence, then the evidence is not capable in law of providing the charge beyond reasonable doubt and there is no case to answer.
+
+Therefore, there is a no case submission only if the evidence lacks capacity to lead a reasonable mind to reject all such hypotheses as unreasonable (emphasis added). It is the applicant's submission that on the evidence adduced by prosecution on the hearing of the charge, there is evidence, and further, that evidence has the capacity to exclude any reasonable hypothesis consistent with innocence. The defendant admitted to taking the inverter and giving his wife permission to sell the inverter. The HR Manager provided business records of all purchases made by the defendant during the time of his employment. No business records existed for the purchase of the inverter.
+
+<!-- block_042 procedure -->
+
+### Lies as consciousness of guilt
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: Not specified] [CITATION: Consciousness of Guilt - Lies] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Explanation of using lies as evidence of guilt] [CONCEPTS: consciousness of guilt, lies, Edwards direction, prosecution, jury instructions]
+
+Discussion on lies as a consciousness of guilt, referencing the reliance of the prosecution on what they claim are lies told by the defendant to show guilt. Important to identify precisely the lies relied upon by the prosecution, the basis for implicating the defendant, and ensuring evidence is clear.
+
+### Requirements for using lies against the defendant
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: Not specified] [CITATION: Requirements for Using Lies] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Criteria for using lies as evidence] [CONCEPTS: criteria, lies, evidence, consciousness of guilt, defendant]
+
+Before using evidence of lies against the defendant, you must satisfy several matters:
+
+1. You must be satisfied that the defendant has told a deliberate untruth. Confusion or other reasons may prevent a finding that a deliberate lie has occurred. 
+2. You must be satisfied that the lie is connected with some circumstance or event related to the offence. 
+3. You must be convinced that the lie was told because the defendant knew that the truth would implicate him in the commission of the offence and not a lesser offence.
+
+### Edwards Direction and its Application 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: Not specified] [CITATION: Edwards Direction - Application] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Application of Edwards direction] [CONCEPTS: Edwards direction, prosecution, jury instructions, evidence, guilt]
+
+As a general rule, an Edwards (1993) direction should be given only if the prosecution contends that a lie is evidence of guilt, as explained in pertinent case law. Courts warn of the need for care in using this direction, indicating situations where the jury might misunderstand the prosecution's case.
+
+### Circumstantial Evidence and Reasons for Lying
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: Not specified] [CITATION: Circumstantial Evidence Considerations] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Considerations surrounding circumstantial evidence] [CONCEPTS: circumstantial evidence, lying, innocent explanations, guilt, reasons]
+
+The judge must direct attention to any innocent explanations for the lie, such as attempting to bolster a just cause or concealing embarrassment. If a lesser offence is implicated, the jury should be instructed on how this affects the understanding of lies, specifically in their implication of guilt.
+
+### Implications of Failing to Give Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: Not specified] [CITATION: Inference of Guilt from Failure to Give Evidence] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Implications of not testifying] [CONCEPTS: failure to give evidence, inference, circumstantial case, jury instructions, guilt]
+
+The use of an appellant's failure to give evidence may enhance an inference of guilt from proven facts. The jury must be cautioned about this use and informed that such an inference should only arise when relevant facts can easily be perceived to be known by the accused.
+
+### Case References
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Shaw v Tasmania - Case Example] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Relevant case law illustrating application] [CONCEPTS: Shaw v Tasmania, guilt, lies, inference, evidence]
+
+**Shaw v Tasmania** [2022] TASCCA 2 provides insight into cases involving lies construed as consciousness of guilt, highlighting the need for independent evidence establishing that the lies were indeed lies and not simply misunderstandings.
+
+### No Case to Answer - The Test 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not specified] [SECTION: Not specified] [CITATION: No Case to Answer - The Test] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Explanation of the no case to answer test] [CONCEPTS: no case to answer, evidence, conviction, elements, test]
+
+The classic test in determining if a defendant has a case to answer is that expressed in **May v O'Sullivan** (1955) HCA 38. The focus is not on whether the prosecution can obtain a conviction but if there is sufficient evidence to proceed legally against the defendant.
+
+### Evidence and Circumstantial Cases
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not specified] [SECTION: Not specified] [CITATION: Circumstantial Evidence and No Case Submission] [CATEGORY: checklist] [TYPE: checklist] [TOPIC: Criteria for circumstantial case no submission] [CONCEPTS: circumstantial evidence, no case submission, jury instructions, burden of proof, reasonable doubt]
+
+In circumstantial evidence cases, if the evidence is accepted, it must produce a conclusion of guilt beyond reasonable doubt while excluding competing hypotheses. The role of the judge is defined clearly against drawing inferences.
+
+### Rule in Browne v Dunn
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act] [SECTION: 46] [CITATION: Browne v Dunn - Rule Explanation] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Rule of procedural fairness in cross-examination] [CONCEPTS: procedural fairness, Browne v Dunn, cross-examination, witness examination, evidentiary rules]
+
+The rule in **Browne v Dunn** pertains to the procedural fairness required in cross-examination, allowing a witness the chance to confront and respond to evidence affecting their testimony. Breaching this rule can lead to significant legal consequences.
+
+<!-- block_043 master -->
+
+# Admissibility of Hearsay Evidence and Prejudicial Impact
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: court considers hearsay information and unavailability] [CONCEPTS: hearsay, unavailability, representation, credibility, prejudice] [CITATION: hoc-b043-m001-hearsay-and-prejudice] [ACT: Evidence Act 2001] [CASE: Sanderson v Rabuntja, DPP v Nicholls, Tasmania v Dolega, State of Tasmania v Allie and Maple]
+
+NOTICE MUST be given under s 67 first. That notice has to be in accordance with the requirements of regulation 4 of the Evidence regulations 2022.
+
+Section 18 (non-compellable) is basis for unavailability argument. *Sanderson v Rabuntja* \[2014\] NTSC 13
+
+**DPP v Nicholls \[2010\] VSC 397 (6 September 2010)**
+
+Start with one of the categories in 3B of the EA.
+
+Then 65(2)(b) or (d).
+
+For (b)
+
+**Tasmania v Dolega \[2016\] TASSC 65**
+
+There is the need to consider the circumstances in which the representation was made, and the effect of those circumstances on either the credibility or reliability of the representation, as the case may be. Similar observations can be made in respect of the requirement in the second limb of s 65(2)(b). To allow the admission of the evidence in this case as an exception to the hearsay rule, the court must be satisfied that the circumstances in which the previous representation was made "make it unlikely that the representation is a fabrication".
+
+**State of Tasmania v Allie and Maple \[2025\] TASSC 6**
+
+This case considered hearsay evidence after the complainant had died before trial. The issues were the timing of the representations (i.e. shortly after) and "unfair prejudice" as defence had little opportunity to challenge the assertions of the complainant in interview. This meant there was an unfair impetus for the defendant to have to give evidence in the trial to refute the claims -- a tactical disadvantage, and as such, unfairly prejudicial.
+
+Specifically, at para 38, it is spelled out what issue defence took: *"It is contended for the accused that the representations were not made "shortly after" the events in question. Further, it is submitted on their behalf that it has not been shown that the representations were made "in circumstances that make it unlikely that the representation is a fabrication". In relation to s 65(2)( c), it is contended the higher threshold test is not met, namely that the representations were not made in "circumstances that make it highly probable that the representation is reliable."*
+
+The case referred to the HCA decision of: *Sio v the Queen* \[2016\] HCA 32, at para 34. This case spells out the procedure: *"It then requires the identification of the particular representation to be adduced in evidence as proof of that fact. The circumstances in which that representation was made may then be considered in order to determine whether the conditions of admissibility are met. This process must be observed in relation to each relevant fact sought to be proved by tendering evidence under s 65."*
+
+### 65(2)(b)
+
+Case also discussed meaning of "Shortly after" and "make it unlikely that it is a fabrication."
+
+\[51\] The common approach is to focus upon the circumstances of the making of the representation to determine whether it is unlikely that the representation was a fabrication.
+
+"Circumstances":
+
+\[52\] Section 65(2)(b) and (c) require courts to have regard to the "circumstances" in which the relevant representation was made. The focus is the reliability of the representation, not (directly) the reliability of the asserted fact: Mason P in *Ambrosoli* at \[28\]. The enquiry is not concerned with independent evidence that tends only to prove the asserted fact. The enquiry is concerned with the objective circumstances in which it was made, not the apparent truthfulness of the person making it: *Sio* at \[70\].
+
+\[55\] "...The true concern of the provision is with the identification of circumstances which of themselves warrant the conclusion that the representation is reliable notwithstanding its hearsay character."
+
+\[57\] It can be seen that the "circumstances" to be considered in the application of s 65(2)(b) can include previous or subsequent statements or conduct of the person who made the representation, to the extent to which they reflect on the reliability of the circumstances of the making of the particular hearsay representations.
+
+Basically, in this case, representations made on the day were allowed under 65(2)(b), but the representations made 2 days later about the same events, in a statutory declaration, were not. This was despite the fact the statement was attested to as true. Though the court did accept it weighed in favour of reliability generally.
+
+### 65(2)(c)
+
+The court then considered the representation under 65(2)(c). It said that this test involves a higher threshold of "highly" probable and is concerned with reliability at large. As such, it also excluded the later statement.
+
+### Exclusion of prejudicial evidence in criminal proceedings
+
+***Papakosmas v The Queen* (1999) 196 CLR 297 at \[91\].**
+
+In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.
+
+Evidence is not unfairly prejudicial because it makes it more likely that the accused will be convicted. As Hunt CJ at CL said in *R v BD* [(1997) 94 A Crim R 131], 139: 
+
+"The prejudice to which each of the sections \[ss 135, 136 and 137\] refers is *not* that the evidence merely tends to establish the Crown case; it means prejudice which is unfair because there is a real risk that the evidence will be misused by the jury in some unfair way."
+
+The submissions by defence as to what amounted to unfair prejudice in the matter include:
+
+- representations will not only be unassailed by cross-examination (because he is an unavailable witness) but that this will occur in the context of a trial where the accused in their interviews were not provided with an opportunity to refute Mr Percy\'s representations of what happened.
+
+- there will be forensic pressure for him to give evidence to meet the State\'s cases and then the issues on his trial will be joined. It is submitted that the unfairness will be particularly marked if he does not give evidence. It is submitted that the jury are likely to draw an adverse inference from a failure to give evidence in this context.
+
+- given there will be no cross-examination of the complainant, no forensic challenge, and no joinder of issues arising from Mr Allie\'s record of interview, there will be a greater likelihood of the jury, in some way, impermissibly informing itself on Mr Allie\'s trial using Mr Maple\'s police interview.
+
+- the inability to cross-examine the complainant is that there is no opportunity to cross-examine the complainant about his drug use, which might have had implications for the reliability of his representations.
+
+- the inability to cross-examine the complainant, along with the nature of the accounts given by the accused in their interviews, which were lacking in detail and which, as a result, did not contradict the detail of the complainant\'s account.
+
+- It is said that self-defence is raised by the two accused in their interviews with police. Critical issues on the trial will be why the men were there and what they did. Unfortunately, however, the detail of what Mr Percy said in his statutory declaration was not put to the accused during their police interviews. It was pointed out in submissions for the accused Mr Allie that in relation to his interview, the police do not put to the accused most of the allegations that were made by Mr Percy. The only allegation put with any precision or detail relates to the taking of the vehicle and setting fire to it.
+
+All submissions were dismissed as being amenable to proper and detailed directions to the jury.
+
+<!-- block_043 procedure -->
+
+### Notice Requirements for Unavailable Witness
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 67] [CITATION: Evidence Act 2001 (Tas) s 67 - Notice Requirements] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Notice requirements for unavailable witness] [CONCEPTS: notice, unavailability, Evidence Act, s 67, legal procedure]
+
+Notice must be given under s 67 first. That notice has to be in accordance with the requirements of regulation 4 of the Evidence Regulations 2022.
+
+---
+
+### Unavailability Argument Based on s 18
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 18] [CITATION: Evidence Act 2001 (Tas) s 18 - Unavailability Argument] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Basis for unavailability argument] [CONCEPTS: unavailability, s 18, non-compellable, argument]
+
+Section 18 (non-compellable) is basis for unavailability argument. *Sanderson v Rabuntja* \[2014\] NTSC 13.
+
+---
+
+### Citation of Case Authority - DPP v Nicholls
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: DPP v Nicholls (2010) VSC 397 - Citation of Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Reference to DPP v Nicholls] [CONCEPTS: DPP, Nicholls, case authority, criminal law, citation]
+
+**DPP v Nicholls \[2010\] VSC 397 (6 September 2010)**
+
+---
+
+### Step-by-Step Procedure for s 65
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 65] [CITATION: Evidence Act 2001 (Tas) s 65 - Step-by-Step Procedure] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Tactical workflow for proceeding with s 65] [CONCEPTS: s 65, hearsay, procedure, legal workflow, evidence]
+
+Start with one of the categories in 3B of the EA. Then 65(2)(b) or (d).
+
+---
+
+### Case Analysis - Tasmania v Dolega
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: N/A] [CITATION: Tasmania v Dolega (2016) TASSC 65 - Case Analysis] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Implications from Tasmania v Dolega] [CONCEPTS: Dolega, hearsay, representation, credibility, reliability]
+
+**Tasmania v Dolega \[2016\] TASSC 65**
+
+Paraphrased - there is the need to consider the circumstances in which the representation was made, and the effect of those circumstances on either the credibility or reliability of the representation, as the case may be.
+
+---
+
+### Considerations Under s 65(2)(b) and (c)
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 65] [CITATION: Evidence Act 2001 (Tas) s 65 - Considerations] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Considerations for s 65(2)(b) and (c)] [CONCEPTS: s 65(2)(b), s 65(2)(c), hearsay, representation, admissibility]
+
+The common approach is to focus upon the circumstances of the making of the representation to determine whether it is unlikely that the representation is a fabrication.
+
+---
+
+### Case Authority Reference - State of Tasmania v Allie and Maple
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: State of Tasmania v Allie and Maple (2025) TASSC 6 - Case Authority Reference] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Implications from State of Tasmania v Allie and Maple] [CONCEPTS: Allie, Maple, hearsay, trial, representation]
+
+**State of Tasmania v Allie and Maple \[2025\] TASSC 6**
+
+This case considered hearsay evidence after the complainant had died before trial. The issues were the timing of the representations (i.e. shortly after) and "unfair prejudice" as the defence had little opportunity to challenge the assertions of the complainant in interview.
+
+---
+
+### Legal Principle on Exclusion of Prejudicial Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Papakosmas v The Queen (1999) 196 CLR 297 - Exclusion of Prejudicial Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Legal principle regarding exclusion of unfair evidence] [CONCEPTS: exclusion, prejudicial evidence, legal principle, trial, unfairness]
+
+In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.
+
+---
+
+### Submission Analysis for Unfair Prejudice
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: State of Tasmania v Allie and Maple - Submission Analysis] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Submission analysis on unfair prejudice] [CONCEPTS: submissions, defence, unfair prejudice, trial, jury]
+
+Submissions by defence as to what amounted to unfair prejudice in the matter include:
+
+- Representations will not be unassailed by cross-examination (because he is an unavailable witness) but that this will occur in the context of a trial where the accused in their interviews were not provided with an opportunity to refute Mr Percy’s representations of what happened.
+
+---
+
+### Definition and Considerations of Admissions under EA
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: N/A] [CITATION: Evidence Act 2001 (Tas) - Admissions Definitions] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Definition of admissions and their implications] [CONCEPTS: admissions, hearsay, exceptions, evidence, acknowledgment]
+
+Adverse to the person's interest in the outcome of the proceeding. Admissions are an exception to the hearsay rule, as are the representations made around the same time, which provide context for the admission (e.g., the entire video statement) per s 81 EA.
+
+---
+
+### Notebook Interview Admissions Procedure
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 86] [CITATION: Evidence Act 2001 (Tas) s 86 - Notebook Interview Admissions] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Procedure for notebook interview admissions] [CONCEPTS: notebook interviews, admissions, admissibility, oral admissions, evidence]
+
+Evidence is admissible if written down and acknowledged by defendant per s 86 of EA. Not eligible for "serious offences" as defined in the act (basically over 18 and indictable offences).
+
+---
+
+### Case Reference - Bird v Adams
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Bird v Adams - Case Reference] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case reference regarding admissions] [CONCEPTS: Bird v Adams, case authority, admissions, evidence, drug possession]
+
+***Bird v Adams* Criminal Law Review 1972 Page 174**. The defendant was arrested for having in his possession LSD on 1/12/70. He accepted that he had possession which the Justices found sufficient.
+
+---
+
+### Case Reference - Harris v Pandava
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Harris v Pandava - Case Reference] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case reference regarding admissions] [CONCEPTS: Harris v Pandava, case authority, evidence, admissions]
+
+***Harris v Pandava* 24/75 Neasey J. 10/6/75**. Evidence of familiarity used similarly to *Bird v Adams*.
+
+---
+
+### Admission to Age Implications
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: R v Recorder of Grimsby Ex P. Purser - Age Admissions] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case law regarding admissions about age] [CONCEPTS: age, admissions, proof, magistrates, evidence]
+
+*R v Recorder of Grimsby Ex P. Purser* *(1951) 2 All E.R. 889; 35 CR. APP.R. 155*. The court held that magistrates are entitled to accept an admission by the offender as to his age.
+
+---
+
+### Discussion on Admissions when Defendant not Aware of Being a Suspect
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 90] [CITATION: Tasmania v Thompson (2022) TASSC 27 - Admissions when Unaware of Suspicion] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Discussion on admissions in context of suspicion] [CONCEPTS: admissions, suspect, fairness, evidence, legal process]
+
+Ok when they have been cautioned, but it is not always necessary that they're on notice that they are a suspect of a specific offence.
+
+---
+
+### Non-Summonsed Witness Examination Authority
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 36] [CITATION: Evidence Act 2001 (Tas) s 36 - Non-Summonsed Witness Examination] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Authority for non-summonsed witness examination] [CONCEPTS: non-summonsed witness, examination, court, legal authority]
+
+Court can order person in the court to give evidence even if not previously served with summons.
+
+---
+
+### Procedure for Business Records by Affidavit
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 170/171] [CITATION: Evidence Act 2001 (Tas) s 170/171 - Business Records Affidavit] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Procedure for submitting business records via affidavit] [CONCEPTS: business records, affidavit, evidence, legal process, submission]
+
+Business records in by affidavit under s 170/171. Can rely on an affidavit of record keeper if they satisfy s 171(1)(a) to adduce evidence of business records.
+
+---
+
+### Admission of Illegally Obtained Evidence Factors
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: N/A] [CITATION: Tasmania v Melick (2019) TASSC 19 - Admission of Illegally Obtained Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Factors supporting admission of illegally obtained evidence] [CONCEPTS: illegally obtained evidence, admission, factors, case law, legal implications]
+
+**Tasmania v Melick \[2019\] TASSC 19**
+
+Factors supporting admission include: high probative value and the evidence is extremely important in the proceedings.
+
+---
+
+### Evidence of Silence Implications under s 89 EA
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 89] [CITATION: Evidence Act 2001 (Tas) s 89 - Evidence of Silence Implications] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Implications of using silence as evidence] [CONCEPTS: evidence of silence, credibility, inference, s 89 EA, legal concerns]
+
+Can't use silence as a weapon to later attack/ seek to draw negative inference of the credibility of an account. S. 89 EA.
+
+---
+
+<!-- block_044 master -->
+
+# Exclusion of Admissions due to Oppressive Questioning
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: court considers oppressive questioning leading to confessions] [CONCEPTS: admissions, confessions, oppressive questioning, Evidence Act, fairness] [CITATION: hoc-b044-m001-exclusion-admissions-oppressive-questioning] [ACT: Evidence Act 2001] [CASE: Tasmania v Purkiss & Otto [2019] TASSC 45]
+
+There have been many reported common law cases in which evidence of admissions and confessions has been excluded because of oppressive questioning, particularly questioning involving undue persistence, cross-examination or scepticism. Many of the cases are referred to in *Cross on Evidence*, 11^th^ Australian edition, at \[33730\]. These cases are useful in determining questions of fairness for the purposes of [s 90](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s90.html) of the [*Evidence Act*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/).
+
+In *R v Amad *[\[1962\] VicRp 75](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VicRp/1962/75.html); [\[1962\] VR 545](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1962%5d%20VR%20545), Smith J said, at 548:
+
+\"A person in custody is, by that fact, ordinarily under great stress, and for that reason the law for his protection holds it to be improper to subject him, even after caution, to any form of cross-examination the tendency of which is in fact to extort admissions or to overcome his mental resistance to making admissions.\"
+
+In *R v Pritchard *[\[1991\] VicRp 8](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/vic/VicRp/1991/8.html); [\[1991\] 1 VR 84](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1991%5d%201%20VR%2084), the Crown had relied at trial on a videotaped interview in which the interviewing officers had made it clear that they did not believe the interviewee. The Victorian Court of Criminal Appeal dismissed an appeal against conviction, but made critical comments about the form of questioning. Crockett, McGarvie and Beech JJ said, at 93:
+
+\"The harm to him \[the applicant\] was that by the form of his questions the police officer was able to convey to the viewer of the tape the undisguised ridicule and derision he entertained about the answers of the applicant given in an endeavour to extricate himself from what obviously were real difficulties. The police would not at the trial have been permitted to express their incredulity or total disbelief in the applicant's answers. Why should they be allowed to do so by the form of questions chosen to be put to the applicant which can be, as they were, so vividly reproduced before the jury at trial?\"
+
+Several of Inspector Burk's questions involve expressions of disbelief in Ms Otto's answers and expressions of belief as to her involvement in the killing of her husband. He said things that he would not be allowed to say as a witness at the trial. It would have been unfair to Ms Otto for the jury to have seen and heard the inspector saying the things that I have quoted.
+
+---
+
+# Argument on Necessity of Playing Full Video Interview
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: obligation to play entire record of interview] [CONCEPTS: hearsay, admission, Evidence Act, playing evidence, Spinks v L] [CITATION: hoc-b044-m002-necessity-full-video-interview] [ACT: Evidence Act 2001] [CASE: Spinks v L [2020] TASMC 5]
+
+I recon I could argue no need to play if no "admission" exception to hearsay... However, if interview contains ANY admission of any sort, there is an arguable obligation to play the ROI in full:
+
+"It is hearsay because it records a previous representation admitted to prove the truth of some facts which the defendant intended to assert [(s 59(1))](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s59.html), but it is admissible under the [*Evidence Act* 2001](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/) [s 81(2)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s81.html) as an exception to the hearsay rule. The obligation to put the case fairly requires the prosecution to tender the whole of the interview -- 'the good with the bad' ([^\]^](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASMC/2020/5.html#fnB1) *R v Soma* [\[2003\] HCA 13](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2003/13.html); [(2003) 212 CLR 299](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%282003%29%20212%20CLR%20299) at [\[30\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2003/13.html#para30)-[\[31\]](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2003/13.html#para31))".
+
+---
+
+# Court's Consideration on Admissibility of Record of Interview
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: admissibility of evidence based on defendant's silence] [CONCEPTS: hearsay, defendant silence, exculpatory statements, Police v Quinn, weight of evidence] [CITATION: hoc-b044-m003-court-considers-admissibility-interview] [ACT: None] [CASE: Police v Quinn [2019] TASMC 4]
+
+**DECISION OF:** Daly DCM
+
+\[Para 14\] "For the reasons that follow, I have preferred the evidence of the police officers to that of the defendant, where their evidence conflicts. ***The defendant did not testify on oath in court. It was, of course, his right to remain silent in court. No adverse inference may be drawn from that. I assess the weight to be given to his exculpatory statements, where they are in conflict with the evidence the police officers, in light of the fact that his version of events was not given on oath and were untested by cross-examination. I give little weight to that material."***
+
+---
+
+# Requirement for Full Record of Interview in Evidence
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: necessity of playing full recorded interview] [CONCEPTS: transcript, evidence, Baker v Barratt, mixed statements] [CITATION: hoc-b044-m004-necessity-full-record-interview] [ACT: None] [CASE: Baker v Barratt [2019] TASSC 28]
+
+Cannot substitute part or any of the recorded interview just with the transcript as the transcript is not evidence. Failure to do so is error. **Baker v Barratt \[2019\] TASSC 28 (4 July 2019) at \[28\]**
+
+**Malcolm CJ and Murray J in R v McCarrol [\[2004\] WASCA 131](http://www.austlii.edu.au/au/cases/wa/WASCA/2004/131.html);** BC200404491 at \[19\]:
+
+The law as to the reception in evidence of a 'mixed' statement, one containing admissions or declarations against interest by an accused person and one containing exculpatory statements, is clear: Mule v R [\[2004\] WASCA 7](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/wa/WASCA/2004/7.html); BC200400034 \... Where the prosecution is permitted to tender such a statement, relying upon its confessional qualities, then it is obliged to accept in evidence the exculpatory material which may in turn be relied upon by the accused. All of the statement becomes evidence available to the jury for their consideration, but the admissions and the exculpatory material need not, and indeed probably should not in the generality of cases, be accorded equal weight.
+
+---
+
+# Use of Tendency Evidence and Its Implications
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: tendency evidence and its application] [CONCEPTS: tendency evidence, circumstantial evidence, multiple incidents, probative value] [CITATION: hoc-b044-m005-tendency-evidence-application] [ACT: None] [CASE: Jotheeswaran v Barnes [2019] TASSC 42]
+
+When a defendant makes admissions in an interview or a statement that is relied upon by the prosecution, any exculpatory assertions in the interview or statement may be relied upon as evidence favourable to the defendant: *R v Higgins *[\[1828\] EngR 201](http://www.worldlii.org/int/cases/EngR/1828/201.html); [(1829) 3 C & P 603](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281829%29%203%20C%20%26%20P%20603), [172 ER 565](http://www.austlii.edu.au/cgi-bin/LawCite?cit=172%20ER%20565); *Jack v Smail *[\[1905\] HCA 25](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/ArgusLawRp/1905/96.html); [(1905) 2 CLR 684](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%281905%29%202%20CLR%20684) at 695, 708.
+
+---
+
+# Recent Complaint Evidence Under s 66
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: admissibility of recent complaint evidence] [CONCEPTS: s 66, evidence, truth of assertion, spontaneous representation, prior inconsistent statement] [CITATION: hoc-b044-m006-recent-complaint-evidence] [ACT: Evidence Act 2001] [CASE: Marysej v McCullough [2018] TASSC]
+
+Permissible under s 66 where vic says to someone it happened so long as pre-conditions are met. However, not if they are saying it for the purposes of what will be said in court (i.e. a police formal statement) per s 66(3). So contrast this with a spontaneous representation at the scene.
+
+That means that a statement can't go in as evidence. But a neighbour they complain to, or the police they report to at the scene should be fine.
+
+See para 19 of ***Marysej v McCullough*** \[2018\] TASSC for a good example of the distinction.
+\[19\] The evidence of Ms Eberhart of the complainant's account of the applicant trying to pull her pants down was evidence of the truth of the complainant's assertions: Evidence Act 2001, s 66(2); Papakosmas v The Queen \[1999\] HCA 37, 196 CLR 297. On the same basis, the evidence of the assertions in the conversation with Senior Constable Carr was also evidence of the truth of the facts asserted unless the complainant said what she did for the purpose of indicating the evidence that she would be able to give in a court proceeding: Evidence Act, s 66(3). I think the only reasonable inference was that at the time of that conversation Senior Constable Carr was trying to find out what had happened, and that the complainant was enlightening her, rather than outlining the evidence she could give. It follows that the evidence of the descriptions of events given by the complainant to both Ms Eberhart and Senior Constable Carr was evidence of the truth of the facts asserted.
+
+3^rd^ party witness's evidence of vic's distress and the account she gave of the defendant's actions is relevant as it tends to corroborate vic's assertions as to def's conduct. Witness's evidence that vic complained to her about def's conduct is admissible as evidence of the truth of the facts that vic asserted, [*Evidence Act *2001](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), [s 66(2)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s66.html); *Papakosmas v The Queen* [\[1999\] HCA 37](http://www.austlii.edu.au/cgi-bin/LawCite?cit=%5b1999%5d%20HCA%2037), [196 CLR 297.](http://www.austlii.edu.au/cgi-bin/LawCite?cit=196%20CLR%20297)
+
+NOTE -- section 66(3) does not restrict statements going in for PIS!!! Adduced not just as hearsay but also for credit.
+
+Prosecution can admit that document on the hearing, not just as evidence of a prior inconsistent statement admittedly made by the complainant, but also as evidence of the truth of the matters asserted in it (See [*Evidence Act*](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/), [s60).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s60.html) There is abundant evidence that supports the prosecution submission that, once the prior representation is admissible as a prior inconsistent statement it is also admissible by operation of [s 60](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s60.html) as proof of the truth of its content. (See *Neill-Fraser v Tasmania (No2)* [(2019) TASSC 11](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASSC/2019/11.html) at par 20 per Brett J)
+
+---
+
+# Approach to Coincidence Evidence
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: admission of coincidence evidence] [CONCEPTS: coincidence evidence, evidence admission, R v Gale, probative value] [CITATION: hoc-b044-m007-coincidence-evidence-approach] [ACT: Evidence Act 2001] [CASE: Tasmania v Harris [2016] TASSC 47]
+
+**The approach to coincidence evidence**
+
+In *R v Gale; R v Duckworth* [\[2012\] NSWCCA 174](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2012/174.html), [217 A Crim R 487](http://www.austlii.edu.au/cgi-bin/LawCite?cit=217%20A%20Crim%20R%20487), Simpson J, with whom McClellan CJ at CL and Fullerton J agreed, summarised the approach to be adopted in considering the admission of evidence as coincidence evidence at \[30\]-\[31\] in the following way:
+
+\[30\] The factual underpinnings of the [s 98](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s98.html) decision to admit or reject coincidence evidence are:
+
+- that there is evidence capable of establishing the occurrence of two or more events; and
+
+- that there is evidence capable of establishing similarities in the two or more events; or
+
+- that there is evidence capable of establishing similarities in the circumstances in which two or more events occurred;
+
+- that there is evidence capable of establishing both similarities in the two or more events and similarities in the circumstances in which the two events occurred.
+
+\[31\] In a case in which it is found that there is such evidence, then, in my opinion, the correct process in the determination of the admission of evidence under [s 98](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s98.html) involves a series of steps, as follows:
+
+- the first step is to identify the 'particular act of a person' or the 'particular state of mind of a person' that the party tendering the evidence seeks to prove;
+
+- the second step is to identify the 'two or more events' from the occurrence of which the party tendering the evidence seeks to prove that the person in question did the 'particular act' or had the 'particular state of mind';
+
+- the third step is to identify the 'similarities in the events' and/or the 'similarities in the circumstances in which the events occurred' by reason of which the party tendering the evidence asserts the improbability of coincidental occurrence of the events;
+
+- the fourth step is to determine whether 'reasonable notice' has been given of the intention to adduce the evidence (or, if reasonable notice has not been given, whether a direction under [s 100(2)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s100.html) ought to be given, dispensing with the requirement);
+
+- the fifth step is to make an evaluation whether the evidence will, either by itself or in conjunction with other evidence already given or anticipated, 'have significant probative value';
+
+- in a criminal proceeding, if it is determined that the evidence would have 'significant probative value', the sixth step is the determination whether the probative value of the evidence 'substantially outweighs' any prejudicial effect it may have on the defendant [(s 101(2)).](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/tas/consol_act/ea200180/s101.html)
+
+- the sixth step necessarily involves some analysis both of the probative value of the evidence in question and any prejudicial effect it might have: *R v RN* [\[2005\] NSWCCA 413](http://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2005/413.html), and a balancing of the two.
+
+---
+
+# Coincidence Evidence and Multiple Complainants
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: coincidence evidence in cases with multiple complainants] [CONCEPTS: coincidence evidence, multiple complainants, Biddle v Smith, improbability] [CITATION: hoc-b044-m008-coincidence-evidence-multiple-complainants] [ACT: None] [CASE: Biddle v Smith [2012] TASMC 24]
+
+Another good use of coincidence evidence is "*that having regard to the similarities in the events and the circumstances in which they are alleged to have occurred, it is improbable that, by coincidence, either child has either concocted or is mistaken about what occurred."*
+
+See para 19 onwards of **Biddle v Smith \[2012\] TASMC 24**
+
+And from \[22\]: *On the other hand, I am satisfied that the evidence in respect of one charge does have significant probative value in the proof of the other, on the basis that it is highly improbable, in my view, that both children would have coincidently either made up or been mistaken about being assaulted by the defendant. My reasons for arriving at this conclusion are as follows:*
+
+*There are a number of similarities between the versions of the children, which make it unlikely that their stories have falsely or mistakenly arisen by coincidence. Those similarities include the following:*
+
+- *The age of the children.*
+
+- *The fact that the defendant has met the children through the church his wife attends.*
+
+- *That each assault was of a sexual nature.*
+
+- *Each assault was relatively short lived and involved a brief but deliberate application of force by the defendant to the child in question.*
+
+- *That in each case the assault is alleged to have occurred in the context of a game being played by the defendant with the child.*
+
+- *That the defendant has initiated the game in question on each occasion.*
+
+- *A further circumstance of importance which contributes to the improbability of coincidence is that the allegations have been made by each child within two days of the other.*
+
+---
+
+# Tendency Evidence in Sexual Offense Cases
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: tendency evidence and sexual offenses] [CONCEPTS: tendency evidence, uncharged acts, circumstantial evidence, probative value] [CITATION: hoc-b044-m009-tendency-evidence-sexual-offense] [ACT: Evidence Act 2001] [CASE: Police v FRS [2020] TASMC 9]
+
+By amended notice dated 19 2020 the State gave notice of an intention to adduce tendency evidence: [*Evidence Act* 2001](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/), [s 97(1)(a).](http://www.austlii.edu.au/au/legis/tas/consol_act/ea200180/s97.html) The notice (at para. 2) indicated the State's intention to adduce evidence that the defendant had a tendency to:
+
+a.  have a sexual interest in and/or engage in sexual contact with his nieces aged approximately 16 years;
+
+b.  impose himself sexually upon his nieces without seeking or obtaining their consent;
+
+v.  sexually touch his nieces under their clothing;
+
+d.  sexually touch his nieces when they stayed overnight;
+
+e.  sexually touch his nieces when they were in bed; and/or
+
+f.  sexually touch his nieces in circumstances when they were alone.
+
+The evidence was tendered on both complaints as cross-admissible tendency evidence. The defendant's counsel told the Court that there was no dispute that the evidence was tendency evidence and that there was no objection to its admission. During the course of the trial, AB gave evidence that the defendant massaged her shoulders and moved his hands "a bit too low". It was common ground that this uncharged act was included in the amended tendency notice. The defendant's counsel conceded that the evidence of the uncharged act was admissible as tendency evidence. Even so, prosecuting counsel submitted that the Court should decide whether it is correct to characterise the evidence in question as tendency evidence.
+
+Tendency evidence is a species of circumstantial evidence. It provides the foundation for an inference that, because a person has a relevant tendency, it is more likely that they acted in a particular way, or had a particular state of mind. It is indirect evidence which allows 'stepping stone' reasoning as follows:
+
+> That
+>
+> - on an occasion other than the charged occasion, the defendant acted in a particular way;
+> - it can therefore be inferred that the person had a tendency to act in that way;
+> - because of that tendency, it can be inferred that on the charged occasion, the person acted in conformity with that tendency.
+> 
+> Alternatively, that
+> - on an occasion other than the charged occasion, the defendant had a particular state of mind;
+> - it can therefore be inferred that the person had a tendency to have that state of mind;
+> - because of that tendency, it can be inferred that on the charged occasion, the person's state of mind conformed with that tendency.
+
+---
+
+# Assessment of Probative Value of Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: assessment of the probative value of tendency evidence] [CONCEPTS: probative value, tendency evidence, multiple complainants, High Court, Brown v Tasmania] [CITATION: hoc-b044-m010-assessment-probative-value-tendency-evidence] [ACT: None] [CASE: Brown v Tasmania [2019] TASCCA 4]
+
+At para \[54\]
+
+In *McPhillamy v The Queen *[\[2018\] HCA 52](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/cth/HCA/2018/52.html), [361 ALR 13](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=361%20ALR%2013) at \[26\]:
+
+\"\... assessment of the probative value of tendency evidence requires the court to determine the extent to which the evidence is capable of proving the tendency.\"
+
+The evidence must be capable of proving the tendency, but this can be considered with other evidence such as the presence of the def's DNA on the complainant's nightie.
+
+---
+
+# Admissibility of Future or Subsequent Behavior as Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: admissibility of future behavior as tendency evidence] [CONCEPTS: future behavior, tendency evidence, probative value, RH v The Queen] [CITATION: hoc-b044-m011-admissibility-future-behavior] [ACT: None] [CASE: Brown v Tasmania [2019] TASCCA 4]
+
+*\[20\] The first thing to notice about the proposed evidence is that it is of events which post-date the crimes. The fact that the tendency evidence relates to events after the alleged conduct in issue does not necessarily mean that the probative value of the evidence is reduced: RH v The Queen [\[2014\] NSWCCA 71](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2014/71.html), [241 A Crim R 1](http://www8.austlii.edu.au/cgi-bin/LawCite?cit=241%20A%20Crim%20R%201) at \[88\]-[\[130\]](http://www8.austlii.edu.au/cgi-bin/viewdoc/au/cases/nsw/NSWCCA/2014/71.html#para130).
+
+<!-- block_044 procedure -->
+
+### Tasmania v Purkiss & Otto [2019] TASSC 45 - Case Authority: Exclusion of Interviews
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 90] [CITATION: Tasmania v Purkiss & Otto - Exclusion of Interviews] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Basis for exclusion of evidence from interviews] [CONCEPTS: exclusion of interviews, oppressive questioning, admissions, confession, fairness]  
+Can be excluded on basis of overzealous interview tactics. Careful..
+
+### R v Amad [1962] VicRp 75 - Case Authority: Unsuitable Cross-Examination
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 90] [CITATION: R v Amad - Case Authority on Cross-Examination] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Improper treatment of a person in custody] [CONCEPTS: improper questioning, custody stress, cross-examination, legal protections, admissions]  
+In *R v Amad* [1962] VicRp 75, Smith J said, at 548:  
+"A person in custody is, by that fact, ordinarily under great stress, and for that reason the law for his protection holds it to be improper to subject him, even after caution, to any form of cross-examination the tendency of which is in fact to extort admissions or to overcome his mental resistance to making admissions."
+
+### R v Pritchard [1991] VicRp 8 - Case Authority: Police Opinions During Interview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 90] [CITATION: R v Pritchard - Police Interview Conduct] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Admissibility of police opinions during interrogation] [CONCEPTS: video interview, police credibility, questioning method, jury impact, exculpatory statements]  
+In *R v Pritchard* [1991] VicRp 8, the Crown relied on a videotaped interview where police expressed disbelief. The Victorian Court of Criminal Appeal noted:  
+"Why should they be allowed to do so by the form of questions chosen to be put to the applicant which can be, as they were, so vividly reproduced before the jury at trial?"
+
+### Spinks v L [2020] TASMC 5 - Case Authority: Requirement to Tender Full ROI
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 81(2)] [CITATION: Spinks v L - Full ROI Obligations] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Hearsay implications of video interviews] [CONCEPTS: ROI, hearsay, admissions, obligation to tender, evidence presentation]  
+"It is hearsay because it records a previous representation admitted to prove the truth the existence of some facts which the defendant intended to assert, but it is admissible under the *Evidence Act* 2001 s 81(2) as an exception to the hearsay rule. The obligation to put the case fairly requires the prosecution to tender the whole of the interview -- 'the good with the bad.'"
+
+### Police v Quinn [2019] TASMC 4 - Case Authority: Evaluation of Defendant's Silence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Police v Quinn - Silent Defendant Assessment] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Weight of untested exculpatory statements] [CONCEPTS: defendant silence, weight of evidence, cross-examination, rights, conflicting testimonies]  
+"For the reasons that follow, I have preferred the evidence of the police officers to that of the defendant, where their evidence conflicts... I assess the weight to be given to his exculpatory statements, where they are in conflict with the evidence of the police officers, in light of the fact that his version of events was not given on oath and was untested by cross-examination."
+
+### Baker v Barratt [2019] TASSC 28 - Case Authority: Recorded Interview Requirements
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Baker v Barratt - Requirement for Full ROI] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Completeness of recorded interviews in evidence] [CONCEPTS: recorded interview, transcription errors, court errors, evidence admissibility, procedural errors]  
+"Cannot substitute part or any of the recorded interview just with the transcript as the transcript is not evidence. Failure to do so is error."
+
+### Mule v R [2004] WASCA 7 - Case Authority: Mixed Statements in Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Mule v R - Mixed Statements Admissibility] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Treatment of mixed statements in prosecutions] [CONCEPTS: mixed statements, confessions, exculpatory content, admissions, jury deliberation]  
+"The law as to the reception in evidence of a 'mixed' statement is clear: Where the prosecution is permitted to tender such a statement, it is obliged to accept in evidence the exculpatory material which may in turn be relied upon by the accused."
+
+### Jotheeswaran v Barnes [2019] TASSC 42 - Case Authority: Admissions as Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Jotheeswaran v Barnes - Use of Admissions] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Admissibility of defendant's admissions and exculpatory statements] [CONCEPTS: admissions, exculpatory statements, fairness in trials, jury consideration, evidence standards]  
+"When a defendant makes admissions in an interview that is relied upon by the prosecution, any exculpatory assertions in that interview may be relied upon as evidence favorable to the defendant."
+
+### FW: Tasmania v Thompson [2022] TASSC 27 - Case Authority: Formal Cautions 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Tasmania v Thompson - Caution Requirements] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Necessity of interviewing caution] [CONCEPTS: caution, suspect, fairness, interview procedures, legal standards]  
+"In my view, it is apparent that his Honour\'s comments presupposed that the administration of a caution would certainly satisfy the requirements of fairness in the circumstances of that particular case."
+
+### Recent Complaint Evidence (66(2)) - Legal Doctrine: Admissibility Conditions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 66(2)] [CITATION: Recent Complaint Evidence - Admissibility Conditions] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Conditions for admissibility of recent complaint evidence] [CONCEPTS: recent complaint evidence, admissibility, preconditions, spontaneous representations, court evidentiary standards]  
+Permissible under s 66 where the victim says to someone it happened so long as pre-conditions are met. However, not if they are saying it for the purposes of what will be said in court (i.e. a police formal statement).
+
+### Marysej v McCullough [2018] TASSC - Case Authority: Spontaneous Representations
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Marysej v McCullough - Spontaneous Representation Distinction] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Distinction in spontaneous representations for evidence admissibility] [CONCEPTS: spontaneous representation, admissibility, preconditions, hearsay, interview evidence]  
+See para 19 of *Marysej v McCullough* where the evidence of Ms Eberhart of the complainant’s account was evidence of the truth of the complainant’s assertions.
+
+### Tasmania v Harris [2016] TASSC 47 - Case Authority: Approach to Coincidence Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 98] [CITATION: Tasmania v Harris - Coincidence Evidence Approach] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Guidelines for assessing coincidence evidence] [CONCEPTS: coincidence evidence, evidentiary rules, contributory factors, unfair prejudice, weighing evidence]  
+In *R v Gale; R v Duckworth* [2012] NSWCCA 174, it was summarised that the factual underpinnings of the s 98 decision to admit or reject coincidence evidence involve various steps, including the evaluation of numerous contributing factors.
+
+### Biddle v Smith [2012] TASMC 24 - Case Authority: Effectiveness of Coincidence Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Biddle v Smith - Coincidence Evidence Effectiveness] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Coincidence evidence assessment] [CONCEPTS: coincidence evidence, exculpatory statements, similar incidents, linked offenses]  
+Another good use of coincidence evidence is "*that having regard to the similarities in the events and the circumstances in which they are alleged to have occurred, it is improbable that, by coincidence, either child has either concocted or is mistaken about what occurred.*"
+
+### Police v FRS [2020] TASMC 9 - Case Authority: Tendency Evidence Requirements
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 97] [CITATION: Police v FRS - Tendency Evidence Admissibility] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Requirements for admissibility of tendency evidence] [CONCEPTS: tendency evidence, circumstantial evidence, inference reasoning, inclinations, juror interpretation]  
+By amended notice, the State provided evidence regarding the defendant's tendency to have a sexual interest and engage in inappropriate conduct.
+
+### Brown v Tasmania [2019] TASCCA 4 - Case Authority: Probative Value of Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 97] [CITATION: Brown v Tasmania - Probative Value of Tendency Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Assessment of probative value of tendency evidence] [CONCEPTS: tendency evidence, probative value, court guidelines, sexual misconduct, juror understanding]  
+In *McPhillamy v The Queen*, the court stated that "assessment of the probative value of tendency evidence requires the court to determine the extent to which the evidence is capable of proving the tendency."
+
+### Evidence of Future/ Subsequent Behavior - Brown v Tasmania [2019] TASCCA 4
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: n/a] [CITATION: Evidence of Subsequent Behavior - Case Assessment] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Consideration of subsequent behavior as evidence] [CONCEPTS: future behavior, tendency evidence, probative value, assessments, evidentiary impact]  
+"The fact that the tendency evidence relates to events after the alleged conduct in issue does not necessarily mean that the probative value of the evidence is reduced."
+
+<!-- block_045 master -->
+
+# Tendency Evidence and Probative Value
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Court considers the requirements of tendency evidence] [CONCEPTS: tendency evidence, probative value, circumstantial evidence, admissibility, Evidence Act 2001] [CITATION: hoc-b045-m001-tendency-evidence-probative-value] [ACT: Evidence Act 2001] [CASE: Brown v Tasmania [2019] TASCCA 4]
+
+There is no requirement for the tendency evidence to be closely similar to the alleged offence for it to have significant probative value, although if it is strikingly similar, it will have significant probative value: see Hughes v The Queen [2017] HCA 20, [344 ALR 187] at [39]. What is required, as occurred in this case, is that there is some feature or features between the tendency evidence and the alleged offending that links them: see R v Bauer (above) at [85]. The linking factors were referred to by the trial judge as set out at [52]. 
+
+Essentially when faced with the defence argument: *There was not sufficient similarity between the conduct said to establish the tendency, and the conduct of the person who perpetrated the crime alleged in the indictment, to support a reasoning process that it was highly probable that the same person must have committed both crimes.* The counter is that the tendency is: *Yes, however, when combined with other evidence, the asserted tendency evidence constituted an important component of a strong circumstantial case.* 
+
+The gist is that the proposed 'tendency' is just another form of circumstantial evidence that is to be considered with other evidence. In this case the stated alleged tendency was: *"a tendency to impose himself in a sexual manner upon females whilst they were in a vulnerable position, namely whilst asleep in bed."*
+
+The trial court ruled, correctly: *The crucial aspect with respect to the circumstantial reasoning open to the jury on the question of identity was that the appellant had a tendency to impose himself in a sexual manner upon females. The fact that the female was in a vulnerable position at the time contributed to the probative value of the tendency, but was not dependent on the female being in bed or asleep. The feature of imposition meant that the appellant's tendency was to physically engage in a sexual way with a female without seeking or obtaining her consent. Clearly, taken alone, this tendency was too broad to identify him as the offender in this case. However, when considered with the other circumstantial evidence relating to the question of identity, the evidence supported the improbability that another person with similar characteristics, who was in the area at the same time, and had the same tendency, that is, a tendency to impose himself sexually upon females without seeking or obtaining their consent, was responsible for the crime. It also strengthened the significance of the location of DNA which had a high probability match with the accused, and supported the conclusions available from the evidence of flight and false alibi. The tendency evidence was a piece of circumstantial evidence, which the trial judge correctly concluded, having regard to the balance of the circumstantial case, had significant probative value. It was an important "strand" in a "strands in the cable" circumstantial case. The evidence was correctly admitted.*
+
+**Distinction**
+
+- **TENDENCY CONCERNS THE PERSON**
+
+- **COINCIDENCE CONCERNS EVENTS**
+
+Evidence is generally inadmissible to prove a tendency purpose or to prove a fact coincidentally although it may be admissible for another purpose (s 95 of the *Evidence Act 2001* (the Act)) unless it is admissible under the provisions of the Act.
+
+Tendency and coincidence evidence is governed by ss 97, 98 and 101 of the Act. It is a rule of exclusion. That is, evidence of tendency or coincidence is not admissible unless the above provisions are satisfied.
+
+Now when dealing with the evidence, the first point to understand is the difference between the two types of evidence. In the case of tendency evidence we are dealing with a person. In criminal law that is normally the accused, although not necessarily. Tendency evidence is evidence tendered to establish that a person has or had acted in a particular way, or has or had a particular state of mind. It is evidence that is tendered in order to provide the foundation for an inference that because a person has or had that tendency, it is more likely that he or she behaved in a particular way or had a particular state of mind at a time or in circumstances relevant to the issues in dispute: *Elomar v R* [2014] NSWCCA 303 at [253]; *Gardiner v R* (2006) 162 A Crim R 233; *Patterson v Tasmania* [2017] TASCCA per Wood J at [68].
+
+Evidence of actual conduct and an actual state of mind is not tendency evidence: *Patterson v Tasmania* supra per Wood, J at [25]. Similarly, evidence that an accused actually had a motive to do something is not tendency evidence: *Patterson v Tasmania* supra at [22].
+
+It is important to remember that the evidence must prove that the accused committed the particular act or had a particular state of mind and not somebody else, such as the complainant: *Phillips v R* 225 CLR 303.
+
+Coincidence evidence does not relate to persons, it relates to events, such events being similar. For the purpose of the criminal law, in effect, the coincidence rule applies where the Crown contends that because two crimes are so substantially similar one person must have committed both crimes. In that way, the Crown may not have sufficient evidence in respect of each individual crime but a jury can use the evidence in respect of each crime to conclude the accused committed both crimes. Where there is no other evidence the similarities between the two crimes would have to be unique or striking: *Sutton v R* (1984) 152 CLR 528.
+
+Similar conduct on different occasions can reveal a pattern from which it may be inferred, via coincidence reasoning, that an accused did a particular act or had a particular state of mind even though the crimes may not be strikingly similar but the evidence shows the accused is intricately involved in both crimes: *R v Bell* [2002] NSWCCA 2; *Tasmania v Standage* [2012] TASSC 88.
+
+Or there may be a combination of the above two options, which makes it outside human experience that the crimes were carried out in such a like manner and the accused behaved in such a like manner other than the accused was committing both crimes.
+
+In *Tognolini v R* [2011] VSCA 394 Nettle JA said at [6] -
+
+> Ultimately, the question is not whether the means of commission of the crime is in each case the same or strikingly similar but whether the evidence sought to be admitted "is cogent enough to be admitted as proof of identification of this offender." Logically, that depends upon all the evidence in the case and whether, when the putative similar fact evidence is considered in the context of all the evidence, its probative value sufficiently outweighs any prejudicial effect as to render its admission just.
+>
+> Understandably, cases concerning the admissibility of similar fact evidence tend to divide according to whether or not there is direct testimony of the accused's commission of the offence charged. Where there is no direct evidence of the accused's commission of the offence charged, the need for striking similarity or signature is logically more likely to apply. But where there is some direct evidence of involvement apart from the similar fact evidence, the similar fact evidence need not be as "uniquely denominative" of the accused, because it is not the sole means of identifying the accused, and something less than striking similarity or signature is more likely to suffice.
+>
+> So, too, if there is evidence which in some way connects an accused with a series of offences, as well as with the offence which is charged, then, even though it may fall short of striking similarity or signature, the combined effect of the evidence can render it so improbable that any person other than the accused committed each of the offences as to make evidence of all admissible.
+>
+> ...the applicant made threats of consequences which, not long later, were followed by conflagration.
+
+And Judd AJA said at [54] -
+
+> While the evidence disclosed some similarity in the way the fires were started, that was not the primary connecting factor upon which the Crown case against the applicant depended. There was an evident pattern of behaviour on the part of the applicant that was before his Honour at the time of his ruling, and the existence of the pattern was established on the evidence at trial. The applicant sought to advance his own business and eliminate competition by approaching the operators of competing businesses, threatening them with fire, or alluding to the risk of fire, and demanding their commercial cooperation.
+
+In *CW v R* [2010] VSCA 288 at [19]:
+
+> Not only was each victim a person with whom the applicant had had business dealings, but he was in a current dispute with each of them. In the circumstances, the judge was entitled to conclude...that...it would be contrary to ordinary experience for this series of fires, affecting these particular victims, to have occurred by coincidence.
+
+See also *Perry v R* (1982) 150 CLR 580 at 587.
+
+More controversially, similarities in the accounts of two or more witnesses regarding the conduct of an accused make it improbable that the witnesses are telling lies in the absence of concoction or contamination: See *OPP v Boardman* [1975] AC 421; *Hock v R* (1988) 165 CLR 292; *WRC* [2002] 130 A Crim R 89; "Uniform Evidence Law" Odgers 13th ed pp 255-6.
+
+In *Tasmania v Y* [2007] TASSC 112, Crawford J said that these cases were common law cases (except *WRC*) and that such evidence is not admissible on that basis, saying, "*if the evidence is only relevant to credibility then it is not admissible at all*". He admitted the evidence on the basis of tendency evidence. That is, the accused had a tendency to act in a similar manner. The identical accounts of the complainants added to its probative value.
+
+However, in *BBH v R* [2012] HCA 9, Crennan and Kiefel JJ said at [159]:
+
+> The probative force of W's evidence arises in part because of the similarity between the event observed by him and the acts of which the complainant complained. It was the coincidence of both the complainant and W independently giving evidence of such events which gave the evidence its special probative force. There could be no suggestion of collusion between the complainant and W concerning the evidence - either in fact or at law. Here the evidence was truly independent.
+
+Their Honours then endorsed the comments of Hodgson JA in *WRC* where he said -
+
+> ...in cases of this kind, the related events do not need to have such striking similarity as is required when it is the events themselves that are said to have probative value.
+
+The answer would appear to be that the events still have to be similar to enact the section but once that is the case independent witnesses telling the same account adds to the probative value of the events. In that way, the events do not have to be so strikingly similar.
+
+Of course, some evidence may be admissible as both tendency and coincidence evidence.
+
+**Admissibility**
+
+Tendency evidence is governed by ss 97 and 101 of the Act. Such evidence is admissible only if the court thinks that the evidence, either by itself or having regard to other evidence, will have "significant probative value" (s 97(1)(b)).
+
+The evidence is not admissible unless its probative value substantially outweighs any prejudicial effect it may have on the accused (s 101(2)).
+
+Determination of the admissibility of such evidence involves an evaluative judgment: *L v Tasmania* (2006) 15 Tas R 381 per Underwood CJ at [52]; *Donoghue v Tasmania* [2016] TASCCA 17 per Estcourt J at [22].
+
+The evaluative process involves a consideration of the nature of the evidence, the probative value of the evidence and an evaluation of whether the probative value substantially outweighs any prejudicial effect.
+
+Because it is an evaluative process and not a discretion, on appeal before the Court of Criminal Appeal it is that court's task to determine on the evidence at trial whether the tendency evidence was correct or whether it caused a miscarriage of justice: *L v Tasmania* supra; *KMJ v Tasmania* (2011) 218 A Crim R 87 per Evans J at [4]; *McPhillamy v R* [2018] HCA 52 at [11]. The principles in *House v R* do not apply.
+
+**Probative value**
+
+In assessing the probative value of the evidence, it must be assumed that the evidence will be accepted and that any inference open to a jury and favourable to the Crown will be drawn. The probative value of the evidence must be taken at its highest. The credibility or reliability of the evidence, or the witness giving the evidence, is irrelevant. The consideration is whether the evidence could rationally effect the probability of a fact in issue: *Tasmania v L* [2013] TASSC 47 at [42]; *Tasmania v W (No.2)* [2012] TASSC 48 at [11]; *Tasmania v Finnegan (No. 2)* [2012] TASSC 1 at [22]; *KMJ v Tasmania* supra at [30] & [34]; *DSR v R* (2012) 215 A Crim R 349; *R v Shamouil* (2006) 66 NSWLR 112 at [61]; *R v Sood* [2007] NSWCCA 214 at [26]-[40]; *R v Bauer* [2018 HCA 40 at [95].
+
+Tendency and coincidence evidence has significant probative value if it has more than mere relevance and if it is important or of consequence. It does not have to have a substantial degree of relevance: *Tasmania v W (No.2)* supra; *R v Lockyer* (1996) 89 A Crim R 457 per Hunt CJ at CL at 459; *L v Tasmania* supra at [31], [391]-[393]; *R v Fletcher* (2005) 156 A Crim R 308 at [67], [110]-[111]; *R v PWD* (2010) 205 A Crim R 75 at [66].
+
+To have probative value that is significant, tendency evidence must potentially be influential in the context of fact finding or potentially have importance in establishing one or more of the disputed facts: *IMM v R* [2016] HCA 14 at [46]; *Hughes v R* [2017] HCA 20 at [40].
+
+The assessment of whether the tendency evidence has significant probative value involves consideration of two interrelated but separate matters. Firstly, taking the evidence at its highest, does it support, and if so to what extent, the alleged tendency? Secondly, to what extent does the tendency support the elements of the offence: *Hughes v R* supra at [26] and [34].
+
+In assessing the probative value of the evidence, it must be assessed in the context of the other evidence and the nature of the facts in issue: *IMM v R* (2016) 257 CLR 300 per French CJ, Kiefel, Bell and Keane JJ at [46]; *R v Bauer* supra at [58]-[60]; *Hughes v R* supra at [40]. Thus, the tendency evidence does not have to have significant probative value looking at it in isolation but rather looking at it in the context of the entire evidence.
+
+It is not necessary for tendency evidence to be strikingly similar, or even closely similar, to the alleged offence for it to have significant probative value but if the evidence is strikingly similar it is likely to have significant probative value: *Hughes v R* supra at [39]; *BP v R; R v BP* [2010] NSWCCA 303 at [108]; *R v Ford* (2009) 273 ALR 286 at [38]; *R v PWD* supra at [79]; *Tasmania v W (No. 2)* supra at [13]; *R v Fletcher* supra at [57]-[60]; *R v Bauer* supra at [58].
+
+What is required is that ordinarily there should be some feature between the tendency evidence and the alleged offending that links them: *R v Bauer* supra at [56]; *McPhillamy v R* supra at [31].
+
+In a single complainant sexual offence case, generally the fact that the accused has committed sexual offences on one complainant is sufficient connection to prove a tendency of significant probative value without proving some other special feature because where one person is sexually attracted to another and has sought to fulfil that attraction by committing a sexual act with him or her, it is more likely that person will continue to seek to fulfil the attraction by committing further sexual acts when the occasion presents: *R v Bauer* supra at [60].
+
+However, in multiple complainant sexual offence cases there must be some common feature of or about the offending, apart from the fact it is alleged a sexual offence occurred that demonstrates the accused acted in a particular way, proof of which increases the likelihood that the account under consideration is true: *Bauer v R* supra at s8; *McPhillamy v R* [2018] HCA 52.
+
+Generally speaking, a mere sexual interest in a particular class of persons, although relevant, would not meet the requirement of significant probative value for the admission of tendency evidence. Generally, it is the tendency to act on the sexual interest that gives evidence in sexual cases its probative value: *McPhillamy v R* supra at [28].
+
+An inclination on the part of an adult to engage in sexual conduct with underage persons and to act upon it is a matter outside ordinary human experience. When led in with other factors such as grooming or engaging in such behaviour where there is a risk of detection the conduct will have significant probative force: *Hughes v R* supra at [57].
+
+Often when identity is in issue more similarity will be required to reach the level of significant probative value. However, where a crime is rare or unusual the more weight that can be given to a similarity the more difficult it is to dismiss it as a coincidence, thus giving it greater probative force: *Pfennig v R* (1995) 182 CLR 461 at 472; *Tasmania v Standage* [2012] TASSC 88 per Evans J at [110].
+
+Further, in assessing the force of any similarities they should not be looked at in isolation but as a whole in the context of the entire case: *Sutton v R* (1984) 152 CLR 528 at 536 and 550; *Tasmania v Standage* supra at [110]; *Hughes v R* supra at [40].
+
+**Coincidence Evidence**
+
+Unlike tendency evidence, in order for coincidence evidence to be admitted pursuant to s 98 of the Act it does have to be similar. How similar as to reach significant probative value will depend on the nature of the case and the other evidence.
+
+Factors to be taken into account when determining probative value in respect to coincidence reasoning include:
+
+- The degree of similarity
+
+- The number of similarities
+
+- The timing of the similarities
+
+- The capacity of each similarity, either individually or in conjunction with one another, or with the other evidence, to affect a fact in issue.
+
+See *Sutton v R* (1984) 152 CLR 528 per Gibbs CJ at 536 and Brennan J at 550. The more rare the crime, the less similarities that are required for the evidence to be of significant probative value.
+
+Further, in many cases, it may not be just similarities that will give the evidence significant probative value. The test is whether the evidence is cogent enough to be admitted as proof of identification of the accused. If there are similarities between the crimes and other evidence that intrinsically link the accused to the crimes, this may be of significant probative value even if the crimes are not strikingly similar: *Tognolini v R* supra at [6]-[8]; *CW v R* supra at [10]-[22]; *Perry v R* (1980) 150 CLR 580 per Gibb CJ at 587.
+
+Further, in respect to tendency and coincidence evidence, the court should not focus on the dissimilarities, rather it should focus on the similarities and whether they support the tendency and coincidence reasoning: *Hughes v R* supra at [56].
+
+Although it is necessary to keep a distinction between tendency and coincidence evidence because the test is different, the distinction becomes less important where it is being argued that the same conduct should be admitted both for a tendency purpose and for coincidence reasoning. In *Standage v Tasmania* supra Evans J at [5] said:
+
+> For the evidence to be cross-admissible as either or both coincidence evidence or tendency evidence, it must have significant probative value, s97(1)(b), and s98(1)(b). As to coincidence evidence, consistent with s98(1)(b), the probability of the similarities between the killings being explicable on the basis of coincidence is a crucial aspect of the assessment of the probative value of the evidence and its capacity to prove that the accused was the killer on each occasion. Whilst no similar statutory reference to similarities underpins an assessment of the probative value of the evidence as tendency evidence, it is well settled that a significant factor in the assessment of the strength of tendency evidence is the degree of similarity between the conduct on the occasions relied upon. See *FB v R* [2011] NSWCCA 217 at [28] -- [30]; *BP v R* [2010] NSWCCA 303 at [108], and *R v Fletcher* (2005) 156 A Crim R 308 at [57]-[60]. So whilst it is necessary to keep the distinction between coincidence evidence and tendency evidence in mind, the distinction is less stark in this case than it can be, as in arguing for the admission of the evidence as both coincidence evidence and tendency evidence...
+
+This passage was approved by the Court of Criminal Appeal in *Donohue v Tasmania* [2016] TASCCA 17.
+
+**Prejudicial Effect**
+
+Pursuant to s 101 of the Act the probative value must substantially outweigh the prejudicial effect of the evidence.
+
+**Substantial**
+
+In *VOT v WA* 184 A Crim R 284 at 288, Steytler J said "... *the evidence must be evidence that carries substantial weight in tending to prove or disprove facts in issue*."
+
+In *R v Fletcher* 156 A Crim R 308 ... substantial means large, weighty or big and indicates an absolute significance.
+
+In *Tasmania v Martin (No. 2)* supra, Porter J said for the purposes of s 194M it is a combination of the above.
+
+**Prejudice**
+
+Evidence is not prejudicial merely because it establishes the Crown case. It has to be prejudicial in the sense that a jury will give it more weight than it deserves, or in other words that a jury will use it in some unfair way or it will inflame their prejudices (s 101): *Papakosmas v R* 196 CLR 297 per McHugh J at 325; *Festa v R* 208 CLR 593 per Gleeson CJ at 603 and McHugh J at 609-10.
+
+- "[the] danger that the jury's recognition of the appellant's prior guilt was likely to divert them from a proper consideration of the evidence as bearing on the question of his intent in the charges before them": *R v Watkins* [2005] 153 A Crim R 434 at [50].
+
+- "The primary danger is notwithstanding directions given by the trial judge the jury might reason no more rationally than that, if the respondent molested [two other persons] he did the same to the complainant and that emotion not rationality would govern": *R v GAG* (2007) 178 A Crim R 408.
+
+- "...the possibility that the jury will treat the similar facts as establishing an inference of guilt where neither logic nor experience would necessitate the conclusion that it clearly points to the guilt of the accused": *Roach v R* 242 CLR 610 at 617.
+
+See also *Tasmania v Martin (No. 2)* supra at [63]; *Neill-Fraser v Tasmania* [2012] TASCCA 2 at [184]; *Tasmania v W (No. 2)* supra at [11]; *BP v R; R v BP* supra at [109].
+
+Other prejudicial effects include:
+
+- The jury may fail to appreciate a person to have a tendency to have a particular state of mind or to act in a particular way, may not have had that state of mind or may not have acted in that particular way on the occasion in issue.
+
+- The jury may underestimate the number of persons who share that particular tendency.
+
+- It may require the accused to answer a raft of uncharged conduct stretching back over many years.
+
+See *Hughes v R* supra at [17].
+
+In *Bauer* supra at [62] "*the trial judge was correct to hold that RC's evidence was not productive of unfair prejudice*". The relevant portion of the trial judge's ruling is contained at [21], specifically --
+
+> ...Any prejudice is due to the inculpatory nature of the tendency evidence and is not unfair prejudice. The proposed tendency evidence goes to proof of the fact in issue in each charge and will not distract the jury from its task, and clear directions ... will ensure that there is no substitution of the tendency evidence for the charged acts and no impermissible reasoning towards guilt.
+
+The directions by a trial judge to the jury must be taken into account when assessing the risk of unfair prejudice. Juries are often required to follow complex legal directions and disregard inadmissible evidence. It must be assumed that a jury will follow directions from the trial judge: *Gilbert v R* (2000) 201 CLR 414 at [31]-[32]; *R v PWD* supra at [89]-[90].
+
+The fact that the tendency evidence addressed by the prosecution alleges criminal conduct of which the person has not been charged is irrelevant: *R v Hawker* [2004] NSWCCA 427.
+
+**Concoction and Contamination**
+
+At common law tendency and coincidence evidence will lose its probative force if there is a real chance that the evidence was concocted or contaminated: *Hoch v R* (1988) 165 CLR 292.
+
+Under the Act the probability that the tendency or coincidence evidence may be the result of collusion, concoction or suggestion is not to be taken into account when determining the probative value of the evidence or its prejudicial effect (s 101(5)): *Bauer v R* supra at [69].
+
+**Non-Tendency Evidence**
+
+Now it is important to remember the exclusion provisions of Part 6 only apply if you are leading the evidence to prove tendency or coincidence reasoning. If you are leading the evidence for some other purpose, you do not have to comply with ss 97(1)(b), 98(1)(b) or 101 of the Act. Although you would still have to comply with ss 135 and 137 of the Act. In such circumstances, the court has a duty to examine the evidence of the parties. This is necessary because the court needs to determine whether there is a legitimate tendency purpose and, equally, if it is characterised as non-tendency evidence, the court will need to undertake an examination to determine whether there is a legitimate non-tendency purpose: *Patterson v Tasmania* supra at [64]. Of course, evidence may be relevant for a non-tendency purpose but it could also be tendency evidence where it is not intended to be led for a tendency purpose or it is inadmissible on that basis. The judge would have to direct a jury that it cannot use the evidence for tendency or coincidence reasoning (s 95 of the Act).
+
+Where evidence is not being used for a tendency purpose there is no need to give notice of intention to adduce such evidence (ss 97(1)(a) and 98(1)(a)). Such evidence can include:
+
+- evidence of opportunity
+
+- identification
+
+- motive
+
+- *res gestae*
+
+And probably the most contentious of all, relationship evidence.
+
+<!-- block_045 procedure -->
+
+### Chunk 1: Case Authority - Brown v Tasmania Commentary
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Brown v Tasmania [2019] TASCCA 4 - Tendency Evidence Commentary] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Commentary on significance of tendency evidence] [CONCEPTS: tendency evidence, probative value, offences, circumstantial evidence, Tasmanian law]
+
+Tendency evidence need not be identical to the alleged act for it to have significant probative value, although if it is strikingly similar, it will have significant probative value: see Hughes v The Queen [2017] HCA 20 at [39]. The requirement is that there must be potential linking features between the tendency evidence and the alleged offending. 
+
+### Chunk 2: Case Authority - Hughes v The Queen Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Hughes v The Queen [2017] HCA 20 - Tendency Evidence Significance] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Significance of Tendency Evidence] [CONCEPTS: probative value, similar evidence, court cases, evidence admissibility, legal principles]
+
+In Hughes v The Queen, it is noted that the tendency evidence must not be closely similar to the alleged offence to hold significant probative value, although notable similarities strengthen its value.
+
+### Chunk 3: Procedure - Tendency Evidence Requirements
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Tendency Evidence Requirements and Admissibility] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Requirements for Tendency Evidence in Criminal Law] [CONCEPTS: tendency evidence, admissibility, legal framework, evidence assessment, Tasmanian law]
+
+The key point to understand regarding tendency evidence is that it is generally admissible when a court believes it will have "significant probative value". Evaluating propensity implies considering the nature of evidence, its connections among other facts in the case, and its potential impact.
+
+### Chunk 4: Legal Doctrine - Evidence Act Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Sections 97, 98 and 101] [CITATION: Overview of Tendency and Coincidence Evidence] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Overview of Tendency and Coincidence Evidence under Evidence Act 2001] [CONCEPTS: evidence law, coincidence evidence, tendency evidence, exclusion rules, admissibility standards]
+
+Tendency and coincidence evidence is governed by ss 97, 98 and 101 of the Evidence Act 2001. Evidence of tendency is not admissible unless the court deems it to carry significant probative value, which must outweigh any prejudicial effect on the accused.
+
+### Chunk 5: Case Authority - Elomar v R Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Elomar v R [2014] NSWCCA 303 - Tendency Evidence Overview] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Overview of Tendency Evidence] [CONCEPTS: tendency evidence, legal reference, court citations, evidence assessment, judicial interpretation]
+
+Elomar v R [2014] NSWCCA 303 establishes insight into understanding tendency evidence within the context of the broader argument in cases of sexual offences.
+
+### Chunk 6: Case Authority - Gardiner v R Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Gardiner v R (2006) 162 A Crim R 233 - Legal Background to Tendency Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Legal Background to Tendency Evidence] [CONCEPTS: tendency evidence, legal guide, criminal law, case reference, evidence law]
+
+The case of Gardiner v R adds critical context for evaluating tendency evidence and its acceptance in trial based on established methodology.
+
+### Chunk 7: Case Authority - Patterson v Tasmania Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Patterson v Tasmania [2017] TASCCA - Assessment of Tendency Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Assessment of Tendency Evidence] [CONCEPTS: case law, tendency evaluation, legal standards, judgment reference, Tasmania]
+
+Patterson v Tasmania [2017] TASCCA expands on the legal framework for understanding how evidence of a person's previous actions relates to allegations of current offences.
+
+### Chunk 8: Practitioner Annotation - Distinction Between Evidence Types
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Distinction Between Tendency and Coincidence Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Distinction Between Tendency and Coincidence Concerns] [CONCEPTS: tendency, coincidence, evidence purposes, legal distinction, trial evidence]
+
+Tendency concerns the person whereas coincidence concerns events. This distinction is crucial in determining admissibility in legal proceedings.
+
+### Chunk 9: Procedure - Probative Value in Coincidence Reasoning
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Factors Impacting Coincidence Evidence Probative Value] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Factors Impacting Probative Value in Coincidence Evidence] [CONCEPTS: coincidence evidence, probative value, legal factors, jury considerations, evidence appraisal]
+
+When evaluating coincidence reasoning, the factors to consider include the degree and number of similarities, the timing of events, and how these can collectively influence the determination of facts at issue in court.
+
+### Chunk 10: Annotation - Corroborative Evidence in Multiple Complainant Cases
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Corroboration in Multiple Complainants Cases] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Importance of Corroborative Evidence in Establishing Tendencies] [CONCEPTS: corroborative evidence, multiple complainants, sexual offences, cumulative evidence, judicial procedures]
+
+In cases with multiple complainants, corroborative evidence is essential to substantiate claims of a tendency towards particular behaviour by the accused.
+
+### Chunk 11: Case Authority - Tognolini v R Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Tognolini v R [2011] VSCA 394 - Evidence Admission Criteria] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Evidence Admission Criteria for Tendency Cases] [CONCEPTS: propensity evidence, legal cases, evidence criteria, trial outcomes, legal citations]
+
+Tognolini v R provides guidelines related to the standards for admitting similar fact evidence in support of accusations.
+
+### Chunk 12: Case Authority - CW v R Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: CW v R [2010] VSCA 288 - Tendency and Coincidence Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Tendency and Coincidence Evidence Application] [CONCEPTS: criminal evidence, court references, legal implications, evidence jurisprudence, criminal proceedings]
+
+The ruling in CW v R underlines how both tendency and coincidence evidence can be leveraged in court cases, highlighting distinctions and commonalities.
+
+### Chunk 13: Case Authority - Sutton v R Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Sutton v R (1984) 152 CLR 528 - Similarity Evaluation] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Evaluation of Similarities in Evidence] [CONCEPTS: judicial evaluation, legal assessment, similarity in evidence, court judgments, legal proceedings]
+
+Sutton v R encourages analyzing how the evaluation of similarities influences the acceptance of evidence as admissible in legal contexts.
+
+### Chunk 14: Case Authority - Tasmania v Standage Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Tasmania v Standage [2012] TASSC 88 - Legal Reference on Coincidence Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Context for Coincidence Evidence in Trials] [CONCEPTS: coincidence evidence, legal precedent, court references, evidence analysis, standards for admission]
+
+This case establishes a framework for how coincidence evidence can be utilized within trial processes while weighing other factors.
+
+### Chunk 15: Case Authority - BBH v R Citation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: BBH v R [2012] HCA 9 - Probative Force of Testimonies] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Probative Force of Witnesses in Tendency Cases] [CONCEPTS: witness probabilities, case evidence, court analysis, belief systems, credibility assessments]
+
+BBH v R discusses how the testimonies of independent witnesses add probative force to the evidence submitted in tendency cases.
+
+### Chunk 16: Annotation - Prejudicial Effects in Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Prejudice in Tendency Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Managing Prejudicial Effects in Tendency Evidence] [CONCEPTS: prejudicial effects, court processes, jury perceptions, evidentiary risks, judicial considerations]
+
+The potential for tendency evidence to cause unfair prejudice must be weighed against its probative value to ensure a fair trial process.
+
+### Chunk 17: Procedure - Requirements for Evidence Admissibility
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Sections 97 and 101] [CITATION: Admissibility of Evidence Per Evidence Act] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Admissibility Standards Under Sections 97 and 101] [CONCEPTS: admissibility criteria, legal standards, impact of evidence, burden of proof, trial fairness]
+
+Under Sections 97 and 101, evidence must demonstrably outweigh any prejudicial effect to be permissible within court proceedings.
+
+### Chunk 18: Annotation - Evaluating Striking Similarities
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not Applicable] [CITATION: Evaluating Evidence Similarities] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Importance of Similarities in Evidence Evaluations] [CONCEPTS: evidence evaluations, judicial assessments, probative value, legal standards, court procedures]
+
+Evaluations of the probative value must consider the relationships among all evidence presented, factoring in the context and implications.
+
+### Chunk 19: Procedure - Non-Tendency Evidence Characteristics
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Section Not Applicable] [CITATION: Importance of Non-Tendency Evidence] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Characteristics of Non-Tendency Evidence and Related Implications] [CONCEPTS: non-tendency evidence, legal implications, evidence purposes, admissibility, trial processes]
+
+Courts must distinguish non-tendency evidence to determine whether it serves a legitimate legal purpose, distinguishing it from tendency or coincidence applications. 
+
+### Chunk 20: Annotation - Types of Non-Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not Applicable] [CITATION: Types and Purposes of Non-Tendency Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Types of Non-Tendency Evidence Beyond Tendency Context] [CONCEPTS: non-tendency, legal evidence types, admissibility, intent, relations]
+
+Non-tendency evidence may include aspects such as motive or identification and should adhere to standards under various sections of the Evidence Act.
+
+<!-- block_046 master -->
+
+# Relationship Evidence and Its Admissibility
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: relationship evidence admissibility] [CONCEPTS: prejudicial questioning, relevance, tendency, motive, res gestae] [CITATION: hoc-b046-m001-relationship-evidence-admissibility] [ACT: None] [CASE: Gipp v R]
+
+Standard objection:
+
+Objection -- prejudicial questioning/ relevance/ tendency
+
+Response:
+
+- Response was admissible as context/ relationship evidence.
+
+Relevant as it is part of the factual matrix - puts specific complaint in context as offending behaviour that is escalating -- not submitted to go so far as tendency.
+
+In *Gipp v R* (1998) 194 CLR 106, Gaudron J said that the test in *Pfennig* applied to relationship evidence, Callinan J agreed. McHugh and Hayne JJ said it was not propensity evidence whilst Kirby J said it may be tendency evidence but in any event it was admissible.
+
+I think with relationship evidence the important point to remember is that it can take many different forms and there are many different reasons why you might want to lead it.
+
+If you are leading it merely to prove the accused had sex with the complainant in the past and therefore he had sex on this occasion, that is clearly tendency evidence.
+
+However, it may also occur in some of the following forms:
+
+1. In the context of a marriage, evidence of a bad relationship between the accused and his deceased wife may be led to prove he had a motive to murder her: *Wilson v R* (1970) 123 CLR 334. Clearly, the relationship evidence is not being led to prove tendency.
+
+2. It may be led to show why a complainant acquiesced to sexual intercourse. If the accused had regularly committed acts of violence upon the complainant in the past then such evidence could be led to prove:
+
+    (a) That on this occasion the complainant was not consenting to sex;
+
+    (b) The accused had knowledge that the complainant was not consenting to sex. Again, the evidence is being led for a non-tendency purpose;
+
+    (c) To explain why the complainant behaved in the manner she did or why she did not complain, etc. Again, a non-tendency reasoning.
+
+    (d) To show the complainant's version of events is more capable of belief when seen in the context of what the complainant says was her sexual relationship with the accused.
+
+Authority for this type of evidence does not fall within the exclusion provisions of Part 6 of the Act: *Conway v R* 98 FCR 204 (Full Court of the Federal Court) at 233; *R v Lock* (1997) 91 A Crim R 336; *Roach v R* 242 CLR 610 at pp 624-5; *WFS v R* (2011) 33 VR 406.
+
+#### P v Tasmania [2009] TASSC 81 (11 September 2009)
+
+Relationship evidence is not being relied upon as tendency evidence, but relationship evidence which could help the jury to evaluate evidence of what happened at the time of the alleged offence.
+
+Relevant evidence is defined under s 55(1) as that which if accepted could rationally affect directly or indirectly the assessment of the probability of the existence of a fact in issue in the proceeding.
+
+Relationship assists the court as it places actions and conduct in context to assist the court assess the evidence of a person's action.
+
+Relationship evidence can be used to explain why a non-consenting person acts in a way in which they were consenting.
+
+Relationship evidence may explain a statement or an event that would otherwise appear curious or unlikely. It may cut down or bolster the plausibility of something that a witness has said.
+
+In the absence of relationship evidence, the victim's account of what otherwise would have been presented as a single and apparently isolated act might have been regarded as difficult to believe.
+
+A victim, for instance, may express no surprise at the actions of the defendant; may make no protest to a criminal act directed towards them, behaving, rather as if it was a common occurrence.
+
+If a victim was not permitted to say as such, a victim's evidence may seem hard to believe.
+
+<!-- block_046 procedure -->
+
+### Relationship Evidence - Standard Objection
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not applicable] [CITATION: Evidence Act 2001 - Standard Objection] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Standard objection and response to relationship evidence] [CONCEPTS: relationship evidence, objection, relevance, tendency, admissibility]
+
+Standard objection:  
+Objection -- prejudicial questioning/ relevance/ tendency  
+
+Response:  
+- Response was admissible as context/ relationship evidence.
+
+Relevant as it is part of the factual matrix - puts specific complaint in context as offending behaviour that is escalating -- not submitted to go so far as tendency.
+
+### Forms and Purposes of Relationship Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Evidence Act 2001 - Forms and Purposes of Relationship Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Commentary on the forms and purposes of relationship evidence] [CONCEPTS: relationship evidence, forms, purposes, tendency, admissibility]
+
+I think with relationship evidence the important point to remember is that it can take many different forms and there are many different reasons why you might want to lead it.
+
+If you are leading it merely to prove the accused had sex with the complainant in the past and therefore he had sex on this occasion, that is clearly tendency evidence.  
+
+However, it may also occur in some of the following forms:
+
+1. In the context of a marriage, evidence of a bad relationship between the accused and his deceased wife may be led to prove he had a motive to murder her: *Wilson v R* (1970) 123 CLR 334. Clearly, the relationship evidence is not being led to prove tendency.
+  
+2. It may be led to show why a complainant acquiesced to sexual intercourse. If the accused had regularly committed acts of violence upon the complainant in the past then such evidence could be led to prove:  
+(a) That on this occasion the complainant was not consenting to sex;  
+(b) The accused had knowledge that the complainant was not consenting to sex. Again, the evidence is being led for a non-tendency purpose;  
+(c) To explain why the complainant behaved in the manner she did or why she did not complain, etc. Again, a non-tendency reasoning.  
+(d) To show the complainant's version of events is more capable of belief when seen in the context of what the complainant says was her sexual relationship with the accused.
+
+### Case Authority on Relationship Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not applicable] [CITATION: Evidence Act 2001 - Case Authority on Relationship Evidence] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Citation of case authorities regarding relationship evidence] [CONCEPTS: case law, relationship evidence, admissibility, Gipp v R, Conway v R]
+
+In *Gipp v R* (1998) 194 CLR 106, Gaudron J said that the test in *Pfennig* applied to relationship evidence, Callinan J agreed. McHugh and Hayne JJ said it was not propensity evidence whilst Kirby J said it may be tendency evidence but in any event it was admissible.
+
+Authority for this type of evidence does not fall within the exclusion provisions of Part 6 of the Act: *Conway v R* 98 FCR 204 (Full Court of the Federal Court) at 233; *R v Lock* (1997) 91 A Crim R 336; *Roach v R* 242 CLR 610 at pp 624-5; *WFS v R* (2011 33 VR 406.
+
+### Explanation of Evidence Relevance Under s 55(1)
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: s 55(1)] [CITATION: Evidence Act 2001 - Relevance Under s 55(1)] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Definition of relevant evidence] [CONCEPTS: evidence, relevance, assessment, fact in issue, criminal proceedings]
+
+Relevant evidence is defined under s 55(1):  
+That which if accepted could rationally affect directly or indirectly the assessment of the probability of the existence of a fact in issue in the proceeding.
+
+### Unfair Prejudice vs General Prejudice
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: s 137] [CITATION: Evidence Act 2001 - Unfair Prejudice Explanation] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Difference between unfair and general prejudice] [CONCEPTS: prejudice, unfair, jury, evidence, decision-making]
+
+There is a difference. All evidence that may tend to convict is prejudicial. What is meant by unfair prejudice is that the jury may use the evidence to make a decision on an improper, perhaps emotional basis. If there is a real risk that the evidence may be misused by the jury in some way, then it may be unfairly prejudicial.
+
+### Onus of Proof Related to Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not applicable] [CITATION: Evidence Act 2001 - Onus of Proof for Tendency Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Commentary on the onus of proof regarding tendency evidence] [CONCEPTS: onus of proof, tendency evidence, reasonable doubt, admissibility]
+
+However, at common law, a jury must at least be satisfied beyond reasonable doubt in respect of tendency or propensity evidence: *HML v R* supra.
+
+The reason for this at common law was the high test of admissibility of tendency and coincidence evidence. Such a direction should not be given under the Uniform Evidence Act, unless it is apprehended that in the particular circumstance of the case there is a significant possibility of the jury reading the uncharged acts as an indispensable link in their chain of reasoning to guilt: *Bauer v R* supra at \[86\]. Otherwise, as with any other piece of circumstantial evidence, the jury must be satisfied of it.
+
+### Notice Requirements for Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not applicable] [CITATION: Evidence Act 2001 - Notice Requirements for Tendency Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Requirements for a proper tendency notice] [CONCEPTS: tendency evidence, notice, Crown papers, admissibility]
+
+It is sufficient notice to refer to the Crown papers where it is readily identified to say such evidence will be used for a tendency purpose: *R v AB* \[2001\] NSWCCA 496.
+
+A tendency notice should explicitly identify the fact or facts in issue upon which the tendering party asserts the evidence bears. It should also explicitly identify the tendency sought to be proved: *Gardiner v R* (2006) 162 A Crim R 233.
+
+### Admissibility of Defense's Tendency Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: Not applicable] [CITATION: Evidence Act 2001 - Admissibility of Defense's Tendency Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Commentary on the defense's ability to challenge evidence] [CONCEPTS: defense, tendency evidence, admissibility, co-accused, reasonable possibility]
+
+Clearly an accused person can raise a hypothesis that somebody else committed the crime and can lead evidence to that effect: *Re Van Beelen* (1974) 9 SASR 163.
+
+In doing so an accused may wish to raise tendency evidence regarding another person or coincidence reasoning between two events to show somebody else may have committed the crime. This typically occurs in, but is not limited to, cases where there are co-accused.
+
+### Example Tendency Notice
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Police v FRS - Example Tendency Notice] [CATEGORY: script] [TYPE: script] [TOPIC: Example of a tendency notice in a criminal case] [CONCEPTS: tendency evidence, sexual interest, consent, criminal procedure]
+
+**Example Tendency notice:**  
+**Police v FRS \[2020\] TASMC 9 (25 May 2020)**  
+a. have a sexual interest in and/or engage in sexual contact with his nieces aged approximately 16 years;  
+    a. impose himself sexually upon his nieces without seeking or obtaining their consent;  
+    i. sexually touch his nieces under their clothing;  
+    a. sexually touch his nieces when they stayed overnight;  
+    a. sexually touch his nieces when they were in bed; and/or  
+    a. sexually touch his nieces in circumstances when they were alone.
+
+<!-- block_047 master -->
+
+# Tendency Evidence and Coincidence Evidence Principles
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: tendency evidence and coincidence evidence rules] [CONCEPTS: tendency, coincidence, admissibility, probative value, hearsay] [CITATION: hoc-b047-m001-tendency-coincidence-principles] [ACT: Evidence Act 2001] [CASE: R v PWD; CGL v DPP (Vic)]
+
+However, to avoid application of the provision it will not be sufficient to assert that the evidence is relevant to prove something other than 'tendency' but to demonstrate that the evidence is relevant to a fact in issue by a process of reasoning which does not involve the drawing of an inference from evidence of tendency to conforming behavior.
+
+1. Is it evidence to act in a 'particular' way or 'particular' state of mind?
+
+i. S 97: Tendency Rule (eg. Reputation)
+
+1. Tendency evidence is evidence that is used to prove the person had a tendency to act in a particular way or to have a particular state of mind.
+
+2. R v PWD "Proof of a tendency to act in a particular way of itself goes nowhere. Evidence that a person had a particular tendency is adduced in order to render more probable the proposition that, on a particular occasion relevant to the proceedings, that person acted in a particular way (or had a particular state of mind); that is, to provide the foundation for an inference to that effect. Put another way, tendency evidence is tendered to prove (by inference), that, because, on a particular occasion, a person acted in a particular way (or had a particular state of mind), that person, on an occasion relevant to the proceeding, acted in a particular way (or had a particular state of mind." "Section 97 is not directed only at evidence showing a tendency to commit a particular crime but showing a tendency to act in a particular way". In this case it was directed to showing that the appellant had a tendency to use violence to the complainant and to seek to control her in stressful marriage situations, and was relevant to whether he did by his actions on the night in question effectively 'detain' her; but it was not necessary for this purpose to show that he had detained her on any other occasion.
+
+b. S 98: Coincidence Rule ('related events')
+
+2. Is it admissible?
+
+a. Admissible only if of 'significant probative value'
+
+i. S 97
+
+ii. ***CGL v DPP (Vic) [2010] at [22]*** Sexual assault case; whether the different complainants charges should be heard separately. Accordingly, the questions to be addressed in relation to coincidence evidence are as follows:
+
+1. Are the similarities in the specified events and/or in the circumstances in which they occurred such that it is improbable that the events occurred coincidentally?
+
+2. If so, would the evidence of those events and circumstances tend to prove that the accused:
+
+(a) did the specified act; or
+
+(b) had the specified state of mind where doing that act or having that state of mind is a fact in issue or is relevant to a fact in issue?
+
+3. If so, does the evidence have significant probative value, either by itself or having regard to other evidence adduced or ought to be adduced by the prosecution?
+
+4. If so, does the probative value of the evidence substantially outweigh any prejudicial effect it may have on the accused?
+
+iii. R v PWD The authorities are clear that for evidence to be admissible under s 97 there does not have to be striking similarities, or even closely similar behaviour.
+
+1. Exceptions
+
+a. S 100: Direction by Judge
+
+b. S 97(2)(b): adduced to rebut other parties' tendency evidence
+
+2. Case Law
+
+a. Jacara v Perpetual Trustees
+
+b. Lockyer:
+
+i. Something more than mere relevance, but less than a substantial degree of relevance
+
+ii. It must also be important or of consequence
+
+c. Townsend v Townsend
+
+iv. S 98
+
+1. (2): 'related events' if 'substantially or relevantly similar'
+
+a. *DSJ v The Queen* 'In my opinion, it is plain that s 98, in its terms, poses this simple question: whether the evidence being considered is capable, to a significant degree, of rationally affecting the assessment (ultimately by a jury) of the probability of the existence of a fact in issue.' [and] 'if a hypothetical jury would think it unlikely that the evidence were important in relation to the facts in issue then the trial Judge might the more readily conclude that the evidence lacks the capacity required for admissibility.'
+
+b. *R v PWD (2010)* Section 98 provides in terms that two or more events occurring is not admissible to prove that a person did a particular act, on the basis that, having regard to any similarities in the events or the circumstances in which they occurred, or any similarities in both the events and the circumstances in which they occurred, it is improbable that the events occurred coincidentally unless, the evidence has significant probative value. [...] In *PNJ*, the Victorian Court of Appeal acknowledged that under the express provision in s 98, similarity is an important factor from which probative force is derived under s 98.
+
+2. W v The Queen: If not a 'related event', s 137 applies.
+
+a. In a criminal proceeding, the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.
+
+v. S 95
+
+1. Makes it clear that unlike hearsay and character, if the evidence is admitted for another purpose, the section for tendency/coincidence must still be satisfied; it cannot automatically be used for coincidence just because it has been admitted for another purpose.
+
+b. Proceedings
+
+i. Civil: apply 'significant probative value' test
+
+ii. Criminal: offered by Crown about D -- s 101 Further restrictions on tendency evidence and coincidence evidence adduced by prosecution
+
+1. S101(2): Probative value must substantially outweigh prejudicial effect
+
+2. S 101(3/4): Inapplicable if defendant 'opens the door'
+
+3. Reasonable notice to be given to other parties: s 97-100
+
+# Lay Opinion Evidence and Admissibility
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: lay opinion exception under s 78] [CONCEPTS: lay opinion, admissibility, witness, perception, descriptive weight] [CITATION: hoc-b047-m003-lay-opinion-evidence] [ACT: Evidence Act 2001] [CASE: None]
+
+Remember s. 78 exception allowing lay opinion representations to be made by a witness if they submit an opinion of what happened to better give descriptive weight of what they saw, heard, or otherwise perceived. Not direct evidence, but admissible to give the court a better description of what they were in fact able to perceive.
+
+# Expert Evidence and Qualifications
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: expert evidence under s 79] [CONCEPTS: expert evidence, qualifications, opinion, hearsay, admissibility] [CITATION: hoc-b047-m004-expert-evidence-qualifications] [ACT: Evidence Act 2001] [CASE: Jackson v The State of Western Australia]
+
+Expert evidence is an exception to hearsay evidence. It is relevant as the basis of an expert's opinion.
+
+**BRENT as an expert witness under s. 79.**
+
+Q: What is your training and experience with respect to identifying controlled plants or products, specifically for cannabis?
+
+**Dot points:**
+
+- How long on the job
+- Years in uniform
+- Years as a specialist investigator/detective
+- Time spent in specialist roles? Drug/CIB secondments?
+- Specialist lessons/seminars at the Academy
+- Specialist courses? Specialist conferences?
+- Internal training with Forensics?
+- Time posted to Western Drugs
+- Promoted to rank of Sgt at Western Drugs
+- During these roles, have or haven't been directly, or indirectly involved in countless incidents involving the seizure of controlled plants? Have seen it, processed, had cause for it to be subject to examination to confirm your assessment?
+- In every/most/some instance, a presumptive test or full analysis has been performed on a product I have identified as cannabis; it has been confirmed?
+
+Q: Would you accept the proposition that you have specialised knowledge with respect of the identification and seizure of Cannabis?
+
+A: Yes or no.
+
+- **[submit to court that witness is qualified to present expert opinion]**
+
+Q: Sgt, was this the exhibit that was admitted by the def, and seized during the course of your search?
+
+A: Confirm... or not.
+
+Q: You've had an opportunity to examine that exhibit?
+
+A: Yes or no.
+
+Q: Based on your training, study and experience, can you provide the Court with your opinion as to what that exhibit is?
+
+# Identifying Documents Over Video Link
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: procedure for identifying documents via video link] [CONCEPTS: identification, video link, documentation, witness, evidence] [CITATION: hoc-b047-m005-identifying-docs-video-link] [ACT: None] [CASE: None]
+
+After establishing id and quals, and confirming a report was generated by the witness, and whether they have a copy with them, seek leave for the witness to refer to the document to describe id factors (i.e. sample id and barcode and document id details), once done confirm info to FFST provided by police, that the sample was analysed and what the result was.
+
+# Witnesses Not Answering Questions
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: witnesses refusing to answer questions under Justices Act] [CONCEPTS: witness, questioning, refusal, Justices Act, consequences] [CITATION: hoc-b047-m006-witness-refusal-questions] [ACT: Justices Act 1959] [CASE: None]
+
+**[Justices Act 1959] 43. Witness not answering**
+
+If on the appearance of a person required as a witness before justices, either voluntarily or in obedience to a summons, or upon being brought before them by virtue of a warrant, that person --
+
+(a) refuses to be examined upon oath concerning the matters;
+
+(b) refuses to take an oath; or
+
+(c) having taken an oath refuses to answer such questions concerning the matter as are then put to him --
+
+without offering any sufficient excuse for his refusal, any justice then present and having jurisdiction may by warrant commit the person so refusing to a gaol, there to remain and be imprisoned for 7 days, unless in the meantime he consents to be examined and to answer concerning the matter.
+
+# Credibility of Witnesses and Submissions
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: assessing witness credibility and defense submissions] [CONCEPTS: credibility, witness, submissions, reliability, evidence] [CITATION: hoc-b047-m007-witness-credibility-submissions] [ACT: None] [CASE: Police v Endlay; Kilby]
+
+### Submissions for Defence Favourable Witnesses 
+
+**Police v Endlay [2020] TASMC 13 (9 January 2020)**
+
+"As to her credit and reliability I also observe that I place no weight on her answers to questions asked of her in cross-examination proper by Ms Stewart. Those questions were entirely leading. While the asking of leading questions in cross-examination is permissible and obviously in many cases quite common, in this case, it was plain that the complainant was a partisan witness who was entirely favourable to the defence case. She was effectively a defence witness. To use the words of Mr Gillies in "The Law of Evidence in Australia" at page 126 in giving her answers to those questions she functioned as **["a mere echo of counsel".]**
+
+### Submissions as to Complainant Credibility 
+
+1. The complainant gave a version of events which was narrated confidently and chronologically. Her evidence was populated by a significant amount of minor detail about the events she was narrating. These matters enabled me to form an impression that the complainant's version was produced from her memory of events which were events which she actually experienced. The complainant's version was without internal or other inconsistencies.
+
+> The complainant's conduct in immediately contacting her friend Ms A, her father, her grandmother, and by going immediately to the police station was consistent with the complaint of having been assaulted as alleged. This conduct is a matter indicating to me that the complainant is a credible witness: *Kilby* \[1973\] HCA 30.
+
+# Rebuttal Evidence: Section 106 Practices
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: rebuttal evidence under s 106] [CONCEPTS: rebuttal, evidence, witness, trial, procedures] [CITATION: hoc-b047-m008-rebuttal-evidence-s106] [ACT: None] [CASE: Australian Automotive Repairers Association v Insurance Australia Ltd; Neill-Fraser v Tasmania (No 2)]
+
+***Australian Automotive Repairers Association v Insurance Australia Ltd (2006) FCAFC33*** - in that case the evidence which was sought to be tendered to rebut the witness' evidence was direct evidence by people who saw the witness being coached pre-trial as to how to answer questions in cross-examination in a certain way.
+
+**Neill-Fraser v Tasmania (No 2) [2019] TASSC 11 (21 March 2019)**
+
+A weird one:
+
+Witness had previously spoken to police. During the conversation with the officer, she was asked about dates and details. In the course of the conversation, she said she couldn't remember the exact dates but had them in a diary. She retrieved the diary, refreshed her memory/read from it, and provided the police with the dates.
+
+At the hearing, she could not remember the date, and despite lots of searching could not find the diary.
+
+Prosecution sought to cross-examine under 38(1)(c) [not clear what was inconsistent from the case].
+
+She was permitted to give oral evidence about the facts in the diary by virtue of s 48 in that it could not be found.
+
+This was objected to on the previous representation, namely the saying of the dates, which was based on the diary entry (itself a previous representation) and thus second-hand hearsay.
+
+Court allowed it, as the evidence was in the personal knowledge of the woman, and notwithstanding the reference to the diary, it was fresh in the memory in the circumstances (being about a month only and a few other indicia).
+
+It was held not to be second-hand hearsay because her representation was not dependent upon the representation of another person, but rather her own contemporaneous notes.
+
+She was asked about making the inconsistent statement and agreed that she may have done so but did not remember doing so, or the specific dates. The requirements of s 43 were also addressed. Having put the representation to her, and getting the answer "could not remember", it enlivened s 106, and evidence could be tendered through the officer she talked to, that she did so, and the specific dates she told him could be tendered. As it is in through 106, s 60 gets it in as proof of the fact.
+
+# Relationship to Misuse of Drugs Act
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: evidence related to Misuse of Drugs Act] [CONCEPTS: evidence, prosecution, disclosure, witness, information] [CITATION: hoc-b047-m009-misuse-drugs-act-relation] [ACT: Misuse of Drugs Act 2001] [CASE: None]
+
+**Misuse of Drugs Act 2001**
+
+**34. Prosecution witness need not disclose source of information**
+
+A witness for the prosecution in proceedings under this Act is not obliged to disclose --
+
+(a) the fact that the witness received any information; or
+
+(b) the nature of any information received by the witness; or
+
+(c) the name of the person who gave the witness any information.
+
+# Court Control Over Witness Questioning
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: court powers regarding witness questioning under s 26] [CONCEPTS: court powers, witness questioning, fairness, proceedings] [CITATION: hoc-b047-m010-court-control-questioning] [ACT: Evidence Act 2001] [CASE: ASIC v Rich]
+
+### Leave Under s 192 (s 26)
+
+**Used to curtail defense questioning**
+
+**Police v Endlay [2020] TASMC 13 (9 January 2020) [92-]**
+
+92. The *[Evidence Act]*, *[s 26]* gives the Court power to disallow certain forms of questioning. In my view this is such an example. It provides as follows:
+
+*"26. **Court's control over questioning of witness***
+
+*(a) the way in which witnesses are to be questioned; and*
+
+*(b) the production and use of documents and things in connection with the questioning of witnesses; and*
+
+*(c) the order in which parties may question a witness; and*
+
+*(d) the presence and behaviour of any person in connection with the questioning of witnesses."*
+
+93. [Section 26] gives the Court very considerable breadth of powers to ensure a fair and efficient hearing. In *ASIC v Rich* [(2006) 201 FLR 206], Austin J held that in the exercise of the power it has under [s 26] that the Courts should consider the factors listed in [s 192] of the act.
+
+94. [Section 192] provides that:
+
+*"192. **Leave, permission or direction may be given on terms***
+
+*(1) If, because of this Act, a court may give any leave, permission or direction, the leave, permission or direction may be given on any terms the court thinks fit.*
+
+*(2) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --*
+
+*(a) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and*
+
+*(b) the extent to which to do so would be unfair to a party or to a witness; and*
+
+*(c) the importance of the evidence in relation to which the leave, permission or direction is sought; and*
+
+*(d) the nature of the proceeding; and*
+
+*(e) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence."*
+
+95. In my view, s 192(2)(a) and (b) are of relevance here. In that regard I briefly refer to *ASIC v Citigroup Global Markets Australia Pty Ltd* [(2007) FCA 121] at par 7 and 8.
+
+<!-- block_047 procedure -->
+
+### 1. Tendency/Coincidence Rules Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: Various] [CITATION: Tendency/Coincidence Rules Overview] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of Tendency and Coincidence rules] [CONCEPTS: tendency, coincidence, hearsay, evidence, inference]
+
+This chunk covers the overview of the Tendency and Coincidence Rules regarding evidence. Hearsay must be assessed for its purpose; the evidence must demonstrate relevance to a fact in issue without relying solely on a tendency to conform behavior.
+
+### 2. S 97: Tendency Rule explanation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 97] [CITATION: Evidence Act 2001 (Tas) s 97 - Tendency Rule] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Explanation of the Tendency Rule] [CONCEPTS: tendency evidence, state of mind, relevance, legal rules, Tasmanian law]
+
+This chunk covers the explanation of the Tendency Rule as per s 97. Tendency evidence demonstrates that a person had a tendency to act in a particular way or to have a specific state of mind.
+
+### 3. R v PWD case authority explanation
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 97] [CITATION: Evidence Act 2001 (Tas) s 97 - R v PWD Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: R v PWD significance in Tendency evidence] [CONCEPTS: R v PWD, case authority, tendency, evidence, behavior]
+
+This chunk covers the significance of R v PWD regarding Tendency evidence. "Proof of a tendency to act in a particular way of itself goes nowhere... Tendency evidence is tendered to prove (by inference) that... because... on a particular occasion, a person acted in a particular way..."
+
+### 4. S 98: Coincidence Rule conditions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 98] [CITATION: Evidence Act 2001 (Tas) s 98 - Coincidence Rule] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Explanation of the Coincidence Rule] [CONCEPTS: coincidence evidence, probative value, legal principles, evidence rules, court requirements]
+
+This chunk covers the explanation of the Coincidence Rule as per s 98. It details the conditions under which coincidence evidence is admissible based on significant probative value.
+
+### 5. CGL v DPP (Vic) scripted test questions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 98] [CITATION: CGL v DPP (Vic) - Coincidence Evidence Test Questions] [CATEGORY: script] [TYPE: script] [TOPIC: Coincidence Evidence Evaluation Questions] [CONCEPTS: CGL v DPP, evidence evaluation, coincidence evidence, legal procedures, courtroom questions]
+
+This chunk lists the questions to address in relation to coincidence evidence as established in CGL v DPP (Vic):
+
+1. Are the similarities in the specified events and/or in the circumstances in which they occurred such that it is improbable that the events occurred coincidentally?
+2. If so, would the evidence of those events and circumstances tend to prove that the accused:
+   (a) did the specified act; or
+   (b) had the specified state of mind 
+   where doing that act or having that state of mind is a fact in issue or is relevant to a fact in issue? 
+3. If so, does the evidence have significant probative value, either by itself or with other evidence?
+4. If so, does the probative value of the evidence substantially outweigh any prejudicial effect it may have on the accused?
+
+### 6. Exceptions to Tendency/Coincidence Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 97-100] [CITATION: Exceptions to Tendency/Coincidence Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of Exceptions in Evidence Rules] [CONCEPTS: exceptions, evidence rules, legal procedure, propensity evidence, court guidelines]
+
+This chunk provides an overview of exceptions to the admissibility of Tendency and Coincidence evidence, particularly under s 100 and s 97(2)(b), which applies to rebuttal of tendency evidence.
+
+### 7. Case Law References (Jacara v Perpetual Trustees, Lockyer, Townsend v Townsend)
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: Various] [CITATION: Case Law References - Jacara, Lockyer, Townsend] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: References of Relevant Case Laws] [CONCEPTS: case law, Jacara, Lockyer, Townsend, legal precedent]
+
+This chunk covers references to relevant case law including Jacara v Perpetual Trustees and Lockyer. Emphasizes that evidence must be more than merely relevant; it must be essential.
+
+### 8. S 95: Admissibility clarification
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 95] [CITATION: Evidence Act 2001 (Tas) s 95 - Admissibility Clarification] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Clarification of Admissibility Regarding Other Purposes] [CONCEPTS: s 95, admissibility, evidence rules, legal doctrine, purpose of evidence]
+
+This chunk clarifies that, unlike hearsay and character evidence, evidence admitted for another purpose must still satisfy the provisions for Tendency or Coincidence.
+
+### 9. Opinion Evidence Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 79] [CITATION: Evidence Act 2001 (Tas) s 79 - Opinion Evidence Overview] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Overview of Opinion Evidence] [CONCEPTS: opinion evidence, expert testimony, admissibility, hearsay, court procedures]
+
+This chunk discusses the application of opinion evidence under s 79 that is not considered hearsay. It must be relevant to an expert's opinion without needing to prove the underlying facts.
+
+### 10. Lay Opinion Evidence Clarification
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 78] [CITATION: Evidence Act 2001 (Tas) s 78 - Lay Opinion Evidence] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Explanation of Lay Opinion Evidence] [CONCEPTS: lay opinion, admissibility, descriptive evidence, perception, court rules]
+
+This chunk explains the s. 78 exception allowing lay opinions regarding descriptive weight based on perception, providing the court with a clearer view of what was observed.
+
+### 11. Expert Evidence and Citing Procedure
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 79] [CITATION: Evidence Act 2001 (Tas) s 79 - Expert Evidence and Citing Procedure] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Application of Expert Evidence] [CONCEPTS: expert evidence, admissibility, hearsay exceptions, courtroom procedures]
+
+This chunk discusses expert witness criteria and presenting evidence relevant to the expert's opinion under s 79, including the need for the expert to affirm their qualifications.
+
+### 12. Method to identify documents over video link
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: Various] [CITATION: Method to Identify Documents over Video Link] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Procedure for Identifying Evidence over Video] [CONCEPTS: video link, identifying documents, courtroom strategies, evidence presentation, evidence protocols]
+
+This chunk covers the method to facilitate the identification of documents through video link during a proceeding and ensuring the information is properly verified.
+
+### 13. Witnesses not answering questions per Justices Act 1959 s 43
+[DOMAIN: Tasmanian Criminal Law] [ACT: Justices Act 1959 (Tas)] [SECTION: 43] [CITATION: Justices Act 1959 (Tas) s 43 - Witnessing Not Answering Questions] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Witness Non-Compliance Procedures] [CONCEPTS: Justices Act, witness compliance, courtroom conduct, legal statutes]
+
+This chunk delineates the procedures under the Justices Act 1959 relating to witnesses who refuse to answer questions, including possible consequences for non-compliance.
+
+### 14. Credibility Consideration in Defence Witnesses
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: Various] [CITATION: Police v Endlay \[2020\] TASMC 13 - Considerations of Defence Witness Credibility] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Credibility Assessment of Defence Witnesses] [CONCEPTS: witness credibility, cross-examination, leading questions, defence strategy, case law]
+
+This chunk covers credibility considerations regarding a defence witness in Police v Endlay, particularly about how leading questions in cross-examination affect the perception of reliability.
+
+### 15. Submissions regarding Complainant Credibility
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidnce Act 2001 (Tas)] [SECTION: Various] [CITATION: Complainant Credibility Submissions] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Considerations on Complainant Credibility] [CONCEPTS: complainant credibility, evidence assessment, witness testimony, legal strategy, trial procedure]
+
+This chunk evaluates submissions made regarding the complainant’s credibility based on her actions following an alleged assault.
+
+### 16. Section 106 Rebuttal Evidence Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 106] [CITATION: Evidence Act 2001 (Tas) s 106 - Rebuttal Evidence] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Overview of Rebuttal Evidence Procedures] [CONCEPTS: rebuttal evidence, legal procedures, witness cross-examination, courtroom tactics, evidence rules]
+
+This chunk outlines the provisions applicable to rebuttal evidence during legal proceedings, emphasizing how it can be presented to counter witness statements.
+
+### 17. Misuse of Drugs Act 2001 Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Misuse of Drugs Act 2001 (Tas)] [SECTION: 34] [CITATION: Misuse of Drugs Act 2001 (Tas) s 34 - Prosecution Witness Disclosure] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Prosecution Witness Information Confidentiality] [CONCEPTS: Misuse of Drugs Act, witness confidentiality, court procedures, evidence, prosecution strategy]
+
+This chunk covers the provisions of the Misuse of Drugs Act 2001 concerning the confidentiality of prosecution witnesses and their information sources.
+
+### 18. Leave under s 192: Court's control over questioning
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 192] [CITATION: Evidence Act 2001 (Tas) s 192 - Court Control over Questioning] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Court's Power in Witness Questioning] [CONCEPTS: court control, questioning witnesses, legal powers, fair hearing, courtroom guidelines]
+
+This chunk addresses the court's powers under s 192 regarding the questioning of witnesses, including factors to consider in permitting or restricting questions in court.
+
+<!-- block_048 master -->
+
+# Court Considerations for Granting Discretional Leave
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: court may take into account various considerations for granting leave] [CONCEPTS: discretion, leave, evidence, fairness, proceedings] [CITATION: hoc-b048-m001-court-considerations] [ACT: None] [CASE: None]
+
+The court may be assisted by submissions in respect the general considerations when determining an exercise of discretional leave, espoused in s. 192:
+
+\(2\) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --
+
+\(a\) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and
+
+> ***These are summary proceedings. The matter is a relatively discreet matter -- I would submit further inquiry would not unduly lengthen the course of proceedings.***
+
+\(b\) the extent to which to do so would be unfair to a party or to a witness; and
+
+- ***The prosecution would submit that without the grant of leave, the veracity of the evidence given by this witness, is unlikely to receive any form of challenge by the defence. The question of fairness, I would submit, is one relating to a fair trial to all parties of this contest, to present their case in the best possible light.***
+
+- ***A copy of the initial statement, provided by this witness, has previously been disclosed to the defence. Presumably, they have been on notice of what, at least what the Prosecution believed would be the intended evidence of this witness. Such evidence would not be a surprise.***
+
+\(c\) the importance of the evidence in relation to which the leave, permission or direction is sought; and
+
+- ***This evidence is not only important, but determinative -- on one account an assault has occurred, on the other no offence has taken place.***
+
+\(d\) the nature of the proceeding; and
+
+- ***These are FV proceedings, these are serious allegations, and it is, in my submission, important that all evidence before you is appropriately tested.***
+
+\(e\) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence.
+
+- ***The defendant is not compellable -- there are no other means by which this evidence could be presented to the court. The parties are here, and in all other respects the parties can proceed with the hearing - an adjournment would not alter this situation now faced, and would only serve to delay matters further.***
+
+---
+
+# Procedure for Cross-Examination Under Section 38
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: practice note] [TYPE: practice note] [TOPIC: cross-examination under section 38 of the Evidence Act] [CONCEPTS: cross-examination, witness, PIS, evidence, statements] [CITATION: hoc-b048-m002-cross-examination-section-38] [ACT: Evidence Act] [CASE: None]
+
+I can cross-examine a witness under 38 about a PIS they have made. The starting point is to look at s 43 of the EA.
+
+I do not need to show them anything beforehand to do that.
+
+If they deny the making of the PIS, I HAVE to put to them the circumstances under which they made the statement, and draw their attention to the inconsistency under 43(2). Have the statement marked for identification (MFI).
+
+Having done this, I can now adduce evidence of the making of the PIS through another witness under s 106 as counter credibility evidence. Once admitted under 106, it is then admissible as proof of the representation.
+
+### Quick Soldiers 5 on PIS s. 38:
+
+Firstly, exhaust your EIC to the fullest extent possible, making notes of departures or omissions. If it becomes obvious during their EIC that they are going to be hostile, continue through, but signal to the court (for the benefit of defence) when a significant inconsistency arises that an application is likely to be forthcoming (this satisfies the notice requirement under s.38(6) -- if you didn't know it was going to happen before the hearing).
+
+Secondly, try to exploit s. 32 if you can. This saves undermining the witness's credibility so much (assuming the pre-conditions of s. 32 are met - statement was contemporaneous, truthful etc., fresh in the mind).
+
+If that fails to yield results, make careful note of the inconsistencies between the statement and the evidence.
+
+Make your application, seeking to have the witness excluded.
+
+Ask the court if they wish to hear submissions under s. 192 (they never ever need to, but it makes you look cool showing off you know the law).
+
+Tender the written statement in support of the application (the defence usually concedes this for the purposes of the application -- except for Richo, coz he is a dick). Point directly to the paragraphs that are inconsistent and seek leave to cross-examine on those portions (courts are sticklers for limiting us, so you need to be clear about what you say is inconsistent, and what you want to cross-examine on).
+
+Remember s. 38(3) -- seek leave to cross-examine on credit generally -- there must be a reason for the inconsistency!
+
+The witness is recalled. Put to them the circumstances of the making of the statement and put to them the extent of the inconsistency (this satisfies s. 43 which we may need to come to later).
+
+If they accept the inconsistency, put to them the most favourable evidence (statement or EIC) was the truth.
+
+If they accept that, job done.
+
+If not, go through the whole s. 38, pointing out all the inconsistencies. Conclude your examination and get the statement in through the officer who took it. You've satisfied s 43 so you can tender it as evidence of a prior inconsistent statement (PIC), and because of s. 60, it can be used as evidence of the truth.
+
+If the defence or the witness deny ever making the initial out-of-court statement, you just need to interpose (on the application) to call the officer to whom it was made. You only need to satisfy the court on the balance of probabilities that a PIS occurred to advance a s 38.
+
+So, in short:
+
+Section 32
+
+Section 38
+
+Section 192
+
+Section 43
+
+Section 60
+
+---
+
+# Precedent for Evidence of Inconsistent Representation
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: precedent for calling a police officer before witness testimony] [CONCEPTS: evidence, inconsistent representation, cross-examination, police testimony, legal precedent] [CITATION: hoc-b048-m003-evidence-inconsistent-representation] [ACT: None] [CASE: J v Hamilton [2007] TASSC 105]
+
+In [J v Hamilton \[2007\] TASSC 105 (13 December 2007)](http://classic.austlii.edu.au/cgi-bin/disp.pl/au/cases/tas/TASSC/2007/105.html?stem=0&synonyms=0&query=poa1935140%20s37b)
+
+Appeal of case that at first instance cop was called to submit the interview of a witness before the witness gave evidence on the basis that the prosecutor knew they would be unfavorable. It was to pre-empt the need to prove it later. Although consented to by the defence, and not an issue of the appeal, it demonstrates at least that it has been done before. Key is that it is only marked for identification (MFI), and otherwise just rely on the hearsay exception of the maker being available.
+
+Notes:
+
+From observations in court
+
+Let the victim go through all of the evidence.
+
+Signal to the court at the relevant bit that s. 38 is likely, but then go through right to the end.
+
+Signal s. 38 and ask the victim to be excused.
+
+Refer to her statement -- seek to hand it up to "*I wonder if the defence consents to me handing up a copy of the statement to assist my application*" and specifically point to the inconsistency.
+
+If the statement is challenged by the defence, submit that the test is balance of probabilities that the statement is hearsay.
+
+If not satisfied with that, call the police officer to give evidence of the taking of it on the voir dire. Get all the details!!! Everything. Demeanour, emotional state, speech clarity. Ask the court to accept evidence of the officer in the substantive trial as well. The voir dire is a separate hearing.
+
+Have the statement marked for identification.
+
+Finish s. 38 submission -- ask leave to cross-examine about the making of the statement, and point to specific inconsistency to be crossed about.
+
+---
+
+# Process to Re-Open Prosecution Case
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: discretion to re-open prosecution case due to failure to adduce evidence] [CONCEPTS: re-open, prosecution, evidence, unforeseeable, case law] [CITATION: hoc-b048-m004-reopen-prosecution-case] [ACT: None] [CASE: Maher v Maynard [1991] TASSC 8]
+
+Discretion to re-open prosecution case when failure to adduce evidence. See for a failed attempt by Prosecution: **Maher v Maynard \[1991\] TASSC 8**
+
+Must have been unforeseeable that such evidence would come out.
+
+**PROCESS:**
+
+**Section 38**
+
+As soon as the inconsistency arises, make note of it, and consider notifying the court that this juncture is appropriate to signal that such an application is forthcoming (may also help warn the defence and satisfy the notice requirement if there was no warning).
+
+Ask the court -- Your honour, I have an application to make pursuant to section 38 of the Evidence Act. I seek to make that application in the absence of the witness.
+
+- Have the witness excused.
+
+Application made pursuant to s. 38(1) sub-para (a) and (c).
+
+It is my submission that the evidence given by this witness, in respect of their observation/account of the defendant's representation is unfavorable to the Prosecution. Additionally, that the evidence just given is inconsistent with a prior statement made by the witness.
+
+In support of that submission, your honour, I'd invite the court to make reference to a statutory declaration made by the witness on the x Date. If I could specifically take your honour to para X of that statement.
+
+- show statement
+
+- Take the court to the point of the inconsistency.
+
+Your honour will note in that statement the witness states XXXX.
+
+Further, If I may, I would take the court to sub-s 3 of section 38, and seek leave to extend cross-examination beyond the simple fact of the inconsistent statement, but further, to matters of credit as to why the witness has made the inconsistent statement now, in their evidence in chief.
+
+Relevant to your honour's determination as to whether the leave ought to be granted are matters enumerated in sub-s 6 of section 38.
+
+Sub-para (a) -- Notice was given previously when suspicion arose as to the potential or, the matter has taken the prosecution by surprise, the application has been made at the first available moment.
+
+Sub-para (b) --
+
+The court may be assisted by submissions in respect to the general considerations when determining an exercise of discretional leave, espoused in s. 192:
+
+\(2\) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --
+
+\(a\) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and
+
+> ***These are summary proceedings. The matter is a relatively discreet matter -- I would submit further inquiry would not unduly lengthen the course of proceedings.***
+
+\(b\) the extent to which to do so would be unfair to a party or to a witness; and
+
+- ***The prosecution would submit that without the grant of leave, the veracity of the evidence given by this witness is unlikely to receive any form of challenge by the defence. The question of fairness, I would submit, is one relating to a fair trial to all parties of this contest, to present their case in the best possible light.***
+
+- ***A copy of the initial statement, provided by this witness, has previously been disclosed to the defence. Presumably they have been on notice of what, at least what the Prosecution believed would be the intended evidence of this witness. Such evidence would not be a surprise.***
+
+\(c\) the importance of the evidence in relation to which the leave, permission or direction is sought; and
+
+- ***This evidence is not only important, but determinative -- on one account an assault has occurred, on the other no offence has taken place.***
+
+\(d\) the nature of the proceeding; and
+
+- ***These are FV proceedings, these are serious allegations, and it is, in my submission, important that all evidence before you is appropriately tested.***
+
+\(e\) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence.
+
+- ***The defendant is not compellable -- there are no other means by which this evidence could be presented to the court. The parties are here, and in all other respects the parties can proceed with the hearing - an adjournment would not alter this situation now faced, and would only serve to delay matters further.***
+
+<!-- block_048 procedure -->
+
+### Submissions Regarding Discretional Leave Under s 192
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 192] [CITATION: Evidence Act 2001 (Tas) s 192 - Submissions on Exercise of Discretion] [CATEGORY: procedure] [TYPE: script] [TOPIC: Submissions on considerations for granting leave] [CONCEPTS: Section 192, discretional leave, fairness, hearing length, witness rights]
+The court may be assisted by submissions in respect the general considerations when determining an exercise of discretional leave, espoused in s. 192:
+
+\(2\) Without limiting the matters that the court may take into account in deciding whether to give the leave, permission or direction, it is to take into account --
+
+\(a\) the extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing; and
+
+> ***These are summary proceedings. The matter is a relatively discreet matter -- I would submit further inquiry would not unduly lengthen the course of proceedings***
+
+\(b\) the extent to which to do so would be unfair to a party or to a witness; and
+
+- ***The prosecution would submit that without the grant of leave, the veracity of the evidence given by this witness, is unlikely to receive any form of challenge by the defence. The question of fairness, I would submit, is one relating to a fair trial to all parties of this contest, to present their case in the best possible light***
+
+- ***A copy of the initial statement, provided by this witness, has previously been disclosed to the defence. Presumably they have been on notice of what, at least what the Prosecution believed would be the intended evidence of this witness. Such evidence would not be a surprise***
+
+\(c\) the importance of the evidence in relation to which the leave, permission or direction is sought; and
+
+- ***This evidence is not only important, but determinative -- on one account an assault has occurred, on the other not offence has taken place.***
+
+\(d\) the nature of the proceeding; and
+
+- ***These are FV proceedings, these are serious allegations, and it is, in my submission, important that all evidence before you is appropriately tested***
+
+\(e\) the power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence.
+
+- ***The defendant is not compellable -- there are no other means by which this evidence could be presented to the court. The parties are here, and in all other respects, the parties can proceed with the hearing - an adjournment would not alter this situation now faced, and would only serve to delay matters further.***
+
+### Section 38 Cross-Examination Tactical Workflow
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Cross-Examination Workflow] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Tactical workflow for Section 38 cross-examination] [CONCEPTS: Section 38, cross-examination, witness statements, inconsistencies, evidence]
+I can cross-examine a witness under 38 about a PIS they have made. Starting point is to look at s 43 of the EA.
+
+1. I do not need to show them anything beforehand to do that.
+2. If they deny the making of the PIS I HAVE to put to them the circumstances under which they made the statement, and draw their attention to the inconsistency under 43(2).
+3. Have the statement marked for identification (MFI).
+4. Having done this, I can now adduce evidence of the making of the PIS through another witness under s 106 as counter credibility evidence. Once admitted under 106 -- it is then admissible as proof of the representation.
+
+### Steps for Addressing Inconsistencies During Witness Examination
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Steps for Inconsistencies] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Step-by-step for handling inconsistencies] [CONCEPTS: witness examination, inconsistencies, cross-examination, strategy, legal process]
+1. Firstly, exhaust your EIC to the fullest extent possible, making notes of departures or omissions.
+2. If it becomes obvious during their EIC that they are going to be hostile, continue through, but signal to the court (for the benefit of the defence) when a significant inconsistency arises that an application is likely to be forthcoming (this satisfies the notice requirement under s.38(6)).
+3. Secondly, try to exploit s. 32 if you can. This saves undermining the witnesses' credibility so much (assuming the pre-conditions of s. 32 are met - statement was contemporaneous, truthful etc., fresh in the mind).
+4. If that fails to yield results, make careful note of the inconsistencies between the statement and the evidence.
+5. Make your application, seeking to have the witness excluded.
+6. Ask the court if they wish to hear submissions under s. 192 (they never ever need to, but it makes you look cool showing off you know the law).
+7. Tender the written statement in support of the application (defence usually concede this for the purposes of the application -- except for Richo, coz he is a dick).
+8. Point directly to the paragraphs that are inconsistent and seek leave to CX on those portions.
+9. Remember s. 38(3) -- seek leave to CX on credit generally -- there must be a reason for the inconsistency!
+10. If the witness is recalled, put to them the circumstances of the making of the statement and put to them the extent of the inconsistency.
+11. If they accept the inconsistency, put to them the most favourable evidence (statement or EIC) was the truth.
+12. If they accept that, job done.
+13. If not, go through the whole 38, pointing out all the inconsistencies. Conclude your examination and get the statement in through the officer who took it. You've satisfied s 43 so you can tender it as evidence of a PIC, and because of s. 60 it can be used as evidence of the truth.
+
+### Evidence of Inconsistent Representation in the Context of Witness Examination
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 38] [CITATION: J v Hamilton [2007] TASSC 105 - Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case reference for evidence submission] [CONCEPTS: J v Hamilton, inconsistent evidence, witness credibility, prosecution strategy, case law]
+In [J v Hamilton \[2007\] TASSC 105 (13 December 2007)](http://classic.austlii.edu.au/cgi-bin/disp.pl/au/cases/tas/TASSC/2007/105.html?stem=0&synonyms=0&query=poa1935140%20s37b) 
+
+Appeal of case that at first instance cop was called to submit interview of witness before the witness gave evidence on the basis that prosecutor knew they would be unfavourable. It was to pre-empt the need to prove it later. Although consented to by defence, and not an issue of the appeal, it demonstrates at least that it has been done before. Key is that it is only MFI, and otherwise just rely on the hearsay exception of the maker being available.
+
+### Practitioner Notes on Re-Opening Prosecution Case
+[DOMAIN: Tasmanian Criminal Law] [ACT: Justices Act 1959 (Tas)] [SECTION: n/a] [CITATION: Maher v Maynard \[1991\] TASSC 8 - Procedural Note] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Note on reopening case] [CONCEPTS: re-opening case, prosecution strategy, unforeseen evidence, Justices Act, procedural law]
+Discretion to re-open prosecution case when failure to adduce evidence. See for a failed attempt by Pross: **Maher v Maynard \[1991\] TASSC 8**. Must have been unforeseeable that such evidence would come out.
+
+### Tactical Workflow for Applying for Leave to Cross-Examine Under Section 38
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Application for Leave to Cross-Examine] [CATEGORY: procedure] [TYPE: procedural] [TOPIC: Workflow for application under Section 38] [CONCEPTS: application, leave, cross-examination, evidence, inconsistent statements]
+As soon as the inconsistency arises make note of it, and consider notifying the court that this juncture is appropriate to signal that such an application is forthcoming (may also help warn defence and satisfy the notice requirement if there was no warning).
+
+1. Ask the court -- Your honour, I have an application to make pursuant to section 38 of the Evidence Act. I seek to make that application in the absence of the witness.
+2. Have the witness excused.
+3. Application made pursuant to s 38(1) sub-para (a) and (c).
+4. It is my submission that the evidence given by this witness, in respect of their observation/account of the defendant's representation is unfavorable to the Prosecution. Additionally, that the evidence just given is inconsistent with a prior statement made by the witness.
+5. In support of that submission, your honour, I'd invite the court to make reference to a statutory declaration made by the witness on the x Date. If I could specifically take your honour to para X of that statement.
+6. Show statement.
+7. Take the court to point of the inconsistency.
+8. Your honour will note in that statement the witness states XXXX.
+9. Further, If I may, I would take the court to sub-s 3 of section 38, and seek leave to extend cross-examination beyond the simple fact of the inconsistent statement, but further, to matters of credit as to why the witness has made the inconsistent statement now, in their evidence in Chief.
+10. Relevant to your honour's determination as to whether the leave ought be granted, are matters enumerated in sub-s 6 of section 38.
+
+### Observations and Practitioner Notes from Court
+[DOMAIN: Tasmanian Criminal Law] [ACT: n/a] [SECTION: n/a] [CITATION: Court Observation Notes - Practitioner Insights] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Court insights on witness handling] [CONCEPTS: courtroom observations, witness handling, strategy, practitioner notes, legal proceedings]
+- From observations in court: Let vic go through all of evidence.
+- Signal to court at relevant bit that 38 likely, but then go through right to the end.
+- Signal 38 and ask vic to be excused.
+- Refer to her statement -- seek to hand it up to "*I wonder if the defence consents to me handing up a copy of the statement to assist my application*" and specifically point to the inconsistency.
+- If the statement is challenged by defence, submit that the test is balance of probabilities that the statement is hearsay.
+- If not satisfied with that, call the police officer to give evidence of the taking of it on the voir dire. Get all the details!!! Everything. Demeanour emotional state, speech clarity. Ask court to accept evidence of officer in the substantive trial as well. Voir dire is separate hearing.
+- Have statement marked for ID.
+- Finish 38 submission -- ask leave to Cross about the making of statement, and point to specific inconsistency location within statement and areas sought to be CX on. Include surrounding areas, as whilst not directly inconsistent, are required context to the inconsistency.
+
+<!-- block_049 master -->
+
+# Section 38 Application for Prior Inconsistent Statements
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Section 38 application for prior inconsistent statements] [CONCEPTS: prior inconsistent statements, credibility, cross-examination, leave application, evidence] [CITATION: hoc-b049-m001-section-38-application] [ACT: Evidence Act 2001] [CASE: None]
+
+**Alternative version --- s 38(1)(c)**
+
+**SET UP BASIS FOR APPLICATION**
+
+- Did anything else happen?
+
+- Do you remember talking to police?
+
+- Do you remember making a statement \[But if witness denies making a statement, need to stop here and call evidence on the *voir dire\]*
+
+- Did you sign it, as true and correct?
+
+*Show document*
+
+**MAKE APPLICATION AND ASK THAT THE WITNESS BE RELIEVED**
+
+**LEAVE APPLICATION TO PROCEDD ON S.38 BASIS:**
+
+- *YH, the witness has just given evidence that...*
+
+- *She made a prior inconsistent statement to police on*...\[Take to relevant paragraph or simply read it? Indicate what date it was signed\]
+
+- *I seek leave to cross-examine as to:*
+
+- **the prior inconsistent statement;**
+
+- **AND matters relevant only to her credibility** (e.g. they are now back together, the witness does not want the D to go to prison, threats or intimidation...)
+
+ADDRESS ***S 38(6) FACTORS***
+
+- **Notice** was given to my learned friend on ... of my intention to seek leave;
+
+- The matters on which, and the extent to which, the witness has been, or is likely to be, **questioned by another party.**
+
+ADDRESS ***S 192 FACTORS:***
+
+A)  The extent to which to do so would be **likely to add unduly** to, or to shorten, the **length of the hearing;** and
+
+- *It will lengthen the hearing but not unduly*
+
+B)  The extent to which to do so would be **unfair** to a party or to a witness; and
+
+- *Purpose is to provide Ms Whiley with an opportunity to admit she made a statement to police, and then admit that the statement is true. Secondly, it is to satisfy the requirements of s 43(2), if recourse to that statement is necessary.*
+
+- As far as I understand the Defence case, it is not that they intend to put an alternative course to the witness but instead to, and therefore, it would be unfair to them to grant leave because they would not challenge the statement in cross-examination. Can test the truthfulness about his memory or illicit evidence about drug taking to cast doubt on the truthfulness of what she said to police.
+
+- Unfair to prosecution to not allow it to use a mechanism clearly provided for by the act (s 43).
+
+- If not memory, not no value, as value to lay ground-work for s 43 (prosecution) or to reliability of statement (defence).
+
+C)  the **importance of the evidence** in relation to which the leave, permission or direction is sought; and
+
+- The evidence is very important. It is open to YH to argue that Ms Whiley told the truth immediately after the alleged assault, and that later changed her story to protect the Defendant who is her husband.
+
+D)  the **nature of the proceeding;** and
+
+- While it is a summary offence, it is not a trivial offence.
+
+- Involves a serious assault on the person, in her home.
+
+E)  the power of the court, if any, to **adjourn** the hearing or to make another order or to give a direction in relation to the evidence.
+
+- Evidence is crucial to the prosecution case
+
+- Need not be a motive to give untruthful evidence, but important to explore it here.
+
+- Contemporaneous, more probably reliable
+
+- Other unfairness?
+
+**PROCEEDING TO S 38 CROSS-EXAMINATION**
+
+***If in an Oral statement to police:***
+
+- Police attended your address on \.... didn\'t they?
+
+- And when they arrived they asked you what had happened?
+
+- You told them you had not seek your ex partner, Andrew Whiley in a number of weeks and that he had appeared unexpectedly while you were asleep on the couch?
+
+***If in a Statutory declaration made by witness:***
+
+- Did you make a statement to police on \...?
+
+- Put when ...\[aka fresh in mind\]
+
+- Sign it?
+
+- Sign it, declaring, contents of it were true, and correct?
+
+- Told them that \[put allegation\]
+
+- And he **DID DO** \[put allegation\] ***\[Browne v Dunn\]***
+
+- Can you remember discussing what happened with police?
+
+- Do you remember making a statement to police in the form of a statutory declaration?
+
+- Did you make one \[ie on the day of the offence\]
+
+- Do you remember being asked to read it?
+
+- And sign and date it if it was true and correct?
+
+- Did you sign it?
+
+- \[Seek leave\]
+
+- Show document
+
+- Is that your name and address at the top of the page?
+
+- Is that your signature at the bottom of the page?
+
+- Is that the date next to your signature and is that the date you signed the statutory declaration?
+
+- When you signed it, did you sign the document believing its contents to be true and correct?
+
+- \[Take witness to paragraph and ask them to read it to themselves\.]
+
+- *I will now ask you again, do you now remember what happened that day?*
+
+<!-- block_049 procedure -->
+
+### Alternative options for witness testimony
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Alternative Options] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Alternative options for witness testimony] [CONCEPTS: witness options, testimony, memory, evidence, s 38]
+
+1. Alternative version
+2. Can't remember anything (and/or drugged)
+3. Not swear oath
+4. Swear oath but not give evidence
+
+### Setting up basis for s 38 application
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Setting Up Application] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Setting up basis for s 38 application] [CONCEPTS: s 38 application, witness statement, police statement, voir dire, testimony]
+
+Tactical workflow for setting up the basis for a s 38 application.
+
+- Did anything else happen?
+- Do you remember talking to police?
+- Do you remember making a statement? [But if the witness denies making a statement, need to stop here and call evidence on the *voir dire*]
+- Did you sign it, as true and correct? *Show document*
+
+### Leave application to proceed on s 38 basis
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Leave Application] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Leave application to proceed on s 38 basis] [CONCEPTS: leave application, cross-examination, inconsistent statement, credibility]
+
+- YH, the witness has just given evidence that...
+- She made a prior inconsistent statement to police on... [Take to relevant paragraph or simply read it? Indicate what date it was signed]
+- I seek leave to cross-examine as to:
+ - the prior inconsistent statement;
+ - AND matters relevant only to her credibility (e.g. they are now back together, the witness does not want the D to go to prison, threats or intimidation...).
+
+### Addressing s 38(6) factors
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - S 38(6) Factors] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Addressing s 38(6) factors] [CONCEPTS: s 38(6) factors, notice, questioning party]
+
+ADDRESS ***S 38(6) FACTORS***
+
+- Notice was given to my learned friend on ... of my intention to seek leave;
+- The matters on which, and the extent to which, the witness has been, or is likely to be questioned by another party.
+
+### Addressing s 192 factors
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 192] [CITATION: Evidence Act 2001 (Tas) s 192 - Factors Consideration] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Addressing s 192 factors] [CONCEPTS: s 192, hearing length, unfairness, evidence importance]
+
+ADDRESS ***S 192 FACTORS:***
+
+A) The extent to which to do so would be likely to add unduly to, or to shorten, the length of the hearing;
+- *It will lengthen the hearing but not unduly*
+
+B) The extent to which to do so would be unfair to a party or to a witness;
+- *Purpose is to provide Ms Whiley with an opportunity to admit she made a statement to police, and then admit that the statement is true. Secondly, it is to satisfy the requirements of s 43(2), if recourse to that statement is necessary.*
+
+C) The importance of the evidence in relation to which the leave, permission or direction is sought;
+- *The evidence is very important. It is open to YH to argue that Ms Whiley told the truth immediately after the alleged assault, and that later changed her story to protect the Defendant who is her husband.*
+
+D) The nature of the proceeding;
+- *While it is a summary offence, it is not a trivial offence. It involves a serious assault on the person, in her home.*
+
+E) The power of the court, if any, to adjourn the hearing or to make another order or to give a direction in relation to the evidence.
+
+### Proceeding to s 38 cross-examination
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Cross-Examination Procedure] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Proceeding to s 38 cross-examination] [CONCEPTS: cross-examination, witness, statutory declaration, police statement]
+
+Tactical workflow for proceeding to s 38 cross-examination.
+
+***If in an Oral statement to police:***
+- Police attended your address on .... didn’t they?
+- And when they arrived they asked you what had happened?
+- You told them you had not seen your ex-partner, Andrew Whiley in a number of weeks and that he had appeared unexpectedly while you were asleep on the couch?
+
+***If in a Statutory declaration made by witness:***
+- Did you make a statement to police on ...?
+- Put when ... [aka fresh in mind]
+- Sign it?
+- Sign it, declaring contents of it were true, and correct?
+- Told them that [put allegation]
+- And he **DID DO** [put allegation] (*Browne v Dunn*)
+- Can you remember discussing what happened with police?
+- Do you remember making a statement to police in the form of a statutory declaration?
+- Did you make one [i.e., on the day of the offence]?
+- Do you remember being asked to read it?
+- And sign and date it if it was true and correct?
+- Did you sign it?
+- [Seek leave]
+- Show document
+- Is that your name and address at the top of the page?
+- Is that your signature at the bottom of the page?
+- Is that the date next to your signature and is that the date you signed the statutory declaration?
+- When you signed it, did you sign the document believing its contents to be true and correct?
+- [Take witness to paragraph and ask them to read it to themselves.]
+- I will now ask you again, do you now remember what happened that day?
+
+### Result after cross-examination
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Result after Cross-Examination] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Result after cross-examination] [CONCEPTS: cross-examination outcome, witness adoption, memory assessment]
+
+RESULT - AFTER CROSS-EXAMINATION
+
+1. If they adopt statement - **move on.**
+2. Accept they told that to police but:
+   - it didn’t actually happen --- **move on;** or
+   - I don’t remember what happened --- **move on.**
+3. Agree they made the prior statement, but does **not accurately record** what they told police or **cannot remember what told police, MFI and TENDER.**
+4. Deny or not remember making a statement. **MFI and TENDER.**
+ 
+### Section 137 unfair prejudice considerations
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 137] [CITATION: Evidence Act 2001 (Tas) s 137 - Unfair Prejudice Considerations] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Considerations of unfair prejudice] [CONCEPTS: section 137, unfair prejudice, probative value, evidence]
+
+*Section 137. Exclusion of prejudicial evidence in criminal proceedings*
+*In a criminal proceeding the court must refuse to admit evidence adduced by the prosecutor if its probative value is outweighed by the danger of unfair prejudice to the defendant.*
+
+Claimed loss of memory (which even if rejected, did not necessarily lead to acceptance of the truth of the previous representations) precluded detailed cross-examination as to the facts asserted and that adversely affected the probative value of the representations.
+
+### Setting up basis for s 38 application (further details)
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Further Application Setup] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Further basis for s 38 application] [CONCEPTS: witness testimony, credibility, fabricated evidence, charging party]
+
+Tactical workflow for setting up the basis for a s 38 application.
+
+- Did anything else happen?
+- Seek Leave --- Not genuine attempt ie WITNESS IS UNFAVOURABLE
+- YH, the witness has given evidence that ...
+- This not a genuine attempt as present because ... expect to be in her knowledge as ...
+- Seek to cross-examine her on matters regarding her credibility including whether:
+  - Lying as have reconciled and not want to get in trouble
+  - Why --- put to her the reason as to the fabrication which relates to her credibility
+  - Harder to resume relationship if convicted
+- Can you remember discussing what happened with police?
+- Do you remember making a statement to police in the form of a statutory declaration?
+- Did you make one? [i.e., on the day of the offence]
+- Do you remember being asked to read it?
+- And sign and date it if it was true and correct?
+- Did you sign it?
+- [Seek leave] *Show document*
+- Is that your name and address at the top of the page?
+- Is that your signature at the bottom of the page?
+- Is that the date next to your signature and is that the date you signed the statutory declaration?
+- When you signed it, did you sign the document believing its contents to be true and correct? [Take witness to paragraph and ask them to read it to themselves.]
+  
+### Section 42 application for leading questions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 42] [CITATION: Evidence Act 2001 (Tas) s 42 - Leading Questions Application] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Leading questions in defense witness cases] [CONCEPTS: section 42, leading questions, defense witness, evidence]
+
+If the witness is clearly in the defence camp, and 38 is required, make an application under s 42 (leading questions) to prevent the CX from merely putting things to them. There is no likelihood of facts coming out if they are clearly in enemy camp.
+
+### Tendering prior inconsistent statement as evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 38] [CITATION: Evidence Act 2001 (Tas) s 38 - Tendering Prior Inconsistent Statement] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Tendering PIS as evidence] [CONCEPTS: prior inconsistent statement, evidence tender, police officer]
+
+Through Police officer
+- Get evidence from officer that victim read it, amount of time; whether any amendments were made; that they signed the section about it being a truthful statement.
+
+### Section 32 procedure for refreshing memory
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 32] [CITATION: Evidence Act 2001 (Tas) s 32 - Refreshing Memory Procedure] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Procedure for refreshing memory] [CONCEPTS: section 32, memory refreshing, document verification, witness statement]
+
+Tactical workflow for refreshing memory.
+
+- Must be a contemporaneous document.
+- Document must have been made or verified by the witness.
+- Be prepared to show the document to the witness.
+
+Chain of questions to satisfy essential preconditions of refreshing memory:
+
+- Ask witness if after the event they made a note of what was said:
+- How long after did you make the note?
+- Where did you make the note?
+- When you made the note, were the words still fresh in your memory?
+- How did you make the notes?
+- Did the notes accurately record your memory at the time?
+- It has been x months since the incident?
+- Are you able to recall what was said at the time?
+- Are you able to produce those notes?
+- Do you seek leave of the court to refer to those notes to refresh your memory as to what was said?
+
+### Factors for using document to refresh memory
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 32] [CITATION: Evidence Act 2001 (Tas) s 32 - Factors for Document Use] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Factors for using document to refresh memory] [CONCEPTS: section 32, leave factors, memory revival]
+
+Section 32(1) of the Evidence Act provides that a witness may use a document to revive their memory, if the court gives leave. Section 32(2) provides the considerations the court should consider.
+
+Rely on this section if a witness says that they cannot remember, or if I know that they have forgotten something that was in their statement.
+
+- Can you remember anything else?
+- Is there anything that would help you remember? (Why yes! I did a statement.)
+- Do you have that statement with you? (Why yes, I do.)
+- When was that statement made? (When I was interviewed by police shortly after the event.)
+
+### Section 66(3) considerations about representations
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: section 66] [CITATION: Evidence Act 2001 (Tas) s 66 - Representations Consideration] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Considerations of representations in court] [CONCEPTS: section 66, representations, admissibility, truth assertion]
+
+Contemplation of court proceedings - Representation by a person who is available, by s 60, becomes admissible as to the truth of the assertion.
+
+Defence object on the basis of s 66(3) and the representation was made for the purpose of indicating the evidence she would give in an Australian proceeding.
+
+This was dealt with by *Saunders* [2004] TASSC 95 par 60, where Crawford said that reference to s (3) is clearly a reference to the maker, not who heard the representation (also in Esposito --- Wood J).
+
+Case is not so clear where a person at the scene makes a representation to a police officer who just arrived and is trying to find out what happened --- i.e., it may be to make a complaint or to assist a police officer who has just arrested someone.
+
+Therefore, it is significant what the purpose of the maker is. Reasonable to infer she was not prepared to make a statement as she was scared; she did not perceive that representation she gave was an account she might be able to give in a court proceeding. No basis for concluding at the time the purpose was for indicating what evidence she would give at Court proceedings.
+
+<!-- block_050 master -->
+
+# Privilege against self-incrimination and section 128 certificates  
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: privilege against self-incrimination applies under section 128] [CONCEPTS: privilege, self-incrimination, section 128, witness, court] [CITATION: hoc-b050-m001-privilege-against-self-incrimination] [ACT: Evidence Act 1995] [CASE: Song v Ying (2010) 79 NSWLR 442]
+
+Not available to **[Defendant]{.underline}** in EIC or RX to questions from their own lawyer! Not "compelled" (*Song v Ying* (2010) 79 NSWLR 442; \[2010\] NSWCA).
+
+**Privilege in respect of self-incrimination in other proceedings**
+
+1. Section 128 applies if a witness objects to giving particular evidence or evidence on a particular matter because doing so may tend to prove the witness has committed an offence against, or arising under, an Australian law or a law of a foreign country, or is liable to a civil penalty (s128(1)). It details a procedure which both protects the witness claiming the privilege and enables the proceeding in which the witness is called to have the benefit of his or her evidence.
+
+2. If the court considers that a witness or party may have grounds for applying or objecting under this Part, it must satisfy itself that the witness or party is aware of the effect of s128 (s132).
+
+3. If the court takes the precaution of warning a possible co-offender or alternative suspect of the availability of the privilege, it is prudent to do so in the absence of the jury (*KH v R* \[2014\] NSWCCA 294 at \[35\]). Similarly, any application for a s 128 certificate should be determined in the absence of the jury (*Spence v The Queen* \[2016\] VSCA 113, \[55\]).
+
+4. If the court determines there are reasonable grounds for the objection, it must inform the witness:
+   
+    - that he or she need not give the evidence unless required by the court to do so under s128(4); and
+   
+    - that the court will give a certificate under s128 if:
+   
+      - the witness willingly gives the evidence without being required to do so; or
+   
+      - the witness gives the evidence after being required by the court to do so; and
+   
+    - of the effect of the certificate (s128(3)).
+
+5. The court may require the witness to give the evidence if it is satisfied that the interests of justice require the witness to give the evidence, provided that the evidence does not tend to prove that the witness has committed an offence or is liable to a civil penalty under a law of a foreign country (s128(4)).
+
+6. The following cannot be used against a person who gave the evidence in any proceeding in a Victorian court or before any person or body authorised by a law of Victoria, or by consent of parties, to hear, receive and examine evidence:
+
+    - evidence given by the person in respect of which a certificate has been given; and
+   
+    - any information, document or thing obtained as a direct or indirect consequence of the person having given that evidence (s128(7)).
+
+7. This protection does not apply to a criminal proceeding in respect of the falsity of the evidence (s128(7)). Nor does it apply to proceedings which are a retrial of the accused for the same offence, or a trial of the accused for an offence arising out of the same facts that gave rise to that offence (s128(9)).
+
+8. The section does not apply in criminal proceedings where an accused gives evidence that he or she:
+   
+    - did an act, the doing of which is a fact in issue; or
+   
+    - had a state of mind, the existence of which is a fact in issue (s128(10)).
+
+<!-- block_050 procedure -->
+
+### Chunk 1: Privilege against self-incrimination (s 128 certificates) 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Tactical Workflow] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Workflow for applying privilege against self-incrimination] [CONCEPTS: privilege, self-incrimination, s 128, court procedure, witness evidence]
+
+Tactical workflow for privilege against self-incrimination (s 128 certificates). Not available to **[Defendant]{.underline}** in EIC or RX to questions from their own lawyer! Not "compelled" (*Song v Ying* (2010) 79 NSWLR 442; \[2010\] NSWCA).
+
+### Chunk 2: Court procedure regarding s 128 privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Court Procedure] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Steps for court on s 128 privilege] [CONCEPTS: court procedure, self-incrimination, privilege, witness, objection]
+
+1. Section 128 applies if a witness objects to giving particular evidence because it may tend to prove an offence against Australian law or liable to a civil penalty (s128(1)).
+2. Court must ensure witness is aware of the effect of s128 (s132).
+3. Court must warn any potential co-offender of privilege availability in absence of jury (see *KH v R* \[2014\] NSWCCA 294).
+4. Court must determine reasonable grounds for objection and inform witness of their rights under s128.
+
+### Chunk 3: Guidelines for issuing s 128 certificates
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Certificate Issuance] [CATEGORY: procedure] [TYPE: script] [TOPIC: Guidelines for court on s 128 certificates] [CONCEPTS: certificate, evidence, compulsion, privilege, witness]
+
+If the court determines reasonable grounds for objection, it must:
+- Inform the witness: they need not give evidence unless required by the court to do so under s128(4).
+- Explain the potential issuance of a certificate indicating protection against self-incriminating evidence.
+
+### Chunk 4: Practitioner's annotation on common law privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Common Law Privilege Annotation] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Commentary on common law privilege] [CONCEPTS: common law, self-incrimination, s 128, witness, court]
+
+While the common law privilege against self-incrimination can apply to judicial and non-judicial proceedings, s 128 is limited to a witness who objects to giving evidence in court (*DPP v Peters* (2019) 59 VR 203, \[74\], \[114\]).
+
+### Chunk 5: Case authority for privilege relevant to self-incrimination
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Relevant case law for self-incrimination privilege] [CONCEPTS: case law, self-incrimination, privilege, witness, Australian law]
+
+In *Song v Ying*, the NSW Court of Appeal held that any witness who is compellable to give evidence may object to giving evidence without the protection of a certificate at any stage (*Song v Ying* (2010) 79 NSWLR 442; \[2010\] NSWCA 237).
+
+### Chunk 6: Legal doctrine regarding effect of s 128 certificate
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Legal Doctrine] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Legal effect of s 128 certificate] [CONCEPTS: certificate, self-incrimination, legal doctrine, privilege, court]
+
+The effect of a s128 certificate provides both use and derivative use immunity regarding evidence given under its protection. This enables the witness not to have the evidence used against them in any future proceedings.
+
+### Chunk 7: Step sequence for determining reasonable grounds for objection
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Reasonable Grounds for Objection] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Steps to determine reasonable grounds for objection] [CONCEPTS: reasonable grounds, objection, evidence, court, self-incrimination]
+
+The court must assess:
+1. Whether there are reasonable grounds for objection based on evidence presented.
+2. Whether there is a real prospect of criminal prosecution based on such evidence.
+3. The court's burden of proof rests with the witness seeking the privilege (balance of probabilities).
+
+### Chunk 8: Reasoning for interests of justice in compelling evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Interests of Justice] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Judicial considerations on interests of justice] [CONCEPTS: interests of justice, compel, evidence, court, discretion]
+
+In determining whether the interests of justice require such action, consider the scope and purpose of the legislation, as well as what is its real objective in compelling evidence.
+
+### Chunk 9: Annotation on application of s 128 in different contexts
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Application Context] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Contextual application of s 128] [CONCEPTS: application, self-incrimination, evidence, privilege, court]
+
+Section 128 applies only in proceedings to which the Act applies, and only regarding 'testimonial disclosure' at a hearing. The common law applies in other contexts.
+
+### Chunk 10: Observational note on limitations of s 128
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Limitations Note] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Limitations of s 128 privilege] [CONCEPTS: limitations, self-incrimination, privilege, witness, evidence]
+
+The privilege does not apply to criminal proceedings where the accused gives evidence that is a fact in issue (s128(10)). 
+
+### Chunk 11: Script for explaining effect of a s 128 certificate
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Tas)] [SECTION: 128] [CITATION: Evidence Act 1995 (Tas) s 128 - Explaining Certificate] [CATEGORY: procedure] [TYPE: script] [TOPIC: Script for court on s 128 certificate effects] [CONCEPTS: s128, certificate, explanation, witness, privilege]
+
+When explaining to a witness, inform them that:
+- They need not give evidence unless the court requires.
+- A certificate will protect any evidence provided from being used against them later.
+
+<!-- block_051 master -->
+
+# Public Interest Immunity and Informant Protection
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Primacy of protection of informers] [CONCEPTS: public interest immunity, informant protection, confidentiality, police recruitment, High Court] [CITATION: hoc-b051-m001-public-interest-immunity] [ACT: None] [CASE: Chief Commissioner of Police v Crupi \[2024\] HCA 34]
+
+"Public knowledge that a source's expectations of confidentiality had been breached would certainly undermine the ability of police to recruit informers in future." This statement highlights the significance of public interest immunity in safeguarding the identities of police informants. The High Court's decision in **Chief Commissioner of Police v Crupi \[2024\] HCA 34** reiterates the principles established in *AB (a pseudonym) v CD (a pseudonym)*, \[2018\] HCA 58; (2018) 93 ALJR 59; 362 ALR 1.
+
+A key aspect of this immunity is the understanding that the disclosure of an informant's identity can not only impact the immediate case but also deter potential informants in future investigations. This is particularly relevant in maintaining the integrity and efficacy of police operations, as informants provide crucial information that can lead to successful prosecutions.
+
+Moreover, the public interest in protecting informers has broader implications for society, as it encourages cooperation between citizens and law enforcement agencies. If individuals believe that their confidentiality will not be respected, they may be less willing to come forward with valuable information regarding criminal activities. Such a chilling effect could lead to an increase in crime as law enforcement would be deprived of essential intelligence and support from the community.
+
+In balancing the needs for transparency and the protection of informers, the High Court underscores the importance of maintaining this trust in the justice system. The precedent set in these cases illustrates the ongoing challenge of navigating public interest considerations against the backdrop of individual rights and effective law enforcement strategies.
+
+# DPP Charging Advice on Computer-Related Fraud
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: practice note] [TYPE: practice note] [TOPIC: Charging approach for computer-related fraud] [CONCEPTS: DPP guidelines, computer-related crime, fraud, indictable offences, course of conduct] [CITATION: hoc-b051-m002-dpp-charging-advice] [ACT: Justices Act 1959] [CASE: None]
+
+Where the computer-related crime involves fraud a similar approach to stealing as provided by s72 of the Justices Act 1959 should be taken. That is, a summary charge should be preferred where the amount of the alleged computer-related fraud is less than $20,000 unless:
+
+• the charge involves forms part of a course of conduct or series of crimes which are indictable
+
+• circumstances relating to the alleged offender and/or to the conduct are such that the penalty provision in the lower court would not be adequate
+
+• a co-accused was dealt with on indictment (prosecutors should strive for consistency as between co-offenders unless there are compelling reasons not to). 
+
+The approach taken by the DPP indicates a structured framework for deciding the appropriate means of prosecution, noting the thresholds and contributing factors that would elevate charges from summary to indictable offences. This guidance fosters consistency in charging decisions and ensures that justice is pursued in a manner that reflects the seriousness of the conduct involved.
+
+Particular attention to the context and relationship between co-offenders is essential in practice. This aligns with the broader objectives of the legal system where comparable cases are treated similarly unless distinguishing factors justify different outcomes. The complexity of the alleged fraud, including its context and implications for victims, also plays a substantial role in determining the appropriate level and nature of charges pursued by the prosecution.
+
+# Key Definitions Relating to Fraud (NSW)
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Key fraud definitions from Crimes Act] [CONCEPTS: deception, dishonesty, financial advantage, obtaining property, fraud] [CITATION: hoc-b051-m003-key-definitions-fraud] [ACT: Crimes Act 1900 (NSW)] [CASE: None]
+
+To understand what may constitute a fraudulent act, there are some key terms that need to be defined.
+
+**DECEPTION** is defined in the Crimes Act 1900 (NSW) as something that you say or do where the act of doing so was conceived and executed to deliberately and intentionally mislead a person (victim). The crimes act provides examples of deception as:
+
+- Deceiving somebody about your intentions.
+
+- Causing a computer to respond in a way that you don't have the proper authority to do so. Such as accessing somebody else's computer by entering their password without their consent.
+
+To commit fraud, the deception must be either intended or reckless. Recklessness is where you were aware that what you were doing was possibly deceptive, but you did it anyway. You were, essentially, indifferent to the possibility that your conduct was deceptive.
+
+**DISHONESTY** is a matter to be decided by the courts. In deciding whether somebody has been dishonest, the magistrate or jury, depending on the case, will apply the standards of ordinary people to determine if the conduct was dishonest.
+
+**OBTAINS PROPERTY BELONGING TO ANOTHER** refers to when a person obtains or enables ownership of property belonging to another person or where a third person is induced to act in a manner that results in obtaining, retaining, possessing or controlling property. For a conviction of fraudulently obtaining property belonging to another, the person must have intended to permanently deprive the owner of the property.
+
+Lastly, **OBTAINING A FINANCIAL ADVANTAGE** details the act of deceiving another to dishonestly acquire financial benefits for oneself or someone else, also including insidious methods of inducing third parties to produce a financial advantage. This advantage can manifest as either temporary or permanent financial gain or disadvantage to others involved.
+
+# Obtaining Goods by False Pretences
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Direct evidence requirement for false pretences] [CONCEPTS: obtaining goods, false pretences, direct evidence, inductive reasoning, significance of representations] [CITATION: hoc-b051-m004-obtaining-goods-false-pretences] [ACT: Criminal Code] [CASE: Gordon Daniel McLeod v R \[1996\] TASSC 10]
+
+Need direct evidence from the victim (person induced) that the false representations of the defendant induced them to provide the goods. A promise regarding future conduct is inadequate; it must be false at the time of representation.
+
+The Crown is required to prove in each case that the false pretence was acted upon by those delivering goods. If a scenario arises where individuals are providing goods indiscriminately, the representation made by the offender may lose its legal significance, since the inducement relies heavily on the circumstances presented in the transaction.
+
+Prosecuting counsel should heed the advice of the Court of Appeal in *Laverty (1970) 54 Cr App R 495 at 497, 498*, where it was stated, "It is axiomatic that it is for the prosecution to prove that the false representation acted on the mind... and in the ordinary way, and the Court emphasises this, the matter should be proved by direct evidence.” However, it was also noted that inducement can be established without direct evidence if the facts suggest the false pretence is the only reasonable operative inducement.
+
+In *Gordon Daniel McLeod v R \[1996\] TASSC 10*, the court reiterated that to secure a conviction, the Crown bears the burden of establishing beyond a reasonable doubt that a false representation led to the procurement of goods. The adequacy of evidence for direct inducement is paramount in ensuring fair and just verdicts in offences involving deceitful conduct.
+
+<!-- block_051 procedure -->
+
+### Public Interest Immunity for Disclosure
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Public Interest Immunity Discussion] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Discussion on public interest immunity for disclosure] [CONCEPTS: public interest immunity, disclosure, Chief Commissioner of Police v Crupi, confidentiality, informers]
+Primacy of protection of informers. See recent HCA case of **Chief Commissioner of Police v Crupi \[2024\] HCA 34 (11 September 2024)** which reiterates *AB (a pseudonym) v CD (a pseudonym)*, \[2018\] HCA 58; (2018) 93 ALJR 59; 362 ALR 1.
+
+"Public knowledge that a source's expectations of confidentiality had been breached would certainly undermine the ability of police to recruit informers in future."
+
+---
+
+### DPP Charging Advice for Fraud
+[DOMAIN: Tasmanian Criminal Law] [ACT: Justices Act 1959 (Tas)] [SECTION: s 72] [CITATION: DPP Charging Advice - Fraud] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Charging advice for fraud cases] [CONCEPTS: DPP, fraud, computer-related crime, summary charge, charging advice, indictable offences]
+Where the computer-related crime involves fraud a similar approach to stealing as provided by s 72 of the Justices Act 1959 should be taken. That is, a summary charge should be preferred where the amount of the alleged computer-related fraud is less than \$20,000 unless:
+
+1. the charge involved forms part of a course of conduct or series of crimes which are indictable
+2. circumstances relating to the alleged offender and/or to the conduct are such that the penalty provision in the lower court would not be adequate
+3. a co-accused was dealt with on indictment (prosecutors should strive for consistency as between co-offenders unless there are compelling reasons not to).
+
+---
+
+### Commonwealth Offence: Dishonesty
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code] [SECTION: 480.4] [CITATION: Commonwealth Offence - Dishonestly Obtaining] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Commonwealth offence of dishonestly obtaining personal financial information] [CONCEPTS: Commonwealth offence, financial information, dishonestly obtaining, deceit, Criminal Code]
+See Cth Code Section 480.4 of the Criminal Code - Dishonestly obtaining or dealing in personal financial information, (in this case it was passwords), (CDPP Charging advice pdf saved in research file).
+
+Seems to be used when they use deceit to elicit information either from victim or otherwise to then use that info to access accounts or get loans such as credit card numbers, verbal passwords and account numbers. It appears that "personal financial information" is distinct from "personal info such as drivers licence etc). MUST involve a bank or lending institution or corporation.
+
+---
+
+### Case Authority: JOD V R
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: JOD V R - Identity Theft] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Identity theft and organized crime syndicate] [CONCEPTS: JOD V R, identity theft, organized crime, financial institutions, fraud]
+JOD V R - \[2009\] NSWCCA 205 (25 08 2009)\
+GILES J; HALL J; HULME J;\
+Identity theft - applicant involved in organized crime syndicate which took over identities of legitimate individuals and entities in order to defraud financial institutions - applicant presenting false documents to open bank accounts in false names, withdraw money from genuine bank accounts or make fraudulent claims in relation to credit cards and bank loans - application of parity principles - offenders charged with different offences not strictly co-offenders having regard to relevant factual and other differences in respective offending - higher objective criminality than co-offender due to his role in syndicate and repeated offending over a lengthy period - no disproportion between head sentences imposed on co-offenders - appeal against sentence dismissed.
+
+---
+
+### Key Definitions Relating to Fraud
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Key Definitions - Fraud] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definitions related to fraud] [CONCEPTS: definitions, fraud, deception, obtaining property, dishonesty, financial advantage]
+To understand what may constitute a fraudulent act, there are some key terms that need to be defined.
+
+**DECEPTION**: Deception is defined in the Crimes Act 1900 (NSW) as something that you say or do where the act of doing so was conceived and executed to deliberately and intentionally mislead a person (victim). The Crimes Act provides examples of deception as:
+
+- Deceiving somebody about your intentions.
+- Causing a computer to respond in a way that you don't have the proper authority to do so. Such as accessing somebody else's computer by entering their password without their consent.
+
+To commit fraud, the deception must be either intended or reckless. Recklessness is where you were aware that what you were doing was possibly deceptive, but you did it anyway. You were, essentially, indifferent to the possibility that your conduct was deceptive.
+
+**DISHONESTY**: Whether the act was dishonest or not is based on the standards of ordinary people and whether the act was known to have been dishonest by the defendant, according to the standards of ordinary people. Dishonesty is a matter to be decided by the courts.
+
+---
+
+### Charging Differences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code] [SECTION: 250-4] [CITATION: Charging Differences - False Pretences] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Differences in charging for fraud-related offences] [CONCEPTS: charging differences, false pretences, criminal code, dishonestly, financial advantage]
+**OBTAINING GOODS BY FALSE PRETENCES**: 
+
+**Criminal Code Section 250-4**
+
+**EXAMPLES**:
+
+- Where a person uses a stolen credit card to purchase goods from a business and the transaction occurs between the offender and a staff member.
+- Where a person pretends to be an employee of a business to obtain goods from a supplier of that business.
+
+**DISHONESTLY ACQUIRING A FINANCIAL ADVANTAGE**: 
+
+**Criminal Code Section 252A-1/7**
+
+**EXAMPLES**:
+
+- Where a person takes a price sticker off a lower-priced item and swaps it with a higher-priced item in order to purchase the item for a cheaper price.
+- Where a person obtains (from a staff member) pre-paid mobile phone credit using a stolen credit card.
+- Where a person advertises an item for sale on eBay/gumtree and receives funds from the buyer and fails to deliver the item purchased.
+
+---
+
+### Computer Related Fraud
+[DOMAIN: Tasmanian Criminal Law] [ACT: Police Offences Act] [SECTION: 43A] [CITATION: Computer Related Fraud - Examples] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Examples of computer related fraud] [CONCEPTS: computer-related fraud, Police Offences Act, examples, stolen credit card, automated transactions]
+**COMPUTER RELATED FRAUD**:
+
+**Police Offences Act Section 43A**
+
+**EXAMPLES**:
+
+- Where a person purchases items with a stolen credit card using a "self-service" checkout and has no interaction with a staff member.
+- Where a person uses a stolen ATM card and withdraws cash from an ATM.
+- Where a person uses a stolen credit card to pay a bill using an automated phone payment system.
+- Where a person uses a stolen credit card to purchase items online with no communication with an actual person.
+
+---
+
+### Related Supporting Provisions
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Evidence Relating to Intention to Deceive] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Evidence relating to intention to deceive or defraud] [CONCEPTS: evidence, intention, deceive, defraud, statutes]
+**CODE: 255A.** Evidence relating to intention to deceive or defraud. On the trial of a person charged with a crime under this Chapter of which an intent to deceive or defraud is an element, it is not necessary to prove an intent to deceive or defraud any particular person.
+
+---
+
+### Case Authority: Murphy v R
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION: 252A] [CITATION: Murphy v R - Alternative Conviction] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Dishonestly acquiring a financial advantage contrary to the Code] [CONCEPTS: Murphy v R, financial advantage, dishonestly, representation, conviction]
+**Dishonestly acquiring a financial advantage contrary to the Code, s 252A***: Nettlefold J in Murphy v R \[1987\] TASSC 15; [(1987) Tas R 178] at 184, "services, money or property amount to a financial advantage."
+
+Note: as an alternative conviction - A false representation as to the offender's intention to pay at a later date, whilst not a false pretence, could constitute a deception for the purposes of a charge of dishonestly acquiring a financial advantage contrary to the Code, s 252A.
+
+See ***Tasmania v Clark \[2018\] TASSC 64*** (29 November 2018) - elements and definition of dishonestly acquire financial advantage.
+
+---
+
+### Obtaining Goods by False Pretences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code] [SECTION: 250-4] [CITATION: Goods by False Pretences] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Overview of obtaining goods by false pretences] [CONCEPTS: false pretences, goods, criminal code, direct evidence, representations]
+**OBTAINING GOODS BY FALSE PRETENCES**:
+
+**Criminal Code Section 250-4**
+
+Need direct evidence from the victim (person induced) that the false representations of the defendant induced them to provide the goods.
+
+Promise as to future conduct is not enough. Must be false at time. Summary: the Crown does have to prove in each case that the false pretence acted on the minds of the people delivering them.
+
+---
+
+### Compensation Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Compensation Orders - Lusted v Doornbusch] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Overview of compensation orders] [CONCEPTS: compensation orders, Lusted v Doornbusch, legislation, personal injuries, damages]
+**Lusted v Doornbusch \[2011\] TASMC 28 (4 November 2011)**: 
+Where straightforward and simple they can be granted on the spot. 
+
+*6. "The general purpose of the legislation is to provide a summary and inexpensive method of compensating a victim for personal injuries or property damage. In an appropriate case, the legislation provides a convenient means for a victim to avoid instituting separate civil proceedings to recover damages. The legislation is not intended to cater for claims involving complicated or extensive inquiry or investigation; R v Kneeshaw \[1975\] QB 57 at 60, R v Braham \[1977\] VicRp 11 at 110-111 and R v Ferrari \[1997\] QCA 73. If it appears to the court that there is a real issue to be determined, it should decline to make an order and leave the question to be determined by a civil court in accordance with its normal procedures."*
+
+---
+
+### Sentencing Considerations
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Sentencing Considerations - General] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of sentencing considerations] [CONCEPTS: sentencing, proportionality, totality, age of offender, delay]
+See also FV sentencing above for specifics.
+
+***"Your record indicates a need for a sentence that will act as a deterrent to you."***
+
+### Power to Read Facts for Prosecutor
+Evidence of facts to support charge must be proved by evidence. That evidence can be submitted formally or informally (s 4(2) evidence act or informally under s. 81 of the Sentencing Act. That is the common way in Tasmania (para \[28\] **Parker v Tasmania \[2019\] TASCCA 16 (8 October 2019)**).
+
+---
+
+### Correcting Sentence (Sentencing Order)
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act] [SECTION: 94] [CITATION: Correcting Sentence - Overview] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of correcting sentence] [CONCEPTS: sentencing, correcting, dismissal, plea, guilty]
+Section 94 sentencing act requires an actual sentence. Dismissal following a plea or finding of guilty under s 7 of the sentencing act is a sentence. But dismissal following a TNE or otherwise is not.
+
+### De Simoni Principle
+**The principal in *R v De Simoni*:** 
+*Tasmania v Gladwin \[2016\] TASSC 64*
+
+12. The principle in *R v De Simoni* \[(1980) 147 CLR 383\], as it has been applied in Tasmania, is that a person may only be punished for the offence of which he or she has been convicted, without regard to circumstances which are the ingredients of a different offence, with which he or she has not been charged or convicted...
+
+---
+
+### Proportionality and Totality
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Proportionality and Totality Principles] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of proportionality and totality principles in sentencing] [CONCEPTS: proportionality, totality, sentencing, Veen v The Queen, common law]
+The common law principles of proportionality and totality should be considered.
+
+**Proportionality** requires that a sentence should be proportional to the objective circumstances of the offence: Veen v The Queen (No 2)(1988) 164 CLR 465.
+
+**Totality** requires a court in imposing sentences for a number of offences, to ensure the overall sentence is 'just and appropriate' and adequately reflects the overall criminality of all the offences...
+
+---
+
+### Sentencing Considerations - Youth
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Sentencing Considerations - Youth] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of sentencing considerations for youth offenders] [CONCEPTS: youth, sentencing, rehabilitation, public interest, delay]
+***Garcie v Lusted \[2014\] TASSC 27*** {Para 10}
+
+Age of offender (youth can include 19 yo) - High public interest youths being rehabilitated. They should be given every reasonable opportunity to reform rather than exposed to the corrupting nature of custody. Rehabilitation prospects outweigh consideration of deterrent punishment or denunciation.
+
+---
+
+### Delay as a Mitigating Factor
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Delay as a Mitigating Factor - Overview] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of delay as a mitigating factor in sentencing] [CONCEPTS: delay, mitigating factor, conviction, anxiety, rehabilitation]
+**Delay:**
+
+***Palmer v Tasmania \[2024\] TASCCA 6 (5 July 2024)*** 
+
+> *\[29\] It is well established that delay in an appropriate case can be considered a substantial "mitigating factor": R v Todd \[1982\] 2 NSWLR 517; Prehn v The Queen \[2003\] TASSC 55. But it is not mitigatory as such: Director of Public Prosecutions v Allen \[2017\] TASCCA, 27 Tas R 260 at \[19\]...
+
+---
+
+<!-- block_052 master -->
+
+# Aggravating Factors in Sentencing Family Violence Offences
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: aggravating factors in family violence sentencing] [CONCEPTS: family violence, aggravating factors, mitigating factors, psychological impact, sentencing considerations] [CITATION: hoc-b052-m001-aggravating-factors-family-violence] [ACT: Family Violence Act 2004] [CASE: Palmer v Tasmania [2024] TASCCA 6]
+
+In the respondent's written submissions, aggravating factors and the absence of mitigating factors are detailed. Those submissions are as follows:
+
+"**Aggravating factors**
+
+It is asserted the following were aggravating factors:
+
+(a) The charges were matters of family violence which took place in the complainant's home.
+
+(b) Both counts involved proved allegations of strangulation or choking.
+
+(i) In respect of count 1, the complainant felt pain and was unable to breathe nor speak. She was also rendered less able to defend herself from the subsequent head-butt that took place while she was lying down on the bed.
+
+(ii) The conduct which was the subject of count 2 was especially serious involving, as it did, the use of a ligature. The complainant felt as though she could not breathe and as though she was going to lose consciousness on multiple occasions.
+
+(c) The conduct was deliberately calculated to cause the complainant fear and to cause her to believe she would die. During the acts the subject of count two, the Appellant told the complainant that her daughter would not see her again.
+
+(d) The acts of violence the subject of the charges occurred against a background of ongoing abuse and threatening behaviour. This had begun in September 2019 with the accused verbally abusing the complainant and confronting her about his belief that the complainant was bringing other men to their home. The Appellant also sent a string of abusive text messages to the complainant shortly before the offending took place. After count 1 occurred the Appellant followed the complainant out of the bedroom where count 2 then took place. It could not be said that the Appellant's conduct was isolated.
+
+(e) The complainant suffered significant physical injuries.
+
+(f) The complainant also suffered significant psychological and emotional impacts as a result of the offending. It is significant that those effects were still prevalent almost four years after the commission of the crimes.
+
+(g) The offending (particularly that which was the subject of count 1) occurred in the presence of or near to the complainant's infant child and the Appellant knew that to be the case: Family Violence Act 2004, [s 13(a).]
+
+***Absence of mitigating factors***
+
+It is asserted that the following mitigating factors were absent:
+
+(a) The Appellant was not a youthful offender.
+
+(b) There was no evidence of remorse, nor any submissions made on his behalf to that effect. The learned sentencing judge noted that in the course of the Appellant's video recorded interview the Appellant felt justified in committing the acts of violence that he admitted to. Further, those admissions did not reflect the full extent of his criminal conduct.
+
+(c) Although he entered a plea of guilty to the charges, that was only after a trial had already begun and, because of the nature and extent of the matters later brought into dispute, the complainant was required to give evidence and be cross-examined, as were a number of other witnesses. In those circumstances, the plea was deprived of its utilitarian benefit.
+
+(d) The Appellant had substantial prior convictions, including for family violence. In January 2019 he was sentenced by way of conviction and fine for five charges of breaching a police family violence order in respect of a different partner. He also had prior convictions in Queensland and Western Australia for violent offending. It could not be said that the offending was an isolated aberration. Specific deterrence was clearly a relevant sentencing consideration.
+
+(e) Although the Appellant had what was described by his counsel as a "history of mental health concerns," there was no suggestion made to the learned sentencing judge, nor was there any evidence put before the Court, that any of those concerns contributed to the Appellant's offending or to the level of moral culpability to be ascribed to him in respect of it."
+
+<!-- block_052 procedure -->
+
+### 1. Aggravating factors detailed in Palmer v Tasmania
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Palmer v Tasmania - Aggravating Factors] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Aggravating factors in domestic violence case] [CONCEPTS: aggravating factors, family violence, strangulation, psychological impact, sentencing]
+
+The aggravating factors in Palmer v Tasmania (2024) are detailed as follows:
+
+- The charges were matters of family violence that occurred in the complainant's home.
+- Both counts involved allegations of strangulation.
+  - For count 1, the complainant experienced pain, unable to breathe or speak, making it difficult for her to defend herself against a subsequent attack.
+  - Count 2 was serious, involving a ligature, leading the complainant to feel as if she could lose consciousness multiple times.
+- The conduct was calculated to instill fear in the complainant, with threats made regarding her daughter.
+- The acts occurred against a backdrop of ongoing abuse that began in September 2019, including verbal abuse and threats via text messages prior to the events.
+- The complainant suffered significant physical injuries.
+- There were lasting psychological effects, evident even four years post-offending.
+- The acts were committed in the presence of the complainant's infant child, which the appellant was aware of.
+
+### 2. Absence of mitigating factors detailed in Palmer v Tasmania
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Palmer v Tasmania - Absence of Mitigating Factors] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Mitigating factors considered absent in sentencing] [CONCEPTS: mitigating factors, lack of remorse, prior convictions, guilty plea, mental health]
+
+The absence of mitigating factors in Palmer v Tasmania is noted as follows:
+
+- The appellant was not a youthful offender.
+- No evidence of remorse was presented. During the video recorded interview, the appellant felt justified in his actions.
+- The guilty plea was entered only after a trial began, lacking its utilitarian benefit due to extensive witness strain.
+- Significant prior convictions existed, including family violence breaches; previous violent conduct indicated this was not an isolated incident.
+- Mental health history was acknowledged, but no connection to the offending or moral culpability was established.
+
+### 3. Case authority: Martial arts training relevance in Dahmes v The King
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Dahmes v The King - Martial Arts Training] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Martial arts training as a factor in sentencing] [CONCEPTS: sentencing, martial arts, aggravating factor, appeal, injury]
+
+In Dahmes v The King [2025] VSCA 213, the court upheld that the applicant's past martial arts training was a relevant factor in sentencing. The court refused leave to appeal, concluding there was no procedural unfairness in considering this training an aggravating factor.
+
+### 4. Impact of intoxication in mitigation discussed in Brown v Jones
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Brown v Jones - Impact of Intoxication] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Intoxication as a mitigating factor] [CONCEPTS: intoxication, culpability, mitigating factors, sentencing, remorse]
+
+In Brown v Jones [2021] TASSC 58, counsel acknowledged intoxication but did not suggest it as a mitigating factor, recognizing it could reduce culpability only in specific circumstances. Intoxication may show a lack of premeditation or awareness but can also aggravate violent crimes due to heightened fear for victims.
+
+### 5. Sentencing submissions: general procedures
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Sentencing Procedures - General Rules] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: General rules on sentencing submissions] [CONCEPTS: sentencing submissions, defence, prosecution, evidence rules, remorse]
+
+Rules of Evidence do not need to apply per s 81 of the Sentencing Act and s 4(2) of the Evidence Act during sentencing submissions made by both Defence and Prosecution. The lack of remorse where a defendant pleads not guilty and is found guilty can heighten the stress experienced by witnesses and victims.
+
+### 6. Discussion of repeat offending and its implications
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Repeat Offending - Summary] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Implications of repeat offending in sentencing] [CONCEPTS: repeat offending, character, deterrence, sentencing]
+
+The courts often view repeat offending as a pattern showing an uncharacteristic lifestyle, reducing the validity of the argument that offences reflect immaturity or isolated behaviour.
+
+### 7. Explanation of childhood deprivation as a mitigation claim 
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Childhood Deprivation - Overview] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Childhood deprivation as a mitigating factor] [CONCEPTS: childhood deprivation, moral culpability, sentencing, dysfunction, rehabilitation]
+
+Childhood deprivation claims argue that a deprived upbringing may significantly lessen an offender's moral culpability, suggesting lesser weight be placed on deterrence and more on rehabilitation during sentencing.
+
+### 8. Banfield v Tasmania case commentary on childhood deprivation
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Banfield v Tasmania - Childhood Deprivation] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Impacts of childhood deprivation in sentencing] [CONCEPTS: Banfield v Tasmania, childhood deprivation, rehabilitation, principles, sentencing]
+
+In Banfield v Tasmania [2024] TASCCA 1, lifelong damage from childhood violence can elevate rehabilitation's weight as a sentencing factor. Courts may moderate general deterrence's influence based on the offender’s childhood experiences, but evidence must be provided to support such claims.
+
+### 9. Sentencing submissions regarding non-acceptance of facts
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Burns v Robinson - Non-Acceptance of Facts] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Judicial discretion on sentencing fact acceptance] [CONCEPTS: sentencing, judicial discretion, fact acceptance, mitigation]
+
+In Burns v Robinson [2022] TASSC 43, sentencing magistrates are not obligated to accept claimed facts. If the court intends to disregard material facts presented in mitigation, it must inform the offender and allow a chance to address them.
+
+### 10. Sentencing considerations regarding recording a conviction
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Attorney-General v Smith - Recording a Conviction] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Considerations for recording convictions] [CONCEPTS: recording a conviction, sentencing, public interest, seriousness]
+
+In Attorney-General v Smith [2002] TASSC 10, the court outlined that the impact of recording or not recording a conviction must be considered, factoring in public interest and the serious nature of the offence.
+
+### 11. Discussion of relevant statutory provisions for conviction recording
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997 (Tas)] [SECTION: 7(f)] [CITATION: Statutory Provisions - Conviction Recording] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Statutory provisions for conviction records] [CONCEPTS: statutory provisions, conviction record, sentencing, offender benefits]
+
+Under s 7(f) of the Sentencing Act, the Court has discretion to refrain from recording a conviction for minor offences, allowing for rehabilitation under community service if appropriate.
+
+### 12. Totality principle in sentencing explained
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Totality Principle - Guidelines] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Totality principle in sentencing] [CONCEPTS: totality principle, multiple sentences, sentencing, criminality]
+
+The totality principle requires the court to consider the cumulative effect of multiple sentences ensuring the total of imposed penalties reflects the overall criminality rather than being excessively punitive.
+
+### 13. Late plea of guilty considerations
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Late Plea of Guilty - Considerations] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Implications of a late guilty plea] [CONCEPTS: late guilty plea, sentencing, judicial burden, process]
+
+Late pleas should be scrutinized as their benefits are countered by extensive resource expenditure incurred due to a change in the plea near trial commencement. 
+
+### 14. Offending while on bail commentary
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Offending on Bail - Commentary] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Implications of offending while on bail] [CONCEPTS: bail, repeat offending, contempt of court, aggravating factors]
+
+Continuing criminal conduct while on bail is severely viewed as it reflects a disregard for the law, often warranting harsher penalties to establish a deterrent.
+
+### 15. Self-induced intoxication as a non-mitigating factor
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997 (Tas)] [SECTION: 11C] [CITATION: Self-Induced Intoxication - Non-Mitigating Factor] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Self-induced intoxication in sentencing] [CONCEPTS: self-induced intoxication, sentencing, culpability, mitigating factors]
+
+Under s 11C of the Sentencing Act, self-induced intoxication is not considered a mitigating factor during sentencing, underscoring accountability for criminal behaviour.
+
+### 16. Social prevalence of crimes and its implications on sentencing
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Prevalence of Crimes - Sentencing Factors] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Social prevalence of crimes in sentencing] [CONCEPTS: crime prevalence, deterrence, statistical data, sentencing]
+
+Deterrence remains a key factor in sentencing. While crime prevalence can inform sentencing considerations, reliance mainly on statistical data needs caution as they may misrepresent specific cases' severity.  
+
+### 17. Sentencing youth offenders commentary
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Youth Offenders - Guidelines] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Implications of youth in sentencing] [CONCEPTS: youth offenders, sentencing, deterrence, rehabilitative aims]
+
+Youth status can significantly influence sentencing, but the gravity and premeditated nature of crimes will often minimize leniency.
+
+<!-- block_053 master -->
+
+# Overview of Home Detention and Electronic Monitoring
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: legislation] [TYPE: legislation] [TOPIC: amendments to Sentencing Act allowing home detention] [CONCEPTS: home detention, electronic monitoring, Sentencing Act, assessment process, breaches] [CITATION: hoc-b053-m001-home-detention-overview] [ACT: Sentencing Act 1997] [CASE: None]
+
+The amendments to the *Sentencing Act 1997* will come into force on 14 December 2018. From this date onwards, the court will have the power to order an assessment for an order for electronic monitoring and home detention.
+
+An order for electronic monitoring and home detention can be made where, if not for the order, the offender would otherwise have served a custodial sentence. The Magistrate is not required to state the duration of the custodial sentence s/he would have imposed; it is not a substitute sentence.
+
+The maximum duration for an order is 18 months. The offender will be subject to home detention for the duration of the order. They will be permitted to leave the home only within certain times for approved activities. Approved activities include, for example, employment, education, training, and rehabilitation courses. The weekly schedule will be pre-planned to allow for travel time to and from approved activities.
+
+The perimeters of the permitted area in the home are not necessarily defined by the boundaries of the property and can be narrowed by Community Corrections. This may be the case where the property is, for example, a large rural property. The perimeters of the permitted area may be set to only those necessary for the day-to-day use of the property.
+
+The device can be paired with a 'victim alert device' which will alert the monitoring unit when the device enters a certain radius of the victim device. This is similar to the family violence devices used by police. The victim devices are activated by the victim pressing two buttons on the device, which then sends an alert and activates the GPS and 2-way communications. Community Corrections will be taking over the administration of these once their monitoring and compliance unit is fully established.
+
+The system uses a combination of 'active' and 'passive' monitoring. This means that the devices are always recording the data (passive) but are only in 'active' mode at certain times. A device may be in active mode when an offender is travelling to and from an approved activity and the monitoring and compliance unit wishes to monitor their travel. A device may be switched to active mode at any time.
+
+The electronic monitoring system is supplied by 'Buddy', a UK company. The device is fitted to the offender's ankle. Each device pairs with a Radio Frequency beacon which is installed in the house. When the device is in range of the beacon, it pairs with the beacon. When the device goes out of range of the RF beacon, it switches to GPS. If the GPS fails, the device can pair to telephone towers or Wi-Fi.
+
+The battery life of the devices will vary depending on whether it is in active (GPS -- away from the home) or passive (RF -- within the home) monitoring mode. The device can be charged by attaching a small battery pack to it. The battery pack transfers the charge to the device without the need for the offender to attach the device to a charger. The battery pack can then be removed from the device and recharged.
+
+It will be a condition of the order that the offender charge the device once a day. The offender will have no way of knowing the battery level of their device. There are two battery alerts for the devices that will be sent to the monitoring unit. When the battery reaches 30% and when it reaches 10%, the offender will not be aware of the alerts. The monitoring unit can notify the offender and request that they charge the device.
+
+**Assessments**
+
+Assessments take 6 weeks and are done in two parts -- assessment of the offender and assessment of the home.
+
+The assessment of the offender is essentially a pre-sentence report to determine whether the offender is a suitable candidate for home detention. The assessment will make clear to the offender what the impact of the order is, and ensure that they understand and believe they can comply with the order. It has been suggested that home detention may not be suitable for those with mental health issues who may find compliance with the strict routines and schedules particularly difficult.
+
+The assessment of the home involves assessing whether the home is suitable for detention. This involves ensuring that the device works in the home and ensuring the home has appropriate facilities. The assessor can obtain information from housing services to ensure that, for example, a lease of a house to be used for detention is not going to expire or be terminated before the end of the period of detention.
+
+In other jurisdictions, there are restrictions on the types of offences for which such orders are available (for example violent offences, sex offences). Here, there are no such limitations. The limitations relate to whether the home is appropriate. For example, in violent offences (particularly family violence offences), if the victim lives at the home proposed for detention, it will not be suitable. An order may still be made if a suitable alternative address can be identified.
+
+All co-residents of the home must consent to the home being used for the detention. All co-residents are required to submit to a police check. If co-residents have a criminal record, this does not automatically preclude an order being made, as the power remains discretionary. If the co-residents do not consent to the home being used for the detention, the offender will not be informed that the co-residents withheld consent (they will be told that the home was deemed unsuitable).
+
+After an assessment is made, this information is provided to the court and the Magistrate exercises their discretion in whether or not to make the order.
+
+# Legislative Framework for Home Detention Orders
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: legislation] [TYPE: legislation] [TOPIC: legislative provisions for Home Detention Orders under Sentencing Act] [CONCEPTS: Home Detention Orders, amendments, court discretion, core conditions, special conditions] [CITATION: hoc-b053-m002-home-detention-legislative-framework] [ACT: Sentencing Act 1997] [CASE: None]
+
+Section 42AC of the Act allows a court to make a home detention order. A court can only make an order if it considers that it would be appropriate, in all the circumstances, to make the order (s 42AC(2)(a)). A court can make a home detention order if it convicts an offender and considers that it would otherwise have sentenced the offender to a period of imprisonment (this can include a suspended period of imprisonment) (s 42AC(1)).
+
+A home detention order is not imposed as a substitute sentence for a period of imprisonment; it is a sentencing option in its own right. A home detention order can run for a period of 18 months (s 42AF(2)).
+
+A home detention order must specify the premises that will be the premises at which the offender must reside during the order (s 42AC(5)). A court can make more than one home detention order and can make a home detention order in relation to an offender who is already subject to another home detention order, a community correction order, or a community service order (s 42AC(4)). However, the total operational period of multiple home detention orders cannot exceed 18 months (s 42AF(3)).
+
+It is a core condition of a home detention order that the offender submit to electronic monitoring unless the court determines, and specifies, that there are suitable reasons for the offender not to be required to submit to electronic monitoring (s 42AD(2)). In the second reading speech, the minister listed potential reasons electronic monitoring may not be required as: where an offender is highly unlikely to breach a condition of their order, or because of immobility or illness they are unable to leave their premises.
+
+An order may specify different times for different days of the week during which an offender is required to be at the relevant premises (s 42AD(3)). An offender is not required to be at the relevant premises if they are seeking urgent medical treatment or it would be dangerous to remain on the premises (s 42AD(4)(a) and (b)).
+
+With the approval of a probation officer or prescribed officer, an offender is able to leave the premises to engage in activities such as employment, education, or rehabilitation programs (s 42AD(4)(c)). A home detention order can commence on the day it is made or a later day specified in the order (s 42AG). A police officer can arrest an offender if the police officer believes on reasonable grounds that the offender has breached, is breaching, or is about to breach, a condition of the order (s 42AL(4)).
+
+There are a number of pre-conditions to the making of a home detention order:
+- The offender must undertake a pre-sentence report to consider whether they are suitable for home detention (s 42AC(2)(b));
+- The offender must consent to the order being made (s 42AC(2)(c));
+- The court must be satisfied that the residence is suitable for a home detention order (s 42AC(2)(d));
+- Each adult who resides at the premises (other than in a group premises) must consent to the order being made (s 42AC(2)(e));
+- If the relevant offence is a family violence offence, a violent offence, or a sexual offence, a home detention order cannot be made if the victim of the offence is to, or is likely to, reside during all or part of the period, at the relevant address (s 42AC(3)(a));
+- The Court cannot make an order if it is of the opinion that there is a significant risk that the offender may commit a violent offence, or sexual offence, during the intended period of the order (s 42AC(3)(b)).
+
+Home detention orders must be subject to a number of core conditions. These are listed in s 42AD(1) of the Act. The conditions are numerous and, without listing them in their entirety, include conditions that:
+- The offender must not commit an offence that is punishable by imprisonment (s 42AD(1)(a));
+- The offender must reside at the relevant premises and must be at that premises during times specified in the order except for a relevant reason (s 42AD(1)(b) and (c));
+- The offender must permit a police officer, probation officer, or prescribed officer to enter the premises (s 42AD(1)(d));
+- The offender must permit a police officer to conduct a search of the premises, conduct a frisk search of the offender, and take a sample of any substance found on the premises or on the person of the offender (s 42AD(1)(e));
+
+This section contains other core conditions relating to an offender's required interactions with probation officers and conditions relating to electronic monitoring.
+
+# Further Legal Provisions Relating to Home Detention
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: legislation] [TYPE: legislation] [TOPIC: further legal provisions for Home Detention Orders under Sentencing Act] [CONCEPTS: conditions, breaches, applications, variations, cancellation] [CITATION: hoc-b053-m003-home-detention-further-provisions] [ACT: Sentencing Act 1997] [CASE: None]
+
+Section 42AE of the Act contains special conditions that may be included in an order. Section 42AE(1)(d) allows the court to include any condition that it considers appropriate for the purpose of reducing the likelihood of the offender re-offending during the period of the order. If an offender fails to comply with a special condition, the Court may issue a warrant to arrest the offender.
+
+Provisions relating to an application to vary or cancel an order are contained in s 42AU of the Act. An offender or an authorised person can apply to the court that made the order for the order to be varied or cancelled (s 42AU(1)). The Court must consider the extent to which the offender has complied with the order (s 42AU(7)).
+
+The Court may cancel an order where an offender has completed community service (s 42AU(4)(d)). Except where community service has been completed, in order to vary or cancel an order, the Court must be satisfied that either:
+
+- Changes to the offender's circumstances since the making of the order have rendered the offender unable to comply with one or more of the conditions of the order; or
+- The offender is no longer willing or able to comply with the order; or
+- It is otherwise appropriate to do so (s 42AU(6)).
+
+On hearing an application to vary or cancel an order, the Court may:
+- Vary the order by adding, removing, or altering a special condition or altering the operational period of the order;
+- Cancel the order and, if appropriate, any other order concerning the offence, and deal with the offender as if the court had just found the offender guilty of the offence;
+- Refuse to vary or cancel the order (ss 42AU(4)(a), (b), (c), and (e)).
+
+The provisions relating to a breach of a condition of an order are contained in s 42AV of the Act. An authorised person can apply to the Court under this section if it appears to them that the offender has breached a condition of the order (s 42AV(1)).
+
+If the Court finds that the offender has breached a condition of the order, it must either:
+- Confirm the order;
+- Vary the order by adding, removing, or altering a special condition or extending the operational period;
+- Cancel the order, and if appropriate, any other order, and deal with the offender in respect of the offence as if it had just found the offender guilty of that offence (s 42AV(4)).
+
+If the Court finds that the offender has breached a condition of the order by committing an offence, the Court must deal with the application as if it were an application under s 42AW (breach of condition of community correction order where offender found guilty of offence) even if the application was not brought under that section (s 42AV(6)).
+
+Provisions relating to the breach of an order by committing further offences are contained in s 42AW of the Act. If a court hears an application under this section, it must proceed in much the same way as mentioned above in relation to an application under s 42AV of the Act.
+
+<!-- block_053 procedure -->
+
+### Chunk 1: Briefing on Home Detention and Electronic Monitoring
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Home Detention Overview - Briefing] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Overview of home detention and electronic monitoring under the Sentencing Act] [CONCEPTS: home detention, electronic monitoring, sentencing, offender assessment, Community Corrections]
+This chunk provides an overview of home detention and electronic monitoring under the *Sentencing Act 1997*. The amendments to the Act will come into force on 14 December 2018. From this date onwards, the court will have the power to order an assessment for an order for electronic monitoring and home detention. An order for electronic monitoring and home detention can be made where, if not for the order, the offender would otherwise have served a custodial sentence. The maximum duration for an order is 18 months.
+
+### Chunk 2: Home Detention Orders and Core Conditions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 42AC] [CITATION: Home Detention Orders - Core Conditions] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Legal framework for home detention orders] [CONCEPTS: home detention, Sentencing Act, court orders, core conditions, electronic monitoring]
+This chunk covers the legal framework governing home detention orders as outlined in the *Sentencing Act 1997*. 
+
+1. A court can only make a home detention order if it considers that it is appropriate (s 42AC(2)(a)).
+2. A home detention order can run for a period of 18 months (s 42AF(2)).
+3. The offender must submit to electronic monitoring unless there are suitable reasons specified by the court (s 42AD(2)).
+4. The order must specify the residence during the requirement (s 42AC(5)).
+5. Core conditions include not committing offences punishable by imprisonment and permitting monitoring personnel to enter the premises (s 42AD(1)(a) and (d)).
+
+### Chunk 3: Assessments for Home Detention Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Home Detention Assessments - Process Overview] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Assessment process for home detention orders] [CONCEPTS: assessment process, offenders, home suitability, mental health, compliance]
+This chunk outlines the assessment process required for home detention orders. Assessments take 6 weeks and involve evaluating the offender and the home. The offender assessment will determine suitability and whether they can comply with the order. The home assessment will ensure the device functions correctly and that appropriate facilities are available. 
+
+### Chunk 4: The Order for Home Detention
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Home Detention Order - Process] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Procedure for making a home detention order] [CONCEPTS: home detention order, Community Corrections, probation officer, assessments, compliance]
+This chunk discusses the procedure following the Magistrate's decision to impose a home detention order. If granted, the offender must immediately report to Community Corrections to be fitted with the monitoring device. The procedure ensures continuity of employment and addresses timely reporting to probation officers.
+
+### Chunk 5: Monitoring and Compliance Procedures
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Monitoring and Compliance in Home Detention] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Monitoring and compliance for home detention orders] [CONCEPTS: monitoring unit, Community Corrections, compliance alerts, mobile phone requirement]
+This chunk covers the responsibilities of the Community Corrections monitoring unit based in Hobart. It highlights the alerts for non-compliance, such as low battery notifications and deviations from approved schedules. It also emphasizes that offenders must carry their mobile phones at all times for communication.
+
+### Chunk 6: Breach Policies for Home Detention
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Breach Policies for Home Detention Orders] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Policies regarding breaches of home detention orders] [CONCEPTS: breach consequences, probation officer discretion, compliance, custodial sentence]
+This chunk elaborates on the breach policies applicable to home detention orders. There is no strict rule for consequences; minor breaches may lead to little repercussions, while significant breaches could result in termination of the order, potentially leading to custodial sentences.
+
+### Chunk 7: Community Correction Orders Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 42AN] [CITATION: Community Correction Orders - Overview] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Framework for community correction orders] [CONCEPTS: community correction order, sentencing options, probation, core conditions, breaches]
+This chunk outlines the framework for Community Correction Orders under the *Sentencing Act 1997*. It states that such orders can be made without necessarily recording a conviction and can replace previous community service and probation orders.
+
+### Chunk 8: Core Conditions for Community Correction Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 42AO] [CITATION: Core Conditions of Community Correction Orders] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Core conditions applicable to community correction orders] [CONCEPTS: core conditions, community correction orders, prohibited offences, supervision requirements]
+This chunk specifies the core conditions that apply to community correction orders, including prohibitions on committing offences punishable by imprisonment and requirements to report to probation officers.
+
+### Chunk 9: Special Conditions and Application Processes for Community Correction Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 42AP] [CITATION: Special Conditions for Community Correction Orders] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Special conditions and application processes in community correction orders] [CONCEPTS: special conditions, compliance, application process, court discretion]
+This chunk details the special conditions that a court may impose as part of a community correction order and the application process for varying or cancelling such orders.
+
+### Chunk 10: Breach Policies for Community Correction Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 42AV] [CITATION: Breach Policies in Community Correction Orders] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Policies regarding breaches of community correction orders] [CONCEPTS: breaches, court procedures, offender consequences, compliance]
+This chunk explains the breach policies for community correction orders indicating what may occur if an offender is found to have breached their order, including the court's options.
+
+<!-- block_054 master -->
+
+# Drug Treatment Orders Overview
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Drug Treatment Orders as court mandated diversion] [CONCEPTS: drug treatment orders, court diversion program, eligibility, sentencing, conditions] [CITATION: hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders] [ACT: Sentencing Act 1997] [CASE: Tasmania v Joseph [2017] TASSC 23]
+
+A Drug Treatment Order (DTO) is designed to serve as an alternative to imprisonment, effectively functioning as part of the **Court Mandated Diversion Program**. The underlying objective of this program is to address the issues linked to an individual's drug use and associated criminal behavior, thereby aiming to sever the connection between drug use and offending, and ultimately enhance the individual's quality of life.
+
+It is essential to understand that a DTO imposes strict requirements that necessitate a significant time commitment from participants, rendering it far from an easy option.
+
+**Eligibility Criteria**
+
+To be considered for a DTO, individuals must meet specific criteria:
+
+- They must either plead guilty or be found guilty of the offences in question.
+- The offender should have a documented history of drug use that correlates with their criminal activity.
+- Candidates must be at least 18 years of age.
+- Participants must express a willingness to engage with the program.
+
+Conversely, individuals are exempted from eligibility under the following conditions:
+
+- If they have a current or outstanding charge related to sexual offences or offences causing actual bodily harm (psychological harm can also be included).
+- If they are currently subject to a Supreme Court order or a Parole Order.
+
+**Court Diversion Officers**
+
+A court diversion officer plays a pivotal role in assessing the candidate's suitability for the DTO. This assessment usually involves an extensive inquiry into the individual's previous and current drug use, lifestyle habits, and criminal history. The officer is not just an assessor but also doubles as a case manager throughout the program, ensuring that the individual meets their treatment goals while receiving appropriate support. Regular updates regarding the participant's progress are communicated to the presiding Magistrate.
+
+**Structure of Drug Treatment Orders**
+
+A drug treatment order can extend up to 24 months and is typically accompanied by a suspended sentence. This means that while the individual participates in the program, their prison sentence is effectively on hold. However, failure to complete or comply with the program can result in the individual serving their sentence in prison or performing community service. Conversely, successful completion may lead to the cancellation or reduction of their sentence.
+
+Substantial restrictions are placed upon participants to facilitate recovery from drug dependency and disrupt the cycle of drug-related crime. These restrictions may include the following components:
+
+- Mandatory abstinence from all illicit drug use.
+- Regular and random urinalysis.
+- Scheduled meetings with the court diversion officer.
+- Attendance at court reviews conducted by a Magistrate.
+- Participation in individual counselling and group therapy sessions.
+
+Moreover, residential rehabilitation and medically supervised withdrawal may be offered along with life-skills improvement services such as literacy and numeracy classes, programs addressing anger management, family violence, gambling, parenting, and employment services.
+
+The program is segmented into three distinct phases designed to transition gradually from stabilization to re-integration:
+
+- **Phase 1: Stabilisation (6 to 12 months)** – Involves weekly case management, counselling, drug testing, and court appearances.
+- **Phase 2: Consolidation (4 to 7 months)** – Features biweekly case management and counselling, biweekly drug testing, and reduced court appearances.
+- **Phase 3: Re-integration (3 to 5 months)** – Offers monthly case management, counselling, drug testing, and further reduction in court attendance.
+
+**Conditions Preventing Drug Treatment Orders**
+
+Section 27B of the Sentencing Act outlines circumstances that preclude the issuance of a DTO, including:
+
+- Committing sexual offences or offences resulting in actual bodily harm.
+- Existing proceedings within any court related to the aforementioned categories of offences.
+- Being subject to a Parole order, a Supreme Court sentence, or a previous Drug Treatment Order.
+
+The case *Tasmania v Joseph* [2017] TASSC 23 serves as a salient example, clarifying the interpretation of "bodily harm," which is not explicitly defined in Tasmanian law, but is consistently interpreted to encompass any injury exceeding transient or trivial damage. The jurisprudence further aligns psychological harm with physical harm, affirming that both necessitate the same level of consideration under the DTO criteria.
+
+<!-- block_054 procedure -->
+
+### Drug Treatment Orders Overview 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Drug Treatment Orders - Overview] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Overview of Drug Treatment Orders] [CONCEPTS: Drug Treatment Order, Court Mandated Diversion Program, drug use, offending, rehabilitation]
+
+Tactical overview of Drug Treatment Orders (DTO). DTOs are an alternative to incarceration, aimed at addressing underlying issues related to drug use and offending, thereby helping offenders break the link between their drug use and criminal activity.
+
+---
+
+### Eligibility Criteria for Drug Treatment Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Drug Treatment Orders - Eligibility Criteria] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Eligibility for DTO] [CONCEPTS: eligibility criteria, plead guilty, history of drug use, age requirement, program participation]
+
+You are eligible if you:
+- plead guilty, or are found guilty
+- have a history of drug use and offending linked to your drug use
+- are 18 years or over
+- are willing to participate in the program
+
+You are not eligible if you:
+- have a current or outstanding sexual offence including actual serious bodily harm
+- are subject to a Supreme Court Order or Parole Order
+
+---
+
+### Role of Court Diversion Officers
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Drug Treatment Orders - Court Diversion Officers] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Responsibilities of Court Diversion Officers] [CONCEPTS: court diversion officer, assessment, case management, progress reports]
+
+A court diversion officer will assess your suitability by asking about your previous and current drug use, criminal activity, and lifestyle. 
+
+The court diversion officer will also:
+- be your case manager throughout the program and help you meet your goals and make sure you get the most suitable treatments
+- give regular progress reports to the Magistrate
+
+---
+
+### Details of Drug Treatment Orders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Drug Treatment Orders - Conditions] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Details of Drug Treatment Orders] [CONCEPTS: DTO duration, compliance, prison, community service]
+
+A drug treatment order:
+- can last for 24 months
+- has a sentence attached, which means if you don't successfully complete it, you could serve time in prison
+
+Essentially, your sentence is 'on hold' while you take part in the program:
+- if you **don't** successfully complete or comply with the program, you could be imprisoned or do community service
+- if you **do** successfully complete the program, your sentence could be cancelled or reduced
+
+---
+
+### Phases of the Drug Treatment Program
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Drug Treatment Orders - Program Phases] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Stages of Drug Treatment Program] [CONCEPTS: Stabilisation, Consolidation, Re-integration, drug testing, case management]
+
+The Drug Treatment Program has three phases:
+1. **Phase 1: Stabilisation (6 to 12 months)**
+   - Weekly case management
+   - Weekly counselling
+   - Random drug testing (at least once a week)
+   - Regular court appearances
+
+2. **Phase 2: Consolidation (4 to 7 months)**
+   - Fortnightly case management
+   - Fortnightly counselling
+   - Random drug testing (at least once a fortnight)
+   - Reduced court appearances
+
+3. **Phase 3: Re-integration (3 to 5 months)**
+   - Monthly case management
+   - Monthly counselling
+   - Random drug testing (at least once a month)
+   - Reduced court appearances
+
+---
+
+### Conditions Preventing DTO
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 27B] [CITATION: Conditions Preventing DTO] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Conditions preventing DTO] [CONCEPTS: DTO eligibility, sexual offences, actual bodily harm, Supreme Court]
+
+Conditions which prevent the court from making a DTO include:
+- Sexual offences
+- Offences amounting to actual physical harm
+- Outstanding proceedings in any court for the above type of offences
+- Subject to Parole order
+- Subject to Supreme Court sentence
+- Subject to a previous Drug Treatment Order
+
+---
+
+### Case Authority: Tasmania v Joseph [2017] TASSC 23
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Tasmania v Joseph - Legal Principle on Bodily Harm] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Definition of Bodily Harm] [CONCEPTS: bodily harm, Tasmanian legislation, psychological harm, legal precedent]
+
+In *Tasmania v Joseph* \[2017\] TASSC 23, the court held that:
+- "Bodily harm" includes any hurt or injury calculated to interfere with health or comfort. It need not be permanent and must be more than transient or trifling. 
+
+The case affirmed that there is no logical reason to distinguish between cases where the injury inflicted is psychological rather than physical.
+
+---
+
+### Additional Conditions for Family Violence Offences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Family Violence Offences - Additional Conditions] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Additional Conditions for DTO in Family Violence Cases] [CONCEPTS: Family violence, DTO, core conditions, compliance]
+
+For DTOs stemming from family violence matters, additional "core" conditions must include the requirement that no other family violence occur.
+
+---
+
+### Process for Activating DTO Custodial Components
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: N/A] [CITATION: Activating Custodial Components - Process] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Activation of Custodial Components in DTO] [CONCEPTS: custodial component, activation, court application, sentencing act]
+
+The court may activate part or all of the custodial component of the order when the Magistrate is satisfied that the defendant has committed a crime punishable by more than 12 months in prison. 
+
+---
+
+### Cancellation Conditions for DTO
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 27Q] [CITATION: Cancellation of DTO - Conditions] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Conditions for Cancellation of DTO] [CONCEPTS: cancellation, court authority, compliance, treatment supervision]
+
+A court may cancel the treatment and supervision part of a drug treatment order if it is satisfied on the balance of probabilities that:
+- the offender's circumstances were not accurately presented before the order was made,
+- the offender will be unable to comply due to materially changed circumstances,
+- the offender is no longer willing to comply, or
+- the continuation is unlikely to achieve the purposes for which the order was made.
+
+---
+
+### Five Stages of Change in Recovery
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Five Stages of Change - Recovery Process] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Stages in Addiction Recovery] [CONCEPTS: addiction recovery, change stages, precontemplation, maintenance]
+
+Overview of the five stages of change in addiction recovery:
+1. **Precontemplation Stage:** Lack of readiness for treatment, justifications for behavior.
+2. **Contemplation Stage:** Awareness of need for change.
+3. **Preparation Stage:** Building urgency and taking initial actions.
+4. **Action Stage:** Commitment to change and significant lifestyle adjustments.
+5. **Maintenance Stage:** Working to prevent relapse and maintain positive changes.
+
+---
+
+### Suspended Sentences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act 1997] [SECTION: 27] [CITATION: Suspended Sentences - Breach of Order] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Breach of Suspended Sentences] [CONCEPTS: suspended sentence, breach, court activation, offender rights]
+
+If, on hearing an application regarding a suspended sentence, the court finds that the offender has been found guilty of a new offense, the sentence of imprisonment held in suspense must be activated.
+
+---
+
+### Definition of "Unjust"
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Definition of Unjust in Sentencing] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Judicial Interpretation of Unjust] [CONCEPTS: unjust, judicial discretion, sentencing principles]
+
+The term "unjust" is not defined in the Act and is left for judicial officers to determine contextually. It has been characterized by the necessity for courts to consider justice and fairness in deciding on the activation of suspended sentences.
+
+---
+
+### Disparity Between Offences
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Chatwin v Godfrey - Disparity Consideration] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Judicial Guidance on Sentencing Disparity] [CONCEPTS: disparity, original offending, breach offending, sentencing intention]
+
+*Chatwin v Godfrey* \[2013\] TASSC 70 discusses the relevance of the disparity in nature between original offending and breaching offending, emphasizing the original offence’s statutory conditions for sentencing.
+
+---
+
+### Activation for Young Offenders
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Activation for Young Offenders - Public Interest] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Judicial Approach to Young Offenders] [CONCEPTS: young offenders, public interest, sentencing impact]
+
+In *Allie v Wilkie* \[2019\] TASSC 27, the court stressed that the public interest aligns with the best treatment for young offenders, aiming for them to become good citizens.
+
+---
+
+### Practice Reference: Police v Gale
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Police v Gale - Case Reference] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Practice Case Reference] [CONCEPTS: Police v Gale, sovereign citizens, legal proceedings]
+
+Reference to *Police v Gale* \[2020\] TASMC 11 as a practice case study involving sovereign citizens.
+
+---
+
+### References to Other Case Law
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Other Case Law References] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Additional Case References] [CONCEPTS: case law, citation references, legal precedent]
+
+References to additional case law: 
+- Nibbs v Devonport City Council \[2015\] TASSC 34
+- Kosteska v Magistrate Manthey & Anor \[2013\] QCA 105 
+- Meads v Meads \[2012\] ABQB 571
+
+<!-- block_055 master -->
+
+# Commonwealth Crimes Act and Jurisdictional Issues
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Commonwealth jurisdiction and applicable law] [CONCEPTS: Commonwealth criminal cases, Judiciary Act, federal jurisdiction, summary offences, committal proceedings] [CITATION: hoc-b055-m001-commonwealth-jurisdiction] [ACT: Judiciary Act 1903 (Cth)] [CASE: None]
+
+This Court has jurisdiction in respect of Commonwealth criminal cases by virtue of [s 68(1)](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/ja1903112/s68.html) of the [*Judiciary Act *1903](http://www.austlii.edu.au/cgi-bin/viewdoc/au/legis/cth/consol_act/ja1903112/) (Cth).
+
+A Local Court may therefore conduct committal proceedings in respect of Commonwealth indictable offences, may hear and determine summary hearings and may sentence offenders who have pleaded guilty to an offence against the laws of the Commonwealth.
+
+The question of why trials of Commonwealth offences are not heard before a federal court, such as the Federal Magistrates Court or the Federal Court of Australia, can be addressed as follows: a. The criminal jurisdiction of those courts is limited by virtue of the statutes that create them and the range of matters of a criminal nature that may be heard by those courts; specifically, those courts do not have a general grant of jurisdiction to hear and determine criminal matters involving offences under the laws of the Commonwealth; and b. The relevant State and Territory courts that typically hear and determine summary or indictable offences against the laws of the State or Territory are given federal jurisdiction to similarly hear and determine summary and indictable offences against the laws of the Commonwealth, pursuant to s 68(2) of the Judiciary Act.
+
+The Judiciary Act 1903 (Cth) permits State and Territory courts to exercise federal jurisdiction in respect of certain matters. Part X of the Judiciary Act contains provisions dealing with 'Criminal Jurisdiction'. Pursuant to s 68(2), within Part X, and in combination with the respective State or Territory legislation granting criminal jurisdiction to a court, the State and Territory courts that have jurisdiction with respect to summary conviction, committal proceedings and trials on indictment of persons charged with offences against the laws of the relevant State or Territory are invested with 'like jurisdiction' in respect of persons charged with offences against the laws of the Commonwealth. Section 68 and the meaning of the phrase 'like jurisdiction' have been considered in a number of cases. When exercising 'like jurisdiction' in respect of the determination of a Commonwealth offence, the court applies the relevant procedural laws of the State 'by way of analogy'.
+
+<!-- block_055 procedure -->
+
+### Commonwealth Jurisdiction: Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Judiciary Act 1903 (Cth)] [SECTION: s 68] [CITATION: Commonwealth Jurisdiction - Overview] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Overview of Commonwealth criminal jurisdiction] [CONCEPTS: jurisdiction, Commonwealth, indictable offences, committal proceedings, State courts]
+This chunk covers the jurisdiction of the Court in respect of Commonwealth criminal cases. This Court has jurisdiction in respect of Commonwealth criminal cases by virtue of s 68(1) of the *Judiciary Act* 1903 (Cth). A Local Court may therefore conduct committal proceedings in respect of Commonwealth indictable offences, may hear and determine summary hearings and may sentence offenders who have pleaded guilty to an offence against the laws of the Commonwealth.
+
+### DPP Guideline: Joint Commonwealth/State Trials
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: DPP Guidelines - Joint Trials] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Guidelines for joint trials] [CONCEPTS: DPP, joint trials, prosecution, State offences, Commonwealth offences]
+This chunk covers the guidelines for prosecuting situations where an accused has allegedly committed both State and Commonwealth crimes arising from the same factual circumstances. The DPP has authority to prosecute Commonwealth matters, with a memorandum of understanding outlining the protocol for which Office should prosecute when both jurisdictions are involved. Key factors include the jurisdiction that typically handles the majority of the offences and efficiency considerations in prosecution.
+
+### Evidence Act Applicability
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 1995 (Cth)] [SECTION: N/A] [CITATION: Evidence Act Applicability] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Applicability of State vs Commonwealth evidence law] [CONCEPTS: Evidence Act, prosecution, Commonwealth law, State law, criminal procedure]
+This chunk covers whether the Commonwealth Evidence Act 1995 applies in Tasmania. The short answer is **no** - the applicable laws relating to evidence and arrest, bail, and criminal procedure in respect of offences against Commonwealth laws are generally those of the relevant State or Territory. 
+
+### Indictable vs Summary Commonwealth Offences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act 1914 (Cth)] [SECTION: s 4G] [CITATION: Indictable vs Summary Commonwealth Offences] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Explanation of offence classifications] [CONCEPTS: indictable offences, summary offences, Crimes Act, prosecution, legal classification]
+This chunk discusses the difference between indictable and summary Commonwealth offences, specifically that the Crimes Act contains provisions dealing with summary proceedings and the disposal of indictable offences summarily, and that the Criminal Procedure Act provisions do not apply to Commonwealth offences.
+
+### Youth Commonwealth Offending
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act 1914 (Cth)] [SECTION: s 20C] [CITATION: Youth Commonwealth Offending] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Processing youth offending] [CONCEPTS: youth offenders, Commonwealth law, State offence, criminal liability, legal procedures]
+This chunk covers how youth Commonwealth offending can be dealt with as if it were a State offence according to s 20C of the Crimes Act.
+
+### Principles of Criminal Responsibility
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1995 (Cth)] [SECTION: Chapter 2] [CITATION: Principles of Criminal Responsibility] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Principles of criminal responsibility] [CONCEPTS: criminal responsibility, actus reus, mens rea, Commonwealth offences, legal framework]
+This chunk outlines principles of criminal responsibility under Chapter 2 of the Criminal Code Act, including the definitions of physical elements and fault elements for Commonwealth offences.
+
+### Defences under the Criminal Code Act
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1995 (Cth)] [SECTION: Chapter 2, Part 2.3] [CITATION: Defences under Criminal Code] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Statutory defences for Commonwealth offences] [CONCEPTS: defences, criminal law, insanity, mental impairment, intoxication]
+This chunk describes general defences available under the Criminal Code Act for Commonwealth offences, including mental impairment and intoxication.
+
+### Claim of Right
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: Moore v Howe [2017] TASMC 10] [CITATION: Claim of Right Defence] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Claim of right legal principles] [CONCEPTS: claim of right, legal defence, theft, dishonesty, property rights]
+This chunk explains the existence of a claim of right as a defence to theft, drawing from case law including *Moore v Howe [2017] TASMC 10*, highlighting that it negates the element of dishonesty.
+
+### Mental Impairment (Insanity)
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Justice (Mental Impairment) Act] [SECTION: s 33, 34] [CITATION: Mental Impairment Process] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Process for not guilty due to insanity] [CONCEPTS: mental impairment, insanity, legal process, criminal justice, court procedures]
+This chunk provides the process that follows a finding of not guilty on the grounds of insanity, necessitating the reports under the Criminal Justice (Mental Impairment) Act.
+
+### Commonwealth Offences - Using a Carriage Service
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act 1914 (Cth)] [SECTION: s 474.17] [CITATION: Use of Carriage Service Offence] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Offence of Using a Carriage Service] [CONCEPTS: carriage service, electronic offences, Crimes Act, prosecution, applicability]
+This chunk covers the offence of using a carriage service, detailing that it is an electable offence under s 4J of the Crimes Act requiring election at first appearance.
+
+### Sentencing of Federal Offenders
+[DOMAIN: Tasmanian Criminal Law] [ACT: Crimes Act] [SECTION: Part 1B] [CITATION: Sentencing of Federal Offenders] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Sentencing laws for federal offenders] [CONCEPTS: federal offences, sentencing, legislation, Tasmanian courts, criminal justice]
+This chunk explains the laws applicable to the sentencing of federal offenders. It details the requirement to apply provisions of Part 1B of the Crimes Act when sentencing.
+
+### Appeals: Manifest Inadequacy
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: DPP v Pearce [2015] TASCCA 1] [CITATION: Appeals on Manifest Inadequacy] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Principles for appeals on inadequacy] [CONCEPTS: appeals, sentencing, manifest inadequacy, legal principles, judicial discretion]
+This chunk outlines principles from the case *Director of Public Prosecutions (Acting) v Pearce* regarding appeals against sentences based on manifest inadequacy, including guidance on the judicial discretion exercised.
+
+### Correction of Sentence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Sentencing Act] [SECTION: s 94] [CITATION: Correction of Sentence] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Legal basis for correcting sentences] [CONCEPTS: corrections, sentencing procedures, Sentencing Act, judicial review, legal process]
+This chunk explains that correcting a sentence can be sought under Section 94 of the *Sentencing Act*.
+
+### Definitions: Breach of the Peace
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: R v Howell (1981)] [CITATION: Breach of the Peace Definition] [CATEGORY: procedure] [TYPE: legal doctrine] [TOPIC: Definition of breach of the peace] [CONCEPTS: breach of peace, public disorder, legal definitions, common law, R v Howell]
+This chunk provides the definition of breach of the peace and discusses its application in Australian law, referencing *R v Howell*.
+
+### Unfairly Prejudiced: Counter-Argument
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: Young v Lusted] [CITATION: Unfairly Prejudiced Counter-Argument] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Counter-argument regarding jury vs magistrate decisions] [CONCEPTS: jury, magistrate, decision making, legal arguments, Young v Lusted]
+This chunk references a counter-argument from *Young v Lusted* discussing the merits of a magistrate's decision-making capabilities compared to a jury.
+
+<!-- block_056 master -->
+
+# Glossary Definitions for Criminal Law Terms
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Various definitions relevant to criminal law] [CONCEPTS: abet, accused, acquittal, action, actus reus] [CITATION: hoc-b056-m001-glossary-definitions] [ACT: None] [CASE: None]
+
+**Abet**\
+To assist or encourage as an accomplice in the commission of an offence. To be present when the offence is committed.
+
+**Accused person**\
+A person charged with an offence; the defendant in criminal proceedings.
+
+**Acquittal**\
+A finding that an accused person is not guilty of a charge.
+
+**Action**\
+Any proceeding in a court.
+
+**Act of Parliament**\
+A statute; a legislative decree of parliament.
+
+**Actus reus**\
+A guilty act \[Latin\]. Voluntary acts or omissions which constitute a crime.
+
+**Ad hoc**\
+For this purpose, and often used in the sense of "impromptu".
+
+**Adjourn**\
+To suspend or postpone, especially a meeting or hearing to a future date or sine die (the rising of the court).
+
+**Adjudicate**\
+To determine an issue or dispute in a judicial manner.
+
+**Administrator**\
+Generally a person who directs or manages the affairs of another. In Probate actions, a person appointed by the court to administer an estate which lacks an executor.
+
+**Admiralty jurisdiction**\
+Jurisdiction over maritime matters, including damage to ships and cargoes, collisions at sea and seafarers wages. A distinguishing feature of this jurisdiction is that it allows an aggrieved person to lodge an action in rem which is an action directed against the property in question, usually a ship.
+
+**Admissible evidence**\
+Evidence which may be received, or be capable of being received in a court or tribunal for the purpose of proving a fact at issue. *See also* **rules of evidence.**
+
+**Adoption**\
+The legal process by which a child becomes the child of the adopting parent and ceases to be the child of any person who was its parent before the adoption.
+
+**Adult**\
+A person who has attained 18 years of age and is considered to be of full legal capacity.
+
+**Advocate**\
+The legal practitioner or person presenting a case to a court or tribunal on behalf of one of the parties involved.
+
+**Affidavit**\
+A written statement, sworn or affirmed, which may be used as a substitute for oral evidence in court.
+
+**Affirmation**\
+A solemn declaration, being the secular equivalent of an oath. See also: **Oath**.
+
+**Agent**\
+A person authorised to act on behalf of another (the principal).
+
+**Age of consent**\
+The age at which a person is judged capable in law of consenting to sexual intercourse. The age at which persons may marry without parental approval.
+
+**Agreed facts**\
+Often in written form, a statement of facts agreed to by all parties that will not be disputed.
+
+**Alias**\
+A false or assumed name.
+
+**Allegation**\
+An assertion, still to be proved, made by a party in a legal proceeding.
+
+**Allocatur**\
+The certificate of a taxing officer stating costs allowed. \[L: it is allowed\].
+
+**Allocatus**\
+In a criminal trial, the opportunity for the convicted person, after pronouncement of the verdict, to comment as to why the court should not impose its penalty.
+
+**Alternative counts**\
+In an information, indictment or presentment, an alternative description of the same offence. The alternative count is generally for a less serious offence than the one in the main count.
+
+**Alternative verdict**\
+A verdict of guilty in respect of an offence other than that with which the accused was charged, eg manslaughter for murder.
+
+**Amicus curiae**\
+A person, usually a barrister, with no personal interest in the proceedings who is permitted to argue a point of law or fact before the court, usually on behalf of some party indirectly interested.
+
+**Appeal**\
+An application to a higher court to review the decision of a lower court on the ground that it was in some way flawed; a rehearing, as the result of such an application.
+
+**Appearance**\
+The coming to court as a party to an action, either in person or through a legal representative.
+
+**Appellant**\
+A party who appeals against a judicial decision which is not in that person's favour. Relating to appeals; having power to decide appeals. See also: **Appeal**.
+
+**Arraign**\
+To call a prisoner to the court to answer the charge in the indictment.
+
+**Arrears**\
+A debt owing after the time for payment; examples include unpaid rent, unpaid interest, and unpaid maintenance.
+
+**Asportation**\
+The detachment, movement, or carrying away of property.
+
+**Attachment**\
+The process by which a court is able to seize a person's money or property for the purpose of ensuring that a judgment can be satisfactorily rendered.
+
+**Attestation**\
+The act of witnessing, eg that a document has been signed.
+
+**Automatism**\
+An inability to control physical reflexes, produced by some external cause. It is a criminal defence because the act of the accused person is not voluntary.
+
+**Autrefois acquit**\
+A plea that the prisoner has already been tried for and acquitted of the same offence \[French: formerly acquitted\].
+
+---
+
+# Additional Legal Terms Glossary
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definitions of legal terms relevant to court processes] [CONCEPTS: bail, bailiff, bar, bench, judgment] [CITATION: hoc-b056-m002-legal-terms-glossary] [ACT: None] [CASE: None]
+
+**Bail**\
+In criminal proceedings, the right to be released from custody granted to an accused person on conditions specified by the court.
+
+**Bailiff**\
+An administrative officer performing the functions of a sheriff in connection with a lower court, including serving and executing court processes.
+
+**Bar**\
+A notional partition isolating the bench and the front row of counsel's seats from the rest of the court; the collective body of barristers. To destroy or end a right by preventing or blocking a legal action from being brought in its defence.
+
+**Bar table**\
+The table in a courtroom at which the advocates sit.
+
+**Barrister**\
+A legal practitioner whose main function is to act as an advocate in court.
+
+**Bench**\
+A collective term for judges; the place in court where the judges sit.
+
+**Bench warrant**\
+A warrant for arrest issued by a court. Generally used for non-appearance of a prisoner on bail and authorises their arrest and appearance before the court.
+
+**Bill of costs**\
+A solicitor's account of costs incurred on the client's behalf.
+
+**Bona fide**\
+In good faith; with sincerity \[Latin\].
+
+**Bond**\
+A formal undertaking, such as a contract under seal, which binds a person to pay a sum of money in default of fulfilling some condition or acknowledges the existence of a debt; an undertaking by an offender to be of good behaviour for a certain period -- See also: **Good Behaviour Bond**.
+
+**Burden of proof**\
+(in the law of evidence) The duty of one party (usually the party bringing the proceedings against another) to make out the case against the other party and to provide to the court that the case has been established.
+
+**By-law**\
+Subordinate legislation, generally at the local government level and having effect only within the area of responsibility of the responsible body.
+
+---
+
+<!-- block_056 procedure -->
+
+### Glossary Entry - Abet
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Abet] [CONCEPTS: abet, assist, encourage, crime, accomplice]  
+Abet: To assist or encourage as an accomplice in the commission of an offence. To be present when the offence is committed.
+
+### Glossary Entry - Accused Person
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Accused Person] [CONCEPTS: accused person, defendant, criminal proceedings]  
+Accused person: A person charged with an offence; the defendant in criminal proceedings.
+
+### Glossary Entry - Acquittal
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Acquittal] [CONCEPTS: acquittal, not guilty, charge]  
+Acquittal: A finding that an accused person is not guilty of a charge.
+
+### Glossary Entry - Act of Parliament
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Act of Parliament] [CONCEPTS: Act of Parliament, statute, legislation]  
+Act of Parliament: A statute; a legislative decree of parliament.
+
+### Glossary Entry - Actus Reus
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Actus Reus] [CONCEPTS: actus reus, guilty act, crime]  
+Actus reus: A guilty act [Latin]. Voluntary acts or omissions which constitute a crime.
+
+### Glossary Entry - Bail
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Bail] [CONCEPTS: bail, custody, accused person]  
+Bail: In criminal proceedings, the right to be released from custody granted to an accused person on conditions specified by the court.
+
+### Glossary Entry - Cross Examination
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of Cross Examination] [CONCEPTS: cross examination, interrogation, witness]  
+Cross examination: The interrogation of one party's witness by the opposing party.
+
+### Annotation - Assault Inquiry
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Questions on Assault] [CONCEPTS: assault, election, defence]  
+4 types of assault. Do you have to elect one of the assaults?
+
+### Annotation - Honest and Reasonable Inquiry
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Honest and Reasonable Defence] [CONCEPTS: honest, reasonable, defence, case law]  
+Honest and reasonable -- need a case where the defence failed! -- pete? In Sims, how would you have argued that it was not reasonable??
+
+### Annotation - Credibility and Character Protection
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Defence Protections of Credibility] [CONCEPTS: credibility, character, sections 104-110, defence]  
+Defence protections of credibility/character. i.e. explain difference and application of ss104-110.
+
+### Annotation - Section 106 EA Inquiry
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Section 106 Evidence Act 2001 Inquiry] [CONCEPTS: section 106, Evidence Act, witness, defendants]  
+Does s 106 EA apply to defendants as well (are they a 'witness'? I think they are based on definition as a party giving evidence in the act but not sure).

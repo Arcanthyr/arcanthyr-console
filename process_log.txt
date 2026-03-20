@@ -436,3 +436,210 @@
 [2026-03-20 18:08:13] Block 038: complete.
 [2026-03-20 18:08:13] Block 039: starting — target: master_corpus_part2.md
 [2026-03-20 18:08:13]   [master] Sending to API...
+[2026-03-20 18:08:51]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:08:51]   [repair] Running repair pass on block 39...
+[2026-03-20 18:09:27]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:09:27]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:09:27]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:09:32]   [procedure] Sending to API...
+[2026-03-20 18:10:22]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:10:22]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:10:27] Block 039: complete.
+[2026-03-20 18:10:27] Block 040: starting — target: master_corpus_part2.md
+[2026-03-20 18:10:27]   [master] Sending to API...
+[2026-03-20 18:10:54]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:10:54]   [repair] Running repair pass on block 40...
+[2026-03-20 18:11:08]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:11:08]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:11:08]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:11:13]   [procedure] Sending to API...
+[2026-03-20 18:11:43]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:11:43]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:11:48] Block 040: complete.
+[2026-03-20 18:11:48] Block 041: starting — target: master_corpus_part2.md
+[2026-03-20 18:11:48]   [master] Sending to API...
+[2026-03-20 18:12:07]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:12:07]   [repair] Running repair pass on block 41...
+[2026-03-20 18:13:07]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:13:07]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:13:07]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:13:12]   [procedure] Sending to API...
+[2026-03-20 18:14:18]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:14:18]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:14:23] Block 041: complete.
+[2026-03-20 18:14:23] Block 042: starting — target: master_corpus_part2.md
+[2026-03-20 18:14:23]   [master] Sending to API...
+[2026-03-20 18:15:04]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:15:04]   [repair] Running repair pass on block 42...
+[2026-03-20 18:16:18]   [repair] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:16:18]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:16:18]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:16:23]   [procedure] Sending to API...
+[2026-03-20 18:16:57]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:16:57]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:17:02] Block 042: complete.
+[2026-03-20 18:17:02] Block 043: starting — target: master_corpus_part2.md
+[2026-03-20 18:17:02]   [master] Sending to API...
+[2026-03-20 18:17:26]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:17:26]   [repair] Running repair pass on block 43...
+[2026-03-20 18:17:57]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:17:57]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:17:57]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:18:02]   [procedure] Sending to API...
+[2026-03-20 18:18:59]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:18:59]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:19:04] Block 043: complete.
+[2026-03-20 18:19:04] Block 044: starting — target: master_corpus_part2.md
+[2026-03-20 18:19:04]   [master] Sending to API...
+[2026-03-20 18:19:45]   [master] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:19:45]   [master] Status requires follow-up — running secondary pass...
+[2026-03-20 18:22:40]   [master] Follow-up FINAL STATUS: UNKNOWN
+[2026-03-20 18:22:40]   [master] Follow-up chunks appended.
+[2026-03-20 18:22:40]   [repair] Running repair pass on block 44...
+[2026-03-20 18:26:12]   [repair] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:26:12]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:26:12]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND WITH MINOR REVIEW | followup=yes | chunks=yes
+[2026-03-20 18:26:17]   [procedure] Sending to API...
+[2026-03-20 18:28:10]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:28:10]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:28:15] Block 044: complete.
+[2026-03-20 18:28:15] Block 045: starting — target: master_corpus_part2.md
+[2026-03-20 18:28:15]   [master] Sending to API...
+[2026-03-20 18:29:54]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:29:54]   [repair] Running repair pass on block 45...
+[2026-03-20 18:32:30]   [repair] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:32:30]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:32:30]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:32:35]   [procedure] Sending to API...
+[2026-03-20 18:34:56]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:34:56]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:35:01] Block 045: complete.
+[2026-03-20 18:35:01] Block 046: starting — target: master_corpus_part2.md
+[2026-03-20 18:35:01]   [master] Sending to API...
+[2026-03-20 18:35:39]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:35:39]   [repair] Running repair pass on block 46...
+[2026-03-20 18:35:55]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:35:55]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:35:55]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:36:00]   [procedure] Sending to API...
+[2026-03-20 18:36:46]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:36:46]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:36:51] Block 046: complete.
+[2026-03-20 18:36:51] Block 047: starting — target: master_corpus_part2.md
+[2026-03-20 18:36:51]   [master] Sending to API...
+[2026-03-20 18:38:19]   [master] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:38:19]   [master] Status requires follow-up — running secondary pass...
+[2026-03-20 18:39:10]   [master] Follow-up FINAL STATUS: UNKNOWN
+[2026-03-20 18:39:10]   [master] Follow-up chunks appended.
+[2026-03-20 18:39:10]   [repair] Running repair pass on block 47...
+[2026-03-20 18:42:01]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:42:01]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:42:01]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND WITH MINOR REVIEW | followup=yes | chunks=yes
+[2026-03-20 18:42:06]   [procedure] Sending to API...
+[2026-03-20 18:42:58]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:42:58]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:43:03] Block 047: complete.
+[2026-03-20 18:43:03] Block 048: starting — target: master_corpus_part2.md
+[2026-03-20 18:43:03]   [master] Sending to API...
+[2026-03-20 18:44:02]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:44:02]   [repair] Running repair pass on block 48...
+[2026-03-20 18:44:57]   [repair] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:44:57]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:44:57]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:45:02]   [procedure] Sending to API...
+[2026-03-20 18:45:57]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:45:57]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:46:02] Block 048: complete.
+[2026-03-20 18:46:02] Block 049: starting — target: master_corpus_part2.md
+[2026-03-20 18:46:02]   [master] Sending to API...
+[2026-03-20 18:46:33]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:46:33]   [repair] Running repair pass on block 49...
+[2026-03-20 18:47:04]   [repair] FINAL STATUS: READY FOR APPEND WITH MINOR REVIEW
+[2026-03-20 18:47:04]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:47:04]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:47:09]   [procedure] Sending to API...
+[2026-03-20 18:48:28]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:48:28]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:48:33] Block 049: complete.
+[2026-03-20 18:48:33] Block 050: starting — target: master_corpus_part2.md
+[2026-03-20 18:48:33]   [master] Sending to API...
+[2026-03-20 18:48:55]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:48:55]   [repair] Running repair pass on block 50...
+[2026-03-20 18:49:24]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:49:24]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:49:24]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:49:29]   [procedure] Sending to API...
+[2026-03-20 18:50:05]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:50:05]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:50:10] Block 050: complete.
+[2026-03-20 18:50:10] Block 051: starting — target: master_corpus_part2.md
+[2026-03-20 18:50:10]   [master] Sending to API...
+[2026-03-20 18:50:37]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:50:37]   [repair] Running repair pass on block 51...
+[2026-03-20 18:51:28]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:51:28]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:51:28]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:51:33]   [procedure] Sending to API...
+[2026-03-20 18:52:46]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:52:46]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:52:51] Block 051: complete.
+[2026-03-20 18:52:51] Block 052: starting — target: master_corpus_part2.md
+[2026-03-20 18:52:51]   [master] Sending to API...
+[2026-03-20 18:53:15]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:53:15]   [repair] Running repair pass on block 52...
+[2026-03-20 18:53:43]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:53:43]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:53:43]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:53:48]   [procedure] Sending to API...
+[2026-03-20 18:54:38]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:54:38]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:54:43] Block 052: complete.
+[2026-03-20 18:54:43] Block 053: starting — target: master_corpus_part2.md
+[2026-03-20 18:54:43]   [master] Sending to API...
+[2026-03-20 18:55:16]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:55:16]   [repair] Running repair pass on block 53...
+[2026-03-20 18:56:36]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:56:36]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:56:36]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:56:41]   [procedure] Sending to API...
+[2026-03-20 18:57:26]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:57:26]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:57:31] Block 053: complete.
+[2026-03-20 18:57:31] Block 054: starting — target: master_corpus_part2.md
+[2026-03-20 18:57:31]   [master] Sending to API...
+[2026-03-20 18:57:48]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:57:48]   [repair] Running repair pass on block 54...
+[2026-03-20 18:58:05]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:58:05]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 18:58:05]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:58:10]   [procedure] Sending to API...
+[2026-03-20 18:59:07]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 18:59:07]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 18:59:12] Block 054: complete.
+[2026-03-20 18:59:12] Block 055: starting — target: master_corpus_part2.md
+[2026-03-20 18:59:12]   [master] Sending to API...
+[2026-03-20 19:00:51]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 19:00:51]   [repair] Running repair pass on block 55...
+[2026-03-20 19:01:15]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 19:01:15]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 19:01:15]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 19:01:20]   [procedure] Sending to API...
+[2026-03-20 19:02:19]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 19:02:19]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 19:02:24] Block 055: complete.
+[2026-03-20 19:02:24] Block 056: starting — target: master_corpus_part2.md
+[2026-03-20 19:02:24]   [master] Sending to API...
+[2026-03-20 19:03:08]   [master] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 19:03:08]   [repair] Running repair pass on block 56...
+[2026-03-20 19:04:31]   [repair] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 19:04:31]   [repair] Repair chunks accepted — replacing master output
+[2026-03-20 19:04:31]   [master] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 19:04:36]   [procedure] Sending to API...
+[2026-03-20 19:05:24]   [procedure] FINAL STATUS: READY FOR APPEND TO MASTER FILE
+[2026-03-20 19:05:24]   [procedure] appended to master_corpus_part2.md | status=READY FOR APPEND TO MASTER FILE | followup=no | chunks=yes
+[2026-03-20 19:05:29] Block 056: complete.
+[2026-03-20 19:05:29] ============================================================
+[2026-03-20 19:05:29] All blocks processed.
+[2026-03-20 19:05:30]   Part 1 corpus : master_corpus_part1.md
+[2026-03-20 19:05:30]   Part 2 corpus : master_corpus_part2.md
+[2026-03-20 19:05:30]   Log           : process_log.txt

@@ -1852,6 +1852,22 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
   }
 }
 
+async function handleRequeueMetadata(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT citation FROM cases WHERE enriched = 0`
+    ).all();
+    for (const row of results) {
+      await env.CASE_QUEUE.send({ type: 'METADATA', citation: row.citation });
+    }
+    return new Response(JSON.stringify({ ok: true, enqueued: results.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 async function handleRequeueChunks(request, env, corsHeaders) {
   const key = request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -2235,6 +2251,7 @@ export default {
       return new Response(JSON.stringify({ ok: true, count: chunk_ids.length }), { headers: corsHeaders });
     }
 
+    if (url.pathname === '/api/admin/requeue-metadata' && request.method === 'POST') return handleRequeueMetadata(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
 
     if (url.pathname === '/api/pipeline/fts-search' && request.method === 'POST') {
@@ -2357,29 +2374,31 @@ export default {
           // Summary-augmented context — pass case metadata to each chunk extraction
           const context = caseRow ? `Case: ${citation}\nFacts: ${caseRow.facts || ''}\nIssues: ${caseRow.issues || ''}` : `Case: ${citation}`;
 
-          const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt, AND preserve the most important judicial reasoning passages verbatim.
-
-Output ONLY valid JSON:
-{
-  "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}],
-  "holdings": [],
-  "legislation": [],
-  "key_authorities": [{"name": "", "treatment": "", "why": ""}],
-  "reasoning": "Key judicial reasoning passages preserved verbatim from the excerpt (200-400 words)"
-}
-
-If no legal content is present output all empty arrays and reasoning: "".`;
+          const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt. Output ONLY valid JSON: { "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}], "holdings": [], "legislation": [], "key_authorities": [{"name": "", "treatment": "", "why": ""}] }. If no legal content is present output { "principles": [], "holdings": [], "legislation": [], "key_authorities": [] }.`;
 
           const userContent = `${context}\n\nExcerpt:\n${row.chunk_text}`;
-          const raw = await callWorkersAI(env, systemPrompt, userContent, 1500);
+          const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${env.OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+              model: "gpt-4o-mini-2024-07-18",
+              max_completion_tokens: 2500,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userContent }
+              ]
+            })
+          });
+          const aiData = await aiResponse.json();
+          const raw = aiData.choices?.[0]?.message?.content?.trim() || "";
           const cleaned = (raw || '').replace(/```json|```/g, '').trim();
 
           let extracted = { principles: [], holdings: [], legislation: [], key_authorities: [] };
-          try { extracted = JSON.parse(cleaned); } catch (e) { console.error(`[queue] JSON parse failed chunk ${citation}/${chunk_index}`); }
-
-          if (!extracted.principles?.length && !extracted.holdings?.length) {
-            throw new Error(`Empty extraction for chunk ${citation}/${chunk_index} — retrying`);
-          }
+          console.log(`[queue] raw response chunk ${citation}/${chunk_index}:`, raw);
+          try { extracted = JSON.parse(cleaned); } catch (e) { console.error(`[queue] JSON parse failed chunk ${citation}/${chunk_index}:`, e.message); }
 
           await env.DB.prepare(
             `UPDATE case_chunks SET principles_json = ?, done = 1 WHERE citation = ? AND chunk_index = ?`
