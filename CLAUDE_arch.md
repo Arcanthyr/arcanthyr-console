@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 March 2026 (end of session 7). Upload every session alongside CLAUDE.md.*
+*Updated: 20 March 2026 (end of session 9). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -120,6 +120,45 @@ Pass 5 — Case chunk pass (UNCONDITIONAL — session 8): Qdrant filtered to typ
 **Diagnostic rule:** empty or unexpected results → first check:
 `docker compose logs --tail=50 agent-general`
 Skip/error messages are logged per-pass and visible immediately.
+
+**Session 9 changes:**
+- Case chunk threshold: 0.15 → 0.35 (reduces noise from irrelevant case chunks)
+- HCA added to COURT_HIERARCHY: tier 4 (above CCA/FullCourt tier 3)
+- Dead Nexus route removed: handleLegalQueryQwen + legal-query-qwen router entry deleted from worker.js
+
+---
+
+## CORPUS PIPELINE — SECONDARY SOURCES (v2, session 9)
+
+**Corpus damage confirmed session 9:**
+- Old parser (###? heading + [DOMAIN:] lookahead) silently skipped 437 of 1,575 chunks (28%)
+- Part 1: 317 ingested of 488 actual chunks (171 skipped)
+- Part 2: 821 ingested of 1,087 actual chunks (266 skipped)
+- Old Master prompt produced thin pointer chunks — summarised content into metadata headers instead of preserving prose
+
+**Parser fix (ingest_corpus.py session 9):**
+- Heading regex: `#+ .+` (was `###? .+`) — now accepts single # headings
+- Metadata lookahead: `\[[A-Z]+:` (was `\[DOMAIN:`) — now accepts any bracket field
+- MASTER_ONLY flag added — set True to ingest only master block chunks (preserves procedure chunks)
+
+**process_blocks.py fix (session 9):**
+- MASTER_PROMPT replaced — preservation-focused, 500-800 word body target, verbatim/near-verbatim prose
+- REPAIR_PROMPT added — second pass catches thin chunks, implicit paraphrase, manufactured authority stubs
+- Model: gpt-4o-mini-2024-07-18 (confirmed — gpt-5.x produces near-empty output)
+- MAX_TOKENS: 32000
+- RUN_REPAIR_PASS: True
+
+**Reprocessing sequence (pending):**
+1. Pilot — `python process_blocks.py --start-from 1 --single 1` · manual CQT check
+2. Delete doctrine chunks from D1: `DELETE FROM secondary_sources WHERE category IN ('annotation', 'doctrine', 'case authority', 'legal doctrine')`
+3. Delete secondary_source vectors from Qdrant: existing /delete-by-type route with type=secondary_source (then re-embed procedure chunks)
+4. Run process_blocks.py overnight (both parts)
+5. Ingest with MASTER_ONLY=True
+6. Set enriched=1: `UPDATE secondary_sources SET enriched=1 WHERE enriched=0`
+7. Run embed pass on VPS
+8. Run gen_cleanup_sql.py for Word artifacts
+9. Run reingest_duplicates.py if needed
+10. Run extended retrieval baseline
 
 ---
 
@@ -286,6 +325,9 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - **PowerShell SSH quoting mangles auth headers** — never test API routes via SSH from PowerShell. SSH to VPS first, then run curl.
 - **TASSC 2024 scraper timeouts** — cases 3, 8, 9, 10 failed with HTTP 0 in previous run. Zero rows in D1. Will retry when scraper resumes.
 - **Pre-scraper gate** — CLEARED session 4. Queues live + baseline 15/15. Scraper ready.
+
+### CHUNK message prompt — thin content (identified session 9)
+Queue Pass 2 (CHUNK handler in worker.js) extracts principles/holdings/legislation as JSON but discards surrounding judicial reasoning prose. The LLM only sees extracted metadata, not the judge's reasoning. Same root cause as old Master prompt problem. Fix: preserve raw chunk_text alongside extracted principles. Deferred — tackle before scraper adds significant volume (currently 29 cases).
 - **BM25 corpus cold start** — ~2s delay on first query after container restart. Acceptable.
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables.
 - **tmux send-keys poller pattern** — DO NOT use. Fires into wrong context, runs in main shell, dies on SSH disconnect. Attach to tmux manually instead. Confirmed session 4.
@@ -394,6 +436,15 @@ Do NOT use `tmux send-keys` — confirmed to run in main shell and die on SSH di
 **`run_case_chunk_embedding_pass(batch=10)`** — added 18 March 2026 (session 2). Fetches `case_chunks WHERE done=1 AND embedded=0` via `GET /api/pipeline/fetch-case-chunks-for-embedding`. Embeds `chunk_text` via Ollama pplx-embed. Upserts to Qdrant `general-docs-v2` with payload `{ chunk_id, citation, chunk_index, type: 'case_chunk', source: 'AustLII' }`. Marks embedded via `POST /api/pipeline/mark-case-chunks-embedded`. Runs automatically in `--mode embed` and `--mode both`, after secondary sources pass and before legislation pass.
 
 **Default batch:** 50 · **Loop sleep:** 15 seconds
+
+### enrichment_poller.py — payload text limits (fixed session 9)
+All three embed passes previously truncated payload text to [:1000]. Fixed:
+- secondary_sources embed pass (line 700): [:1000] → [:5000]
+- case_chunk embed pass (line 770): [:1000] → [:3000]
+- legislation embed pass (line 845): [:1000] → [:3000]
+
+Existing Qdrant points still have [:1000] truncation — will be corrected on re-embed after corpus reprocessing.
+The vector itself was always embedded from full text — only the payload (what the LLM sees at query time) was truncated.
 
 ### BM25 + RRF Hybrid Retrieval (added session 3)
 

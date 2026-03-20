@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 19 March 2026 (end of session 7) · Supersedes all prior versions
+Updated: 20 March 2026 (end of session 9) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -53,6 +53,12 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
 | backfill scripts | Must run on VPS — fetch D1 data via Worker API (not wrangler subprocess), hit Qdrant via localhost:6334 |
 | Retrieval diagnostics | First step always: `docker compose logs --tail=50 agent-general` on VPS — skip message visible immediately |
+| enrichment_poller payload | Payload text limits fixed session 9 — secondary_sources [:5000], case_chunks [:3000], legislation [:3000]. Old Qdrant points still have [:1000] — will be corrected on re-embed after corpus reprocessing |
+| CHUNK message prompt | Case law Queue Pass 2 has same thin-content problem as old Master prompt — extracts principles/holdings JSON but discards judicial reasoning prose. Fix deferred — tackle before scraper adds significant volume |
+| ingest_corpus.py parser | Fixed session 9 — heading regex now accepts single # and any [UPPERCASE:] field as lookahead. Previously only matched ## or ### + [DOMAIN:] — silently skipped 437 chunks across both corpus parts |
+| process_blocks.py | Updated session 9 — new preservation-focused Master prompt, Repair pass added, model fixed to gpt-4o-mini-2024-07-18, MAX_TOKENS=32000 |
+| Corpus damage confirmed | 437 chunks silently skipped by old parser (171 part1, 266 part2) — never ingested into D1 or Qdrant. Full reprocessing required — fixes both thin content and missing chunks simultaneously |
+| Pilot run required | Before overnight corpus reprocess — run python process_blocks.py --start-from 1 --single 1, manually check output with CQT, confirm substantive prose preserved before committing to full 56-block run |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -61,22 +67,22 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 19 March 2026 (end of session 7)
+## SYSTEM STATE — 20 March 2026 (end of session 9)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 3,481+ points (stable — no new embed pass this session) |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | 29 rows · 22 deep_enriched=1 · 7 pending (2026 cases — deep_enriched=0, awaiting neuron reset) · scraper resuming TASSC 2024/11 at noon 20 Mar |
-| D1 case_chunks | 651 chunks · all done=1 · all embedded=1 · zero empty enrichment |
+| D1 cases | 29+ rows · scraper running TASSC 2024 · TASSC/2024/2-3 confirmed uploaded session 9 |
+| D1 case_chunks | 651+ chunks · growing as scraper runs · poller embedding with corrected 3000-char payload |
 | D1 secondary_sources | 2,032 total · all enriched=1 · all embedded |
 | D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| worker.js | Deployed session 8 · version c5f8101c · orderedChunks + [CASE EXCERPT]/[ANNOTATION] labels + Qwen3 prompt fix + Workers AI 4006 error handling |
+| worker.js | Deployed session 9 · version 6f006d85 · dead Nexus route removed (handleLegalQueryQwen + legal-query-qwen router entry deleted) |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
-| enrichment_poller | Permanent Docker service (restart: unless-stopped) · no tmux · check: docker compose logs enrichment-poller |
-| server.py | Semantic (Qdrant 0.45) + concept search + score=0.0 BM25 append + case chunk pass UNCONDITIONAL (Qdrant 0.15, type=case_chunk, top 4) · NO RRF · NO in-memory BM25 · NO FTS5 — these were documented in session 3 but never deployed |
+| enrichment_poller | Permanent Docker service · payload truncation fixed session 9 — secondary_sources 5000 chars, case_chunks 3000 chars, legislation 3000 chars · force-recreated and confirmed running |
+| server.py | Case chunk threshold raised 0.15 → 0.35 · HCA added to court hierarchy tier 4 · Nexus legacy route deleted · re-rank logging added · SCP'd and force-recreated session 9 |
 | Retrieval | Case chunk pass UNCONDITIONAL (session 8 fix) · Worker.js calls /search, takes results verbatim, assembles context · NO RRF blend in Worker.js · /api/pipeline/bm25-corpus and /api/pipeline/fts-search routes exist but are DEAD — nothing calls them |
 | Phase 5 | VALIDATED — Workers AI (Qwen3-30b) returning real answers |
 | Frontend | Dark Gazette theme · Library pills · category display · UI briefs 1–6 complete · max_tokens fix deployed |
@@ -115,15 +121,13 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## IMMEDIATE NEXT ACTIONS
+## OUTSTANDING PRIORITIES
 
-1. **Deploy worker.js** — orderedChunks + label + prompt changes applied locally but NOT deployed. Run `npx wrangler deploy` from `Arc v 4/` first thing next session.
-
-2. **Investigate RRF displacement** — Neill-Fraser case chunks score 0.4915 semantically but are displaced by RRF blend. Case chunks are invisible to BM25/FTS5 passes (secondary source only). Likely cause: RRF ranks secondary source BM25/FTS5 hits ahead of case chunks that only appear in semantic pass. Possible fix: boost case_chunk rank in RRF, or add case chunk score directly to RRF contribution.
-
-3. **Monitor scraper** — Task Scheduler firing daily 8am AEST from `C:\Users\Hogan\run_scraper.bat`. Check `arcanthyr-console\Local Scraper\scraper.log` for progress.
-
-4. **Copy updated CLAUDE.md + CLAUDE_arch.md into `Arc v 4/`** and commit (this session's commit)
+1. **PILOT RUN** — `python process_blocks.py --start-from 1 --single 1` · check output manually · confirm substantive prose before overnight run
+2. **CHUNK message prompt fix** — worker.js Queue Pass 2 · replace thin JSON extraction with reasoning-preservation prompt · do before scraper adds significant volume
+3. **OVERNIGHT CORPUS RUN** — after pilot validates · delete doctrine chunks from D1 + Qdrant · run process_blocks.py overnight · ingest with MASTER_ONLY=True · set enriched=1 · embed pass · run baseline
+4. **RE-EMBED PASS** — after corpus reprocessing · fixes old [:1000] truncated Qdrant payloads for all existing chunks
+5. **Monitor scraper** — check log daily · confirm TASSC 2024 progressing
 
 ---
 
@@ -147,6 +151,25 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. CLAUDE.md session 6 note "resumes at TASSC 2024/11" was incorrect.
 
 ---
+
+## CHANGES THIS SESSION (session 9) — 20 March 2026
+
+- **Dead Nexus route deleted from worker.js** (handleLegalQueryQwen + legal-query-qwen router entry)
+- **worker.js deployed** version 6f006d85
+- **Case chunk threshold raised** 0.15 → 0.35 in server.py
+- **HCA added to COURT_HIERARCHY** at tier 4 (above CCA/FullCourt tier 3)
+- **server.py SCP'd and force-recreated**
+- **enrichment_poller.py payload truncation fixed** — secondary_sources [:5000], case_chunks [:3000], legislation [:3000]
+- **enrichment_poller SCP'd and force-recreated** — confirmed embedding TASSC 2024 case chunks
+- **ingest_corpus.py parser fixed** — heading regex accepts single # + any [UPPERCASE:] field lookahead + MASTER_ONLY flag added
+- **process_blocks.py updated** — new Master prompt (preservation-focused), Repair pass, correct model string, MAX_TOKENS=32000
+- **Corpus damage confirmed** — 437 of 1,575 chunks silently skipped by old parser (28%)
+- **Scraper tzdata fix** — pip install tzdata resolved ZoneInfoNotFoundError
+- **Scraper running** — TASSC/2024/2-3 confirmed uploading session 9
+- **Consultant decision brief produced** — corpus knowledge loss diagnosis, Option D hybrid approach recommended
+- **Retrieval baseline extended** — Q16-Q18 added (natural language, no citation pattern)
+- **Baseline script SCP'd to VPS**
+- **git commits:** 8230350 (server.py/worker.js), ingest_corpus.py fix, process_blocks.py updates, enrichment_poller.py fix
 
 ## CHANGES THIS SESSION (session 8) — 20 March 2026
 
@@ -250,3 +273,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references. Do AFTER cross-reference agent design confirmed.
 - **Auto-populate legislation metadata on upload** — Claude API reads filename/first page.
+- **CHUNK message prompt fix** — Queue Pass 2 in worker.js extracts principles/holdings as JSON but discards judicial reasoning prose. Fix: preserve raw chunk_text alongside extracted principles in enriched_content field. Do before scraper adds significant volume — currently 29 cases, will be expensive to reprocess at 1000+
+- **Re-embed pass post-reprocessing** — all existing Qdrant points have [:1000] truncated payload text. After corpus reprocessing, run full re-embed to get [:5000]/[:3000] payloads for all chunks
+- **Corpus pilot validation** — run 3-block pilot, apply CQT (chunk quality test) manually before full 56-block overnight run
+- **Scraper tzdata** — pip install tzdata required on Windows Store Python — document in CLAUDE.md for fresh environments
