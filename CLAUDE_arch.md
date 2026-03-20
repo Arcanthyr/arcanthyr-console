@@ -326,8 +326,15 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - **TASSC 2024 scraper timeouts** — cases 3, 8, 9, 10 failed with HTTP 0 in previous run. Zero rows in D1. Will retry when scraper resumes.
 - **Pre-scraper gate** — CLEARED session 4. Queues live + baseline 15/15. Scraper ready.
 
-### CHUNK message prompt — thin content (identified session 9)
-Queue Pass 2 (CHUNK handler in worker.js) extracts principles/holdings/legislation as JSON but discards surrounding judicial reasoning prose. The LLM only sees extracted metadata, not the judge's reasoning. Same root cause as old Master prompt problem. Fix: preserve raw chunk_text alongside extracted principles. Deferred — tackle before scraper adds significant volume (currently 29 cases).
+### CHUNK message handler — GPT-4o-mini (switched session 10)
+CHUNK queue consumer now calls OpenAI GPT-4o-mini-2024-07-18 directly via fetch() instead of callWorkersAI(). Workers AI (Qwen3) was blocking graphic evidence descriptions in family violence cases. GPT-4o-mini handles sensitive legal content without moderation blocks. OPENAI_API_KEY set as Worker secret. max_completion_tokens: 2500. Empty extraction (all arrays empty) now writes done=1 — narrative chunks legitimately contain no extractable principles.
+
+### Admin requeue routes (added session 10)
+- POST /api/admin/requeue-chunks — reads case_chunks WHERE done=0, enqueues CHUNK messages for each · use when chunks stall after Queue max_retries
+- POST /api/admin/requeue-metadata — reads cases WHERE enriched=0, enqueues METADATA messages for each · use when Pass 1 enrichment stalls
+- Both require X-Nexus-Key auth
+- PowerShell trigger: `$key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1]` then `Invoke-WebRequest -Uri "https://arcanthyr.com/api/admin/requeue-X" -Method POST -Headers @{"X-Nexus-Key"=$key} -UseBasicParsing | Select-Object -ExpandProperty Content`
+
 - **BM25 corpus cold start** — ~2s delay on first query after container restart. Acceptable.
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables.
 - **tmux send-keys poller pattern** — DO NOT use. Fires into wrong context, runs in main shell, dies on SSH disconnect. Attach to tmux manually instead. Confirmed session 4.
