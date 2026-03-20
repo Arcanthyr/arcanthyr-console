@@ -697,7 +697,7 @@ def run_embedding_pass(batch: int) -> dict:
         metadata     = {
             'source_id':   chunk.get('source_id', ''),
             'chunk_index': chunk.get('chunk_index', 0),
-            'text':        embed_text[:1000],  # truncated preview in Qdrant payload
+            'text':        embed_text[:5000],
             'type':        'secondary_source',
             'category':    chunk.get('category', 'doctrine')
         }
@@ -767,7 +767,7 @@ def run_case_chunk_embedding_pass(batch: int = 10) -> dict:
             'citation':    chunk.get('citation', ''),
             'chunk_index': chunk.get('chunk_index', 0),
             'case_name':   chunk.get('case_name') or '',
-            'text':        embed_text[:1000],
+            'text':        embed_text[:3000],
             'type':        'case_chunk',
             'source':      'AustLII',
         }
@@ -842,7 +842,7 @@ def run_legislation_embedding_pass(batch: int = 5) -> dict:
                 'section_id':     s['section_id'],
                 'section_number': s['section_number'],
                 'heading':        s['heading'],
-                'text':           embed_text[:1000],
+                'text':           embed_text[:3000],
                 'type':           'legislation'
             }
             try:
