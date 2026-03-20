@@ -1852,6 +1852,22 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
   }
 }
 
+async function handleRequeueChunks(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT citation, chunk_index FROM case_chunks WHERE done = 0`
+    ).all();
+    for (const row of results) {
+      await env.CASE_QUEUE.send({ type: 'CHUNK', citation: row.citation, chunk_index: row.chunk_index });
+    }
+    return new Response(JSON.stringify({ ok: true, enqueued: results.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 async function handleFetchCasesByLegislationRef(request, env, corsHeaders) {
   const key = request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -2218,6 +2234,8 @@ export default {
       }
       return new Response(JSON.stringify({ ok: true, count: chunk_ids.length }), { headers: corsHeaders });
     }
+
+    if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
 
     if (url.pathname === '/api/pipeline/fts-search' && request.method === 'POST') {
       const { query, limit = 10 } = await request.json();

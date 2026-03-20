@@ -1412,3 +1412,1331 @@ Practitioner commentary on the duties of a prosecutor within the criminal justic
 > Prosecuting counsel in a criminal trial represents the State. The accused, the court and the community are entitled to expect that, in performing his function of presenting the case against an accused, he will act with fairness and detachment and always with the objectives of establishing the whole truth in accordance with the procedures and standards which the law requires to be observed and of helping to ensure that the accused's trial is a fair one.  
 >
 > Prosecutors are the most powerful players in the criminal justice system, capable of determining who should be charged and with what crimes. The duty to serve as a minister of justice is designed to limit abuse of this power and to compensate for the imbalance of resources that so often places the defense at a disadvantage. Demanding more of prosecutors than of other lawyers also fosters greater confidence in the legitimacy and accuracy of the criminal justice system.
+
+<!-- block_010 master -->
+
+# The Prerogative "To Prosecute or Not to Prosecute"
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: factors influencing discretion to prosecute] [CONCEPTS: discretion, public interest, reasonable prospect of conviction, prosecutorial decision-making, evidence sufficiency] [CITATION: hoc-b010-m001-factors-influencing-discretion-to-prosecute] [ACT: Criminal Code] [CASE: None]
+
+The following are extracts from the Summary Prosecutions Manual, <http://intranet.police.tas.gov.au:8888/dpem/index.php?id=2158>
+
+- Case evaluation must be made at each stage of bringing an action. ***(p. 50)***
+
+- A decision not to proceed may be pragmatic, compassionate or recognise that the allegation is not born out by the evidence, or is countered by a well substantiated defence - if the pursuit of justice is the goal, then a decision to discontinue a prosecution is not necessarily a failure. ***(p. 51)***
+
+- Having satisfied himself or herself that the evidence is sufficient to justify the institution or continuation of a prosecution, the prosecutor must then consider whether, in light of the provable facts and the whole of the surrounding circumstances, the public interest requires a prosecution to be pursued. It is not the rule that all offences brought to the attention of the authorities must be prosecuted. ***(p. 51)***
+
+Within Part 8.10 of the Police Manual (<http://hbtapp9v.police.tas.gov.au:81/TPM/>) there are guidelines as to the decision of whether to prosecute/not prosecute:
+
+**8.10 Decisions to Prosecute/Not to Prosecute**
+
+(1) Tasmania Police will prosecute offenders where there exists a reasonable prospect of conviction.
+
+(2) The criteria for not prosecuting, although there exists a reasonable prospect of conviction, include:
+  
+(a) technical breaches of the law;
+
+(b) trivial contraventions of the law;
+
+(c) vexatious, oppressive and malicious prosecutions;
+
+(d) prosecutions that would attract ridicule, or bring the law into contempt;
+
+(e) unreasonable delay has occurred in bringing a prosecution;
+
+(f) where the mental condition of the offender suggests treatment rather than prosecution; and
+
+(g) any other proper consideration.
+
+The initial consideration in the exercise of the discretion to prosecute is whether the evidence is sufficient to justify the institution or continuation of a prosecution (s310(4) of the Criminal Code). A prosecution should not be instituted or continued unless there is admissible, substantial and reliable evidence that a criminal offence known to the law has been committed by an identifiable person.
+
+However, application of the reasonable prospect of conviction test dispassionately, after due deliberation by a person experienced in weighing the available evidence, is the best way of seeking to avoid the risk of prosecuting an innocent person and the useless expenditure of public funds. When evaluating the evidence, regard should be had to the following matters:
+
+- Are there grounds for believing the evidence may be excluded, bearing in mind the principles of admissibility at common law and under statute?
+
+- If the case depends in part on admissions by the accused, are there any grounds for believing that they are of doubtful reliability having regard to the age, intelligence and apparent understanding of the accused?
+
+- Does it appear that a witness is exaggerating, or that his or her memory is faulty or contaminated, or that the witness is either hostile or friendly to the accused, or may be otherwise unreliable?
+
+- Has a witness any apparent motive for telling less than the whole truth?
+
+- Are there matters which might properly be put to a witness by the defence to attack his or her credibility?
+
+- If identity is likely to be an issue, how cogent and reliable is the evidence of those who purport to identify the accused?
+
+- Is there anything which causes suspicion that a false story may have been concocted?
+
+- Are all the necessary witnesses available and competent to give evidence pursuant to s18 of the Evidence Act 2001?
+
+- Where child witnesses are involved, are they competent to give evidence pursuant to the Evidence Act 2001?
+
+Having satisfied himself or herself that the evidence is sufficient to justify the institution or continuation of a prosecution, the prosecutor must then consider whether, in the light of the provable facts and the whole of the surrounding circumstances, the public interest requires a prosecution to be pursued. It is not the rule that all offences brought to the attention of the authorities must be prosecuted. Public interest does not equate to the level of public interest in an individual person or a particular matter.
+
+The factors which can properly be taken into account in deciding whether the public interest requires a prosecution will vary from case to case. While many public interest factors militate against a decision to proceed with a prosecution, there are public interest factors that operate in favour of proceeding with a prosecution (e.g. the seriousness of the offence, the need for deterrence). In this regard, generally speaking, the more serious the offence the less likely it will be that the public interest will not require that a prosecution be pursued.
+
+Factors which may arise for consideration in determining whether the public interest requires a prosecution include:
+
+- the seriousness or, conversely, the triviality of the alleged offence or that it is of a "technical" nature only
+
+- any mitigating or aggravating circumstances
+
+- the youth, age, intelligence, physical health, mental health, or special infirmity of the alleged offender, a witness or victim
+
+- the alleged offender's antecedents and background
+
+- the staleness of the alleged offence
+
+- the degree of culpability of the alleged offender in connection with the offence
+
+- the obsolescence or obscurity of the law
+
+- whether the prosecution would be perceived as counter-productive, for example, by bringing the law into disrepute
+
+- the availability and efficacy of any alternatives to prosecution
+
+- the prevalence of the alleged offence and the need for deterrence, both personal and general
+
+- whether the consequences of any resulting conviction would be unduly harsh and oppressive
+
+- whether the alleged offence is of considerable public concern
+
+- the risk to the public in not proceeding
+
+- any entitlement of the victim or other person or body to criminal compensation, reparation, or forfeiture if prosecution action is taken
+
+- the likelihood of a confiscation order being made against the alleged offender's property upon conviction
+
+- the attitude of the victim of the alleged offence to a prosecution
+
+- where the victim does not wish to proceed, the likely effect on the victim in forcing him or her to give evidence. Also, conversely, the future risk to the victim, family members, and the public in not proceeding.
+
+- the likely length and expense of a trial
+
+- whether the alleged offender is willing to co-operate in the investigation or prosecution of others, or the extent to which the alleged offender has done so
+
+- the likely outcome in the event of a finding of guilt having regard to the sentencing options available to the court
+
+- whether the alleged offence is triable only on indictment
+
+- whether the alleged offender has already been sentenced for other offences and the likelihood of the imposition of an additional penalty having regard to the totality principle
+
+- The applicability of and weight to be given to these and other factors will depend on the particular circumstances of each case.
+
+As a matter of practical reality, the proper decision in many cases will be to proceed with a prosecution if there is sufficient evidence available to justify a prosecution. Although there may be public interest factors present in a particular case, often the proper decision will be to proceed with a prosecution and for those factors to be put to the court at sentence in mitigation. Nevertheless, where the offence is not so serious as to plainly require prosecution, or where the victim does not wish to proceed, the prosecutor should always apply his or her mind to whether the public interest requires a prosecution to be pursued.
+
+Vehicle recovered. No damage. Little inconvenience to victims. Victims required to travel from FOSTER. Content for matter to drop. FSST required from to attend in person from HOBART. Unwilling retired police witness. Not in public interest to proceed.
+
+<!-- block_010 procedure -->
+
+### Case Evaluation Notes
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Case evaluation process] [CONCEPTS: case evaluation, prosecution decision, evidence sufficiency, public interest, legal discretion]  
+Case evaluation must be made at each stage of bringing an action. 
+
+---
+
+### Practitioner Commentary on Decisions Not to Prosecute
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Rationale for prosecution discontinuation] [CONCEPTS: prosecution discontinuation, justice pursuit, compassionate decisions, evidential failure, defence considerations]  
+A decision not to proceed may be pragmatic, compassionate or recognise that the allegation is not born out by the evidence, or is countered by a well substantiated defence - if the pursuit of justice is the goal, then a decision to discontinue a prosecution is not necessarily a failure.
+
+---
+
+### Tasmania Police Prosecution Guidelines
+[DOMAIN: Tasmanian Criminal Law] [ACT: Tasmania Police Manual] [SECTION: 8.10] [CITATION: Tasmania Police Guidelines - Prosecution Decisions] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Guidelines for prosecution decisions] [CONCEPTS: prosecution criteria, reasonable prospect, technical breaches, public interest factors]  
+**8.10 Decisions to Prosecute/Not to Prosecute**  
+(1) Tasmania Police will prosecute offenders where there exists a reasonable prospect of conviction.  
+(2) The criteria for not prosecuting, although there exists a reasonable prospect of conviction include:  
+(a) technical breaches of the law;  
+(b) trivial contraventions of the law;  
+(c) vexatious, oppressive and malicious prosecutions;  
+(d) prosecutions that would attract ridicule, or bring the law into contempt;  
+(e) unreasonable delay has occurred in bringing a prosecution;  
+(f) where the mental condition of the offender suggests treatment rather than prosecution; and  
+(g) any other proper consideration.
+
+---
+
+### DPP Guidelines on Discretion to Prosecute
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: DPP discretion considerations] [CONCEPTS: DPP, discretion, sufficient evidence, prosecution continuation, public interest]  
+The initial consideration in the exercise of the discretion to prosecute is whether the evidence is sufficient to justify the institution or continuation of a prosecution. A prosecution should not be instituted or continued unless there is admissible, substantial and reliable evidence that a criminal offence known to the law has been committed by an identifiable person. 
+
+---
+
+### Public Interest Factors in Prosecutorial Decisions
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Public interest in prosecution] [CONCEPTS: public interest factors, prosecution decisions, mitigating circumstances, deterrence, victim considerations]  
+Factors which may arise for consideration in determining whether the public interest requires a prosecution include:  
+- the seriousness or, conversely, the triviality of the alleged offence or that it is of a "technical" nature only  
+- any mitigating or aggravating circumstances  
+- the youth, age, intelligence, physical health, mental health or special infirmity of the alleged offender, a witness or victim  
+- the alleged offender's antecedents and background  
+- the staleness of the alleged offence  
+- the degree of culpability of the alleged offender in connection with the offence  
+- the obsolescence or obscurity of the law  
+- whether the prosecution would be perceived as counter-productive, for example, by bringing the law into disrepute  
+- the availability and efficacy of any alternatives to prosecution  
+- the prevalence of the alleged offence and the need for deterrence, both personal and general  
+
+---
+
+### R v Brown Disclosure Obligations Commentary
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Disclosure obligations in prosecution] [CONCEPTS: disclosure obligations, R v Brown, material evidence, fairness, Crown case]  
+Kirby J adopted the following statement of Lord Hope in R v Brown 226 in 1998 as representing an accurate statement of the law in Australia:  
+*The prosecution is not obliged to lead evidence which may undermine the Crown case, but fairness requires that material in its possession which may undermine the Crown case is disclosed to the defence.*
+
+---
+
+### R v H Commentary on Disclosure Obligations
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Disclosure obligations in prosecution] [CONCEPTS: fairness, material evidence, R v H, prosecution obligations, defence rights]  
+As was highlighted in 2004 in R v H by Lord Bingham: Fairness ordinarily requires that any material held by the prosecution which weakens its case or strengthens that of the defendant, if not relied on as part of its formal case against the defendant, should be disclosed to the defence. 
+
+---
+
+### Example Case: Robertson v Reardon
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Case relevance to disclosure] [CONCEPTS: R v Reardon, disclosure issues, driving charge, defense alibi, prosecution obligations]  
+In *Robertson v Reardon*, it was an evade and drug drive charge. ID was in issue as was a defense alibi. *The evidence was necessary, in my view, to unfold the narrative and give a complete account of the events upon which the prosecution was based*.
+
+---
+
+### Model Rules of Professional Conduct on Witness Obligations
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Prosecutorial obligations toward witnesses] [CONCEPTS: Model Rules, prosecutor obligations, witness testimony, admissibility, trial conduct]  
+A prosecutor must call as part of the prosecution's case all witnesses:  
+20.7.1 whose testimony is admissible and necessary for the presentation of the whole picture;  
+20.7.2 whose testimony provides reasonable grounds for the prosecutor to believe that it could provide admissible evidence relevant to any matter in issue;  
+20.7.3 whose testimony or statements were used in the course of any committal proceedings; and  
+20.7.4 from whom statements have been obtained in the preparation or conduct of the prosecution's case...
+
+---
+
+### Case Authority: R v Apostilides on Witness Responsibilities
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Witness calling responsibilities in prosecution] [CONCEPTS: R v Apostilides, witness obligation, Crown case, trial rights, prosecutorial discretion]  
+The Crown Prosecutor alone bears the responsibility of deciding whether a person will be called as a witness for the Crown; the trial judge may, but is not obliged to question the prosecutor...
+
+---
+
+### Case Authority: Darren John Burston v David John Brooks on Witness Selection
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Witness selection issues] [CONCEPTS: Darren John Burston v David John Brooks, witness obligations, prosecutorial duties, Court of Appeal, trial fairness]  
+"I have mentioned that a number of witnesses who might have been expected to have been called by the respondent... when spoken to in the charge room, the applicant made it quite clear that he did not consider that he had done anything wrong..."
+
+---
+
+### Case Authority: Martin v Visser on Use of Witnesses
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: case authority] [TOPIC: Defence witness obligations and trial impact] [CONCEPTS: Martin v Visser, trial conduct, witness obligations, prosecution decisions, trial fairness]  
+Where it was not until the defence led their case where it became apparent that arguably material witnesses were not called.
+
+<!-- block_011 master -->
+
+# Unknown Witnesses
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: no obligation to call impractical unknown witnesses] [CONCEPTS: unknown witnesses, prosecution, evidential duties, witness reliability, judicial fairness] [CITATION: hoc-b011-m001-unknown-witnesses] [ACT: None] [CASE: Hrycyszyn v Bonde \[2003\] TASSC 126]
+
+No obligation to call an unknown witness where impractical to find them. Defence argued that Pross failed to make enquiries to identify a potential witness and their potential evidence.
+
+**Hrycyszyn v Bonde** \[2003\] TASSC 126 (27 November 2003)
+
+Counsel for the applicant conceded that no duty rested on the prosecutor to call the unknown person, referring in that regard to Richardson v R \[1974\] HCA 19; (1974) 131 CLR 116 at 119-121, Whitehorn v R \[1983\] HCA 42; (1983) 152 CLR 657 at 663-665 and Taylor v Hayes (1989) 46 A Crim R 457 at 461-463. No authority was cited in support of the ground of review. No attack was made on the fairness of the hearing because of the failure of the police to locate and call the unknown witness. The attack was made solely on the omission of the learned magistrate to deal in his reasons with that failure. I can find no basis for concluding that his Worship ought to have done so. The issue would only have been material if it had been open to the learned magistrate to draw an inference adverse to the prosecution by reason of Constable Steele's failure to ascertain who the witness was and what he might have said in evidence. On such skimpy material, no adverse inference could be drawn that might have assisted the applicant's case. There is no merit in the ground.
+
+# Obligation to Call Material Witnesses
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: prosecution's obligation to call witnesses] [CONCEPTS: prosecution, material witnesses, narrative, reliability, evidence] [CITATION: hoc-b011-m002-obligation-to-call-material-witnesses] [ACT: None] [CASE: None]
+
+The prosecution alone bears the responsibility of deciding whether to call a person as a witness for the prosecution (*Apostilides v R* (1984) 154 CLR 563).
+
+The prosecution must call all witnesses necessary to unfold the narrative of events unless there is a good reason not to do so (*Whitehorn v R* (1983) 152 CLR 657; *Dyers v R* (2002) 210 CLR 285*; *Mahmood v Western Australia* (2008) 232 CLR 397).
+
+As the prosecution seeks the truth, it must call evidence favourable and unfavourable to its case (*R v Soma* (2003) 212 CLR 299; *R v Shaw* (1991) 57 A Crim R 425; *R v Glennon (No. 2)* (2001) 7 VR 631).
+
+However, the prosecution does not need to call a witness if his or her evidence:
+
+- Is likely to be unreliable, untrustworthy or otherwise incapable of belief (*Whitehorn v R* (1983) 152 CLR 657; *R v Newland* (1997) 98 A Crim R 455). It is not enough for the prosecution to merely suspect the witness is unreliable. There must be identifiable circumstances which clearly establish unreliability (*Apostilides v R* (1984) 154 CLR 563).
+
+> The mere fact that a potential witness has made contradictory statements in the past is not a sufficient reason for failing to call him or her (*R v Shaw* (1991) 57 A Crim R 425; *R v Armstrong* \[1998\] 4 VR 533; *R v Palmer* \[2000\] VSCA 236).
+>
+> The fact that the prosecution expects the witness to be unfavourable, or to give evidence that does not accord with the prosecution's case theory, is also not a sufficient reason for failing to call a witness (*Whitehorse v R* (1983) 152 CLR 657; *R v Newland* (1997) 98 A Crim R 455; *R v Heinze* \[2005\] VSCA 124; *Dyers v R* (2002) 210 CLR 285; *R v Kneebone* (1999) 47 NSWLR 450).
+
+- Is likely to be unnecessarily repetitious, in light of the number of witnesses available for the proof of the matter on which they would give evidence (*Whitehorn v R* (1983) 152 CLR 657); or
+
+- Relates to an issue which has been raised by the defence, and on which the defence bears the onus of proof (e.g., mental impairment) (*R v Fitchett* \[2009\] VSCA 150).
+
+Previously, one of the factors the prosecution could consider when deciding whether to call a witness was whether the interests of justice required that it be able to cross-examine that witness (see, e.g., *Richardson v R* (1974) 131 CLR 116). This was due to the restrictions the common law placed on the prosecution's ability to cross-examine its own witnesses. As *Evidence Act 2008* s38 now provides the prosecution with a greater opportunity to cross-examine its own witnesses, this is no longer a reasonable basis for refusing to call a witness (*Santo v R* \[2009\] NSWCCA 269; *Kanaan v R* \[2006\] NSWCCA 109; *Kneebone v R* (1999) 47 NSWLR 450 per Smart AJ).
+
+It will usually be unjust to refuse the prosecution leave to cross-examine a witness under *Evidence Act 2008* s38 where it has called that witness because of its duty to put all material evidence (including unfavourable evidence) before the jury (*Santo v R* \[2009\] NSWCCA 269; *Kanaan v R* \[2006\] NSWCCA 109; *Kneebone v R* (1999) 47 NSWLR 450 per Smart AJ).
+
+<!-- block_011 procedure -->
+
+### Obligation to Call Unknown Witnesses
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Obligation to Call Unknown Witnesses] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Discussion of obligation regarding unknown witnesses] [CONCEPTS: obligation, unknown witness, prosecution duties, reasonable efforts, evidentiary standards]
+
+No obligation to call an unknown witness where impractical to find them. Defence argued that Pross failed to make enquiries to identify a potential witness and their potential evidence.
+
+### Hrycyszyn v Bonde [2003] TASSC 126
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Hrycyszyn v Bonde Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority regarding prosecution's duty to call witnesses] [CONCEPTS: Hrycyszyn, unknown witness, prosecution duty, inquiry failure, case law]
+
+Counsel for the applicant conceded that no duty rested on the prosecutor to call the unknown person, referring in that regard to Richardson v R [1974] HCA 19; (1974) 131 CLR 116 at 119 - 121, Whitehorn v R [1983] HCA 42; (1983) 152 CLR 657 at 663 - 665 and Taylor v Hayes (1989) 46 A Crim R 457 at 461 - 463. No authority was cited in support of the ground of review. No attack was made on the fairness of the hearing because of the failure of the police to locate and call the unknown witness. The attack was made solely on the omission of the learned magistrate to deal in his reasons with that failure. I can find no basis for concluding that his Worship ought to have done so. The issue would only have been material if it had been open to the learned magistrate to draw an inference adverse to the prosecution by reason of Constable Steele's failure to ascertain who the witness was and what he might have said in evidence. On such skimpy material, no adverse inference could be drawn that might have assisted the applicant's case. There is no merit in the ground.
+
+### Obligation to Call Material Witnesses
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Obligation to Call Material Witnesses] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Prosecutor's duty regarding material witnesses] [CONCEPTS: prosecution duty, material witnesses, narrative, evidence types, criminal procedure]
+
+The prosecution alone bears the responsibility of deciding whether to call a person as a witness for the prosecution (Apostilides v R (1984) 154 CLR 563). The prosecution must call all witnesses necessary to unfold the narrative of events unless there is a good reason not to do so (Whitehorn v R (1983) 152 CLR 657; Dyers v R (2002) 210 CLR 285; Mahmood v Western Australia (2008) 232 CLR 397).
+
+As the prosecution seeks the truth, it must call evidence favourable and unfavourable to its case (R v Soma (2003) 212 CLR 299; R v Shaw (1991) 57 A Crim R 425; R v Glennon (No. 2) (2001) 7 VR 631).
+
+However, the prosecution does not need to call a witness if his or her evidence:
+1. Is likely to be unreliable, untrustworthy or otherwise incapable of belief (Whitehorn v R (1983) 152 CLR 657; R v Newland (1997) 98 A Crim R 455). It is not enough for the prosecution to merely suspect the witness is unreliable. There must be identifiable circumstances which clearly establish unreliability (Apostilides v R (1984) 154 CLR 563).
+
+> The mere fact that a potential witness has made contradictory statements in the past is not a sufficient reason for failing to call him or her (R v Shaw (1991) 57 A Crim R 425; R v Armstrong [1998] 4 VR 533; R v Palmer [2000] VSCA 236).
+>
+> The fact that the prosecution expects the witness to be unfavourable, or to give evidence that does not accord with the prosecution's case theory, is also not a sufficient reason for failing to call a witness (Whitehorse v R (1983) 152 CLR 657; R v Newland (1997) 98 A Crim R 455; R v Heinze [2005] VSCA 124; Dyers v R (2002) 210 CLR 285; R v Kneebone (1999) 47 NSWLR 450).
+
+2. Is likely to be unnecessarily repetitious, in light of the number of witnesses available for the proof of the matter on which they would give evidence (Whitehorn v R (1983) 152 CLR 657); or
+
+3. Relates to an issue which has been raised by the defence, and on which the defence bears the onus of proof (e.g., mental impairment) (R v Fitchett [2009] VSCA 150).
+
+### Other Explanations for Not Calling a Witness
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Other Explanations for Not Calling a Witness] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Situations justifying non-calling of witnesses] [CONCEPTS: non-calling, explanations, witness credibility, legal standards, prosecution duties]
+
+At common law, the prosecution has been held to have a good reason for not calling a witness in the following circumstances:
+- Where it did not know what evidence the witness would give (e.g., because the police did not take a witness statement) (Gillan v Police (SA) (2004) 149 A Crim R 354); **My note CF with Solis v The Queen [2018] VSCA 275, [104]-[108]** where it was said a failure by police to question a relevant person is not a satisfactory reason for not calling the person. A prosecutor cannot remain passive, leaving a failure by police to dictate who should be called at the trial).
+
+- Where the witness could not have been compelled to give evidence (R v Reardon (No 2) (2004) 60 NSWLR 454);
+
+- Where the witness had been deported and could not be subpoenaed (Fonseka v R (2003) 140 A Crim R 395);
+
+- Where the witness had indicated that he or she would not give evidence due to a privilege under Evidence Act 2008 (R v Kessing (2008) 73 NSWLR 22).
+
+### Can a Prosecutor Select the Witnesses to Suit His or Her Case?
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Prosecutors Selecting Witnesses] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Prosecutor obligations and witness selection] [CONCEPTS: prosecutor discretion, material witnesses, fair trial, Evidence Act, selection criteria]
+
+No, Prosecutor's obligation is to call all material witnesses unless ... The object is a fair trial and section 38 Evidence, 2001 offers the prosecutor some ability to deal with unfavourable witnesses. Failure to call an apparent witness will generally give rise to a Jones v Dunkel warning! Though there is a authority that says there is limited application of the principle to criminal proceedings as explained by the Full Court of the South Australian Supreme Court in Police v Kyriacou [2009] SASC 66; (2009) 103 SASR 243; (2009) 193 A Crim R 490 at [62]-[63].
+
+### Witnesses - Prosecution Obligation
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Witnesses - Prosecution Obligation] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Expectations regarding prosecution witnesses] [CONCEPTS: prosecution responsibility, witness call, narrative completeness, testimony types, evidence admissibility]
+
+In Whitehorn v R [1983] HCA 42; (1983) 152 CLR 657 at 16, Dawson J said:
+\[15\] *In Richardson v. The Queen [1974] HCA 19; (1974) 131 CLR 116 this Court pointed out that although the choice made by a Crown Prosecutor of the witnesses to be called in support of the Crown case may be said to involve the exercise of a discretion, that means no more than that he is called upon to make a personal judgment bearing in mind the responsibilities of his office...* 
+
+\[16\] *Nevertheless, there is good guidance in the cases for what constitutes a material witness...* The presence of a material witness is crucial to unfold the complete narrative of the events. While a prosecutor should make all reasonable efforts to bring these witnesses, they are not facilitation of an inquisition, but part of a balance towards a fair trial.
+
+### Court Calling a Witness
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Court Calling a Witness] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Trial Judge Responsibilities Regarding Witnesses] [CONCEPTS: trial judge limits, fair trial, witness calling, responsibilities, prosecutor duties]
+
+In Whitehorn v R [1983] HCA 42; (1983) 152 CLR 657 at 17 - 18, Dawson J said:
+\[17\] *No doubt all of these observations...might lead a judge to invite reconsideration of the call but do not extend to responsibilities which belong expressly to the parties. If the Crown fails to call a witness whom the trial judge considers ought to be called...*
+
+### Darren John Burston v David John Brooks [1996] TASSC 152
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Darren John Burston v David John Brooks Case Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority regarding prosecution witness obligation] [CONCEPTS: Burston, witness failure, prosecution duties, commentary, case law]
+
+I have mentioned that a number of witnesses who might have been expected to have been called by the respondent, namely the manager of the Saloon Bar and some four police officers, were not called by him and no explanation was given for this failure. Counsel who appeared for the applicant before the learned magistrate raised this matter in his opening address but the learned magistrate made no mention of it in his reasons. When spoken to in the charge room, the applicant made it quite clear that he did not consider that he had done anything wrong. On the prosecution version of events, the applicant's altercation with the manager was the catalyst which led to subsequent events. The respondent's failure to call her is mystifying and on the face of it suggests a quite inappropriate conduct of the prosecution. 
+
+### Model Rules of Professional Conduct and Practice
+[DOMAIN: Tasmanian Criminal Law] [ACT:] [SECTION:] [CITATION: Model Rules of Professional Conduct and Practice] [CATEGORY: checklist] [TYPE: checklist] [TOPIC: Prosecutorial responsibilities regarding witnesses] [CONCEPTS: prosecutorial conduct, witness obligations, trial fairness, evidence relevance, witness statements]
+
+20.7 A prosecutor must call as part of the prosecution's case all witnesses:
+20.7.1 whose testimony is admissible and necessary for the presentation of the whole picture;
+20.7.2 whose testimony provides reasonable grounds for the prosecutor to believe that it could provide admissible evidence relevant to any matter in issue;
+20.7.3 whose testimony or statements were used in the course of any committal proceedings; and
+20.7.4 from whom statements have been obtained in the preparation or conduct of the prosecution's case, unless:
+  (a) the opponent consents to the prosecutor not calling a particular witness;
+  (b) the only matter with respect to which the particular witness can give admissible evidence has been dealt with by an admission on behalf of the accused; or
+  (c) the prosecutor believes on reasonable grounds that the administration of justice in the case would be harmed by calling a particular witness or particular witnesses to establish a particular point already adequately established by another witness or other witnesses, provided that:
+      - the prosecutor is not obliged to call evidence from a particular witness, who would otherwise fall within Rules 20.7.1-20.7.4, if the prosecutor believes on reasonable grounds that the testimony of that witness is plainly unreliable by reason of the witness being in the camp of the accused;
+      - the prosecutor must inform the opponent as soon as practicable of the identity of any witness whom the prosecutor intends not to call on any ground within (a), (b) and (c), together with the grounds on which the prosecutor has reached that decision; and
+      - the prosecutor must call any witness whom the prosecutor intends not to call on the ground in (i) if the opponent requests the prosecutor to do so for the purpose of permitting the opponent to cross-examine that witness.
+
+<!-- block_012 master -->
+
+# Legal Professional Privilege Overview
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: privilege requires confidential communication for legal advice] [CONCEPTS: legal professional privilege, confidential communication, litigation privilege, exceptions, waiver] [CITATION: hoc-b012-m001-legal-professional-privilege-overview] [ACT: None] [CASE: None]
+
+For privilege to apply it is necessary to show a communication was confidential, and that its dominant purpose was for the purpose of obtaining legal advice or for actual or anticipated litigation. Privilege may be able to be enforced via an injunction to restrain unauthorised use of privileged communications or via court processes during litigation. There are a number of exceptions to legal professional privilege, including waiver, statutory exclusions and improper or illegal conduct. Clients and practitioners should be aware of these exceptions to dispute claims of privilege by opposing parties, and to ensure that their own privileged communications do not fall within an exception.
+
+Parties should be particularly careful in relation to waiver of privilege as this can be implied where a party acts inconsistently with the maintenance of confidentiality. The Commonwealth of Australia and five of the country's eight states and territories have enacted legislation relating to legal professional privilege, all of which are largely identical and reflect common law protections. Both common law and statute recognise two types of privilege: legal advice privilege and litigation privilege.
+
+Legal advice privilege protects "confidential communications" between a client and a lawyer where confidential documents prepared by a client, lawyer or a third party are made or prepared for the dominant purpose of providing legal advice. Litigation privilege protects confidential communications and documents prepared for the dominant purpose of actual or anticipated proceedings. The litigation protection applies to communications between a client and their lawyer and may also apply to certain categories of communications between a lawyer and a third party.
+
+The Evidence Acts govern whether evidence can be adduced or admitted into evidence in a proceeding where client legal privilege may apply to that evidence. The common law provides the same protection but also protects against a broader range of compulsory actions to produce documents, including in pre-trial processes such as discovery and, in certain circumstances, claims for production by regulators. Privilege is not limited to documents, but applies to all communications between lawyers and clients which meet the dominant purpose test and confidentiality requirements set out below.
+
+Furthermore, privilege will attach to some documents which do not pass between a lawyer and client. This includes notes made by the client which record communications with the lawyer. Similarly, it attaches to work by a lawyer for the benefit of the client, such as memos and chronologies, even if not given to the client. However, documents already in existence which are later provided to a legal advisor for the purpose of providing legal advice will not attract privilege.
+
+Both the common law and the Evidence Acts in Australia require that a communication or document be made or produced for the "dominant purpose" of providing legal advice or actual or anticipated legal proceedings in order to attract privilege. The onus of proving the dominant purpose of a document or communication lies with the party claiming privilege. If a document would have been brought into existence regardless of an intention to seek legal advice, it will not be privileged.
+
+Where a document or communication contains both legal and non-legal advice, the portion containing legal advice will be privileged and the non-legal advice will not be. Non-legal advice includes advice that is purely commercial or of a public relations character. A communication must have been made confidentially to attract privilege. The Evidence Acts define a confidential communication as one in which there was an "express or implied obligation not to disclose its contents." This means that where a communication is made in front of a third party, privilege will likely not apply.
+
+# In-House Lawyers and Privilege
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: privilege attaches to in-house lawyers if in confidence] [CONCEPTS: in-house lawyers, confidentiality, privilege waiver, client communications, litigation privilege] [CITATION: hoc-b012-m002-in-house-lawyers-privilege] [ACT: None] [CASE: None]
+
+Privilege can attach to communications between an in-house lawyer and their employer, provided that the communication is made in confidence and the lawyer is acting in their professional capacity. There is a risk that privilege may not apply to communications with an in-house lawyer who is not sufficiently independent or who also has a non-legal role closely linked with their legal role.
+
+Only litigation privilege (not legal advice privilege) can attach to communications with third parties, such as experts. Generally when an expert is confidentially briefed for an opinion in relation to anticipated litigation, this will attract privilege. However, where a party seeks to rely on an expert report in litigation, this will waive privilege over the instructions given and the documents referred to or relied upon within the expert's report. There are a number of exceptions to privilege, including waiver, statutory exclusions, and illegal or improper conduct.
+
+Waiver of privilege occurs when the party claiming privilege acts inconsistently with the maintenance of the confidentiality of the communication. Waiver can be express or implied. Where waiver is implied it will not be relevant whether the party intended to waive privilege. Instead, the test is whether it would be unfair or misleading to allow a party to maintain privilege despite the inconsistent action. Simply stating that legal advice exists will not be sufficient to waive privilege.
+
+Waiver may also occur where the holder of the privilege puts his or her state of mind in issue. For example, where a party alleges in a proceeding that they undertook a particular action based on legal advice provided, they have put their state of mind at issue in the proceeding. It will then be relevant to consider the factors that the party was aware of at the time of the representation, including any legal advice that had been received. Inadvertent disclosure may not result in a waiver of privilege as long as the party who committed the error acts promptly upon realising their error. 
+
+In some circumstances, disclosure to a third party will not waive privilege if that party has a sufficiently close interest in the litigation or advice. Where parties share the same lawyer or have sufficiently close interests they will have joint privilege or common interest privilege. For example, communications between an insurer and an insured may have common interest privilege.
+
+# Waiver and Judicial Precedents
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: the test for determining privilege waiver] [CONCEPTS: waiver, privilege, judicial authority, confidentiality, evidence act] [CITATION: hoc-b012-m003-waiver-judicial-precedents] [ACT: None] [CASE: Lamers v Lamer [2017] VSC 165]
+
+A recent restatement by the Victorian Supreme Court of principles relating to waiver is found in *Lamers v Lamer* [2017] VSC 165. This case concerned a dispute between the plaintiff and his uncle in relation to a farming property and promises about the business that the uncle allegedly made to his nephew, including that he would be made the appointer of a trust and have shares in a trustee company transferred to him on his uncle's death.
+
+The defendants filed an affidavit of documents and then a later supplementary affidavit. A claim for privilege was made with respect to the supplementary affidavit. It became apparent that some documents over which privilege had not been sought in the first affidavit were the same documents that had been the subject of claims for privilege in the second affidavit. The defendants tried to address this question by saying select documents produced voluntarily in the first affidavit were not really privileged.
+
+Unfortunately, the court went further and said that it would be necessary to inspect documents listed in the second affidavit which would otherwise be privileged in order to properly understand the documents voluntarily produced. Waiver had occurred and the plaintiff was entitled by the Victorian Evidence Act to inspect otherwise privileged documents or parts of documents relating to a disposal of shares and ownership of the disputed assets to enable a proper understanding of other documents that had already been given to the plaintiff.
+
+Privilege does not apply to communications made for the purpose of facilitating illegal or improper purposes. This applies regardless of whether or not the lawyer was a party to, or even aware of, the improper purpose.
+
+A recent example of where privilege was excluded in such circumstances is found in *Aucare Dairy Pty Ltd v Huang* [2017] FCA 746. The Federal Court found that, as there was a strong case that the respondents had engaged in fraudulent conduct, communications with their lawyers in the course of that conduct were not privileged. The applicants did not contend that the respondent's solicitors had knowledge of or participated in the fraud and did not need to do so to succeed in their application.
+
+# Use of Privilege in Litigation
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: privilege can be enforced to combat disclosure requests] [CONCEPTS: litigation privilege, disclosure, injunction, Evidence Act, regulators] [CITATION: hoc-b012-m004-litigating-privilege] [ACT: Australian Securities and Investments Act 2001 (Cth)] [CASE: Aucare Dairy Pty Ltd v Huang [2017] FCA 746]
+
+Privilege can be removed or altered by legislation. For example, section 192 of the *Australian Securities and Investments Act 2001* (Cth) abrogates legal professional privilege. Where a party is threatening the disclosure of privileged information it may be possible to obtain an injunction seeking to restrain the disclosure. Additionally, during the course of litigation, privilege can be used as a basis for refusing requests from another party to provide privileged documents during pre-trial procedures or during a trial.
+
+Privilege can also be used to combat attempts by other parties to have a court admit privileged communications which have been obtained despite the privileged status of those documents. Privilege also provides a basis for withholding information from regulators in some situations. Whether this is possible and the necessary steps will depend on the specific regulator and the circumstances in which the information has been requested. For example, privilege can in some instances be used as a method for withholding privileged documents from production for some compulsory notices issued by Australia's corporate regulator, the Australian Securities and Investments Commission (ASIC).
+
+Where a regulator such as the Australian Competition and Consumer Commission or ASIC conduct a raid to seize documents, they may or may not be permitted to take privileged documents.
+
+1. When giving verbal advice, make sure that only those people who are necessary are present to ensure that there is the necessary confidentiality for privilege to apply.
+2. Advising a third party about the contents of advice may waive privilege.
+3. When acting as in-house counsel, legal advice should not be mixed with comments about strategic or operational matters. All advice given by in-house counsel must be independent of their employer to be privileged. Documents merely stating a partisan company position without independent thought will not be privileged.
+4. Legal advice which forms part of or an attachment to Board papers may not be privileged and nor will notes made about what non-lawyers have said at a board meeting when they discuss legal advice received. To get around this issue, a legal advisor should attend in person at any board meeting to advise its members and then prepare a record of that meeting to give directly to the board members to confirm the advice provided.
+5. Unless an expert is formally retained by a lawyer for the express purpose of assisting a lawyer to give advice and has all communications necessary for their work with the lawyer, it should be assumed that any communications between clients and experts, and any documents created by them may not be privileged. For this reason, it is good to get lawyers involved early on during any investigations. Where a lawyer is engaged to investigate for the purpose of potential litigation, the investigation will be privileged.
+6. If an expert's advice is relied on in any proceeding, the communications with them or to them will likely not be privileged, nor will the expert's notes and draft documents.
+7. It is often not possible to refuse to provide documents to a regulator. If documents are produced, it should be done together with an express statement (or if possible an agreement) that the documents are confidential and privileged and the provision of the documents does not amount to any waiver.
+8. Be wary of provision of large volumes of documents in commercial transactions such as via data rooms and the like. Provision of documents in such circumstances can amount to a waiver of privilege.
+9. Be careful when producing documents to avoid a waiver of privilege in other documents. If a party produces a letter from a lawyer about a transaction which says "as set out in my previous letter," there may well be a waiver of privilege in that previous letter even if it is privileged.
+
+<!-- block_012 procedure -->
+
+### Overview of legal professional privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Overview of legal professional privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Introduction to legal professional privilege] [CONCEPTS: legal professional privilege, disclosure, protection, communications, legal advice]
+
+Legal professional privilege can protect against disclosure of documents.
+
+### Scope and source of legal professional privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Scope and source of legal professional privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Scope of legal professional privilege] [CONCEPTS: legal privilege, communication, confidentiality, common law, Australia]
+
+The Commonwealth of Australia and five of the country’s eight states and territories have enacted legislation relating to legal professional privilege, all of which are largely identical and reflect common law protections.
+
+### Application of legal professional privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Application of legal professional privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Application criteria for legal privilege] [CONCEPTS: application, legal advice, litigation, client communication, protection]
+
+Privilege may be able to be enforced via an injunction to restrain unauthorised use of privileged communications or via court processes during litigation.
+
+### Exceptions to privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Exceptions to privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Exceptions to legal professional privilege] [CONCEPTS: legal privilege exceptions, waiver, statutory exclusion, improper conduct, confidentiality]
+
+There are a number of exceptions to legal professional privilege, including waiver, statutory exclusions, and improper or illegal conduct. 
+
+### Enforcing privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Enforcing privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Mechanisms for enforcing legal privilege] [CONCEPTS: enforcing privilege, injunction, litigation, privileged communications, court processes]
+
+Privilege can be enforced via an injunction to restrain unauthorised use of privileged communications.
+
+### In-house lawyers and privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: In-house lawyers and privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Privilege applicable to in-house counsel] [CONCEPTS: in-house counsel, attorney-client privilege, confidentiality, independence, employer communications]
+
+Privilege can attach to communications between an in-house lawyer and their employer, provided that the communication is made in confidence and the lawyer is acting in their professional capacity.
+
+### Third parties and privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Third parties and privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Privilege in communications with third parties] [CONCEPTS: third party privilege, litigation privilege, expert opinion, confidentiality, waiver]
+
+Only litigation privilege (not legal advice privilege) can attach to communications with third parties, such as experts.
+
+### Waiver of privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Waiver of privilege] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Conditions under which privilege can be waived] [CONCEPTS: waiver of privilege, express, implied, confidentiality, legal advice, disclosure]
+
+Waiver of privilege occurs when the party claiming privilege acts inconsistently with the maintenance of the confidentiality of the communication.
+
+### Recent case authority on waiver of privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Recent case authority on waiver of privilege] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case law on privilege waiver] [CONCEPTS: waiver case, Lamers v Lamer, privilege, affidavit, documents]
+
+A recent restatement by the Victorian Supreme Court of principles relating to waiver is found in *Lamers v Lamer* \[2017\] VSC 165.
+
+### Legal doctrine on privilege and improper purposes
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Legal doctrine on privilege and improper purposes] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Legal doctrine on privilege and illegal acts] [CONCEPTS: privilege, illegal conduct, communications, law, protections]
+
+Privilege does not apply to communications made for the purpose of facilitating illegal or improper purposes.
+
+### Practical tips for practitioners regarding privilege
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Practical tips for practitioners regarding privilege] [CATEGORY: checklist] [TYPE: checklist] [TOPIC: Practical guidelines for maintaining privilege] [CONCEPTS: privilege tips, confidentiality, legal advice, board papers, experts]
+
+1.  When giving verbal advice, make sure that only those people who are necessary are present to ensure that there is the necessary confidentiality for privilege to apply.  
+2.  Advising a third party about the contents of advice may waive privilege.  
+3.  When acting as in-house counsel, legal advice should not be mixed with comments about strategic or operational matters. All advice given by in-house counsel must be independent of their employer to be privileged. Documents merely stating a partisan company position without independent thought will not be privileged.  
+4.  Legal advice which forms part of or an attachment to Board papers may not be privileged and nor will notes made about what non-lawyers have said at a board meeting when they discuss legal advice received. To get around this issue, a legal advisor should attend in person at any board meeting to advise its members and then prepare a record of that meeting to give directly to the board members to confirm the advice provided.  
+5.  Unless an expert is formally retained by a lawyer for the express purpose of assisting a lawyer to give advice and has all communications necessary for their work with the lawyer, it should be assumed that any communications between clients and experts, and any documents created by them may not be privileged. For this reason, it is good to get lawyers involved early on during any investigations. Where a lawyer is engaged to investigate for the purpose of potential litigation, the investigation will be privileged.    
+6.  If an expert’s advice is relied on in any proceeding the communications with them or to them will likely not be privileged, nor will the expert’s notes and draft documents.  
+7.  It is often not possible to refuse to provide documents to a regulator. If documents are produced, it should be done together with an express statement (or if possible an agreement) that the documents are confidential and privileged and the provision of the documents does not amount to any waiver.  
+8.  Be wary of provision of large volumes of documents in commercial transactions such as via data rooms and the like. Provision of documents in such circumstances can amount to a waiver of privilege.  
+9.  Be careful when producing documents to avoid a waiver of privilege in other documents. If a party produces a letter from a lawyer about a transaction which says "as set out in my previous letter" there may well be a waiver of privilege in that previous letter even if it is privileged.    
+
+### Charge negotiation (plea bargaining)
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Charge negotiation guidelines] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Guidelines for charge negotiation] [CONCEPTS: plea bargaining, prosecution guidelines, criminal charges, negotiation considerations, defendant cooperation]
+
+A proposal should not be entertained by the prosecution unless:  
+- the charges to be proceeded with bear a reasonable relationship to the nature of the criminal conduct of the accused  
+- those charges provide an adequate basis for an appropriate sentence in all the circumstances of the case  
+- there is evidence to support the charges  
+
+### Judicial bias - apprehension of bias
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Application for disqualification due to bias] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Application regarding perceived judicial bias] [CONCEPTS: judicial bias, disqualification, magistrate, impartiality, private communications]
+
+Make an application to disqualify themselves from the hearing upon the grounds of perceived bias.
+
+### Judicial bias - test and relevant authority
+[DOMAIN: Tasmanian Criminal Law] [ACT: N/A] [SECTION: N/A] [CITATION: Test for perceived bias] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Test for assessing judicial bias] [CONCEPTS: bias test, judicial proceedings, impartiality, fair-minded observer, pre-judgment]
+
+The requisite standard required of a judicial officer is breached if, in the eyes of that fair-minded lay observer, a decision-maker proceeds to determination of a question by reference to something other than the evidence which is led.
+
+### Apparent bias - legal definition and authority
+[DOMAIN: Tasmanian Criminal Law] [ACT: Justices Act 1959] [SECTION: 107(4)] [CITATION: Apparent bias definition] [CATEGORY: procedure] [TYPE: annotation] [TOPIC: Definition of apparent bias] [CONCEPTS: apparent bias, natural justice, error of law, judicial fairness, legal standards]
+
+A denial of natural justice by way of apparent bias is an error of law within the meaning of the *Justices Act 1959*, s107(4).
+
+<!-- block_013 master -->
+
+# One-Sided Phone Recording Defence under the Listening Devices Act
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: defence if consented to by one party to protect their lawful interest] [CONCEPTS: Listening Devices Act, defence, lawful interest, family violence, admissibility] [CITATION: hoc-b013-m001-one-sided-phone-recording-defence] [ACT: Listening Devices Act 1991] [CASE: Sepulveda v The Queen]
+
+Section 5 of the Listening Devices Act 1991 addresses a defence available if one party consented to the recording of a conversation to protect their "lawful interest." The case of *Sepulveda v The Queen* illustrates this, where the NSW Court of Criminal Appeal concluded that protection in this context entailed 'defence from harm, danger or evil'. In *Sepulveda*, the decision summarized relevant considerations surrounding the clandestine recording of a conversation in which a person accused of child sex abuse admitted his crimes to one of his victims.
+
+The commentary highlights that the Listening Devices Act 1984, which has been repealed, had a provision in section 5 mirroring this lawful interest exception, situating it within the framework of both NSW and Tasmanian legislation. 
+
+In the unreported decision of ***Moore v Harrison [2018] TASMC***, which explored similar legal themes, a recording made by the victim's sister contained evidence of a complaint about an assault. The victim was unaware that she had been recorded during the conversation, which raised questions about the applicability of the lawful interest defence. In this instance, it was argued that the recording was made because the sister knew that the victim may not provide an honest account due to fears of repercussions for the defendant.
+
+Magistrate Ken Stanton in *Moore v Harrison* underscored that protecting the interests of a victim of a serious crime, including family violence, has been found to be a sufficient legal interest. In particular, at paragraph 20 of his decision, it was seen that protection from family violence can justify the recording even without the victim's knowledge. 
+
+The considerations surrounding whether it was "reasonably necessary to protect" are canvassed in the decision, reflecting a balancing act of factors within the circumstances of the particular case. These factors include the immediacy of the threat and the ability to produce contemporaneous notes. The argument extends to an evaluation under Section 138(3) of the Evidence Act, suggesting that even if caught under Section 5(1)(b), the evidence ought to be admitted if it elucidates circumstances of family violence.
+
+It is significant to note that Section 14 of the Listening Devices Act does not exclude the evidence based on the victim's lack of awareness of the recording. According to this provision, the victim (recorder) can still be considered a party to the conversation. The evidence in *Dimech v Tasmania* further highlights the admissibility discussions around evidence obtained in circumstances similar to those in *Moore v Harrison*. Additionally, *Shepperd v Cannell* indicates that the absence of certain evidence does not terminate the case, bolstering the argument that other corroborative elements can be considered.
+
+The overarching legal narrative concludes that the critical lens through which one assesses consent and lawful interest in recording conversations is underscored by clarity on how immediate protection necessitates such actions. If the recording can substantiate claims of violence or abuse where other evidentiary avenues are limited, it warrants significant consideration within both the lawful interest framework and necessary defence.
+
+<!-- block_013 procedure -->
+
+### Tactical Workflow for One-Sided Phone Recordings
+[DOMAIN: Tasmanian Criminal Law] [ACT: Listening Devices Act 1991] [SECTION: 5] [CITATION: Listening Devices Act 1991 s 5 - Tactical Workflow] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Workflow for using one-sided phone recordings] [CONCEPTS: phone recordings, lawful interests, consent, Listening Devices Act, Tasmanian law]  
+This chunk covers the tactical workflow for utilizing one-sided phone recordings as a defence if consented to by one party under the Listening Devices Act. 
+
+1. Assess if the recording was made with the consent of one party.
+2. Determine if the recording protects a lawful interest.
+3. Reference the case of *Sepulveda v The Queen* for applicable legal principles.
+4. Evaluate the implications of inadmissibility under s 14(1) if caught violating s 5(1)(b).
+
+---
+
+### Commentary on *Sepulveda v The Queen*
+[DOMAIN: Tasmanian Criminal Law] [ACT: Listening Devices Act 1991] [SECTION: 5] [CITATION: Listening Devices Act 1991 s 5 - Commentary on Sepulveda] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Definition of lawful interests] [CONCEPTS: Sepulveda case, lawful interests, protection from harm, criminal appeal, case law]  
+This chunk contains commentary on *Sepulveda v The Queen*, which concluded that protection of lawful interests entails 'defence from harm, danger or evil'.
+
+---
+
+### Legislation Discussion on Listening Devices Act 1991
+[DOMAIN: Tasmanian Criminal Law] [ACT: Listening Devices Act 1991] [SECTION: 5] [CITATION: Listening Devices Act 1991 s 5 - Legislation Discussion] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of Listening Devices Act provisions] [CONCEPTS: Listening Devices Act, consent, legal exceptions, Tasmanian law, evidence]  
+This chunk discusses the critical sections related to recording conversations under the Listening Devices Act 1991. 
+
+1. Section 5(1)(b): Prohibits recording a conversation to which you are a party.
+2. Section 5(3): Lists exceptions that allow for implied consent or reasonable necessity.
+3. Reference to the case of *Moore v Harrison* to illustrate application of these sections.
+
+---
+
+### Legal Argument from *Moore v Harrison*
+[DOMAIN: Tasmanian Criminal Law] [ACT: Listening Devices Act 1991] [SECTION: 5] [CITATION: Listening Devices Act 1991 s 5 - Legal Argument from Moore v Harrison] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Legal arguments regarding implied consent] [CONCEPTS: Moore v Harrison, lawful interest, consent, victim’s sister, evidence admission]  
+This section covers the legal argument surrounding the application to admit evidence based on *Moore v Harrison*, which dealt with recording a conversation made by the victim's sister without the victim's knowledge.
+
+1. Argument asserts that recording was necessary due to victim's potential dishonesty.
+2. Legal reasoning referenced from magistrate Ken Stanton’s unpublished decision.
+
+---
+
+### Analysis of Necessity to Protect Lawful Interests
+[DOMAIN: Tasmanian Criminal Law] [ACT: Listening Devices Act 1991] [SECTION: 5] [CITATION: Listening Devices Act 1991 s 5 - Analysis of Necessity] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Assessing reasonable necessity] [CONCEPTS: reasonable necessity, lawful interests, family violence, balancing factors, magistrate's reasoning]  
+This chunk analyzes the question of whether the record made by the victim’s sister was "reasonably necessary" for protection under s 5(3).
+
+1. Discusses balancing act of factors including lack of witnesses and the immediacy of need.
+2. Reference to additional case law regarding family violence as a sufficient lawful interest.
+
+---
+
+### Absence of Evidence Not Terminal
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 20] [CITATION: Evidence Act 2001 s 20 - Absence of Evidence Not Terminal] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority on absence of evidence] [CONCEPTS: absence of evidence, case law, Tasmania v Dolega, corroborative evidence]  
+This chunk references case law showing that the absence of evidence from police officers is not necessarily indicative that harm did not occur. Specifically noted in *Shepperd v Cannell*, para 20 which discusses the reliability of complainant’s evidence supported by corroborative facts.
+
+---
+
+### Failure to Record Reasons in Statement Not Terminal
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 12] [CITATION: Evidence Act 2001 s 12 - Failure to Record Reasons Not Terminal] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Legality of search statement omission] [CONCEPTS: failure to record reasons, legality of search, Moore v Knowles, omission]  
+This section covers the case *Moore v Knowles*, where the court held that the failure of an officer to record the basis of their belief during a search did not invalidate the legality of the search.
+
+---
+
+### Sources of Evidence Concerning Prior Offences
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 97] [CITATION: Evidence Act 2001 s 97 - Sources of Evidence: Prior Offences] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Admissibility of prior offences as evidence] [CONCEPTS: sources of evidence, prior offences, Evidence Act, character evidence, admissibility]  
+This chunk raises questions regarding the admissibility of prior offences under the Evidence Act, focusing on the criteria within sections 97, 98, and 110.
+
+---
+
+### Tactical Steps for Formatting Phone Download Evidence 
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 100] [CITATION: Evidence Act 2001 s 100 - Phone Download Evidence Formatting] [CATEGORY: checklist] [TYPE: checklist] [TOPIC: Procedure for formatting phone evidence for court] [CONCEPTS: phone downloads, evidence formatting, court procedure, legal services, evidence admission]  
+Outline of tactical steps for formatting and presenting phone download evidence in court.
+
+1. Edit in Excel, sorting by inbox/outbox and colour-coding entries.
+2. Delete irrelevant messages.
+3. Prepare evidence in accordance with legal services guidelines.
+
+---
+
+### Discussion on Phone Towers and Data Mapping
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2008] [SECTION: 135] [CITATION: Evidence Act 2008 s 135 - Phone Towers and Data Mapping] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Circumstantial evidence from telecommunications] [CONCEPTS: circumstantial evidence, phone towers, mapping, Wagner v The King, legal analysis]  
+This chunk discusses circumstantial telecommunications evidence as shown in *Wagner v The King*, noting the probative value of evidence from phone records.
+
+---
+
+### Admission Evidence Strategies Regarding Arunta Recordings
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 106] [CITATION: Evidence Act 2001 s 106 - Arunta Recordings Admissibility] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Using private recordings as evidence] [CONCEPTS: admission evidence, Arunta recordings, witness motive, Police v Endlay, evidence admission]  
+This section outlines strategies for using private recordings as admissions evidence under Tasmania's laws, referencing *Police v Endlay* for legal context.
+
+---
+
+### Body Worn Cameras Legislation Update
+[DOMAIN: Tasmanian Criminal Law] [ACT: Surveillance Legislation Amendments (Personal Police Cameras) Act 2018] [SECTION: 1] [CITATION: Surveillance Legislation Amendments - Body Worn Cameras] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Updates on body worn cameras for police] [CONCEPTS: body worn cameras, police powers, legislative amendments, evidence admission, public recording]  
+Discussion on amendments to police use of personal cameras and the legal implications of body worn cameras under new legislation.
+
+---
+
+### RDS 000 Calls as Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 69] [CITATION: Evidence Act 2001 s 69 - RDS 000 Calls as Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Admissibility of emergency calls as evidence] [CONCEPTS: 000 calls, admissibility, business records, Tasmania v Dolega, evidence law]  
+Exploration of how RDS 000 calls can be admitted as evidence in court, framing them as business records.
+
+---
+
+### Limitations on Subpoenaing Social Media Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 88] [CITATION: Evidence Act 2001 s 88 - Subpoenaing Social Media Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Challenges with social media evidence retrieval] [CONCEPTS: social media, subpoena limitations, Facebook, evidence admission, privacy concerns]  
+This chunk outlines the challenges involved in subpoenaing social media evidence and how it can be accessed with consent.
+
+---
+
+### Strategies for Authenticating Social Media Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001] [SECTION: 58] [CITATION: Evidence Act 2001 s 58 - Authenticating Social Media Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Authenticity issues with Facebook evidence] [CONCEPTS: social media evidence, authenticity, business records, Evidence Act, evidential hurdles]  
+Strategies to authenticate social media evidence, addressing pre-admission hurdles including relevance, authenticity, hearsay, and potential prejudice.
+
+---
+
+<!-- block_014 master -->
+
+# Collecting DNA and Fingerprint Evidence in Criminal Proceedings
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: procedures for collecting and submitting DNA and fingerprint evidence] [CONCEPTS: DNA, fingerprint, evidence collection, forensic services, barcoding] [CITATION: hoc-b014-m001-collecting-evidence] [ACT: None] [CASE: None]
+
+- Sample site recorded by photograph or by seizing item.
+
+- Item or location is given a barcode/sample number.
+
+- Sample details are recorded by sampling officer and a barcode is kept in their personal records.
+
+- Sample is sent to Tas Forensic Services (DNA) or to Fingerprint section (TasPol).
+
+**DNA:**
+
+- DNA will result in report making reference to specific barcode numbers.
+
+- Call sample taker -- ensure to ask if the sample/item was given a barcode/reference number (note, can seek leave to permit officer to refer to their notes to retrieve the number).
+
+- Once link between item/sample location and barcode reference number is made, analyst can be called.
+
+- Treat as with all expert witnesses -- confirm details of expertise and submit to court that witness is qualified to present expert opinion.
+
+- Once expertise established ask them if they prepared a report -- authenticate -- and seek to tender.
+
+- Generally, this is enough -- can ask more questions like degradation periods of samples etc. if poignant.
+
+It was not possible to determine from DNA analysis alone how, and for how long, DNA has been deposited on an item.
+
+### Fingerprint:
+
+Same same.
+
+However, generally no report, just a stat dec so they will need to orally give details and make link to serial/barcode number.
+
+---
+
+# Bank Records and Warrants for Criminal Investigations
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: obtaining bank records through warrants] [CONCEPTS: bank records, affidavits, Evidence Act, authorisation, disclosure] [CITATION: hoc-b014-m002-bank-warrants] [ACT: Evidence Act 2001] [CASE: None]
+
+Cops can request copies of bank records by number or name and usually that comes with an affidavit from the respective banks "keeper of the records". You can get that in as is under s 170 of the EA as long as you meet the "author" requirements and service (not just disclosure) requirements on defence under 171-172.
+
+Example of affidavit and warrant on file under business records.
+
+---
+
+# Dock Identification in Criminal Trials
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: doctrine] [TOPIC: dock identification limits] [CONCEPTS: dock identification, admissibility, prior identification, case law] [CITATION: hoc-b014-m003-dock-identification] [ACT: None] [CASE: None]
+
+Dock identifications are not usually permitted, other than as confirmatory of an acceptable prior out-of-court identification: *Jamal v R* \[2000\] FCA 1195; *(2000) 182 ALR 307*; *R v Gorham* \[1997\] SASC 6218; *(1997) 68 SASR 505*.
+
+The courts have long adopted the attitude that, in cases in which a witness has not become familiar with the appearance of an accused person by reason of previous knowledge or association and has not seen the accused since the events in question, evidence of identification will not normally be admitted where the purported identification has occurred in circumstances in which the accused is specifically presented to the witness as a person who is suspected of having committed the relevant crime.
+
+---
+
+# Voice Identification Evidence and Recognition Evidence
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: admissibility of voice recognition evidence] [CONCEPTS: voice identification, recognition, opinion evidence, admissibility, case law] [CITATION: hoc-b014-m004-voice-identification] [ACT: None] [CASE: Davey v Tasmania [2020] TASCCA 12]
+
+*Davey v Tasmania* \[2020\] TASCCA 12 (5 August 2020) \[from para 53 voice recognition opinion evidence\]
+
+Voice recognition can be admissible as ad hoc opinion evidence.
+
+### Recognition Evidence
+
+Recognition evidence can involve as much danger of mistaken identification as cases involving persons first seen at the times of their alleged crimes. *Sundram v Bearman* \[2020\] TASMC 18 (3 August 2020) indicated the court should be especially cautious before convicting based on identification or recognition evidence. There is a recognition that mistakes in identification do occur.
+
+---
+
+# Police Identification Evidence in Tasmania
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: probative value of police identification evidence] [CONCEPTS: police identification, evidence admission, credibility, conviction, case law] [CITATION: hoc-b014-m005-police-identification] [ACT: None] [CASE: Young v Lusted [2011] TASSC 22]
+
+*YOUNG v LUSTED* (Crawford CJ) \[2011\] TASSC 22 *(BUT see Baker v Penneyston* \[2018\] TASSC 8).
+
+\[27\] No doubt police officers make mistakes, like all of us. Nevertheless, there was no error in taking into account the fact that the witness was a police officer. It was relevant to the probative value of the evidence. The magistrate was justified in having regard to the fact that a police officer who by reason of his rank had obviously had long experience as a police officer would have greater training and experience for perceiving and remembering the features of a person under observation than many lay persons. The Inspector was likely to have been more aware than a lay person of the need to observe and retain a memory of his observations.
+
+\[29\] For those reasons, I conclude that the magistrate correctly decided to admit the evidence.
+
+\[30\] Although it is not determinative of the question whether the evidence should not have been admitted, I mention that it was not the only evidence that led the magistrate to conclude beyond reasonable doubt that the applicant was the driver of the Falcon. 
+
+---
+
+# Conduct and Management of a Voir Dire
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: procedures and standards for a voir dire] [CONCEPTS: voir dire, burden of proof, admissibility, Evidence Act, cross-examination] [CITATION: hoc-b014-m006-voir-dire-management] [ACT: Evidence Act 2001] [CASE: None]
+
+A criminal trial is "deemed to begin when the accused is called upon to plead": *Criminal Code*, s 351(6).
+
+The court has a discretion as to which party presents evidence first on the voir dire: *R v Turner (No 12)* \[2001\] TASSC 103. However, the defence is rarely, if ever, compelled to go first.
+
+Prima facie, all evidence on a voir dire is to be given orally. In practice, counsel very often seek to have questions of admissibility determined wholly or partly "on the papers".
+
+### Evidentiary thresholds:
+
+In proceedings on the voir dire, the burden of proof of a fact is upon the party asserting that fact.
+
+In proceedings on the voir dire, the standard of proof is proof on the balance of probabilities: *Evidence Act*, s 142. See also *Moore v Knowles* \[2017\] TASMC 12.
+
+If a witness has commenced giving evidence before a jury, and needs to give evidence on the voir dire, that witness must first swear another oath or make another affirmation. That is to say, the voir dire is treated as a separate proceeding, requiring afresh oath or affirmation.
+
+---
+
+# ID Evidence and the Role of Dock Identification
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: limitations and context of dock identification evidence] [CONCEPTS: ID evidence, dock identification, prior identification, case law, admissibility] [CITATION: hoc-b014-m007-id-evidence-dock-identification] [ACT: None] [CASE: None]
+
+The courts have long held that dock identifications are not usually permitted, except as confirmatory of an acceptable prior out-of-court identification. This principle is articulated in *Jamal v R* \[2000\] FCA 1195 and provides that for dock identifications to be admissible, the witness must have become familiar with the appearance of the accused by reason of previous knowledge or association. If the witness has not seen the accused since the events in question, the circumstances under which the identification occurs—specifically that the accused is presented as the suspect—further complicate its admissibility.
+
+In essence, the reliance on dock identification poses risks of unfair prejudice and misidentification, necessitating careful scrutiny by the court.
+
+---
+
+# Admissibility of Voice Recognition Evidence in Criminal Proceedings
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: criteria for admissibility of voice recognition evidence] [CONCEPTS: voice recognition, admissibility, opinion evidence, expert testimony, case law] [CITATION: hoc-b014-m008-voice-recognition-evidence] [ACT: None] [CASE: Davey v Tasmania [2020] TASCCA 12]
+
+In *Davey v Tasmania* \[2020\], the court assessed the admissibility of voice recognition evidence, asserting that such evidence can be presented as ad hoc opinion evidence. This ruling underscores the necessity for expert testimony to establish credibility and reliability before the evidence can be admitted. The court's emphasis aligns with established therapeutic jurisprudence reflecting the importance of contextualizing voice recognition within the broader spectrum of identification evidence.
+
+This type of evidence necessitates a rigorous verification process to ensure the accuracy of the identification, as voice recognition inherently holds the potential for varying degrees of reliability.
+
+---
+
+# Concerns Regarding Recognition Evidence in Criminal Law
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: cautions on reliance in recognition evidence] [CONCEPTS: recognition evidence, mistaken identification, judicial caution, case law, assessment standards] [CITATION: hoc-b014-m009-recognition-evidence] [ACT: None] [CASE: Sundram v Bearman [2020] TASMC 18]
+
+In *Sundram v Bearman* \[2020\], the court directed that special caution must be exercised before reaching convictions based on recognition evidence, even when supplemented by other evidence. The court acknowledged that mistakes in identification do occur and pointed out the historical prevalence of wrongful convictions arising from honest yet mistaken identifications. This case underscores the need for judicial awareness regarding the particular pitfalls associated with "recognition" scenarios, which can be as problematic as cases involving initial sightings of a subject.
+
+Judicial caution is not merely advisable; it is essential given that even reliable witnesses, including acquaintances, can lead to incorrect identifications.
+
+---
+
+# Police Identification Evidence and Its Evaluation
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: credibility assessment of police identification testimony] [CONCEPTS: police testimony, identification evidence, admissibility, credibility, case law] [CITATION: hoc-b014-m010-police-identification-evidence] [ACT: None] [CASE: Young v Lusted [2011] TASSC 22]
+
+The case of *Young v Lusted* \[2011\] emphasizes the necessity of evaluating police identification evidence within a framework recognizing the potential for error. The magistrate, in this context, justified the admissibility of identification evidence by considering the police officer's superior experience and training in comparison to laypersons. The court articulated that the officer's rank and background contributed to the credibility of his observations and recollections of the incident in question. 
+
+This case indicates a nuanced approach where police officers' testimonies derive weight from their professional training, which can afford their assertions a higher degree of probative value. However, it simultaneously reminds the court to remain vigilant about inherent fallibility, ensuring comprehensive vetting prior to evidential acceptance.
+
+---
+
+# Managing Voir Dire: Standards and Practices
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: practices and standards in managing voir dire hearings] [CONCEPTS: voir dire, admissibility, Evidence Act, cross-examination, standard of proof] [CITATION: hoc-b014-m011-managing-voir-dire] [ACT: Evidence Act 2001] [CASE: None]
+
+Effective management of a voir dire involves several critical considerations as indexed by the *Evidence Act 2001*. A voir dire is seen as a separate proceeding where the burden of proof lies upon the asserting party, typically demanding proof on the balance of probabilities. It is essential to establish that if a witness has begun giving evidence before the jury, that individual must swear an additional oath when testifying on voir dire.
+
+There are also nuances regarding when a voir dire should occur; ideally, it is pre-trial but may be invoked if evidentiary issues arise during trial. The proceedings should be judiciously minimized to avoid jury inconvenience while ensuring comprehensive compliance with evidentiary thresholds necessitating prior resolution.
+
+---
+
+# Considerations in Conducting Voir Dire
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: key strategic decisions required for voir dire management] [CONCEPTS: voir dire, objection strategy, defensive questions, impact on jury, evidentiary thresholds] [CITATION: hoc-b014-m012-voir-dire-considerations] [ACT: None] [CASE: None]
+
+When approaching a voir dire, counsel must make strategic decisions informed by the likelihood of success regarding the objection to the evidence proposed. Counsel must determine whether to pursue a voir dire based on the potential impact of the evidence on the case. Additionally, the limits of the objections need clear identification to guide the voir dire process effectively.
+
+Particular attention should be given to whether oral evidence or decision on the papers is preferred, as well as the tactical requirement for potentially surprising a witness if necessary. All these aspects could significantly influence judicial opinions and jury perceptions, particularly in recognizing how the evidence presented aligns with the established law under the *Evidence Act*.
+
+---
+
+<!-- block_014 procedure -->
+
+### Collecting DNA and Fingerprint Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) s 38 - Tactical Workflow] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Tactical workflow for collecting DNA and fingerprint evidence] [CONCEPTS: DNA evidence, fingerprint evidence, evidence collection, forensic services, sample recording]
+
+Tactical workflow for collecting DNA and fingerprint evidence.
+
+1. Sample site recorded by photograph or by seizing item.
+2. Item or location is given a barcode/sample number.
+3. Sample details are recorded by sampling officer and a barcode is kept in their personal records.
+4. Sample is sent to Tas Forensic Services (DNA) or to Fingerprint section (TasPol).
+
+### DNA Evidence Collection Process
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) s 38 - DNA Evidence Collection Process] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Practitioner commentary on DNA evidence collection process] [CONCEPTS: DNA report, barcode reference, expert witness, sample analysis, expert opinion]
+
+Annotated commentary on DNA evidence collection process.
+
+- DNA will result in report making reference to specific barcode numbers.
+- Call sample taker -- ensure to ask if the sample/item was given a barcode/reference number (note, can seek leave to permit officer to refer to their notes to retrieve the number).
+- Once link between item/sample location and barcode reference number is made, analyst can be called.
+- Treat as with all expert witnesses -- confirm details of expertise and submit to court that witness is qualified to present expert opinion.
+- Once expertise established ask them if they prepared a report -- authenticate -- and seek to tender.
+- Generally this is enough -- can ask more questions like degradation periods of samples etc. if poignant.
+
+### Fingerprint Evidence Collection Process
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) s 38 - Fingerprint Evidence Collection Process] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Practitioner commentary on fingerprint evidence collection] [CONCEPTS: fingerprint report, stat dec, oral evidence, serial/barcode link, evidence link]
+
+Annotated commentary on fingerprint evidence collection.
+
+Same same. However, generally no report, just a stat dec so they will need to orally give details and make link to serial/barcode number.
+
+### Bank Records through Warrant
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 170] [CITATION: Evidence Act 2001 (Tas) s 170 - Bank Records Warrant] [CATEGORY: checklist] [TYPE: checklist] [TOPIC: Checklist for obtaining bank records via warrants and affidavits] [CONCEPTS: bank records, affidavit, disclosure requirements, section 170, section 171-172]
+
+Checklist for obtaining bank records via warrants and affidavits.
+
+Cops can request copies of bank records by number or name and usually that comes with an affidavit from the respective banks "keeper of the records". You can get that in as is under s 170 of the EA as long as you meet the "author" requirements and service (not just disclosure) requirements on defence under 171-172. Example of affidavit and warrant on file under business records.
+
+### Dock Identification Commentary
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code] [SECTION: s 351] [CITATION: Criminal Code s 351 - Dock Identification Commentary] [CATEGORY: script] [TYPE: script] [TOPIC: Scripted legal commentary regarding dock identification] [CONCEPTS: dock identification, safety of evidence, prior identifications, case law, witness familiarity]
+
+Scripted commentary regarding dock identification.
+
+***Police v Murtagh* \[2009\] TASMC 05**
+\[67\] \... dock identifications are not usually permitted, other than as confirmatory of an acceptable prior out-of-court identification: *Jamal v R [2000] FCA 1195; (2000) 182 ALR 307*, *R v Gorham* [1997] SASC 6218; (1997) 68 SASR 505).
+
+"\[65\] The courts have long adopted the attitude that, in cases in which a witness has not become familiar with the appearance of an accused person by reason of previous knowledge or association and has not seen the accused since the events in question, evidence of identification will not normally be admitted where the purported identification has occurred in circumstances in which the accused is specifically presented to the witness as a person who is suspected of having committed the relevant crime.
+
+### Voice Identification Evidence Ruling
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) s 38 - Voice Identification Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority discussion on voice identification evidence] [CONCEPTS: voice identification, ad hoc opinion evidence, admissibility, opinion evidence law, case law]
+
+Case authority discussion on voice identification evidence.
+
+***Davey v Tasmania \[2020\]* TASCCA** 12 (5 August 2020) \[from para 53 voice recognition opinion evidence\] can be admissible as ad hoc opinion evidence.
+
+### Recognition Evidence Ruling
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) s 38 - Recognition Evidence Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority discussion on recognition evidence] [CONCEPTS: recognition evidence, reliability, mistaken identifications, prosecution practices, case law]
+
+Case authority discussion on recognition evidence.
+
+***Sundram v Bearman \[2020\] TASMC 18 (3 August 2020)***.
+
+*137 I direct myself as follows. The Court should be specially cautious before convicting in a case depending on identification or recognition evidence even if there is other evidence: Mistakes in identification do occur. As a result of honest but mistaken identification, innocent people have been convicted. Even close friends and relatives can be mistaken. Honest and convincing witnesses may be mistaken. "Recognition" cases can involve as much danger of mistaken identification as cases involving persons first seen at the times of their alleged crimes. However, recognition evidence will, generally speaking, be more reliable than identification evidence strictly so called because, for example, the displacement effect and the 'rogues gallery effect' would not appear to be material. Ms Paul's evidence was not directly challenged on the basis that she had made an error in her recognition of Mr Bearman, but his defence necessarily raised that issue.
+
+### Police ID Evidence Case Review
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) s 38 - Police ID Evidence Case Review] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority discussion on police ID evidence] [CONCEPTS: police ID evidence, magistrate guidance, probative value, witness reliability, case law]
+
+Case authority discussion on police ID evidence.
+
+***YOUNG v LUSTED*** (Crawford CJ) \[2011\] TASSC 22 (BUT see ***Baker v Penneyston*** \[2018\] TASSC 8 (20 February 2018) -- Which undermines it slightly)
+
+\[27\] No doubt police officers make mistakes, like all of us. Nevertheless, there was no error in taking into account the fact that the witness was a police officer. It was relevant to the probative value of the evidence. The magistrate was justified in having regard to the fact that a police officer who by reason of his rank had obviously had long experience as a police officer, would have greater training and experience for perceiving and remembering the features of a person under observation than many lay persons. The Inspector was likely to have been more aware than a lay person of the need to observe and retain a memory of his observations.
+
+\[29\] For those reasons, I conclude that the magistrate correctly decided to admit the evidence.
+
+### Voir Dire Conduct and Management
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code] [SECTION: s 351] [CITATION: Criminal Code s 351 - Voir Dire Conduct and Management] [CATEGORY: script] [TYPE: script] [TOPIC: Scripted commentary on voir dire conduct and management] [CONCEPTS: voir dire, evidence admissibility, judicial discretion, preliminary hearings, case law]
+
+Scripted commentary on voir dire conduct and management.
+
+A criminal trial is "deemed to begin when the accused is called upon to plead": Criminal Code, s 351(6). The court has a discretion as to which party presents evidence first on the voir dire: *R v Turner (No 12)* \[2001\] TASSC 103. However, the defence is rarely, if ever, compelled to go first.
+
+### Evidentiary Thresholds on Voir Dire
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 142] [CITATION: Evidence Act 2001 (Tas) s 142 - Evidentiary Thresholds] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Evidentiary thresholds and decision-making in voir dire] [CONCEPTS: burden of proof, balance of probabilities, voir dire process, admissibility challenges, case law]
+
+Annotated commentary on evidentiary thresholds in voir dire.
+
+In proceedings on the voir dire, the burden of proof of a fact is upon the party asserting that fact. In proceedings on the voir dire, the standard of proof is proof on the balance of probabilities: *Evidence Act*, s 142. See also *Moore v Knowles \[2017\] TASMC 12.
+
+### Common Voir Dire Matters
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) - Common Matters on Voir Dire] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Common matters considered on the voir dire] [CONCEPTS: voir dire objections, admissibility concerns, evidentiary issues, legal strategy, case law]
+
+Annotated commentary on common matters considered on the voir dire.
+
+There is no limit to the range of admissibility objections that might be determined on the voir dire. Those that are commonly the subject of voir dires include the following:
+
+### Danger of Unfair Prejudice
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 137] [CITATION: Evidence Act 2001 (Tas) s 137 - Danger of Unfair Prejudice] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Danger of unfair prejudice concerning evidence] [CONCEPTS: evidence admissibility, unfair prejudice, jury influences, case law, judicial discretion]
+
+Annotated commentary on the danger of unfair prejudice.
+
+Evidence may be objected to on the basis that "its probative value is outweighed by the danger of unfair prejudice to the defendant": *Evidence Act*, s 137. In assessing the probative value of the evidence, it must be assumed that the jury will accept the evidence as credible, and that the jury will draw from it every inference favourable to the Crown that is reasonably open.
+
+### Tendency and Coincidence Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: ss 97, 98] [CITATION: Evidence Act 2001 (Tas) ss 97, 98 - Tendency and Coincidence Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Tendency and coincidence evidence objections] [CONCEPTS: tendency evidence, coincidence evidence, sexual assault cases, evidentiary standards, case law]
+
+Annotated commentary on tendency and coincidence evidence.
+
+Objections relating to these types of evidence are particularly common in sexual cases involving multiple complainants. The Crown's contentions as to tendency and/or coincidence evidence are restricted by the contents of the tendency notice or coincidence notice that has to be given in writing to the defence: *Evidence Act*, ss 97(1)(a), 98(1)(a).
+
+### Admissions and Evidence Challenges
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 90] [CITATION: Evidence Act 2001 (Tas) s 90 - Admissions and Evidence Challenges] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Admission evidence objections] [CONCEPTS: admissions, evidence admissibility, fairness standards, abuse of process, case law]
+
+Annotated commentary on admissions and evidence challenges.
+
+A judge may refuse to admit evidence of an admission if "having regard to the circumstances in which the admission was made, it would be unfair to a defendant to use the evidence": *Evidence Act*, s 90(b).
+
+### Improperly Obtained Evidence
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 138] [CITATION: Evidence Act 2001 (Tas) s 138 - Improperly Obtained Evidence] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Discussion on improperly obtained evidence] [CONCEPTS: evidence admissibility, impropriety, legal standards, burden of proof, case law]
+
+Annotated commentary on improperly obtained evidence.
+
+Evidence that was obtained improperly or in contravention of an Australian law, or in consequence of an impropriety or of such a contravention, is not to be admitted "unless the desirability of admitting the evidence outweighs the undesirability of admitting evidence that has been obtained in the way in which the evidence was obtained": *Evidence Act*, s 138(1).
+
+### Freshness of Memory and Admissibility
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: s 66(2)] [CITATION: Evidence Act 2001 (Tas) s 66(2) - Freshness of Memory] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Freshness of memory and hearsay evidence] [CONCEPTS: hearsay evidence, first-hand accounts, memory freshness, evidentiary rules, legal strategy]
+
+Annotated commentary on freshness of memory and admissibility.
+
+Under s 66(2) of the *Evidence Act*, first-hand hearsay evidence of an assertion by a person who is available as a witness is prima facie admissible "if, when the representation was made, the occurrence of the asserted fact was fresh in the memory of the person who made the representation".
+
+### Decisions to be Made by Counsel
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION:] [CITATION: Evidence Act 2001 (Tas) - Decisions for Counsel] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Decisions to be made by counsel regarding voir dire] [CONCEPTS: counsel strategy, voir dire decisions, evidentiary objections, audience consideration, tactical decisions]
+
+Annotated commentary on decisions to be made by counsel.
+
+There are a number of decisions that need to be made by counsel in relation to a voir dire. *Voir dire or no voir dire?* Counsel should consider the likelihood or otherwise of the objection being successful. It may sometimes be preferable to concentrate on the weakness of the prosecution case, rather than on questions of admissibility.
+
+<!-- block_015 master -->
+
+# Doli Incapax: Test for Capacity to Know Wrongness
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: test for rebutting doli incapax through admissions] [CONCEPTS: doli incapax, admissions, prosecutorial obligations, children's rights, legal standards] [CITATION: hoc-b015-m001-doli-incapax-capacity-test] [ACT: Children (Criminal Proceedings) Act (1987)] [CASE: R (a child) v Whitty (1993)]
+
+Applies to youths aged 10-13. Note section 18 states UNDER 14 yo! Not 14 and under.
+
+An admission made by a child will often be sufficient to rebut *doli incapax*. Thomas Crofts (at 187) argues: 
+
+"It has been established that an important source of information for assessing a child's appreciation of the seriousness of the act is what the child says when interviewed by the police. This type of evidence is preferable in as far as it refers directly to a child's appreciation of the act itself and is not drawn from a general analysis of the behaviour and personality of the child."
+
+The classic Australian case on point is the Victorian case of R (a child) v Whitty (1993) 66 A Crim R 462. In Whitty's case, a child was arrested for shoplifting, and when interviewed by police regarding the offence, used the words, "*I stole*". It was held that the use of these words was evidence of mischievous discretion. The child's language was interpreted to indicate knowledge that the act of stealing was wrong, perhaps in contrast to the words *'I took*'.
+
+However, before an alleged admission could be used as evidence to rebut the presumption of *doli incapax*, the usual questions relating to any alleged admission must be asked. Additionally, if the alleged admission was made, is it indicative of the child's understanding at the time of the offence?
+
+Despite the additional obligations placed on the prosecution in order to rebut *doli incapax*, a child is still entitled to rely on his or her right to silence. A child under fourteen should be advised of the additional dangers of making a record of interview. If a child elects to make a record of interview, the investigating police are likely to ask questions with the specific intention of rebutting *doli incapax*.
+
+The NSW Police Service 'Code of Practice' at page 33 reminds officers: 
+
+*"Remember, when interviewing children between 10 and 14 you need to obtain evidence they knew what they were doing was wrong (as opposed to mischievous or naughty)."*
+
+A child should not be put into any worse position than an adult offender and is entitled to attempt to exclude otherwise inadmissible admissions. A quick checklist includes:
+
+(a) Are the admissions caught by s.13 of the Children (Criminal Proceedings) Act (1987)?
+
+(b) Did the child receive legal advice? See R v ME, R v LT and R v CE (Unreported, Supreme Court Common Law Division, 3 October 2002).
+
+(c) Are the admissions admissible under Part 3.4 of the Evidence Act?
+
+(d) Should the admission be excluded under s.90, s.135, s.137 or s.138?
+
+(e) Is the admission caught by s281 of the Criminal Procedure Act?
+
+The alleged admissions must show that the child understood that his actions were seriously wrong and not just naughty. If the admissions are equivocal, or ambiguous, then it can be argued that the prosecution has not successfully rebutted the presumption. It has been suggested in IPH v. Chief Constable of South Wales that the most appropriate way to determine the *doli incapax* issue is for investigating police to ask the child 'did you appreciate that what you did was seriously wrong?' In the absence of such a direct question, the evidence will require the Court to interpret what was the understanding of the child.
+
+Facts of IPH v. Chief Constable of South Wales [1987] Crim LR 42. An 11-year-old boy was convicted of criminal damage to a van. The van's windows were smashed, the paintwork was scratched, and the van was pushed into a pole. The child was interviewed by police. During the interview, the child said, "*Yeah, I knew I would damage the truck by pushing it into the pole*". On appeal, the Divisional Court said that the admission proved that the child knew that damage would result from the action. The admission did not prove knowledge that the action was seriously wrong as opposed to mischievous or naughty.
+
+The child's intention must be assessed at the time of committing the offence. Any statements given by a child after the offence may have been tainted or affected by the process. It is arguable that since being arrested, taken to a police station, and placed in a dock, the child has come to an appreciation that he or she has done something wrong. This understanding may not have been consistent with the child's state of mind at the time of the alleged offence.
+
+---
+
+# Evidence Considerations in Rebutting Doli Incapax
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: alternative sources of evidence to rebut doli incapax] [CONCEPTS: evidence admissibility, rebuttal, police interviews, moral understanding, prosecution] [CITATION: hoc-b015-m002-evidence-rebutting-doli-incapax] [ACT: None] [CASE: TPL v The State of Western Australia [2025] WASCA 195]
+
+Admissibility of alternative sources of evidence can be seen in **The King v TT [2024] NTSC 62 (18 July 2024)**.
+
+**CASE NOTE -- Doli Incapax: Indicia For / Against Capacity**
+
+**Case** 
+
+**TPL v The State of Western Australia [2025] WASCA 195**
+
+**Issue (relevant to you)** 
+
+Whether the prosecution rebutted the **presumption of incapacity** under **s 29 Criminal Code (WA)** for conduct committed when the accused was aged 10--14, by proving beyond reasonable doubt that he had the **capacity to know the conduct was seriously wrong by ordinary adult standards**.
+
+1. Prosecution-relied indicia of capacity (trial level) 
+
+The trial judge relied heavily on **circumstances of offending**, treating them as "capacity circumstances". These included:
+
+A. Secrecy / concealment
+- Luring complainants away from others (shed, bins, tents)
+- Moving behind objects for concealment
+- Acting when others were asleep
+- Pretending to be asleep when footsteps were heard
+
+B. Ruse / deception
+- "Smell my fingers" incident
+- Pretending to show something
+- Creating games with sexual "rewards"
+- Blaming or attempting to shift responsibility if discovered
+
+C. Warnings / threats
+- Telling complainants not to tell
+- Threatening to scream or get them into trouble
+- Using force to compel compliance
+
+D. Sexual knowledge
+- Asking "can I put it in"
+- Demonstrating masturbation
+- Awareness of sexual mechanics
+
+E. Planning
+- Repeated offending
+- Structured sequences (games, rewards)
+- Escalation over time
+
+**Trial judge's inference:** 
+These factors showed foresight, awareness of consequences, and appreciation that the conduct was "seriously wrong".
+
+2. Why the Court of Appeal rejected those indicia as insufficient 
+
+The Court's reasoning is extremely important for future cases.
+
+**Core principle (re-stated clearly)**
+
+**Secrecy, force, deception or planning --- even in sexual offending --- do NOT, without more, rebut doli incapax.**
+
+The Court repeatedly emphasised that the question is **capacity to know serious moral wrongness**, not:
+- legal wrongness
+- fear of getting in trouble
+- awareness of rules
+- "naughtiness"
+- ability to manipulate
+
+3. Specific indicia the Court said were ambiguous or weak 
+
+A. Secrecy ≠ moral understanding
+The Court held that concealment may show:
+- fear of punishment
+- awareness of rules
+- desire to avoid trouble
+But **does not necessarily show appreciation of serious moral wrongness**. This follows **RP v The Queen** and **BDO v The Queen**.
+
+B. Use of force
+The Court expressly rejected the idea that:
+- using force against a younger child
+- overcoming resistance
+- causing distress
+necessarily implies understanding of moral autonomy or serious wrongdoing.
+Children may:
+- know someone doesn't want something
+- still not understand *why* it is morally wrong.
+
+C. Ruses and deception
+Deception may show:
+- cognitive functioning
+- problem-solving ability
+But **does not equate to moral development**. The Court cautioned against equating "cleverness" with capacity.
+
+D. Sexual knowledge
+Awareness of sexual mechanics or terminology does not prove appreciation of moral wrongness and does not prove capacity to evaluate harm or ethical boundaries. This was particularly important given the **familial context**.
+
+4. Absence of *positive* indicia of capacity (decisive)
+What ultimately sank the prosecution case was **what was missing**, not what was present. The Court emphasised the lack of:
+- contemporaneous carers
+- teachers
+- counsellors
+- psychologists
+- caregivers
+- evidence of moral instruction
+- evidence of internalised moral framework
+
+No witness could say: "At that time, this child understood that this conduct was seriously wrong by adult moral standards."
+
+5. Documentary records -- expressly limited probative value
+**School records**
+- Poor academic performance
+- Behavioural issues
+- Some sexualised language
+
+The Court held that these **do not establish moral capacity**. Lack of intellectual disability ≠ capacity, and "Intelligent" was a mischaracterisation.
+
+**Child protection records**
+- Demonstrated chaos, neglect, trauma
+- No evidence of moral guidance or internalised norms
+- Actually **supported developmental delay**.
+
+6. Expert evidence -- key lesson
+Although the trial judge rejected the defence psychologist's opinion, the Court made this critical point: 
+
+**Rejecting defence expert evidence does not supply affirmative proof of capacity.**
+Once the expert was set aside, the State had nothing but circumstances of offending, which was insufficient as a matter of law.
+
+7. Net result -- practical indicia framework
+**❌ Insufficient indicia (without more)**
+- Secrecy
+- Deception
+- Ruse
+- Force
+- Sexual knowledge
+- Repetition
+- Fear of getting caught
+- Awareness of rules
+
+**✅ What would likely be required (not present here)**
+- Evidence of moral instruction
+- Evidence of ethical reasoning
+- Evidence of internalised norms
+- Contemporaneous observations of moral understanding
+- Evidence child distinguished "seriously wrong" from "naughty"
+- Evidence child could appreciate harm in an adult moral sense.
+
+8. Practical takeaway for you (Tas context)
+This case is **very strong authority** for the proposition that: 
+
+**You cannot rebut doli incapax by offence circumstances alone, even where the conduct is extremely serious.**
+
+For prosecutors:
+- This sharply limits reliance on "capacity circumstances"
+- Requires early thinking about **developmental evidence**
+
+For defence:
+- This is a blueprint for attacking inferential reasoning
+- Especially where there is trauma, neglect, or instability.
+
+---
+
+# Admissions and Doli Incapax: Key Principles
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: principles surrounding admissions in rebutting doli incapax] [CONCEPTS: admissions, police interviews, children's rights, prosecutorial obligations, evidentiary standards] [CITATION: hoc-b015-m003-admissions-doli-incapax-principles] [ACT: Children (Criminal Proceedings) Act (1987)] [CASE: R v ME, R v LT and R v CE (Unreported, 2002)]
+
+Before an alleged admission could be used as evidence to rebut the presumption of *doli incapax*, the usual questions relating to any alleged admission must be asked. Additionally, if the alleged admission was made, it must be indicative of the child's understanding at the time of the offence. 
+
+The child's right to silence must be affirmed, and the additional obligations placed on the prosecution to rebut *doli incapax* still allow the child to remain silent without any implications on their case. This includes advisement that children under fourteen should be fully informed about the repercussions of making a record of interview. The police may ask questions with the direct intention of rebuffing *doli incapax*, thus increasing pressure on the child.
+
+In R v ME, R v LT and R v CE, the necessity of legal advice for the child becomes evident. Admissions not caught by section 13 of the Children (Criminal Proceedings) Act (1987) might still pose admissibility questions under Part 3.4 of the Evidence Act, whereas the considerations surrounding its admissibility must reflect the child's capacity at the time of questioning.
+
+The weight of the admissions presented needs to point to understanding that the child's actions were not merely 'naughty' but were indeed 'seriously wrong'. 
+
+However, the qualifications and nuances come into play when assessing if the admissions were clear beyond all doubt or contradiction. The child's statement must reflect an appreciation of serious moral wrongness rather than leaving room for any ambiguity, which further implies that the questioning should strive to gain clarity rather than lead to equivocation.
+
+---
+
+# Indicia of Capacity in Doli Incapax
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: indicia relevant to capacity in rebutting doli incapax] [CONCEPTS: capacity, moral understanding, legal standards, child psychology, prosecution] [CITATION: hoc-b015-m004-indicia-capacity-doli-incapax] [ACT: Criminal Code (WA)] [CASE: RP v The Queen; BDO v The Queen]
+
+In *TPL v The State of Western Australia*, the trial judge relied heavily on "capacity circumstances" without adequately addressing the requirement of knowing serious moral wrongness. 
+
+The indicia of capacity included aspects like secrecy, deception, and sexual knowledge but did not meet the necessary threshold for rebutting *doli incapax*. Secrecy, for example, was interpreted not necessarily as an indication of moral comprehension but rather as an awareness of societal rules or a fear of punishment. Similarly, using force in a context of sexual offending does not inherently imply an understanding of the moral wrongfulness attached to the act.
+
+The Court of Appeal clarified that simply displaying clever behavior or cognitive functioning does not equate to moral development. Contrary to the trial observations, there was an absence of positive indicia that would have been determinative in evaluating whether the child understood what was seriously wrong by adult moral standards.
+
+Contemporaneous evidence from caregivers, teachers, and psychologists, alongside lack of moral instruction, was crucial for assessing the child's understanding. The Court acknowledged the criticality of this evidence over circumstantial conduct, aiming for insight into the child’s internal moral reasoning rather than behaviors indicative of wrongdoing.
+
+---
+
+# Doli Incapax and Evidentiary Framework
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: evidentiary framework in doli incapax considerations] [CONCEPTS: evidentiary value, moral reasoning, legal standards, developmental psychology, probative evidence] [CITATION: hoc-b015-m005-evidentiary-framework-doli-incapax] [ACT: None] [CASE: TPL v The State of Western Australia [2025] WASCA 195]
+
+The importance of evidence in doli incapax determinations cannot be understated. While evidence of the offending behavior is frequently available, it's the qualitative assessment of a child’s moral understanding that ultimately governs whether the presumption can be rebutted. In *TPL v The State of Western Australia*, the criticisms by the Court focused on the absence of positive indicia, rather than what the prosecution attempted to infer from the circumstances.
+
+Evidentiary frameworks must incorporate developmental perspectives on a child's capacity for moral reasoning supported by real-world interactions and instructions received from key figures in their lives. The Court emphasized that understanding serious moral wrongness goes beyond mere indicators of intelligent behavior or awareness of consequences; rather, it requires evidence that the child can differentiate between serious wrong and mere naughtiness.
+
+Further, the Court reiterated that documents like school records or psychologist assessments, while potentially informative, must not stand alone as proof of moral capacity. Instead, they should be contextualized within the greater framework of the individual child's development, learning, and internal moral framework, emphasizing the need for holistic assessments in these cases.
+
+With this understanding, practitioners must comprehensively gather evidence that encompasses direct observations as well as developmental history, ensuring that all relevant factors are taken into account for assessments of doli incapax.
+
+---
+
+# Legal Standards for Excluding Improperly Obtained Evidence
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: legal framework for exclusion of improperly obtained evidence] [CONCEPTS: evidence exclusion, legal standards, prosecutorial conduct, ethical guidelines, judicial discretion] [CITATION: hoc-b015-m006-excluding-improperly-obtained-evidence] [ACT: Evidence Act] [CASE: Bunning v Cross [1978] HCA 22]
+
+Under section 138 of the Evidence Act, evidence obtained improperly or illegally stands as a central consideration in adjudicating admissibility in court. Following the principles established in *Bunning v Cross*, the judge possesses the discretion to dismiss evidence that has been acquired through unlawful means or practices inconsistent with societal standards.
+
+The assessment for exclusion involves weighing the desirability of such evidence against the inherent public interest in the administration of justice. Judges must balance the importance of convicting those who commit criminal offences with the need to protect individuals from unlawful police conduct, signalling a nuanced approach to evidentiary admissions. Notably, courts consider various factors, including the seriousness of the offence and the nature of the impropriety, while arriving at decisions on admissibility.
+
+As established by the High Court in *Ireland*, simply demonstrating that the police behavior didn’t reflect best practice is not enough; the focus must remain on whether the actions contravened minimum acceptable standards. Overarching public policy must guide the discretion exercised in these scenarios, ensuring that the integrity of the judicial process remains intact and that unlawful conduct does not receive judicial sanction.
+
+In the Tasmanian context, this legal doctrine promotes accountability in law enforcement while considering the ramifications of procedural missteps. The emphasis on ethical policing is vital to maintaining public confidence and safeguarding procedural justice across the board.
+
+---
+
+<!-- block_015 procedure -->
+
+### Chunk 1: Interviewing Children Regarding Doli Incapax
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Tactical workflow for interviewing children regarding doli incapax] [CONCEPTS: doli incapax, interview children, police questioning, legal rights, admission]
+
+Tactical workflow for interviewing children regarding doli incapax.
+
+1. Ensure the child is aware of their right to silence.
+2. Explain the importance of legal advice.
+3. Ask the child open-ended questions to gauge understanding.
+4. Assess whether the child rebuts the presumption with statements like ‘I stole’.
+5. Document all responses accurately.
+
+### Chunk 2: Rebutting Doli Incapax with Statements/Admissions
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: §35] [CITATION: Evidence Act 2001 (Tas) §35 - Commentary on Doli Incapax] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Practitioner commentary on rebutting doli incapax with statements/admissions] [CONCEPTS: doli incapax, children's statements, admissions, legal framework, rebuttal]
+
+Practitioner commentary on rebutting doli incapax with statements/admissions. An admission made by a child will often be sufficient to rebut *doli incapax*. Thomas Crofts (at 187) argues: "It has been established that an important source of information for assessing a child's appreciation of the seriousness of the act is what the child says when interviewed by the police..."
+
+### Chunk 3: Scripted Questions for Assessing Understanding
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: script] [TOPIC: Scripted questions for assessing understanding of moral wrongness] [CONCEPTS: doli incapax, interview questions, moral understanding, child interviews, police protocol]
+
+Scripted questions for assessing understanding of moral wrongness in children during police interviews.
+
+1. "Did you know what you did was wrong?"
+2. "Why do you think it's wrong to take something that doesn’t belong to you?"
+3. "Can you explain your action at the time?"
+
+### Chunk 4: Checklist for Determining Admissibility
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: procedure] [TYPE: checklist] [TOPIC: Checklists for determining admissibility of children's admissions] [CONCEPTS: admissibility, children's admissions, legal advice, procedural requirements, evidence]
+
+Checklist for assessing whether a child's admission can rebut doli incapax:
+
+1. Are the admissions caught by s.13 of the [Children (Criminal Proceedings) Act (1987)?]
+2. Did the child receive legal advice?
+3. Are the admissions admissible under Part 3.4 of the [Evidence Act]?
+4. Should the admission be excluded under s.90, s.135, s.137 or s.138?
+5. Is the admission caught by s281 of the [Criminal Procedure Act]?
+
+### Chunk 5: Case Authority - R (a child) v Whitty
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority from R (a child) v Whitty regarding admissions] [CONCEPTS: doli incapax, case law, admissions, children's understanding, legal precedent]
+
+Case authority from R (a child) v Whitty. In this case, a child arrested for shoplifting stated, '*I stole*' when interviewed by police. It was held that this phrase constituted evidence of mischievous discretion, suggesting the child understood stealing was wrong.
+
+### Chunk 6: Case Authority - IPH v Chief Constable of South Wales
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority referencing IPH v. Chief Constable of South Wales regarding understanding of wrongness] [CONCEPTS: doli incapax, legal precedent, moral wrongness, police interviews, children's testimony]
+
+Case authority referencing IPH v. Chief Constable of South Wales. An 11-year-old was convicted of criminal damage. The court stated that while the admission indicated knowledge of the damage caused, it did not demonstrate understanding that it was "seriously wrong," highlighting the necessity for direct questioning.
+
+### Chunk 7: Annotation on TPL v The State of Western Australia
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Annotation on TPL v The State of Western Australia regarding rebutting presumption of incapacity] [CONCEPTS: doli incapax, presumption of incapacity, prosecutorial burden, legal standards, child offenders]
+
+Annotation on TPL v The State of Western Australia regarding rebutting presumption of incapacity. The core principle reiterated is that mere circumstances of offending do not establish a child's moral understanding and cannot solely rebut *doli incapax* without further evidence.
+
+### Chunk 8: Practitioner Notes on Prosecutorial Indicia
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Practitioner notes on prosecutorial indicia regarding doli incapax] [CONCEPTS: doli incapax, prosecutorial indicia, legal reasoning, moral understanding, case analysis]
+
+Practitioner notes on prosecutorial indicia regarding doli incapax. The Court of Appeal emphasized that factors like secrecy and use of force do not inherently indicate a child's capacity to understand serious moral wrongness, which is essential for rebuttal.
+
+### Chunk 9: Legal Doctrine from Tasmania v Bott
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: §138] [CITATION: Evidence Act 2001 (Tas) §138 - Commentary on Improperly Obtained Evidence] [CATEGORY: annotation] [TYPE: legal doctrine] [TOPIC: Legal doctrine from Tasmania v Bott regarding improperly obtained evidence] [CONCEPTS: illegally obtained evidence, Tasmanian law, evidentiary rules, prosecution, defense]
+
+Legal doctrine from Tasmania v Bott regarding improperly obtained evidence under s138. The accused bears the onus to prove that evidence was obtained unlawfully. If proven, it falls to the Crown to show that its admission is more desirable than the undesirability of admitting it.
+
+### Chunk 10: Legal Authority on Discretion Exclusion from Bunning v Cross
+[DOMAIN: Tasmanian Criminal Law] [ACT: Evidence Act 2001 (Tas)] [SECTION: §138] [CITATION: Evidence Act 2001 (Tas) §138 - Legal Authority] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Legal authority on discretion to exclude evidence from Bunning v Cross] [CONCEPTS: evidence exclusion, judicial discretion, public policy, improper conduct, legal proceedings]
+
+Legal authority on discretion to exclude evidence from Bunning v Cross. The trial judge must balance the public interest in prosecuting crimes against the need to protect individuals from unlawful treatment.
+
+### Chunk 11: Case Authority on Entrapment from Ridgeway v R
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case authority on entrapment from Ridgeway v R] [CONCEPTS: entrapment, legal precedent, criminal law, inducement, state conduct]
+
+Case authority on entrapment from Ridgeway v R. The High Court found that no substantive defence of entrapment exists, emphasizing voluntary wrongdoing over external inducement and the need to protect law enforcement accountability.
+
+### Chunk 12: Notes on Discretionary Exclusion of Evidence in Tasmania
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Notes on discretionary exclusion of evidence in Tasmania from R v Osborne] [CONCEPTS: evidence exclusion, public interest, tasmanian authority, legal proceedings, law enforcement]
+
+Notes on discretionary exclusion of evidence in Tasmania from R v Osborne. It is established that entrapment does not provide a substantive defence, and evidence obtained via unlawful means may still be excluded based on public policy considerations.
+
+<!-- block_016 master -->
+
+# Speedy Trial Rights and Unfairness Test
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: right to a fair trial, test of unfairness] [CONCEPTS: speedy trial, fair trial, delay, prejudice, community interests] [CITATION: hoc-b016-m001-speedy-trial-rights] [ACT: None] [CASE: Lillico v McKenna (1995) 5 Tas R 147; Jago v District Court of New South Wales [1989] HCA 46]
+
+Counsel for the applicant principally relied on the judgment of McHugh JA in *Aboud v Attorney-General (NSW) (supra)* but neither counsel adverted to the fact that the basic premise upon which his Honour proceeded, namely that there is a common law right to a speedy trial, was rejected by the High Court in *Jago v District Court of New South Wales* [1989] HCA 46; (1989) 168 CLR 23. The right is to a fair trial as distinct from a speedy trial, although in particular circumstances a trial which is long delayed may cease to be capable of being a fair trial.
+
+The test of unfairness which is relevant involves a balancing process between the interests of the applicant on the one hand and the interests of the community, which has an interest in seeing that those who commit offences are brought to trial, on the other hand (Jago v District Court of New South Wales (supra) at 33, 49-50). To dismiss a complaint because any subsequent trial would be unfair is to provide a defendant with an extreme remedy and one which should only be provided in very limited circumstances. I find it difficult to conceive of circumstances where that remedy ought to be provided in a case such as the present where, at least in relation to the complaints other than complaint 2181/1985, delay and prejudice have arisen in circumstances where they would not have arisen had the applicant not sought to evade the criminal process.
+
+---
+
+# Insanity and Mental Disease Criteria
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: insanity criteria, balance of probabilities] [CONCEPTS: mental disease, criminal responsibility, jury, burden of proof, exception] [CITATION: hoc-b016-m002-insanity-criteria] [ACT: None] [CASE: Tasmania v Scott [2025] TASSC 53]
+
+I am satisfied that bipolar disorder is a mental disease within the meaning of s 16 and that Mr Scott was afflicted with that condition when he pointed the toy gun at the complainant. I direct myself in accordance with the comments of King CJ in *R v Radford* [(1985) 42 SASR 266], as approved by Mason CJ, Brennan and McHugh JJ in *R v Falconer* [1990] HCA 49; (1990) 171 CLR 30 at 53. However, the existence of a mental disease by itself does not excuse an accused person. In *Hitchens v The Queen* [1962] TASStRp 6; [1962] Tas SR 35, the Court of Criminal Appeal comprising Burbury CJ, Crisp and Cox JJ said at 49:
+
+"It was for the accused affirmatively to establish to the satisfaction of the jury that upon the balance of probabilities he by reason of mental disease was not criminally responsible for his acts. For the mere existence of mental disease would not excuse him from criminal responsibility. Nor was it sufficient for him to prove that his alleged crime was the product of mental disease in the sense that it would not have occurred but for the existence of the disease. The law prescribes additional criteria to be established by evidence as a condition of criminal responsibility. An act may be a crime although the mind of a person who does it is affected by mental disease if such disease does not in fact produce upon his mind one of the results prescribed by the law as tests of criminal responsibility."
+
+---
+
+# Automatism Defense and Burden of Proof
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: automatism defense, burden of proof] [CONCEPTS: automatism, medical evidence, presumption, voluntary act, concussion] [CITATION: hoc-b016-m003-automatism-defense] [ACT: None] [CASE: Wilson v Judges [2025] TASSC 10; R v Falconer [1990] HCA 49]
+
+Latest decision with best summary!
+
+Court affirms high threshold. Presumption of voluntary and intentional act but medical evidence can displace presumption. Not necessary for defence to prove underlying circumstances that caused the state, just the opinion that something else caused it. It is then for the prosecution to prove beyond reasonable doubt that whatever alt source there was didn't happen, or could only be attributed to voluntary intoxication -- which negates the defence.
+
+Court said: "Having raised a reasonable possibility that the applicant's actions were not voluntary and intentional and that the state which led to that outcome was attributable to a concussion from a head injury, the prosecution had the onus of excluding that possibility, thereby leaving self-induced intoxication as the only reasonable explanation. The prosecution did not discharge that onus. For example, it did not call any contrary medical evidence, nor did it attempt to demonstrate the negative of the proposition concerning the head injury, that is that the bruised eye was not explained by her suffering a head injury prior to committing the relevant actions."
+
+---
+
+# Self Defense: Evidence and Jury Instruction
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: self-defense, jury instruction] [CONCEPTS: reasonable possibility, burden of proof, factual evidence, circumstantial case, lawful application of force] [CITATION: hoc-b016-m004-self-defense-evidence] [ACT: None] [CASE: Irons v Moore [2019] TASSC 22; Viro v The Queen [1978] 141 CLR 88]
+
+In a case involving a jury, the issue of self-defence will only be left for the jury's consideration where it is raised as a reasonable possibility on the evidence "and the accused raises the question": *Viro v The Queen* [(1978) 141 CLR 88] at 95, per Barwick CJ. However, where the question is raised as an issue, then the onus will be on the prosecution to negative the reasonable possibility of lawful self-defence beyond reasonable doubt: *Walsh v The Queen* [1993] TASSC 91. 
+
+The same principles will apply in a summary hearing before a magistrate: *Hindrum v Lane* [2014] TASFC 5. In particular, the magistrate will not be required to consider the issue of self-defence unless it is raised as a reasonable possibility on the evidence, and in that event the prosecution will have the onus of excluding that possibility beyond reasonable doubt.
+
+---
+
+<!-- block_016 procedure -->
+
+### Chunk 1: Common Law Right to Speedy Trial
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Lillico v McKenna (1995) - Annotation on Speedy Trial] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Discussion on right to a speedy trial] [CONCEPTS: speedy trial, fair trial, Jago case, common law, criminal process]
+Counsel for the applicant principally relied on the judgment of McHugh JA in *Aboud v Attorney-General (NSW)* (supra) but neither counsel adverted to the fact that the basic premise upon which his Honour proceeded, namely that there is a common law right to a speedy trial, was rejected by the High Court in *Jago v District Court of New South Wales* \[[1989] HCA 46\]; \[(1989) 168 CLR 23\]. The right is to a fair trial as distinct from a speedy trial, although in particular circumstances a trial which is long delayed may cease to be capable of being a fair trial.
+
+### Chunk 2: Test of Unfairness in Trials
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Jago v District Court - Test of Unfairness] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Balancing process of interests in unfair trials] [CONCEPTS: unfairness, balancing interests, criminal process, trial delay, community rights]
+The test of unfairness which is relevant involves a balancing process between the interests of the applicant on the one hand and the interests of the community, which has an interest in seeing that those who commit offences are brought to trial, on the other hand (Jago v District Court of New South Wales (supra) at 33, 49-50). To dismiss a complaint because any subsequent trial would be unfair is to provide a defendant with an extreme remedy and one which should only be provided in very limited circumstances.
+
+### Chunk 3: Insanity Diagnosis
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Tasmania v Scott [2025] TASSC 53 - Insanity Diagnosis] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Mental disease diagnosis in relation to insanity] [CONCEPTS: insanity, mental disease, diagnosis, criminal liability, Tasmania v Scott]
+I am satisfied that bipolar disorder is a mental disease within the meaning of s 16 and that Mr Scott was afflicted with that condition when he pointed the toy gun at the complainant. 
+
+### Chunk 4: Criminal Responsibility and Mental Disease
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Hitchens v The Queen - Criminal Responsibility] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Mental disease and criminal responsibility standards] [CONCEPTS: mental disease, criminal responsibility, jury, balance of probabilities, additional criteria]
+However, the existence of a mental disease by itself does not excuse an accused person. In *Hitchens v The Queen* \[[1962] TASStRp 6\]; \[[1962] Tas SR 35\], the Court of Criminal Appeal comprising Burbury CJ, Crisp and Cox JJ said at 49: "It was for the accused affirmatively to establish to the satisfaction of the jury that upon the balance of probabilities he by reason of mental disease was not criminally responsible for his acts. For the mere existence of mental disease would not excuse him from criminal responsibility."
+
+### Chunk 5: Mental Impairment Procedure
+[DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Justice (Mental Impairment) Act] [SECTION: 33, 34] [CITATION: Bonde v Weate [2017] TASMC 11 - Mental Impairment Procedure] [CATEGORY: procedure] [TYPE: procedure] [TOPIC: Steps following not guilty by reason of mental impairment] [CONCEPTS: mental impairment, procedure, reporting, court process, Tasmania]
+Process on finding of not guilty on grounds of insanity: See ***Bonde v Weate* \[2017\] TASMC 11**. Need s. 33 and 34 reports under *Criminal Justice (mental impairment) Act*.
+
+### Chunk 6: Defense of Automatism Overview
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Wilson v Judges [2025] TASSC 10 - Automatism Summary] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Overview of automatism defense requirements] [CONCEPTS: automatism, defense, medical evidence, voluntary action, intent]
+Court affirms high threshold. Presumption of volition and intentional act but medical evidence can displace presumption. Not necessary for defense to prove underlying circumstances that caused the state, just the opinion that something else caused it.
+
+### Chunk 7: Important Ruling on Automatism
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: R v Falconer - Automatism as a Defense] [CATEGORY: case authority] [TYPE: case authority] [TOPIC: Case details on automatism as a legitimate defense] [CONCEPTS: automatism, defense of insanity, medical evidence, ruling, intent]
+Court said: "Having raised a reasonable possibility that the applicant's actions were not voluntary and intentional and that the state which led to that outcome was attributable to a concussion from a head injury, the prosecution had the onus of excluding that possibility..."
+
+### Chunk 8: Legal Doctrine: de minimis non curat lex
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Harrison v Moore [2018] TASSC 53 - De Minimis Doctrine] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Application of the de minimis principle] [CONCEPTS: de minimis, criminal proceedings, legal standard, court review, Tasmania]
+An abbreviated form of the Latin Maxim de minimis non curat lex, "law is not concerned with small things." A legal doctrine by which a court refuses to consider trifling things. Its application sometimes leads to an action being dismissed, especially when the only redress being sought is for a nominal sum, such as a dollar. The maxim is not applicable to criminal proceedings.
+
+### Chunk 9: Self Defense Applicability
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Tasmania v Milligan [2021] TASSC 59 - Self Defense Applicability] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Self-defense relevance in summary matters] [CONCEPTS: self-defense, summary hearings, validity, legal principles, Tasmania]
+Despite adage that code principles apply only to like offences, Blow CJ says otherwise.
+
+### Chunk 10: Procedural Requirement for Self-Defense
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Irons v Moore [2019] TASSC 22 - Self Defense Procedural Requirements] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Requirement for raising self-defense in court] [CONCEPTS: self-defense, jury consideration, prosecution burden, evidence, reasonable possibility]
+1. It is well established that in a case involving a jury, self-defense will only be left for the jury's consideration where it is raised as a reasonable possibility on the evidence and the accused raises the question: *Viro v The Queen* \[(1978) 141 CLR 88\]. However, where the question is raised as an issue, then the onus will be on the prosecution to negative the reasonable possibility of lawful self-defense beyond reasonable doubt.
+
+### Chunk 11: Evidential Onus on Defendants
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Irons v Moore [2019] TASSC 22 - Evidential Onus in Self Defense] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Defense onus in circumstantial cases] [CONCEPTS: self-defense, evidential onus, circumstantial cases, appeal case, prosecution burden]
+In this case the victim was unwilling to give evidence... the appeal court said technically there was no one else OTHER than the defendant who could espouse on what had occurred... 
+
+### Chunk 12: Pre-Emptive Self-Defense
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Wright v Tasmania [2005] TASSC 113 - Preemptive Force in Self Defense] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Preconditions for using pre-emptive self-defense] [CONCEPTS: pre-emptive self-defense, justification, legal standing, case reference, self-defense]
+Blow, J: A person who believes he or she is about to be attacked does not necessarily have to wait for the assailant to strike the first blow or fire the first shot. Circumstances may justify the use of pre-emptive force in self-defense.
+
+### Chunk 13: Self-Defense for Original Aggressors
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Viro v. The Queen [1978] HCA 9 - Self-Defense Limits for Aggressors] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Limitations for initial aggressors in claiming self-defense] [CONCEPTS: self-defense, original aggressor, lawful force, response, legal case]
+Gibbs J. pointed out that self-defense is not a defense available to the original aggressor in a conflict either when the original victim uses lawful force to resist him...
+
+### Chunk 14: Test for Self-Defense Claims
+[DOMAIN: Tasmanian Criminal Law] [ACT: Not applicable] [SECTION: Not applicable] [CITATION: Walsh v R [1993] TASSC 91 - Self Defense Test] [CATEGORY: legal doctrine] [TYPE: legal doctrine] [TOPIC: Outlining subjective and objective tests for self-defense] [CONCEPTS: self-defense, subjective test, objective test, legal assessment, courtroom standards]
+Subjective -- mind of the person claiming the defense. Objective -- in the subjective circumstances was the force used unreasonable.
