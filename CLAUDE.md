@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 March 2026 (end of session 9) · Supersedes all prior versions
+Updated: 20 March 2026 (end of session 11) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -30,7 +30,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Rogue d file | Delete with `Remove-Item "c:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\d"` if it reappears — commit deletion |
 | server.py auth | All direct calls to localhost:18789 require header `X-Nexus-Key` · Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env` on VPS · "unauthorized" = missing or wrong key |
 | server.py search field | Search endpoint expects `query_text` (not `query`) · "query_text is required" = wrong field name · endpoint: `POST localhost:18789/search` |
-| retrieval_baseline.sh | Requires `X-Nexus-Key` header and `query_text` field · results in `~/retrieval_baseline_results.txt` |
+| retrieval_baseline.sh | KEY now auto-reads from ~/ai-stack/.env — no manual export needed · still requires query_text field · results in ~/retrieval_baseline_results.txt |
 | ingest_corpus.py | Lives at `arcanthyr-console\ingest_corpus.py` (NOT inside `Arc v 4/`) · INPUT_FILE hardcoded — change manually · PROCEDURE_ONLY=True filters procedure chunks only · Block separator format MUST be `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` followed by `### Heading` then `[DOMAIN:]` on next line · Use Python (not PowerShell Out-File) to create corpus files — PowerShell BOM/encoding corrupts block separators · upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations |
 | Bash scripts on VPS | Large pastes truncate in SSH terminal — create files locally and SCP to VPS instead |
 | PowerShell file creation | Use Python script to write files, not Out-File — BOM corruption confirmed on corpus files |
@@ -79,7 +79,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
 | D1 cases | 126 rows · ALL enriched=1 · ALL deep_enriched=1 · scraper running |
-| D1 case_chunks | 2,607 total · 918 done=1 · 938 embedded · poller running overnight (~3-4hrs to complete) |
+| D1 case_chunks | 2,607 total · all done=1 · embed pass in progress (~1,187/2,607 as of session 11) |
 | D1 secondary_sources | 2,032 total · all enriched=1 · all embedded |
 | D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
@@ -122,12 +122,16 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-
+1. **Corpus wipe + ingest** — waiting on embed pass completion (target 2,607/2,607) · D1 delete master rows · Qdrant secondary source delete · ingest part1 then part2 · set enriched=1 · run embed pass
+2. **BRD doctrine chunk** — no standalone beyond reasonable doubt chunk in corpus · write and ingest manually post-corpus-ingest · content: Criminal Code s13, Walters direction, Green v R
+3. **handleFetchSectionsByReference LIKE fix** — post-ingest · replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts · new chunk IDs needed first to validate pattern
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
+- **retrieval_baseline.sh was silently failing** — KEY env var not set · fixed session 11 · auto-reads from .env now
+- **Baseline result session 11: 12 pass / 4 partial / 1 fail** · Q2 BRD gap confirmed (corpus gap, not retrieval failure) · Q8/Q12/Q13 partial — RRF noise and LIKE pattern issues · rerun after corpus ingest
 - **Embedding backlog** — 1,669 case chunks unembedded as of session 10 end · poller running overnight · check first thing next session
 - **process_blocks.py overnight run** — check failed blocks summary · stale 32000 error in summary is from prior failed run, not current
 - **CHUNK prompt reasoning field** — added and reverted session 10 · chunk_text already in Qdrant payload, reasoning field not needed · do not re-add
@@ -143,6 +147,18 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done" · always restarts from case 1 for unfinished court/year
 
 ---
+
+## CHANGES THIS SESSION (session 11) — 20 March 2026
+
+- **Corpus reprocessing confirmed complete** — 56/56 blocks · block_001 stale error was from prior run · not a failure
+- **CQT pass confirmed** — block_005 substantive prose preserved · blocks 010/015 correctly procedure-only · no master content missing
+- **Embed pass in progress** — 1,187/2,607 case chunks embedded as of session start · poller running cleanly
+- **Scraper confirmed running** — TASSC 2022 in progress · all 2025/2024/2023 courts marked done · scraper.log path corrected (arcanthyr-console\Local Scraper\ not Arcanthyr\Local Scraper\)
+- **Retrieval baseline rerun** — 12 pass / 4 partial / 1 fail · Q2 BRD confirmed corpus gap · Q12 hostile witness answer quality good despite partial score
+- **RRF/LIKE fix investigation** — handleFetchSectionsByReference secondary_sources LIKE '%38%' confirmed source of noise · fix parked post-ingest · FTS5 replacement recommended
+- **Payload truncation confirmed** — enrichment_poller.py embed_text[:3000] confirmed live · session 9 fix verified
+- **retrieval_baseline.sh fixed** — KEY auto-read from .env · no manual export needed · SCP'd to VPS
+- **BRD corpus gap confirmed** — no standalone BRD chunk in either corpus part · manual ingest required post-corpus-ingest
 
 ## CHANGES THIS SESSION (session 9) — 20 March 2026
 
