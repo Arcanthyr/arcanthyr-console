@@ -2339,7 +2339,18 @@ export default {
           // Summary-augmented context — pass case metadata to each chunk extraction
           const context = caseRow ? `Case: ${citation}\nFacts: ${caseRow.facts || ''}\nIssues: ${caseRow.issues || ''}` : `Case: ${citation}`;
 
-          const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt. Output ONLY valid JSON: { "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}], "holdings": [], "legislation": [], "key_authorities": [{"name": "", "treatment": "", "why": ""}] }. If no legal content is present output { "principles": [], "holdings": [], "legislation": [], "key_authorities": [] }.`;
+          const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt, AND preserve the most important judicial reasoning passages verbatim.
+
+Output ONLY valid JSON:
+{
+  "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}],
+  "holdings": [],
+  "legislation": [],
+  "key_authorities": [{"name": "", "treatment": "", "why": ""}],
+  "reasoning": "Key judicial reasoning passages preserved verbatim from the excerpt (200-400 words)"
+}
+
+If no legal content is present output all empty arrays and reasoning: "".`;
 
           const userContent = `${context}\n\nExcerpt:\n${row.chunk_text}`;
           const raw = await callWorkersAI(env, systemPrompt, userContent, 1500);

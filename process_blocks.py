@@ -43,7 +43,7 @@ TOTAL_BLOCKS  = 56
 PART1_END     = 16        # blocks 1-16 -> part1, blocks 17-32 -> part2
 MODEL         = "gpt-4o-mini-2024-07-18"
 TEMPERATURE   = 1
-MAX_TOKENS    = 32000      # enough for a full block output
+MAX_TOKENS    = 16000      # enough for a full block output
 SLEEP_BETWEEN = 5         # seconds between API calls
 RUN_REPAIR_PASS = True   # set False to skip repair pass
 
@@ -250,7 +250,7 @@ INSIDE "## FORMATTED CHUNKS":
 For each chunk, output EXACTLY this structure:
 
 # <Heading text - descriptive and specific to the doctrinal unit>
-[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line label; must not replace the body>] [CONCEPTS: <key terms present in body; aim for ~5>] [CITATION: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}] [ACT: <Act name(s) or None>] [CASE: <case citation(s) or None>]
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line label; must not replace the body>] [CONCEPTS: <key terms present in body; aim for ~5>] [CITATION: hoc-b{{BLOCK_NUMBER}}-m{{CHUNK_INDEX}}-{{short-topic-kebab}}] [ACT: <Act name(s) or None>] [CASE: <case citation(s) or None>]
 
 <Blank line>
 
@@ -261,7 +261,7 @@ METADATA FIELD RULES:
 - CATEGORY/TYPE: canonical list only; no procedure/script
 - TOPIC: one line; no "This chunk covers..."
 - CONCEPTS: actually present in body; no invention; ~5
-- CITATION slug: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}
+- CITATION slug: hoc-b{{BLOCK_NUMBER}}-m{{CHUNK_INDEX}}-{{short-topic-kebab}}
 - ACT/CASE: substantively discussed only; otherwise "None"
 - ALL metadata on ONE line
 - Exactly one blank line between metadata and body
@@ -392,8 +392,9 @@ def process_block_with_prompt(
     """
     log(f"  [{prompt_name}] Sending to API...")
 
+    system_prompt = prompt.replace("{{BLOCK_NUMBER}}", str(block_num)).replace("{{SOURCE_BLOCK_TEXT}}", "")
     messages = [
-        {"role": "system", "content": prompt},
+        {"role": "system", "content": system_prompt},
         {"role": "user",   "content": block_text},
     ]
 

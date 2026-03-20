@@ -1,0 +1,1 @@
+block_001 | master | Error code: 400 - {'error': {'message': 'max_tokens is too large: 32000. This model supports at most 16384 completion tokens, whereas you provided 32000.', 'type': 'invalid_request_error', 'param': 'max_tokens', 'code': 'invalid_value'}}
