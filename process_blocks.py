@@ -41,10 +41,11 @@ OUTPUT_PART2  = "master_corpus_part2.md"
 LOG_FILE      = "process_log.txt"
 TOTAL_BLOCKS  = 56
 PART1_END     = 16        # blocks 1-16 -> part1, blocks 17-32 -> part2
-MODEL         = "gpt-5-mini-2025-08-07"
+MODEL         = "gpt-4o-mini-2024-07-18"
 TEMPERATURE   = 1
 MAX_TOKENS    = 32000      # enough for a full block output
 SLEEP_BETWEEN = 5         # seconds between API calls
+RUN_REPAIR_PASS = True   # set False to skip repair pass
 
 
 # ---------------------------------------------
@@ -52,134 +53,97 @@ SLEEP_BETWEEN = 5         # seconds between API calls
 # ---------------------------------------------
 
 MASTER_PROMPT = textwrap.dedent("""\
-You are processing ONE PART of a large legal research document for ingestion into a vector search and AI retrieval system.
-The source material contains mixed personal notes and commentary on Tasmanian criminal law, including legislation, legal concepts, doctrinal analysis, evidentiary principles, sentencing principles, and case references.
-If output budget becomes constrained, prioritise in this order: 1. Complete formatted chunks 2. Coverage report 3. Validation report 4. Deduplication report
-Never truncate the formatted chunk set.
-Your task is to perform ALL of the following in a single pass on the uploaded part only:
-1. FORMAT the source into semantically clean, self-contained retrieval chunks. 2. VERIFY COVERAGE by checking whether any substantive legal content in the source part was omitted from the formatted output. 3. VALIDATE STRUCTURE by checking the formatted output against the structural and metadata rules below.
-Do not summarise or omit substantive legal analysis. Work only on the uploaded part. Do not rely on prior or later parts. Do not ask for confirmation. Output in Markdown only.
+You are a legal knowledge formatter for a Tasmanian criminal law research system.
 
-SOURCE INDEX PASS
-Before producing any formatted chunks, perform a SOURCE INDEX PASS.
-Scan the uploaded source block and identify every distinct doctrinal unit present. Examples include:
-- statutory provisions - offence definitions - elements of offences - defences - evidentiary rules - sentencing principles - procedural rules - interpretive doctrines - case authorities
-Case Authority Detection: during this scan, detect all case citations embedded in the text. Look for patterns such as: - [YYYY] TASSC - [YYYY] TASCCA - [YYYY] HCA - R v - DPP v
-Each detected authority must be recorded as a doctrinal unit and converted into a case authority chunk.
-Create a list titled:
-## SOURCE DOCTRINAL UNITS
-Each item must be a concise description of one doctrinal unit. This list must represent the complete conceptual coverage of the source block. Do not begin formatting chunks until this list is complete. Each doctrinal unit listed must produce at least one formatted chunk unless the material is clearly duplicative.
+Your task is NOT to summarise and NOT to rewrite in a sanitised style.
+Your task is to PRESERVE substantive prose, doctrinal reasoning, and analytical commentary from the source block
+verbatim or near-verbatim, and to add a small amount of structured metadata as retrieval handles.
 
-PRIMARY OBJECTIVE
-Convert the uploaded source part into semantically clean, self-contained chunks optimised for vector retrieval.
-Each chunk must be fully understandable in isolation with no reliance on surrounding sections.
-If the source already complies, preserve the substance and structure unless changes are required for compliance.
+NON-NEGOTIABLE RULES (DO NOT VIOLATE):
+You MUST NOT:
+- summarise (no "This chunk covers ..." one-liners)
+- replace explanatory prose with headings + keywords
+- sanitise informal language that carries legal meaning (keep practitioner shorthand, abbreviations, informal tone)
+- invent doctrine, tests, holdings, or authorities not present in the source text
+- add "clean" doctrine statements that are not grounded in the source
+- duplicate procedure/script content (handled by a separate Procedure Prompt)
 
-FORMATTING RULES
-HEADING STRUCTURE
-Use three heading levels only.
-Level 1 - Major Act or major doctrinal topic. Example: # Criminal Code Act 1924 (Tas)
-Level 2 - Specific statutory provision or major legal concept. Example: ## Criminal Code Act 1924 (Tas) s 156 - Culpable Homicide
-Level 3 - Sub-rule or analytical component. Example: ### Elements of the Offence
+You MUST:
+- produce multiple formatted chunks from this block
+- keep the BODY of each chunk approximately 500-800 words (target range)
+- preserve all doctrinal reasoning and analytical commentary in the BODY (verbatim or near-verbatim)
+- add bracketed metadata on ONE LINE as retrieval handles (NOT a replacement for the body)
+- include doctrine-signal language where present in the source ("the test is...", "requires...", "the court considers...")
+  If the source states a test informally, you may add a short TOPIC line that uses doctrine-signal phrasing,
+  but you MUST still keep the full original prose in the body.
 
-RULE ISOLATION
-Each chunk must describe only one legal rule, definition, doctrinal test, evidentiary rule, sentencing principle, procedural rule, interpretive principle, or analytical principle.
-If a section discusses multiple rules or tests, split it into separate chunks with distinct headings.
-Examples of separate rule chunks: - offence definition - elements of offence - statutory definition - defence requirements - evidentiary admissibility test - sentencing principle - procedural rule - interpretive principle - case authority
+INPUTS YOU WILL RECEIVE:
+- BLOCK_NUMBER: integer NNN
+- SOURCE_BLOCK_TEXT: ~3,000 words of mixed legal prose/notes
 
-METADATA MARKERS
-Immediately below every Level 2 or Level 3 heading include metadata markers in this exact order when supported by the source text:
-[DOMAIN: Tasmanian Criminal Law] [ACT: full Act name] [SECTION: section number] [CITATION: full legislative citation] [TYPE: offence / element of offence / defence / statutory definition / legal doctrine / evidentiary rule / sentencing principle / procedural rule / interpretive principle / case authority] [CASE: full case citation] [TOPIC: concise legal topic] [CONCEPTS: 5-10 supported keywords or search phrases]
-Rules: - Only include metadata supported by the source text. - Never invent statutes, sections, cases, or doctrines. - Omit [SECTION:] if not tied to a specific section. - Omit [ACT:] and [CITATION:] if the chunk is not statutory. - Omit [CASE:] unless the chunk is about or materially relies on a cited case.
-Minimum required for every chunk: [DOMAIN:] [TYPE:] [TOPIC:] [CONCEPTS:]
-If legislation is analysed also require: [ACT:] [CITATION:]
-If case authority is analysed also require: [CASE:]
+OUTPUT REQUIREMENTS (STRICT):
+- Output must contain EXACTLY these two top-level sections, in this order:
+  1) "## FORMATTED CHUNKS"
+  2) "## FINAL STATUS"
+- Do NOT output any other commentary, explanation, or headings outside those two sections.
 
-TYPE FIELD
-Select the most accurate classification from the approved categories above.
+INSIDE "## FORMATTED CHUNKS":
+For each chunk, output EXACTLY this structure:
 
-CONCEPTS FIELD
-Provide 5-10 concepts supported by the source text.
-Include: - doctrinal terminology - synonyms - related legal ideas - plain-language search phrases a non-lawyer might use
-Prefer mixed legal and natural-language phrasing. Do not include unrelated concepts. Do not use fewer than 5 concepts unless the source genuinely does not support more.
-Example: [CONCEPTS: recklessness, mental element, criminal fault, awareness of risk, subjective foresight, state of mind, did they know the risk, foresight of harm]
+# <Heading text - descriptive and specific to the doctrinal unit; NOT a summary sentence>
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <one of: annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line topic label using source-grounded language; may include "test is/requires/court considers" if supported>] [CONCEPTS: <comma-separated key terms present in the body; aim for ~5>] [CITATION: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}] [ACT: <Act name(s) if substantively discussed, else None>] [CASE: <case citation(s) if substantively discussed, else None>]
 
-CHUNK STRUCTURE
-Each chunk must follow this structure:
-Heading Metadata markers Prose explanation
-Rules: - The chunk must stand alone. - Include full statutory references in the text. - Do not rely on surrounding headings. - Remove cross-references such as: see above / see below / as discussed earlier / refer to / noted earlier - Rewrite cross-references as complete standalone explanations.
+<Blank line>
 
-CONCEPT ANCHOR RULE
-The first sentence of each chunk must clearly state the rule or legal concept being explained.
-Example: "Culpable homicide under Criminal Code Act 1924 (Tas) s 156 refers to an unlawful killing that does not satisfy the elements required for murder."
+<BODY: 500-800 words target; verbatim or near-verbatim from the source; preserves reasoning and commentary>
 
-CHUNK LENGTH
-Target length: 150-350 words. Hard maximum: 450 words.
-If a discussion exceeds 450 words, split into logically distinct sub-topics with new headings.
-Never use continuation headings such as: (cont.) / continued / part 2
-Instead use semantic headings such as: - Admissibility Test - Elements - Exception - Mental Element - Evidentiary Threshold - Sentencing Considerations
+METADATA FIELD RULES:
+- DOMAIN: always exactly "Tasmanian Criminal Law"
+- CATEGORY: choose the best fit from the canonical list (do NOT use procedure/script here)
+- TYPE: set equal to CATEGORY
+- TOPIC: one line; descriptive label only; MUST NOT replace the body; do not write "This chunk covers..."
+- CONCEPTS: include concepts actually present in the body (no invention); aim for about 5
+- CITATION slug: must be ASCII lower-case, digits and hyphens only, no spaces.
+  Pattern: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}
+  Example: hoc-b012-m003-double-jeopardy-test
+- ACT: include the Act name(s) if substantively discussed; otherwise write "None"
+- CASE: include case citation(s) only where there is substantive commentary; otherwise write "None"
+- Keep ALL metadata on ONE line exactly as bracket pairs shown above.
 
-LISTS AND ELEMENTS
-Use numbered lists when describing: - elements of offences - statutory tests - multi-factor standards
-Use prose for commentary.
+CHUNKING RULES:
+- Target body length: 500-800 words per chunk.
+- Split on natural boundaries: headings, topic transitions, or coherent doctrine units.
+- Do NOT shorten content to hit a length target. If running long, create an additional chunk instead.
+- Avoid duplication across chunks. If minimal overlap needed, repeat at most 1-2 sentences.
 
-CITATIONS
-Normalise citations.
-Legislation: Criminal Code Act 1924 (Tas) s 156 Cases: [2024] TASSC 24
-Rules: - Never abbreviate Act names within a chunk. - Ensure the full statute name appears within the chunk text when legislation is discussed.
+PROCEDURE/SCRIPT EXCLUSION RULE:
+- If a passage is primarily scripted questioning, examination sequences, step-by-step courtroom workflow,
+  or tactical sequences, EXCLUDE it from Master output.
+- If a passage mixes doctrine with minor procedural notes, keep the doctrine and omit only the procedural lines.
 
-CASE AUTHORITY BLOCKS
-When a case is cited as authority for a legal rule, create a separate authority chunk.
-Structure: ### Authority - [short description of rule]
-Metadata must include: [DOMAIN: Tasmanian Criminal Law] [TYPE: case authority] [CASE: full case citation] [TOPIC: legal principle supported] [CONCEPTS: doctrinal terms and plain-language phrases related to the authority]
-Content: explain the legal principle confirmed by the case. Do not include procedural history or detailed facts unless essential to the rule.
+CASE AUTHORITY CHUNK RULE:
+- Create a chunk with CATEGORY = "case authority" ONLY if the source contains substantive commentary
+  (what it held, the test applied, why it matters, distinguishing features).
+- If a citation is merely listed or mentioned in passing, do NOT create a standalone case authority chunk.
+  Keep the mention inside the relevant doctrine/annotation chunk instead.
 
-TABLES
-Convert tables to prose unless the table compares multiple legal rules across three or more attributes.
+FINAL STATUS RULE:
+After all chunks, output:
+## FINAL STATUS
+<one of: READY FOR APPEND TO MASTER FILE / READY FOR APPEND WITH MINOR REVIEW / NEEDS REVISION BEFORE APPEND>
 
-CLEANING RULES
-Remove: page numbers / headers and footers / redundant whitespace / duplicate content / cross-references
-If duplicate content appears, retain the fuller explanation and remove the weaker duplicate.
+Choose:
+- READY FOR APPEND TO MASTER FILE only if confident all rules followed and substance preserved.
+- READY FOR APPEND WITH MINOR REVIEW if compliant but minor uncertainty exists.
+- NEEDS REVISION BEFORE APPEND if any chunk is thin, overly summarised, or format rules were hard to follow.
 
-REVIEW FLAG
-If heading level, metadata classification, rule separation, or source interpretation is uncertain, mark the affected chunk: [REVIEW]
+NOW PROCESS THIS BLOCK:
 
-COVERAGE VERIFICATION RULES
-After formatting, compare the formatted output against the uploaded source part only.
-Identify any substantive legal material present in the source that does not appear in the formatted output.
-Check specifically for: - missing doctrines - missing statutory provisions - missing section-specific analysis - missing defences - missing evidentiary rules - missing sentencing principles - missing procedural rules - missing interpretive principles - missing case authorities - missing major headings or doctrinal topics
-If material is missing, list it under [UNPROCESSED].
-At the end of the formatted output, list all major headings or topics identified in the source part. If any identified topic was not converted into a chunk, flag it as [UNPROCESSED].
-
-STRUCTURAL VALIDATION RULES
-Before finalising, validate the formatted output against the following checks.
-CHECK 1 - CHUNK LENGTH: flag any chunk exceeding 450 words. Report heading and approximate word count.
-CHECK 2 - CONTINUATION HEADINGS: flag headings containing (cont.) / continued / part 2. Suggest a semantic replacement.
-CHECK 3 - CROSS REFERENCES: flag phrases such as see above / see below / as discussed / refer to / noted earlier. Quote the sentence.
-CHECK 4 - STATUTE CONTEXT: flag any chunk referencing a section number without the full Act name in that chunk text.
-CHECK 5 - HEADING CONTEXT: flag any Level 2 heading that does not include the Act name or legal topic.
-CHECK 6 - METADATA COMPLETENESS: flag Level 2 or Level 3 chunks missing required metadata.
-CHECK 7 - CONCEPTS FIELD QUALITY: flag [CONCEPTS:] entries containing fewer than 5 concepts, containing only formal legal terms, or including unrelated concepts.
-CHECK 8 - TYPE FIELD VALIDITY: flag [TYPE:] entries inconsistent with the chunk content.
-CHECK 9 - CASE METADATA: flag any chunk referencing a case citation that does not include a [CASE:] metadata marker where required.
-CHECK 10 - DUPLICATE CONTENT: flag chunks that repeat substantive content elsewhere. Retain the most complete chunk. Identify the weaker duplicate.
-CHECK 11 - DOMAIN MARKER: flag any chunk missing [DOMAIN: Tasmanian Criminal Law].
-CHECK 12 - SOURCE COVERAGE: flag major headings, doctrines, statutes, or authorities from the uploaded source part absent from the formatted output.
-Only report checks where an issue exists.
-
-MANDATORY OUTPUT FORMAT
-Output exactly in this order:
-# PART OUTPUT
-## SOURCE DOCTRINAL UNITS [List of all doctrinal units identified in the source block before formatting begins.]
-## FORMATTED CHUNKS [Full formatted Markdown chunk set for this uploaded part.]
-## SOURCE TOPICS IDENTIFIED [List all major headings, topics, doctrines, statutory provisions, and authorities identified in the source part.]
-## COVERAGE REPORT Either: "No substantive omissions detected in this part." Or: a list headed [UNPROCESSED] containing each suspected omission.
-## VALIDATION REPORT For each issue found, report: Check number / Heading / Quoted text (first 50 words) / Explanation If no issue exists for a check, do not report it.
-## DEDUPLICATION REPORT Either: "No substantive duplicates detected in this part." Or: list duplicate chunks and specify which version should be retained.
-## FINAL STATUS State one of: - READY FOR APPEND TO MASTER FILE - READY FOR APPEND WITH MINOR REVIEW - NEEDS REVISION BEFORE APPEND
-
-PROCESS DISCIPLINE
-- Do not analyse any material outside the uploaded part. - Do not summarise the source instead of formatting it. - Do not omit substantive legal content. - Do not produce Word formatting. - Do not begin until the source part is present.
+BLOCK_NUMBER: {{BLOCK_NUMBER}}
+SOURCE_BLOCK_TEXT:
+\"\"\"
+{{SOURCE_BLOCK_TEXT}}
+\"\"\"
 """)
 
 
@@ -241,6 +205,87 @@ Output exactly in this order:
 ## COVERAGE REPORT Either: "No substantive omissions detected." Or: [UNPROCESSED] list.
 ## VALIDATION REPORT For each issue: Check number / Heading / Explanation. If no issues, state "No issues detected."
 ## FINAL STATUS State one of: - READY FOR APPEND TO MASTER FILE - READY FOR APPEND WITH MINOR REVIEW - NEEDS REVISION BEFORE APPEND
+""")
+
+
+# ---------------------------------------------
+# REPAIR PROMPT (post-master compliance pass)
+# ---------------------------------------------
+
+REPAIR_PROMPT = textwrap.dedent("""\
+You are a compliance and repair formatter for a legal secondary-source corpus.
+
+You will receive:
+- BLOCK_NUMBER: integer NNN
+- SOURCE_BLOCK_TEXT: the original block
+- DRAFT_OUTPUT: the model's prior Master output
+
+Your task is ONLY to repair structural compliance and substance-preservation failures.
+You MUST NOT summarise, sanitise, or replace reasoning with one-line descriptions.
+
+WHAT YOU MUST CHECK AND REPAIR:
+You MUST repair the output if ANY of the following are true:
+- Any chunk body is missing, extremely short, or looks like an index entry (headings + "This chunk covers...").
+- Any chunk paraphrases heavily instead of preserving verbatim or near-verbatim source prose.
+- Chunk bodies are far outside the target size range (target 500-800 words), unless the source truly lacks content.
+- "case authority" chunks were created for passing mentions with no substantive commentary.
+- Procedure/script content appears (scripted questions, workflows, step sequences); remove it.
+- Formatting does not match ingest requirements (missing ## FORMATTED CHUNKS, wrong heading level,
+  metadata not on one line, missing blank line before body, missing/invalid FINAL STATUS).
+
+WHAT TO DO INSTEAD OF SUMMARISING:
+- Expand thin chunks by COPYING relevant contiguous source prose from SOURCE_BLOCK_TEXT into the body.
+- Split oversized chunks at natural boundaries (doctrine coherence first).
+- Merge undersized fragments with adjacent related material if it improves coherence.
+- Preserve informal language; do not clean up practitioner shorthand.
+- Delete any invented doctrine/test/holding not supported by the source.
+
+OUTPUT REQUIREMENTS (STRICT):
+- Output must contain EXACTLY these two top-level sections, in this order:
+  1) "## FORMATTED CHUNKS"
+  2) "## FINAL STATUS"
+- Do NOT output any other commentary outside those two sections.
+
+INSIDE "## FORMATTED CHUNKS":
+For each chunk, output EXACTLY this structure:
+
+# <Heading text - descriptive and specific to the doctrinal unit>
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line label; must not replace the body>] [CONCEPTS: <key terms present in body; aim for ~5>] [CITATION: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}] [ACT: <Act name(s) or None>] [CASE: <case citation(s) or None>]
+
+<Blank line>
+
+<BODY: 500-800 words target; verbatim or near-verbatim from source>
+
+METADATA FIELD RULES:
+- DOMAIN: always exactly "Tasmanian Criminal Law"
+- CATEGORY/TYPE: canonical list only; no procedure/script
+- TOPIC: one line; no "This chunk covers..."
+- CONCEPTS: actually present in body; no invention; ~5
+- CITATION slug: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}
+- ACT/CASE: substantively discussed only; otherwise "None"
+- ALL metadata on ONE line
+- Exactly one blank line between metadata and body
+
+CASE AUTHORITY RULE:
+- Keep CATEGORY = "case authority" only when body contains substantive commentary.
+- Otherwise move passing mention into doctrine/annotation chunk and delete standalone chunk.
+
+FINAL STATUS RULE:
+## FINAL STATUS
+<READY FOR APPEND TO MASTER FILE / READY FOR APPEND WITH MINOR REVIEW / NEEDS REVISION BEFORE APPEND>
+
+NOW REPAIR THIS:
+
+BLOCK_NUMBER: {{BLOCK_NUMBER}}
+SOURCE_BLOCK_TEXT:
+\"\"\"
+{source_block}
+\"\"\"
+
+DRAFT_OUTPUT:
+\"\"\"
+{draft_output}
+\"\"\"
 """)
 
 
@@ -500,6 +545,29 @@ def main():
                 chunks, status, followup = process_block_with_prompt(
                     client, block_text, prompt_text, prompt_name, block_num
                 )
+                # Repair pass — runs after master, uses source block + master output as input
+                if prompt_name == "master" and RUN_REPAIR_PASS and chunks:
+                    repair_input = REPAIR_PROMPT.format(
+                        source_block=block_text,
+                        draft_output=chunks
+                    )
+                    repair_messages = [
+                        {"role": "system", "content": repair_input},
+                        {"role": "user", "content": "Please review and repair the draft output above."}
+                    ]
+                    log(f"  [repair] Running repair pass on block {block_num}...")
+                    try:
+                        repair_response = call_api(client, repair_messages)
+                        repair_chunks = extract_formatted_chunks(repair_response)
+                        repair_status = extract_final_status(repair_response)
+                        log(f"  [repair] FINAL STATUS: {repair_status}")
+                        if repair_chunks:
+                            chunks = repair_chunks
+                            log(f"  [repair] Repair chunks accepted — replacing master output")
+                        else:
+                            log(f"  [repair] WARNING: No FORMATTED CHUNKS in repair response — keeping master output")
+                    except Exception as e:
+                        log(f"  [repair] ERROR: {e} — keeping master output")
                 append_chunks_to_file(output_file, block_num, prompt_name, chunks)
                 log(
                     f"  [{prompt_name}] appended to {output_file} | "
