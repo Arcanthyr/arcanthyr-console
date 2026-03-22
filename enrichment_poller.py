@@ -52,11 +52,12 @@ log = logging.getLogger(__name__)
 WORKER_URL        = os.environ.get('WORKER_URL',        'https://arcanthyr.com')
 NEXUS_SECRET_KEY  = os.environ.get('NEXUS_SECRET_KEY',  '')
 ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+OPENAI_API_KEY    = os.environ.get('OPENAI_API_KEY', '')
 QDRANT_URL        = os.environ.get('QDRANT_URL',        'http://localhost:6334')
 OLLAMA_URL        = os.environ.get('OLLAMA_URL',        'http://localhost:11434')
 COLLECTION        = os.environ.get('COLLECTION',        'general-docs-v2')
 EMBED_MODEL       = 'argus-ai/pplx-embed-context-v1-0.6b:fp32'
-CLAUDE_MODEL      = 'claude-sonnet-4-20250514'
+OPENAI_ENRICH_MODEL = 'gpt-4o-mini-2024-07-18'
 
 NEXUS_HEADERS = {
     'Content-Type': 'application/json',
@@ -361,68 +362,63 @@ def call_claude(chunk_text: str) -> str:
     Returns full response text.
     Raises on API error.
     """
-    headers = {
-        'Content-Type':      'application/json',
-        'x-api-key':         ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-    }
-    body = {
-        'model':      CLAUDE_MODEL,
-        'max_tokens': 4096,
-        'system':     MASTER_PROMPT_SYSTEM,
-        'messages': [
-            {
-                'role':    'user',
-                'content': MASTER_PROMPT_TEMPLATE.format(chunk_text=chunk_text)
-            }
-        ]
-    }
-    resp = requests.post(
-        'https://api.anthropic.com/v1/messages',
-        headers=headers,
-        json=body,
-        timeout=120
+    response = requests.post(
+        'https://api.openai.com/v1/chat/completions',
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {OPENAI_API_KEY}'
+        },
+        json={
+            'model': OPENAI_ENRICH_MODEL,
+            'max_tokens': 1000,
+            'messages': [
+                {'role': 'system', 'content': MASTER_PROMPT_SYSTEM},
+                {'role': 'user', 'content': chunk_text}
+            ]
+        },
+        timeout=60
     )
-    resp.raise_for_status()
-    data = resp.json()
-    return data['content'][0]['text']
+    response.raise_for_status()
+    data = response.json()
+    return data['choices'][0]['message']['content']
 
 
 def call_claude_followup(original_response: str, unprocessed_items: str) -> str:
     """Second call for NEEDS REVISION — process unprocessed doctrinal units."""
-    headers = {
-        'Content-Type':      'application/json',
-        'x-api-key':         ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-    }
-    body = {
-        'model':      CLAUDE_MODEL,
-        'max_tokens': 4096,
-        'system':     MASTER_PROMPT_SYSTEM,
-        'messages': [
-            {
-                'role':    'user',
-                'content': MASTER_PROMPT_TEMPLATE.format(chunk_text='[See follow-up]')
-            },
-            {
-                'role':    'assistant',
-                'content': original_response
-            },
-            {
-                'role':    'user',
-                'content': FOLLOWUP_PROMPT.format(unprocessed_items=unprocessed_items)
-            }
-        ]
-    }
-    resp = requests.post(
-        'https://api.anthropic.com/v1/messages',
-        headers=headers,
-        json=body,
-        timeout=120
+    messages = [
+        {
+            'role':    'system',
+            'content': MASTER_PROMPT_SYSTEM
+        },
+        {
+            'role':    'user',
+            'content': MASTER_PROMPT_TEMPLATE.format(chunk_text='[See follow-up]')
+        },
+        {
+            'role':    'assistant',
+            'content': original_response
+        },
+        {
+            'role':    'user',
+            'content': FOLLOWUP_PROMPT.format(unprocessed_items=unprocessed_items)
+        }
+    ]
+    response = requests.post(
+        'https://api.openai.com/v1/chat/completions',
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {OPENAI_API_KEY}'
+        },
+        json={
+            'model': OPENAI_ENRICH_MODEL,
+            'max_tokens': 1000,
+            'messages': messages
+        },
+        timeout=60
     )
-    resp.raise_for_status()
-    data = resp.json()
-    return data['content'][0]['text']
+    response.raise_for_status()
+    data = response.json()
+    return data['choices'][0]['message']['content']
 
 
 def extract_formatted_chunks(response_text: str) -> Optional[str]:
