@@ -1255,7 +1255,7 @@ async function handleUploadCorpus(body, env) {
   `).bind(citation, source || citation, doc_type || null, text, new Date().toISOString(), category ?? 'doctrine').run();
 
   await env.DB.prepare(
-    `INSERT INTO secondary_sources_fts (rowid, source_id, title, raw_text)
+    `INSERT OR REPLACE INTO secondary_sources_fts (rowid, source_id, title, raw_text)
      SELECT rowid, id, title, raw_text FROM secondary_sources WHERE id = ?`
   ).bind(citation).run();
 

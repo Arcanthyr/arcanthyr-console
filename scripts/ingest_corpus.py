@@ -5,9 +5,9 @@ import json
 import sys
 import requests
 
-PROCEDURE_ONLY = True
+PROCEDURE_ONLY = False
 
-INPUT_FILE = r"C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\master_corpus_part2.md"
+INPUT_FILE = r"C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\master_corpus_part1.md"
 WORKER_ENDPOINT = "https://arcanthyr.com/api/legal/upload-corpus"
 DRY_RUN = "--dry-run" in sys.argv
 
