@@ -200,6 +200,13 @@ function splitIntoChunks(text, chunkSize = 3000) {
   return chunks;
 }
 
+function isLikelyHeader(chunkIndex, chunkText) {
+  if (chunkIndex !== 0) return false;
+  const upperLabels = (chunkText.match(/^[A-Z ]{4,}[\s]*:/gm) || []).length;
+  const hasMarkers = /COURT\s*:|CITATION\s*:|PARTIES\s*:|JUDGE\s*:|HEARD\s*:|DELIVERED\s*:/i.test(chunkText);
+  return upperLabels >= 3 || hasMarkers;
+}
+
 async function processCaseUpload(env, caseText, citation, caseName, court) {
   if (!caseText || !citation) throw new Error("Missing required fields: caseText and citation");
 
@@ -2368,15 +2375,109 @@ export default {
           if (!row) throw new Error(`No chunk found for ${citation} index ${chunk_index}`);
 
           const caseRow = await env.DB.prepare(
-            `SELECT case_name, court, facts, issues FROM cases WHERE citation = ?`
+            `SELECT case_name, court, facts, issues, judge, case_date FROM cases WHERE citation = ?`
           ).bind(citation).first();
 
-          // Summary-augmented context — pass case metadata to each chunk extraction
-          const context = caseRow ? `Case: ${citation}\nFacts: ${caseRow.facts || ''}\nIssues: ${caseRow.issues || ''}` : `Case: ${citation}`;
+          const totalChunks = msg.body.total_chunks || 0;
+          const roleHint = isLikelyHeader(chunk_index, row.chunk_text) ? 'header' : 'unknown';
+          const userContent = [
+            `Case: ${citation}`,
+            `Court: ${caseRow?.court || 'Not stated'}`,
+            `Judge: ${caseRow?.judge || 'Not stated'}`,
+            `Date: ${caseRow?.case_date || 'Not stated'}`,
+            `Chunk: ${chunk_index + 1} of ${totalChunks}`,
+            `Hint: ${roleHint}`,
+            `Case context — Facts: ${caseRow?.facts || ''}`,
+            `Case context — Issues: ${caseRow?.issues || ''}`,
+            ``,
+            `--- EXCERPT START ---`,
+            row.chunk_text,
+            `--- EXCERPT END ---`
+          ].join('\n');
 
-          const systemPrompt = `You are a legal research assistant analysing Australian criminal case law. Extract legal principles, holdings, legislation, and authorities from this excerpt. Output ONLY valid JSON: { "principles": [{"principle": "IF...THEN...", "type": "ratio|obiter", "statute_refs": [], "keywords": []}], "holdings": [], "legislation": [], "key_authorities": [{"name": "", "treatment": "", "why": ""}] }. If no legal content is present output { "principles": [], "holdings": [], "legislation": [], "key_authorities": [] }.`;
+          const systemPrompt = `You are an Australian legal judgment enrichment engine. You analyse a single excerpt from a court judgment and output ONLY valid JSON.
 
-          const userContent = `${context}\n\nExcerpt:\n${row.chunk_text}`;
+Your goal is retrieval-quality enrichment for a legal research system. Extract only what is genuinely supported by THIS excerpt. Do not infer a legal principle unless the excerpt itself contains judicial reasoning, an applied legal test, or a clearly expressed legal conclusion by the judge.
+
+STEP 1 — CLASSIFY the chunk. You must assign one of these types:
+- "reasoning" — judicial analysis, statement or application of a legal test, ratio decidendi, obiter dicta, the judge's reasoning on a legal issue
+- "evidence" — witness testimony, cross-examination transcript, factual narrative, exhibit descriptions
+- "submissions" — arguments advanced by counsel or parties, not the judge's own conclusions
+- "procedural" — grounds of appeal, charge history, pleadings, orders, procedural background
+- "header" — court/citation/parties/judge/dates/catchwords metadata with no substantive reasoning
+- "mixed" — genuinely contains both judicial reasoning and one or more other types
+
+STEP 2 — EXTRACT based on type. These rules are absolute:
+1. Do NOT extract legal principles from evidence, submissions, procedural, or header chunks. Cross-examination about a firearm does not establish an assault principle. Only the judge's reasoning does.
+2. Do NOT restate generic criminal law doctrine unless the judge explicitly states or applies it in THIS excerpt.
+3. Do NOT attempt to state the overall case holding unless this specific chunk contains it.
+4. Principles must be stated in the judge's own doctrinal language — NOT as simplified IF/THEN abstractions. Preserve the specific conditions, qualifications, and statutory anchors as the judge expressed them.
+5. Quality over quantity. One precisely stated principle is better than three generic ones. Maximum 2 principles per chunk; usually 0 or 1. If no clear principle exists, return [].
+6. Only include authorities actually named in the excerpt text — not your background knowledge.
+7. Only include legislation actually cited in the excerpt text.
+8. Use facts_summary and issues only as case context. Extract only from the EXCERPT.
+
+OUTPUT — respond with ONLY valid JSON, no markdown fences, no commentary:
+
+{
+  "chunk_type": "reasoning|evidence|submissions|procedural|header|mixed",
+  "subject_matter": "criminal|civil|administrative|family|mixed|unknown",
+  "enriched_text": "string",
+  "principles": [
+    {
+      "principle": "string — the court's doctrinal statement with its specific conditions as expressed by the judge",
+      "type": "ratio|obiter",
+      "confidence": "high|medium",
+      "statute_refs": ["s 46 Criminal Code (Tas)"],
+      "authorities_applied": ["case name"],
+      "keywords": ["specific legal terms — 3 to 6, not generic words like criminal or law"]
+    }
+  ],
+  "holdings": [
+    {
+      "holding": "string",
+      "topic": "string",
+      "basis": "factual|legal|procedural"
+    }
+  ],
+  "legislation": ["s 46 Criminal Code (Tas)"],
+  "key_authorities": [
+    {
+      "name": "string",
+      "treatment": "applied|followed|distinguished|cited|referred to|not followed",
+      "proposition": "string"
+    }
+  ],
+  "reasoning_quotes": [
+    {
+      "quote": "string — verbatim sentence max 200 chars",
+      "why_selected": "string"
+    }
+  ],
+  "confidence": "high|medium|low"
+}
+
+FIELD SPECIFICATIONS:
+
+enriched_text is REQUIRED and is the primary field for semantic embedding.
+
+For reasoning chunks (200-350 words): Open with one sentence identifying the legal issue addressed. State the principle or test in the judge's own doctrinal terms. For each authority cited, state what specific principle it stands for in this case. Include 1-2 verbatim sentences from the judicial reasoning in quotation marks. Note any statutory provisions interpreted. Close with the specific conclusion reached.
+
+For evidence chunks (80-150 words): Open with "This chunk contains [witness testimony / cross-examination / factual narrative] regarding [specific topic]." Summarise factual content. Note what legal issue it is relevant to. Do NOT state legal principles.
+
+For submissions chunks (80-150 words): Open with "This chunk contains [appellant/respondent/Crown] submissions regarding [specific topic]." Summarise the argument. Note which legal issue it addresses.
+
+For procedural chunks (50-100 words): Describe the procedural content.
+
+For header chunks (50-80 words): Open with "This chunk contains the judgment header for [case name]." List metadata present.
+
+principles — only for reasoning or mixed chunks; empty array otherwise; max 2
+holdings — only for reasoning or mixed chunks; empty array otherwise; max 3
+legislation — string array; only what appears in the excerpt; max 5; empty array otherwise
+key_authorities — only cases named in the excerpt; max 5; empty array otherwise
+reasoning_quotes — only for reasoning or mixed chunks; max 2; each quote max 200 chars; empty array otherwise
+confidence — high if clearly reasoning with explicit principles; medium if reasoning present but implicit; low if ambiguous or thin`;
+
           const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -2385,7 +2486,7 @@ export default {
             },
             body: JSON.stringify({
               model: "gpt-4o-mini-2024-07-18",
-              max_completion_tokens: 2500,
+              max_completion_tokens: 1600,
               messages: [
                 { role: "system", content: systemPrompt },
                 { role: "user", content: userContent }
@@ -2400,9 +2501,30 @@ export default {
           console.log(`[queue] raw response chunk ${citation}/${chunk_index}:`, raw);
           try { extracted = JSON.parse(cleaned); } catch (e) { console.error(`[queue] JSON parse failed chunk ${citation}/${chunk_index}:`, e.message); }
 
+          const enrichedText = extracted.enriched_text || null;
+
+          // Code-side validator — strip authorities not actually named in excerpt
+          if (extracted.key_authorities) {
+            extracted.key_authorities = extracted.key_authorities.filter(a =>
+              row.chunk_text.includes((a.name || '').split(' ')[0])
+            );
+          }
+          // Enforce type-based extraction gates
+          if (!['reasoning', 'mixed'].includes(extracted.chunk_type)) {
+            extracted.principles = [];
+            extracted.holdings = [];
+            extracted.reasoning_quotes = [];
+          }
+          // Cap arrays
+          if ((extracted.principles || []).length > 2) extracted.principles = extracted.principles.slice(0, 2);
+          if ((extracted.holdings || []).length > 3) extracted.holdings = extracted.holdings.slice(0, 3);
+          if ((extracted.reasoning_quotes || []).length > 2) extracted.reasoning_quotes = extracted.reasoning_quotes.slice(0, 2);
+          if ((extracted.legislation || []).length > 5) extracted.legislation = extracted.legislation.slice(0, 5);
+          if ((extracted.key_authorities || []).length > 5) extracted.key_authorities = extracted.key_authorities.slice(0, 5);
+
           await env.DB.prepare(
-            `UPDATE case_chunks SET principles_json = ?, done = 1 WHERE citation = ? AND chunk_index = ?`
-          ).bind(JSON.stringify(extracted), citation, chunk_index).run();
+            `UPDATE case_chunks SET principles_json = ?, enriched_text = ?, done = 1 WHERE citation = ? AND chunk_index = ?`
+          ).bind(JSON.stringify(extracted), enrichedText, citation, chunk_index).run();
 
           // Check if all chunks done — if so, merge
           const pending = await env.DB.prepare(
@@ -2411,12 +2533,12 @@ export default {
 
           if (pending.cnt === 0) {
             // Merge all chunk results
-            const chunks = await env.DB.prepare(
+            const allChunks = await env.DB.prepare(
               `SELECT principles_json FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
             ).bind(citation).all();
 
             const allPrinciples = [], allHoldings = [], allLegislation = new Set(), allAuthorities = [];
-            for (const chunk of chunks.results) {
+            for (const chunk of allChunks.results) {
               try {
                 const data = JSON.parse(chunk.principles_json || '{}');
                 if (data.principles) allPrinciples.push(...data.principles);
@@ -2434,12 +2556,20 @@ export default {
               return true;
             });
 
+            const chunkSubjects = allChunks.results
+              .map(c => { try { return JSON.parse(c.principles_json)?.subject_matter; } catch(e) { return null; } })
+              .filter(s => s && s !== 'unknown');
+            const subjectCounts = {};
+            chunkSubjects.forEach(s => { subjectCounts[s] = (subjectCounts[s] || 0) + 1; });
+            const subject_matter = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'unknown';
+
             await env.DB.prepare(`
               UPDATE cases SET
                 principles_extracted = ?,
                 holdings_extracted = ?,
                 legislation_extracted = ?,
                 authorities_extracted = ?,
+                subject_matter = ?,
                 deep_enriched = 1
               WHERE citation = ?
             `).bind(
@@ -2447,6 +2577,7 @@ export default {
               JSON.stringify(allHoldings),
               JSON.stringify([...allLegislation]),
               JSON.stringify(dedupedAuth),
+              subject_matter,
               citation
             ).run();
             console.log(`[queue] merge complete for ${citation} — ${allPrinciples.length} principles`);
@@ -2498,7 +2629,7 @@ export default {
               INSERT OR IGNORE INTO case_chunks (id, citation, chunk_index, chunk_text, done, embedded)
               VALUES (?, ?, ?, ?, 0, 0)
             `).bind(chunkId, citation, i, chunks[i]).run();
-            await env.CASE_QUEUE.send({ type: 'CHUNK', citation, chunk_index: i });
+            await env.CASE_QUEUE.send({ type: 'CHUNK', citation, chunk_index: i, total_chunks: chunks.length });
           }
           console.log(`[queue] enqueued ${chunks.length} CHUNK messages for ${citation}`);
           msg.ack();
