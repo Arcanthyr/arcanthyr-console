@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 22 March 2026 (end of session 12) · Supersedes all prior versions
+Updated: 23 March 2026 (end of session 14) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -56,7 +56,10 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | backfill scripts | Must run on VPS — fetch D1 data via Worker API (not wrangler subprocess), hit Qdrant via localhost:6334 |
 | Retrieval diagnostics | First step always: `docker compose logs --tail=50 agent-general` on VPS — skip message visible immediately |
 | enrichment_poller payload | Payload text limits fixed session 9 — secondary_sources [:5000], case_chunks [:3000], legislation [:3000] |
-| CHUNK message prompt | Case law Queue Pass 2 has same thin-content problem as old Master prompt — extracts principles/holdings JSON but discards judicial reasoning prose. Fix deferred — tackle before scraper adds significant volume |
+| CHUNK prompt v3 | DEPLOYED session 14 — 6-type chunk classification (reasoning/evidence/submissions/procedural/header/mixed), enriched_text primary output, faithful prose principles replacing IF/THEN, reasoning_quotes field, subject_matter classification · worker.js version db71db45 + f150e037 |
+| case_chunks schema | New columns added session 14: enriched_text TEXT (stores v3 prompt output), subject_matter TEXT (on cases table) · poller now embeds from enriched_text with chunk_text fallback |
+| requeue-chunks scope | No citation filter — requeues ALL done=0 chunks · for single-case pilot: manually reset that case only before calling the route |
+| total_chunks in queue | CHUNK queue messages now include total_chunks field — used for Chunk N of M positional hint in prompt |
 | ingest_corpus.py parser | Fixed session 9 — heading regex now accepts single # and any [UPPERCASE:] field as lookahead |
 | process_blocks.py | Updated session 9 — new preservation-focused Master prompt, Repair pass added, model fixed to gpt-4o-mini-2024-07-18, MAX_TOKENS=32000 |
 | CHUNK enrichment model | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY Worker secret) — NOT Workers AI · switched session 10 due to content moderation blocks |
@@ -71,28 +74,28 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 22 March 2026 (end of session 13)
+## SYSTEM STATE — 23 March 2026 (end of session 14)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks + 2,607 case chunks · all embedded |
+| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · case chunks being re-embedded overnight from enriched_text |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | 309 rows · ALL enriched=1 · 303 deep_enriched=1 · 6 pending deep enrichment · scraper running (at TASSC 2020) |
-| D1 case_chunks | 2,607 total · all done=1 · all embedded=1 |
-| D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
+| D1 cases | 303 cases · all enriched=1 · deep_enriched reprocessing overnight · subject_matter column added |
+| D1 case_chunks | 5,202 total · 5,187 done=0 requeued for v3 re-enrichment · enriched_text column added · reprocess running overnight |
+| D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 · untouched this session |
 | D1 secondary_sources_fts | 1,171 rows · backfilled session 13 · all three retrieval passes operational |
-| D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| worker.js | Deployed session 12 · version 2d3716de · FTS5 INSERT OR REPLACE fix live |
+| D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant · untouched this session |
+| worker.js | Deployed session 14 · versions db71db45 + f150e037 · CHUNK prompt v3 + fetch-case-chunks enriched_text SELECT |
 | Cloudflare plan | Workers Paid ($5/month) — neuron cap removed |
-| CHUNK enrichment model | GPT-4o-mini-2024-07-18 |
-| Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler |
-| enrichment_poller | Permanent Docker service · running · idle · GPT-4o-mini enrichment live |
-| server.py | Case chunk threshold 0.35 · HCA tier 4 · SCP'd session 9 |
-| Retrieval | Triple-pass hybrid pipeline confirmed working · baseline 14 pass / 3 partial / 0 fail |
+| CHUNK enrichment model | GPT-4o-mini-2024-07-18 · v3 prompt live |
+| Cloudflare Queues | LIVE · 2,440+ messages processed as of session end · 0 retries · processing overnight |
+| enrichment_poller | Permanent Docker service · running · re-embedding case chunks from enriched_text as queue completes |
+| server.py | Case chunk threshold 0.35 · HCA tier 4 · unchanged this session |
+| Retrieval | Triple-pass hybrid pipeline operational · baseline rerun needed after re-embed completes |
 | Phase 5 | VALIDATED — Claude API primary path confirmed good answer quality |
 | Corpus | COMPLETE — 1,172 chunks · all embedded · FTS5 backfilled · BRD chunk added |
-| Scraper | Running — Task Scheduler daily noon · 309 cases · stopped at TASSC/2020/5 session limit |
+| Scraper | Running — Task Scheduler daily noon · 303 cases · unaffected by this session's changes |
 
 ---
 
@@ -124,19 +127,21 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Run retrieval baseline** — `~/retrieval_baseline.sh` on VPS — confirm improvement over 12/4/1
+1. **Verify overnight reprocess complete** — check case_chunks done=1 count reaches 5,202 · check poller re-embedding from enriched_text · then run retrieval baseline
 2. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · placeholder never substituted · find and fix citation in D1 and Qdrant
 3. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts
-4. **CHUNK message prompt fix** — Queue Pass 2 discards judicial reasoning prose · fix before scraper adds significant volume (currently 309 cases)
-5. **BRD corpus gap** — chunk ingested · verify retrieval quality on Q2 next baseline run
+4. **Run retrieval baseline** — after re-embed completes · expect improvement on case law queries · Q2 BRD and Q13 RRF noise are the markers to watch
+5. **subject_matter classification** — verify cases.subject_matter populated correctly after reprocess · spot-check civil vs criminal split
+6. **Add subject_matter filter to retrieval** — once populated, scope case chunk retrieval to criminal cases for criminal law queries
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Baseline rerun done session 13** — 14 pass / 3 partial / 0 fail · Q2 BRD partial (chunk ingested, verify next run) · Q9 guilty plea partial (corpus gap) · Q13 case_chunk noise at rank 1 (RRF displacement known issue)
+- **Case chunks reprocessing overnight** — 5,187 chunks requeued session 14 · v3 prompt running · check done count in morning · poller re-embedding as chunks complete
+- **Baseline rerun needed** — after re-embed completes · previous 14/3/0 score was with old chunk payloads · expect case law query improvement
+- **subject_matter pending** — cases.subject_matter will populate as chunks complete overnight · verify spot-check before using as retrieval filter
 - **FTS5 backfill complete** — 1,171 rows · session 13
-- **6 cases pending deep_enriched** — Queue will clear automatically
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
 - **RRF displacement of case chunks** — case chunks only in semantic pass · investigate next session
@@ -147,6 +152,19 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
+
+## CHANGES THIS SESSION (session 14) — 23 March 2026
+
+- **CHUNK prompt v3 deployed** — replaced single-line IF/THEN extraction prompt with 6-type classification engine (reasoning/evidence/submissions/procedural/header/mixed) · enriched_text field added as primary output (200-350 word prose synthesis for reasoning chunks, honest description for others) · reasoning_quotes field extracts verbatim judicial passages · subject_matter classification added · principles now stated in judge's own doctrinal terms not IF/THEN abstraction · why: old prompt produced same generic principle across 4-5 chunks of same case, hallucinated principles from transcript/header chunks, and output never reached LLM at query time since only raw chunk_text was embedded
+- **enriched_text column added to case_chunks** — ALTER TABLE case_chunks ADD COLUMN enriched_text TEXT · why: needed to store v3 prompt output separately from principles_json so poller can embed from it
+- **subject_matter column added to cases** — ALTER TABLE cases ADD COLUMN subject_matter TEXT · why: enables future filtering of case chunk retrieval to criminal cases only for criminal law queries; populated by merge step from chunk-level classifications
+- **enrichment_poller.py updated** — embeds case chunks from enriched_text when present, falls back to chunk_text · fetch-case-chunks Worker route updated to SELECT enriched_text · SCP'd and force-recreated · why: without this change enriched_text would be stored in D1 but never used for embedding — Qdrant payloads would still contain raw chunk_text
+- **total_chunks added to CHUNK queue messages** — METADATA handler now sends total_chunks: chunks.length with each CHUNK message · why: enables Chunk N of M positional hint in v3 prompt, helping model recognise chunk 0 as likely header
+- **isLikelyHeader() function added** — detects header chunks at chunk_index 0 via uppercase label patterns · passes role_hint: 'header' in user message · why: chunk 0 was consistently boilerplate header producing hallucinated principles; hint suppresses extraction without hard-coding behaviour
+- **Code-side validator added** — strips authorities not named in excerpt, enforces type-based extraction gates, caps array lengths · why: prevents authority hallucination and ensures non-reasoning chunks cannot produce principles regardless of model output
+- **max_completion_tokens reduced** — 2,500 → 1,600 · why: v3 output is denser but more structured; 2,500 was wasteful and increased cost; 1,600 is sufficient for all chunk types with margin
+- **Pilot validated on [2024] TASCCA 14** — trafficking/sentencing appeal · 15 chunks · chunk 0 correctly classified header · reasoning chunks produced faithful prose principles with verbatim judicial quotes · evidence/factual chunks correctly described without invented doctrine · approved for full rollout
+- **Full reprocess initiated** — all 5,187 done=0 chunks requeued · all case_chunk Qdrant vectors deleted (secondary sources and legislation untouched) · queue processing overnight · ~2,440 chunks complete as of session end · 0 retries
 
 ## CHANGES THIS SESSION (session 13) — 22 March 2026
 
@@ -212,7 +230,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Run retrieval baseline** — after embed pass confirms complete
 - **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R
 - **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
-- **CHUNK message prompt fix** — preserve raw chunk_text alongside extracted principles · do before scraper adds significant volume
+- **subject_matter retrieval filter** — once cases.subject_matter populated after reprocess, add filter to case chunk Qdrant pass to scope criminal law queries to criminal cases only
+- **Duplicate principle deduplication** — post-reprocess: compare principles across chunks of same case by semantic similarity, merge/suppress near-duplicates before final storage
+- **Re-embed pass** — COMPLETED session 14 as part of CHUNK v3 reprocess — all case chunks being re-embedded from enriched_text overnight
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
@@ -225,4 +245,4 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
-- **Re-embed pass** — all existing Qdrant points have [:1000] truncated payload text · after corpus fully embedded, run full re-embed to get [:5000]/[:3000] payloads
+- **Re-embed pass** — COMPLETED session 14 — case chunks re-embedded from enriched_text (v3 prompt output) · secondary sources and legislation payloads unchanged (already at [:5000]/[:3000] from session 9 fix)

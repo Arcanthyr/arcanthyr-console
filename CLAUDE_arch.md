@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 22 March 2026 (end of session 13). Upload every session alongside CLAUDE.md.*
+*Updated: 23 March 2026 (end of session 14). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -155,7 +155,7 @@ WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
 **LIVE implementation:**
 - Queue name: `arcanthyr-case-processing`
 - **METADATA message:** Pass 1 (first 8k chars) → one Workers AI call → writes `case_name`, `judge`, `parties`, `facts`, `issues`, `enriched=1` to D1 → splits full `raw_text` into 3k-char chunks → writes to `case_chunks` table → enqueues one CHUNK message per chunk → `ack()`
-- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call → writes `principles_json`, sets `done=1` → checks `COUNT(*) WHERE done=0` → if 0, merges all chunk results → writes `deep_enriched=1` to `cases` → `ack()`
+- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call with v3 prompt → writes `principles_json` + `enriched_text`, sets `done=1` → checks `COUNT(*) WHERE done=0` → if 0, merges all chunk results + derives `subject_matter` → writes `deep_enriched=1` + `subject_matter` to `cases` → `ack()`
 - **Frontend:** polls `/api/legal/case-status` — `enriched=1` set after Pass 1, `deep_enriched=1` set after merge
 
 ---
@@ -263,12 +263,31 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - **AustLII block** — VPS IP (31.220.86.192) permanently blocked. Scraper must run locally on Windows only
 - **Cloudflare Workers Observability** — use `npx wrangler tail arcanthyr-api` for real-time logs
 - **PowerShell SSH quoting mangles auth headers** — never test API routes via SSH from PowerShell
-- **6 cases pending deep_enriched** — Queue will clear automatically
-- **CHUNK message prompt** — extracts principles JSON but discards judicial reasoning prose · fix before scraper adds significant volume
+- **CHUNK prompt v3 live** — deployed session 14 · 6-type classification · enriched_text primary output · faithful prose principles · 5,187 chunks requeued for reprocess · completing overnight · run retrieval baseline after re-embed confirms complete
+- **subject_matter pending** — cases.subject_matter populating overnight as chunks complete · verify criminal/civil split before using as retrieval filter
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 
-### CHUNK message handler — GPT-4o-mini (switched session 10)
-CHUNK queue consumer now calls OpenAI GPT-4o-mini-2024-07-18 directly via fetch() instead of callWorkersAI(). Workers AI (Qwen3) was blocking graphic evidence descriptions in family violence cases. GPT-4o-mini handles sensitive legal content without moderation blocks. OPENAI_API_KEY set as Worker secret. max_completion_tokens: 2500. Empty extraction (all arrays empty) now writes done=1.
+### CHUNK message handler — v3 prompt (session 14)
+CHUNK queue consumer calls GPT-4o-mini-2024-07-18 with v3 enrichment prompt. Switched from Workers AI (Qwen3) in session 10 due to content moderation blocks on graphic legal content.
+
+**v3 prompt changes (session 14):**
+- 6-type chunk classification: reasoning / evidence / submissions / procedural / header / mixed
+- enriched_text field: 200-350 word prose synthesis for reasoning chunks; honest description for other types
+- reasoning_quotes: up to 2 verbatim judicial passages per chunk
+- subject_matter: criminal/civil/administrative/family/mixed/unknown
+- principles stated in judge's own doctrinal terms — not IF/THEN abstraction
+- max 2 principles per chunk (was unlimited, caused repetition across chunks)
+- max_completion_tokens: 1,600 (was 2,500)
+- Code-side validator: strips authorities not named in excerpt, enforces type gates, caps array lengths
+
+**User message format (v3):**
+Includes: Case, Court, Judge, Date, Chunk N of M, Hint (header/unknown), Case context Facts/Issues, EXCERPT START/END delimiters
+
+**isLikelyHeader() function:** detects chunk_index=0 with uppercase label patterns (COURT:/CITATION:/PARTIES: etc) — passes role_hint: 'header' to suppress principle extraction from header chunks
+
+**empty extraction guard:** enriched_text present and >30 words = valid done state regardless of principles/holdings arrays being empty (prevents infinite retry on evidence/header chunks)
+
+**Reprocess session 14:** all 5,187 case chunks reset done=0, all case_chunk Qdrant vectors deleted, requeued overnight. Secondary sources and legislation untouched.
 
 ### Admin requeue routes (added session 10)
 - POST /api/admin/requeue-chunks — reads case_chunks WHERE done=0, enqueues CHUNK messages
@@ -393,13 +412,15 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 ### cases D1 schema notes
 
 - PK is `id` (TEXT) — citation with spaces replaced by hyphens
-- Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched`
+- Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched, subject_matter`
+- `subject_matter TEXT` — added session 14 · values: criminal/civil/administrative/family/mixed/unknown · derived at merge step from most frequent chunk-level classification
 - `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete
 
 ### case_chunks D1 schema
 
 - `id TEXT PRIMARY KEY` — format: `{citation}__chunk__{N}`
-- Full column list: `id, citation, chunk_index, chunk_text, principles_json, done, embedded`
+- Full column list: `id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded`
+- `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller (falls back to chunk_text if null)
 - `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
 - `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
 
@@ -451,7 +472,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Fix malformed corpus row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · D1 id and Qdrant chunk_id both need correcting · identify correct block number first
 - **Restore Claude API key in VPS .env** — console.anthropic.com login loop blocking access · contact support@anthropic.com · update both VPS .env and Wrangler secret once resolved
 - **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
-- **CHUNK message prompt fix** — preserve raw chunk_text alongside extracted principles
+- **subject_matter retrieval filter** — scope case chunk Qdrant pass to criminal cases for criminal law queries · pending cases.subject_matter population after overnight reprocess
+- **Duplicate principle deduplication** — compare principles across chunks of same case by semantic similarity post-reprocess · merge/suppress near-duplicates
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
@@ -465,4 +487,4 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
 - **RRF displacement of case chunks** — case chunks only in semantic pass · BM25/FTS5 secondary-source hits accumulate rank that outpaces case chunks · need to boost case_chunk RRF contribution or add explicit score-weighted pass
-- **Re-embed pass** — existing Qdrant points have [:1000] payload text · after new corpus fully embedded, run full re-embed to get [:5000]/[:3000] payloads
+- **Re-embed pass** — COMPLETED session 14 · case chunks re-embedded from enriched_text overnight · secondary sources [:5000] and legislation [:3000] unchanged from session 9 fix
