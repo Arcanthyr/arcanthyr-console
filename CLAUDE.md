@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 March 2026 (end of session 11) · Supersedes all prior versions
+Updated: 22 March 2026 (end of session 12) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -31,7 +31,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | server.py auth | All direct calls to localhost:18789 require header `X-Nexus-Key` · Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env` on VPS · "unauthorized" = missing or wrong key |
 | server.py search field | Search endpoint expects `query_text` (not `query`) · "query_text is required" = wrong field name · endpoint: `POST localhost:18789/search` |
 | retrieval_baseline.sh | KEY now auto-reads from ~/ai-stack/.env — no manual export needed · still requires query_text field · results in ~/retrieval_baseline_results.txt |
-| ingest_corpus.py | Lives at `arcanthyr-console\ingest_corpus.py` (NOT inside `Arc v 4/`) · INPUT_FILE hardcoded — change manually · PROCEDURE_ONLY=True filters procedure chunks only · Block separator format MUST be `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` followed by `### Heading` then `[DOMAIN:]` on next line · Use Python (not PowerShell Out-File) to create corpus files — PowerShell BOM/encoding corrupts block separators · upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations |
+| ingest_corpus.py | Lives at `arcanthyr-console\ingest_corpus.py` (NOT inside `Arc v 4/`) · INPUT_FILE hardcoded — change manually · PROCEDURE_ONLY=False for full corpus ingest · Block separator format MUST be `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` followed by `### Heading` then `[DOMAIN:]` on next line · Use Python (not PowerShell Out-File) to create corpus files — PowerShell BOM/encoding corrupts block separators · upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations |
+| ingest_part2.py | Lives at `arcanthyr-console\ingest_part2.py` — standalone copy of ingest_corpus.py with INPUT_FILE hardcoded to master_corpus_part2.md and PROCEDURE_ONLY=False |
+| FTS5 wipe before re-ingest | Before any corpus re-ingest run: `DELETE FROM secondary_sources_fts` via wrangler d1 — INSERT OR REPLACE fix deployed session 12 (version 2d3716de) so this should no longer be needed, but if 500 errors appear on upload-corpus, wipe FTS5 first |
 | Bash scripts on VPS | Large pastes truncate in SSH terminal — create files locally and SCP to VPS instead |
 | PowerShell file creation | Use Python script to write files, not Out-File — BOM corruption confirmed on corpus files |
 | upload-corpus auth | Route does NOT use X-Nexus-Key — uses User-Agent spoof: `Mozilla/5.0 (compatible; Arcanthyr/1.0)` |
@@ -45,7 +47,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
 | BM25_FTS_ENABLED | Kill switch in server.py — set False to disable FTS5 pass. SCP + force-recreate container. No wrangler deploy needed. |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
-| Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · runs on Windows only (VPS IP blocked) |
+| Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · log: `arcanthyr-console\Local Scraper\scraper.log` · runs on Windows only (VPS IP blocked) |
 | Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (upsert). |
 | run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
@@ -53,13 +55,11 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
 | backfill scripts | Must run on VPS — fetch D1 data via Worker API (not wrangler subprocess), hit Qdrant via localhost:6334 |
 | Retrieval diagnostics | First step always: `docker compose logs --tail=50 agent-general` on VPS — skip message visible immediately |
-| enrichment_poller payload | Payload text limits fixed session 9 — secondary_sources [:5000], case_chunks [:3000], legislation [:3000]. Old Qdrant points still have [:1000] — will be corrected on re-embed after corpus reprocessing |
+| enrichment_poller payload | Payload text limits fixed session 9 — secondary_sources [:5000], case_chunks [:3000], legislation [:3000] |
 | CHUNK message prompt | Case law Queue Pass 2 has same thin-content problem as old Master prompt — extracts principles/holdings JSON but discards judicial reasoning prose. Fix deferred — tackle before scraper adds significant volume |
-| ingest_corpus.py parser | Fixed session 9 — heading regex now accepts single # and any [UPPERCASE:] field as lookahead. Previously only matched ## or ### + [DOMAIN:] — silently skipped 437 chunks across both corpus parts |
+| ingest_corpus.py parser | Fixed session 9 — heading regex now accepts single # and any [UPPERCASE:] field as lookahead |
 | process_blocks.py | Updated session 9 — new preservation-focused Master prompt, Repair pass added, model fixed to gpt-4o-mini-2024-07-18, MAX_TOKENS=32000 |
-| Corpus damage confirmed | 437 chunks silently skipped by old parser (171 part1, 266 part2) — never ingested into D1 or Qdrant. Full reprocessing required — fixes both thin content and missing chunks simultaneously |
-| Pilot run required | Before overnight corpus reprocess — run python process_blocks.py --start-from 1 --single 1, manually check output with CQT, confirm substantive prose preserved before committing to full 56-block run |
- CHUNK enrichment model | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY Worker secret) — NOT Workers AI · switched session 10 due to content moderation blocks |
+| CHUNK enrichment model | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY Worker secret) — NOT Workers AI · switched session 10 due to content moderation blocks |
 | requeue admin routes | POST /api/admin/requeue-chunks — re-enqueues done=0 chunks · POST /api/admin/requeue-metadata — re-enqueues enriched=0 cases · both require X-Nexus-Key · read key from .env with $key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1] |
 | PowerShell Invoke-WebRequest | Add -UseBasicParsing to avoid security prompt · use $key pattern above for auth header |
 | Workers Paid | Cloudflare Workers Paid plan active ($5/month) — no neuron cap · purchased session 10 |
@@ -71,29 +71,29 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 20 March 2026 (end of session 10)
+## SYSTEM STATE — 22 March 2026 (end of session 12)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 3,481+ points (secondary/legislation) + case chunks embedding overnight · poller running |
+| Qdrant general-docs-v2 | 1,272 legislation points + secondary sources embedding overnight · case chunks all embedded (2,607/2,607) |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | 126 rows · ALL enriched=1 · ALL deep_enriched=1 · scraper running |
-| D1 case_chunks | 2,607 total · all done=1 · embed pass in progress (~1,187/2,607 as of session 11) |
-| D1 secondary_sources | 2,032 total · all enriched=1 · all embedded |
-| D1 secondary_sources_fts | 2,031 rows — FTS5 virtual table live, porter tokenizer |
+| D1 cases | 309 rows · ALL enriched=1 · 303 deep_enriched=1 · 6 pending deep enrichment · scraper running (at TASSC 2020) |
+| D1 case_chunks | 2,607 total · all done=1 · all embedded=1 |
+| D1 secondary_sources | 1,171 total · all enriched=1 · embedded=0 · poller embedding overnight |
+| D1 secondary_sources_fts | Empty — will be repopulated as poller embeds and corpus syncs |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
-| worker.js | Deployed session 10 · version 312fa925 · GPT-4o-mini CHUNK enrichment · requeue-chunks + requeue-metadata admin routes · empty extraction guard removed |
-| Cloudflare plan | Workers Paid ($5/month) — neuron cap removed · purchased session 10 |
-| CHUNK enrichment model | GPT-4o-mini-2024-07-18 (switched from Workers AI session 10 — content moderation blocks on graphic evidence) |
-| Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler · fan-out pattern working |
-| enrichment_poller | Permanent Docker service · payload truncation fixed session 9 · running overnight embedding 1,669 case chunks |
+| worker.js | Deployed session 12 · version 2d3716de · FTS5 INSERT OR REPLACE fix live |
+| Cloudflare plan | Workers Paid ($5/month) — neuron cap removed |
+| CHUNK enrichment model | GPT-4o-mini-2024-07-18 |
+| Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler |
+| enrichment_poller | Permanent Docker service · running · embedding 1,171 secondary source chunks overnight |
 | server.py | Case chunk threshold 0.35 · HCA tier 4 · SCP'd session 9 |
-| Retrieval | Triple-pass hybrid pipeline confirmed working · Neill-Fraser DNA answer quality validated session 10 |
-| Phase 5 | VALIDATED — Claude API primary path confirmed good answer quality (session 10 Neill-Fraser test) |
-| process_blocks.py | Running overnight — all 56 blocks · MAX_TOKENS 16000 · REPAIR_PROMPT double-brace fixed · BLOCK_NUMBER injection fixed · corpus files deleted for clean run |
-| Corpus reprocessing | IN PROGRESS overnight — master_corpus_part1.md + master_corpus_part2.md being written fresh |
-| Scraper | Running — Task Scheduler daily · 126 cases in D1 including 2026 cases · business hours gate active |
+| Retrieval | Triple-pass hybrid pipeline confirmed working |
+| Phase 5 | VALIDATED — Claude API primary path confirmed good answer quality |
+| Corpus | FRESH — master_corpus_part1.md (488 chunks) + master_corpus_part2.md (683 chunks) ingested session 12 · 1,171 total · preservation-focused prompts · all enriched=1 |
+| Scraper | Running — Task Scheduler daily noon · 309 cases · stopped at TASSC/2020/5 session limit |
+
 ---
 
 ## RETRIEVAL BASELINE — 18 March 2026 (session 4 — COMPLETE)
@@ -118,170 +118,100 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Q14 | Leading questions technique | ✅ Pass | Police v Endlay, s42 application |
 | Q15 | Witness refuses to answer | ✅ Pass | s43 Justices Act |
 
+**Note:** Baseline rerun required next session after embed pass completes on new corpus (1,171 chunks).
+
 ---
 
 ## OUTSTANDING PRIORITIES
 
-1. **Corpus wipe + ingest** — waiting on embed pass completion (target 2,607/2,607) · D1 delete master rows · Qdrant secondary source delete · ingest part1 then part2 · set enriched=1 · run embed pass
-2. **BRD doctrine chunk** — no standalone beyond reasonable doubt chunk in corpus · write and ingest manually post-corpus-ingest · content: Criminal Code s13, Walters direction, Green v R
-3. **handleFetchSectionsByReference LIKE fix** — post-ingest · replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts · new chunk IDs needed first to validate pattern
+1. **Confirm embed pass complete** — `SELECT COUNT(*) as total, SUM(embedded) as embedded FROM secondary_sources` — target 1,171/1,171
+2. **Run retrieval baseline** — `~/retrieval_baseline.sh` on VPS — expect improvement over 12/4/1 from session 11
+3. **BRD doctrine chunk** — no standalone beyond reasonable doubt chunk in corpus · write and ingest manually · content: Criminal Code s13, Walters direction, Green v R
+4. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts · new chunk IDs needed first to validate pattern
+5. **CHUNK message prompt fix** — Queue Pass 2 discards judicial reasoning prose · fix before scraper adds significant volume (currently 309 cases)
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **retrieval_baseline.sh was silently failing** — KEY env var not set · fixed session 11 · auto-reads from .env now
-- **Baseline result session 11: 12 pass / 4 partial / 1 fail** · Q2 BRD gap confirmed (corpus gap, not retrieval failure) · Q8/Q12/Q13 partial — RRF noise and LIKE pattern issues · rerun after corpus ingest
-- **Embedding backlog** — 1,669 case chunks unembedded as of session 10 end · poller running overnight · check first thing next session
-- **process_blocks.py overnight run** — check failed blocks summary · stale 32000 error in summary is from prior failed run, not current
-- **CHUNK prompt reasoning field** — added and reverted session 10 · chunk_text already in Qdrant payload, reasoning field not needed · do not re-add
-- **master_corpus_part2.md committed to git** — partial pilot output accidentally committed · harmless, will be overwritten by overnight run
-- **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary) · direct curl test not reliable
-- **RRF displacement of case chunks** — case chunks only in semantic pass · BM25/FTS5 secondary-source hits accumulate RRF rank · can outrank case chunks even at score 0.49 · investigate next session
-- **Workers AI content moderation** — Qwen3 blocks graphic evidence descriptions (family violence, violence) · CHUNK enrichment now on GPT-4o-mini · summarizeCase() Pass 1/Pass 2 still on Workers AI — monitor for similar blocks
-- **Empty extraction guard removed** — narrative chunks legitimately return empty JSON · pipeline now writes done=1 for all valid responses · correct behaviour
-- **2026 cases unenriched** — 97 cases were stuck on METADATA retry · cleared session 10 via requeue-metadata · all 126 now enriched
+- **Baseline rerun pending** — must rerun after embed pass completes on new 1,171-chunk corpus
+- **6 cases pending deep_enriched** — Queue will clear automatically
+- **FTS5 table empty** — secondary_sources_fts was wiped session 12 for clean ingest · will be repopulated as upload-corpus route syncs on future ingests · existing embedded rows will NOT auto-populate FTS5 — may need a backfill after embed pass
+- **secondary_sources_fts backfill needed** — 1,171 rows will be embedded but FTS5 will be empty until a backfill runs · affects BM25/FTS5 retrieval pass · scope backfill script next session
+- **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
+- **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
+- **RRF displacement of case chunks** — case chunks only in semantic pass · investigate next session
+- **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 - **python-docx / striprtf** — not installed in agent-general container · DOCX/RTF uploads will error
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables
-- **Scraper no per-case resume** — progress file only stores court_year: "done" · always restarts from case 1 for unfinished court/year
+- **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
 
+## CHANGES THIS SESSION (session 12) — 22 March 2026
+
+- **Corpus wipe confirmed clean** — secondary_sources D1 deleted (0 rows) · Qdrant secondary/case vectors deleted · 1,272 legislation points retained
+- **FTS5 root cause identified** — `handleUploadCorpus` FTS5 insert had no ON CONFLICT clause · caused SQLITE_CONSTRAINT 500 errors on any re-ingest where FTS5 table had existing rows
+- **FTS5 fix deployed** — `INSERT INTO secondary_sources_fts` → `INSERT OR REPLACE INTO secondary_sources_fts` · worker.js version 2d3716de
+- **Corpus ingested** — part1: 488 chunks / 488 OK · part2: 683 chunks / 683 OK · 1,171 total · zero failures
+- **enriched=1 set** — all 1,171 rows updated · poller now embedding overnight
+- **ingest_part2.py created** — standalone copy of ingest_corpus.py for part2 · lives at arcanthyr-console\ingest_part2.py
+- **Case count** — 309 cases · 303 deep_enriched · scraper stopped at TASSC/2020/5 (session limit)
+- **Embed pass confirmed complete** — 2,607/2,607 case chunks embedded before session start
+- **Battle test** — all 5 checks passed: poller running, 6 cases pending deep_enriched (normal), scraper clean stop, FTS5 fix deployed, secondary_sources 1,171/1,171
+
 ## CHANGES THIS SESSION (session 11) — 20 March 2026
 
-- **Corpus reprocessing confirmed complete** — 56/56 blocks · block_001 stale error was from prior run · not a failure
-- **CQT pass confirmed** — block_005 substantive prose preserved · blocks 010/015 correctly procedure-only · no master content missing
+- **Corpus reprocessing confirmed complete** — 56/56 blocks · block_001 stale error was from prior run
+- **CQT pass confirmed** — block_005 substantive prose preserved · blocks 010/015 correctly procedure-only
 - **Embed pass in progress** — 1,187/2,607 case chunks embedded as of session start · poller running cleanly
-- **Scraper confirmed running** — TASSC 2022 in progress · all 2025/2024/2023 courts marked done · scraper.log path corrected (arcanthyr-console\Local Scraper\ not Arcanthyr\Local Scraper\)
-- **Retrieval baseline rerun** — 12 pass / 4 partial / 1 fail · Q2 BRD confirmed corpus gap · Q12 hostile witness answer quality good despite partial score
-- **RRF/LIKE fix investigation** — handleFetchSectionsByReference secondary_sources LIKE '%38%' confirmed source of noise · fix parked post-ingest · FTS5 replacement recommended
-- **Payload truncation confirmed** — enrichment_poller.py embed_text[:3000] confirmed live · session 9 fix verified
-- **retrieval_baseline.sh fixed** — KEY auto-read from .env · no manual export needed · SCP'd to VPS
+- **Scraper confirmed running** — TASSC 2022 in progress · all 2025/2024/2023 courts marked done
+- **Retrieval baseline rerun** — 12 pass / 4 partial / 1 fail · Q2 BRD confirmed corpus gap
+- **RRF/LIKE fix investigation** — handleFetchSectionsByReference LIKE '%38%' confirmed source of noise · fix parked post-ingest
+- **retrieval_baseline.sh fixed** — KEY auto-read from .env · SCP'd to VPS
 - **BRD corpus gap confirmed** — no standalone BRD chunk in either corpus part · manual ingest required post-corpus-ingest
 
 ## CHANGES THIS SESSION (session 9) — 20 March 2026
 
-- **Dead Nexus route deleted from worker.js** (handleLegalQueryQwen + legal-query-qwen router entry)
-- **worker.js deployed** version 6f006d85
+- **Dead Nexus route deleted from worker.js** · worker.js deployed version 6f006d85
 - **Case chunk threshold raised** 0.15 → 0.35 in server.py
-- **HCA added to COURT_HIERARCHY** at tier 4 (above CCA/FullCourt tier 3)
-- **server.py SCP'd and force-recreated**
+- **HCA added to COURT_HIERARCHY** at tier 4
 - **enrichment_poller.py payload truncation fixed** — secondary_sources [:5000], case_chunks [:3000], legislation [:3000]
-- **enrichment_poller SCP'd and force-recreated** — confirmed embedding TASSC 2024 case chunks
 - **ingest_corpus.py parser fixed** — heading regex accepts single # + any [UPPERCASE:] field lookahead + MASTER_ONLY flag added
-- **process_blocks.py updated** — new Master prompt (preservation-focused), Repair pass, correct model string, MAX_TOKENS=32000
+- **process_blocks.py updated** — new Master prompt, Repair pass, correct model string, MAX_TOKENS=32000
 - **Corpus damage confirmed** — 437 of 1,575 chunks silently skipped by old parser (28%)
-- **Scraper tzdata fix** — pip install tzdata resolved ZoneInfoNotFoundError
-- **Scraper running** — TASSC/2024/2-3 confirmed uploading session 9
-- **Consultant decision brief produced** — corpus knowledge loss diagnosis, Option D hybrid approach recommended
-- **Retrieval baseline extended** — Q16-Q18 added (natural language, no citation pattern)
-- **Baseline script SCP'd to VPS**
-- **git commits:** 8230350 (server.py/worker.js), ingest_corpus.py fix, process_blocks.py updates, enrichment_poller.py fix
+- **Retrieval baseline extended** — Q16-Q18 added
 
 ## CHANGES THIS SESSION (session 8) — 20 March 2026
 
-- **worker.js deployed** — session 7 changes now live (orderedChunks, [CASE EXCERPT]/[ANNOTATION] labels, Qwen3 prompt fix) · version 84d42ffc
-- **Case chunk pass gate removed** — pass now runs unconditionally on every query · no citation pattern required · Neill-Fraser DNA retrieval confirmed working · server.py SCPed to VPS + agent-general force-recreated
-- **Workers AI error handling** — callWorkersAI() now throws on result.error or code 4006 · CHUNK handler throws on empty extraction → msg.retry() fires · prevents silent hollow enrichment on neuron cap
-- **DST fix** — austlii_scraper.py is_business_hours() now uses zoneinfo Australia/Hobart · was hardcoded UTC+10, Tasmania currently UTC+11 · caused 8am Task Scheduler trigger to be rejected
-- **Scraper rescheduled to noon** — Task Scheduler trigger moved from 8am to 12pm · neurons reset at 11am Hobart (midnight UTC) · one hour buffer before scraper fires
-- **MAX_CASES_PER_SESSION confirmed 100** — was temporarily set to 10 for session 6 test run · already restored to 100
-- **Architecture docs corrected** — session 3 RRF/BM25/FTS5 work documented as complete but never deployed · Worker.js and server.py confirmed against live code · dead routes identified · CLAUDE_arch.md retrieval section replaced with v5 (confirmed)
-- **Cloudflare git integration disconnected** — was auto-deploying on every push from root directory, failing because worker.js is in Arc v 4/ · manual wrangler deploy confirmed as correct workflow
-- **Retrieval baseline** — extend with 2-3 natural language case queries without citation patterns added to roadmap
-- **All committed** · fe4d059 (session 7 worker deploy) · 58d0d25 (session 8 changes)
-
-## CHANGES THIS SESSION (session 7) — 19 March 2026
-
-- **Task Scheduler fixed** — run_scraper.bat moved to `C:\Users\Hogan\run_scraper.bat` (local, not OneDrive) — fixes Launch Failure error
-- **worker.js: citation-aware context assembly** — handleLegalQueryWorkersAI rewritten: (1) reorder — case_chunk entries sorted before secondary_source; (2) cap — max 2 secondary sources when citation query + case chunks present; (3) type labels — `[CASE EXCERPT]` / `[ANNOTATION]` prefix on each context block
-- **worker.js: prompt fix** — Qwen3 system prompt updated to reason from raw judgment text rather than refuse; CASE EXCERPT / ANNOTATION framing added
-- **worker.js: NOT YET DEPLOYED** — changes applied locally, last deployed version 2658f6f0 (filteredChunks approach, now superseded)
-- **Scraper: AustLII header truncation** — `extract_text()` now strips everything before first `COURT :` or `CITATION :` marker — removes navigation/boilerplate from scraped text
-- **Junk cases deleted** — [2004] TASSC 84, [2018] TASSC 62, [2016] TASMC 14, [2024] TASSC 6 (no HTML / corrupt)
-- **Neill-Fraser reingested** — [2021] TASCCA 12 reingested clean · 152 chunks in Qdrant · all embedded=1
-- **CLAUDE.md corrected** — scraper has no per-case resume; progress file only stores "done" or absent; session 6 note "resumes at TASSC 2024/11" was wrong
-- **Outstanding issue** — Neill-Fraser DNA chunks scoring 0.4915 semantically but displaced by RRF blend — architectural investigation deferred to session 8
-
-## CHANGES THIS SESSION (session 6) — 18 March 2026
-
-- server.py 1,259-line version SCPed to VPS + agent-general force-recreated
-- Scraper test run — 10 x TASSC 2024 cases ingested, all HTTP 200, all deep_enriched=1
-- Progress file restored — 2025 courts marked done, resumes at TASSC 2024/11
-- Windows Task Scheduler configured — run_scraper.bat fires daily at 8am AEST
-- Business hours gate confirmed working via Task Scheduler test
-- MAX_CASES_PER_SESSION confirmed 100, business hours gate confirmed restored
-
-## CHANGES THIS SESSION (session 5) — 18 March 2026
-
-- case_name added to case chunk Qdrant payload — worker.js LEFT JOIN cases on fetch-case-chunks-for-embedding + enrichment_poller.py metadata dict updated
-- 177 case chunks reset to embedded=0 and re-embedded with full payload — previous embed pass had stored empty payloads (root cause: original embed ran before case_name field existed; backfill via PUT wiped remaining fields)
-- backfill_case_chunk_names.py rewritten — runs on VPS, fetches D1 data via Worker API, hits Qdrant at localhost:6334 · original script failed: used external IP (port 6334 blocked) and npx subprocess (not on VPS)
-- Two-stage case chunk retrieval added to server.py — second Qdrant pass filtered to type=case_chunk, threshold 0.15, top 4, merged before return
-- Prompt fix — Claude Case C (worker.js line 1563) and Qwen3 (server.py) updated: reason from raw judgment text, don't refuse when no clean doctrinal statement present
-- Neill-Fraser retrieval — Q1 ✅ Q2 ✅ Q3 ✅ all passing post-fix
-- Architecture clarification confirmed — RRF/in-memory BM25/FTS5 blend is in Worker.js handleLegalQuery only · server.py is semantic + BM25 append + case chunk second-pass
-- worker.js deployed 4e2b2dcf · server.py SCPed to VPS + agent-general force-recreated
-
-## CHANGES THIS SESSION (session 4) — 18 March 2026
-
-- max_tokens bumped to 2,000 on handleLegalQuery() (Claude API) and handleLegalQueryWorkersAI() (Workers AI) — was 1,024 and 800 respectively — fixes answer truncation
-- handleAxiomRelay() written — three-stage Workers AI pipeline: decompose → tensions → final report (SIGNAL / LEVERAGE POINT / RELAY ACTIONS / DEAD WEIGHT)
-- axiom-relay case added to AI router — was returning 404, now wired to handleAxiomRelay()
-- Sentencing first offenders chunk ingested and embedded — Q9 now passing
-- Embed pass completed — 3,457 Qdrant points (2,032 secondary + 1,272 legislation + 153 case chunks)
-- Reconcile confirmed — D1 and Qdrant in sync
-- Retrieval baseline re-run — 15/15 passing (clean sweep)
-- Scraper progress file recreated — ready to resume at TASSC 2024
-- UI briefs 1–6 all confirmed complete
-- Stray image `unnamed (2) (1) (1).jpg` deleted from public/
-- worker.js deployed 44f54c6b
-
-## CHANGES SESSION 3 — 18 March 2026
-
-- Worker.js renamed to worker.js — wrangler warning resolved
-- process-document "both" mode fixed — runs Master + Procedure prompts per block, time.sleep(1.5) between
-- Category normalisation — 8 canonical categories, 2,031 rows normalised
-- Library status pills — enriched/embedded/deep_enriched/chunk counts + category display
-- In-memory BM25 corpus — bm25_tokenize, bm25_build_corpus, bm25_query, rrf_blend in server.py
-- RRF hybrid retrieval — Reciprocal Rank Fusion replaces score=0.0 BM25 append hack
-- /api/pipeline/bm25-corpus Worker route — returns embedded secondary_sources for corpus build
-- D1 FTS5 virtual table — secondary_sources_fts, porter tokenizer, 2,031 rows, full corpus
-- /api/pipeline/fts-search Worker route — sanitised MATCH query, returns bm25_score
-- FTS5 sync — ingest and delete routes updated to maintain FTS table
-- Triple-pass hybrid pipeline — semantic + in-memory BM25 + FTS5 → RRF, all three firing
-- BM25_FTS_ENABLED flag — kill switch for FTS5 pass in server.py
-- RAG workflow doc v3 — complete rewrite reflecting current architecture
+- **worker.js deployed** · version 84d42ffc
+- **Case chunk pass gate removed** — pass now runs unconditionally on every query
+- **Workers AI error handling** — callWorkersAI() now throws on result.error or code 4006
+- **DST fix** — austlii_scraper.py is_business_hours() now uses zoneinfo Australia/Hobart
+- **Scraper rescheduled to noon** — neurons reset at 11am Hobart
+- **Architecture docs corrected** — session 3 RRF/BM25/FTS5 work documented as complete but never deployed
+- **Cloudflare git integration disconnected**
 
 ---
 
 ## FUTURE ROADMAP
 
-- **Deploy worker.js** — IMMEDIATE next session. orderedChunks + label + prompt fix not yet deployed.
-- **Investigate RRF displacement** — case chunks scoring ~0.49 but displaced by secondary source BM25/FTS5 RRF contribution. Likely need to boost case_chunk rank in RRF blend or add direct score weighting.
-- **Monitor scraper** — Task Scheduler firing daily 8am AEST. Check scraper.log for progress.
-- **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume.
-- **Retrieval eval framework** — formalise scored baseline as standing process.
-- **Extend retrieval baseline** — add 2-3 natural language case queries without citation patterns (e.g. "Neill-Fraser DNA secondary transfer") to catch gate/threshold issues early
-- **RAG workflow doc** — DONE v3 18 Mar 2026.
-- **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks.
-- **Scraper noon schedule** — Task Scheduler set to 12pm daily · neurons reset 11am Hobart · do not move earlier without checking neuron reset time
-- **Neuron cap monitoring** — at 100 cases/day with large judgments (100+ chunks each) cap may be hit · if recurring, consider moving to Workers Paid ($5/month) or GPT-4o mini (~$0.05/day) for chunk enrichment
-- **Cloudflare git integration** — disconnected session 8 · deploy manually via wrangler only
-- **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-scraper-run.
-- **Qwen3 UI toggle** — add third button to model toggle. Workers AI confirmed working.
-- **Nightly cron for xref_agent.py** — after scraper actively running.
-- **Stare decisis layer** — surface treatment history from case_citations.
-- **Animated sigil** — swap sigil.jpg for sigil.gif if rotating GIF produced.
-- **chunk finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable.
-- **Dead letter queue** — for chunks that fail max_retries. Low priority.
-- **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested.
-- **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal.
-- **Reingest-case route** — delete + reingest pattern to backfill case_name into Qdrant.
-- **Legislation enrichment via Claude API** — plain English summaries, cross-references. Do AFTER cross-reference agent design confirmed.
-- **Auto-populate legislation metadata on upload** — Claude API reads filename/first page.
-- **CHUNK message prompt fix** — Queue Pass 2 in worker.js extracts principles/holdings as JSON but discards judicial reasoning prose. Fix: preserve raw chunk_text alongside extracted principles in enriched_content field. Do before scraper adds significant volume — currently 29 cases, will be expensive to reprocess at 1000+
-- **Re-embed pass post-reprocessing** — all existing Qdrant points have [:1000] truncated payload text. After corpus reprocessing, run full re-embed to get [:5000]/[:3000] payloads for all chunks
-- **Corpus pilot validation** — run 3-block pilot, apply CQT (chunk quality test) manually before full 56-block overnight run
-- **Scraper tzdata** — pip install tzdata required on Windows Store Python — document in CLAUDE.md for fresh environments
+- **secondary_sources_fts backfill** — IMMEDIATE next session · 1,171 rows embedded but FTS5 empty · BM25/FTS5 retrieval pass blind until fixed
+- **Run retrieval baseline** — after embed pass confirms complete
+- **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R
+- **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
+- **CHUNK message prompt fix** — preserve raw chunk_text alongside extracted principles · do before scraper adds significant volume
+- **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
+- **Retrieval eval framework** — formalise scored baseline as standing process
+- **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
+- **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-scraper-run
+- **Qwen3 UI toggle** — add third button to model toggle
+- **Nightly cron for xref_agent.py** — after scraper actively running
+- **Stare decisis layer** — surface treatment history from case_citations
+- **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal
+- **Legislation enrichment via Claude API** — plain English summaries, cross-references
+- **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
+- **Dead letter queue** — for chunks that fail max_retries. Low priority
+- **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
+- **Re-embed pass** — all existing Qdrant points have [:1000] truncated payload text · after corpus fully embedded, run full re-embed to get [:5000]/[:3000] payloads
