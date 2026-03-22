@@ -468,10 +468,12 @@ def extract_unprocessed(response_text: str) -> Optional[str]:
 
 def get_embedding(text: str) -> list[float]:
     """Get pplx-embed embedding from Ollama."""
+    if len(text) > 8000:
+        log.warning(f'[EMBED] Large input: {len(text)} chars — may be slow')
     resp = requests.post(
         f'{OLLAMA_URL}/api/embeddings',
         json={'model': EMBED_MODEL, 'prompt': text},
-        timeout=30  # was 180 — fail fast, don't hang the loop
+        timeout=120  # raised from 30 — 30s insufficient for large enriched chunks
     )
     resp.raise_for_status()
     return resp.json()['embedding']
@@ -705,7 +707,7 @@ def run_embedding_pass(batch: int) -> dict:
         log.info(f'[EMBED] {i}/{len(chunks)} chunk_id={chunk_id}')
 
         try:
-            vector = get_embedding(embed_text)
+            vector = get_embedding(embed_text[:5000])
             upsert_qdrant(chunk_id, vector, metadata)
 
             # Verify the point actually landed — retry up to 5 times with 1s between
