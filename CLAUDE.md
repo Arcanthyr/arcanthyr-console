@@ -71,27 +71,27 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 22 March 2026 (end of session 12)
+## SYSTEM STATE — 22 March 2026 (end of session 13)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation points + secondary sources embedding overnight · case chunks all embedded (2,607/2,607) |
+| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks + 2,607 case chunks · all embedded |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
 | D1 cases | 309 rows · ALL enriched=1 · 303 deep_enriched=1 · 6 pending deep enrichment · scraper running (at TASSC 2020) |
 | D1 case_chunks | 2,607 total · all done=1 · all embedded=1 |
-| D1 secondary_sources | 1,171 total · all enriched=1 · embedded=0 · poller embedding overnight |
-| D1 secondary_sources_fts | Empty — will be repopulated as poller embeds and corpus syncs |
+| D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
+| D1 secondary_sources_fts | 1,171 rows · backfilled session 13 · all three retrieval passes operational |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant |
 | worker.js | Deployed session 12 · version 2d3716de · FTS5 INSERT OR REPLACE fix live |
 | Cloudflare plan | Workers Paid ($5/month) — neuron cap removed |
 | CHUNK enrichment model | GPT-4o-mini-2024-07-18 |
 | Cloudflare Queues | LIVE — arcanthyr-case-processing · METADATA + CHUNK handler |
-| enrichment_poller | Permanent Docker service · running · embedding 1,171 secondary source chunks overnight |
+| enrichment_poller | Permanent Docker service · running · idle · GPT-4o-mini enrichment live |
 | server.py | Case chunk threshold 0.35 · HCA tier 4 · SCP'd session 9 |
-| Retrieval | Triple-pass hybrid pipeline confirmed working |
+| Retrieval | Triple-pass hybrid pipeline confirmed working · baseline 14 pass / 3 partial / 0 fail |
 | Phase 5 | VALIDATED — Claude API primary path confirmed good answer quality |
-| Corpus | FRESH — master_corpus_part1.md (488 chunks) + master_corpus_part2.md (683 chunks) ingested session 12 · 1,171 total · preservation-focused prompts · all enriched=1 |
+| Corpus | COMPLETE — 1,172 chunks · all embedded · FTS5 backfilled · BRD chunk added |
 | Scraper | Running — Task Scheduler daily noon · 309 cases · stopped at TASSC/2020/5 session limit |
 
 ---
@@ -124,20 +124,19 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Confirm embed pass complete** — `SELECT COUNT(*) as total, SUM(embedded) as embedded FROM secondary_sources` — target 1,171/1,171
-2. **Run retrieval baseline** — `~/retrieval_baseline.sh` on VPS — expect improvement over 12/4/1 from session 11
-3. **BRD doctrine chunk** — no standalone beyond reasonable doubt chunk in corpus · write and ingest manually · content: Criminal Code s13, Walters direction, Green v R
-4. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts · new chunk IDs needed first to validate pattern
-5. **CHUNK message prompt fix** — Queue Pass 2 discards judicial reasoning prose · fix before scraper adds significant volume (currently 309 cases)
+1. **Run retrieval baseline** — `~/retrieval_baseline.sh` on VPS — confirm improvement over 12/4/1
+2. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · placeholder never substituted · find and fix citation in D1 and Qdrant
+3. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts
+4. **CHUNK message prompt fix** — Queue Pass 2 discards judicial reasoning prose · fix before scraper adds significant volume (currently 309 cases)
+5. **BRD corpus gap** — chunk ingested · verify retrieval quality on Q2 next baseline run
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Baseline rerun pending** — must rerun after embed pass completes on new 1,171-chunk corpus
+- **Baseline rerun done session 13** — 14 pass / 3 partial / 0 fail · Q2 BRD partial (chunk ingested, verify next run) · Q9 guilty plea partial (corpus gap) · Q13 case_chunk noise at rank 1 (RRF displacement known issue)
+- **FTS5 backfill complete** — 1,171 rows · session 13
 - **6 cases pending deep_enriched** — Queue will clear automatically
-- **FTS5 table empty** — secondary_sources_fts was wiped session 12 for clean ingest · will be repopulated as upload-corpus route syncs on future ingests · existing embedded rows will NOT auto-populate FTS5 — may need a backfill after embed pass
-- **secondary_sources_fts backfill needed** — 1,171 rows will be embedded but FTS5 will be empty until a backfill runs · affects BM25/FTS5 retrieval pass · scope backfill script next session
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
 - **RRF displacement of case chunks** — case chunks only in semantic pass · investigate next session
@@ -148,6 +147,18 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
+
+## CHANGES THIS SESSION (session 13) — 22 March 2026
+
+- **Embed pass confirmed complete** — 1,171/1,171 secondary source chunks embedded · poller idle
+- **Two stuck chunks fixed** — `hoc-b042-m001-lies-consciousness-of-guilt` (15,542 chars) and `hoc-b045-m001-tendency-evidence-probative-value` (26,420 chars) were timing out · root cause: GPT-4o-mini enrichment expanded raw_text far beyond normal chunk size, exceeding 30s Ollama timeout · fix: raise get_embedding() timeout 30s→120s + add large input warning log >8000 chars · Qdrant points deleted, embedded=0 reset, re-embedded successfully at full text
+- **FTS5 backfill complete** — secondary_sources_fts wiped (had 1,854 duplicate rows from INSERT OR REPLACE on non-empty table) then clean INSERT from secondary_sources · 1,171 rows · all three retrieval passes now operational
+- **Retrieval baseline rerun** — estimated 14 pass / 3 partial / 0 fail · improvement over 12/4/1 · Q2 and Q9 remain partial (corpus gaps) · Q13 has case_chunk RRF noise at rank 1
+- **BRD doctrine chunk ingested** — `hoc-b057-m001-beyond-reasonable-doubt` · corrected statutory citation: Evidence Act 2001 (Tas) s 141(1) (not Criminal Code s13) · Green v The Queen (1971) 126 CLR 28 · Walters v The Queen [1969] 2 AC 26 · embedded and verified · next block number for manual chunks: hoc-b057
+- **Malformed row identified** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · block number placeholder never substituted · fix deferred
+- **Enrichment poller switched to GPT-4o-mini** — replaced both call_claude and call_claude_followup · Claude API key unavailable (console.anthropic.com login loop, likely credit/key issue) · OPENAI_API_KEY confirmed in VPS .env · gpt-4o-mini-2024-07-18 · system prompt preserved in followup messages array · deployed and running clean · no 401 errors
+- **CLAUDE.md why directive added** — session change logs now include rationale alongside changes
+- **Full directory path directive added** — all commands now include full cd path
 
 ## CHANGES THIS SESSION (session 12) — 22 March 2026
 

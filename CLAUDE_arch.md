@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 22 March 2026 (end of session 12). Upload every session alongside CLAUDE.md.*
+*Updated: 22 March 2026 (end of session 13). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -68,7 +68,7 @@ VPS enrichment_poller.py (permanent Docker service, --loop):
   [EMBED] pass   → enriched=1, embedded=0 rows → pplx-embed → Qdrant → embedded=1
   [CASE-EMBED]   → case_chunks done=1, embedded=0 → pplx-embed → Qdrant → embedded=1
   [LEG]          → legislation embedded=0 → pplx-embed → Qdrant → embedded=1
-  [ENRICH]       → unenriched secondary_sources → Claude API → enriched_text → enriched=1
+  [ENRICH]       → unenriched secondary_sources → GPT-4o-mini (OpenAI API) → enriched_text → enriched=1
 ```
 
 **CRITICAL — After any secondary_sources ingest, manually set enriched=1:**
@@ -85,6 +85,7 @@ New rows land with `enriched=0`. Poller's embed pass only picks up `enriched=1, 
 | Manual case uploads | Workers AI — same Worker path | NOT via VPS poller |
 | Secondary sources corpus | None — raw_text IS the content | embed raw_text directly, enriched_text stays NULL |
 | Legislation | None — raw statutory text embedded directly | |
+| Future secondary source uploads (small volume) | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY in VPS .env) | switched from Claude API session 13 — Claude API key unavailable |
 
 **Secondary sources corpus (session 12):** 1,171 rows · all enriched=1 · embedded=0 (poller embedding overnight). `enriched_text` is NULL — correct, poller falls back to `raw_text`. Do NOT run `--mode enrich` on these rows.
 
@@ -118,12 +119,12 @@ Skip/error messages are logged per-pass and visible immediately.
 
 ## CORPUS PIPELINE — SECONDARY SOURCES (v3, session 12)
 
-**Session 12 corpus state:**
-- Part 1: 488 chunks ingested (was 317 in old corpus — 171 previously skipped by old parser)
-- Part 2: 683 chunks ingested (was 821 procedure-only — now full master+procedure from new parser)
-- Total: 1,171 chunks · all enriched=1 · embedded=0 (poller running overnight)
-- All chunks use hoc-b{N}-m{N}-{slug} citation format (master) or secondary-{slug} format
-- New corpus uses preservation-focused Master prompt + Repair pass from process_blocks.py
+**Session 13 corpus state:**
+- Part 1: 488 chunks · Part 2: 683 chunks · BRD manual chunk: 1 · Total: 1,172 chunks
+- All enriched=1 · all embedded=1 · FTS5 backfilled (1,171 rows — BRD chunk also in FTS5)
+- Next manual chunk block number: hoc-b057 (hoc-b056 is highest corpus block)
+- Malformed row: hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders — fix pending
+- Corpus uses preservation-focused Master prompt + Repair pass from process_blocks.py
 
 **Parser fix (ingest_corpus.py session 9):**
 - Heading regex: `#+ .+` (was `###? .+`) — now accepts single # headings
@@ -355,7 +356,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 **D1 FTS5 (`secondary_sources_fts`):**
 - Created session 3 · porter tokenizer
-- **Currently empty** — wiped session 12 for corpus re-ingest · backfill required
+- **Backfilled session 13** — 1,171 rows · clean INSERT after wipe · all three retrieval passes operational
 - Queried via Worker POST `/api/pipeline/fts-search`
 - Gated by `BM25_FTS_ENABLED = True` in server.py
 
@@ -423,8 +424,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Auth: KEY auto-reads from `~/ai-stack/.env` — no manual export needed
 - Field name: `query_text`
 - Results in `~/retrieval_baseline_results.txt`
-- **Last run: 20 Mar 2026 (session 11) — 12 pass / 4 partial / 1 fail (old corpus)**
-- **Rerun required** after embed pass completes on new 1,171-chunk corpus
+- **Last run: 22 Mar 2026 (session 13) — 14 pass / 3 partial / 0 fail (new corpus)**
+- Q2 BRD partial (BRD chunk now ingested — verify next run) · Q9 guilty plea partial (corpus gap) · Q13 case_chunk RRF noise
 
 ### Word artifact cleanup
 
@@ -447,9 +448,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 ## FUTURE ROADMAP
 
-- **secondary_sources_fts backfill** — IMMEDIATE next session after embed complete
-- **Run retrieval baseline** — after embed pass confirms 1,171/1,171 embedded
-- **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R
+- **Fix malformed corpus row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · D1 id and Qdrant chunk_id both need correcting · identify correct block number first
+- **Restore Claude API key in VPS .env** — console.anthropic.com login loop blocking access · contact support@anthropic.com · update both VPS .env and Wrangler secret once resolved
 - **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
 - **CHUNK message prompt fix** — preserve raw chunk_text alongside extracted principles
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
