@@ -759,7 +759,7 @@ def run_case_chunk_embedding_pass(batch: int = 10) -> dict:
 
     for i, chunk in enumerate(chunks, 1):
         chunk_id    = chunk['id']
-        embed_text  = chunk.get('chunk_text', '')
+        embed_text = chunk.get('enriched_text') or chunk.get('chunk_text', '')
         metadata    = {
             'chunk_id':    chunk_id,
             'citation':    chunk.get('citation', ''),
