@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 23 March 2026 (end of session 14) · Supersedes all prior versions
+Updated: 23 March 2026 (end of session 16) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -66,6 +66,14 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | requeue admin routes | POST /api/admin/requeue-chunks — re-enqueues done=0 chunks · POST /api/admin/requeue-metadata — re-enqueues enriched=0 cases · both require X-Nexus-Key · read key from .env with $key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1] |
 | PowerShell Invoke-WebRequest | Add -UseBasicParsing to avoid security prompt · use $key pattern above for auth header |
 | Workers Paid | Cloudflare Workers Paid plan active ($5/month) — no neuron cap · purchased session 10 |
+| CLAUDE_decisions.md | Upload each session alongside CLAUDE.md + CLAUDE_arch.md · CC appends decisions directly · re-extract quarterly via extract_decisions.py |
+| Wrangler auth | If D1 queries return error 7403, run npx wrangler login to re-authenticate |
+| arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
+| arcanthyr-ui deploy | Cloudflare Pages — not yet configured · TBD next session |
+| JWT secret | worker.js uses `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY` · no separate JWT_SECRET set in Wrangler — NEXUS_SECRET_KEY is signing key |
+| worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
+| Vite proxy IPv6 fix | proxy target hardcoded to `104.21.1.159` with `Host: arcanthyr.com` header + `secure: false` · Node.js on Windows prefers IPv6 but proxy fails · IPv4 workaround required |
+| wrangler deploy path | Always `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4"` — quotes required due to space in path |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -74,28 +82,29 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 23 March 2026 (end of session 14)
+## SYSTEM STATE — 23 March 2026 (end of session 16)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · case chunks being re-embedded overnight from enriched_text |
+| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · 5,593 case chunks embedded · re-embedding from enriched_text in progress |
 | Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
 | Score threshold | 0.45 (validated) |
-| D1 cases | 303 cases · all enriched=1 · deep_enriched reprocessing overnight · subject_matter column added |
-| D1 case_chunks | 5,202 total · 5,187 done=0 requeued for v3 re-enrichment · enriched_text column added · reprocess running overnight |
-| D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 · untouched this session |
+| D1 cases | 404 total · 340 deep_enriched · 64 pending (new scraper cases) |
+| D1 case_chunks | 6,718 total · 5,873 done=1 · 1,125 still to embed |
+| D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
 | D1 secondary_sources_fts | 1,171 rows · backfilled session 13 · all three retrieval passes operational |
 | D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant · untouched this session |
-| worker.js | Deployed session 14 · versions db71db45 + f150e037 · CHUNK prompt v3 + fetch-case-chunks enriched_text SELECT |
+| worker.js | Deployed session 16 · version 1be8eb3b · CORS + JWT auth + cookie fix + new routes |
 | Cloudflare plan | Workers Paid ($5/month) — neuron cap removed |
 | CHUNK enrichment model | GPT-4o-mini-2024-07-18 · v3 prompt live |
-| Cloudflare Queues | LIVE · 2,440+ messages processed as of session end · 0 retries · processing overnight |
-| enrichment_poller | Permanent Docker service · running · re-embedding case chunks from enriched_text as queue completes |
+| Cloudflare Queues | Processing new scraper cases · 0 retries |
+| enrichment_poller | Running · embedding case chunks from enriched_text |
 | server.py | Case chunk threshold 0.35 · HCA tier 4 · unchanged this session |
-| Retrieval | Triple-pass hybrid pipeline operational · baseline rerun needed after re-embed completes |
+| Retrieval | Triple-pass hybrid pipeline operational · baseline rerun needed after embed completes |
 | Phase 5 | VALIDATED — Claude API primary path confirmed good answer quality |
 | Corpus | COMPLETE — 1,172 chunks · all embedded · FTS5 backfilled · BRD chunk added |
-| Scraper | Running — Task Scheduler daily noon · 303 cases · unaffected by this session's changes |
+| Scraper | Running daily noon · 404 cases |
+| UI rebuild | arcanthyr-ui created · local dev working · Cloudflare Pages deploy pending |
 
 ---
 
@@ -127,12 +136,14 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Verify overnight reprocess complete** — check case_chunks done=1 count reaches 5,202 · check poller re-embedding from enriched_text · then run retrieval baseline
-2. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · placeholder never substituted · find and fix citation in D1 and Qdrant
-3. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` ID slug match with FTS5 search against secondary_sources_fts
-4. **Run retrieval baseline** — after re-embed completes · expect improvement on case law queries · Q2 BRD and Q13 RRF noise are the markers to watch
-5. **subject_matter classification** — verify cases.subject_matter populated correctly after reprocess · spot-check civil vs criminal split
-6. **Add subject_matter filter to retrieval** — once populated, scope case chunk retrieval to criminal cases for criminal law queries
+1. **Run retrieval baseline** — after embed pass completes · ~/retrieval_baseline.sh on VPS
+2. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders`
+3. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` slug match with FTS5
+4. **subject_matter spot-check** — verify cases.subject_matter populated correctly
+5. **arcanthyr-ui Cloudflare Pages deploy** — local dev working · configure Pages project + build pipeline · set VITE_API_BASE env var for production
+6. **Library case reading pane** — click case row → ReadingPane opens with facts/holding/principles tabs · ReadingPane.jsx exists, wire to Library.jsx
+7. **Verify JWT_SECRET set in Wrangler** — currently falling back to NEXUS_SECRET_KEY · optionally set dedicated JWT_SECRET via `npx wrangler secret put JWT_SECRET`
+8. **Retrieval baseline rerun** — embed pass on new cases completing · run ~/retrieval_baseline.sh on VPS
 
 ---
 
@@ -152,6 +163,41 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
+
+## CHANGES THIS SESSION (session 17) — 23 March 2026
+
+- **Vite proxy removed** — api.js BASE now hardcodes `https://arcanthyr.com` · browser calls Worker directly · proxy section deleted from vite.config.js · fixes 502 timeout that was hitting 104.21.1.159 directly
+- **Auth removed for local dev** — verify/login/logout replaced with no-op stubs in api.js · Landing.jsx replaced with immediate redirect to /research · auth useEffect guards removed from Research.jsx, Upload.jsx, Library.jsx
+- **Research UX: query → AI Summary** — setActiveTab('summary') fires after query completes · source cards in left panel made non-interactive (onClick removed, cursor pointer removed from ResultCard.jsx)
+- **Library reading pane** — click case row opens split reading pane · Facts/Holding/Principles tabs · facts/holding/subject_matter added to handleLibraryList SELECT in worker.js · deployed via dashboard (wrangler deploy blocked by Cloudflare API routing issue from ISP — transient, unrelated to codebase)
+- **Upload URL input** — AustLII URL text input added to Cases tab · Fetch button wired to api.uploadCase({ url }) · file upload still available as primary option
+- **ResultCard cursor fix** — removed leftover cursor:pointer and hover styles after onClick removal
+- **wrangler deploy note** — timed out repeatedly this session · confirmed ISP routing issue to api.cloudflare.com (not IP block, not auth, not code) · workaround: dashboard deploy · expect to resolve on its own
+
+## CHANGES THIS SESSION (session 16) — 23 March 2026
+
+- **arcanthyr-ui created** — new React/Vite app at `arcanthyr-console/arcanthyr-ui/` · five views: Landing, Research, Upload, Library, ShareModal · all API calls via `api.js` with `credentials:include` · Vite proxy routes `/api/*` → live Worker
+- **CORS deployed to worker.js** — `ALLOWED_ORIGINS` list (`*.pages.dev` + `localhost:5173/4173`) · `Access-Control-Allow-Credentials: true` · `X-Nexus-Key` in allowed headers
+- **JWT auth implemented** — `signJWT`/`verifyJWT`/`getTokenFromRequest` via Web Crypto API (no npm) · httpOnly cookie `arc_token` · 24h expiry · signed with `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY`
+- **Auth routes added** — `POST /api/auth/login` · `GET /api/auth/verify` · `POST /api/auth/logout`
+- **New Worker routes** — `GET /api/legal/cases` · `GET /api/legal/corpus` · `GET /api/legal/legislation` (aliases to existing library handler) · `POST /api/legal/share`
+- **Cookie Secure flag removed** — `SameSite=None; Secure` → `SameSite=Lax` on login and logout · required for HTTP local dev · production will be HTTPS via Cloudflare Pages · worker.js version `1be8eb3b`
+- **Vite proxy IPv6 fix** — proxy target changed from `arcanthyr.com` to `104.21.1.159` with `Host: arcanthyr.com` header · Node.js on Windows resolves to IPv6 which proxy cannot connect over
+- **api.js query field fixed** — frontend was sending `query_text`, worker expects `query` · fixed to `{ query: query_text }` · Worker internally translates to `query_text` before calling server.py · server.py unchanged
+- **Model toggle added to Research** — Claude API / Workers AI toggle · routes to `legal-query-workers-ai` handler when Workers selected · chip style matching filter buttons
+- **Upload drag and drop restored** — CorpusTab: drag zone reads `.md`/`.txt` into textarea via FileReader · LegislationTab: drop zone replaces old button, click also triggers file picker
+- **Landing loop fixed** — `window.location.href = '/'` redirect removed from `api.js` `req()` 401 handler · was causing infinite remount on Landing where 401 is expected for logged-out users
+- **Scraper updated** — SESSION_LIMIT 100 → 150 · behavioural jitter added (7% chance 25-45s additional pause) · second Task Scheduler task added at 18:00 (`run_scraper_evening`) · throughput ~300 cases/day
+- **sigil.gif pending** — `sigil.jpg` placeholder in `src/assets/` · swap by dropping `sigil.gif` in same folder and updating import in `Landing.jsx` and `ReadingPane.jsx`
+
+## CHANGES THIS SESSION (session 15) — 23 March 2026
+
+- **MCP servers installed** — 21st.dev Magic (user scope), GitHub MCP, Context7, Firecrawl added to Claude Code · magic registered in ~/.claude.json · GitHub PAT with repo scope · all scope user
+- **CLAUDE_decisions.md created** — 377 passages, 1,535 lines, 8 sections extracted from 30 past conversations via extract_decisions.py · lives at arcanthyr-console\CLAUDE_decisions.md · upload each session alongside CLAUDE.md and CLAUDE_arch.md
+- **UI rebuild designed** — complete design system locked: Libre Baskerville serif throughout, dark chrome (#0A0C0E) + light reading pane (#F8F6F1), IBM accent blue (#4A9EFF) · five views: Landing, Research, Upload, Library, Share modal · sigil (white compass rose GIF) on landing page
+- **CC handover brief written** — full spec for arcanthyr-ui React/Vite/Cloudflare Pages build · new repo arcanthyr-ui · worker.js gets CORS headers + /api/auth/login only · all other backend untouched
+- **Scraper progress** — 404 cases total (up from 303) · 340 deep_enriched · 64 pending (new scraper cases) · 5,873 chunks done · 5,593 embedded · queue still processing new cases cleanly
+- **Wrangler token expired mid-session** — resolved with npx wrangler login · add to session checklist if D1 queries return 7403
 
 ## CHANGES THIS SESSION (session 14) — 23 March 2026
 

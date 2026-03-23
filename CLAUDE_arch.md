@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 23 March 2026 (end of session 14). Upload every session alongside CLAUDE.md.*
+*Updated: 23 March 2026 (end of session 16). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -199,6 +199,41 @@ WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
 
 ---
 
+## ARCANTHYR-UI (session 16)
+
+**Stack:** React + Vite + Cloudflare Pages (deploy pending)
+**Repo location:** `arcanthyr-console/arcanthyr-ui/`
+**Dev server:** `npm run dev` from `arcanthyr-console/arcanthyr-ui/` · `http://localhost:5173`
+
+**API base (session 17+):**
+- `api.js BASE = 'https://arcanthyr.com'` — browser calls Worker directly, no proxy
+- Vite proxy removed — `vite.config.js` has no server.proxy section
+- CORS on Worker allows `http://localhost:5173` → preflight passes cleanly
+
+**Auth flow (local dev — session 17+):**
+- Auth removed for local dev — verify/login/logout are no-op stubs returning `{ ok: true }`
+- Landing.jsx immediately redirects to /research (no password screen)
+- Worker JWT/cookie auth still live in production — unaffected
+
+**API field names (critical):**
+- Frontend → Worker: `{ query }` (not query_text)
+- Worker → server.py: `{ query_text }` (Worker translates internally)
+- Never send `query_text` from frontend — Worker reads `body.query`
+
+**Pages (all in `src/pages/`):**
+- `Landing.jsx` — immediate redirect to /research (auth removed session 17)
+- `Research.jsx` — query input, model toggle (Claude/Workers), filter chips, non-clickable source list, AI Summary auto-displays in reading pane after query
+- `Upload.jsx` — 3 tabs: Cases (file drop + AustLII URL input) / Secondary Sources (drag+drop .md/.txt) / Legislation (drag+drop .pdf/.txt)
+- `Library.jsx` — 3 tabs: cases/corpus/legislation · case rows clickable → split reading pane with Facts/Holding/Principles tabs
+- Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`
+
+**Production deploy (pending):**
+- Cloudflare Pages project not yet created
+- Will need `VITE_API_BASE` env var pointing to `https://arcanthyr.com`
+- Build command: `npm run build` · output dir: `dist`
+
+---
+
 ## KEY FILE LOCATIONS
 
 | File | Path |
@@ -218,6 +253,9 @@ WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
 | worker.js | `Arc v 4/worker.js` |
 | CLAUDE.md | `Arc v 4/CLAUDE.md` |
 | CLAUDE_arch.md | `Arc v 4/CLAUDE_arch.md` |
+| arcanthyr-ui | `arcanthyr-console/arcanthyr-ui/` — React/Vite frontend · `npm run dev` from this dir |
+| api.js | `arcanthyr-console/arcanthyr-ui/src/api.js` — all Worker API calls |
+| vite.config.js | `arcanthyr-console/arcanthyr-ui/vite.config.js` — no proxy (removed session 17) |
 | austlii_scraper.py | `arcanthyr-console/Local Scraper/austlii_scraper.py` — Windows only |
 | scraper_progress.json | `arcanthyr-console/Local Scraper/scraper_progress.json` |
 | scraper.log | `arcanthyr-console/Local Scraper/scraper.log` |
@@ -306,9 +344,9 @@ Includes: Case, Court, Judge, Date, Chunk N of M, Hint (header/unknown), Case co
 
 - Courts: TASSC, TASCCA, TASFC, TAMagC
 - Years: `range(2025, 2004, -1)` — 2025 to 2005 inclusive
-- `MAX_CASES_PER_SESSION`: 100
-- Delays: 10–20s random · Business hours: 08:00–18:00 AEST
-- Schedule: Windows Task Scheduler daily noon (Task Scheduler at `C:\Users\Hogan\run_scraper.bat`)
+- `MAX_CASES_PER_SESSION`: 150 (raised session 16 from 100)
+- Delays: 10–20s random + 7% chance of 25-45s behavioural jitter (added session 16) · Business hours: 08:00–18:00 AEST
+- Schedule: Windows Task Scheduler · noon (`run_scraper.bat`) + 18:00 (`run_scraper_evening`) · throughput ~300 cases/day
 - Proxy: `arcanthyr.com/api/legal/fetch-page` — routes via Cloudflare edge (VPS IP blocked)
 - Upload timeout: 120s
 - **Current position:** stopped at TASSC/2020/5 (session limit) · will resume TASSC/2020/6 next run
