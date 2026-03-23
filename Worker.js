@@ -25,6 +25,52 @@ function rateLimit(key, max, windowMs) {
 }
 
 /* =============================================================
+   JWT UTILITIES (Web Crypto — no npm required)
+   ============================================================= */
+function b64url(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+    .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+function b64urlDecode(str) {
+  return atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+}
+
+async function signJWT(payload, secret) {
+  const header = b64url(new TextEncoder().encode(JSON.stringify({ alg: 'HS256', typ: 'JWT' })));
+  const body   = b64url(new TextEncoder().encode(JSON.stringify(payload)));
+  const data   = `${header}.${body}`;
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(data));
+  return `${data}.${b64url(sig)}`;
+}
+
+async function verifyJWT(token, secret) {
+  if (!token) return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const [header, payload, sig] = parts;
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']
+  );
+  const sigBytes = Uint8Array.from(b64urlDecode(sig), c => c.charCodeAt(0));
+  const valid = await crypto.subtle.verify('HMAC', key, sigBytes, new TextEncoder().encode(`${header}.${payload}`));
+  if (!valid) return null;
+  const parsed = JSON.parse(b64urlDecode(payload));
+  if (parsed.exp < Math.floor(Date.now() / 1000)) return null;
+  return parsed;
+}
+
+function getTokenFromRequest(request) {
+  const cookie = request.headers.get('Cookie') || '';
+  const match = cookie.match(/arc_token=([^;]+)/);
+  return match ? match[1] : null;
+}
+
+/* =============================================================
    WORKERS AI HELPER
    ============================================================= */
 const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
@@ -108,6 +154,15 @@ async function sendEmail(env, to, subject, html) {
 
   if (!response.ok) throw new Error(`Resend API error: ${await response.text()}`);
   return await response.json();
+}
+
+async function handleShare(body, env) {
+  const { to, subject, researchSummary, note } = body || {};
+  if (!to || !subject) throw new Error("to and subject are required");
+  const noteHtml = note ? `<p style="color:#555;font-style:italic">${note}</p>` : '';
+  const html = `<h2>${subject}</h2>${noteHtml}<hr/><pre style="font-family:serif;white-space:pre-wrap">${researchSummary || ''}</pre><p style="color:#999;font-size:12px">Sent via Arcanthyr</p>`;
+  await sendEmail(env, to, subject, html);
+  return { ok: true };
 }
 
 /* =============================================================
@@ -1277,7 +1332,8 @@ async function handleLibraryList(env) {
     env.DB.prepare(`
       SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
              processed_date, summary_quality_score, 'case' AS doc_type,
-             LENGTH(raw_text) AS raw_size, enriched, deep_enriched,
+             LENGTH(raw_text) AS raw_size, enriched, deep_enriched, subject_matter,
+             facts, holding, holdings_extracted,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation) AS chunk_count,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation AND embedded = 1) AS chunks_embedded
       FROM cases ORDER BY processed_date DESC
@@ -2130,10 +2186,18 @@ export default {
     const origin = request.headers.get("Origin") || "";
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
 
+    const ALLOWED_ORIGINS = [
+      'https://arcanthyr-ui.pages.dev',
+      'http://localhost:5173',
+      'http://localhost:4173',
+    ];
+    const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : (origin || "*");
+
     const corsHeaders = {
-      "Access-Control-Allow-Origin": origin || "*",
+      "Access-Control-Allow-Origin": allowedOrigin,
       "Access-Control-Allow-Methods": "GET,POST,DELETE,PATCH,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, X-Nexus-Key",
+      "Access-Control-Allow-Credentials": "true",
     };
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
@@ -2141,6 +2205,38 @@ export default {
     const json = (data, status = 200) => new Response(JSON.stringify(data), {
       status, headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
+
+    /* ── AUTH ROUTES ─────────────────────────────────────────── */
+    if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
+      const { password } = body || {};
+      if (!password || password !== env.NEXUS_SECRET_KEY) return json({ error: 'Unauthorized' }, 401);
+      const jwtSecret = env.JWT_SECRET || env.NEXUS_SECRET_KEY;
+      const token = await signJWT({ sub: 'arcanthyr', exp: Math.floor(Date.now() / 1000) + 86400 }, jwtSecret);
+      const res = new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json',
+          'Set-Cookie': `arc_token=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400` }
+      });
+      return res;
+    }
+
+    if (url.pathname === '/api/auth/verify' && request.method === 'GET') {
+      const token = getTokenFromRequest(request);
+      const jwtSecret = env.JWT_SECRET || env.NEXUS_SECRET_KEY;
+      const payload = await verifyJWT(token, jwtSecret);
+      if (!payload) return json({ ok: false }, 401);
+      return json({ ok: true });
+    }
+
+    if (url.pathname === '/api/auth/logout' && request.method === 'POST') {
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json',
+          'Set-Cookie': 'arc_token=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0' }
+      });
+    }
 
     /* ── AI PROXY ROUTES ─────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ai/")) {
@@ -2199,6 +2295,10 @@ export default {
         else if (action === "upload-secondary" && request.method === "POST") result = await handleUploadSecondarySource(body, env);
         else if (action === "upload-corpus" && request.method === "POST") result = await handleUploadCorpus(body, env);
         else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
+        else if (action === "cases" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.cases; }
+        else if (action === "corpus" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.secondary; }
+        else if (action === "legislation" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.legislation; }
+        else if (action === "share" && request.method === "POST") result = await handleShare(body, env);
         else if (action.startsWith("library/delete/") && request.method === "DELETE") {
           // URL pattern: /api/legal/library/delete/{docType}/{id}
           const parts = action.replace("library/delete/", "").split("/");
