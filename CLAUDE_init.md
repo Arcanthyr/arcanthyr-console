@@ -1,0 +1,189 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## Session Setup
+
+Before any `wrangler` or `npx` command in PowerShell:
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+**Read CLAUDE.md and CLAUDE_arch.md at the start of every session** — both are required for full context.
+
+---
+
+## Commands
+
+### Deploy Worker
+```bash
+# From "Arc v 4/" directory
+wrangler deploy
+```
+
+### D1 Database (always add `--remote` for live data)
+```bash
+wrangler d1 execute arcanthyr --remote --command "SELECT COUNT(*) FROM cases"
+wrangler d1 execute arcanthyr --remote --file schema.sql
+```
+
+### Stream Worker logs
+```bash
+wrangler tail
+```
+
+### Secrets
+```bash
+wrangler secret put NEXUS_SECRET_KEY
+```
+
+### VPS: Check enrichment poller (SSH)
+```bash
+docker compose logs --tail=20 enrichment-poller
+docker compose ps
+```
+
+### VPS: server.py health check
+```bash
+curl localhost:18789/status -H "X-Nexus-Key: $(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)"
+```
+
+### SCP server.py (canonical copy is on VPS — always pull before editing)
+```powershell
+# Download from VPS
+scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"
+# Upload to VPS
+scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py
+```
+After uploading server.py, force-recreate the container on VPS: `docker compose up -d --force-recreate agent-general`
+
+### Retrieval baseline
+```bash
+# On VPS — results in ~/retrieval_baseline_results.txt
+./retrieval_baseline.sh
+```
+
+### Corpus processing (PowerShell, "Arc v 4/" directory)
+```bash
+python process_blocks.py
+```
+
+There is no `npm`, `build`, `lint`, or `test` step — the Worker (`worker.js`) is vanilla JS deployed directly via `wrangler deploy`.
+
+---
+
+## Architecture
+
+### Three-Tier Stack
+
+```
+Browser (public/app.js + HTML)
+    ↓ REST API calls
+Cloudflare Edge (worker.js)
+    ↓ HTTP fetch (auth: X-Nexus-Key)
+VPS Backend (server.py port 18789 + enrichment_poller.py)
+    ↓
+Qdrant (vector DB, localhost:6334 on VPS host)
+Ollama (embedding model, local)
+```
+
+**No build step.** `public/` is served as Worker static assets; `worker.js` is the single Worker entry point deployed directly.
+
+---
+
+### Key Files
+
+| File | Where | Purpose |
+|---|---|---|
+| `worker.js` | Cloudflare Edge | All HTTP routing, D1 ops, case pipeline orchestration, queue consumer |
+| `server.py` | VPS (Docker: `agent-general`) | Semantic search, Qdrant ops, hybrid retrieval, Qwen3 inference |
+| `enrichment_poller.py` | VPS (Docker: `enrichment-poller`) | Background loop: enrich secondary_sources + case_chunks via GPT-4o-mini, embed via Ollama |
+| `public/app.js` | Browser | SPA frontend, no framework |
+| `wrangler.toml` | — | Worker config: D1 binding (`DB`), AI binding (`AI`), Queue binding (`CASE_QUEUE`) |
+| `schema.sql` | — | D1 schema source of truth |
+| `CLAUDE_arch.md` | — | Full architecture reference, route map, component notes |
+
+---
+
+### Case Processing Pipeline
+
+```
+Upload (PDF/text)
+  → worker.js /api/legal/upload-case
+  → D1 cases table (raw_text + Pass 1 metadata)
+  → Cloudflare Queue: METADATA message
+  → Worker splits case into 3k-char chunks → case_chunks table
+  → Enqueue CHUNK messages (one per chunk)
+  → Workers AI (GPT-4o-mini): CHUNK prompt v3 → enriched_text + principles_json
+  → enrichment_poller detects done=1 chunks with embedded=0
+  → Embed enriched_text via Ollama → Qdrant upsert
+  → Mark embedded=1 in D1
+```
+
+**CHUNK prompt v3** (session 14): classifies chunk type (reasoning/evidence/submissions/procedural/header/mixed), writes 200–350 word `enriched_text` prose for reasoning chunks, extracts `reasoning_quotes` (verbatim judicial passages), sets `subject_matter`.
+
+---
+
+### Retrieval Pipeline (Triple-Pass Hybrid)
+
+Triggered by `POST /api/legal/legal-query` → delegates to `server.py`:
+
+1. **Semantic pass** — Qdrant cosine similarity, threshold 0.45, collection `general-docs-v2`
+2. **BM25/FTS5 pass** — `secondary_sources_fts` FTS5 table for section/keyword hits
+3. **Case chunk pass** — second Qdrant query scoped to case chunks, threshold 0.35, up to 4 chunks
+4. **RRF merge** — Reciprocal Rank Fusion across all three passes
+5. **LLM synthesis** — Retrieved context sent to Qwen3 (Workers AI) for final answer
+
+Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/FullCourt (3) > Supreme (2) > Magistrates (1).
+
+---
+
+### D1 Database — Key Tables
+
+| Table | PK Format | Notes |
+|---|---|---|
+| `cases` | citation string | `enriched`, `deep_enriched`, `subject_matter` columns |
+| `case_chunks` | `citation__chunk__N` | `chunk_text`, `enriched_text`, `principles_json`, `done`, `embedded` |
+| `secondary_sources` | `id` TEXT | No `citation` column — never query `WHERE citation =` |
+| `secondary_sources_fts` | — | FTS5 virtual table; mirrors secondary_sources |
+| `legislation_sections` | — | Referenced by `handleFetchSectionsByReference` |
+
+---
+
+### Auth & External Services
+
+- **Admin routes** (Worker): `X-Nexus-Key` header required. Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env` on VPS.
+- **upload-corpus route**: No `X-Nexus-Key` — uses `User-Agent: Mozilla/5.0 (compatible; Arcanthyr/1.0)`.
+- **server.py**: All direct calls to `localhost:18789` require `X-Nexus-Key`.
+- **Qdrant**: VPS host port is `6334` (not 6333) — always `curl localhost:6334` from host.
+- **Search endpoint**: expects field `query_text` (not `query`).
+
+---
+
+### PowerShell Constraints
+
+- No `&&` chaining — run commands separately
+- No heredoc (`<<'EOF'`)
+- No `grep` — use `Select-String`
+- No `head` — use `Select-Object -First N`
+- No `Out-File` for corpus files — use Python to write (PowerShell BOM corrupts block separators)
+
+---
+
+### Enrichment Poller
+
+Runs as permanent Docker service (`restart: unless-stopped`) — no tmux needed. Embeds from `enriched_text` when present, falls back to `chunk_text`. After any secondary_sources ingest, manually set `enriched=1` via wrangler d1 — new rows land with `enriched=0` and the poller won't process them until updated.
+
+---
+
+### ingest_corpus.py
+
+Lives at `arcanthyr-console\ingest_corpus.py` (one level above `Arc v 4/`). Block separator format must be:
+```
+<!-- block_NNN master -->
+### Heading
+[DOMAIN:]
+```
+`upload-corpus` is destructive upsert — do not re-run against already-ingested citations.
