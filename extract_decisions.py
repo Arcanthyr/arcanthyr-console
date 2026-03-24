@@ -211,13 +211,15 @@ def content_words(text):
 
 
 def deduplicate(findings):
-    """Remove near-duplicate excerpts based on first-120-char identity only.
-    Soft Jaccard dedup is too aggressive when all passages share domain vocabulary."""
+    """Remove near-duplicate excerpts.
+    Tuple layout: (score, conv_name, conv_date, sender, created_at, excerpt)
+    excerpt is at index 5."""
     seen_starts = set()
     unique = []
     for item in findings:
-        text = item[3]
-        start = re.sub(r'\s+', ' ', text[:150]).strip()
+        excerpt = item[5]
+        # Hard dedup on normalised first 150 chars
+        start = re.sub(r'\s+', ' ', excerpt[:150]).strip()
         if start in seen_starts:
             continue
         seen_starts.add(start)

@@ -2599,7 +2599,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
 
           let extracted = { principles: [], holdings: [], legislation: [], key_authorities: [] };
           console.log(`[queue] raw response chunk ${citation}/${chunk_index}:`, raw);
-          try { extracted = JSON.parse(cleaned); } catch (e) { console.error(`[queue] JSON parse failed chunk ${citation}/${chunk_index}:`, e.message); }
+          try { extracted = JSON.parse(cleaned); } catch (e) { console.error('CHUNK JSON parse failed:', e.message, 'raw:', cleaned?.slice(0, 200)); throw e; }
 
           const enrichedText = extracted.enriched_text || null;
 
@@ -2621,6 +2621,10 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
           if ((extracted.reasoning_quotes || []).length > 2) extracted.reasoning_quotes = extracted.reasoning_quotes.slice(0, 2);
           if ((extracted.legislation || []).length > 5) extracted.legislation = extracted.legislation.slice(0, 5);
           if ((extracted.key_authorities || []).length > 5) extracted.key_authorities = extracted.key_authorities.slice(0, 5);
+
+          if (!extracted.chunk_type) {
+            throw new Error('CHUNK enrichment produced no chunk_type — likely empty or malformed GPT response');
+          }
 
           await env.DB.prepare(
             `UPDATE case_chunks SET principles_json = ?, enriched_text = ?, done = 1 WHERE citation = ? AND chunk_index = ?`

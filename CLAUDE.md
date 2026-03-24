@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 23 March 2026 (end of session 16) · Supersedes all prior versions
+Updated: 24 March 2026 (end of session 18, full) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -82,29 +82,19 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 23 March 2026 (end of session 16)
+## SYSTEM STATE — 24 March 2026 (end of session 18)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · 5,593 case chunks embedded · re-embedding from enriched_text in progress |
-| Embedding model | argus-ai/pplx-embed-context-v1-0.6b:fp32 (Ollama, VPS Docker) |
-| Score threshold | 0.45 (validated) |
-| D1 cases | 404 total · 340 deep_enriched · 64 pending (new scraper cases) |
-| D1 case_chunks | 6,718 total · 5,873 done=1 · 1,125 still to embed |
+| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · case chunks re-embedding overnight |
+| D1 cases | 543 total · 479 deep_enriched · 537 holding=null or failed (Pass 1 prompt fix needed) |
+| D1 case_chunks | 8,533 total · 5,128 good (done=1, enriched_text populated) · 3,143 done=0 (reprocessing overnight) |
 | D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
-| D1 secondary_sources_fts | 1,171 rows · backfilled session 13 · all three retrieval passes operational |
-| D1 legislation | 5 Acts · embedded=1 · 1,272 sections in Qdrant · untouched this session |
-| worker.js | Deployed session 16 · version 1be8eb3b · CORS + JWT auth + cookie fix + new routes |
-| Cloudflare plan | Workers Paid ($5/month) — neuron cap removed |
-| CHUNK enrichment model | GPT-4o-mini-2024-07-18 · v3 prompt live |
-| Cloudflare Queues | Processing new scraper cases · 0 retries |
-| enrichment_poller | Running · embedding case chunks from enriched_text |
-| server.py | Case chunk threshold 0.35 · HCA tier 4 · unchanged this session |
-| Retrieval | Triple-pass hybrid pipeline operational · baseline rerun needed after embed completes |
-| Phase 5 | VALIDATED — Claude API primary path confirmed good answer quality |
-| Corpus | COMPLETE — 1,172 chunks · all embedded · FTS5 backfilled · BRD chunk added |
-| Scraper | Running daily noon · 404 cases |
-| UI rebuild | arcanthyr-ui created · local dev working · Cloudflare Pages deploy pending |
+| worker.js | Version 7e0c7dc0 · CHUNK handler fix deployed · re-throw on JSON parse failure + chunk_type guard |
+| enrichment_poller | Running · idle (no chunks ready to embed — waiting for queue to produce done=1 chunks) |
+| Cloudflare Queue | Draining overnight · requeue-chunks called multiple times · ~3,143 chunks remaining |
+| Scraper | DISABLED — Task Scheduler paused overnight · re-enable after done=0 = 0 |
+| arcanthyr-ui | Library improved · local dev working · Cloudflare Pages deploy still pending |
 
 ---
 
@@ -136,14 +126,16 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Run retrieval baseline** — after embed pass completes · ~/retrieval_baseline.sh on VPS
-2. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders`
-3. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` slug match with FTS5
-4. **subject_matter spot-check** — verify cases.subject_matter populated correctly
-5. **arcanthyr-ui Cloudflare Pages deploy** — local dev working · configure Pages project + build pipeline · set VITE_API_BASE env var for production
-6. **Library case reading pane** — click case row → ReadingPane opens with facts/holding/principles tabs · ReadingPane.jsx exists, wire to Library.jsx
-7. **Verify JWT_SECRET set in Wrangler** — currently falling back to NEXUS_SECRET_KEY · optionally set dedicated JWT_SECRET via `npx wrangler secret put JWT_SECRET`
-8. **Retrieval baseline rerun** — embed pass on new cases completing · run ~/retrieval_baseline.sh on VPS
+1. **Morning check** — `SELECT COUNT(*) FROM case_chunks WHERE done=0` → confirm 0
+2. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after done=0 confirms 0
+3. **Re-enable scrapers** — Task Scheduler run_scraper + run_scraper_evening after done=0 = 0
+4. **Fix Pass 1 prompts for Qwen3** — pull pass1Prompt/pass2Prompt/singlePassPrompt via CC · redesign for Qwen3-30b output style · increase Pass 1 maxTokens 2000→3000 · fix holding merge to last-non-null-wins · test on 5–10 cases · requeue-metadata all 543
+5. **Fix merge logic** — holdings consolidation in CHUNK merge step · deduplicate across chunks · add principles consolidation · then requeue-metadata (free, fast — no GPT calls)
+6. **Poller CASE-EMBED guard** — add `enriched_text IS NOT NULL` to CASE-EMBED fetch in enrichment_poller.py
+7. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders`
+8. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` slug match with FTS5
+9. **Cloudflare Pages deploy** — arcanthyr-ui local dev working · configure Pages project
+10. **Library reading pane from Research** — click source card → reading pane opens
 
 ---
 
@@ -163,6 +155,17 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
+
+## CHANGES THIS SESSION (session 18) — 24 March 2026
+
+- **Silent CHUNK enrichment failure diagnosed and fixed** — 3,677 case chunks (49% of corpus) had done=1 but enriched_text=NULL and empty principles_json (chunk_type=null). Root cause: JSON parse failure in CHUNK handler inner try/catch was swallowed — execution continued to UPDATE done=1 with empty defaults. GPT was returning valid 200 responses but unparseable JSON on ~49% of chunks, silently poisoning D1 since session 14 v3 reprocess.
+- **CHUNK handler fix deployed — worker.js version 7e0c7dc0** — (1) inner JSON parse catch now re-throws → outer catch fires → msg.retry() called → queue retries; (2) chunk_type guard added before UPDATE done=1 — throws if chunk_type is null/undefined, catching empty GPT responses. Chunks that fail now retry up to queue max retries then dead-letter rather than silently marking done=1 with null enriched_text.
+- **3,677 chunks reset and requeued** — `UPDATE case_chunks SET done=0, embedded=0 WHERE done=1 AND enriched_text IS NULL AND JSON_EXTRACT(principles_json, '$.chunk_type') IS NULL` — requeue-chunks called multiple times, queue draining overnight. 5,128 good chunks confirmed at session end (up from 4,856).
+- **Pass 1 holding failure identified** — 537/543 cases have holding=NULL or "AI extraction failed". Root cause: pass1Prompt and pass2Prompt were designed for Llama 3.1 8B, Qwen3-30b-a3b-fp8 was swapped in on 17 March without prompt redesign, validated on only one case (Sears v Copper Mines). Fix deferred to next session — pull actual prompt text via CC, redesign for Qwen3, test on 5–10 cases, then requeue-metadata on all 543 cases. No re-scraping needed — raw_text in D1.
+- **Library UI improved** — single scroll reading pane (Facts → Holding → Principles, no tabs) · search bar + court/year filter chips · stats counters removed · sigil import fixed in ReadingPane.jsx (sigil.jpg → /unnamed.jpg) · title search field corrected (case_name → title) · dead StatsRow component removed.
+- **Poller CASE-EMBED guard — OUTSTANDING** — enrichment_poller.py CASE-EMBED pass fetches done=1 AND embedded=0 but does not check enriched_text IS NOT NULL. Add as defensive measure next session.
+- **Scraper disabled** — Task Scheduler run_scraper and run_scraper_evening disabled to prevent new cases competing with reprocess queue overnight. Re-enable after done=0 confirms 0.
+- **processed_date column null** — confirmed never populated by scraper pipeline, cannot determine which cases were processed by Llama 3.1 8B vs Qwen3-30b from D1. Irrelevant since all cases need requeue-metadata after Pass 1 prompt fix.
 
 ## CHANGES THIS SESSION (session 17) — 23 March 2026
 
