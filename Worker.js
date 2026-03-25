@@ -104,6 +104,7 @@ Output only the Markdown chunks or NO PROCEDURE CONTENT. No preamble, no comment
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   const result = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
+    budget_tokens: 0,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
@@ -468,7 +469,11 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       // Merge pass2 results — concat principles and legislation, take first non-null holding
       const mergedPrinciples = pass2Results.flatMap(r => r.principles || []);
       const mergedLegislation = [...new Set(pass2Results.flatMap(r => r.legislation || []))];
-      const mergedHolding = pass2Results.find(r => r.holding)?.holding || null;
+      const mergedHolding = pass2Results
+        .flatMap(r => r.holdings || [])
+        .map(h => typeof h === 'string' ? h : h.holding)
+        .filter(Boolean)
+        .join(" ") || null;
 
       const syntheticPass2 = {
         holdings: pass2Results.flatMap(r => r.holdings || []),
@@ -2596,10 +2601,16 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
           const aiData = await aiResponse.json();
           const raw = aiData.choices?.[0]?.message?.content?.trim() || "";
           const cleaned = (raw || '').replace(/```json|```/g, '').trim();
+          const chunkId = `${citation}__chunk__${chunk_index}`;
+
+          if (!cleaned) {
+            console.error("CHUNK parse failed for chunk:", chunkId, raw?.slice(0, 200));
+            throw new Error("CHUNK parse failed: empty or malformed response");
+          }
 
           let extracted = { principles: [], holdings: [], legislation: [], key_authorities: [] };
           console.log(`[queue] raw response chunk ${citation}/${chunk_index}:`, raw);
-          try { extracted = JSON.parse(cleaned); } catch (e) { console.error('CHUNK JSON parse failed:', e.message, 'raw:', cleaned?.slice(0, 200)); throw e; }
+          try { extracted = JSON.parse(cleaned); } catch (e) { console.error("CHUNK parse failed for chunk:", chunkId, raw?.slice(0, 200)); throw new Error("CHUNK parse failed: empty or malformed response"); }
 
           const enrichedText = extracted.enriched_text || null;
 
@@ -2667,6 +2678,11 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
             chunkSubjects.forEach(s => { subjectCounts[s] = (subjectCounts[s] || 0) + 1; });
             const subject_matter = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'unknown';
 
+            const chunkHoldingStr = allHoldings
+              .map(h => typeof h === 'string' ? h : h.holding)
+              .filter(Boolean)
+              .join(" ") || null;
+
             await env.DB.prepare(`
               UPDATE cases SET
                 principles_extracted = ?,
@@ -2674,6 +2690,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
                 legislation_extracted = ?,
                 authorities_extracted = ?,
                 subject_matter = ?,
+                holding = ?,
                 deep_enriched = 1
               WHERE citation = ?
             `).bind(
@@ -2682,6 +2699,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
               JSON.stringify([...allLegislation]),
               JSON.stringify(dedupedAuth),
               subject_matter,
+              chunkHoldingStr,
               citation
             ).run();
             console.log(`[queue] merge complete for ${citation} — ${allPrinciples.length} principles`);
@@ -2698,7 +2716,23 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
           console.log(`[queue] METADATA pass for ${citation}, length: ${row.raw_text.length}`);
 
           // Pass 1 — metadata/facts/case_name from first 8k chars
-          const pass1System = `You are a legal research assistant. Extract metadata from the opening of this Australian court judgment. Output ONLY valid JSON: { "case_name": "", "judge": "", "parties": "", "facts": "", "issues": [] }`;
+          const pass1System = `You are a legal metadata extraction assistant. Extract structured metadata from this Australian court judgment.
+
+Return ONLY a single valid JSON object. No explanation, no markdown, no text before or after the JSON.
+
+{
+  "case_name": "Full case name as it appears in the judgment header (e.g. R v Smith [2021] TASSC 45)",
+  "judge": "Presiding judge(s) surname and title only (e.g. Wood J, or Pearce and Brett JJ)",
+  "parties": "Applicant/Appellant and Respondent as named (e.g. Tasmania v Jones)",
+  "facts": "2-4 sentences summarising the core factual background giving rise to the proceeding. Extract from the judgment text — do not infer.",
+  "issues": ["Legal issue 1 as a short phrase", "Legal issue 2 as a short phrase"]
+}
+
+Rules:
+- Extract only what is explicitly stated. Do not infer or fabricate.
+- issues must be an array of strings, never a single string.
+- If a field cannot be determined from the text, use an empty string or empty array.
+- The very first character of your response must be {`;
           const pass1Raw = await callWorkersAI(env, pass1System, row.raw_text.slice(0, 8000), 1500);
           const pass1Cleaned = (pass1Raw || '').replace(/```json|```/g, '').trim();
           let pass1 = { case_name: null, judge: null, parties: null, facts: null, issues: [] };

@@ -1552,4 +1552,28 @@ Supplement to CLAUDE.md and CLAUDE_arch.md — focuses on *why*, not *what*.
 
 ---
 
+## Session 19 Decisions — 24 March 2026
+
+**[2026-03-24]** *Deploy React frontend via Worker static assets, not Cloudflare Pages* — session 19
+
+> Decided to serve arcanthyr-ui from the existing arcanthyr-api Worker via `[assets]` binding rather than setting up a separate Cloudflare Pages project. Rationale: Pages deploy required separate project configuration, custom domain routing, and CORS was already solved for arcanthyr.com. Serving from the Worker keeps the entire app (API + frontend) under one deployment unit — `npx wrangler deploy` pushes both. arcanthyr-ui.pages.dev is now redundant and can be deleted.
+
+**[2026-03-24]** *Do not add _redirects to arcanthyr-ui/public/* — session 19
+
+> Adding a `_redirects` file to `public/` caused Workers Assets to enter an infinite redirect loop (error 10021). SPA routing is handled by `not_found_handling = "single-page-application"` in wrangler.toml — this is sufficient and the only correct approach. Never add _redirects back.
+
+**[2026-03-24]** *Model toggle names: Sol and V'ger* — session 19
+
+> Claude API query path renamed to "Sol", Workers AI (Qwen3-30b) path renamed to "V'ger". V'ger is the default. These are UI labels only — no backend routing changes. The naming is thematic, not technical.
+
+**[2026-03-24]** *Stop poller before embed pass when enriched_text is absent* — session 19
+
+> Discovered 85 chunks were embedded from chunk_text (raw text) because the poller ran before re-enrichment completed. Stopping the poller after 85 to prevent further wasted embed passes was the correct call — chunk_text vectors are lower quality than enriched_text vectors and will need to be replaced anyway. Rule: always verify enriched_text IS NOT NULL on target chunks before starting poller CASE-EMBED pass.
+
+**[2026-03-24]** *Globe moved to Compose page, not Landing* — session 19
+
+> The Three.js Earth globe was moved off the Landing page (which now uses a VanishingInput search bar instead) and onto the Compose page. Rationale: Landing page should be fast and focused on the search entry point; globe is a cosmetic feature better suited to a secondary page. Replaces the cobe-based globe that had rendering issues.
+
+---
+
 *377 passages from 135 conversations + session 15 additions.*

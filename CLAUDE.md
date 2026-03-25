@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 24 March 2026 (end of session 18, full) · Supersedes all prior versions
+Updated: 25 March 2026 (end of session 20) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -69,7 +69,8 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | CLAUDE_decisions.md | Upload each session alongside CLAUDE.md + CLAUDE_arch.md · CC appends decisions directly · re-extract quarterly via extract_decisions.py |
 | Wrangler auth | If D1 queries return error 7403, run npx wrangler login to re-authenticate |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
-| arcanthyr-ui deploy | Cloudflare Pages — not yet configured · TBD next session |
+| arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ |
+| Model toggle names | Sol = Claude API (claude-sonnet) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
 | JWT secret | worker.js uses `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY` · no separate JWT_SECRET set in Wrangler — NEXUS_SECRET_KEY is signing key |
 | worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
 | Vite proxy IPv6 fix | proxy target hardcoded to `104.21.1.159` with `Host: arcanthyr.com` header + `secure: false` · Node.js on Windows prefers IPv6 but proxy fails · IPv4 workaround required |
@@ -82,19 +83,19 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 24 March 2026 (end of session 18)
+## SYSTEM STATE — 24 March 2026 (end of session 19)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · case chunks re-embedding overnight |
-| D1 cases | 543 total · 479 deep_enriched · 537 holding=null or failed (Pass 1 prompt fix needed) |
-| D1 case_chunks | 8,533 total · 5,128 good (done=1, enriched_text populated) · 3,143 done=0 (reprocessing overnight) |
+| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · 5,719 case chunks embedded (5,634 good from enriched_text · 85 from chunk_text — need embedded=0 reset) |
+| D1 cases | 543 total · 479 deep_enriched · 280 cases with enriched_text NULL (need re-enrichment) |
+| D1 case_chunks | 8,533 total · all done=1 · 5,719 embedded · 2,814 unembedded (waiting for re-enrichment pass) |
 | D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
-| worker.js | Version 7e0c7dc0 · CHUNK handler fix deployed · re-throw on JSON parse failure + chunk_type guard |
-| enrichment_poller | Running · idle (no chunks ready to embed — waiting for queue to produce done=1 chunks) |
-| Cloudflare Queue | Draining overnight · requeue-chunks called multiple times · ~3,143 chunks remaining |
-| Scraper | DISABLED — Task Scheduler paused overnight · re-enable after done=0 = 0 |
-| arcanthyr-ui | Library improved · local dev working · Cloudflare Pages deploy still pending |
+| enrichment_poller | STOPPED — do not restart until worker.js CHUNK consumer fix deployed |
+| Cloudflare Queue | Idle |
+| Scraper | DISABLED — keep disabled until re-enrichment complete |
+| arcanthyr.com | Live — Worker serves React frontend from public/ + all API routes · version 2eeb2b1f |
+| arcanthyr-ui.pages.dev | Redundant — safe to delete · no longer updated |
 
 ---
 
@@ -126,21 +127,27 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Morning check** — `SELECT COUNT(*) FROM case_chunks WHERE done=0` → confirm 0
-2. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after done=0 confirms 0
-3. **Re-enable scrapers** — Task Scheduler run_scraper + run_scraper_evening after done=0 = 0
-4. **Fix Pass 1 prompts for Qwen3** — pull pass1Prompt/pass2Prompt/singlePassPrompt via CC · redesign for Qwen3-30b output style · increase Pass 1 maxTokens 2000→3000 · fix holding merge to last-non-null-wins · test on 5–10 cases · requeue-metadata all 543
-5. **Fix merge logic** — holdings consolidation in CHUNK merge step · deduplicate across chunks · add principles consolidation · then requeue-metadata (free, fast — no GPT calls)
-6. **Poller CASE-EMBED guard** — add `enriched_text IS NOT NULL` to CASE-EMBED fetch in enrichment_poller.py
-7. **Fix malformed row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders`
-8. **handleFetchSectionsByReference LIKE fix** — replace `'%38%'` slug match with FTS5
-9. **Cloudflare Pages deploy** — arcanthyr-ui local dev working · configure Pages project
-10. **Library reading pane from Research** — click source card → reading pane opens
+1. **Morning check before scraper re-enable** — run three test procedures from session 20: (1) confirm pending_pass1 → 0 and has_holding climbing; (2) spot-check 5 random cases for holding + facts quality; (3) manual end-to-end test on one fresh case via fetch-case-url · only re-enable Task Scheduler after all three pass
+2. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
+2. **Fix CHUNK consumer silent failure bug** — worker.js: throw explicitly when JSON.parse fails on GPT response · check enriched_text IS NOT NULL before writing done=1 · deploy via wrangler
+3. **Reset 85 chunk_text embeddings** — `UPDATE case_chunks SET embedded=0 WHERE embedded=1 AND enriched_text IS NULL` · delete those 85 Qdrant vectors
+4. **Re-enrich 280 cases** — reset done=0 on affected chunks · call /api/admin/requeue-chunks · let CHUNK consumer re-process overnight
+5. **Restart poller** — after re-enrichment complete · will embed from enriched_text
+6. **Re-enable scrapers** — after poller confirms done=0 = 0
+7. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after full embed pass
+8. **Fix Pass 1 prompts for Qwen3** — redesign pass1Prompt/pass2Prompt for Qwen3-30b output style · test on 5-10 cases · requeue-metadata all 543
+9. **Fix merge logic** — holdings consolidation in CHUNK merge step
+10. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
+11. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
+12. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
+13. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
+14. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
+- **requeue-metadata running overnight** — 548 cases queued 25 March 2026 · expect deep_enriched=1 and holding populated on all cases by morning · run Check 1 and Check 2 from session 20 test procedures before re-enabling scraper
 - **Case chunks reprocessing overnight** — 5,187 chunks requeued session 14 · v3 prompt running · check done count in morning · poller re-embedding as chunks complete
 - **Baseline rerun needed** — after re-embed completes · previous 14/3/0 score was with old chunk payloads · expect case law query improvement
 - **subject_matter pending** — cases.subject_matter will populate as chunks complete overnight · verify spot-check before using as retrieval filter
@@ -155,6 +162,34 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
+
+## CHANGES THIS SESSION (session 20) — 25 March 2026
+
+- **Correct route for URL-based case ingestion identified** — `POST /api/legal/fetch-case-url` (not `/api/legal/upload-case`) is the correct endpoint for URL-based ingestion. `/api/legal/upload-case` expects `case_text` + `citation` fields — posting `{url}` to it causes `citation.match()` to throw on undefined. All manual URL ingestion and scraper URL posting must use `fetch-case-url`. Why: diagnosed after 500 error on test upload; CC traced four `.match()` calls and identified the route mismatch as root cause.
+- **fetch-page response shape confirmed** — `handleFetchPage` returns `{ html, status }` directly (not wrapped in `result`). All call sites destructuring `{ html, status }` directly are correct. Why: investigated as potential source of `.match()` on undefined — ruled out by CC reading the function return at line 1727.
+- **holding merge bug fixed — worker.js** — `cases.holding` was NULL on 537/543 cases due to three compounding bugs: (1) Pass 2 merge read `r.holding` (singular) instead of `r.holdings` (array) — always null; (2) `_buildSummary` fell through to "Not extracted" when holdings array empty; (3) CHUNK merge UPDATE never wrote to `cases.holding` at all — holdings from GPT-4o-mini chunk responses were collected into `allHoldings` but only written to `holdings_extracted`. Why: diagnosed via CC tracing full merge chain from Pass 2 parse through to D1 write.
+- **Three fixes applied to worker.js for holding:** (1) Pass 2 merge line 472: `flatMap(r => r.holdings||[]).map(h => typeof h==='string'?h:h.holding).filter(Boolean).join(" ")||null`; (2) CHUNK merge: `chunkHoldingStr` derived from `allHoldings` and added to UPDATE `cases SET holding=?`; (3) Temporary Pass 2 raw preview log added then removed after diagnosis.
+- **requeue-metadata fired on all 548 cases** — `UPDATE cases SET enriched=0, holding=NULL, deep_enriched=0` run first to reset flags, then `requeue-metadata` enqueued 548 cases. Queue processing overnight — Pass 1 + CHUNK enrichment + merge will populate holdings for all cases. Why: holdings were NULL on all pre-existing cases due to the merge bug; reset required since route only requeues enriched=0 cases.
+- **Scraper remains disabled** — will re-enable tomorrow morning after confirming requeue is running cleanly and holding is populating on existing cases.
+- **budget_tokens: 0 confirmed global** — hardcoded in `callWorkersAI` shared function, not at call sites. Every Workers AI call suppresses thinking mode uniformly.
+- **Pass 1 output quality confirmed good** — facts, issues, judge, case_name all populating correctly on new cases after session 19 prompt redesign. holding was the only remaining gap, now fixed via CHUNK merge path.
+- **Temporary debug log removed** — `Pass 2 raw preview` console.log removed from worker.js before scraper re-enable.
+
+## CHANGES THIS SESSION (session 19) — 24 March 2026
+
+- **arcanthyr-ui deployed to arcanthyr.com via Worker** — React app built with Vite, dist/ copied into `Arc v 4/public/`, deployed via `npx wrangler deploy` · Worker now serves both API routes and frontend static assets · `not_found_handling = "single-page-application"` added to wrangler.toml for SPA deep link routing · _redirects file removed (conflicts with Workers Assets — infinite loop error 10021) · Current Version ID: 2eeb2b1f
+- **arcanthyr-ui.pages.dev redundant** — Pages deployment superseded by Worker static assets · no longer receives updates · safe to delete from Cloudflare dashboard (Pages → arcanthyr-ui → Settings → Delete project)
+- **Model toggle renamed** — Claude API path = "Sol" · Workers AI (Qwen3-30b) path = "V'ger" · V'ger set as default selected model · names are UI labels only, no backend significance
+- **Landing page rebuilt** — lamp effect and globe removed · VanishingInput search bar added · suggestion pills added below search · nav links restored (Research/Library/Upload/Compose) · sigil restored to 320px
+- **Globe rebuilt on Compose page** — replaced cobe with Three.js + @react-three/fiber + @react-three/drei · real blue marble Earth texture from unpkg · 4 markers: Devonport, Ulverstone, Burnie, Melbourne with floating coordinate labels · arcs: Devonport→Melbourne, Burnie→Melbourne, Devonport→Burnie · camera-following point light · white rim glow · direct group rotation (no OrbitControls) · scroll to zoom · auto-rotation when idle
+- **Library reading pane text fixed** — facts/holding/principles text was invisible (light grey on white pane) · fixed to var(--pane-text) dark colour
+- **Compose page** — "Dispatched via Resend" status now shows in blue instead of green
+- **Browser tab title fixed** — index.html title changed from "arcanthyr-ui" to "Arcanthyr"
+- **Both query paths confirmed working** — Sol and V'ger both returned correct results for Evidence Act s 36 witness compellability query
+- **done=0 bug diagnosed and partially fixed** — 2,899 chunks stuck at done=0 with chunk_text populated but enriched_text NULL and empty stub principles_json · root cause: CHUNK queue consumer silent JSON parse failure — when GPT returns malformed response, empty stub written with done=1 in old code; in current code chunk_type guard sometimes throws before done=1, leaving done=0 · manually set done=1 on all 2,899 via UPDATE WHERE chunk_text IS NOT NULL AND principles_json IS NOT NULL
+- **Poller stopped after 85 chunk_text embeddings** — stopped to prevent wasted embed pass · 85 chunks now have chunk_text vectors (need embedded=0 reset) · 2,814 unembedded waiting for proper re-enrichment
+- **FSST medications corpus gap identified** — secondary-correspondence-on-medications-and-drug-testing chunk had `...` placeholder where Gardner's reply should be · content was never in corpus source file · chunk formatted and ready to upload next session
+- **Hogan on Crime gap-fill agent** — identified as future agent task: read source document, compare against D1 raw_text, flag truncations and placeholders, generate formatted chunks for gaps · add to roadmap
 
 ## CHANGES THIS SESSION (session 18) — 24 March 2026
 

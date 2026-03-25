@@ -199,9 +199,28 @@ WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
 
 ---
 
-## ARCANTHYR-UI (session 16)
+## ARCANTHYR-UI (session 19 — DEPLOYED)
 
-**Stack:** React + Vite + Cloudflare Pages (deploy pending)
+### arcanthyr-ui — Frontend Architecture (session 19)
+
+**Deployment:** React/Vite app built to `dist/`, copied into `Arc v 4/public/`, served by Worker via `[assets]` binding at arcanthyr.com. NOT a separate Cloudflare Pages deployment.
+
+**Deploy command:**
+```
+cd arcanthyr-ui && npm run build
+cp -r dist/. "../Arc v 4/public/"
+cd "../Arc v 4" && npx wrangler deploy
+```
+
+**SPA routing:** `not_found_handling = "single-page-application"` in wrangler.toml — catches all deep links and serves index.html.
+
+**_redirects:** Do NOT add a _redirects file to arcanthyr-ui/public/ — it conflicts with Workers Assets and causes infinite loop error 10021.
+
+**Model toggle names:** Sol = Claude API (claude-sonnet) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default
+
+**Globe dependencies:** Three.js + @react-three/fiber + @react-three/drei · Earth texture from unpkg · lives on Compose page
+
+**Stack:** React + Vite
 **Repo location:** `arcanthyr-console/arcanthyr-ui/`
 **Dev server:** `npm run dev` from `arcanthyr-console/arcanthyr-ui/` · `http://localhost:5173`
 
