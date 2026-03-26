@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 25 March 2026 (end of session 20) · Supersedes all prior versions
+Updated: 26 March 2026 (end of session 21) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -83,18 +83,18 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 24 March 2026 (end of session 19)
+## SYSTEM STATE — 26 March 2026 (end of session 21)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · 5,719 case chunks embedded (5,634 good from enriched_text · 85 from chunk_text — need embedded=0 reset) |
-| D1 cases | 543 total · 479 deep_enriched · 280 cases with enriched_text NULL (need re-enrichment) |
-| D1 case_chunks | 8,533 total · all done=1 · 5,719 embedded · 2,814 unembedded (waiting for re-enrichment pass) |
+| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · case chunks embedding in progress (poller active) |
+| D1 cases | 549 total · 274 deep_enriched (275 reset for bad chunk re-enrichment) · 361 with holdings |
+| D1 case_chunks | 8,533 total · 2,627 done=0 (bad chunk cleanup in progress via nightly cron) · 5,873 good (done=1, enriched_text populated) |
 | D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
-| enrichment_poller | STOPPED — do not restart until worker.js CHUNK consumer fix deployed |
-| Cloudflare Queue | Idle |
-| Scraper | DISABLED — keep disabled until re-enrichment complete |
-| arcanthyr.com | Live — Worker serves React frontend from public/ + all API routes · version 2eeb2b1f |
+| enrichment_poller | RUNNING — actively embedding case chunks |
+| Cloudflare Queue | Active — processing nightly cleanup batches (250 chunks/night at 3am UTC) |
+| Scraper | RE-ENABLED — run_scraper 8am AEST + run_scraper_evening 6pm AEST |
+| arcanthyr.com | Live — Worker version ba8bafa0 |
 | arcanthyr-ui.pages.dev | Redundant — safe to delete · no longer updated |
 
 ---
@@ -127,30 +127,27 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Morning check before scraper re-enable** — run three test procedures from session 20: (1) confirm pending_pass1 → 0 and has_holding climbing; (2) spot-check 5 random cases for holding + facts quality; (3) manual end-to-end test on one fresh case via fetch-case-url · only re-enable Task Scheduler after all three pass
-2. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
-2. **Fix CHUNK consumer silent failure bug** — worker.js: throw explicitly when JSON.parse fails on GPT response · check enriched_text IS NOT NULL before writing done=1 · deploy via wrangler
-3. **Reset 85 chunk_text embeddings** — `UPDATE case_chunks SET embedded=0 WHERE embedded=1 AND enriched_text IS NULL` · delete those 85 Qdrant vectors
-4. **Re-enrich 280 cases** — reset done=0 on affected chunks · call /api/admin/requeue-chunks · let CHUNK consumer re-process overnight
-5. **Restart poller** — after re-enrichment complete · will embed from enriched_text
-6. **Re-enable scrapers** — after poller confirms done=0 = 0
-7. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after full embed pass
-8. **Fix Pass 1 prompts for Qwen3** — redesign pass1Prompt/pass2Prompt for Qwen3-30b output style · test on 5-10 cases · requeue-metadata all 543
-9. **Fix merge logic** — holdings consolidation in CHUNK merge step
-10. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
-11. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
-12. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
-13. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
-14. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
+1. **Monitor nightly cleanup cron** — check each morning: `SELECT COUNT(*) FROM case_chunks WHERE done=0` should drop by ~250/night · expect 0 in ~11 nights · also check `SELECT COUNT(*) as has_holding FROM cases WHERE holding IS NOT NULL AND holding != 'Not extracted'` climbing toward 549
+2. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after bad chunk cleanup completes and poller re-embeds · compare against 15/15 benchmark
+3. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
+4. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
+5. **Poller enriched_text IS NOT NULL guard** — enrichment_poller.py CASE-EMBED pass should check enriched_text IS NOT NULL before embedding · defensive fix · add next session
+6. **Fix Pass 1 prompts for Qwen3** — redesign pass1Prompt/pass2Prompt for Qwen3-30b output style · test on 5-10 cases · requeue-metadata all 543
+7. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
+8. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
+9. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
+10. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
+11. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **requeue-metadata running overnight** — 548 cases queued 25 March 2026 · expect deep_enriched=1 and holding populated on all cases by morning · run Check 1 and Check 2 from session 20 test procedures before re-enabling scraper
-- **Case chunks reprocessing overnight** — 5,187 chunks requeued session 14 · v3 prompt running · check done count in morning · poller re-embedding as chunks complete
-- **Baseline rerun needed** — after re-embed completes · previous 14/3/0 score was with old chunk payloads · expect case law query improvement
-- **subject_matter pending** — cases.subject_matter will populate as chunks complete overnight · verify spot-check before using as retrieval filter
+- **Nightly cleanup cron running** — 2,627 bad chunks (pre-Fix-1 stubs) processing at 250/night via 3am UTC cron · 275 cases have deep_enriched=0 until their chunks complete · holdings will populate progressively · monitor morning D1 checks
+- **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
+- **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
+- **Baseline rerun needed** — after bad chunk cleanup completes and poller re-embeds · expect improvement on case law queries
+- **subject_matter pending** — cases.subject_matter will populate as chunks complete · verify spot-check before using as retrieval filter
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
@@ -162,6 +159,32 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 
 ---
+
+## CHANGES THIS SESSION (session 21) — 26 March 2026
+
+- **Correct route for URL-based case ingestion confirmed** — `POST /api/legal/fetch-case-url` is the correct endpoint for URL-based ingestion (not `/api/legal/upload-case`). The latter expects `case_text` + `citation` fields — posting `{url}` causes `citation.match()` to throw on undefined. Why: diagnosed after 500 error on test upload; CC traced four `.match()` calls and identified route mismatch as root cause. Note for CLAUDE.md: always use `fetch-case-url` for URL-based ingestion.
+
+- **fetch-page response shape confirmed** — `handleFetchPage` returns `{ html, status }` directly (not wrapped in `result`). All call sites destructuring `{ html, status }` directly are correct. Why: investigated as potential source of undefined `.match()` — ruled out by CC reading function return at line 1727.
+
+- **holding merge bug fixed (three compounding bugs)** — `cases.holding` was NULL on 537/543 cases: (1) Pass 2 merge read `r.holding` (singular) instead of `r.holdings` (array) — always null; (2) `_buildSummary` fell through to "Not extracted" when holdings array empty; (3) CHUNK merge UPDATE never wrote to `cases.holding` — holdings from GPT-4o-mini chunk responses collected into `allHoldings` but only written to `holdings_extracted`. Fix: line 472 flatMap with object extraction, plus `chunkHoldingStr` derived from `allHoldings` added to CHUNK merge UPDATE. Why: diagnosed via CC tracing full merge chain from Pass 2 parse through to D1 write.
+
+- **Merge race condition fixed — atomic claim pattern** — When 500+ cases requeued simultaneously, parallel CHUNK workers both passed `pending.cnt === 0` check before either wrote `done=1`, causing merge to never fire. Fix: inserted `UPDATE cases SET deep_enriched=1 WHERE citation=? AND deep_enriched=0` as atomic gate before merge body — D1 serialises writes so only one worker gets `changes=1` and proceeds. Why: 275 cases stuck at `deep_enriched=0` after overnight requeue despite all chunks done; CC diagnosed race condition and proposed atomic mutex. This is the permanent fix — no more manual one-chunk-per-case recovery needed.
+
+- **max_retries raised from 2 to 5** — wrangler.toml queue consumer `max_retries` raised to 5. Why: with only 2 retries, chunks hitting GPT-4o-mini rate limits during large batch operations exhausted retries within minutes and dead-lettered. 5 retries gives sufficient headroom for rate limits to ease before messages die.
+
+- **Batched chunk cleanup cron added** — new `runBatchedChunkCleanup` function runs nightly at 3am UTC via second cron trigger. Selects up to 250 `done=0` chunks and enqueues as CHUNK messages. Logs remaining count. Self-terminating when `done=0 = 0`. Why: 2,627 pre-Fix-1 bad chunks (enriched_text=NULL, empty principles_json stubs) need re-enrichment but cannot be fired all at once without hitting GPT-4o-mini rate limits. Automated nightly batches of 250 clear the backlog in ~11 nights without manual intervention.
+
+- **requeue-chunks limit parameter added** — `handleRequeueChunks` now accepts optional `{ limit: N }` body. Appends `LIMIT N` to SELECT if present. Allows manual controlled batches via `Body '{"limit":250}'`. Why: previously no way to scope requeue to a subset — all done=0 chunks fired simultaneously.
+
+- **runDailySync legacy cron retained** — 2am UTC cron still calls `runDailySync` (legacy Worker-native AustLII scraper). Confirmed superseded by Python scraper but left running as it is likely a no-op. Clean disable deferred.
+
+- **Phase 0 cleanup executed** — 2,627 bad chunks reset to `done=0, embedded=0`; 275 affected cases reset to `deep_enriched=0, holding=NULL, principles_extracted='[]', holdings_extracted='[]'`. Nightly 3am cron will process 250/night automatically. First batch fires tonight (3am UTC = 1pm AEST).
+
+- **Scraper re-enabled** — Task Scheduler `run_scraper` (8am AEST) and `run_scraper_evening` (6pm AEST) re-enabled after all three pre-scraper checks passed.
+
+- **Bulk requeue race condition documented** — root cause of overnight stall: all 548 cases × ~15 chunks = ~8,000 simultaneous GPT-4o-mini calls hit rate limits; chunks exhausted max_retries=2 before rate limits eased; queue went silent. Not foreseeable — first time all cases requeued simultaneously. Fix: max_retries=5 + batched requeue approach for future bulk operations.
+
+- **worker.js version** — `ba8bafa0`
 
 ## CHANGES THIS SESSION (session 20) — 25 March 2026
 
