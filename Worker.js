@@ -741,6 +741,24 @@ async function runDailySync(env) {
   return { success: true, cases_processed: casesProcessed, cases_failed: casesFailed, errors };
 }
 
+async function runBatchedChunkCleanup(env) {
+  const countRow = await env.DB.prepare(
+    `SELECT COUNT(*) as cnt FROM case_chunks WHERE done = 0`
+  ).first();
+  if (!countRow || countRow.cnt === 0) {
+    console.log('[cron] no bad chunks remaining');
+    return;
+  }
+  const { results } = await env.DB.prepare(
+    `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 LIMIT 250`
+  ).all();
+  for (const row of results) {
+    await env.CASE_QUEUE.send({ type: 'CHUNK', citation: row.citation, chunk_index: row.chunk_index });
+  }
+  const remaining = countRow.cnt - results.length;
+  console.log(`[cron] batched cleanup: enqueued ${results.length} chunks, ${remaining} remaining`);
+}
+
 /* =============================================================
    ORIGINAL AI ACTION HANDLERS
    ============================================================= */
@@ -1940,9 +1958,14 @@ async function handleRequeueChunks(request, env, corsHeaders) {
   const key = request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   try {
-    const { results } = await env.DB.prepare(
-      `SELECT citation, chunk_index FROM case_chunks WHERE done = 0`
-    ).all();
+    const body = await request.json().catch(() => ({}));
+    const limit = body.limit ? parseInt(body.limit) : null;
+    const query = limit
+      ? `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 LIMIT ?`
+      : `SELECT citation, chunk_index FROM case_chunks WHERE done = 0`;
+    const { results } = limit
+      ? await env.DB.prepare(query).bind(limit).all()
+      : await env.DB.prepare(query).all();
     for (const row of results) {
       await env.CASE_QUEUE.send({ type: 'CHUNK', citation: row.citation, chunk_index: row.chunk_index });
     }
@@ -2465,6 +2488,7 @@ export default {
 
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(runDailySync(env));
+    ctx.waitUntil(runBatchedChunkCleanup(env));
   },
 
   async queue(batch, env) {
@@ -2641,12 +2665,23 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
             `UPDATE case_chunks SET principles_json = ?, enriched_text = ?, done = 1 WHERE citation = ? AND chunk_index = ?`
           ).bind(JSON.stringify(extracted), enrichedText, citation, chunk_index).run();
 
-          // Check if all chunks done — if so, merge
+          // Check if all chunks done — if so, attempt atomic merge claim
           const pending = await env.DB.prepare(
             `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0`
           ).bind(citation).first();
 
           if (pending.cnt === 0) {
+            // Atomic claim — only one concurrent worker proceeds per citation
+            const claimResult = await env.DB.prepare(
+              `UPDATE cases SET deep_enriched = 1 WHERE citation = ? AND deep_enriched = 0`
+            ).bind(citation).run();
+
+            if (claimResult.meta.changes === 0) {
+              console.log(`[queue] merge already claimed for ${citation}, skipping`);
+              msg.ack();
+              return;
+            }
+
             // Merge all chunk results
             const allChunks = await env.DB.prepare(
               `SELECT principles_json FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
@@ -2690,8 +2725,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
                 legislation_extracted = ?,
                 authorities_extracted = ?,
                 subject_matter = ?,
-                holding = ?,
-                deep_enriched = 1
+                holding = ?
               WHERE citation = ?
             `).bind(
               JSON.stringify(allPrinciples),
