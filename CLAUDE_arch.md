@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 23 March 2026 (end of session 16). Upload every session alongside CLAUDE.md.*
+*Updated: 28 March 2026 (end of session 23). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -155,8 +155,25 @@ WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
 **LIVE implementation:**
 - Queue name: `arcanthyr-case-processing`
 - **METADATA message:** Pass 1 (first 8k chars) → one Workers AI call → writes `case_name`, `judge`, `parties`, `facts`, `issues`, `enriched=1` to D1 → splits full `raw_text` into 3k-char chunks → writes to `case_chunks` table → enqueues one CHUNK message per chunk → `ack()`
-- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call with v3 prompt → writes `principles_json` + `enriched_text`, sets `done=1` → checks `COUNT(*) WHERE done=0` → if 0, merges all chunk results + derives `subject_matter` → writes `deep_enriched=1` + `subject_matter` to `cases` → `ack()`
+- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call with v3 prompt → writes `principles_json` + `enriched_text`, sets `done=1` → checks `COUNT(*) WHERE done=0` → if 0, calls `performMerge()` → `ack()`
+- **MERGE message (session 22):** synthesis-only re-merge — reads all `principles_json` from `case_chunks`, runs `performMerge()` with synthesis GPT-4o-mini call, writes case-level principles → `ack()`
 - **Frontend:** polls `/api/legal/case-status` — `enriched=1` set after Pass 1, `deep_enriched=1` set after merge
+
+### performMerge() — shared merge function (session 22)
+
+Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-merge only). Steps:
+1. Collect `allPrinciples`, `allHoldings`, `allLegislation`, `allAuthorities` from all chunk `principles_json`
+2. Collect `enriched_text` from reasoning/mixed chunks into `enrichedTexts` array
+3. If `enrichedTexts.length > 0`: make GPT-4o-mini synthesis call with enriched_text + Pass 1 context → produces 4-8 case-specific principles
+4. If synthesis fails or enrichedTexts empty: fall back to raw `allPrinciples` concatenation
+5. Atomic gate: `UPDATE cases SET deep_enriched=1 WHERE citation=? AND deep_enriched=0` — only one worker proceeds
+6. Write `principles_extracted`, `holdings_extracted`, `legislation_extracted`, `authorities_extracted`, `subject_matter`, `holding` to D1
+
+**Synthesis prompt** produces principles as JSON array of `{ principle, statute_refs, keywords }` — no type/confidence/source_mode fields. Case-specific prose style, not generic IF/THEN.
+
+**Synthesis skip condition:** If all chunks have null `enriched_text` (pre-Fix-1 bad chunks), synthesis is skipped and raw concatenation is used. This produces old-format principles. Fix: re-merge after chunks are re-enriched.
+
+**Synthesis error handling:** catch block logs `[queue] synthesis failed for {citation}, falling back to raw concat: {error}` and sets `synthesisedPrinciples = allPrinciples` (old format with `type`/`confidence`). No retry. If synthesis fails, case gets old-format principles silently — check Worker real-time logs to diagnose.
 
 ---
 
@@ -298,105 +315,19 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 );
 ```
 
-- **Current state (session 12):** Empty — wiped for clean corpus ingest · needs backfill after embed pass
-- **Sync:** `handleUploadCorpus` uses `INSERT OR REPLACE INTO secondary_sources_fts` (fixed session 12) — re-ingest safe
-- **Query route:** POST `/api/pipeline/fts-search` — returns `source_id`, `title`, `bm25_score`
-- **Export limitation:** `npx wrangler d1 export` does not support virtual tables
-- **Backfill:** `INSERT INTO secondary_sources_fts (rowid, source_id, title, raw_text) SELECT rowid, id, title, raw_text FROM secondary_sources WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)`
-
----
-
-## KNOWN ISSUES / WATCH LIST
-
-- **secondary_sources_fts empty** — wiped session 12 for clean ingest · backfill needed after embed pass · BM25/FTS5 retrieval pass blind until fixed
-- **Docker internal hostnames** — poller must use `OLLAMA_URL=http://ollama:11434` and `QDRANT_URL=http://qdrant-general:6333`
-- **Qdrant port mapping** — host-side: 6334. Inside Docker network: 6333
-- **Nexus health check port is 18789** — not 8000
-- **Always set enriched=1 after secondary_sources ingest** — new rows land with enriched=0
-- **ingest_corpus.py destructive upsert** — ON CONFLICT DO UPDATE resets embedded=0 on citation collision
-- **upload-corpus auth** — uses User-Agent spoof, NOT X-Nexus-Key
-- **Category normalisation** — DONE session 3. 8 canonical categories
-- **Word artifact noise** — 131 secondary_sources chunks cleaned 18 Mar 2026. Re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
-- **AustLII block** — VPS IP (31.220.86.192) permanently blocked. Scraper must run locally on Windows only
-- **Cloudflare Workers Observability** — use `npx wrangler tail arcanthyr-api` for real-time logs
-- **PowerShell SSH quoting mangles auth headers** — never test API routes via SSH from PowerShell
-- **CHUNK prompt v3 live** — deployed session 14 · 6-type classification · enriched_text primary output · faithful prose principles · 5,187 chunks requeued for reprocess · completing overnight · run retrieval baseline after re-embed confirms complete
-- **subject_matter pending** — cases.subject_matter populating overnight as chunks complete · verify criminal/civil split before using as retrieval filter
-- **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
-
-### CHUNK message handler — v3 prompt (session 14)
-CHUNK queue consumer calls GPT-4o-mini-2024-07-18 with v3 enrichment prompt. Switched from Workers AI (Qwen3) in session 10 due to content moderation blocks on graphic legal content.
-
-**v3 prompt changes (session 14):**
-- 6-type chunk classification: reasoning / evidence / submissions / procedural / header / mixed
-- enriched_text field: 200-350 word prose synthesis for reasoning chunks; honest description for other types
-- reasoning_quotes: up to 2 verbatim judicial passages per chunk
-- subject_matter: criminal/civil/administrative/family/mixed/unknown
-- principles stated in judge's own doctrinal terms — not IF/THEN abstraction
-- max 2 principles per chunk (was unlimited, caused repetition across chunks)
-- max_completion_tokens: 1,600 (was 2,500)
-- Code-side validator: strips authorities not named in excerpt, enforces type gates, caps array lengths
-
-**User message format (v3):**
-Includes: Case, Court, Judge, Date, Chunk N of M, Hint (header/unknown), Case context Facts/Issues, EXCERPT START/END delimiters
-
-**isLikelyHeader() function:** detects chunk_index=0 with uppercase label patterns (COURT:/CITATION:/PARTIES: etc) — passes role_hint: 'header' to suppress principle extraction from header chunks
-
-**empty extraction guard:** enriched_text present and >30 words = valid done state regardless of principles/holdings arrays being empty (prevents infinite retry on evidence/header chunks)
-
-**Reprocess session 14:** all 5,187 case chunks reset done=0, all case_chunk Qdrant vectors deleted, requeued overnight. Secondary sources and legislation untouched.
-
-### Admin requeue routes (added session 10)
-- POST /api/admin/requeue-chunks — reads case_chunks WHERE done=0, enqueues CHUNK messages
-- POST /api/admin/requeue-metadata — reads cases WHERE enriched=0, enqueues METADATA messages
-- Both require X-Nexus-Key auth
-- PowerShell trigger: `$key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1]` then `Invoke-WebRequest -Uri "https://arcanthyr.com/api/admin/requeue-X" -Method POST -Headers @{"X-Nexus-Key"=$key} -UseBasicParsing | Select-Object -ExpandProperty Content`
-
-### handleUploadCorpus — FTS5 fix (session 12)
-- Previous behaviour: `INSERT INTO secondary_sources_fts` — failed with SQLITE_CONSTRAINT on any re-ingest where FTS5 already had rows for that citation
-- Fixed: `INSERT OR REPLACE INTO secondary_sources_fts` — deployed version 2d3716de
-- Workaround if 500 errors still appear: `DELETE FROM secondary_sources_fts` before ingest run
-
----
-
-## SCRAPER CONFIG
-
-- Courts: TASSC, TASCCA, TASFC, TAMagC
-- Years: `range(2025, 2004, -1)` — 2025 to 2005 inclusive
-- `MAX_CASES_PER_SESSION`: 150 (raised session 16 from 100)
-- Delays: 10–20s random + 7% chance of 25-45s behavioural jitter (added session 16) · Business hours: 08:00–18:00 AEST
-- Schedule: Windows Task Scheduler · noon (`run_scraper.bat`) + 18:00 (`run_scraper_evening`) · throughput ~300 cases/day
-- Proxy: `arcanthyr.com/api/legal/fetch-page` — routes via Cloudflare edge (VPS IP blocked)
-- Upload timeout: 120s
-- **Current position:** stopped at TASSC/2020/5 (session limit) · will resume TASSC/2020/6 next run
-- **Progress file:** `arcanthyr-console/Local Scraper/scraper_progress.json` — NO per-case resume · stores court_year: "done" only
-
-**extract_text() pipeline (session 7 — current):**
-1. BeautifulSoup: remove script/style/nav/header/footer tags
-2. Extract judgment div or body
-3. Get plain text
-4. `_strip_boilerplate()` — remove AustLII navigation patterns
-5. **Header truncation:** find first `COURT :` or `CITATION :` marker; truncate everything before it
-6. `_strip_noise_lines()` — remove navigation keyword lines
-7. `_deduplicate_orders()` — remove duplicate ORDERS block
-8. `_compress_whitespace()` — normalise blank lines and spaces
-
----
-
-## CLOUDFLARE ACCOUNT
-
-- **Plan:** Workers Paid ($5/month) — neuron cap removed (session 10)
-- **Account ID:** `def9cef091857f82b7e096def3faaa25`
-
 ---
 
 ## COMPONENT NOTES
 
-### Windows Task Scheduler — scraper automation
+### austlii_scraper.py
 
-- Task name: Arcanthyr Scraper
-- Triggers: Daily at 12:00 PM (noon) AEST — neurons reset 11am Hobart, one hour buffer
-- Action: runs `C:\Users\Hogan\run_scraper.bat` — MUST be local path (not OneDrive)
+- Location: `arcanthyr-console\Local Scraper\austlii_scraper.py`
+- Progress: `arcanthyr-console\Local Scraper\scraper_progress.json`
+- Log: `arcanthyr-console\Local Scraper\scraper.log`
+- Runs on Windows via Task Scheduler (VPS IP banned by AustLII)
+- Task Scheduler tasks: `run_scraper` (8am AEST) + `run_scraper_evening` (6pm AEST)
+- SESSION_LIMIT: 150 per run
+- Behavioural jitter: 7% chance 25-45s additional pause
 - Business hours gate in scraper handles time window
 - Exit code 2 = business hours gate fired (normal/expected outside hours)
 
@@ -412,7 +343,7 @@ Volume-mounted at `./agent-general/src:/app/src`. Runs as permanent Docker servi
 
 **Modes:** `--mode enrich`, `--mode embed`, `--mode both`, `--mode reconcile`, `--loop`, `--status`
 
-**Cases enrichment path:** handled by Cloudflare Queue consumer (Worker), not the poller. METADATA message → Pass 1 metadata + chunk split. CHUNK messages → per-chunk principle extraction → merge.
+**Cases enrichment path:** handled by Cloudflare Queue consumer (Worker), not the poller. METADATA message → Pass 1 metadata + chunk split. CHUNK messages → per-chunk principle extraction → merge with synthesis.
 
 **Default batch:** 50 · **Loop sleep:** 15 seconds
 
@@ -453,6 +384,14 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `handleLegalQuery()` | Claude API (claude-sonnet-4-20250514) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
+### worker.js — admin routes
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/api/admin/requeue-chunks` | POST | Re-enqueues done=0 chunks · accepts `{"limit":N}` |
+| `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
+| `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
+
 ### Qdrant payload field names
 
 - Secondary source type filter: field = `type`, value = `secondary_source`
@@ -471,7 +410,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - PK is `id` (TEXT) — citation with spaces replaced by hyphens
 - Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched, subject_matter`
 - `subject_matter TEXT` — added session 14 · values: criminal/civil/administrative/family/mixed/unknown · derived at merge step from most frequent chunk-level classification
-- `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete
+- `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete and merge runs
 
 ### case_chunks D1 schema
 
@@ -530,7 +469,6 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Restore Claude API key in VPS .env** — console.anthropic.com login loop blocking access · contact support@anthropic.com · update both VPS .env and Wrangler secret once resolved
 - **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
 - **subject_matter retrieval filter** — scope case chunk Qdrant pass to criminal cases for criminal law queries · pending cases.subject_matter population after overnight reprocess
-- **Duplicate principle deduplication** — compare principles across chunks of same case by semantic similarity post-reprocess · merge/suppress near-duplicates
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
@@ -542,6 +480,5 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
-- **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
+- **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **RRF displacement of case chunks** — case chunks only in semantic pass · BM25/FTS5 secondary-source hits accumulate rank that outpaces case chunks · need to boost case_chunk RRF contribution or add explicit score-weighted pass
-- **Re-embed pass** — COMPLETED session 14 · case chunks re-embedded from enriched_text overnight · secondary sources [:5000] and legislation [:3000] unchanged from session 9 fix

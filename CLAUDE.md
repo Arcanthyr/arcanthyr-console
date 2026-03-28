@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 26 March 2026 (end of session 21) · Supersedes all prior versions
+Updated: 28 March 2026 (end of session 23) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -38,10 +38,10 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | PowerShell file creation | Use Python script to write files, not Out-File — BOM corruption confirmed on corpus files |
 | upload-corpus auth | Route does NOT use X-Nexus-Key — uses User-Agent spoof: `Mozilla/5.0 (compatible; Arcanthyr/1.0)` |
 | enriched=1 after ingest | After any secondary_sources ingest, always manually set `enriched=1` via wrangler d1 — new rows land with enriched=0 and poller won't embed them until this is done |
-| Cloudflare Queues | LIVE — fetch-case-url and upload-case both async via queue · Queue name: arcanthyr-case-processing · Message types: METADATA (Pass 1) and CHUNK (principle extraction) |
-| case_chunks table | New D1 table — stores 3k-char chunks per case · columns: id, citation, chunk_index, chunk_text, principles_json, done, embedded · PK is `citation__chunk__N` format |
-| deep_enriched flag | New column on cases table · 0 = Pass 1 only · 1 = all chunks processed and merged |
-| Queue message types | METADATA → Pass 1 + split + enqueue chunks · CHUNK → one Workers AI call per chunk + merge when all done |
+| Cloudflare Queues | LIVE — fetch-case-url and upload-case both async via queue · Queue name: arcanthyr-case-processing · Message types: METADATA (Pass 1), CHUNK (principle extraction), MERGE (synthesis-only re-merge) |
+| case_chunks table | D1 table — stores 3k-char chunks per case · columns: id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded · PK is `citation__chunk__N` format |
+| deep_enriched flag | Column on cases table · 0 = Pass 1 only · 1 = all chunks processed and merged |
+| Queue message types | METADATA → Pass 1 + split + enqueue chunks · CHUNK → one GPT-4o-mini call per chunk + merge when all done · MERGE → synthesis-only re-merge (no chunk reprocessing) |
 | D1 no citation column | secondary_sources PK is `id` (TEXT) — no `citation` column. Never query `WHERE citation =`. |
 | callWorkersAI fix | reasoning_content fallback added — if content is null, falls back to reasoning_content before text. Fixes Qwen3 thinking mode responses. |
 | poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
@@ -63,7 +63,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | ingest_corpus.py parser | Fixed session 9 — heading regex now accepts single # and any [UPPERCASE:] field as lookahead |
 | process_blocks.py | Updated session 9 — new preservation-focused Master prompt, Repair pass added, model fixed to gpt-4o-mini-2024-07-18, MAX_TOKENS=32000 |
 | CHUNK enrichment model | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY Worker secret) — NOT Workers AI · switched session 10 due to content moderation blocks |
-| requeue admin routes | POST /api/admin/requeue-chunks — re-enqueues done=0 chunks · POST /api/admin/requeue-metadata — re-enqueues enriched=0 cases · both require X-Nexus-Key · read key from .env with $key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1] |
+| requeue admin routes | POST /api/admin/requeue-chunks — re-enqueues done=0 chunks · POST /api/admin/requeue-metadata — re-enqueues enriched=0 cases · POST /api/admin/requeue-merge — re-triggers merge for deep_enriched=0 cases where all chunks done · all require X-Nexus-Key · read key from .env with $key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1] |
 | PowerShell Invoke-WebRequest | Add -UseBasicParsing to avoid security prompt · use $key pattern above for auth header |
 | Workers Paid | Cloudflare Workers Paid plan active ($5/month) — no neuron cap · purchased session 10 |
 | CLAUDE_decisions.md | Upload each session alongside CLAUDE.md + CLAUDE_arch.md · CC appends decisions directly · re-extract quarterly via extract_decisions.py |
@@ -75,6 +75,10 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
 | Vite proxy IPv6 fix | proxy target hardcoded to `104.21.1.159` with `Host: arcanthyr.com` header + `secure: false` · Node.js on Windows prefers IPv6 but proxy fails · IPv4 workaround required |
 | wrangler deploy path | Always `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4"` — quotes required due to space in path |
+| Merge synthesis | GPT-4o-mini synthesis call at merge time produces case-level principles from enriched_text · shared `performMerge()` function used by both CHUNK and MERGE handlers · falls back to raw concat on failure |
+| PRINCIPLES_SPEC | Updated session 22 — case-specific prose style, no IF/THEN, no type/confidence/source_mode fields · only affects Pass 2 (Qwen3) which is overwritten by merge anyway |
+| Bulk requeue danger | Never reset enriched=0 on all cases simultaneously — causes Pass 1 re-run + chunk re-split + GPT-4o-mini rate limit exhaustion · use requeue-merge for synthesis-only re-runs |
+| requeue-merge target param | body.target='remerge' queries deep_enriched=1 cases, resets each to 0 before enqueuing MERGE message · default (no target) queries deep_enriched=0 with runtime chunk check · added session 23 |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -83,18 +87,18 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 26 March 2026 (end of session 21)
+## SYSTEM STATE — 28 March 2026 (end of session 23)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 1,272 legislation + 1,172 secondary source chunks · case chunks embedding in progress (poller active) |
-| D1 cases | 549 total · 274 deep_enriched (275 reset for bad chunk re-enrichment) · 361 with holdings |
-| D1 case_chunks | 8,533 total · 2,627 done=0 (bad chunk cleanup in progress via nightly cron) · 5,873 good (done=1, enriched_text populated) |
+| Qdrant general-docs-v2 | 10,333 vectors total · 1,272 legislation + 1,172 secondary source chunks · case chunks embedding via poller |
+| D1 cases | 550 total · 329 deep_enriched · 221 pending chunk completion |
+| D1 case_chunks | 8,679 total · 2,086 done=0 (nightly cron clearing 250/night) · 6,593 done=1 |
 | D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
-| enrichment_poller | RUNNING — actively embedding case chunks |
-| Cloudflare Queue | Active — processing nightly cleanup batches (250 chunks/night at 3am UTC) |
-| Scraper | RE-ENABLED — run_scraper 8am AEST + run_scraper_evening 6pm AEST |
-| arcanthyr.com | Live — Worker version ba8bafa0 |
+| enrichment_poller | RUNNING — embedding case chunks as they complete |
+| Cloudflare Queue | Nightly cron clearing done=0 chunks at 3am UTC (1pm AEST) · 250/night |
+| Scraper | NOT RUNNING — last log entry 24 March · Task Scheduler status unknown · re-investigate next session |
+| arcanthyr.com | Live — Worker version 5d61d0b7 (session 23: synthesis JSON fix + requeue-merge target param) |
 | arcanthyr-ui.pages.dev | Redundant — safe to delete · no longer updated |
 
 ---
@@ -121,32 +125,34 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Q14 | Leading questions technique | ✅ Pass | Police v Endlay, s42 application |
 | Q15 | Witness refuses to answer | ✅ Pass | s43 Justices Act |
 
-**Note:** Baseline rerun required next session after embed pass completes on new corpus (1,171 chunks).
+**Note:** Baseline rerun required after chunk cleanup completes and poller re-embeds.
 
 ---
 
 ## OUTSTANDING PRIORITIES
 
-1. **Monitor nightly cleanup cron** — check each morning: `SELECT COUNT(*) FROM case_chunks WHERE done=0` should drop by ~250/night · expect 0 in ~11 nights · also check `SELECT COUNT(*) as has_holding FROM cases WHERE holding IS NOT NULL AND holding != 'Not extracted'` climbing toward 549
-2. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after bad chunk cleanup completes and poller re-embeds · compare against 15/15 benchmark
-3. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
-4. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
-5. **Poller enriched_text IS NOT NULL guard** — enrichment_poller.py CASE-EMBED pass should check enriched_text IS NOT NULL before embedding · defensive fix · add next session
-6. **Fix Pass 1 prompts for Qwen3** — redesign pass1Prompt/pass2Prompt for Qwen3-30b output style · test on 5-10 cases · requeue-metadata all 543
+1. **Monitor nightly cron** — 2,086 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~8-9 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
+2. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
+3. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
+4. **Fix scraper Task Scheduler** — last log entry 24 March · confirm Task Scheduler status and re-enable if dead
+5. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
+6. **Poller enriched_text IS NOT NULL guard** — enrichment_poller.py CASE-EMBED pass should check enriched_text IS NOT NULL before embedding · defensive fix
 7. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
 8. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
 9. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
 10. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
 11. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
+12. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Nightly cleanup cron running** — 2,627 bad chunks (pre-Fix-1 stubs) processing at 250/night via 3am UTC cron · 275 cases have deep_enriched=0 until their chunks complete · holdings will populate progressively · monitor morning D1 checks
+- **Queue stalled on 2,594 chunks** — bulk requeue (548 cases simultaneously) exhausted max_retries=5 on GPT-4o-mini rate limits · nightly cron at 3am UTC re-enqueues 250/night · self-resolving in ~10 nights · can manually fire `requeue-chunks` with `{"limit":250}` to speed up
+- **~329 cases merged with old-format principles** — synthesis confirmed working (session 23 spot-check on [2020] TASSC 1) · re-merge route fixed with target:remerge param · waiting on cron to clear 2,086 pending chunks before bulk re-merge fires · command: `{"target":"remerge","limit":330}`
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
+- **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
-- **Baseline rerun needed** — after bad chunk cleanup completes and poller re-embeds · expect improvement on case law queries
 - **subject_matter pending** — cases.subject_matter will populate as chunks complete · verify spot-check before using as retrieval filter
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
@@ -157,8 +163,42 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
+- **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
+- **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 
 ---
+
+## CHANGES THIS SESSION (session 23) — 28 March 2026
+
+- **Synthesis confirmed working** — [2020] TASSC 1 re-merged with new-format principles (`principle`/`statute_refs`/`keywords`, no `type`/`confidence`). GPT-4o-mini synthesis call in `performMerge` produces case-specific prose. Why: needed to verify synthesis wasn't silently failing before bulk re-merge.
+
+- **requeue-merge routing bug diagnosed** — route queries `WHERE deep_enriched=0` but the early-merged cases are `deep_enriched=1`. `LIMIT N` lands on pending cases with incomplete chunks, runtime check rejects them, returns `requeued:0`. Why: explains why re-merge never fired for old-format cases.
+
+- **requeue-merge target param added** — `body.target='remerge'` queries `WHERE deep_enriched=1`, resets each case to `deep_enriched=0` before enqueuing MERGE message. Default behaviour unchanged (`WHERE deep_enriched=0` with runtime chunk check). Why: enables re-merge of early-merged cases without colliding with pending cases pool.
+
+- **JSON parse fix deployed** — `jsonStart`/`jsonEnd` extraction added to synthesis response parsing in `performMerge`. Replaces fragile `JSON.parse(synthRaw.replace(...))` which failed on any GPT preamble text. Why: defensive fix for GPT responses with leading text before the JSON array.
+
+- **Bulk re-merge deferred** — waiting for nightly cron to finish clearing 2,086 pending chunks (~April 5-6) before firing `target:remerge` on all old-format cases. Why: merging now risks mixing good and bad chunk data for the 221 still-pending cases.
+
+- **Scraper not running** — last log entry 24 March. Task Scheduler status unconfirmed. Deferred to next session. Why: pipeline quality more important than new case volume right now.
+
+- **worker.js version** — `5d61d0b7`
+
+## CHANGES THIS SESSION (session 22) — 27 March 2026
+
+- **PRINCIPLES_SPEC redesigned** — replaced IF/THEN format with case-specific prose style · removed `type`, `confidence`, `source_mode`, `authorities_applied` fields · added 3 new GOOD/BAD examples showing case-specificity vs generic rules · why: principles displayed in Library reading pane were generic statute restatements useless for distinguishing cases
+
+- **Root cause diagnosed: CHUNK merge overwrites Pass 2 principles** — Pass 2 (Qwen3 + PRINCIPLES_SPEC) produces `principles_extracted`, but CHUNK merge immediately overwrites it with chunk-level `allPrinciples` concatenation · why: explains why PRINCIPLES_SPEC changes never took effect — the merge clobbered them before they could be seen
+
+- **Chunk-level principles quality confirmed poor** — spot-checked [2020] TASSC 13 chunk 3 · GPT-4o-mini CHUNK v3 prompt produces generic principles with old schema (type/confidence/authorities_applied) despite prompt rule 4 saying "judge's own doctrinal language" · why: CHUNK v3 prompt optimised for enriched_text quality, not principle extraction; no positive examples in prompt
+
+- **Merge synthesis step added (option C)** — GPT-4o-mini synthesis call inserted into `performMerge()` function · reads enriched_text from reasoning/mixed chunks + Pass 1 facts/issues/holdings · produces 4-8 case-specific principles in new format · falls back to raw concatenation on any failure · shared by both CHUNK handler (normal merge) and MERGE handler (synthesis-only re-merge) · why: architecturally correct — single model call with full judgment awareness at merge time, vs per-chunk extraction with no cross-chunk dedup; cost ~$0.001/case vs $3 for full chunk re-processing
+
+- **MERGE queue message type added** — new third branch in queue consumer · fires synthesis-only merge (no chunk reprocessing) · triggered by `POST /api/admin/requeue-merge` route · accepts `{"limit":N}` body · only enqueues cases where deep_enriched=0 AND all chunks done=1 · why: enables re-merging without re-running $3 worth of GPT-4o-mini chunk calls
+
+- **Full corpus accidentally requeued through Pass 1** — `UPDATE cases SET enriched=0` on all 549 cases triggered full METADATA + CHUNK re-processing · 274 merged quickly with old-format principles (chunks had null enriched_text from pre-Fix-1 era, so synthesis skipped) · 275 still pending (2,594 chunks done=0) · queue stalled from rate limit exhaustion · why: enriched=0 reset was too aggressive — should have used requeue-merge for synthesis-only
+
+- **worker.js version** — `cbc38e39`
 
 ## CHANGES THIS SESSION (session 21) — 26 March 2026
 
@@ -186,159 +226,16 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 - **worker.js version** — `ba8bafa0`
 
-## CHANGES THIS SESSION (session 20) — 25 March 2026
-
-- **Correct route for URL-based case ingestion identified** — `POST /api/legal/fetch-case-url` (not `/api/legal/upload-case`) is the correct endpoint for URL-based ingestion. `/api/legal/upload-case` expects `case_text` + `citation` fields — posting `{url}` to it causes `citation.match()` to throw on undefined. All manual URL ingestion and scraper URL posting must use `fetch-case-url`. Why: diagnosed after 500 error on test upload; CC traced four `.match()` calls and identified the route mismatch as root cause.
-- **fetch-page response shape confirmed** — `handleFetchPage` returns `{ html, status }` directly (not wrapped in `result`). All call sites destructuring `{ html, status }` directly are correct. Why: investigated as potential source of `.match()` on undefined — ruled out by CC reading the function return at line 1727.
-- **holding merge bug fixed — worker.js** — `cases.holding` was NULL on 537/543 cases due to three compounding bugs: (1) Pass 2 merge read `r.holding` (singular) instead of `r.holdings` (array) — always null; (2) `_buildSummary` fell through to "Not extracted" when holdings array empty; (3) CHUNK merge UPDATE never wrote to `cases.holding` at all — holdings from GPT-4o-mini chunk responses were collected into `allHoldings` but only written to `holdings_extracted`. Why: diagnosed via CC tracing full merge chain from Pass 2 parse through to D1 write.
-- **Three fixes applied to worker.js for holding:** (1) Pass 2 merge line 472: `flatMap(r => r.holdings||[]).map(h => typeof h==='string'?h:h.holding).filter(Boolean).join(" ")||null`; (2) CHUNK merge: `chunkHoldingStr` derived from `allHoldings` and added to UPDATE `cases SET holding=?`; (3) Temporary Pass 2 raw preview log added then removed after diagnosis.
-- **requeue-metadata fired on all 548 cases** — `UPDATE cases SET enriched=0, holding=NULL, deep_enriched=0` run first to reset flags, then `requeue-metadata` enqueued 548 cases. Queue processing overnight — Pass 1 + CHUNK enrichment + merge will populate holdings for all cases. Why: holdings were NULL on all pre-existing cases due to the merge bug; reset required since route only requeues enriched=0 cases.
-- **Scraper remains disabled** — will re-enable tomorrow morning after confirming requeue is running cleanly and holding is populating on existing cases.
-- **budget_tokens: 0 confirmed global** — hardcoded in `callWorkersAI` shared function, not at call sites. Every Workers AI call suppresses thinking mode uniformly.
-- **Pass 1 output quality confirmed good** — facts, issues, judge, case_name all populating correctly on new cases after session 19 prompt redesign. holding was the only remaining gap, now fixed via CHUNK merge path.
-- **Temporary debug log removed** — `Pass 2 raw preview` console.log removed from worker.js before scraper re-enable.
-
-## CHANGES THIS SESSION (session 19) — 24 March 2026
-
-- **arcanthyr-ui deployed to arcanthyr.com via Worker** — React app built with Vite, dist/ copied into `Arc v 4/public/`, deployed via `npx wrangler deploy` · Worker now serves both API routes and frontend static assets · `not_found_handling = "single-page-application"` added to wrangler.toml for SPA deep link routing · _redirects file removed (conflicts with Workers Assets — infinite loop error 10021) · Current Version ID: 2eeb2b1f
-- **arcanthyr-ui.pages.dev redundant** — Pages deployment superseded by Worker static assets · no longer receives updates · safe to delete from Cloudflare dashboard (Pages → arcanthyr-ui → Settings → Delete project)
-- **Model toggle renamed** — Claude API path = "Sol" · Workers AI (Qwen3-30b) path = "V'ger" · V'ger set as default selected model · names are UI labels only, no backend significance
-- **Landing page rebuilt** — lamp effect and globe removed · VanishingInput search bar added · suggestion pills added below search · nav links restored (Research/Library/Upload/Compose) · sigil restored to 320px
-- **Globe rebuilt on Compose page** — replaced cobe with Three.js + @react-three/fiber + @react-three/drei · real blue marble Earth texture from unpkg · 4 markers: Devonport, Ulverstone, Burnie, Melbourne with floating coordinate labels · arcs: Devonport→Melbourne, Burnie→Melbourne, Devonport→Burnie · camera-following point light · white rim glow · direct group rotation (no OrbitControls) · scroll to zoom · auto-rotation when idle
-- **Library reading pane text fixed** — facts/holding/principles text was invisible (light grey on white pane) · fixed to var(--pane-text) dark colour
-- **Compose page** — "Dispatched via Resend" status now shows in blue instead of green
-- **Browser tab title fixed** — index.html title changed from "arcanthyr-ui" to "Arcanthyr"
-- **Both query paths confirmed working** — Sol and V'ger both returned correct results for Evidence Act s 36 witness compellability query
-- **done=0 bug diagnosed and partially fixed** — 2,899 chunks stuck at done=0 with chunk_text populated but enriched_text NULL and empty stub principles_json · root cause: CHUNK queue consumer silent JSON parse failure — when GPT returns malformed response, empty stub written with done=1 in old code; in current code chunk_type guard sometimes throws before done=1, leaving done=0 · manually set done=1 on all 2,899 via UPDATE WHERE chunk_text IS NOT NULL AND principles_json IS NOT NULL
-- **Poller stopped after 85 chunk_text embeddings** — stopped to prevent wasted embed pass · 85 chunks now have chunk_text vectors (need embedded=0 reset) · 2,814 unembedded waiting for proper re-enrichment
-- **FSST medications corpus gap identified** — secondary-correspondence-on-medications-and-drug-testing chunk had `...` placeholder where Gardner's reply should be · content was never in corpus source file · chunk formatted and ready to upload next session
-- **Hogan on Crime gap-fill agent** — identified as future agent task: read source document, compare against D1 raw_text, flag truncations and placeholders, generate formatted chunks for gaps · add to roadmap
-
-## CHANGES THIS SESSION (session 18) — 24 March 2026
-
-- **Silent CHUNK enrichment failure diagnosed and fixed** — 3,677 case chunks (49% of corpus) had done=1 but enriched_text=NULL and empty principles_json (chunk_type=null). Root cause: JSON parse failure in CHUNK handler inner try/catch was swallowed — execution continued to UPDATE done=1 with empty defaults. GPT was returning valid 200 responses but unparseable JSON on ~49% of chunks, silently poisoning D1 since session 14 v3 reprocess.
-- **CHUNK handler fix deployed — worker.js version 7e0c7dc0** — (1) inner JSON parse catch now re-throws → outer catch fires → msg.retry() called → queue retries; (2) chunk_type guard added before UPDATE done=1 — throws if chunk_type is null/undefined, catching empty GPT responses. Chunks that fail now retry up to queue max retries then dead-letter rather than silently marking done=1 with null enriched_text.
-- **3,677 chunks reset and requeued** — `UPDATE case_chunks SET done=0, embedded=0 WHERE done=1 AND enriched_text IS NULL AND JSON_EXTRACT(principles_json, '$.chunk_type') IS NULL` — requeue-chunks called multiple times, queue draining overnight. 5,128 good chunks confirmed at session end (up from 4,856).
-- **Pass 1 holding failure identified** — 537/543 cases have holding=NULL or "AI extraction failed". Root cause: pass1Prompt and pass2Prompt were designed for Llama 3.1 8B, Qwen3-30b-a3b-fp8 was swapped in on 17 March without prompt redesign, validated on only one case (Sears v Copper Mines). Fix deferred to next session — pull actual prompt text via CC, redesign for Qwen3, test on 5–10 cases, then requeue-metadata on all 543 cases. No re-scraping needed — raw_text in D1.
-- **Library UI improved** — single scroll reading pane (Facts → Holding → Principles, no tabs) · search bar + court/year filter chips · stats counters removed · sigil import fixed in ReadingPane.jsx (sigil.jpg → /unnamed.jpg) · title search field corrected (case_name → title) · dead StatsRow component removed.
-- **Poller CASE-EMBED guard — OUTSTANDING** — enrichment_poller.py CASE-EMBED pass fetches done=1 AND embedded=0 but does not check enriched_text IS NOT NULL. Add as defensive measure next session.
-- **Scraper disabled** — Task Scheduler run_scraper and run_scraper_evening disabled to prevent new cases competing with reprocess queue overnight. Re-enable after done=0 confirms 0.
-- **processed_date column null** — confirmed never populated by scraper pipeline, cannot determine which cases were processed by Llama 3.1 8B vs Qwen3-30b from D1. Irrelevant since all cases need requeue-metadata after Pass 1 prompt fix.
-
-## CHANGES THIS SESSION (session 17) — 23 March 2026
-
-- **Vite proxy removed** — api.js BASE now hardcodes `https://arcanthyr.com` · browser calls Worker directly · proxy section deleted from vite.config.js · fixes 502 timeout that was hitting 104.21.1.159 directly
-- **Auth removed for local dev** — verify/login/logout replaced with no-op stubs in api.js · Landing.jsx replaced with immediate redirect to /research · auth useEffect guards removed from Research.jsx, Upload.jsx, Library.jsx
-- **Research UX: query → AI Summary** — setActiveTab('summary') fires after query completes · source cards in left panel made non-interactive (onClick removed, cursor pointer removed from ResultCard.jsx)
-- **Library reading pane** — click case row opens split reading pane · Facts/Holding/Principles tabs · facts/holding/subject_matter added to handleLibraryList SELECT in worker.js · deployed via dashboard (wrangler deploy blocked by Cloudflare API routing issue from ISP — transient, unrelated to codebase)
-- **Upload URL input** — AustLII URL text input added to Cases tab · Fetch button wired to api.uploadCase({ url }) · file upload still available as primary option
-- **ResultCard cursor fix** — removed leftover cursor:pointer and hover styles after onClick removal
-- **wrangler deploy note** — timed out repeatedly this session · confirmed ISP routing issue to api.cloudflare.com (not IP block, not auth, not code) · workaround: dashboard deploy · expect to resolve on its own
-
-## CHANGES THIS SESSION (session 16) — 23 March 2026
-
-- **arcanthyr-ui created** — new React/Vite app at `arcanthyr-console/arcanthyr-ui/` · five views: Landing, Research, Upload, Library, ShareModal · all API calls via `api.js` with `credentials:include` · Vite proxy routes `/api/*` → live Worker
-- **CORS deployed to worker.js** — `ALLOWED_ORIGINS` list (`*.pages.dev` + `localhost:5173/4173`) · `Access-Control-Allow-Credentials: true` · `X-Nexus-Key` in allowed headers
-- **JWT auth implemented** — `signJWT`/`verifyJWT`/`getTokenFromRequest` via Web Crypto API (no npm) · httpOnly cookie `arc_token` · 24h expiry · signed with `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY`
-- **Auth routes added** — `POST /api/auth/login` · `GET /api/auth/verify` · `POST /api/auth/logout`
-- **New Worker routes** — `GET /api/legal/cases` · `GET /api/legal/corpus` · `GET /api/legal/legislation` (aliases to existing library handler) · `POST /api/legal/share`
-- **Cookie Secure flag removed** — `SameSite=None; Secure` → `SameSite=Lax` on login and logout · required for HTTP local dev · production will be HTTPS via Cloudflare Pages · worker.js version `1be8eb3b`
-- **Vite proxy IPv6 fix** — proxy target changed from `arcanthyr.com` to `104.21.1.159` with `Host: arcanthyr.com` header · Node.js on Windows resolves to IPv6 which proxy cannot connect over
-- **api.js query field fixed** — frontend was sending `query_text`, worker expects `query` · fixed to `{ query: query_text }` · Worker internally translates to `query_text` before calling server.py · server.py unchanged
-- **Model toggle added to Research** — Claude API / Workers AI toggle · routes to `legal-query-workers-ai` handler when Workers selected · chip style matching filter buttons
-- **Upload drag and drop restored** — CorpusTab: drag zone reads `.md`/`.txt` into textarea via FileReader · LegislationTab: drop zone replaces old button, click also triggers file picker
-- **Landing loop fixed** — `window.location.href = '/'` redirect removed from `api.js` `req()` 401 handler · was causing infinite remount on Landing where 401 is expected for logged-out users
-- **Scraper updated** — SESSION_LIMIT 100 → 150 · behavioural jitter added (7% chance 25-45s additional pause) · second Task Scheduler task added at 18:00 (`run_scraper_evening`) · throughput ~300 cases/day
-- **sigil.gif pending** — `sigil.jpg` placeholder in `src/assets/` · swap by dropping `sigil.gif` in same folder and updating import in `Landing.jsx` and `ReadingPane.jsx`
-
-## CHANGES THIS SESSION (session 15) — 23 March 2026
-
-- **MCP servers installed** — 21st.dev Magic (user scope), GitHub MCP, Context7, Firecrawl added to Claude Code · magic registered in ~/.claude.json · GitHub PAT with repo scope · all scope user
-- **CLAUDE_decisions.md created** — 377 passages, 1,535 lines, 8 sections extracted from 30 past conversations via extract_decisions.py · lives at arcanthyr-console\CLAUDE_decisions.md · upload each session alongside CLAUDE.md and CLAUDE_arch.md
-- **UI rebuild designed** — complete design system locked: Libre Baskerville serif throughout, dark chrome (#0A0C0E) + light reading pane (#F8F6F1), IBM accent blue (#4A9EFF) · five views: Landing, Research, Upload, Library, Share modal · sigil (white compass rose GIF) on landing page
-- **CC handover brief written** — full spec for arcanthyr-ui React/Vite/Cloudflare Pages build · new repo arcanthyr-ui · worker.js gets CORS headers + /api/auth/login only · all other backend untouched
-- **Scraper progress** — 404 cases total (up from 303) · 340 deep_enriched · 64 pending (new scraper cases) · 5,873 chunks done · 5,593 embedded · queue still processing new cases cleanly
-- **Wrangler token expired mid-session** — resolved with npx wrangler login · add to session checklist if D1 queries return 7403
-
-## CHANGES THIS SESSION (session 14) — 23 March 2026
-
-- **CHUNK prompt v3 deployed** — replaced single-line IF/THEN extraction prompt with 6-type classification engine (reasoning/evidence/submissions/procedural/header/mixed) · enriched_text field added as primary output (200-350 word prose synthesis for reasoning chunks, honest description for others) · reasoning_quotes field extracts verbatim judicial passages · subject_matter classification added · principles now stated in judge's own doctrinal terms not IF/THEN abstraction · why: old prompt produced same generic principle across 4-5 chunks of same case, hallucinated principles from transcript/header chunks, and output never reached LLM at query time since only raw chunk_text was embedded
-- **enriched_text column added to case_chunks** — ALTER TABLE case_chunks ADD COLUMN enriched_text TEXT · why: needed to store v3 prompt output separately from principles_json so poller can embed from it
-- **subject_matter column added to cases** — ALTER TABLE cases ADD COLUMN subject_matter TEXT · why: enables future filtering of case chunk retrieval to criminal cases only for criminal law queries; populated by merge step from chunk-level classifications
-- **enrichment_poller.py updated** — embeds case chunks from enriched_text when present, falls back to chunk_text · fetch-case-chunks Worker route updated to SELECT enriched_text · SCP'd and force-recreated · why: without this change enriched_text would be stored in D1 but never used for embedding — Qdrant payloads would still contain raw chunk_text
-- **total_chunks added to CHUNK queue messages** — METADATA handler now sends total_chunks: chunks.length with each CHUNK message · why: enables Chunk N of M positional hint in v3 prompt, helping model recognise chunk 0 as likely header
-- **isLikelyHeader() function added** — detects header chunks at chunk_index 0 via uppercase label patterns · passes role_hint: 'header' in user message · why: chunk 0 was consistently boilerplate header producing hallucinated principles; hint suppresses extraction without hard-coding behaviour
-- **Code-side validator added** — strips authorities not named in excerpt, enforces type-based extraction gates, caps array lengths · why: prevents authority hallucination and ensures non-reasoning chunks cannot produce principles regardless of model output
-- **max_completion_tokens reduced** — 2,500 → 1,600 · why: v3 output is denser but more structured; 2,500 was wasteful and increased cost; 1,600 is sufficient for all chunk types with margin
-- **Pilot validated on [2024] TASCCA 14** — trafficking/sentencing appeal · 15 chunks · chunk 0 correctly classified header · reasoning chunks produced faithful prose principles with verbatim judicial quotes · evidence/factual chunks correctly described without invented doctrine · approved for full rollout
-- **Full reprocess initiated** — all 5,187 done=0 chunks requeued · all case_chunk Qdrant vectors deleted (secondary sources and legislation untouched) · queue processing overnight · ~2,440 chunks complete as of session end · 0 retries
-
-## CHANGES THIS SESSION (session 13) — 22 March 2026
-
-- **Embed pass confirmed complete** — 1,171/1,171 secondary source chunks embedded · poller idle
-- **Two stuck chunks fixed** — `hoc-b042-m001-lies-consciousness-of-guilt` (15,542 chars) and `hoc-b045-m001-tendency-evidence-probative-value` (26,420 chars) were timing out · root cause: GPT-4o-mini enrichment expanded raw_text far beyond normal chunk size, exceeding 30s Ollama timeout · fix: raise get_embedding() timeout 30s→120s + add large input warning log >8000 chars · Qdrant points deleted, embedded=0 reset, re-embedded successfully at full text
-- **FTS5 backfill complete** — secondary_sources_fts wiped (had 1,854 duplicate rows from INSERT OR REPLACE on non-empty table) then clean INSERT from secondary_sources · 1,171 rows · all three retrieval passes now operational
-- **Retrieval baseline rerun** — estimated 14 pass / 3 partial / 0 fail · improvement over 12/4/1 · Q2 and Q9 remain partial (corpus gaps) · Q13 has case_chunk RRF noise at rank 1
-- **BRD doctrine chunk ingested** — `hoc-b057-m001-beyond-reasonable-doubt` · corrected statutory citation: Evidence Act 2001 (Tas) s 141(1) (not Criminal Code s13) · Green v The Queen (1971) 126 CLR 28 · Walters v The Queen [1969] 2 AC 26 · embedded and verified · next block number for manual chunks: hoc-b057
-- **Malformed row identified** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · block number placeholder never substituted · fix deferred
-- **Enrichment poller switched to GPT-4o-mini** — replaced both call_claude and call_claude_followup · Claude API key unavailable (console.anthropic.com login loop, likely credit/key issue) · OPENAI_API_KEY confirmed in VPS .env · gpt-4o-mini-2024-07-18 · system prompt preserved in followup messages array · deployed and running clean · no 401 errors
-- **CLAUDE.md why directive added** — session change logs now include rationale alongside changes
-- **Full directory path directive added** — all commands now include full cd path
-
-## CHANGES THIS SESSION (session 12) — 22 March 2026
-
-- **Corpus wipe confirmed clean** — secondary_sources D1 deleted (0 rows) · Qdrant secondary/case vectors deleted · 1,272 legislation points retained
-- **FTS5 root cause identified** — `handleUploadCorpus` FTS5 insert had no ON CONFLICT clause · caused SQLITE_CONSTRAINT 500 errors on any re-ingest where FTS5 table had existing rows
-- **FTS5 fix deployed** — `INSERT INTO secondary_sources_fts` → `INSERT OR REPLACE INTO secondary_sources_fts` · worker.js version 2d3716de
-- **Corpus ingested** — part1: 488 chunks / 488 OK · part2: 683 chunks / 683 OK · 1,171 total · zero failures
-- **enriched=1 set** — all 1,171 rows updated · poller now embedding overnight
-- **ingest_part2.py created** — standalone copy of ingest_corpus.py for part2 · lives at arcanthyr-console\ingest_part2.py
-- **Case count** — 309 cases · 303 deep_enriched · scraper stopped at TASSC/2020/5 (session limit)
-- **Embed pass confirmed complete** — 2,607/2,607 case chunks embedded before session start
-- **Battle test** — all 5 checks passed: poller running, 6 cases pending deep_enriched (normal), scraper clean stop, FTS5 fix deployed, secondary_sources 1,171/1,171
-
-## CHANGES THIS SESSION (session 11) — 20 March 2026
-
-- **Corpus reprocessing confirmed complete** — 56/56 blocks · block_001 stale error was from prior run
-- **CQT pass confirmed** — block_005 substantive prose preserved · blocks 010/015 correctly procedure-only
-- **Embed pass in progress** — 1,187/2,607 case chunks embedded as of session start · poller running cleanly
-- **Scraper confirmed running** — TASSC 2022 in progress · all 2025/2024/2023 courts marked done
-- **Retrieval baseline rerun** — 12 pass / 4 partial / 1 fail · Q2 BRD confirmed corpus gap
-- **RRF/LIKE fix investigation** — handleFetchSectionsByReference LIKE '%38%' confirmed source of noise · fix parked post-ingest
-- **retrieval_baseline.sh fixed** — KEY auto-read from .env · SCP'd to VPS
-- **BRD corpus gap confirmed** — no standalone BRD chunk in either corpus part · manual ingest required post-corpus-ingest
-
-## CHANGES THIS SESSION (session 9) — 20 March 2026
-
-- **Dead Nexus route deleted from worker.js** · worker.js deployed version 6f006d85
-- **Case chunk threshold raised** 0.15 → 0.35 in server.py
-- **HCA added to COURT_HIERARCHY** at tier 4
-- **enrichment_poller.py payload truncation fixed** — secondary_sources [:5000], case_chunks [:3000], legislation [:3000]
-- **ingest_corpus.py parser fixed** — heading regex accepts single # + any [UPPERCASE:] field lookahead + MASTER_ONLY flag added
-- **process_blocks.py updated** — new Master prompt, Repair pass, correct model string, MAX_TOKENS=32000
-- **Corpus damage confirmed** — 437 of 1,575 chunks silently skipped by old parser (28%)
-- **Retrieval baseline extended** — Q16-Q18 added
-
-## CHANGES THIS SESSION (session 8) — 20 March 2026
-
-- **worker.js deployed** · version 84d42ffc
-- **Case chunk pass gate removed** — pass now runs unconditionally on every query
-- **Workers AI error handling** — callWorkersAI() now throws on result.error or code 4006
-- **DST fix** — austlii_scraper.py is_business_hours() now uses zoneinfo Australia/Hobart
-- **Scraper rescheduled to noon** — neurons reset at 11am Hobart
-- **Architecture docs corrected** — session 3 RRF/BM25/FTS5 work documented as complete but never deployed
-- **Cloudflare git integration disconnected**
-
 ---
 
 ## FUTURE ROADMAP
 
-- **secondary_sources_fts backfill** — IMMEDIATE next session · 1,171 rows embedded but FTS5 empty · BM25/FTS5 retrieval pass blind until fixed
-- **Run retrieval baseline** — after embed pass confirms complete
-- **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R
-- **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
+- **secondary_sources_fts backfill** — completed session 13
+- **Run retrieval baseline** — after chunk cleanup completes
+- **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R — completed session 13
+- **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5
 - **subject_matter retrieval filter** — once cases.subject_matter populated after reprocess, add filter to case chunk Qdrant pass to scope criminal law queries to criminal cases only
-- **Duplicate principle deduplication** — post-reprocess: compare principles across chunks of same case by semantic similarity, merge/suppress near-duplicates before final storage
+- **Duplicate principle deduplication** — SUPERSEDED by merge synthesis step (session 22) which produces deduplicated case-level principles
 - **Re-embed pass** — COMPLETED session 14 as part of CHUNK v3 reprocess — all case chunks being re-embedded from enriched_text overnight
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
@@ -352,4 +249,3 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
-- **Re-embed pass** — COMPLETED session 14 — case chunks re-embedded from enriched_text (v3 prompt output) · secondary sources and legislation payloads unchanged (already at [:5000]/[:3000] from session 9 fix)

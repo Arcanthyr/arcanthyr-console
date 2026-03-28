@@ -350,27 +350,27 @@ async function summarizeCase(env, caseData) {
 
   // ── Shared prompt fragments ───────────────────────────────────────────────
   const PRINCIPLES_SPEC = `
-PRINCIPLES — extract per issue: 1 primary + up to 2 supporting (only if genuinely distinct).
-Maximum 8 principles total across the whole judgment.
+PRINCIPLES — extract the court's key legal holdings as case-specific propositions.
 
-A legal principle MUST be a complete proposition: IF/WHEN [conditions] THEN [legal consequence or rule].
-It must be usable on future facts without knowing the parties' names.
-It must NOT be a label, heading, sentencing factor name, procedural outcome, or fact restatement.
+Each principle must be a concrete statement of what THIS court decided on THIS set of facts — not a generic rule of law that could appear on any case. Include the court's reasoning where it adds value.
 
-BAD: "General deterrence" — label only, not a principle.
-BAD: "The appeal is dismissed" — outcome, not a principle.
-GOOD: "IF an offender commits a violent offence in a domestic or trust relationship, THEN general deterrence is a primary sentencing consideration and may warrant actual imprisonment even for a first offender."
-GOOD: "IF weed eradication works are necessary and intrinsic to a development AND render the land suitable for construction, THEN they constitute substantial commencement of a development permit under s 53(5) of the Land Use Planning and Approvals Act 1993."
+Maximum 8 principles total. 1 primary per issue + up to 2 supporting (only if genuinely distinct).
 
-Each principle object:
-{
-  "principle": "IF/WHEN ... THEN ... (complete proposition, 1-2 sentences)",
-  "type": "ratio" | "obiter" | "procedural",
-  "source_mode": "stated" | "adopted_from_authority" | "implicit_applied",
-  "statute_refs": ["Act (Jurisdiction) s.X"],
-  "keywords": ["topic1", "topic2", "topic3"]
-}
-Mark source_mode "implicit_applied" if the court applied but did not explicitly state the rule.`;
+BAD (generic, could be any case):
+- "General deterrence is a relevant sentencing consideration"
+- "The prosecution bears the onus of proving the charge beyond reasonable doubt"
+- "IF self-defence is raised THEN the prosecution must negative it"
+
+GOOD (case-specific, tells you why THIS case matters):
+- "A 12-month suspended sentence was appropriate for a first-offender domestic assault involving a single punch causing bruising, where the offender had completed a behavioural change program and the victim did not support a custodial sentence"
+- "Weed eradication works constituted substantial commencement of a development permit because they were necessary and intrinsic to the development and rendered the land suitable for construction"
+- "The tendency evidence was admissible because the accused's pattern of targeting intoxicated women at licensed venues had significant probative value that substantially outweighed any prejudicial effect, applying the framework in IMM v The Queen"
+
+Each principle object must include:
+- "principle": the case-specific propositional statement (1-2 sentences, in the court's own doctrinal language where possible)
+- "statute_refs": array of relevant Act and section references (e.g. ["Sentencing Act 1997 (Tas) s 11"]) — empty array if none
+- "keywords": 2-4 short topic keywords (e.g. ["sentencing", "domestic violence", "deterrence"])
+`;
 
   // ── Single-pass prompt (short judgments) ─────────────────────────────────
   const singlePassPrompt = `You are extracting verified legal information from an Australian court judgment for a practitioner database.
@@ -1938,6 +1938,136 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
   }
 }
 
+// ── Merge helper — called from CHUNK handler and MERGE queue handler ─────────
+async function performMerge(citation, caseRow, env) {
+  const allChunks = await env.DB.prepare(
+    `SELECT principles_json FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
+  ).bind(citation).all();
+
+  const allPrinciples = [], allHoldings = [], allLegislation = new Set(), allAuthorities = [], enrichedTexts = [];
+  for (const chunk of allChunks.results) {
+    try {
+      const data = JSON.parse(chunk.principles_json || '{}');
+      if (data.principles) allPrinciples.push(...data.principles);
+      if (data.holdings) allHoldings.push(...data.holdings);
+      if (data.legislation) data.legislation.forEach(l => allLegislation.add(l));
+      if (data.key_authorities) allAuthorities.push(...data.key_authorities);
+      if (['reasoning', 'mixed'].includes(data.chunk_type) && data.enriched_text) {
+        enrichedTexts.push(data.enriched_text);
+      }
+    } catch (e) {}
+  }
+
+  const seenAuth = new Set();
+  const dedupedAuth = allAuthorities.filter(a => {
+    if (seenAuth.has(a.name)) return false;
+    seenAuth.add(a.name);
+    return true;
+  });
+
+  const chunkSubjects = allChunks.results
+    .map(c => { try { return JSON.parse(c.principles_json)?.subject_matter; } catch(e) { return null; } })
+    .filter(s => s && s !== 'unknown');
+  const subjectCounts = {};
+  chunkSubjects.forEach(s => { subjectCounts[s] = (subjectCounts[s] || 0) + 1; });
+  const subject_matter = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'unknown';
+
+  const chunkHoldingStr = allHoldings
+    .map(h => typeof h === 'string' ? h : h.holding)
+    .filter(Boolean)
+    .join(" ") || null;
+
+  // Synthesis call — produce case-level principles from reasoning enriched_text summaries
+  let synthesisedPrinciples = allPrinciples;
+  if (enrichedTexts.length > 0) {
+    try {
+      const synthSystem = `You are a legal research assistant producing a case summary for a research database. You will receive enriched summaries of each reasoning section of an Australian court judgment, plus the case's facts and issues.
+
+Produce 4-8 case-level legal principles that tell a researcher why THIS case matters and what it decided.
+
+Each principle must be a concrete statement of what THIS court decided on THIS set of facts — not a generic rule of law that could appear on any case. Include the court's reasoning where it adds value.
+
+BAD (generic, could be any case):
+- "General deterrence is a relevant sentencing consideration"
+- "The prosecution bears the onus of proving the charge beyond reasonable doubt"
+
+GOOD (case-specific, tells you why THIS case matters):
+- "A 12-month suspended sentence was appropriate for a first-offender domestic assault involving a single punch causing bruising, where the offender had completed a behavioural change program and the victim did not support a custodial sentence"
+- "The tendency evidence was admissible because the accused's pattern of targeting intoxicated women at licensed venues had significant probative value that substantially outweighed any prejudicial effect, applying the framework in IMM v The Queen"
+
+Output ONLY a JSON array of principle objects. No markdown fences. No commentary. Start with [
+
+Each object: { "principle": "case-specific statement (1-2 sentences)", "statute_refs": ["Act (Jurisdiction) s X"], "keywords": ["topic1", "topic2"] }`;
+
+      const synthUser = [
+        `Case: ${caseRow.case_name} (${citation}, ${caseRow.court})`,
+        ``,
+        `Facts: ${caseRow.facts || ''}`,
+        ``,
+        `Issues: ${JSON.stringify(caseRow.issues)}`,
+        ``,
+        `Holdings from chunks: ${JSON.stringify(allHoldings)}`,
+        ``,
+        `Reasoning summaries:`,
+        enrichedTexts.join('\n\n---\n\n')
+      ].join('\n');
+
+      const ctrl = new AbortController();
+      const synthTimeout = setTimeout(() => ctrl.abort(), 25000);
+      const synthResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${env.OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini-2024-07-18",
+          max_completion_tokens: 2000,
+          messages: [
+            { role: "system", content: synthSystem },
+            { role: "user", content: synthUser }
+          ]
+        }),
+        signal: ctrl.signal
+      });
+      clearTimeout(synthTimeout);
+      const synthData = await synthResponse.json();
+      const synthContent = synthData.choices?.[0]?.message?.content
+        || synthData.choices?.[0]?.message?.reasoning_content
+        || "";
+      const synthRaw = synthContent.trim();
+      const jsonStart = synthRaw.indexOf('[');
+      const jsonEnd = synthRaw.lastIndexOf(']');
+      if (jsonStart === -1 || jsonEnd === -1) throw new Error(`No JSON array in synthesis response: ${synthRaw.slice(0, 200)}`);
+      synthesisedPrinciples = JSON.parse(synthRaw.slice(jsonStart, jsonEnd + 1));
+      console.log(`[queue] synthesis complete for ${citation} — ${synthesisedPrinciples.length} principles`);
+    } catch (e) {
+      console.error(`[queue] synthesis failed for ${citation}, falling back to raw concat:`, e.message);
+      synthesisedPrinciples = allPrinciples;
+    }
+  }
+
+  await env.DB.prepare(`
+    UPDATE cases SET
+      principles_extracted = ?,
+      holdings_extracted = ?,
+      legislation_extracted = ?,
+      authorities_extracted = ?,
+      subject_matter = ?,
+      holding = ?
+    WHERE citation = ?
+  `).bind(
+    JSON.stringify(synthesisedPrinciples),
+    JSON.stringify(allHoldings),
+    JSON.stringify([...allLegislation]),
+    JSON.stringify(dedupedAuth),
+    subject_matter,
+    chunkHoldingStr,
+    citation
+  ).run();
+  console.log(`[queue] merge complete for ${citation} — ${synthesisedPrinciples.length} principles`);
+}
+
 async function handleRequeueMetadata(request, env, corsHeaders) {
   const key = request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -1970,6 +2100,44 @@ async function handleRequeueChunks(request, env, corsHeaders) {
       await env.CASE_QUEUE.send({ type: 'CHUNK', citation: row.citation, chunk_index: row.chunk_index });
     }
     return new Response(JSON.stringify({ ok: true, enqueued: results.length }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleRequeueMerge(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const body = await request.json().catch(() => ({}));
+    const limit = body.limit ? parseInt(body.limit) : 250;
+    let requeued = 0;
+    if (body.target === 'remerge') {
+      // Re-merge cases already deep_enriched=1 (bad/old-format principles) — reset then enqueue
+      const { results: candidates } = await env.DB.prepare(
+        `SELECT citation FROM cases WHERE deep_enriched = 1 LIMIT ?`
+      ).bind(limit).all();
+      for (const row of candidates) {
+        await env.DB.prepare(`UPDATE cases SET deep_enriched = 0 WHERE citation = ?`).bind(row.citation).run();
+        await env.CASE_QUEUE.send({ type: 'MERGE', citation: row.citation });
+        requeued++;
+      }
+    } else {
+      // Default: enqueue pending cases (deep_enriched=0) where all chunks are done
+      const { results: candidates } = await env.DB.prepare(
+        `SELECT citation FROM cases WHERE deep_enriched = 0 LIMIT ?`
+      ).bind(limit).all();
+      for (const row of candidates) {
+        const pending = await env.DB.prepare(
+          `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0`
+        ).bind(row.citation).first();
+        if (pending.cnt === 0) {
+          await env.CASE_QUEUE.send({ type: 'MERGE', citation: row.citation });
+          requeued++;
+        }
+      }
+    }
+    return new Response(JSON.stringify({ ok: true, requeued }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   }
@@ -2388,6 +2556,7 @@ export default {
 
     if (url.pathname === '/api/admin/requeue-metadata' && request.method === 'POST') return handleRequeueMetadata(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
+    if (url.pathname === '/api/admin/requeue-merge' && request.method === 'POST') return handleRequeueMerge(request, env, corsHeaders);
 
     if (url.pathname === '/api/pipeline/fts-search' && request.method === 'POST') {
       const { query, limit = 10 } = await request.json();
@@ -2682,62 +2851,28 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
               return;
             }
 
-            // Merge all chunk results
-            const allChunks = await env.DB.prepare(
-              `SELECT principles_json FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
-            ).bind(citation).all();
-
-            const allPrinciples = [], allHoldings = [], allLegislation = new Set(), allAuthorities = [];
-            for (const chunk of allChunks.results) {
-              try {
-                const data = JSON.parse(chunk.principles_json || '{}');
-                if (data.principles) allPrinciples.push(...data.principles);
-                if (data.holdings) allHoldings.push(...data.holdings);
-                if (data.legislation) data.legislation.forEach(l => allLegislation.add(l));
-                if (data.key_authorities) allAuthorities.push(...data.key_authorities);
-              } catch (e) {}
-            }
-
-            // Deduplicate authorities by name
-            const seenAuth = new Set();
-            const dedupedAuth = allAuthorities.filter(a => {
-              if (seenAuth.has(a.name)) return false;
-              seenAuth.add(a.name);
-              return true;
-            });
-
-            const chunkSubjects = allChunks.results
-              .map(c => { try { return JSON.parse(c.principles_json)?.subject_matter; } catch(e) { return null; } })
-              .filter(s => s && s !== 'unknown');
-            const subjectCounts = {};
-            chunkSubjects.forEach(s => { subjectCounts[s] = (subjectCounts[s] || 0) + 1; });
-            const subject_matter = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'unknown';
-
-            const chunkHoldingStr = allHoldings
-              .map(h => typeof h === 'string' ? h : h.holding)
-              .filter(Boolean)
-              .join(" ") || null;
-
-            await env.DB.prepare(`
-              UPDATE cases SET
-                principles_extracted = ?,
-                holdings_extracted = ?,
-                legislation_extracted = ?,
-                authorities_extracted = ?,
-                subject_matter = ?,
-                holding = ?
-              WHERE citation = ?
-            `).bind(
-              JSON.stringify(allPrinciples),
-              JSON.stringify(allHoldings),
-              JSON.stringify([...allLegislation]),
-              JSON.stringify(dedupedAuth),
-              subject_matter,
-              chunkHoldingStr,
-              citation
-            ).run();
-            console.log(`[queue] merge complete for ${citation} — ${allPrinciples.length} principles`);
+            // Merge all chunk results via synthesis
+            await performMerge(citation, { case_name: caseRow?.case_name, court: caseRow?.court, facts: caseRow?.facts, issues: caseRow?.issues }, env);
           }
+          msg.ack();
+
+        } else if (type === 'MERGE') {
+          // MERGE message — re-run merge step for a case with all chunks already done
+          const mergeCaseRow = await env.DB.prepare(
+            `SELECT case_name, court, facts, issues FROM cases WHERE citation = ?`
+          ).bind(citation).first();
+          if (!mergeCaseRow) throw new Error(`No case row for ${citation}`);
+
+          const claimResult = await env.DB.prepare(
+            `UPDATE cases SET deep_enriched = 1 WHERE citation = ? AND deep_enriched = 0`
+          ).bind(citation).run();
+          if (claimResult.meta.changes === 0) {
+            console.log(`[queue] merge already claimed for ${citation}, skipping`);
+            msg.ack();
+            return;
+          }
+
+          await performMerge(citation, mergeCaseRow, env);
           msg.ack();
 
         } else {

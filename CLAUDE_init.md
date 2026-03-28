@@ -116,13 +116,19 @@ Upload (PDF/text)
   → Cloudflare Queue: METADATA message
   → Worker splits case into 3k-char chunks → case_chunks table
   → Enqueue CHUNK messages (one per chunk)
-  → Workers AI (GPT-4o-mini): CHUNK prompt v3 → enriched_text + principles_json
+  → GPT-4o-mini: CHUNK prompt v3 → enriched_text + principles_json
+  → When all chunks done → performMerge():
+      → GPT-4o-mini synthesis call (reads enriched_text from reasoning chunks)
+      → Produces 4-8 case-specific principles → principles_extracted
+      → Falls back to raw principle concatenation on failure
   → enrichment_poller detects done=1 chunks with embedded=0
   → Embed enriched_text via Ollama → Qdrant upsert
   → Mark embedded=1 in D1
 ```
 
 **CHUNK prompt v3** (session 14): classifies chunk type (reasoning/evidence/submissions/procedural/header/mixed), writes 200–350 word `enriched_text` prose for reasoning chunks, extracts `reasoning_quotes` (verbatim judicial passages), sets `subject_matter`.
+
+**Merge synthesis** (session 22): GPT-4o-mini call at merge time reads enriched_text from reasoning/mixed chunks + Pass 1 context, produces case-specific prose principles. Shared `performMerge()` function used by CHUNK handler (normal) and MERGE handler (re-merge only).
 
 ---
 
