@@ -132,23 +132,26 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 ## OUTSTANDING PRIORITIES
 
 1. **Monitor nightly cron** — 2,086 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~8-9 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
-2. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
-3. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
-4. **Fix scraper Task Scheduler** — last log entry 24 March · confirm Task Scheduler status and re-enable if dead
-5. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
-6. **Poller enriched_text IS NOT NULL guard** — enrichment_poller.py CASE-EMBED pass should check enriched_text IS NOT NULL before embedding · defensive fix
-7. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
-8. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
-9. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
-10. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
-11. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
-12. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
+2. **Diagnose Pass 1 case_name bug** — some cases have case_name = "criminal"/"civil" (subject_matter value) instead of actual title · diagnose METADATA handler parse logic before bulk re-merge (synthesis prompt uses case_name)
+3. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
+4. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
+5. **Fix scraper Task Scheduler** — last log entry 24 March · confirm Task Scheduler status and re-enable if dead
+6. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
+7. **Poller enriched_text IS NOT NULL guard** — enrichment_poller.py CASE-EMBED pass should check enriched_text IS NOT NULL before embedding · defensive fix
+8. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
+9. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
+10. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
+11. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
+12. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
+13. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
 - **Queue stalled on 2,594 chunks** — bulk requeue (548 cases simultaneously) exhausted max_retries=5 on GPT-4o-mini rate limits · nightly cron at 3am UTC re-enqueues 250/night · self-resolving in ~10 nights · can manually fire `requeue-chunks` with `{"limit":250}` to speed up
+- **Pass 1 case_name bug** — for some cases `case_name` is populated with the subject_matter classification ("criminal", "civil") instead of the actual case title · likely a Workers AI response parse issue in the METADATA handler · enriched_text and principles unaffected · investigate before bulk re-merge so synthesis has correct case name in prompt
+- **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
 - **~329 cases merged with old-format principles** — synthesis confirmed working (session 23 spot-check on [2020] TASSC 1) · re-merge route fixed with target:remerge param · waiting on cron to clear 2,086 pending chunks before bulk re-merge fires · command: `{"target":"remerge","limit":330}`
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
