@@ -753,13 +753,25 @@ def run_case_chunk_embedding_pass(batch: int = 10) -> dict:
         log.info('[CASE-EMBED] No case chunks ready for embedding.')
         return {'processed': 0, 'ok': 0, 'errors': 0}
 
+    # Guard: skip chunks with no enriched_text — pre-fix bad data waiting for
+    # the nightly cron to re-enrich. Embedding chunk_text directly would embed
+    # unprocessed text that will be overwritten once the chunk is re-enriched.
+    before = len(chunks)
+    chunks = [c for c in chunks if c.get('enriched_text')]
+    skipped = before - len(chunks)
+    if skipped:
+        log.info(f'[CASE-EMBED] Skipped {skipped}/{before} chunks with null enriched_text.')
+    if not chunks:
+        log.info('[CASE-EMBED] No embeddable chunks after enriched_text filter.')
+        return {'processed': 0, 'ok': 0, 'errors': 0, 'skipped': skipped}
+
     log.info(f'[CASE-EMBED] Got {len(chunks)} chunks to embed.')
     ok_ids = []
     errors = 0
 
     for i, chunk in enumerate(chunks, 1):
         chunk_id    = chunk['id']
-        embed_text = chunk.get('enriched_text') or chunk.get('chunk_text', '')
+        embed_text  = chunk['enriched_text']
         metadata    = {
             'chunk_id':    chunk_id,
             'citation':    chunk.get('citation', ''),

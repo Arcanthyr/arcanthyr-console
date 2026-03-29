@@ -2542,7 +2542,7 @@ export default {
         `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, c.case_name
  FROM case_chunks cc
  LEFT JOIN cases c ON c.citation = cc.citation
- WHERE cc.done = 1 AND cc.embedded = 0 LIMIT ?`
+ WHERE cc.done = 1 AND cc.embedded = 0 AND cc.enriched_text IS NOT NULL LIMIT ?`
       ).bind(batch).all();
       return new Response(JSON.stringify({ chunks: results }), { headers: corsHeaders });
     }
@@ -2890,7 +2890,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
 Return ONLY a single valid JSON object. No explanation, no markdown, no text before or after the JSON.
 
 {
-  "case_name": "Full case name as it appears in the judgment header (e.g. R v Smith [2021] TASSC 45)",
+  "case_name": "Party names as they appear in the heading — e.g. 'R v Smith', 'DPP v Jones', 'Tasmania v Brown'. NEVER use court division labels ('Criminal', 'Civil') or the word 'Division'. Fallback to the citation if no party names are visible.",
   "judge": "Presiding judge(s) surname and title only (e.g. Wood J, or Pearce and Brett JJ)",
   "parties": "Applicant/Appellant and Respondent as named (e.g. Tasmania v Jones)",
   "facts": "2-4 sentences summarising the core factual background giving rise to the proceeding. Extract from the judgment text — do not infer.",
@@ -2901,6 +2901,7 @@ Rules:
 - Extract only what is explicitly stated. Do not infer or fabricate.
 - issues must be an array of strings, never a single string.
 - If a field cannot be determined from the text, use an empty string or empty array.
+- case_name must be party names (e.g. "R v Smith"), never a court division label like "Criminal" or "Civil".
 - The very first character of your response must be {`;
           const pass1Raw = await callWorkersAI(env, pass1System, row.raw_text.slice(0, 8000), 1500);
           const pass1Cleaned = (pass1Raw || '').replace(/```json|```/g, '').trim();

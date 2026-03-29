@@ -6523,7 +6523,7 @@ This chunk explains the breach policies for community correction orders indicati
 <!-- block_054 master -->
 
 # Drug Treatment Orders Overview
-[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Drug Treatment Orders as court mandated diversion] [CONCEPTS: drug treatment orders, court diversion program, eligibility, sentencing, conditions] [CITATION: hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders] [ACT: Sentencing Act 1997] [CASE: Tasmania v Joseph [2017] TASSC 23]
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: doctrine] [TYPE: doctrine] [TOPIC: Drug Treatment Orders as court mandated diversion] [CONCEPTS: drug treatment orders, court diversion program, eligibility, sentencing, conditions] [CITATION: hoc-b054-m001-drug-treatment-orders] [ACT: Sentencing Act 1997] [CASE: Tasmania v Joseph [2017] TASSC 23]
 
 A Drug Treatment Order (DTO) is designed to serve as an alternative to imprisonment, effectively functioning as part of the **Court Mandated Diversion Program**. The underlying objective of this program is to address the issues linked to an individual's drug use and associated criminal behavior, thereby aiming to sever the connection between drug use and offending, and ultimately enhance the individual's quality of life.
 

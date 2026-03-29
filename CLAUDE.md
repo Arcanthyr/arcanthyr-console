@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 28 March 2026 (end of session 23) · Supersedes all prior versions
+Updated: 29 March 2026 (end of session 24) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -87,18 +87,18 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 28 March 2026 (end of session 23)
+## SYSTEM STATE — 29 March 2026 (end of session 24)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 10,333 vectors total · 1,272 legislation + 1,172 secondary source chunks · case chunks embedding via poller |
-| D1 cases | 550 total · 329 deep_enriched · 221 pending chunk completion |
-| D1 case_chunks | 8,679 total · 2,086 done=0 (nightly cron clearing 250/night) · 6,593 done=1 |
+| D1 cases | 549 total · 329 deep_enriched · 220 pending chunk completion · [2026] TASFC 1 deleted (junk raw_text) |
+| D1 case_chunks | 8,672 total · ~1,753 done=0 (nightly cron clearing 250/night) · ~6,919 done=1 |
 | D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
-| enrichment_poller | RUNNING — embedding case chunks as they complete |
+| enrichment_poller | RUNNING — restarted 29 March after 5-day stall · force-recreated with enriched_text IS NOT NULL guard |
 | Cloudflare Queue | Nightly cron clearing done=0 chunks at 3am UTC (1pm AEST) · 250/night |
 | Scraper | NOT RUNNING — last log entry 24 March · Task Scheduler status unknown · re-investigate next session |
-| arcanthyr.com | Live — Worker version 5d61d0b7 (session 23: synthesis JSON fix + requeue-merge target param) |
+| arcanthyr.com | Live — Worker version bdfa662e (session 24: Pass 1 case_name prompt fix + enriched_text IS NOT NULL SQL guard) |
 | arcanthyr-ui.pages.dev | Redundant — safe to delete · no longer updated |
 
 ---
@@ -131,26 +131,23 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## OUTSTANDING PRIORITIES
 
-1. **Monitor nightly cron** — 2,086 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~8-9 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
-2. **Diagnose Pass 1 case_name bug** — some cases have case_name = "criminal"/"civil" (subject_matter value) instead of actual title · diagnose METADATA handler parse logic before bulk re-merge (synthesis prompt uses case_name)
-3. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
-4. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
-5. **Fix scraper Task Scheduler** — last log entry 24 March · confirm Task Scheduler status and re-enable if dead
-6. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1
-7. **Poller enriched_text IS NOT NULL guard** — enrichment_poller.py CASE-EMBED pass should check enriched_text IS NOT NULL before embedding · defensive fix
-8. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
-9. **Fix malformed row** — hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders
-10. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
-11. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
-12. **Scan corpus for ... placeholders** — PowerShell Select-String on master_corpus_part1.md + part2.md · fix any gaps found
-13. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
+1. **Monitor nightly cron** — ~1,753 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~7 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
+2. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
+3. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
+4. **Fix scraper Task Scheduler** — last log entry 24 March · confirm Task Scheduler status and re-enable if dead
+5. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1 · deferred from session 24
+6. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
+7. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
+8. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
+9. **Fix corpus ... placeholders** — 5 gaps identified: part1.md:1282, part2.md:381/1167/1957/2415 · source file fixes + re-ingest needed · low priority
+10. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
 - **Queue stalled on 2,594 chunks** — bulk requeue (548 cases simultaneously) exhausted max_retries=5 on GPT-4o-mini rate limits · nightly cron at 3am UTC re-enqueues 250/night · self-resolving in ~10 nights · can manually fire `requeue-chunks` with `{"limit":250}` to speed up
-- **Pass 1 case_name bug** — for some cases `case_name` is populated with the subject_matter classification ("criminal", "civil") instead of the actual case title · likely a Workers AI response parse issue in the METADATA handler · enriched_text and principles unaffected · investigate before bulk re-merge so synthesis has correct case name in prompt
+- **Corpus ... placeholders** — 5 genuine gaps identified: part1.md:1282 (standalone ...), part2.md:381 (T... truncated word), part2.md:1167 (...BUT (see below) dangling ref), part2.md:1957 ([Continues with specifics...] placeholder tag), part2.md:2415 (standalone ...) · source file fixes + re-ingest needed · low priority
 - **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
 - **~329 cases merged with old-format principles** — synthesis confirmed working (session 23 spot-check on [2020] TASSC 1) · re-merge route fixed with target:remerge param · waiting on cron to clear 2,086 pending chunks before bulk re-merge fires · command: `{"target":"remerge","limit":330}`
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
@@ -168,6 +165,24 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
+
+---
+
+## CHANGES THIS SESSION (session 24) — 29 March 2026
+
+- **Pass 1 case_name prompt fix** — added explicit negative constraint: "NEVER use court division labels ('Criminal', 'Civil')". Fallback to citation if no party names visible. Why: Qwen3 was picking up "CRIMINAL DIVISION" header text instead of party names for ~31 cases.
+
+- **31 null case_names patched** — patch_case_names.py extracted party names from raw_text using three cascading patterns (CITATION field → title-line before [year] → inline X v Y). 30 patched, 1 junk case deleted ([2026] TASFC 1 — raw_text was AustLII search page HTML).
+
+- **Malformed corpus row fixed** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` corrected to `hoc-b054-m001-drug-treatment-orders`. Bad D1 + FTS5 rows deleted, master_corpus_part2.md:6526 fixed, re-ingested via upload-corpus, enriched=1 set. Why: literal `{BLOCK_NUMBER}` placeholder was never substituted during original corpus processing.
+
+- **Poller enriched_text IS NOT NULL guard** — dual-layer: Worker.js SQL query adds `AND cc.enriched_text IS NOT NULL`, poller Python filters and logs skipped chunks. Why: prevents embedding pre-fix bad chunks that have null enriched_text — these should wait for cron re-enrichment.
+
+- **Enrichment poller restarted** — stalled since 24 March, force-recreated 29 March. Immediately resumed embedding case chunks.
+
+- **Corpus ... placeholder scan** — 5 genuine gaps identified across part1.md and part2.md. Parked for future fix session.
+
+- **worker.js version** — `bdfa662e`
 
 ---
 

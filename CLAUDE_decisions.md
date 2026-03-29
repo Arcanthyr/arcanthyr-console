@@ -3180,3 +3180,7 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 
 > Scraper last log entry 24 March. Task Scheduler status unknown. Decision: focus on chunk pipeline quality (synthesis, re-merge) before adding new cases. Scraper re-investigation deferred to next session.
 
+**[2026-03-29]** *Session 24 — case_name bug diagnosis* — score 8, assistant
+
+> Root cause: model instruction failure, not code bug. Qwen3 picks up "CRIMINAL DIVISION" header text instead of party names. Prompt fix with negative constraint + citation fallback. 31 affected rows patched via regex extraction from raw_text.
+
