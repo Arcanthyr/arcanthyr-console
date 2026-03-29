@@ -1455,7 +1455,7 @@ function parseFormattedChunks(text) {
 }
 
 async function handleFormatAndUpload(body, env) {
-  let { text, category: defaultCategory } = body;
+  let { text, category: defaultCategory, mode, slug, title } = body;
   if (!text?.trim()) throw new Error('Missing required field: text');
 
   let chunkUnits;
@@ -1463,12 +1463,25 @@ async function handleFormatAndUpload(body, env) {
   if (text.trimStart().startsWith('<!-- block_')) {
     // Pre-formatted corpus blocks — parse directly
     chunkUnits = parseFormattedChunks(text);
+  } else if (mode === 'single') {
+    // Single-chunk mode — bypass GPT, wrap in block format directly
+    const resolvedSlug = slug || `manual-b${String(Date.now()).slice(-4)}-chunk`;
+    const resolvedTitle = title || 'Untitled';
+    const resolvedCategory = defaultCategory || 'doctrine';
+    const blockText = `<!-- block_0001 master -->\n# ${resolvedTitle}\n[DOMAIN: Tasmanian Criminal Law] [CATEGORY: ${resolvedCategory}] [TYPE: ${resolvedCategory}] [TOPIC: ${resolvedTitle}] [CONCEPTS: ] [CITATION: ${resolvedSlug}] [ACT: None] [CASE: None]\n\n${text}`;
+    chunkUnits = parseFormattedChunks(blockText);
   } else {
     // Raw text — call GPT-4o-mini with Master Prompt
     const blockNum = String(Date.now()).slice(-4);
     const systemPrompt = MASTER_PROMPT
       .replace('{{BLOCK_NUMBER}}', blockNum)
       .replace('{{SOURCE_BLOCK_TEXT}}', '');
+
+    const wordCount = text.trim().split(/\s+/).length;
+    const shortSourceNote = wordCount < 800
+      ? '\n\nNOTE: This is a short source block. You MUST still create separate chunks for each distinct doctrinal unit and each case authority with substantive commentary. Do NOT collapse multiple units into a single chunk. Apply the CASE AUTHORITY CHUNK RULE strictly.'
+      : '';
+    const finalPrompt = systemPrompt + shortSourceNote;
 
     const gptResp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -1480,7 +1493,7 @@ async function handleFormatAndUpload(body, env) {
         model: 'gpt-4o-mini-2024-07-18',
         max_completion_tokens: 16000,
         messages: [
-          { role: 'system', content: systemPrompt },
+          { role: 'system', content: finalPrompt },
           { role: 'user',   content: text },
         ],
       }),
