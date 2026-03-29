@@ -1329,7 +1329,7 @@ async function handleUploadCorpus(body, env) {
   await env.DB.prepare(`
     INSERT INTO secondary_sources
     (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
-    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 0, 0, ?)
+    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
     ON CONFLICT(id) DO UPDATE SET
       raw_text = excluded.raw_text,
       title = excluded.title,
@@ -1345,6 +1345,198 @@ async function handleUploadCorpus(body, env) {
   ).bind(citation).run();
 
   return { citation, chunks_stored: 0, message: "Corpus chunk recorded in D1." };
+}
+
+/* =============================================================
+   FORMAT AND UPLOAD
+   Accepts raw source text OR pre-formatted corpus blocks.
+   Raw text → GPT-4o-mini Master Prompt → parse → insert loop.
+   Pre-formatted (starts with <!-- block_) → parse directly.
+   Returns { result: { count: N } }.
+   ============================================================= */
+const MASTER_PROMPT = `You are a legal knowledge formatter for a Tasmanian criminal law research system.
+
+Your task is NOT to summarise and NOT to rewrite in a sanitised style.
+Your task is to PRESERVE substantive prose, doctrinal reasoning, and analytical commentary from the source block
+verbatim or near-verbatim, and to add a small amount of structured metadata as retrieval handles.
+
+NON-NEGOTIABLE RULES (DO NOT VIOLATE):
+You MUST NOT:
+- summarise (no "This chunk covers ..." one-liners)
+- replace explanatory prose with headings + keywords
+- sanitise informal language that carries legal meaning (keep practitioner shorthand, abbreviations, informal tone)
+- invent doctrine, tests, holdings, or authorities not present in the source text
+- add "clean" doctrine statements that are not grounded in the source
+- duplicate procedure/script content (handled by a separate Procedure Prompt)
+
+You MUST:
+- produce multiple formatted chunks from this block
+- keep the BODY of each chunk approximately 500-800 words (target range)
+- preserve all doctrinal reasoning and analytical commentary in the BODY (verbatim or near-verbatim)
+- add bracketed metadata on ONE LINE as retrieval handles (NOT a replacement for the body)
+- include doctrine-signal language where present in the source ("the test is...", "requires...", "the court considers...")
+  If the source states a test informally, you may add a short TOPIC line that uses doctrine-signal phrasing,
+  but you MUST still keep the full original prose in the body.
+
+INPUTS YOU WILL RECEIVE:
+- BLOCK_NUMBER: integer NNN
+- SOURCE_BLOCK_TEXT: ~3,000 words of mixed legal prose/notes
+
+OUTPUT REQUIREMENTS (STRICT):
+- Output must contain EXACTLY these two top-level sections, in this order:
+  1) "## FORMATTED CHUNKS"
+  2) "## FINAL STATUS"
+- Do NOT output any other commentary, explanation, or headings outside those two sections.
+
+INSIDE "## FORMATTED CHUNKS":
+For each chunk, output EXACTLY this structure:
+
+# <Heading text - descriptive and specific to the doctrinal unit; NOT a summary sentence>
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <one of: annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line topic label using source-grounded language; may include "test is/requires/court considers" if supported>] [CONCEPTS: <comma-separated key terms present in the body; aim for ~5>] [CITATION: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}] [ACT: <Act name(s) if substantively discussed, else None>] [CASE: <case citation(s) if substantively discussed, else None>]
+
+<Blank line>
+
+<BODY: 500-800 words target; verbatim or near-verbatim from the source; preserves reasoning and commentary>
+
+METADATA FIELD RULES:
+- DOMAIN: always exactly "Tasmanian Criminal Law"
+- CATEGORY: choose the best fit from the canonical list (do NOT use procedure/script here)
+- TYPE: set equal to CATEGORY
+- TOPIC: one line; descriptive label only; MUST NOT replace the body; do not write "This chunk covers..."
+- CONCEPTS: include concepts actually present in the body (no invention); aim for about 5
+- CITATION slug: must be ASCII lower-case, digits and hyphens only, no spaces.
+  Pattern: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}
+  Example: hoc-b012-m003-double-jeopardy-test
+- ACT: include the Act name(s) if substantively discussed; otherwise write "None"
+- CASE: include case citation(s) only where there is substantive commentary; otherwise write "None"
+- Keep ALL metadata on ONE line exactly as bracket pairs shown above.
+
+CHUNKING RULES:
+- Target body length: 500-800 words per chunk.
+- Split on natural boundaries: headings, topic transitions, or coherent doctrine units.
+- Do NOT shorten content to hit a length target. If running long, create an additional chunk instead.
+- Avoid duplication across chunks. If minimal overlap needed, repeat at most 1-2 sentences.
+
+PROCEDURE/SCRIPT EXCLUSION RULE:
+- If a passage is primarily scripted questioning, examination sequences, step-by-step courtroom workflow,
+  or tactical sequences, EXCLUDE it from Master output.
+- If a passage mixes doctrine with minor procedural notes, keep the doctrine and omit only the procedural lines.
+
+CASE AUTHORITY CHUNK RULE:
+- Create a chunk with CATEGORY = "case authority" ONLY if the source contains substantive commentary
+  (what it held, the test applied, why it matters, distinguishing features).
+- If a citation is merely listed or mentioned in passing, do NOT create a standalone case authority chunk.
+  Keep the mention inside the relevant doctrine/annotation chunk instead.
+
+FINAL STATUS RULE:
+After all chunks, output:
+## FINAL STATUS
+<one of: READY FOR APPEND TO MASTER FILE / READY FOR APPEND WITH MINOR REVIEW / NEEDS REVISION BEFORE APPEND>
+
+Choose:
+- READY FOR APPEND TO MASTER FILE only if confident all rules followed and substance preserved.
+- READY FOR APPEND WITH MINOR REVIEW if compliant but minor uncertainty exists.
+- NEEDS REVISION BEFORE APPEND if any chunk is thin, overly summarised, or format rules were hard to follow.
+
+NOW PROCESS THIS BLOCK:
+
+BLOCK_NUMBER: {{BLOCK_NUMBER}}
+SOURCE_BLOCK_TEXT:
+"""
+{{SOURCE_BLOCK_TEXT}}
+"""`;
+
+function parseFormattedChunks(text) {
+  // Extract ## FORMATTED CHUNKS section if present, else use full text
+  const sectionMatch = text.match(/##\s+FORMATTED CHUNKS\s*\n([\s\S]*?)(?=\n##\s|$)/i);
+  const chunksText = sectionMatch ? sectionMatch[1] : text;
+  // Split on lines that start a new h1 or h3 heading
+  return chunksText.split(/\n(?=#{1,3} )/).map(s => s.trim()).filter(Boolean);
+}
+
+async function handleFormatAndUpload(body, env) {
+  let { text, category: defaultCategory } = body;
+  if (!text?.trim()) throw new Error('Missing required field: text');
+
+  let chunkUnits;
+
+  if (text.trimStart().startsWith('<!-- block_')) {
+    // Pre-formatted corpus blocks — parse directly
+    chunkUnits = parseFormattedChunks(text);
+  } else {
+    // Raw text — call GPT-4o-mini with Master Prompt
+    const blockNum = String(Date.now()).slice(-4);
+    const systemPrompt = MASTER_PROMPT
+      .replace('{{BLOCK_NUMBER}}', blockNum)
+      .replace('{{SOURCE_BLOCK_TEXT}}', '');
+
+    const gptResp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini-2024-07-18',
+        max_completion_tokens: 16000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: text },
+        ],
+      }),
+    });
+    if (!gptResp.ok) {
+      const errText = await gptResp.text();
+      throw new Error(`GPT call failed (${gptResp.status}): ${errText.slice(0, 200)}`);
+    }
+    const gptJson = await gptResp.json();
+    const gptOutput = gptJson.choices?.[0]?.message?.content
+                   || gptJson.choices?.[0]?.message?.reasoning_content
+                   || '';
+    if (!gptOutput) throw new Error('GPT returned empty response');
+    chunkUnits = parseFormattedChunks(gptOutput);
+  }
+
+  if (!chunkUnits.length) throw new Error('No chunks found in formatted output');
+
+  const now = new Date().toISOString();
+  let count = 0;
+
+  for (const unit of chunkUnits) {
+    const lines = unit.split('\n');
+    const heading = lines[0].replace(/^#{1,3}\s+/, '').trim();
+    const metaLine = lines.find(l => l.includes('[CITATION:')) || '';
+
+    const citationMatch = metaLine.match(/\[CITATION:\s*([^\]]+)\]/);
+    const categoryMatch = metaLine.match(/\[CATEGORY:\s*([^\]]+)\]/);
+
+    const citation = citationMatch ? citationMatch[1].trim() : null;
+    const category = (categoryMatch ? categoryMatch[1].trim() : null) || defaultCategory || 'doctrine';
+
+    if (!citation) continue; // skip malformed chunks without a citation
+
+    await env.DB.prepare(`
+      INSERT INTO secondary_sources
+      (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
+      VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        raw_text = excluded.raw_text,
+        title = excluded.title,
+        category = COALESCE(excluded.category, secondary_sources.category),
+        enriched_text = excluded.enriched_text,
+        enriched = excluded.enriched,
+        embedded = 0
+    `).bind(citation, heading, null, unit, now, category).run();
+
+    await env.DB.prepare(
+      `INSERT OR REPLACE INTO secondary_sources_fts (rowid, source_id, title, raw_text)
+       SELECT rowid, id, title, raw_text FROM secondary_sources WHERE id = ?`
+    ).bind(citation).run();
+
+    count++;
+  }
+
+  return { result: { count }, message: `${count} chunk${count !== 1 ? 's' : ''} ingested.` };
 }
 
 /* =============================================================
@@ -2490,6 +2682,7 @@ export default {
         else if (action === "upload-legislation" && request.method === "POST") result = await handleUploadLegislation(body, env);
         else if (action === "upload-secondary" && request.method === "POST") result = await handleUploadSecondarySource(body, env);
         else if (action === "upload-corpus" && request.method === "POST") result = await handleUploadCorpus(body, env);
+        else if (action === "format-and-upload" && request.method === "POST") result = await handleFormatAndUpload(body, env);
         else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
         else if (action === "cases" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.cases; }
         else if (action === "corpus" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.secondary; }
