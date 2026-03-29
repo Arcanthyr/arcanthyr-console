@@ -843,9 +843,11 @@ def run_legislation_embedding_pass(batch: int = 5) -> dict:
         log.info(f'[LEG] Embedding {len(act_sections)} sections for: {leg_title}')
         ok = True
         for s in act_sections:
-            embed_text = s['text']
-            if not embed_text.strip():
+            raw_text = s['text']
+            if not raw_text.strip():
                 continue
+            heading = s.get('heading', '') or ''
+            embed_text = f"{leg_title} — s {s['section_number']} {heading}\n{raw_text}".strip()
             metadata = {
                 'leg_id':         leg_id,
                 'leg_title':      leg_title,

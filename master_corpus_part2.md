@@ -378,7 +378,7 @@ A person who intentionally assists the offender who commits a crime would be gui
 ### Discussion on common intention under s 4
 [DOMAIN: Tasmanian Criminal Law] [ACT: Criminal Code Act 1924] [SECTION: 4] [CITATION: Common Intention Discussion] [CATEGORY: annotation] [TYPE: annotation] [TOPIC: Commentary on common intention as a basis for criminal liability] [CONCEPTS: common intention, unlawful purpose, criminal responsibility, probable consequence, objective test]
 
-T... The foundation of criminal responsibility under s 4 is the "mutual embarkation on a crime". The section establishes the ambit of criminal responsibility by participants while carrying out a common unlawful purpose. In contrast to the common law, the Code defines this ambit by requiring a connection of objective probability between the common purpose and the committed crime.
+The foundation of criminal responsibility under s 4 is the "mutual embarkation on a crime". The section establishes the ambit of criminal responsibility by participants while carrying out a common unlawful purpose. In contrast to the common law, the Code defines this ambit by requiring a connection of objective probability between the common purpose and the committed crime.
 
 Interpreted in this way, criminal responsibility will arise when:
 (a) two or more persons form a common intention to prosecute an unlawful purpose in conjunction with one another, and

@@ -3184,3 +3184,15 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 
 > Root cause: model instruction failure, not code bug. Qwen3 picks up "CRIMINAL DIVISION" header text instead of party names. Prompt fix with negative constraint + citation fallback. 31 affected rows patched via regex extraction from raw_text.
 
+
+## Session 25 Decisions — 29 March 2026
+
+1. **runDailySync is a feature, not legacy** — do not delete. Original design: once scraper works backwards through historical cases, runDailySync handles forward-looking capture of new decisions. Fix: update to use fetch-page proxy. Rationale: verified against session 3 conversation history where the feature was designed.
+
+2. **Scraper re-enablement gated on prompt review** — sequence locked: cron finishes → bulk re-merge → retrieval baseline → evaluate enrichment quality → review prompts → then re-enable. Rationale: no value adding cases processed under unvalidated prompts.
+
+3. **handleFetchSectionsByReference — tighten LIKE, not replace with FTS5** — false positive from broad `%N%` pattern confirmed but retrieval baseline unaffected. Fix is tighter LIKE pattern with `s` prefix boundary, not FTS5 replacement. Rationale: proportionate fix; FTS5 overkill for this use case.
+
+4. **Corpus placeholders — 2 of 5 are real gaps, defer to Procedure Prompt session** — block_023 and block_028 need source material from rag_blocks/. Don't fix in corpus files if they're getting reprocessed through Procedure Prompt anyway. Rationale: avoids duplicate work.
+
+5. **Legislation Act name in embed text, not just metadata** — prepend human-readable title to both embed vector and Qdrant payload text. Rationale: payload text is what Claude sees in retrieved context; metadata-only fix doesn't solve the identification problem.

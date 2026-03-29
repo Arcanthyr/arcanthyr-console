@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 29 March 2026 (end of session 24) · Supersedes all prior versions
+Updated: 29 March 2026 (end of session 25) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -87,19 +87,19 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 29 March 2026 (end of session 24)
+## SYSTEM STATE — 29 March 2026 (end of session 25)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 10,333 vectors total · 1,272 legislation + 1,172 secondary source chunks · case chunks embedding via poller |
-| D1 cases | 549 total · 329 deep_enriched · 220 pending chunk completion · [2026] TASFC 1 deleted (junk raw_text) |
+| Qdrant general-docs-v2 | 10,333+ vectors · 1,272 legislation re-embedding with Act name prefix · 1,172 secondary sources + 1 new (FSST) · case chunks embedding via poller |
+| D1 cases | 549 total · 329 deep_enriched · 220 pending chunk completion |
 | D1 case_chunks | 8,672 total · ~1,753 done=0 (nightly cron clearing 250/night) · ~6,919 done=1 |
-| D1 secondary_sources | 1,172 total · all enriched=1 · all embedded=1 |
-| enrichment_poller | RUNNING — restarted 29 March after 5-day stall · force-recreated with enriched_text IS NOT NULL guard |
+| D1 secondary_sources | 1,173 total (FSST chunk added) · all enriched=1 · FSST pending embed |
+| enrichment_poller | RUNNING — case-embed active · legislation re-embed queued (all Acts set embedded=0) |
 | Cloudflare Queue | Nightly cron clearing done=0 chunks at 3am UTC (1pm AEST) · 250/night |
-| Scraper | NOT RUNNING — last log entry 24 March · Task Scheduler status unknown · re-investigate next session |
-| arcanthyr.com | Live — Worker version bdfa662e (session 24: Pass 1 case_name prompt fix + enriched_text IS NOT NULL SQL guard) |
-| arcanthyr-ui.pages.dev | Redundant — safe to delete · no longer updated |
+| Scraper | NOT RUNNING — deliberately held until cron completes + prompt review done |
+| arcanthyr.com | Live — worker.js version bdfa662e · enrichment_poller updated with Act name prefix |
+| arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
 
 ---
 
@@ -134,20 +134,21 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 1. **Monitor nightly cron** — ~1,753 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~7 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
 2. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
 3. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
-4. **Fix scraper Task Scheduler** — last log entry 24 March · confirm Task Scheduler status and re-enable if dead
-5. **Upload FSST medications chunk** — formatted chunk ready · upload via arcanthyr.com Upload tab (Secondary Sources) · citation: hoc-b033-m004-fsst-medications-false-positive-response · then set enriched=1 · deferred from session 24
-6. **Legislation Act name gap** — prepend legislation_id as Act name in Qdrant payload · re-embed 1,272 sections
-7. **handleFetchSectionsByReference LIKE fix** — replace '%38%' slug match with FTS5
-8. **Delete arcanthyr-ui.pages.dev** — Cloudflare dashboard → Pages → arcanthyr-ui → Settings → Delete project
-9. **Fix corpus ... placeholders** — 5 gaps identified: part1.md:1282, part2.md:381/1167/1957/2415 · source file fixes + re-ingest needed · low priority
-10. **Disable runDailySync legacy cron** — 2am UTC cron calls legacy Worker-native AustLII scraper superseded by Python scraper · safe to disable · low priority
+4. **Confirm legislation re-embed** — check poller LEG logs for Act name prefix in embed text · verify Qdrant payload includes Act title · spot-check: `curl localhost:6334/collections/general-docs-v2/points/{section_id}`
+5. **Re-enable scraper after prompt review** — scraper deliberately held · sequence: cron finishes → re-merge → baseline → evaluate GPT-4o-mini enrichment quality → review Pass 1/Pass 2 prompts → then re-enable Task Scheduler
+6. **Fix runDailySync proxy** — update to use fetch-page proxy instead of direct AustLII fetch · do NOT delete — feature needed for forward-looking new case capture once scraper works backwards
+7. **handleFetchSectionsByReference LIKE tightening** — current `'%' || ? || '%'` on secondary_sources produces false positives (s38 matches IDs with 138) · low priority — retrieval baseline unaffected · tighten LIKE pattern to require `s` prefix before number
+8. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
+9. **Fix UI Secondary Sources upload path** — React UI POSTs to `/upload-corpus` instead of `/api/legal/upload-corpus` · one-line fix in arcanthyr-ui
+10. **Legislation Act name gap** — IN PROGRESS · poller updated with Act title prefix · all legislation set embedded=0 · re-embed running
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
 - **Queue stalled on 2,594 chunks** — bulk requeue (548 cases simultaneously) exhausted max_retries=5 on GPT-4o-mini rate limits · nightly cron at 3am UTC re-enqueues 250/night · self-resolving in ~10 nights · can manually fire `requeue-chunks` with `{"limit":250}` to speed up
-- **Corpus ... placeholders** — 5 genuine gaps identified: part1.md:1282 (standalone ...), part2.md:381 (T... truncated word), part2.md:1167 (...BUT (see below) dangling ref), part2.md:1957 ([Continues with specifics...] placeholder tag), part2.md:2415 (standalone ...) · source file fixes + re-ingest needed · low priority
+- **Corpus ... placeholders — 3 of 5 resolved** — part1.md:1282 and part2.md:2415 confirmed as legal elisions (not errors) · part2.md:381 `T...` fixed to `The` · remaining 2 genuine gaps: part2.md:1167 block_023 (`...BUT see below` dangling ref) and part2.md:1957 block_028 (`[Continues with specifics...]` placeholder) — both need source material from rag_blocks/, deferred to Procedure Prompt re-ingest
+- **UI Secondary Sources upload broken** — React UI posts to `/upload-corpus` (404) instead of `/api/legal/upload-corpus` · workaround: use PowerShell Invoke-WebRequest directly · fix is one-line path change in arcanthyr-ui
 - **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
 - **~329 cases merged with old-format principles** — synthesis confirmed working (session 23 spot-check on [2020] TASSC 1) · re-merge route fixed with target:remerge param · waiting on cron to clear 2,086 pending chunks before bulk re-merge fires · command: `{"target":"remerge","limit":330}`
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
@@ -165,6 +166,26 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
+
+---
+
+## CHANGES THIS SESSION (session 25) — 29 March 2026
+
+- **Legislation Act name prefix in Qdrant** — enrichment_poller.py updated to prepend Act title, section number and heading to embed text (e.g. "Evidence Act 2001 (Tas) — s 38 Unfavourable witnesses\n{section text}"). All legislation rows set embedded=0 to trigger re-embed. Qdrant upsert overwrites by section_id — no cleanup needed. Why: retrieval was finding correct legislation sections but Claude couldn't identify which Act they belonged to because chunk text had no Act name (diagnosed session 18, s 49 Justices Act test).
+
+- **FSST methylamphetamine chunk ingested** — practitioner forensic guidance on medications that won't cause false positive oral fluid results (paracetamol/codeine, pseudoephedrine, diazepam, citalopram, oxycodone, escitalopram, quetiapine, sertraline, clomipramine, phentermine) plus FSST confirmation that passive methylamphetamine inhalation is scientifically impossible. Citation: `fsst-methylamphetamine-false-positives-passive-inhalation`. Category: practice note. Enriched text written directly (no GPT enrichment needed). Why: practitioner-sourced forensic evidence — directly useful for drug driving defences.
+
+- **arcanthyr-ui.pages.dev deleted** — redundant Cloudflare Pages project removed from dashboard. Why: frontend now served directly from Worker at arcanthyr.com, Pages deployment was never updated after the React rebuild.
+
+- **Corpus placeholder scan resolved** — 5 `...` occurrences investigated: 2 confirmed as legal elisions (not errors), 1 trivial typo fixed (`T...` → `The` in part2.md:381 block_019), 2 genuine content gaps identified (block_023 and block_028 — deferred to Procedure Prompt re-ingest). Why: needed to determine which placeholders were real gaps vs intentional legal text.
+
+- **handleFetchSectionsByReference LIKE fix investigated and deferred** — CC diagnosis confirmed false positive risk from `'%' || ? || '%'` pattern on secondary_sources IDs (s38 matches block IDs containing 038, 138 etc). Two ID formats identified: legacy free-text (`Evidence Act 2001 (Tas) s 38 -...`) and modern `hoc-b` slugs. Tighter `s`-prefix LIKE pattern designed but deferred — retrieval baseline unaffected, low priority. Why: polish fix, not a functional regression.
+
+- **runDailySync deletion cancelled** — confirmed as future feature (forward-looking new case capture once scraper works backwards through historical cases). Needs proxy fix (currently hits AustLII directly from Cloudflare IPs), not deletion. Why: original design intent verified against conversation history.
+
+- **Scraper re-enablement deferred** — deliberately held pending: cron completion → bulk re-merge → retrieval baseline → GPT-4o-mini enrichment quality review → Pass 1/Pass 2 prompt review. Why: no point adding new cases processed under prompts not yet validated.
+
+- **UI Secondary Sources upload path bug identified** — React UI posts to `/upload-corpus` (returns 404) instead of `/api/legal/upload-corpus`. Workaround: PowerShell Invoke-WebRequest. Why: discovered while uploading FSST chunk via UI.
 
 ---
 
