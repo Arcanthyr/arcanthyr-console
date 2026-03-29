@@ -2764,6 +2764,30 @@ export default {
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-merge' && request.method === 'POST') return handleRequeueMerge(request, env, corsHeaders);
 
+    /* ── INGEST ROUTES (proxy to nexus) ─────────────────────── */
+    if (url.pathname === '/api/ingest/process-document' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const r = await fetch('https://nexus.arcanthyr.com/process-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': env.NEXUS_SECRET_KEY },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json();
+        return new Response(JSON.stringify(data), { status: r.status, headers: corsHeaders });
+      } catch (err) { return json({ error: err.message }, 500); }
+    }
+    if (url.pathname.startsWith('/api/ingest/status/') && request.method === 'GET') {
+      try {
+        const jobId = url.pathname.slice('/api/ingest/status/'.length);
+        const r = await fetch(`https://nexus.arcanthyr.com/ingest-status/${jobId}`, {
+          headers: { 'X-Nexus-Key': env.NEXUS_SECRET_KEY },
+        });
+        const data = await r.json();
+        return new Response(JSON.stringify(data), { status: r.status, headers: corsHeaders });
+      } catch (err) { return json({ error: err.message }, 500); }
+    }
+
     if (url.pathname === '/api/pipeline/fts-search' && request.method === 'POST') {
       const { query, limit = 10 } = await request.json();
       if (!query) return new Response(JSON.stringify({ error: 'query required' }), { status: 400, headers: corsHeaders });

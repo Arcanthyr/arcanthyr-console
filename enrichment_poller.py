@@ -693,7 +693,8 @@ def run_embedding_pass(batch: int) -> dict:
         # Prefer enriched_text for embedding; fall back to raw text
         embed_text   = chunk.get('enriched_text') or chunk.get('raw_text', '')
         metadata     = {
-            'source_id':   chunk.get('source_id', ''),
+            'citation':    chunk['id'],
+            'source_id':   chunk.get('id', ''),
             'chunk_index': chunk.get('chunk_index', 0),
             'text':        embed_text[:5000],
             'type':        'secondary_source',

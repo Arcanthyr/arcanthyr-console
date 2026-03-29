@@ -1,0 +1,576 @@
+Hearsay – Structure of Answer
+Before considering hearsay, need to ask “is the piece of evidence relevant?”
+All evidence sufficiently relevant to a main/collateral fact in issue is prima facie admissible.
+All evidence that is not sufficiently relevant is not admissible, even without considering hearsay.
+A piece of evidence is relevant when:
+Any two facts are so related to each other that, according to the course of human experience, one fact indicates the likelihood of the existence of the other fact
+A fact is relevant if it can be linked to a main fact in issue or a collateral fact in issue.
+Relevance is a question of law for the judge.
+State the issue in question form:
+“Is the [slogan that “Smalley is Small”] in [a catalogue] documentary hearsay evidence?”
+“Is [deceased’s] statement to [killer] about going to [place] at [time] and overheard by [witness] amount to hearsay?”
+Write: “Hearsay has received various formulations in both case law and academic texts. In Cross on Evidence, hearsay was defined as “an out-of-court assertion, other than one by the person giving evidence, which is inadmissible as evidence of any fact in the assertion.” In Subramaniam De Silva L @ 970 said that statements are hearsay “when the object of the evidence is to establish the truth of what is contained in the statement.””
+Write: “The rationale for the existence of the hearsay rule was stated in Teper by Lord Normand @ 486 to be because:
+Not the best evidence;
+Not delivered under oath;
+Truthfulness and accuracy cannot be tested in cross-examination; and
+(because speaker is not a witness)
+Light which speaker’s demeanour would throw on the testimony is lost.”
+If dealing with written hearsay, give a quick definition of “document”
+“Here, the evidence is in documentary form. The definition of ‘document’ in the QEA is very wide and would fall within para (?) of the definition in Sch 3.”
+Document includes:
+A document in writing
+Any part of a document (a)
+Book, map, plan, graph, drawing (b)
+Photograph (c)
+Label, marking, any writing that identifies or describes something (d)
+Disc, tape, sound track, any sound recording (e)
+Note: also real evidence (Butera). Must prove provenance of tape to show it has not been tampered with or enhanced.
+Film, negative, tape, any video recording (f)
+Note: also real evidence (Sitek). Must prove provenance of tape to show it has not been tampered with or enhanced.
+Catchall: any record of information whatever (g).
+See “Documentary and Real Evidence” notes for fuller info.
+Because evidence will only be excluded as hearsay when admitted to show the truth of the statement, it is important to look at the purpose of the evidence’s admission.
+If trying to rely on statement to show truth of what was said in it, will be hearsay and inadmissible (Subramaniam)
+If the statement is relied on for some other purpose than proving the truth of the statement, it will be admissible as original evidence, not hearsay evidence (Subramanium).
+Possible Purposes for Admission
+Proving person’s state of mind (acting under duress, going to kill him unless he did what he was told) = OK, goes to state of mind, not truth of what was said = original evidence not hearsay (Subramaniam).
+Drawing inferences as to the person’s intention (said was going to meet someone at some place, coupled with circumstantial evidence that corroborates the intention) = OK, goes to intention, not truth of what was stated = original evidence, not hearsay (Walton)
+Statements showed that the deceased ex-wife had the intention to meet the killer, and from there it could be inferred that the deceased did in fact go to meet the killer.
+Also, a bus ticket was found in the deceased’s pocket, indicating she did in fact travel to the town centre, and the bus driver was able to give evidence of the bus’s estimated arrival time – all of which corroborated the inference as to the deceased’s intention
+But if tried to admit statements to show that she did in fact meet the killer, this would be hearsay (as it uses the statements to show their truth, which is not permissible).
+Cylinder block numbers on car engines = not OK, evidence is to prove that the car’s engine matches the CBN from stolen car, therefore hearsay (Myers v DPP).
+Accused and third party put same false information on application form = used only to show that the two parties conspired together, not that the information on the form is true = therefore, OK, not hearsay, is original evidence (Chin).
+Showing the nature of emotion, anxiety or fear at an existing or impending emergency = OK because statement relevant and necessary to explain why phone call was made = original evidence, not hearsay (Ratten)
+Where the fact of making the assertion is the fact in issue = ie where admitting statement to show that it was made, rather than that it is necessarily true = original evidence, not hearsay.
+For example, in order to succeed in an action for defamation, it must be proven that a defamatory statement was published. The truth of the defamatory statement does not need to be proven, but we need to prove that the statement was actually made (publication of defamatory statement). In a defamation case, the statement will be original evidence, not hearsay and will be admissible.
+Statements which form a verbal portion of an act, accompanying and explaining that act = not hearsay
+If the issue in dispute is how someone obtained an item of property, a party could rely on a statement by the giver of property saying “I want you to have this” – this is not hearsay, but treated as part of the act itself
+Words forming of a contract – those words are original evidence that show the contract itself
+Where the fact of making the assertion, whether it be true or not, is relevant to a fact in issue = not hearsay (Subramaniam)
+Example: statement of “get me the police please” over the phone not hearsay because not used to prove victim was being attacked, but instead used to reveal emotions etc (Subramaniam)
+Example: Accused and third party put same false information on application form = used only to show that the two parties conspired together, not that the information on the form is true = therefore, OK, not hearsay, is original evidence (Chin).
+What is the scope of the hearsay rule?
+It applies to:
+Out-of-court assertions
+Express assertions
+Here, the statement [“Michael, daddy’s on the phone” (Walton) / “That was Pollitt on the phone, he buggered up the job, he wants to be paid for something he hasn’t done…” (Pollitt)] is an express assertion of the identity of the person on the phone like in Walton/Pollitt.
+Implied assertions (assertions not intended to be asserted)
+Here, the statement [“Hello Daddy” when boy came to phone: Walton / “Hi Bella”] is an implied assertion of the identity of the other caller because it is implied from the statement and not deliberately intended by author: Walton.
+These are assertions where it was not intended to necessarily convey information (e.g. greetings assert identity but the purpose is not to say who it is).
+An implied assertion is one which can be inferred or implied from a statement or from conduct and will generally not be deliberately intended by the author (Walton – ‘hello daddy’)
+Statements in oral, written or conduct form
+oral – “Daddy is on the phone” in Walton is an express verbal assertion
+written – insurance claim in written form not drafted by the witness
+conduct – in answer to a question “who hit you?” the victim points to someone
+An example of hearsay through conduct could be if a person does not use a staircase because it is faulty, and a different person injures themselves on that staircase – the conduct of the first person could show that the staircase was faulty.
+Another example of hearsay through conduct could be if a covered body was put into a mortuary van that was parked outside someone’s house and a body was carried into the van – through the conduct of the mortuary, neighbours would think that the covered body is dead
+Decide whether the piece of evidence is hearsay or original evidence.
+Just because you decide something is hearsay doesn’t automatically mean it won’t go into evidence, because it might come within an exception.
+If you decide something is original evidence, there is no need to consider an exception, as it is able to be admitted into evidence anyway!
+Exceptions to the Hearsay Rule
+Inherently Reliable Evidence Exception (Telephone Exception)
+Consider this exception every time there’s mention of a telephone call.
+A CL exception applies where there is a contemporaneous statement made by a party to a telephone conversation (either during, before or after the call) where they disclose the identity of the other party (Walton per Deane J @ [4]).
+Rationale:
+Extreme unlikelihood of concoction (Walton per Mason CJ @ [23]-[25]); and
+Spontaneous/contemporaneous identification has high degree of reliability (Pollitt per Mason CJ @ [12]).
+Implied assertions of identity of caller admissible because spontaneous + high degree of reliability (Pollitt per Mason CJ @ [12]).
+Express assertion of identity also admissible because likely to have a high degree of spontaneity, be free from concoction, therefore has high degree of reliability (Pollitt per Mason CJ @ [14]).
+When made by a child (“hello daddy”) there is an extreme unlikelihood favouring admission (Walton per Mason CJ @ [23]-[25]).
+According to Deane J in Walton (@ [4]), the hearsay rule:
+Should be flexibly applied;
+In accordance with common sense and justice; and
+Should produce consequences that show the law is attuned to society.
+NOTE: This exception is restricted to identification evidence (ie “Hi Bella”), and the real benefit of [deceased’s] statement on the phone lies in coupling the identification evidence with the information about [meeting at the Yummy Club at 7pm] (because [deceased’s] body is found next to the [Yummy Club later that evening]).
+Exception should be confined to categories of ordinary social and business conversation where there is no real ground for concluding the identification was fabricated or fictitious (Pollitt per McHugh J @ [23]).
+The scope of the common law inherently reliable evidence/telephone exception is uncertain and a complex area of the law of evidence.
+Walton was confirmed in Kamleh.
+McHugh J in Pollitt suggested that inherently reliable exception should only be available in civil cases, people tend to conceal their identity, use fake names etc in criminal cases (only ordinary social and business calls).
+Also talk about the statutory exception in s 93B QEA (below)!
+Look at s 93B(2)(a) and (b) QEA, which is a clearer statutory reformulation of the inherently reliable exception.  Note that it only applies to certain offences, but is not restricted to identification evidence.
+Res Gestae
+Doctrine of res gestae concerns the admissibility of evidence because of its overwhelming relevance and reliability.
+Literally means “the transaction”
+Enables evidence to be received even though it infringes one of the exclusionary rules, like hearsay.
+There are four main heads of res gestae:
+Incidents or events regarded as part of the transaction in issue
+Spontaneous statements made by participants in or observers of the event in issue
+Statements made by a person as to their contemporaneous physical sensations or general state of health
+Statements made by a person as to their state of emotion or belief
+Incidents/Events Part of Transaction in Issue
+Isn’t so much an exception to hearsay as it is an exception to otherwise inadmissible evidence. For example, evidence that tends to show bad character.
+In O’Leary, the accused’s heavy drinking, violence and hostility explained his mind and attitude which was relevant to whether he was capable of forming the intent to murder, so the lead up evidence was admissible.
+Without the evidence of drinking, the murder was an unintelligible event.
+Intent to cause death or GBH is an element to murder, so it was very important to be able to show whether or not he was capable of having that intent.
+Spontaneous Statements by Participants/Observers of Event
+Case examples:
+Bedingfield: Throat cut in one room, walked out of room and said ‘Oh dear, Aunt, see what B has done to me’ – mere narrative of what already happened. Held: inadmissible.
+Ratten: Statement of wife “get me the police please” and fatal shooting closely associated in time and place. Statement and tone of voice showed forced from wife by overwhelming pressure of contemporaneous event. Spontaneity endorsed by time sequence and R’s proximity to wife with his gun. Held: admissible.
+Andrews: Man attacked by A with knife, few moments after attack while bleeding heavily from serious stomach wound, staggered to unit in same house and able to identify A by name as one of his assailants. Held: admissible (spontaneous and contemporaneous)
+Adelaide Chemical and Fertiliser: C at truck, moving jar of sulphuric acid, broke and spilt on legs. 1-2 minutes later, inside the building, made statement explaining what happened and that jar faulty/cracked. Held: inadmissible – mere narrative (did not meet strict contemporaneity because transaction complete when the jar broke and acid spilt over legs).
+In more recent cases it has been acknowledged that the important factor is not strict contemporaneity but the fact that it was inspired or provoked by the event (Walton, Pollitt and Benz).
+Vocisano: Two brothers driving & crashed. Husband and wife came to accident scene minutes after accident. Not so seriously injured brother told H&W that seriously injured brother was driver. Spontaneous (unlikely to be concocted) not contemporaneous – need both. Held: inadmissible – historical account not part of transaction.
+Morrison: F on phone to L when L told F that M arrived and had knife. F heard murder over phone. L had phone in hand when body found. Held – admissible (M’s presence in unit AND motive (L called M ‘Blocky’ short for blockhead).
+Warren v Coombes: F heard engine revving, car roaring up road, screech of brakes, bang. F said to daughter before crash driver going too fast. After bang, F saw motorcycle and man up in the tree. Held: admissible (contemporaneous + spontaneous).
+Walton: Follows/confirms Vocisano (per Wilson, Dawson and Toohey JJ @ [25]).
+Pollitt: can have approximate, if not exact, contemporaneity.
+In the leading case of Vocisano, Barwick CJ made it clear that both spontaneity and contemporaneity are required for this head.
+Check for spontaneity: is the statement likely to be free of concoction, and made without thought or reflection?
+Eg: made while on fire/burning etc, made while helicopter plummeting from the sky = not likely to be making it up.
+Must have both spontaneity and contemporaneity (Vocisano).
+Check the timing of the statement: was it at the same time as the event happened, or was it more than a few minutes later?
+The requirement for contemporaneity is clear from the cases (Ratten, Walton).
+The earlier the better, more chance of it coming within this head of res gestae.
+Can have approximate, if not exact, contemporaneity (Pollitt)
+Statements About Physical Sensations/General State of Health
+Where there are statements of health at the relevant time or soon after, relating to bodily feelings and symptoms, health, sensations, intention, knowledge or state of mind these are admissible under this third head of res gestae, because they are spontaneous and natural expressions of suffering, forming part of the res (Ramsay v Watson).
+Eg: where plaintiff alleges lead poisoning over 35 years, medical officer as witness for defendant asked on 21 other people’s health from same office = hearsay, doesn’t come within this exception, must call each person (Ramsay v Watson)
+This head only applies where it was the best or only evidence available. If a man's bodily feelings at a particular time were relevant, but he could not be called as a witness, or was not a competent witness, what he had said at that time might be the only means of proving the fact. In most, if not all, of the cases in which this question has arisen the declarant was dead before the trial (Ramsay v Watson @ [6]).
+Mr. Cross has said in his work on Evidence (1958) p. 387 of this topic: "Whatever may be its true nature, the evidence is received because it is frequently all that can possibly be available".
+Statement About Emotion or Belief
+There is no case law relating to this particular test, and there is no provision in the QEA.
+However, contemporaneous representations about the maker’s health, feelings, sensations, intention, knowledge or state of mind are exceptions to the hearsay rule under the CEA (s 72 CEA).
+Statutory Exceptions to Hearsay
+Part 6 of the QEA contains various provisions that amend and extend the circumstances which hearsay evidence will be received into evidence in Queensland (Field @ [10.1]).
+If dealing with documentary evidence… (not oral evidence)
+The QEA provides for the potential admissibility of otherwise documentary hearsay evidence in both civil and criminal proceedings. Different sections deal with each
+FOR A CIVIL TRIAL (Documentary Hearsay)…
+WARNING: Applies to civil cases only!!!
+Documentary hearsay evidence in a civil trial may be admissible under s 92 QEA where:
+There is a statement; and
+Defined in Schedule 3 to include: “any representation of fact, whether made in words or otherwise and whether made by a person, computer or otherwise.”
+In a “document”; and
+The definition of ‘document’ in the QEA is very wide and would fall within para (?) of the definition in Sch 3.
+Document includes: (Sch 3 QEA)
+A document in writing
+Any part of a document (a)
+Book, map, plan, graph, drawing (b)
+Photograph (c)
+Label, marking, any writing that identifies or describes something (d)
+Disc, tape, sound track, any sound recording (e)
+Note: also real evidence (Butera).
+Film, negative, tape, any video recording (f)
+Note: also real evidence (Sitek).
+Catchall: any record of information whatever (g).
+Oral evidence of the fact would be admissible; and
+If [document maker] was around to provide evidence about [facts] this would be admissible because it is relevant to [fact in issue].
+Maker of statement has personal knowledge and is called as a witness (s 92(1)(a)); OR
+A statement is made in a document if it is: s 92(4)(?) QEA
+(a)Written, made, dictated or produced;
+(b)Recorded with the person’s knowledge;
+(c)Recorded in the course of and ancillary to a proceeding; or
+(d)Recognised as the person’s statement by their signature or initialling
+Therefore, here the maker was [person] as they [apply (a), (b), (c) or (d)]. [Person] did/did not have personal knowledge.
+IF original document maker and letter/reproduction of document are different
+Here, using [typed up letter] not [document eg. notes] therefore person who made it is person who typed it up (different person to [employee]) therefore [typist] has no personal knowledge of [document].
+Look out for situation where there are notes made by employee/person with personal knowledge but they are now in a typed report containing details from those notes – work out which is being relied upon.
+The maker of the statement must be called as a witness.
+If they are called and the above is satisfied, the document will be admissible under s 92(1)(a) QEA.
+NOTE: exception for calling witness below.
+Record made in course of “undertaking” and source has personal knowledge and is called as a witness (s 92(1)(b)).
+Undertaking is defined in Sch 3 QEA very widely to include:
+Public administration;
+Any business  most likely
+Profession;
+Occupation;
+Calling;
+Trade
+Undertaking
+Whether or not engaged in:
+By the Crown or statutory body;
+For profit or not;
+In QLD or any other place.
+Source of the record must have personal knowledge, or be reasonably supposed to have had personal knowledge, of what’s in the record (s 92(1)(b)).
+The person who supplied the information in the record must be called as a witness
+If above satisfied, evidence admissible under s 92(1)(b) QEA.
+NOTE: Exception for calling witness below.
+EXCEPTION FOR CALLING WITNESS:
+There is no need to call the witness as required under s 92(1)(a) or (b) where:
+Maker/supplier is dead or unfit due to bodily or mental condition (s 92(2)(a)); or
+Maker/supplier is out of the state and not reasonably practicable to secure their attendance (s 92(2)(b)); or
+Maker/supplier cannot, with reasonable diligence, be found or identified (s 92(2)(c)); or
+It can not reasonably be supposed (having regard to the time which has elapsed since the maker or supplier made the statement, or supplied the information, and to all the circumstances) that the maker or supplier would have any recollection of the matters dealt with by the statement the maker made or in the information the supplier supplied (s 92(2)(d); or
+this provision is particularly relevant for doctors, police, person with many clients etc.
+no party to the proceeding (who would have the right to cross-examine the maker or supplier) requires the maker or supplier being called as a witness (s 92(2)(e)); or
+at any stage of the proceeding it appears to the court that, having regard to all the circumstances of the case, undue delay or expense would be caused by calling the maker or supplier as a witness (s 92(2)(f)).
+If you can make out any of the above, the evidence will still be admissible under s 92(1) even though the maker/supplier is not called as a witness (s 92(2)).
+FOR A CRIMINAL TRIAL (Documentary Hearsay)…
+WARNING: applies to criminal cases only!!!
+Documentary hearsay evidence in a criminal trial may be admissible under s 93 QEA where:
+There is a statement; and
+Defined in Schedule 3 to include: “any representation of fact, whether made in words or otherwise and whether made by a person, computer or otherwise.”
+In a “document”; and
+The definition of ‘document’ in the QEA is very wide and would fall within para (?) of the definition in Sch 3.
+Document includes: (Sch 3 QEA)
+A document in writing
+Any part of a document (a)
+Book, map, plan, graph, drawing (b)
+Photograph (c)
+Label, marking, any writing that identifies or describes something (d)
+Disc, tape, sound track, any sound recording (e)
+Note: also real evidence (Butera).
+Film, negative, tape, any video recording (f)
+Note: also real evidence (Sitek).
+Catchall: any record of information whatever (g).
+Oral evidence of the fact would be admissible; and
+If [document maker] was around to provide evidence about [facts] this would be admissible because it is relevant to [fact in issue].
+The record was made in the course of trade or business (s 93(1)(a)); and
+business includes any public transport, public utility or similar undertaking carried on in Queensland or elsewhere by the Crown (in right of the State of Queensland or any other right) or a statutory body (s 93(2)).
+Information was supplied (whether directly or indirectly) by persons who had, or may reasonably be supposed to have had, personal knowledge of the matters dealt with in the information they supplied (s 93(1)(a)); and
+A statement is made in a document if it is: s 92(4)(?) QEA
+(a)Written, made, dictated or produced;
+(b)Recorded with the person’s knowledge;
+(c)Recorded in the course of and ancillary to a proceeding; or
+(d)Recognised as the person’s statement by their signature or initialling.
+The source of the information is not available (s 93(1)(b)):
+source is dead or unfit due to bodily or mental condition (s 93(1)(b)(i)); or
+source is out of the state and it is not reasonably practicable to secure their attendance (s 93(1)(b)(ii)); or
+source cannot, with reasonable diligence, be found or identified (s 93(1)(b)(iii)); or
+source can not reasonably be supposed (having regard to the time which has lapsed since the person supplied the information and to all the circumstances) to have any recollection of the matters dealt with in the information the person supplied (s 93(1)(b)(iv)).
+this provision is particularly relevant for doctors, police, person with many clients etc.
+Conclusion: is the evidence admissible under s 93 QEA?
+If dealing with oral OR documentary evidence…
+WARNING: Applies to CRIMINAL trials ONLY!!!
+Hearsay evidence may be admissible under s 93B QEA where:
+The proceeding is a prescribed criminal proceeding (s 93B(1)); and
+Homicide, suicide, concealment of birth, offences endangering life or health (GBH, bodily harm, torture), assaults (common assault, assault occasioning bodily harm and serious assault), rape and sexual assaults (s 93B(5) QEA).
+Person has personal knowledge of an asserted fact; and
+Must have personal knowledge of the asserted fact
+Asserted fact is the thing that the truth of the statement is going to prove
+In McGrane, the asserted fact was that the doctor had drugged her.
+State what the asserted fact is.
+Ie can make the representation personally or through an agent (even as an alter ego to avoid embarrassment) (R v McGrane)
+Person makes a representation; and
+Representation defined in s 93B(5)(?) to include:
+(a)an express or implied representation, whether oral or
+written; and
+(b)a representation to be inferred from conduct; and
+(c)a representation not intended by the person making it to be communicated to or seen by another person; and
+(d) a representation that for any reason is not communicated.
+Person who made representation is unavailable (s 93B(1)(b)); and
+Only by reason of the person being dead or mentally or physically incapable of giving the evidence. i.e. doesn’t apply to out-of-state people etc.
+And one of the following applies:
+The representation was made shortly after the asserted fact, and unlikely to be fabricated (s 93B(2)(a)); or
+The onus is on the prosecution to show in a positive way that it is unlikely that the representation was fabricated and that the standard of proof is on the balance of probabilities (R v Martin [2009] per Bradley DCJ @ [29]).
+Highly likely that the representation is reliable (s 93B(2)(b)); or
+If witness’s evidence goes to a central question of fact = more likely to admit (Lester @ [30])
+Even if predisposed against the accused, if doesn’t outweight the evidence’s probative value = more likely to admit (Lester @ [30])
+No internal inconsistencies either with statement or other evidence = more likely to admit  (Lester @ [30])
+Representation was made against the interests of the person who made it (s 93B(2)(c)).
+Conclusion: is the hearsay evidence admissible under s 93B?
+Note: A party to the proceeding can request the court to give the following warnings to the jury: (s 93C(2))
+Hearsay evidence may be unreliable (s 93C(2)(a)); and
+Matters that may cause the hearsay evidence to be unreliable (s 93C(2)(b)); and
+Warn the jury of the need for caution in deciding whether to accept hearsay evidence, and its weight (s 93C(2)(c)).
+Note: still a general discretion to exclude evidence if either unfair, or under s 130 QEA (R v Burke [2009] per Bradley DCJ @ [25]
+But the mere fact that the person making the representations cannot be cross-examined, and indeed could not be cross-examined at committal, could not in itself be a sufficient reason for excluding evidence admissible under s 93B under s 130 (Higgins).
+Miscellaneous issues to discuss
+Where direct oral evidence of a fact would be admissible, any statement contained in a document produced by a computer and tending to establish that fact shall be admissible as evidence of that fact (s 95(1) QEA).
+For the purpose of deciding whether or not a statement is admissible in evidence by virtue of this part, the court may draw any reasonable inference from the form or contents of the document in which the statement is contained, or from any other circumstances (s 96(1) QEA).
+The court may in its discretion reject any statement or representation notwithstanding that the requirements of this part are satisfied with respect thereto, if for any reason it appears to it to be inexpedient in the interests of justice that the statement should be admitted (s 98(1)).
+Estimate of weight of evidence, once it is admitted:
+Contemporaneous with events (s 102(a)); and
+Incentive to conceal or misrepresent the facts (s 102(b)).
+Overall conclusion: is the evidence in or out?
+Teper v The Queen
+Evidence related to the fact that the Crown wanted to get into evidence in a charge of arson against T (arson of own property)
+The evidence was that some third party had said to T at about the time of the arson a statement implying that T set fire to own house and was running away to escape apprehension for it
+However, this was an out of court assertion and the only basis to bring it into court was to rely on the asserted facts mainly that T was running away from his own house which was on fire – the implication of that statement being that he set fire to it himself
+Therefore, it was not allowed in court as evidence because it was hearsay evidence
+The Crown was trying to use the out of court statement to prove the truth of the matter stated
+Subramaniam v Public Prosecutor
+Members of security forces found S in an area surrounding a terrorist camp
+He was severely wounded (head, back and arm injuries)
+He was wearing a belt that had 20 rounds of ammunition on it
+S was charged with being in possession of the ammunition which was contrary to anti-terrorist laws
+S claimed that he had been captured by terrorists and was acting under duress (he was forced to carry the ammunition)
+S said that one of the terrorists was in front of him, one of the terrorists was behind him and he was forced to walk in between them and carry this ammunition
+The evidence in question in this case was a conversation that took place between S and a terrorist
+The conversation was about how he was forced by the terrorist to carry weapons and ammunition
+In this case, the statement was made from terrorist to S saying that he was forcing him to carry ammunition otherwise the terrorists were going to kill S
+Whether or not the terrorists did say they were going to kill S did not matter to this case
+He was claiming duress – so his mental state was very important – if he believed that he would be killed if he did not carry the ammunition, then this statement would be very relevant to establish duress
+Parties can rely on a statement if its purpose is other than to establish its truth and it will not be hearsay, and will be admissible
+“Evidence of a statement made to a witness by a person who is not himself called as a witness may or may not be hearsay. It is hearsay and inadmissible when the object of the evidence is to establish the truth of what is contained in the statement”
+“It is not hearsay and is admissible when it is proposed to establish by the evidence, not the truth of the statement, but the fact that it was made. The fact that the statement was made, quite apart from its truth, is frequently relevant in considering the mental state and conduct thereafter of the witness or of some other person in whose presence the statement was made”
+
+## Ratten v R [1972] 1 AC 378
+
+### Ratten was charged with murder of his wife
+
+### Shotgun went off in the kitchen
+
+### Ratten and his wife were the only people in the house at the time
+
+### Ratten was having an affair with the local schoolteacher (NB. circumstantial evidence)
+
+### Ratten claimed that he was cleaning the gun in the kitchen and it went off accidentally
+
+### The offence happened in a rural area – where you call the police and leave a message and then they hook up the call
+
+### A female from Ratten’s address made the phone call 3-5 minutes before the shooting and the female said in a hysterical sobbing voice “get me the police please” (NB. Saying she was female = opinion evidence)
+
+### The Crown called the telephonist to rebut Ratten’s account of what happened after the shooting – this was relevant to determining whether this was an accident or deliberate shooting
+
+### Ratten tried to argue that right after the shooting, he called the ambulance (the court didn’t find this evidence compelling) – telephonist said definitely female, sobbing, get me police please.
+
+### If we used the statement of “get me the police please” to prove that the wife was being attacked by Ratten then that would be hearsay
+
+### Crown had to prove that there was another purpose for using the statement – Crown argued that the statement would indicate the nature of the emotions (anxiety or fear at an existing or impending emergency) which would help explain that the call was made  relevant and necessary to explain why the call was made
+
+### Hysterical sobbing female voice – relevant to the issue that the killing was not an accident but an intentional murder
+
+## Chin (DOCUMENTARY EVIDENCE
+
+### Chin and Chu were conspiring to import heroin in a suitcase into Sydney
+
+### On their visa applications, Chin and Chu both put down the same Malaysian phone number as their contact number
+
+### If the Crown was trying to prove that they had the same number, then they would be trying to prove the truth of the statement, and this would be inadmissible as hearsay evidence – did not care whether it was their correct number
+
+### But here, Crown was using the phone number to prove conspiracy between them – whether or not they had the same number was irrelevant – it was about the fact that they were conspiring together
+
+### Therefore, the evidence was admissible and not excluded by the hearsay rule
+
+### Telephone number on visa application – because using to prove conspiracy not that telephone number was true
+
+## Myers v DPP
+
+### M convicted of several counts of receiving stolen property
+
+### He bought wrecked cars with their log book and he disguised stolen cars so that they conformed with the details of the wrecked cars
+
+### He had to remove the engine number and chassis number from the wrecked cars and put them on the stolen cars
+
+### There is one number of a car you cannot change – cylinder block number of car, which is scanned into the engine of the car – not possible to alter it
+
+### Crown trying to prove that cylinder block numbers on the cars in question belonged to stolen cars
+
+### Crown wanted to produce microfilm cards which were filled in by workmen when they finished building the cars
+
+### The evidence being tendered was being used to prove the truth of the facts recorded on the car
+
+### Crown trying to prove was that they were going to get the factory records – when the car left the factory it had this block number and this chassis number so it proved that car’s were stolen
+
+### Consequently, it was hearsay evidence – they were using the cards to prove that a particular car had a cylinder block number – trying to prove the truth of the cylinder block number of car
+HELD: House of Lords
+Court held that this was essentially a number that was written down by an unknown employee that showed that if the record was correctly made, the car left the factory bearing these numbers
+Essentially, as the only relevance of this evidence was to prove that when the car left the factory it had those numbers was hearsay, and therefore inadmissible
+Changes in legislation after this making business records admissible (s93 QEA)
+
+## Walton v R
+
+### W charged with murder of ex-wife with a block and hammer in town centre
+They had been together for 2 years and had 2 children
+
+### W wanted to claim insurance money on his ex-wife and obtain custody of their 2 children
+
+### W married another lady 9 days after the death of his ex-wife
+
+### W’s new wife gave evidence about their plan to kill the ex-wife
+
+### Crown called the new wife and she gave evidence that W made arrangements to meet the ex-wife in Town
+
+### There were 3 statements used to corroborate the evidence of the new wife and to establish that the ex-wife went to Town on the date in question to meet W –
+
+### Ex-wife told Mary that she was going to meet W at the Elizabeth Town Centre to buy presents for the children
+
+### The day before the death, ex-wife had a conversation with W on the phone and she said “Michael, daddy’s on the phone …”
+
+### Little boy came to the phone and said “Hello Daddy”
+
+### W objected to all three statements saying that they were hearsay and that they were used to prove that the ex-wife did meet him in town
+The Crown disputed that and tried to show that the evidence established the ex-wife’s intention to meet W in Town, and that from that intention, the jury could infer that the ex-wife went to town to meet W
+The Crown arguing that it was admissible, and that the statements were about ex-wife’s state of mind (her intention to meet W in Town, which inferred that the next day she did go and meet him)
+The Crown used these statements in conjunction with circumstantial evidence and they were bus ticket on ex-wife’s pocket, and one of the bus drivers remembered the lady (remembered the time she caught the bus and the bus stop that she got on), he married a lady 9 days later, and also wanted insurance money (motive for killing her)
+The third statement (little boy saying “Hello daddy”) falls within an exception to the hearsay rule (inherently reliable exception)
+It was an implied assertion that they other person on the end of the phone was the boy’s father, Walton
+An implied assertion is one which can be inferred or implied from a statement or from conduct and will generally not be deliberately intended by the author
+There was an extreme unlikelihood of concoction on the part of the child in identifying his father by saying “Hello, daddy”
+“[E]specially in the field of implied assertions there will be occasions upon which circumstances combine to render evidence sufficiently reliable for it to be placed before the jury for consideration and evaluation of the weight which should be placed upon it, notwithstanding that ins trict terms it would be regarded as inadmissible hearsay… In the present case, the extreme unlikelihood of concotion on the part of the child would have been a factor favouring admission of the statements… To this extent it can be said that the hearsay rule is less rigrous in its application to implied assertions than it is in the case of express assertions”: Mason CJ at [23] to [25].
+“The hearsay rule should not, however, be inflexibly applied but should be qualified where the circumstances are such that its inflexible application would confound justice or common sense or produce the consequence that the law was unattuned to the circumstances of the society which it exists to serve. There is plainly something to be said for the view that, at least in some circumstances, the hearsay rule should be qualified so as not to preclude the receipt of evidence of contemporaneous statements made by one party to a telephone conversation (either in the course of the actual conversation or immediately before or after it) which disclose that the other party to the conversation was the person against whom it is sought to lead otherwise relevant and admissible evidence of that part of the conversation which was overheard”: Deane J at [4]
+
+## Pollitt v R (example of oral evidence – thus prima facie hearsay)
+
+## Pollitt and Allen had an agreement that Pollitt was going to kill Williams
+Pollitt killed the wrong person, Simpson by accident
+Pollitt was charged with murder and Crown had to prove evidence of murder
+Crown trying to prove alleged contract between Allen and Pollitt
+Before trial, Allen was killed
+Pollitt had an accomplice called Jones
+Jones was able to give evidence in the court case about the contract, but the Crown wanted additional evidence to corroborate what Jones was saying
+Crown sought to tender conversations taking place between Allen and some other people, the Berries
+There were some conversations between Berries and Allen, and on the night of the murder of Simpson, Allen told the Berries to watch the news
+Allen also told the Berries that the wrong man had been killed (“it was a stuff up”)
+Then were was a phone call between Pollitt and Allen and Pollitt said he wanted to be paid the $5000 but Allen refused because Pollitt killed the wrong person
+When Allen got off the phone to Pollitt, Allen said to the Berries “that was Pollitt on the phone, he buggered up the job, he wants to be paid for something that hasn’t been done”
+This hearsay evidence fell into the inherently reliable exception because the identification of Pollitt was made immediately after the termination of the telephone call and had a high degree of spontaneity, be free from the possibility of concoction and thus have a high degree of reliability
+
+## O’Leary
+
+## O’Leary and deceased were lumberjacks who shared a cabin at a camp in a remote forest area
+O’Leary had been drinking for some time and was particularly abusive to his fellow employee and he was unprovoked (just being violent)
+Apart from hitting the deceased in the head several times, he poured kerosene on his fellow employee and set him on fire
+The piece of evidence relevant was the lead up information (that O’Leary was drinking heavily and was being violent)
+The court concluded that the evidence was admissible
+
+### Under the influence of continued drinking, O’Leary engaged in repeated acts of violence which constituted a connected course of conduct
+
+### Without that evidence, the murder was an unintelligent event
+
+### O’Leary’s violent and hostile conduct explained his mind and attitude which was relevant to whether he was capable of forming the intent for murder
+Remember murder requires the intent to cause GBH – so intent is very important to murder
+Therefore, the evidence of him drinking and being abusive was very important, and hence it was admissible in this case
+
+## R v Bedingfield
+
+## B charged with murdering his female housemate
+B argued that female committed suicide
+There was a Crown witness who said that the female had walked out of one room (where B was) and walked into another room where the Crown witness was in another room
+She said that “Oh dear, Aunt, see what B has done to me”
+The witness heard that statement and saw that her throat had been cut
+Cockburn CJ refused to allow this evidence because he required strict contemporaneity and claimed that what the female housemate to the Aunt was a mere narrative of what had already happened in another room
+It is a very strict approach – this is the narrow view
+
+## Ratten
+
+### The statement of the wife of “get me the police please” and the fatal shooting were closely associated in time and place
+
+### Statement and tone of voice showed that the statement was forced from the wife by overwhelming pressure of contemporary event
+
+### Statement was spontaneous, which was endorsed by the time sequence and Ratten’s proximity to the wife with his gun
+
+### Hearsay is admissible where the statement is made in approximate but not contemporaneity (contemporaneity requirement) and the possibility of concoction or distortion for the advantage of the maker or the disadvantage of the accused is excluded (spontaneity requirement)
+
+## R v Andrews
+Andrews charged with aggravated robbery and murder
+Andrews attacked a man with a knife and the man died 2 months later
+A few moments after the attack, while bleeding heavily from a serious stomach wound, the man staggered downstairs to a unit in the same house and identified Andrews by name as one of his assailants
+This statement was sufficiently spontaneous and contemporaneous so it was admissible as evidence, despite being hearsay evidence
+
+## Adelaide Chemical and Fertilizer Co v Carlyle
+
+### C attempted to move a jar of sulphuric acid from the company’s delivery platform to his truck
+
+### As he did this, the jar of sulphuric acid broke and spilt on C’s legs
+
+### C immediately went inside the building to wash the acid off
+
+### C’s wife who was sitting in the truck followed him inside and asked him what happened
+
+### C explained how he tilted the jar and as he did it, it must have come away from his hand
+
+### C claimed that the jar was faulty or cracked
+
+### An infection set in, and some time later, C died from this event
+
+### C’s wife tried to sue company for damages and sought to admit the statement made by her husband
+
+### Held that the statement was mere narrative 1-2 minutes after the event – a story about what had happened
+
+### It was held that the transaction complete when jar broke and acid spilt over legs
+Despite this, the wife succeeded in her action – company was found liable for breaching its duty of care
+The evidence was inadmissible in this case – it required strict contemporaneity, and this has not been the approach in many Australian cases, so it is not a leading case
+
+### Hearsay is inadmissible where –
+
+#### Mere narration of a concluded event
+
+#### Distinct and appreciable break in time and place – here, there was a break between the delivery of narrative platform and the inside of the building
+
+#### Narration not naturally or spontaneously emanating from main transaction
+
+#### Narration is an independent and additional transaction
+
+## Vocisano v Vocisano
+
+### Two brothers driving around in a single car and they had an accident
+
+### The car was overturned and one of the boys had been flung from the car and was lying on the road
+
+### The seriously injured brother (the one lying on the road) sued his brother for negligent driving
+
+### The issue in the case was centred around who was the driver at the time
+
+### It wasn’t definite as to who was driving – the seriously injured brother lying on the road couldn’t remember
+
+### A husband and wife came along to the accident scene shortly after the accident
+
+### They testified that the not so seriously injured brother told them that the seriously injured brother lying on the ground was the driver
+
+### The court held that the brother said that his seriously injured brother lying on the ground was the driver so that he could get away from breaching his duty of care (thought he was lying)
+
+### On these particular facts, they claimed that the comments made by the brother that his brother lying on the ground was the driver was spontaneous but not contemporaneous – because it was made minutes after the accident when the husband and wife turned up
+
+### The court also said that the statement was a historical account rather than a statement made as part of the transaction
+
+### A hearsay statement is not admissible merely because it is unlikely to be concocted and thus might be reliable
+
+### A hearsay statement is admissible under res gestae because of the contemporaneous involvement of the speaker at the time the statement is made with the transaction as well as spontaneity/lack of concoction
+
+### Spontaneity by itself is not enough – we need a spontaneity plus contemporaneity
+
+## R v Morrison
+Murder of J and L in a Gold Coast unit in 1999
+A witness named F called L on her mobile just as M arrived in the unit with a knife
+L told F that ‘Blocky’ (M’s nickname) had just arrived and had a knife
+M detested the nickname ‘Blocky’ and the use of the nickname enraged him
+F then heard the actual murder of L as it took place over the mobile phone, before the line went dead
+L still had the mobile phone in her hand when her body was found
+It was held that F’s evidence was admissible under the res gestae exception as evidence of M’s presence in the unit at the time of the murder and a possible motive for the murder (‘Blocky’ was short for Blockhead)
+
+## Warren v Coombes
+
+## F heard the revving up of a car engine, the car roaring up the road, the screech of brakes and a bang
+F did not see the car or the accident
+F was standing in her backyard and she said to her daughter (before the crash) that the driver was going too fast
+Apparently after F heard the bang, she looked up at the sky and saw a motorcyclist and a man up in the tree
+The crucial piece of evidence was the statement made to the daughter
+The court held that this statement was admissible – it was contemporaneous, spontaneous and directly concerned an event in issue
+
+## Ramsay v Watson
+
+### P alleged that after working in printing office for 35 years, he contracted lead poisoning
+P claimed that his employer was negligent and failed to protect him against injury by inhaling lead particles and lead oxide fumes
+Ultimately, P wanted damages from employer
+Printing office wanted to call the Government medical officer to give evidence that he had examined 21 people working in similar conditions and had not contracted lead poisoning
+Past events do not satisfy contemporaneity – therefore, the doctor was prevented from giving evidence about the 21 people’s past sensations, experiences, symptoms
+They should have called the 21 people to give their original evidence of past sensations, experiences and symptoms
+Dr could not comment  Hearsay because not satisfy test of res gestae (C AND S)
+
+## R v McGrane [2002] QCA 173 (ADMISSIBLE)
+
+### Ms Chan died from an overdose of morphine
+
+### It was contended that her doctor (Dr McGrane) killed her – she claimed that she was drugged by him before she died
+
+### This was a murder case (so it was a prescribed criminal proceeding) and the statement was not documentary evidence – so s 93B relevant
+
+### The “asserted fact” for the purposes of s 93B(1) QEA was the drugging
+
+### Evidence of Mrs Lee (from the Health Rights Commission) was admissible because it was open to the jury to decide that Ms Chan made the representation personally –
+
+### Ms Chan either claimed to ring on someone else’s behalf to avoid embarrassment; or
+
+### Ms Chan made an implied representation through an agent – she called an agent who called Mrs Lee, to tell her what had happened
+
+### If someone made the calls from Ms Chan’s home in her absence then they could not use Mrs Lee’s evidence because there would not have been a personal knowledge element would not have been satisfied under the provision – ie. if could prove that burglar got into her house and made the phone call BUT that was unlikely because she was so security conscious
+
+### Experienced counsel for the appellant failed to object to Mrs Lee’s evidence – so it was admissible in that situation (when maybe should not have gone in)
+
+## R v Crump [2004] QCA 176 (INADMISSIBLE – s 93B not accepted)
+
+### D’s body found floating in lagoon
+
+### D had blows to head and abdomen
+
+### D’s de facto partner was convicted of her murder
+
+### Mrs Kahlow’s evidence was that the deceased had told her that the deceased was beaten up by her husband on the previous day and the deceased ran away from him and stayed with a neighbour
+
+### Mrs Kahlow’s evidence was inadmissible under s 93B(2)(a) and (b) QEA
+
+### The reason is that the D’s conversation with Mrs Kahlow could have been a fabrication or unreliable because Mrs Kahlow did not see any injuries (bruising) on the D when they had the conversation
+
+### There was also no evidence to prove how the conversation between Mrs Kahlow and D led into other acts of violence done by the de facto

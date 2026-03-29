@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 29 March 2026 (end of session 25) · Supersedes all prior versions
+Updated: 29 March 2026 (end of session 26) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -37,7 +37,6 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Bash scripts on VPS | Large pastes truncate in SSH terminal — create files locally and SCP to VPS instead |
 | PowerShell file creation | Use Python script to write files, not Out-File — BOM corruption confirmed on corpus files |
 | upload-corpus auth | Route does NOT use X-Nexus-Key — uses User-Agent spoof: `Mozilla/5.0 (compatible; Arcanthyr/1.0)` |
-| enriched=1 after ingest | After any secondary_sources ingest, always manually set `enriched=1` via wrangler d1 — new rows land with enriched=0 and poller won't embed them until this is done |
 | Cloudflare Queues | LIVE — fetch-case-url and upload-case both async via queue · Queue name: arcanthyr-case-processing · Message types: METADATA (Pass 1), CHUNK (principle extraction), MERGE (synthesis-only re-merge) |
 | case_chunks table | D1 table — stores 3k-char chunks per case · columns: id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded · PK is `citation__chunk__N` format |
 | deep_enriched flag | Column on cases table · 0 = Pass 1 only · 1 = all chunks processed and merged |
@@ -87,18 +86,18 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## SYSTEM STATE — 29 March 2026 (end of session 25)
+## SYSTEM STATE — 29 March 2026 (end of session 26)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 10,333+ vectors · 1,272 legislation re-embedding with Act name prefix · 1,172 secondary sources + 1 new (FSST) · case chunks embedding via poller |
 | D1 cases | 549 total · 329 deep_enriched · 220 pending chunk completion |
 | D1 case_chunks | 8,672 total · ~1,753 done=0 (nightly cron clearing 250/night) · ~6,919 done=1 |
-| D1 secondary_sources | 1,173 total (FSST chunk added) · all enriched=1 · FSST pending embed |
+| D1 secondary_sources | 1,174+ total (manual-doli-incapax added) · all enriched=1 |
 | enrichment_poller | RUNNING — case-embed active · legislation re-embed queued (all Acts set embedded=0) |
 | Cloudflare Queue | Nightly cron clearing done=0 chunks at 3am UTC (1pm AEST) · 250/night |
 | Scraper | NOT RUNNING — deliberately held until cron completes + prompt review done |
-| arcanthyr.com | Live — worker.js version bdfa662e · enrichment_poller updated with Act name prefix |
+| arcanthyr.com | Live — worker.js version 9361a39 (CF: f6db67df) · enrichment_poller updated with Act name prefix |
 | arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
 
 ---
@@ -166,6 +165,38 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
+
+---
+
+## CHANGES THIS SESSION (session 27) — 29 March 2026
+
+### Secondary Sources Upload — Built and hardened
+- Paste form fixed: api.js path corrected, citation extraction from [CITATION:] field added client-side
+- Drag-and-drop pipeline built: Worker routes POST /api/ingest/process-document and GET /api/ingest/status/:jobId proxy to server.py /process-document; UI polls every 5s with progress bar
+- python-docx added to Dockerfile.agent (permanent, no longer needs manual pip install after force-recreate)
+- chunks_inserted counter bug fixed: server.py run_ingest_job success check was reading missing ok/success fields — fixed to result.get("result") is not None and not result.get("error")
+- Citation quality fixed: split_chunks_from_markdown now prioritises [CASE:] over [CITATION:], falls back to heading slug; source field now uses chunk heading not filename stem
+
+### Secondary Sources Retrieval — Fixed
+- Pass 3 added to search_text(): filtered query scoped to type=secondary_source, threshold 0.35, limit 4 — gives secondary sources same low-threshold fallback that case chunks already had
+- top_k hard cap raised from 8 to 12
+- Root cause of citation:"unknown" in Qdrant diagnosed: enrichment_poller embed_secondary_sources() was omitting citation from payload metadata — all secondary source points had citation:"unknown", making them unretrievable by name
+- Fixed: poller now writes citation: chunk['id'] and source_id: chunk.get('id','') to Qdrant payload
+- Pass 3 dedup and fallback fixed to read chunk_id from payload correctly
+- All 1,188 secondary sources reset to embedded=0 for overnight re-embed with corrected payloads (~6 hours, 50/cycle)
+- Tomorrow: re-run hearsay query to confirm Ratten v R, Myers v DPP etc. now surface as named sources
+
+## CHANGES THIS SESSION (session 26) — 29 March 2026
+
+- **enriched=1 after ingest rule retired** — `handleUploadCorpus` and `handleFormatAndUpload` both set `enriched=1` on INSERT. Manual `wrangler d1` step is no longer needed after any secondary_sources ingest. Rule removed from session rules table.
+
+- **format-and-upload route live** — `POST /api/legal/format-and-upload` handles both raw text and pre-formatted blocks. Raw text path calls GPT-4o-mini with Master Prompt; short source detection appends chunking instruction to system prompt if word count < 800. Pre-formatted path (`<!-- block_` prefix) calls `parseFormattedChunks` directly, no GPT call. Single-chunk mode: `body.mode='single'` bypasses GPT entirely — wraps text in a `<!-- block_0001 master -->` header using provided `title`, `slug`, `category`, then parses and inserts as one chunk. Auth: User-Agent spoof (`Mozilla/5.0 (compatible; Arcanthyr/1.0)`).
+
+- **Secondary sources upload modal** — raw text paste in CorpusTab now triggers a pre-submit confirmation modal. Auto-suggests title (first line of paste, capped 80 chars) and citation slug (`manual-{slugified-title}`). Category dropdown (all 8 canonical categories). Editing the title auto-updates the slug. Pre-formatted blocks skip the modal entirely and upload immediately. Modal sends `{ text, mode: 'single', title, slug, category }` payload.
+
+- **Upload path fix** — `api.js uploadCorpus` was posting to `${BASE}/upload-corpus` (404). Fixed to `${BASE}/api/legal/upload-corpus`. Superseded by `formatAndUpload` for UI use but `uploadCorpus` retained for PowerShell scripting.
+
+- **worker.js version** — `9361a39` · Cloudflare version ID: `f6db67df`
 
 ---
 

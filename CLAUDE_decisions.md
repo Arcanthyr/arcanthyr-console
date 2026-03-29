@@ -3196,3 +3196,11 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 4. **Corpus placeholders — 2 of 5 are real gaps, defer to Procedure Prompt session** — block_023 and block_028 need source material from rag_blocks/. Don't fix in corpus files if they're getting reprocessed through Procedure Prompt anyway. Rationale: avoids duplicate work.
 
 5. **Legislation Act name in embed text, not just metadata** — prepend human-readable title to both embed vector and Qdrant payload text. Rationale: payload text is what Claude sees in retrieved context; metadata-only fix doesn't solve the identification problem.
+
+## Session 27 decisions
+
+- Secondary sources drag-and-drop built on VPS /process-document (existing) rather than Worker-side processing — avoids Worker CPU/time limits for large documents
+- python-docx baked into Dockerfile.agent rather than pip-installed at runtime — prevents silent failures after force-recreate
+- Pass 3 threshold set to 0.35 (matching case chunk Pass 2) rather than lowering global threshold — preserves precision on Pass 1 while improving secondary source recall
+- Full 1,188 secondary source re-embed approved overnight rather than targeted subset — clean overwrite confirmed safe (deterministic UUID5, no ghost points from Path A for poller-embedded chunks)
+- Targeted Hearsay test deferred in favour of full reset — all chunks had same payload bug, targeted test would have required second full reset anyway

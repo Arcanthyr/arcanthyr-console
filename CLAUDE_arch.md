@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 28 March 2026 (end of session 23). Upload every session alongside CLAUDE.md.*
+*Updated: 29 March 2026 (end of session 26). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -61,8 +61,9 @@ Do NOT run the poller manually via `docker compose exec` anymore — the service
 ## DATA FLOW PIPELINE (v2 — CURRENT)
 
 ```
-Console upload → Worker → D1 (raw_text stored, enriched=0, embedded=0)
+Console upload → Worker → D1 (raw_text stored, enriched=1, embedded=0)
                        → NO nexus call (fire-and-forget removed in v9)
+                       → upload-corpus and format-and-upload set enriched=1 on INSERT (session 26)
 
 VPS enrichment_poller.py (permanent Docker service, --loop):
   [EMBED] pass   → enriched=1, embedded=0 rows → pplx-embed → Qdrant → embedded=1
@@ -71,11 +72,7 @@ VPS enrichment_poller.py (permanent Docker service, --loop):
   [ENRICH]       → unenriched secondary_sources → GPT-4o-mini (OpenAI API) → enriched_text → enriched=1
 ```
 
-**CRITICAL — After any secondary_sources ingest, manually set enriched=1:**
-```sql
-UPDATE secondary_sources SET enriched=1 WHERE enriched=0;
-```
-New rows land with `enriched=0`. Poller's embed pass only picks up `enriched=1, embedded=0` rows. Without this step, rows sit invisible to the poller forever.
+**Secondary sources enriched=1 on insert (session 26):** Console upload routes (`handleUploadCorpus`, `handleFormatAndUpload`) both set `enriched=1` on INSERT — no manual `wrangler d1` step needed after any console upload. Poller embed pass picks up `enriched=1, embedded=0` rows. If using a custom ingest path outside the Worker routes, verify enriched=1 is set manually before the poller runs.
 
 **Enrichment model by content type:**
 
@@ -105,11 +102,18 @@ Worker routes exist but are dead — nothing calls them during query handling.
 - handleLegalQueryWorkersAI only: citation detection → case_chunk sort to front + cap 2 secondary sources + [CASE EXCERPT]/[ANNOTATION] labels
 
 **Actual pipeline — server.py search_text():**
-Pass 1 — Semantic: Qdrant cosine (pplx-embed), top 6, min score 0.45, court hierarchy re-rank within 0.05 band
-Pass 2 — Concept search: second-pass re-embed of extracted legal terms, adds candidates above 0.45
-Pass 3 — BM25 section fetch: explicit section references → D1 legislation sections, score=0.0
-Pass 4 — BM25 case-law fetch: cases citing referenced legislation, score=0.0
-Pass 5 — Case chunk pass (UNCONDITIONAL — session 8): Qdrant filtered to type=case_chunk, threshold 0.35, top 4, merged with dedup. Runs on every query — no gate.
+
+### Retrieval Pipeline (Four-Pass Hybrid)
+
+1. **Pass 1 — Semantic**: Qdrant cosine, threshold 0.45, collection general-docs-v2, top_k (default 6, cap 12)
+2. **Pass 1b — Concept search**: same collection unfiltered, threshold 0.45, top_k * 2
+3. **Pass 2 — Case chunks**: filtered type=case_chunk, threshold 0.35, limit 4
+4. **Pass 3 — Secondary sources**: filtered type=secondary_source, threshold 0.35, limit 4 (added session 27)
+5. **BM25/FTS5**: section references bypass scoring entirely, injected at score=0.0
+6. **RRF merge**: Reciprocal Rank Fusion across all passes
+7. **LLM synthesis**: top chunks sent to Claude API (Sol) or Qwen3 Workers AI (V'ger)
+
+Court hierarchy re-ranks within 0.05 band: HCA (4) > CCA/FullCourt (3) > Supreme (2) > Magistrates (1).
 
 **Diagnostic rule:** empty or unexpected results → first check:
 `docker compose logs --tail=50 agent-general`
@@ -122,9 +126,19 @@ Skip/error messages are logged per-pass and visible immediately.
 **Session 13 corpus state:**
 - Part 1: 488 chunks · Part 2: 683 chunks · BRD manual chunk: 1 · Total: 1,172 chunks
 - All enriched=1 · all embedded=1 · FTS5 backfilled (1,171 rows — BRD chunk also in FTS5)
-- Next manual chunk block number: hoc-b057 (hoc-b056 is highest corpus block)
-- Malformed row: hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders — fix pending
+- Next sequential block number for `ingest_corpus.py` bulk runs: hoc-b057 (hoc-b056 is highest corpus block)
+- Console uploads via `format-and-upload` use timestamp-derived block numbers (`hoc-b{4-digit-timestamp}`) — sequential counter only applies to bulk `ingest_corpus.py` runs
+- Malformed row hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders — FIXED session 24 (corrected to hoc-b054)
 - Corpus uses preservation-focused Master prompt + Repair pass from process_blocks.py
+
+**format-and-upload — primary console upload route (session 26):**
+`POST /api/legal/format-and-upload` · auth: User-Agent spoof (`Mozilla/5.0 (compatible; Arcanthyr/1.0)`) · sets `enriched=1` on INSERT automatically · handled by `handleFormatAndUpload`
+
+Four processing paths:
+1. **Pre-formatted blocks** — text starts with `<!-- block_` → `parseFormattedChunks()` called directly, no GPT call
+2. **Raw text >800 words** — calls GPT-4o-mini-2024-07-18 with Master Prompt
+3. **Raw text <800 words** — calls GPT with Master Prompt + short-source note appended (demands separate chunks per doctrinal unit, strict CASE AUTHORITY CHUNK RULE)
+4. **Single-chunk mode** — `body.mode='single'` bypasses GPT entirely; wraps text in `<!-- block_0001 master -->` header using provided `title`, `slug`, `category`; calls `parseFormattedChunks()` and inserts as one chunk
 
 **Parser fix (ingest_corpus.py session 9):**
 - Heading regex: `#+ .+` (was `###? .+`) — now accepts single # headings
@@ -297,6 +311,7 @@ cd "../Arc v 4" && npx wrangler deploy
 | scraper.log | `arcanthyr-console/Local Scraper/scraper.log` |
 | docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
 | run_scraper.bat | `C:\Users\Hogan\run_scraper.bat` — LOCAL path required |
+| `Dockerfile.agent` | VPS | agent-general image definition — python-docx, qdrant-client, pypdf etc. baked in |
 
 **server.py is volume-mounted** (`./agent-general/src:/app/src` in docker-compose.yml) — NOT baked into image. Changes only require: edit locally → SCP to VPS → `docker compose up -d --force-recreate agent-general` → health check. No rebuild unless Dockerfile changes.
 
@@ -391,6 +406,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/requeue-chunks` | POST | Re-enqueues done=0 chunks · accepts `{"limit":N}` |
 | `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
+| `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
 
 ### Qdrant payload field names
 
@@ -460,6 +476,27 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - New Master prompt: preservation-focused, 500-800 word body target, verbatim/near-verbatim prose
 - REPAIR_PROMPT: second pass catches thin chunks
 - Citation format: `hoc-b{N}-m{N}-{slug}`
+
+---
+
+---
+
+### Secondary Sources Upload Pipeline
+
+Two paths:
+
+**Paste path** (single formatted block):
+- Upload.jsx detects <!-- block_ prefix → extracts [CITATION:] client-side → api.uploadCorpus → handleUploadCorpus → D1 insert (enriched=1, embedded=0) → poller embeds
+
+**Drag-and-drop path** (.docx/.pdf/.txt):
+- File base64 encoded → POST /api/ingest/process-document → Worker proxies to server.py /process-document → background thread: extract text (python-docx/pypdf) → split_chunks_from_markdown → per-block GPT-4o-mini Master Prompt → post_chunk_to_worker → D1 inserts → job_id returned → UI polls /api/ingest/status/:jobId every 5s
+
+Citation priority in split_chunks_from_markdown:
+1. [CASE:] value → {source_name}_{slugified_case}
+2. [CITATION:] value (not bare year) → {source_name}_{slugified_citation}
+3. Fallback → {source_name}_chunk_{i+1:04d}_{heading_slug}
+
+Source title uses chunk heading (not filename stem).
 
 ---
 

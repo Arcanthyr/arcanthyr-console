@@ -213,14 +213,14 @@ def search_text(body):
 
     Params:
         query_text      - natural language query string (required)
-        top_k           - max chunks to return (default 6, max 8)
-        score_threshold - minimum cosine similarity (default 0.65)
+        top_k           - max chunks to return (default 6, max 12)
+        score_threshold - minimum cosine similarity (default 0.45)
 
     Returns list of chunk dicts, re-ranked by court hierarchy where
     scores are within 0.05 of each other.
     """
     query_text      = body.get("query_text", "").strip()
-    top_k           = min(int(body.get("top_k", 6)), 8)
+    top_k           = min(int(body.get("top_k", 6)), 12)
     score_threshold = float(body.get("score_threshold", 0.45))
 
     if not query_text:
@@ -400,6 +400,51 @@ def search_text(body):
     except Exception as e:
         print(f"[!] Case chunk pass error: {e}")
     # ── End case chunk pass ─────────────────────────────────────────────────
+
+    # ── Pass 3: secondary source second-pass retrieval ───────────────────────
+    # Runs on every query — lower threshold 0.35 catches secondary sources that
+    # fall below the main 0.45 threshold but are still relevant.
+    try:
+        sec_source_response = client.query_points(
+            collection_name=COLLECTION,
+            query=query_vector,
+            query_filter=Filter(
+                must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
+            ),
+            limit=4,
+            score_threshold=0.35,
+            with_payload=True,
+        )
+        existing_ids_sec = {c.get("citation") for c in chunks if c.get("citation")}
+        added_sec = 0
+        for hit in sec_source_response.points:
+            payload = hit.payload or {}
+            citation = payload.get("citation", "")
+            chunk_id = citation or payload.get("chunk_id", "")
+            if chunk_id and chunk_id in existing_ids_sec:
+                continue
+            chunks.append({
+                "score":        round(hit.score, 4),
+                "citation":     citation or payload.get("chunk_id") or payload.get("source_id") or "unknown",
+                "court":        payload.get("court", ""),
+                "year":         payload.get("year", ""),
+                "text":         payload.get("text", ""),
+                "summary":      payload.get("summary", ""),
+                "outcome":      payload.get("outcome", ""),
+                "principles":   payload.get("principles", []),
+                "legislation":  payload.get("legislation", []),
+                "chunk":        payload.get("chunk", 0),
+                "total_chunks": payload.get("total_chunks", 1),
+                "type":         "secondary_source",
+            })
+            if chunk_id:
+                existing_ids_sec.add(chunk_id)
+            added_sec += 1
+        if added_sec:
+            print(f"[+] Secondary source pass: added {added_sec} sources (threshold 0.35)")
+    except Exception as e:
+        print(f"[!] Secondary source pass error: {e}")
+    # ── End secondary source pass ────────────────────────────────────────────
 
     return chunks
 
@@ -913,7 +958,10 @@ def split_chunks_from_markdown(formatted_text, source_name):
         heading = heading_match.group(2).strip() if heading_match else f"Chunk {i+1}"
 
         citation_match = re.search(r'\[CITATION:\s*(.+?)\]', part)
-        citation = citation_match.group(1).strip() if citation_match else None
+        citation_raw = citation_match.group(1).strip() if citation_match else None
+
+        case_match = re.search(r'\[CASE:\s*(.+?)\]', part)
+        case_raw = case_match.group(1).strip() if case_match else None
 
         category_match = re.search(r'\[CATEGORY:\s*(.+?)\]', part)
         category = category_match.group(1).strip() if category_match else "doctrine"
@@ -921,17 +969,22 @@ def split_chunks_from_markdown(formatted_text, source_name):
         type_match = re.search(r'\[TYPE:\s*(.+?)\]', part)
         doc_type = type_match.group(1).strip() if type_match else "legal doctrine"
 
-        if not citation:
+        # Priority: [CASE:] > [CITATION:] (if not bare year) > fallback
+        bare_year = re.match(r'^\d{4}$', citation_raw) if citation_raw else None
+        if case_raw:
+            slug = re.sub(r'[^a-zA-Z0-9]+', '_', case_raw).strip('_')[:80]
+            citation = f"{source_name}_{slug}"
+        elif citation_raw and not bare_year:
+            slug = re.sub(r'[^a-zA-Z0-9]+', '_', citation_raw).strip('_')[:80]
+            citation = f"{source_name}_{slug}"
+        else:
             slug = re.sub(r'[^a-zA-Z0-9]+', '_', heading).strip('_')[:60]
             citation = f"{source_name}_chunk_{i+1:04d}_{slug}"
-        else:
-            slug = re.sub(r'[^a-zA-Z0-9]+', '_', citation).strip('_')[:80]
-            citation = f"{source_name}_{slug}"
 
         chunks.append({
             "text":     part,
             "citation": citation,
-            "source":   source_name,
+            "source":   heading,
             "category": category,
             "doc_type": doc_type,
         })
@@ -1012,7 +1065,7 @@ def run_ingest_job(job_id, file_bytes, filename, prompt_mode, worker_url, nexus_
         for chunk in all_chunks:
             try:
                 result = post_chunk_to_worker(chunk, worker_url, nexus_key)
-                if result.get("ok") or result.get("success"):
+                if result.get("result") is not None and not result.get("error"):
                     inserted += 1
                 else:
                     skipped += 1
