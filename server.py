@@ -268,7 +268,7 @@ def search_text(body):
         payload = hit.payload or {}
         chunks.append({
             "score":        round(hit.score, 4),
-            "citation":     payload.get("citation", "unknown"),
+            "citation":     payload.get("citation") or payload.get("chunk_id", "unknown"),
             "court":        payload.get("court", ""),
             "year":         payload.get("year", ""),
             "text":         payload.get("text", ""),
@@ -279,6 +279,7 @@ def search_text(body):
             "chunk":        payload.get("chunk", 0),
             "total_chunks": payload.get("total_chunks", 1),
             "type":         payload.get("type", ""),
+            "_qdrant_id":   str(hit.id),
         })
 
     # Filter out legislation schedule entries — short legislation sections with no legal reasoning
@@ -411,17 +412,18 @@ def search_text(body):
             query_filter=Filter(
                 must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
             ),
-            limit=4,
-            score_threshold=0.35,
+            limit=8,
+            score_threshold=0.25,
             with_payload=True,
         )
         existing_ids_sec = {c.get("citation") for c in chunks if c.get("citation")}
+        existing_qdrant_ids_sec = {c.get("_qdrant_id") for c in chunks if c.get("_qdrant_id")}
         added_sec = 0
         for hit in sec_source_response.points:
             payload = hit.payload or {}
             citation = payload.get("citation", "")
             chunk_id = citation or payload.get("chunk_id", "")
-            if chunk_id and chunk_id in existing_ids_sec:
+            if (chunk_id and chunk_id in existing_ids_sec) or str(hit.id) in existing_qdrant_ids_sec:
                 continue
             chunks.append({
                 "score":        round(hit.score, 4),
@@ -436,12 +438,15 @@ def search_text(body):
                 "chunk":        payload.get("chunk", 0),
                 "total_chunks": payload.get("total_chunks", 1),
                 "type":         "secondary_source",
+                "_qdrant_id":   str(hit.id),
             })
             if chunk_id:
                 existing_ids_sec.add(chunk_id)
             added_sec += 1
+        hit_ids = [h.payload.get("chunk_id", str(h.id)) for h in sec_source_response.points if h.payload]
+        print(f"[+] Secondary source hits: {hit_ids}")
         if added_sec:
-            print(f"[+] Secondary source pass: added {added_sec} sources (threshold 0.35)")
+            print(f"[+] Secondary source pass: added {added_sec} sources (threshold 0.25)")
     except Exception as e:
         print(f"[!] Secondary source pass error: {e}")
     # ── End secondary source pass ────────────────────────────────────────────

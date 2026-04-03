@@ -3197,6 +3197,28 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 
 5. **Legislation Act name in embed text, not just metadata** — prepend human-readable title to both embed vector and Qdrant payload text. Rationale: payload text is what Claude sees in retrieved context; metadata-only fix doesn't solve the identification problem.
 
+## Session 30 decisions — 3 April 2026
+
+- **Staged legislation and prompt deploys separately (blast radius isolation)** — legislation re-embed and Pass 1 prompt revision were treated as independent tasks and deployed in sequence rather than combined. Why: legislation re-embed has a 10-step validation procedure with a hard stop at step 4 (start-time check). Combining it with a Worker.js deploy would have created ambiguity if either failed. Each change validated independently before proceeding to the next.
+
+- **Opus + extended thinking used for Pass 1 prompt revision** — all three Pass 1 prompt rewrites (pass1System, pass1Prompt, singlePassPrompt) were drafted by Opus with extended thinking rather than CC drafting inline. Why: prompts affect data quality at scale — all future case ingests go through these prompts, and a wrong case_name requires a patch script (confirmed: 31 rows patched session 24). Extended thinking ensures reasoning through edge cases (CRIMINAL DIVISION structure, SURNAME normalisation, citation suffix stripping) before committing. Now codified as a SESSION RULES trigger condition for all future prompt engineering decisions.
+
+- **Deferred Ingest Validation Layer (Pydantic)** — Pydantic schema validation for enrichment_poller.py output deferred despite its clear value. Why: the two specific bugs it would have caught (missing citation/source_id in secondary source payloads, missing Act-title prefix in legislation embed_text) are now fixed at source. Corpus is clean post-session-29/30 re-embeds. No bulk ingests imminent. Building it now adds complexity without protecting against an active threat. Trigger condition set: next bulk ingest or model swap. Design spec captured in OUTSTANDING PRIORITIES #13.
+
+- **Systemic finding: two fixes marked deployed without VPS confirmation** — root cause analysis: session 25 legislation prefix fix and session 27 secondary source citation fix were both written to CLAUDE.md as deployed but neither was SCP'd to the VPS. Root cause: enrichment_poller.py had no documented SCP procedure (server.py had one since session 9). The local file was edited and the session closed assuming the bind mount would pick it up — it does not, restart is required. Resolution: (1) SCP rules for enrichment_poller.py added to SESSION RULES; (2) 10-step Poller Deploy Validation Procedure made permanent in CLAUDE.md with hard verification gate at step 4 (container start time must postdate file mtime). Pattern generalised: any VPS-side file change must follow the same SCP → grep → restart → verify sequence.
+
+## Session 28 decisions — 31 March 2026
+
+- **Pass 3 threshold lowered 0.35 → 0.25, limit 4 → 8** — Ratten v R [1972] 1 AC 378 not surfacing in res gestae queries despite correct Qdrant payload. Diagnosis: chunk scored below 0.35 due to thin concepts line (no "res gestae" term present). Threshold lowered as secondary sources are curated corpus with low noise risk. Why not lower further: 0.25 already very permissive — below this risk of irrelevant chunks outweighs recall gain.
+
+- **Concepts enrichment approach: targeted metadata expansion only** — GPT-4o-mini expands CONCEPTS/TOPIC/JURISDICTION lines and adds a search anchor sentence. Body prose deliberately untouched — Master Prompt preservation work from sessions 9-12 must not be overwritten. Why not full re-enrichment: would destroy verbatim/near-verbatim content that took significant effort to produce and is the core retrieval quality asset.
+
+- **Worker fetch route preferred over CF API token for local scripts** — enrich_concepts.py uses GET /api/pipeline/fetch-secondary-raw rather than Cloudflare D1 REST API. Why: no CLOUDFLARE_API_TOKEN exists locally and has never been set up. Worker route with NEXUS_SECRET_KEY is simpler, already authenticated, and consistent with all other local scripts in the project.
+
+- **Ratten v R manual raw_text fix as diagnostic** — before building the enrichment script, Ratten raw_text was manually updated via wrangler d1 and re-embedded by deleting the Qdrant point and letting the poller pick it up. This confirmed the scoring gap hypothesis and validated the fix approach before committing to the full 1,188 chunk enrichment run.
+
+- **Debug log left in server.py Pass 3** — chunk_id list logged unconditionally on every query. Useful for ongoing retrieval diagnostics. Review for removal or conditional flag after enrichment pass completes and retrieval quality confirmed improved.
+
 ## Session 27 decisions
 
 - Secondary sources drag-and-drop built on VPS /process-document (existing) rather than Worker-side processing — avoids Worker CPU/time limits for large documents

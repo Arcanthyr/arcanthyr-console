@@ -358,12 +358,11 @@ Maximum 8 principles total. 1 primary per issue + up to 2 supporting (only if ge
 
 BAD (generic, could be any case):
 - "General deterrence is a relevant sentencing consideration"
-- "The prosecution bears the onus of proving the charge beyond reasonable doubt"
-- "IF self-defence is raised THEN the prosecution must negative it"
+- "The court applied the relevant statutory test"
 
 GOOD (case-specific, tells you why THIS case matters):
 - "A 12-month suspended sentence was appropriate for a first-offender domestic assault involving a single punch causing bruising, where the offender had completed a behavioural change program and the victim did not support a custodial sentence"
-- "Weed eradication works constituted substantial commencement of a development permit because they were necessary and intrinsic to the development and rendered the land suitable for construction"
+- "The appellant's failure to disclose gambling debts totalling $180,000 was fatal to her Testators Family Maintenance claim because adequate provision cannot be assessed without full financial disclosure"
 - "The tendency evidence was admissible because the accused's pattern of targeting intoxicated women at licensed venues had significant probative value that substantially outweighed any prejudicial effect, applying the framework in IMM v The Queen"
 
 Each principle object must include:
@@ -374,34 +373,46 @@ Each principle object must include:
 
   // ── Single-pass prompt (short judgments) ─────────────────────────────────
   const singlePassPrompt = `You are extracting verified legal information from an Australian court judgment for a practitioner database.
-Do not guess or invent rules. If something is not clearly present in the text, use null.
-Output ONLY valid JSON. No markdown fences. No commentary.
+Do not guess or invent. If something is not clearly present, use null.
+Return ONLY a single valid JSON object. No explanation, no markdown, no text before or after the JSON.
 
 Extract these fields:
-- case_name: from the heading or opening lines. Patterns: "R v Smith", "DPP v Jones", "Tasmania v Brown". Fallback to citation.
-- judge: the presiding judge(s). Extract the full name and title as it appears in the judgment heading or opening (e.g. "Blow CJ", "Brett J", "Wood J"). If multiple judges, return as a comma-separated string.
-- parties: the party names as they appear in the case title (e.g. "R v Smith", "DPP v Jones"). Extract verbatim from the heading.
-- facts: factual background (3-4 concrete sentences: parties, charges or dispute, key events and outcome at first instance if appeal).
-- issues: array of 1-5 legal questions the court answered (each a short question string).
+- case_name: party names from the VERY FIRST LINE of the document (e.g. "R v Smith", "DPP v Jones", "Tasmania v Brown (No 2)"). Stop before the first "[" character — do not include the citation. If the first line is missing or unclear, extract from the CITATION field. NEVER use court division labels ("Criminal", "Civil", "Criminal Division", "Civil Division"). If PARTIES uses SURNAME, Given Names format, normalise to Given Names Surname in title case.
+- judge: presiding judge(s) surname and title (e.g. "Blow CJ", "Brett J"). If multiple, comma-separated string.
+- parties: party names from the case title, normalised from SURNAME, Given Names to natural order.
+- facts: 3-4 concrete sentences: parties, charges or dispute, key events, outcome at first instance if appeal.
+- issues: JSON array of 1-5 legal questions the court answered (each a short question string). Must be an array, never a single string.
 - holdings: array matching issues order — the court's direct answer to each issue (1 sentence each).
 - legislation: all Acts and sections materially relied on. Array of strings e.g. ["Sentencing Act 1997 (Tas) s 11"].
 - key_authorities: cases cited and how treated. Array of objects: { "name": "...", "treatment": "applied|followed|distinguished|mentioned", "why": "..." }
 ${PRINCIPLES_SPEC}
 
+Rules:
+- case_name must be party names only — never a court division label, never a bare year, never just a citation.
+- If a field cannot be determined, use null or [].
+- The very first character of your response must be {
+
 Output JSON with keys: case_name, judge, parties, facts, issues, holdings, principles, legislation, key_authorities`;
 
   // ── Pass 1 prompt (long judgments — metadata/facts/issues) ───────────────
-  const pass1Prompt = `You are extracting metadata and facts from the opening section of an Australian court judgment.
-Output ONLY valid JSON. No markdown fences. No commentary.
+  const pass1Prompt = `You are a legal metadata extraction assistant. Extract structured metadata from this Australian court judgment.
 
-Extract:
-- case_name: from heading or opening lines. Fallback to citation.
-- judge: the presiding judge(s). Extract full name and title from the heading or opening (e.g. "Blow CJ", "Brett J"). If multiple judges, comma-separated string.
-- parties: party names verbatim from the case title in the heading (e.g. "R v Smith").
-- facts: factual background (3-4 concrete sentences).
-- issues: array of 1-5 legal questions this judgment answers.
+Return ONLY a single valid JSON object. No explanation, no markdown, no text before or after the JSON.
 
-Output JSON with keys: case_name, judge, parties, facts, issues`;
+{
+  "case_name": "Party names from the VERY FIRST LINE of the document (e.g. 'R v Smith', 'Tasmania v Brown (No 2)'). Stop before the first '[' character — do not include the citation. If the first line is missing or unclear, extract from the CITATION field. NEVER use court division labels ('Criminal', 'Civil', 'Criminal Division', 'Civil Division') as the case_name. If PARTIES uses SURNAME, Given Names format, normalise to Given Names Surname in title case.",
+  "judge": "Presiding judge(s) surname and title (e.g. Blow CJ, Brett J). If multiple, comma-separated.",
+  "parties": "Party names verbatim from the case title, normalised from SURNAME, Given Names to natural order (e.g. Tasmania v John Smith).",
+  "facts": "3-4 concrete sentences: parties, charges or dispute, key events.",
+  "issues": ["Legal question 1", "Legal question 2"]
+}
+
+Rules:
+- Extract only what is explicitly stated. Do not infer or fabricate.
+- issues must be a JSON array of strings, never a single string.
+- If a field cannot be determined, use "" or [].
+- case_name must be party names only — never a court division label, never a bare year, never just a citation.
+- The very first character of your response must be {`;
 
   // ── Pass 2 prompt (long judgments — reasoning section) ───────────────────
   const pass2Prompt = `You are extracting legal principles, holdings, legislation and authorities from the reasoning section of an Australian court judgment.
@@ -431,6 +442,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
 
       const cleaned = raw.replace(/```json|```/g, "").trim();
       const summary = JSON.parse(cleaned);
+      validateCaseName(summary, fullText);
       if (!summary.facts || (!summary.holding && !summary.holdings)) throw new Error("Incomplete AI response");
 
       return _buildSummary(summary, null, caseData.citation);
@@ -444,6 +456,7 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       raw = await callWorkersAI(env, pass1Prompt, p1Content, 2000);
       console.log(`Pass 1 response: ${raw?.length || 0} chars`);
       const pass1 = JSON.parse(raw.replace(/```json|```/g, "").trim());
+      validateCaseName(pass1, fullText);
 
       // Pass 2: overlapping windows from PASS2_START to end of text
       const issuesList = Array.isArray(pass1.issues) ? pass1.issues.join("\n") : (pass1.issues || "");
@@ -502,6 +515,25 @@ Output JSON with keys: holdings, principles, legislation, key_authorities`;
       summary_quality_score: 0.0,
     };
   }
+}
+
+function validateCaseName(parsed, rawText) {
+  const bad = /^(criminal|civil|criminal division|civil division)$/i;
+  const singleWord = /^\w+$/;
+
+  if (!parsed.case_name || bad.test(parsed.case_name.trim()) || singleWord.test(parsed.case_name.trim())) {
+    const firstLine = rawText.split('\n').find(l => l.trim().length > 0) || '';
+    const match = firstLine.match(/^(.+?)\s*\[/);
+    parsed.case_name = match ? match[1].trim() : firstLine.trim();
+  }
+
+  // Strip citation suffix if model left it in
+  const citSuffix = parsed.case_name.match(/^(.+?)\s*\[\d{4}\].*/);
+  if (citSuffix) {
+    parsed.case_name = citSuffix[1].trim();
+  }
+
+  return parsed;
 }
 
 function _buildSummary(primary, secondary, citation) {
@@ -2143,10 +2175,63 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
   }
 }
 
+const SENTENCING_SYNTHESIS_PROMPT = `You are a legal research assistant extracting sentencing analysis from an Australian court judgment for a practitioner research database.
+
+You will receive the case facts, issues, and the raw text of reasoning sections from the judgment. Extract the sentencing analysis ONLY if the court imposed or varied a sentence.
+
+If this judgment does not contain sentencing analysis (e.g. it is an interlocutory ruling, a liability-only decision, or an acquittal), respond with:
+{"sentencing_found": false}
+
+Otherwise, respond with a JSON object:
+
+{
+  "sentencing_found": true,
+  "procedure_notes": "Structured prose summary (200-400 words) covering: offence(s) charged and maximum statutory penalty, plea (guilty/not guilty/mixed), sentence imposed (type + quantum for each count), key aggravating factors the court identified, key mitigating factors the court identified, comparable cases the court cited for sentencing range, any discount methodology (early plea, cooperation, totality), any suspended sentence conditions or non-parole period, court's reasoning on why this sentence was appropriate.",
+  "sentencing_principles": [
+    {
+      "principle": "Case-specific sentencing proposition (1-2 sentences). Must state the offence type, offender characteristics, and sentence imposed — not a generic sentencing rule.",
+      "statute_refs": ["Sentencing Act 1997 (Tas) s 11"],
+      "keywords": ["sentencing", "topic1", "topic2"]
+    }
+  ]
+}
+
+PRINCIPLES RULES:
+- 2-4 sentencing principles maximum
+- Each must be a concrete statement of what THIS court decided for THIS offender — not a restatement of statutory requirements
+- BAD: "The court considered general and specific deterrence" (generic, could be any case)
+- GOOD: "A 3-year imprisonment with 18-month non-parole period was appropriate for a single count of aggravated assault (s 172 Criminal Code) where the offender used a weapon, the victim suffered permanent scarring, and the offender had no prior convictions but showed limited remorse"
+- BAD: "Section 11 of the Sentencing Act requires the court to consider the nature of the offence" (statute restatement)
+- GOOD: "The sentencing discount for an early guilty plea was limited to 10% (rather than the usual 20-25%) because the plea was entered only after the committal hearing and the Crown case was overwhelming"
+
+Output ONLY valid JSON. No markdown fences. No commentary. The first character must be {`;
+
+// ── Sentencing detection helper ───────────────────────────────────────────────
+function isSentencingCase(caseRow, allChunks) {
+  // Check 1: subject_matter from chunk classification
+  if (caseRow.subject_matter === 'criminal') return true;
+
+  // Check 2: keyword scan across chunk principles_json
+  const sentencingKeywords = /\b(sentenc|penalty|custodial|suspended|imprison|fine\b|community service|probation|non-parole|remand|gaol|jail|detention)\b/i;
+
+  for (const chunk of allChunks) {
+    try {
+      const pj = chunk.principles_json || '';
+      if (sentencingKeywords.test(pj)) return true;
+    } catch (e) {}
+  }
+
+  // Check 3: issues contain sentencing terms
+  const issuesStr = typeof caseRow.issues === 'string' ? caseRow.issues : JSON.stringify(caseRow.issues || []);
+  if (sentencingKeywords.test(issuesStr)) return true;
+
+  return false;
+}
+
 // ── Merge helper — called from CHUNK handler and MERGE queue handler ─────────
 async function performMerge(citation, caseRow, env) {
   const allChunks = await env.DB.prepare(
-    `SELECT principles_json FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
+    `SELECT principles_json, chunk_text, enriched_text FROM case_chunks WHERE citation = ? ORDER BY chunk_index`
   ).bind(citation).all();
 
   const allPrinciples = [], allHoldings = [], allLegislation = new Set(), allAuthorities = [], enrichedTexts = [];
@@ -2157,8 +2242,10 @@ async function performMerge(citation, caseRow, env) {
       if (data.holdings) allHoldings.push(...data.holdings);
       if (data.legislation) data.legislation.forEach(l => allLegislation.add(l));
       if (data.key_authorities) allAuthorities.push(...data.key_authorities);
-      if (['reasoning', 'mixed'].includes(data.chunk_type) && data.enriched_text) {
-        enrichedTexts.push(data.enriched_text);
+      if (['reasoning', 'mixed'].includes(data.chunk_type)) {
+        // Prefer enriched_text from column, fall back to principles_json field
+        const et = chunk.enriched_text || data.enriched_text;
+        if (et) enrichedTexts.push(et);
       }
     } catch (e) {}
   }
@@ -2194,11 +2281,11 @@ Each principle must be a concrete statement of what THIS court decided on THIS s
 
 BAD (generic, could be any case):
 - "General deterrence is a relevant sentencing consideration"
-- "The prosecution bears the onus of proving the charge beyond reasonable doubt"
+- "The court applied the relevant statutory test"
 
 GOOD (case-specific, tells you why THIS case matters):
 - "A 12-month suspended sentence was appropriate for a first-offender domestic assault involving a single punch causing bruising, where the offender had completed a behavioural change program and the victim did not support a custodial sentence"
-- "The tendency evidence was admissible because the accused's pattern of targeting intoxicated women at licensed venues had significant probative value that substantially outweighed any prejudicial effect, applying the framework in IMM v The Queen"
+- "The appellant's failure to disclose gambling debts totalling $180,000 was fatal to her Testators Family Maintenance claim because adequate provision cannot be assessed without full financial disclosure"
 
 Output ONLY a JSON array of principle objects. No markdown fences. No commentary. Start with [
 
@@ -2252,6 +2339,96 @@ Each object: { "principle": "case-specific statement (1-2 sentences)", "statute_
     }
   }
 
+  // ── Sentencing second pass (conditional) ────────────────────────────────────
+  let procedureNotes = null;
+
+  if (isSentencingCase(caseRow, allChunks.results)) {
+    try {
+      // Collect raw chunk_text from reasoning/mixed/procedural chunks for sentencing analysis
+      const sentencingTexts = [];
+      for (const chunk of allChunks.results) {
+        try {
+          const data = JSON.parse(chunk.principles_json || '{}');
+          if (['reasoning', 'mixed', 'procedural'].includes(data.chunk_type) && chunk.chunk_text) {
+            sentencingTexts.push(chunk.chunk_text);
+          }
+        } catch (e) {}
+      }
+
+      if (sentencingTexts.length > 0) {
+        const sentUser = [
+          `Case: ${caseRow.case_name} (${citation}, ${caseRow.court})`,
+          ``,
+          `Facts: ${caseRow.facts || ''}`,
+          ``,
+          `Issues: ${JSON.stringify(caseRow.issues)}`,
+          ``,
+          `Holdings: ${JSON.stringify(allHoldings)}`,
+          ``,
+          `Judgment reasoning sections (${sentencingTexts.length} sections):`,
+          sentencingTexts.join('\n\n---\n\n')
+        ].join('\n');
+
+        // Cap input to avoid token overflow — ~40k chars ≈ ~10k tokens
+        const cappedSentUser = sentUser.length > 40000
+          ? sentUser.substring(0, 40000) + '\n\n[TRUNCATED — remaining sections omitted]'
+          : sentUser;
+
+        const sentCtrl = new AbortController();
+        const sentTimeout = setTimeout(() => sentCtrl.abort(), 25000);
+        const sentResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${env.OPENAI_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini-2024-07-18",
+            max_completion_tokens: 2000,
+            messages: [
+              { role: "system", content: SENTENCING_SYNTHESIS_PROMPT },
+              { role: "user", content: cappedSentUser }
+            ]
+          }),
+          signal: sentCtrl.signal
+        });
+        clearTimeout(sentTimeout);
+        const sentData = await sentResponse.json();
+        const sentContent = sentData.choices?.[0]?.message?.content
+          || sentData.choices?.[0]?.message?.reasoning_content
+          || "";
+        const sentRaw = sentContent.trim();
+
+        // Parse JSON response
+        const jsonStart = sentRaw.indexOf('{');
+        const jsonEnd = sentRaw.lastIndexOf('}');
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          const sentResult = JSON.parse(sentRaw.slice(jsonStart, jsonEnd + 1));
+
+          if (sentResult.sentencing_found) {
+            procedureNotes = sentResult.procedure_notes || null;
+
+            // Append sentencing principles to main principles array
+            if (Array.isArray(sentResult.sentencing_principles) && sentResult.sentencing_principles.length > 0) {
+              synthesisedPrinciples = [
+                ...synthesisedPrinciples,
+                ...sentResult.sentencing_principles
+              ];
+              console.log(`[queue] sentencing pass for ${citation} — ${sentResult.sentencing_principles.length} sentencing principles added`);
+            }
+          } else {
+            console.log(`[queue] sentencing pass for ${citation} — no sentencing content found`);
+          }
+        } else {
+          throw new Error(`No JSON object in sentencing response: ${sentRaw.slice(0, 200)}`);
+        }
+      }
+    } catch (e) {
+      console.error(`[queue] sentencing pass failed for ${citation}:`, e.message);
+      // Non-fatal — case still gets doctrine principles from main synthesis
+    }
+  }
+
   await env.DB.prepare(`
     UPDATE cases SET
       principles_extracted = ?,
@@ -2259,7 +2436,8 @@ Each object: { "principle": "case-specific statement (1-2 sentences)", "statute_
       legislation_extracted = ?,
       authorities_extracted = ?,
       subject_matter = ?,
-      holding = ?
+      holding = ?,
+      procedure_notes = ?
     WHERE citation = ?
   `).bind(
     JSON.stringify(synthesisedPrinciples),
@@ -2268,9 +2446,10 @@ Each object: { "principle": "case-specific statement (1-2 sentences)", "statute_
     JSON.stringify(dedupedAuth),
     subject_matter,
     chunkHoldingStr,
+    procedureNotes,
     citation
   ).run();
-  console.log(`[queue] merge complete for ${citation} — ${synthesisedPrinciples.length} principles`);
+  console.log(`[queue] merge complete for ${citation} — ${synthesisedPrinciples.length} principles${procedureNotes ? ' + sentencing notes' : ''}`);
 }
 
 async function handleRequeueMetadata(request, env, corsHeaders) {
@@ -2490,6 +2669,36 @@ async function handleResetEmbedded(request, env, corsHeaders) {
       total += slice.length;
     }
     return new Response(JSON.stringify({ ok: true, reset: total }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleUpdateSecondaryRaw(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { id, raw_text } = await request.json();
+    if (!id || !raw_text) return new Response(JSON.stringify({ ok: false, error: 'id and raw_text required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const result = await env.DB.prepare(`UPDATE secondary_sources SET raw_text = ?, embedded = 0 WHERE id = ?`).bind(raw_text, id).run();
+    return new Response(JSON.stringify({ ok: true, updated: result.meta.changes }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleFetchSecondaryRaw(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const urlObj = new URL(request.url);
+    const offset = parseInt(urlObj.searchParams.get('offset') || '0');
+    const limit = Math.min(parseInt(urlObj.searchParams.get('limit') || '50'), 100);
+    const [countResult, dataResult] = await Promise.all([
+      env.DB.prepare(`SELECT COUNT(*) as total FROM secondary_sources`).first(),
+      env.DB.prepare(`SELECT id, raw_text FROM secondary_sources ORDER BY id LIMIT ? OFFSET ?`).bind(limit, offset).all(),
+    ]);
+    return new Response(JSON.stringify({ ok: true, chunks: dataResult.results, total: countResult.total, offset }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   }
@@ -2735,6 +2944,8 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-for-embedding' && request.method === 'GET') return handleFetchForEmbedding(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-embedded' && request.method === 'GET') return handleFetchEmbedded(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/reset-embedded' && request.method === 'POST') return handleResetEmbedded(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/update-secondary-raw' && request.method === 'POST') return handleUpdateSecondaryRaw(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fetch-secondary-raw' && request.method === 'GET') return handleFetchSecondaryRaw(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-legislation-for-embedding' && request.method === 'GET') return handleFetchLegislationForEmbedding(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-sections-by-reference' && request.method === 'POST') return handleFetchSectionsByReference(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/mark-legislation-embedded' && request.method === 'POST') return handleMarkLegislationEmbedded(request, env, corsHeaders);
@@ -2903,7 +3114,7 @@ export default {
           if (!row) throw new Error(`No chunk found for ${citation} index ${chunk_index}`);
 
           const caseRow = await env.DB.prepare(
-            `SELECT case_name, court, facts, issues, judge, case_date FROM cases WHERE citation = ?`
+            `SELECT case_name, court, facts, issues, judge, case_date, subject_matter FROM cases WHERE citation = ?`
           ).bind(citation).first();
 
           const totalChunks = msg.body.total_chunks || 0;
@@ -3082,14 +3293,14 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
             }
 
             // Merge all chunk results via synthesis
-            await performMerge(citation, { case_name: caseRow?.case_name, court: caseRow?.court, facts: caseRow?.facts, issues: caseRow?.issues }, env);
+            await performMerge(citation, { case_name: caseRow?.case_name, court: caseRow?.court, facts: caseRow?.facts, issues: caseRow?.issues, subject_matter: caseRow?.subject_matter }, env);
           }
           msg.ack();
 
         } else if (type === 'MERGE') {
           // MERGE message — re-run merge step for a case with all chunks already done
           const mergeCaseRow = await env.DB.prepare(
-            `SELECT case_name, court, facts, issues FROM cases WHERE citation = ?`
+            `SELECT case_name, court, facts, issues, subject_matter FROM cases WHERE citation = ?`
           ).bind(citation).first();
           if (!mergeCaseRow) throw new Error(`No case row for ${citation}`);
 
@@ -3120,23 +3331,24 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
 Return ONLY a single valid JSON object. No explanation, no markdown, no text before or after the JSON.
 
 {
-  "case_name": "Party names as they appear in the heading — e.g. 'R v Smith', 'DPP v Jones', 'Tasmania v Brown'. NEVER use court division labels ('Criminal', 'Civil') or the word 'Division'. Fallback to the citation if no party names are visible.",
+  "case_name": "Party names from the VERY FIRST LINE of the document (e.g. 'R v Smith', 'Tasmania v Brown (No 2)'). Stop before the first '[' character — do not include the citation. If the first line is missing or unclear, extract from the CITATION field. NEVER use court division labels ('Criminal', 'Civil', 'Criminal Division', 'Civil Division') as the case_name. If PARTIES uses SURNAME, Given Names format, normalise to Given Names Surname in title case.",
   "judge": "Presiding judge(s) surname and title only (e.g. Wood J, or Pearce and Brett JJ)",
-  "parties": "Applicant/Appellant and Respondent as named (e.g. Tasmania v Jones)",
+  "parties": "Applicant/Appellant and Respondent as named (e.g. Tasmania v Jones). Normalise SURNAME, Given Names to natural order.",
   "facts": "2-4 sentences summarising the core factual background giving rise to the proceeding. Extract from the judgment text — do not infer.",
   "issues": ["Legal issue 1 as a short phrase", "Legal issue 2 as a short phrase"]
 }
 
 Rules:
 - Extract only what is explicitly stated. Do not infer or fabricate.
-- issues must be an array of strings, never a single string.
-- If a field cannot be determined from the text, use an empty string or empty array.
-- case_name must be party names (e.g. "R v Smith"), never a court division label like "Criminal" or "Civil".
+- issues must be a JSON array of strings, never a single string.
+- If a field cannot be determined, use "" or [].
+- case_name must be party names only — never a court division label, never a bare year, never just a citation.
 - The very first character of your response must be {`;
           const pass1Raw = await callWorkersAI(env, pass1System, row.raw_text.slice(0, 8000), 1500);
           const pass1Cleaned = (pass1Raw || '').replace(/```json|```/g, '').trim();
           let pass1 = { case_name: null, judge: null, parties: null, facts: null, issues: [] };
           try { pass1 = JSON.parse(pass1Cleaned); } catch (e) {}
+          validateCaseName(pass1, row.raw_text.slice(0, 8000));
 
           // Write Pass 1 results + set enriched=1
           await env.DB.prepare(`

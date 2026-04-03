@@ -44,7 +44,11 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | D1 no citation column | secondary_sources PK is `id` (TEXT) — no `citation` column. Never query `WHERE citation =`. |
 | callWorkersAI fix | reasoning_content fallback added — if content is null, falls back to reasoning_content before text. Fixes Qwen3 thinking mode responses. |
 | poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
-| BM25_FTS_ENABLED | Kill switch in server.py — set False to disable FTS5 pass. SCP + force-recreate container. No wrangler deploy needed. |
+| BM25_FTS_ENABLED | Kill switch REMOVED — variable does not exist in current server.py. BM25/FTS5 pass runs unconditionally when section references are present. Confirmed session 27. |
+| Pass 3 threshold | Lowered 0.35 → 0.25, limit raised 4 → 8 (session 28) — secondary source recall gap diagnosed via Ratten v R not surfacing · chunk_id debug log added to Pass 3 in server.py (fires unconditionally) |
+| update-secondary-raw | POST /api/pipeline/update-secondary-raw — updates raw_text + resets embedded=0 on secondary_sources row · requires X-Nexus-Key · body: {id, raw_text} · deployed session 28 worker.js version 65017090 |
+| fetch-secondary-raw | GET /api/pipeline/fetch-secondary-raw — paginated fetch of id + raw_text from secondary_sources · requires X-Nexus-Key · params: ?offset=N&limit=N (max 100) · returns {ok, chunks, total, offset} · deployed session 28 |
+| enrich_concepts.py | One-off concepts enrichment script — Arc v 4/enrich_concepts.py · expands CONCEPTS/TOPIC/JURISDICTION lines + adds search anchor sentence via GPT-4o-mini · hits fetch-secondary-raw to read, update-secondary-raw to write · run: python enrich_concepts.py · --dry-run and --limit N flags available · add to .gitignore |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
 | Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · log: `arcanthyr-console\Local Scraper\scraper.log` · runs on Windows only (VPS IP blocked) |
 | Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (upsert). |
@@ -52,6 +56,8 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
+| enrichment_poller.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/enrichment_poller.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\enrichment_poller.py"` |
+| SCP enrichment_poller.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\enrichment_poller.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/enrichment_poller.py` then `docker compose restart enrichment-poller` (NOT force-recreate — bind mount means restart is sufficient for Python code changes) |
 | backfill scripts | Must run on VPS — fetch D1 data via Worker API (not wrangler subprocess), hit Qdrant via localhost:6334 |
 | Retrieval diagnostics | First step always: `docker compose logs --tail=50 agent-general` on VPS — skip message visible immediately |
 | enrichment_poller payload | Payload text limits fixed session 9 — secondary_sources [:5000], case_chunks [:3000], legislation [:3000] |
@@ -78,11 +84,44 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | PRINCIPLES_SPEC | Updated session 22 — case-specific prose style, no IF/THEN, no type/confidence/source_mode fields · only affects Pass 2 (Qwen3) which is overwritten by merge anyway |
 | Bulk requeue danger | Never reset enriched=0 on all cases simultaneously — causes Pass 1 re-run + chunk re-split + GPT-4o-mini rate limit exhaustion · use requeue-merge for synthesis-only re-runs |
 | requeue-merge target param | body.target='remerge' queries deep_enriched=1 cases, resets each to 0 before enqueuing MERGE message · default (no target) queries deep_enriched=0 with runtime chunk check · added session 23 |
+| Opus referral triggers | Defer to Opus + extended thinking (always on) for: (1) Prompt engineering decisions — any LLM prompt that affects data quality at scale; (2) Architectural choices with downstream consequences (schema design, pipeline changes); (3) Any decision where getting it wrong requires a patch script, re-embed, or bulk data fix; (4) Design decisions affecting 100+ rows or Qdrant points. CC should flag these rather than answering directly. |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
 - Claude Code (VS Code) — file edits, terminal commands, git, wrangler deploys
 - PowerShell / SSH — VPS runtime commands, long-running Python scripts
+
+---
+
+## POLLER DEPLOY VALIDATION PROCEDURE
+
+Use this checklist for any enrichment_poller.py change that affects Qdrant payloads or embed text. Two past fixes were documented as deployed but never reached the VPS — this procedure prevents recurrence.
+
+**DEPLOY**
+1. SCP `enrichment_poller.py` to VPS (see SCP rule above)
+2. Grep VPS file for changed lines: `grep -n "<changed pattern>" /home/tom/ai-stack/agent-general/src/enrichment_poller.py`
+3. `docker compose restart enrichment-poller` — restart the container so the running process reloads the file (the bind mount makes the file visible; only a restart loads it into the process)
+4. Verify container start time is AFTER file mtime:
+   - `stat /home/tom/ai-stack/agent-general/src/enrichment_poller.py | grep Modify`
+   - `docker inspect ai-stack-enrichment-poller-1 --format '{{.State.StartedAt}}'`
+   - Container start time must be after file mtime. If not, stop — the running container has old code.
+5. `docker compose logs --tail=10 enrichment-poller` — confirm clean start, no import errors
+
+**RESET** (only after steps 1–5 confirmed)
+
+6. Run the `UPDATE ... SET embedded=0` D1 query
+7. `SELECT COUNT(*) as pending FROM <table> WHERE embedded=0` — confirm count matches expectation exactly
+
+**MONITOR**
+
+8. `docker compose logs --tail=30 enrichment-poller` — watch first batch; confirm new fields appear in log output (add `log.info` debug line to new field before deploying)
+9. After first batch: Qdrant scroll spot-check 3–5 points — confirm new fields are present and non-empty in payload
+10. After all batches complete: `SELECT COUNT(*) as pending FROM <table> WHERE embedded=0` — must be 0 (if non-zero, some rows silently failed and won't retry)
+
+**Key failure modes to guard against:**
+- Reset before restart — the poller picks up embedded=0 rows with old code, re-embeds with stale metadata, marks embedded=1, window is gone
+- Grep passes but process is stale — file on disk is correct but container hasn't restarted; check start time vs mtime
+- Silent partial failure — embedded count non-zero after "complete" means some rows failed all Qdrant verify attempts and stayed embedded=0; check for `⚠ Point not found` warnings in logs
 
 ---
 
@@ -133,13 +172,16 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 1. **Monitor nightly cron** — ~1,753 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~7 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
 2. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
 3. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
-4. **Confirm legislation re-embed** — check poller LEG logs for Act name prefix in embed text · verify Qdrant payload includes Act title · spot-check: `curl localhost:6334/collections/general-docs-v2/points/{section_id}`
-5. **Re-enable scraper after prompt review** — scraper deliberately held · sequence: cron finishes → re-merge → baseline → evaluate GPT-4o-mini enrichment quality → review Pass 1/Pass 2 prompts → then re-enable Task Scheduler
+4. ~~**Confirm legislation re-embed**~~ — ✅ COMPLETE session 30 · all 5 Acts / ~1,272 sections re-embedded with Act-title-prefixed vectors · Qdrant payloads verified
+5. **Re-enable scraper after prompt review** — scraper deliberately held · sequence: cron finishes → re-merge → baseline → evaluate GPT-4o-mini enrichment quality → review Pass 2 prompts → then re-enable Task Scheduler · Pass 1 prompts ✅ revised session 30
 6. **Fix runDailySync proxy** — update to use fetch-page proxy instead of direct AustLII fetch · do NOT delete — feature needed for forward-looking new case capture once scraper works backwards
 7. **handleFetchSectionsByReference LIKE tightening** — current `'%' || ? || '%'` on secondary_sources produces false positives (s38 matches IDs with 138) · low priority — retrieval baseline unaffected · tighten LIKE pattern to require `s` prefix before number
 8. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
 9. **Fix UI Secondary Sources upload path** — React UI POSTs to `/upload-corpus` instead of `/api/legal/upload-corpus` · one-line fix in arcanthyr-ui
-10. **Legislation Act name gap** — IN PROGRESS · poller updated with Act title prefix · all legislation set embedded=0 · re-embed running
+10. ~~**Legislation Act name prefix re-embed**~~ — ✅ COMPLETE session 30
+11. ~~**Confirm secondary source re-embed complete**~~ — ✅ COMPLETE session 29 · all 1,188 chunks re-embedded · citation and source_id confirmed present in Qdrant payloads
+12. ~~**Pass 1 prompt quality review**~~ — ✅ COMPLETE session 30 · all three prompts (pass1System, pass1Prompt, singlePassPrompt) revised · validateCaseName() guard added to all three parse paths · CF Worker `d2f62965`
+13. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 
 ---
 
@@ -168,6 +210,50 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
+## CHANGES THIS SESSION (session 29) — 3 April 2026
+
+- **Secondary source citation fix deployed** — `enrichment_poller.py` `run_embed_secondary_sources()` updated: added `citation: chunk.get('id', '')` and corrected `source_id: chunk.get('id', '')` to metadata dict (previously `source_id` used `chunk.get('source_id', '')` which was always empty; `citation` was entirely absent). Added `[EMBED_SS]` debug log line after upsert to confirm citation/source_id per point. Deployed following Poller Deploy Validation Procedure: SCP → grep → restart → start-time check → clean start. Re-embed running: 1,188 rows reset, ~50 complete at session close.
+
+- **server.py semantic pass citation fallback** — line 271 updated from `payload.get("citation", "unknown")` to `payload.get("citation") or payload.get("chunk_id", "unknown")`. Fixes secondary source chunks showing "unknown" in semantic pass results (Pass 3 already had this fallback). Deployed via SCP + force-recreate agent-general.
+
+- **Poller Deploy Validation Procedure added to CLAUDE.md** — 10-step checklist (deploy → reset → monitor) added as permanent named section. Key rule: restart container BEFORE reset; verify container start time is after file mtime before resetting embedded=0.
+
+- **enrichment_poller.py SCP rules added to SESSION RULES** — pull and push SCP commands added alongside existing server.py SCP rules. Root cause of both past deploy failures was absence of this rule.
+
+- **Session 25 and 27 changelog entries corrected** — both marked with ⚠ "DESCRIBED AS DEPLOYED BUT NOT CONFIRMED ON VPS" with session 29 fix reference.
+
+- **Legislation Act-title prefix re-embed deferred** — audit confirmed session 25 fix never reached VPS (VPS `run_legislation_embedding_pass()` still uses `embed_text = s['text']`). Scheduled for next session after secondary source re-embed completes.
+
+## CHANGES THIS SESSION (session 30) — 3 April 2026
+
+- **Legislation Act-title prefix fix deployed and confirmed** — `enrichment_poller.py` `run_legislation_embedding_pass()` line 848 updated: `embed_text = f"{leg_title} — s {s.get('section_number', '')} {s.get('heading', '')}\n{s['text']}".strip()`. `[EMBED_LEG]` debug log added at line 863. Full 10-step Poller Deploy Validation Procedure followed: SCP → grep → restart → start-time check (container started 35s after file write) → clean start confirmed. Fix was previously documented as deployed in session 25 but never reached VPS.
+
+- **Legislation re-embed complete** — all 5 Acts / ~1,272 sections re-embedded with Act-title-prefixed vectors. Qdrant payloads spot-checked across three Acts (Evidence Act 2001, Criminal Code Act 1924, Misuse of Drugs Act 2001) — `text` field confirmed starting with `"{Act Title} — s {section_number} {heading}\n..."` format, `leg_title` and `section_number` present on all points. Pending count confirmed 0 on completion.
+
+- **Three revised Pass 1 prompts deployed** — all three extraction prompts revised and deployed (Opus + extended thinking used for prompt engineering decisions). Changes consistent across all three:
+  - `pass1System` (queue/METADATA path, line 3150) — JSON template format, VERY FIRST LINE instruction, `[` stop character, expanded NEVER list (Criminal Division, Civil Division added), SURNAME normalisation, `""` / `[]` fallbacks
+  - `pass1Prompt` (direct upload, long judgments, line 394) — rebuilt to JSON template format matching pass1System, same rules block
+  - `singlePassPrompt` (direct upload, short judgments, line 376) — VERY FIRST LINE instruction, expanded NEVER list, SURNAME normalisation, explicit Rules block, `{` first-char constraint
+  - `${PRINCIPLES_SPEC}` interpolation preserved exactly at line 389 in singlePassPrompt
+
+- **`validateCaseName()` guard added to Worker.js** — code-level safety net covering all three parse paths. Function at line 521: catches division labels (regex `/^(criminal|civil|criminal division|civil division)$/i`), single-word values (`/^\w+$/`), falls back to first-line regex extract (`/^(.+?)\s*\[/`). Also strips citation suffix (`/^(.+?)\s*\[\d{4}\].*/`) if model included it. Called at: line 446 (singlePass), line 460 (two-pass pass1), line 3205 (queue path).
+
+- **CF Worker version** — `d2f62965-af15-44a9-9b9d-8f926806f9d3`
+
+- **Pre-deploy audit findings** — systematic pattern identified: two fixes (session 25 legislation prefix, session 27 secondary source citation) documented as deployed in CLAUDE.md without VPS confirmation. Root cause: no SCP procedure for enrichment_poller.py, no post-deploy verification step. Resolution: 10-step validation procedure now permanent in POLLER DEPLOY VALIDATION PROCEDURE section; SCP rules added to SESSION RULES.
+
+## CHANGES THIS SESSION (session 27) — 30 March 2026
+
+- **Dedup fix — secondary source pass** — `_qdrant_id` (Qdrant point UUID) added as secondary dedup key in Pass 3 secondary source guard. `existing_qdrant_ids_sec` built from all chunks already collected; guard now checks `str(hit.id) in existing_qdrant_ids_sec` in addition to citation string match. `_qdrant_id` also stored on appended secondary source chunks. Why: semantic pass and Pass 3 were returning the same Qdrant point twice — once with `citation: "unknown"` (stale payload era) causing citation-based dedup to miss it; UUID check is payload-independent and catches all cases.
+
+- **Dedup fix — case chunk pass** — same `_qdrant_id` pattern applied to case chunk pass. `existing_qdrant_ids_cc` built before loop; guard checks `str(hit.id) in existing_qdrant_ids_cc`; `_qdrant_id` stored on appended case chunk results. Why: semantic pass and case chunk pass were returning identical points twice with different keys (`_qdrant_id` vs `_id`), dedup wasn't cross-checking between them.
+
+- **Secondary source citation/source_id fix** — ✅ CONFIRMED DEPLOYED session 29 (3 April 2026). ⚠ Was documented as deployed in session 27 but was not on VPS — the `UPDATE secondary_sources SET embedded=0` ran but the poller code fix (adding `citation` and correcting `source_id` to use `chunk['id']`) was never SCP'd to VPS before the re-embed ran. All 1,188 points were re-embedded with the old (broken) code and remained without `citation` in Qdrant payload. Fix actually applied session 29 following full 10-step validation procedure. All 1,188 secondary source chunks re-embedded with correct payloads — citation and source_id both confirmed present and non-empty in Qdrant.
+
+- **BM25_FTS_ENABLED kill switch confirmed absent** — CLAUDE.md note about this kill switch is stale. Current server.py has no such variable — BM25/FTS5 pass runs unconditionally when section references are present in query. Why: CC confirmed variable does not exist anywhere in current server.py.
+
+- **subject_matter filter deferred** — server.py case chunk Qdrant pass `subject_matter` filter (`MatchAny(any=["criminal","mixed"])`) drafted but not deployed. Qdrant payload for case chunks does not include `subject_matter` field — filter would return zero results. Requires: (1) Worker fetch route to JOIN cases and return `subject_matter` per chunk, (2) poller metadata dict updated, (3) full case chunk re-embed. Why: deploying filter without payload field would silently kill all case chunk retrieval.
+
 ## CHANGES THIS SESSION (session 27) — 29 March 2026
 
 ### Secondary Sources Upload — Built and hardened
@@ -181,10 +267,10 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - Pass 3 added to search_text(): filtered query scoped to type=secondary_source, threshold 0.35, limit 4 — gives secondary sources same low-threshold fallback that case chunks already had
 - top_k hard cap raised from 8 to 12
 - Root cause of citation:"unknown" in Qdrant diagnosed: enrichment_poller embed_secondary_sources() was omitting citation from payload metadata — all secondary source points had citation:"unknown", making them unretrievable by name
-- Fixed: poller now writes citation: chunk['id'] and source_id: chunk.get('id','') to Qdrant payload
-- Pass 3 dedup and fallback fixed to read chunk_id from payload correctly
-- All 1,188 secondary sources reset to embedded=0 for overnight re-embed with corrected payloads (~6 hours, 50/cycle)
-- Tomorrow: re-run hearsay query to confirm Ratten v R, Myers v DPP etc. now surface as named sources
+- ✅ "Fixed: poller now writes citation: chunk['id'] and source_id: chunk.get('id','')" — CONFIRMED DEPLOYED session 29 (3 April 2026). ⚠ Was described as deployed in session 27 but was not on VPS (VPS file mtime confirmed 2026-03-29 01:58, before session 27 work).
+- Pass 3 dedup and fallback fixed to read chunk_id from payload correctly ✓ (this one did land)
+- All 1,188 secondary sources reset to embedded=0 for overnight re-embed — re-embed ran with old code (no citation fix); Qdrant payloads still had citation ABSENT after "re-embed"
+- ✅ Fix confirmed complete session 29: poller updated, restarted, reset, re-embed complete with EMBED_SS debug log confirming correct citation/source_id in payload — all 1,188 chunks re-embedded with correct payloads
 
 ## CHANGES THIS SESSION (session 26) — 29 March 2026
 
@@ -202,7 +288,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ## CHANGES THIS SESSION (session 25) — 29 March 2026
 
-- **Legislation Act name prefix in Qdrant** — enrichment_poller.py updated to prepend Act title, section number and heading to embed text (e.g. "Evidence Act 2001 (Tas) — s 38 Unfavourable witnesses\n{section text}"). All legislation rows set embedded=0 to trigger re-embed. Qdrant upsert overwrites by section_id — no cleanup needed. Why: retrieval was finding correct legislation sections but Claude couldn't identify which Act they belonged to because chunk text had no Act name (diagnosed session 18, s 49 Justices Act test).
+- **Legislation Act name prefix in Qdrant** — ✅ CONFIRMED DEPLOYED session 30 (3 April 2026). ⚠ Was documented as deployed in session 25 but was not on VPS — enrichment_poller.py `run_legislation_embedding_pass()` still used `embed_text = s['text']` (raw section text) with no Act title prefix. Re-embed in session 25 ran with old code. Fix actually applied session 30: line 848 updated to `f"{leg_title} — s {s.get('section_number', '')} {s.get('heading', '')}\n{s['text']}".strip()`, [EMBED_LEG] debug log added, 10-step validation procedure followed. All 5 Acts / ~1,272 sections re-embedded — Qdrant payloads verified with correct Act title prefix. Why: retrieval was finding correct legislation sections but Claude couldn't identify which Act they belonged to (diagnosed session 18, s 49 Justices Act test).
 
 - **FSST methylamphetamine chunk ingested** — practitioner forensic guidance on medications that won't cause false positive oral fluid results (paracetamol/codeine, pseudoephedrine, diazepam, citalopram, oxycodone, escitalopram, quetiapine, sertraline, clomipramine, phentermine) plus FSST confirmation that passive methylamphetamine inhalation is scientifically impossible. Citation: `fsst-methylamphetamine-false-positives-passive-inhalation`. Category: practice note. Enriched text written directly (no GPT enrichment needed). Why: practitioner-sourced forensic evidence — directly useful for drug driving defences.
 
@@ -304,13 +390,12 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 - **Run retrieval baseline** — after chunk cleanup completes
 - **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R — completed session 13
 - **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5
-- **subject_matter retrieval filter** — once cases.subject_matter populated after reprocess, add filter to case chunk Qdrant pass to scope criminal law queries to criminal cases only
+- **subject_matter retrieval filter** — 3-part fix required: (1) update `/api/pipeline/fetch-case-chunks-for-embedding` Worker route to JOIN cases on citation and return `subject_matter` per chunk; (2) add `subject_matter` to enrichment_poller.py case chunk metadata dict; (3) reset `embedded=0` on all case chunks and let poller re-embed. Do not deploy server.py filter until all three complete.
 - **Duplicate principle deduplication** — SUPERSEDED by merge synthesis step (session 22) which produces deduplicated case-level principles
 - **Re-embed pass** — COMPLETED session 14 as part of CHUNK v3 reprocess — all case chunks being re-embedded from enriched_text overnight
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
-- **FTS5 as mandatory third RRF source** — currently gated by BM25_FTS_ENABLED. Validate post-scraper-run
 - **Qwen3 UI toggle** — add third button to model toggle
 - **Nightly cron for xref_agent.py** — after scraper actively running
 - **Stare decisis layer** — surface treatment history from case_citations

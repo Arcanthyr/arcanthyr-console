@@ -693,7 +693,7 @@ def run_embedding_pass(batch: int) -> dict:
         # Prefer enriched_text for embedding; fall back to raw text
         embed_text   = chunk.get('enriched_text') or chunk.get('raw_text', '')
         metadata     = {
-            'citation':    chunk['id'],
+            'citation':    chunk.get('id', ''),
             'source_id':   chunk.get('id', ''),
             'chunk_index': chunk.get('chunk_index', 0),
             'text':        embed_text[:5000],
@@ -706,6 +706,7 @@ def run_embedding_pass(batch: int) -> dict:
         try:
             vector = get_embedding(embed_text[:5000])
             upsert_qdrant(chunk_id, vector, metadata)
+            log.info(f"[EMBED_SS] citation={metadata['citation'][:60]} source_id={metadata['source_id'][:60]}")
 
             # Verify the point actually landed — retry up to 5 times with 1s between
             verified = False
@@ -844,11 +845,9 @@ def run_legislation_embedding_pass(batch: int = 5) -> dict:
         log.info(f'[LEG] Embedding {len(act_sections)} sections for: {leg_title}')
         ok = True
         for s in act_sections:
-            raw_text = s['text']
-            if not raw_text.strip():
+            embed_text = f"{leg_title} — s {s.get('section_number', '')} {s.get('heading', '')}\n{s['text']}".strip()
+            if not embed_text.strip():
                 continue
-            heading = s.get('heading', '') or ''
-            embed_text = f"{leg_title} — s {s['section_number']} {heading}\n{raw_text}".strip()
             metadata = {
                 'leg_id':         leg_id,
                 'leg_title':      leg_title,
@@ -861,6 +860,7 @@ def run_legislation_embedding_pass(batch: int = 5) -> dict:
             try:
                 vector = get_embedding(embed_text)
                 upsert_qdrant(s['section_id'], vector, metadata)
+                log.info(f"[EMBED_LEG] leg_title={leg_title[:60]} section={s.get('section_number', '')}")
                 total_embedded += 1
             except Exception as e:
                 log.error(f'[LEG] ERROR on section {s["section_number"]}: {e}')

@@ -9,3 +9,5 @@ debug_response.txt
 backfill_enriched.sql
 *.png
 .playwright-mcp/
+
+enrich_concepts.py
