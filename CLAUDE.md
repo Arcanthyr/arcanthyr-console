@@ -224,6 +224,26 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 - **Legislation Act-title prefix re-embed deferred** — audit confirmed session 25 fix never reached VPS (VPS `run_legislation_embedding_pass()` still uses `embed_text = s['text']`). Scheduled for next session after secondary source re-embed completes.
 
+## CHANGES THIS SESSION (session 31) — 3 April 2026
+
+- **Sentencing second pass implemented and deployed** — new `SENTENCING_SYNTHESIS_PROMPT` constant added at module level · `isSentencingCase()` helper added before `performMerge` · sentencing block inserted in `performMerge` after main synthesis, before D1 write · fires conditionally on `subject_matter='criminal'` or sentencing keyword scan · produces `procedure_notes` (structured sentencing summary) + 2-4 sentencing principles appended to `principles_extracted` · non-sentencing cases return `sentencing_found:false` and are skipped cleanly · tested on DPP v King [2024] TASCCA 8 — 6 doctrine + 2 sentencing principles, `procedure_notes` confirmed written · why: sentencing judgments were systematically half-extracted — penalty analysis, quantum, mitigating factors absent from principles
+
+- **Three subject_matter fixes in MERGE/CHUNK handlers** — MERGE handler SELECT, CHUNK handler SELECT, and CHUNK handler inline object to `performMerge` all updated to include `subject_matter` · without the inline object fix, `subject_matter` would have been fetched but silently dropped before reaching `isSentencingCase()` · why: `isSentencingCase` Check 1 was dead code for all queue-triggered merges
+
+- **PRINCIPLES_SPEC synced across worker.js** — two copies were out of sync: `summarizeCase` copy (line 352) still had old BAD examples ("The prosecution bears the onus...", "IF self-defence is raised...") · updated to match `performMerge` copy · third GOOD example updated from "Weed eradication works..." to "The appellant's failure to disclose gambling debts..." for consistency
+
+- **Civil cases principles fix** — synthesis prompt BAD examples were exclusively criminal law · GPT-4o-mini returning `[]` for civil/family judgments (TASCCA 1, TASFC 1, TASFC 4) · added civil GOOD example ("The appellant's failure to disclose gambling debts totalling $180,000...") · all three cases re-merged successfully with correct principles
+
+- **Bulk re-merge completed** — all 551 cases `deep_enriched=1` · 0 old-format (IF/THEN) principles remaining · confirmed via `LIKE '%"type":"ratio"%'` query returning 0
+
+- **Retrieval baseline run** — 18 questions · 8 clear passes · 5 partial · 2 misses (Q11 s138 semantic mismatch, Q13 tendency notice) · deferred investigation until full scrape complete — corpus coverage gaps expected at current volume
+
+- **Scraper re-enabled** — Task Scheduler Arcanthyr Scraper (8am AEST) and run_scraper_evening (6pm AEST) both set to Ready · all gate conditions met: chunks clean, principles new-format, baseline run, Pass 1 prompts revised, sentencing second pass live
+
+- **enrich_concepts.py confirmed in .gitignore** — already present at line 13, no action needed
+
+- **worker.js version** — `fe29090`
+
 ## CHANGES THIS SESSION (session 30) — 3 April 2026
 
 - **Legislation Act-title prefix fix deployed and confirmed** — `enrichment_poller.py` `run_legislation_embedding_pass()` line 848 updated: `embed_text = f"{leg_title} — s {s.get('section_number', '')} {s.get('heading', '')}\n{s['text']}".strip()`. `[EMBED_LEG]` debug log added at line 863. Full 10-step Poller Deploy Validation Procedure followed: SCP → grep → restart → start-time check (container started 35s after file write) → clean start confirmed. Fix was previously documented as deployed in session 25 but never reached VPS.

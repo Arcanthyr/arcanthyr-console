@@ -180,8 +180,13 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 2. Collect `enriched_text` from reasoning/mixed chunks into `enrichedTexts` array
 3. If `enrichedTexts.length > 0`: make GPT-4o-mini synthesis call with enriched_text + Pass 1 context → produces 4-8 case-specific principles
 4. If synthesis fails or enrichedTexts empty: fall back to raw `allPrinciples` concatenation
+  → Sentencing second pass (conditional — fires if `subject_matter='criminal'` or sentencing keywords in chunks):
+      → `isSentencingCase()` checks subject_matter + keyword scan across principles_json + issues string
+      → GPT-4o-mini: `SENTENCING_SYNTHESIS_PROMPT` → `{sentencing_found, procedure_notes, sentencing_principles}`
+      → If `sentencing_found=true`: `procedure_notes` written to cases table, `sentencing_principles` appended to `synthesisedPrinciples`
+      → If `sentencing_found=false`: no-op, case gets doctrine principles only
 5. Atomic gate: `UPDATE cases SET deep_enriched=1 WHERE citation=? AND deep_enriched=0` — only one worker proceeds
-6. Write `principles_extracted`, `holdings_extracted`, `legislation_extracted`, `authorities_extracted`, `subject_matter`, `holding` to D1
+6. Write `principles_extracted`, `holdings_extracted`, `legislation_extracted`, `authorities_extracted`, `subject_matter`, `holding`, `procedure_notes` to D1
 
 **Synthesis prompt** produces principles as JSON array of `{ principle, statute_refs, keywords }` — no type/confidence/source_mode fields. Case-specific prose style, not generic IF/THEN.
 
@@ -399,6 +404,17 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `handleLegalQuery()` | Claude API (claude-sonnet-4-20250514) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
+### Sentencing Second Pass (session 31)
+
+- Constant: `SENTENCING_SYNTHESIS_PROMPT` — module level in worker.js
+- Helper: `isSentencingCase(caseRow, allChunks)` — three checks: (1) `subject_matter='criminal'`, (2) sentencing keyword regex across `principles_json`, (3) issues string scan
+- Fires inside `performMerge()` after main synthesis, before D1 write
+- Cost: ~$0.001/case, only on criminal cases (~60% of corpus)
+- Output: `procedure_notes` (200-400 word structured prose) + 2-4 sentencing principles merged into `principles_extracted`
+- Non-destructive: non-sentencing criminal cases return `sentencing_found=false`, no extra cost beyond the one GPT call
+- Triggered by `requeue-merge` automatically — no separate route needed
+- `subject_matter` must be included in both CHUNK and MERGE handler SELECTs and passed through the inline `caseRow` object to `performMerge` — omitting it silently breaks Check 1
+
 ### worker.js — admin routes
 
 | Route | Method | Purpose |
@@ -427,6 +443,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched, subject_matter`
 - `subject_matter TEXT` — added session 14 · values: criminal/civil/administrative/family/mixed/unknown · derived at merge step from most frequent chunk-level classification
 - `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete and merge runs
+- `procedure_notes TEXT` — populated by sentencing second pass for criminal judgments · NULL for non-criminal or non-sentencing cases
 
 ### case_chunks D1 schema
 
