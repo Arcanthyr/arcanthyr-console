@@ -46,6 +46,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
 | BM25_FTS_ENABLED | Kill switch REMOVED — variable does not exist in current server.py. BM25/FTS5 pass runs unconditionally when section references are present. Confirmed session 27. |
 | Pass 3 threshold | Lowered 0.35 → 0.25, limit raised 4 → 8 (session 28) — secondary source recall gap diagnosed via Ratten v R not surfacing · chunk_id debug log added to Pass 3 in server.py (fires unconditionally) |
+| VPS doc ID format | server.py `post_chunk_to_worker` generates citation-derived IDs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format · both are valid · if duplicate rows appear for VPS-uploaded docs, check for GPT generating slightly different citation strings on re-run |
 | update-secondary-raw | POST /api/pipeline/update-secondary-raw — updates raw_text + resets embedded=0 on secondary_sources row · requires X-Nexus-Key · body: {id, raw_text} · deployed session 28 worker.js version 65017090 |
 | fetch-secondary-raw | GET /api/pipeline/fetch-secondary-raw — paginated fetch of id + raw_text from secondary_sources · requires X-Nexus-Key · params: ?offset=N&limit=N (max 100) · returns {ok, chunks, total, offset} · deployed session 28 |
 | enrich_concepts.py | One-off concepts enrichment script — Arc v 4/enrich_concepts.py · expands CONCEPTS/TOPIC/JURISDICTION lines + adds search anchor sentence via GPT-4o-mini · hits fetch-secondary-raw to read, update-secondary-raw to write · run: python enrich_concepts.py · --dry-run and --limit N flags available · add to .gitignore |
@@ -181,7 +182,10 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 10. ~~**Legislation Act name prefix re-embed**~~ — ✅ COMPLETE session 30
 11. ~~**Confirm secondary source re-embed complete**~~ — ✅ COMPLETE session 29 · all 1,188 chunks re-embedded · citation and source_id confirmed present in Qdrant payloads
 12. ~~**Pass 1 prompt quality review**~~ — ✅ COMPLETE session 30 · all three prompts (pass1System, pass1Prompt, singlePassPrompt) revised · validateCaseName() guard added to all three parse paths · CF Worker `d2f62965`
-13. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+13. **Pass 3 debug log in server.py** — `chunk_id` debug log added to Pass 3 fires unconditionally · needs removal or conditionalization (e.g. guard behind env flag or only when results empty)
+14. **enrich_concepts.py** — confirmed in `.gitignore` (session 31) · no further action needed
+15. **Myers v DPP retrieval test** — post-enrichment check still not run · run after next batch of secondary source uploads
+16. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 
 ---
 
@@ -223,6 +227,16 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Session 25 and 27 changelog entries corrected** — both marked with ⚠ "DESCRIBED AS DEPLOYED BUT NOT CONFIRMED ON VPS" with session 29 fix reference.
 
 - **Legislation Act-title prefix re-embed deferred** — audit confirmed session 25 fix never reached VPS (VPS `run_legislation_embedding_pass()` still uses `embed_text = s['text']`). Scheduled for next session after secondary source re-embed completes.
+
+## CHANGES THIS SESSION (session 32) — 4 April 2026
+
+- **base64 fix in `post_chunk_to_worker` (server.py)** — `text` field was being sent as base64-encoded string with `encoding: "base64"` flag · Worker's `handleUploadCorpus` has no decode step so every chunk silently failed citation check and was skipped · fix: send raw UTF-8 string, remove `encoding` key · why: silent failure — inserted=0 skipped=N with no error, diagnosed by CC reading full function body
+
+- **Word/PDF → Secondary Sources pipeline confirmed end-to-end** — drag-drop `.docx`/`.pdf`/`.txt` on Secondary Sources tab → base64 → Worker proxy `/api/ingest/process-document` → server.py `process_document()` → GPT-4o-mini block formatting → `post_chunk_to_worker` → Worker `handleUploadCorpus` → D1 → poller embeds to Qdrant · tested with tendency/coincidence evidence Word doc · inserted=8 skipped=0 errors=0 · embedded by poller within one loop cycle · why: pipeline was wired but silently broken at the D1 write seam
+
+- **Retrieval test — tendency/coincidence evidence** — new chunks surfacing correctly in query results alongside existing corpus material · s 97(1) two-limb test, notice requirements, IMM v The Queen all retrieved correctly · minor quality note: synthesis referenced s 137 instead of s 135 for general discretionary exclusion — imprecise but not wrong
+
+- **VPS doc ID format noted** — see operational directives rule above
 
 ## CHANGES THIS SESSION (session 31) — 3 April 2026
 

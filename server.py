@@ -1002,12 +1002,11 @@ def post_chunk_to_worker(chunk, worker_url, nexus_key):
     import urllib.request
 
     payload = json.dumps({
-        "text":     base64.b64encode(chunk["text"].encode("utf-8")).decode("ascii"),
+        "text":     chunk["text"],
         "citation": chunk["citation"],
         "source":   chunk["source"],
         "category": chunk["category"],
         "doc_type": chunk["doc_type"],
-        "encoding": "base64",
     }).encode("utf-8")
 
     req = urllib.request.Request(

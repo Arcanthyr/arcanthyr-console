@@ -140,6 +140,15 @@ Four processing paths:
 3. **Raw text <800 words** — calls GPT with Master Prompt + short-source note appended (demands separate chunks per doctrinal unit, strict CASE AUTHORITY CHUNK RULE)
 4. **Single-chunk mode** — `body.mode='single'` bypasses GPT entirely; wraps text in `<!-- block_0001 master -->` header using provided `title`, `slug`, `category`; calls `parseFormattedChunks()` and inserts as one chunk
 
+**Word/PDF drag-drop pipeline (session 32 — confirmed working):**
+Upload.jsx accepts `.pdf`, `.docx`, `.txt` on Secondary Sources tab → reads as base64 DataURL → `api.processDocument({ file_b64, filename })` → Worker proxy `POST /api/ingest/process-document` → server.py `process_document()` → background thread: extract text → split blocks → GPT-4o-mini format → `post_chunk_to_worker` → Worker `POST /api/legal/upload-corpus` → D1 insert `enriched=1, embedded=0` → poller embeds to Qdrant.
+
+Key fix (session 32): `post_chunk_to_worker` was sending base64-encoded text with `encoding: "base64"` flag — Worker has no decode step, all chunks silently skipped. Fixed to send raw UTF-8.
+
+ID format: citation-derived slugs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format. Both valid. Re-uploading same doc overwrites cleanly via `INSERT OR REPLACE`.
+
+`.md` files on drop: load into textarea instead of triggering pipeline — intentional, allows preview/edit before submit.
+
 **Parser fix (ingest_corpus.py session 9):**
 - Heading regex: `#+ .+` (was `###? .+`) — now accepts single # headings
 - Metadata lookahead: `\[[A-Z]+:` (was `\[DOMAIN:`) — now accepts any bracket field
