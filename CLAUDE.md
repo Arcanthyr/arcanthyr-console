@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 29 March 2026 (end of session 26) · Supersedes all prior versions
+Updated: 4 April 2026 (end of session 33) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -126,18 +126,18 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 29 March 2026 (end of session 26)
+## SYSTEM STATE — 4 April 2026 (end of session 33)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 10,333+ vectors · 1,272 legislation re-embedding with Act name prefix · 1,172 secondary sources + 1 new (FSST) · case chunks embedding via poller |
-| D1 cases | 549 total · 329 deep_enriched · 220 pending chunk completion |
-| D1 case_chunks | 8,672 total · ~1,753 done=0 (nightly cron clearing 250/night) · ~6,919 done=1 |
-| D1 secondary_sources | 1,174+ total (manual-doli-incapax added) · all enriched=1 |
-| enrichment_poller | RUNNING — case-embed active · legislation re-embed queued (all Acts set embedded=0) |
-| Cloudflare Queue | Nightly cron clearing done=0 chunks at 3am UTC (1pm AEST) · 250/night |
-| Scraper | NOT RUNNING — deliberately held until cron completes + prompt review done |
-| arcanthyr.com | Live — worker.js version 9361a39 (CF: f6db67df) · enrichment_poller updated with Act name prefix |
+| Qdrant general-docs-v2 | 10,333+ vectors · all 1,272 legislation sections re-embedded with Act name prefix · 1,174+ secondary sources · citation + source_id confirmed in all payloads · case chunks embedded |
+| D1 cases | 551 total · all 551 deep_enriched=1 · 0 pending merge · all new-format principles (no IF/THEN remaining) |
+| D1 case_chunks | all done=1 (nightly cron complete session 31) · case-embed active via poller |
+| D1 secondary_sources | 1,174+ total · all enriched=1 · all embedded=1 |
+| enrichment_poller | RUNNING — case-embed active |
+| Cloudflare Queue | Nightly cron COMPLETE — all done=0 chunks cleared · cron still armed for new scraper cases |
+| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST (re-enabled session 31) |
+| arcanthyr.com | Live — worker.js version ae4b735c · Library Principles tab fix deployed |
 | arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
 
 ---
@@ -170,22 +170,13 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-1. **Monitor nightly cron** — ~1,753 chunks pending · cron fires 3am UTC (1pm AEST) · 250/night · ~7 nights remaining · check: `SELECT SUM(CASE WHEN done=0 THEN 1 ELSE 0 END) as pending FROM case_chunks`
-2. **Bulk re-merge old-format cases after cron completes** — fire `requeue-merge` with `{"target":"remerge","limit":330}` once done=0=0 · synthesis will produce new-format principles for all early-merged cases
-3. **Run retrieval baseline** — ~/retrieval_baseline.sh on VPS after chunk cleanup completes and poller re-embeds
-4. ~~**Confirm legislation re-embed**~~ — ✅ COMPLETE session 30 · all 5 Acts / ~1,272 sections re-embedded with Act-title-prefixed vectors · Qdrant payloads verified
-5. **Re-enable scraper after prompt review** — scraper deliberately held · sequence: cron finishes → re-merge → baseline → evaluate GPT-4o-mini enrichment quality → review Pass 2 prompts → then re-enable Task Scheduler · Pass 1 prompts ✅ revised session 30
-6. **Fix runDailySync proxy** — update to use fetch-page proxy instead of direct AustLII fetch · do NOT delete — feature needed for forward-looking new case capture once scraper works backwards
-7. **handleFetchSectionsByReference LIKE tightening** — current `'%' || ? || '%'` on secondary_sources produces false positives (s38 matches IDs with 138) · low priority — retrieval baseline unaffected · tighten LIKE pattern to require `s` prefix before number
-8. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
-9. **Fix UI Secondary Sources upload path** — React UI POSTs to `/upload-corpus` instead of `/api/legal/upload-corpus` · one-line fix in arcanthyr-ui
-10. ~~**Legislation Act name prefix re-embed**~~ — ✅ COMPLETE session 30
-11. ~~**Confirm secondary source re-embed complete**~~ — ✅ COMPLETE session 29 · all 1,188 chunks re-embedded · citation and source_id confirmed present in Qdrant payloads
-12. ~~**Pass 1 prompt quality review**~~ — ✅ COMPLETE session 30 · all three prompts (pass1System, pass1Prompt, singlePassPrompt) revised · validateCaseName() guard added to all three parse paths · CF Worker `d2f62965`
-13. **Pass 3 debug log in server.py** — `chunk_id` debug log added to Pass 3 fires unconditionally · needs removal or conditionalization (e.g. guard behind env flag or only when results empty)
-14. **enrich_concepts.py** — confirmed in `.gitignore` (session 31) · no further action needed
-15. **Myers v DPP retrieval test** — post-enrichment check still not run · run after next batch of secondary source uploads
-16. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+1. **Fix runDailySync proxy** — update to use fetch-page proxy instead of direct AustLII fetch · do NOT delete — feature needed for forward-looking new case capture once scraper works backwards
+2. **handleFetchSectionsByReference LIKE tightening** — current `'%' || ? || '%'` on secondary_sources produces false positives (s38 matches IDs with 138) · low priority — retrieval baseline unaffected · tighten LIKE pattern to require `s` prefix before number
+3. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
+4. **Fix UI Secondary Sources upload path** — React UI POSTs to `/upload-corpus` instead of `/api/legal/upload-corpus` · one-line fix in arcanthyr-ui
+5. **Pass 3 debug log in server.py** — `chunk_id` debug log added to Pass 3 fires unconditionally · needs removal or conditionalization (e.g. guard behind env flag or only when results empty)
+6. **Myers v DPP retrieval test** — post-enrichment check still not run · run after next batch of secondary source uploads
+7. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 
 ---
 
@@ -227,6 +218,14 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Session 25 and 27 changelog entries corrected** — both marked with ⚠ "DESCRIBED AS DEPLOYED BUT NOT CONFIRMED ON VPS" with session 29 fix reference.
 
 - **Legislation Act-title prefix re-embed deferred** — audit confirmed session 25 fix never reached VPS (VPS `run_legislation_embedding_pass()` still uses `embed_text = s['text']`). Scheduled for next session after secondary source re-embed completes.
+
+## CHANGES THIS SESSION (session 33) — 4 April 2026
+
+- **Library Principles tab fix** — `Library.jsx` Principles tab was reading `c.holdings_extracted` (line 335) instead of `c.principles_extracted` — displaying holdings objects where principles should appear · root cause: copy-paste error when tab was originally written · fix: changed field reference to `c.principles_extracted` · why: h.holding was the first property tried in the render fallback so the bug was silent — holdings text appeared instead of principles text
+
+- **handleLibraryList SELECT fix (worker.js)** — `principles_extracted` was absent from the `handleLibraryList` SELECT at line 1596 · only `holdings_extracted` was fetched · even with the JSX fix, `c.principles_extracted` would have been `undefined` · fix: added `principles_extracted` to the SELECT · deployed CF Worker version `ae4b735c` · why: two-bug compounding failure — wrong field name in JSX AND missing field in SQL
+
+- **Documentation process fix diagnosed** — identified systematic pattern: OUTSTANDING PRIORITIES list was append-only across sessions 31–32 · items completed in session 31 (cron finished, re-merge complete, baseline run, scraper re-enabled) were logged in CHANGES but never removed from Outstanding Priorities · SYSTEM STATE table not updated since session 26 · root cause: update prompt was not specific enough to require reconciliation · this session: explicit reconcile step applied, stale items removed, SYSTEM STATE refreshed
 
 ## CHANGES THIS SESSION (session 32) — 4 April 2026
 

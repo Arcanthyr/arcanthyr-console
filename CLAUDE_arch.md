@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 29 March 2026 (end of session 26). Upload every session alongside CLAUDE.md.*
+*Updated: 4 April 2026 (end of session 33). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -288,7 +288,7 @@ cd "../Arc v 4" && npx wrangler deploy
 - `Landing.jsx` — immediate redirect to /research (auth removed session 17)
 - `Research.jsx` — query input, model toggle (Claude/Workers), filter chips, non-clickable source list, AI Summary auto-displays in reading pane after query
 - `Upload.jsx` — 3 tabs: Cases (file drop + AustLII URL input) / Secondary Sources (drag+drop .md/.txt) / Legislation (drag+drop .pdf/.txt)
-- `Library.jsx` — 3 tabs: cases/corpus/legislation · case rows clickable → split reading pane with Facts/Holding/Principles tabs
+- `Library.jsx` — 3 tabs: cases/corpus/legislation · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33 — was incorrectly reading `c.holdings_extracted`) · `handleLibraryList` SELECT must include `principles_extracted` (added session 33)
 - Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`
 
 **Production deploy (pending):**
