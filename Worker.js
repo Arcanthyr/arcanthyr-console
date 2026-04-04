@@ -1038,14 +1038,24 @@ async function handleSearchPrinciples(body, env) {
   }));
 }
 
+function citationToId(citation) {
+  return citation
+    .trim()
+    .replace(/[\[\]\s]+/g, '-')
+    .toLowerCase()
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 async function handleUploadCase(body, env) {
   let { case_text, citation, case_name, court, court_hint, encoding } = body;
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   court = court || courtMap[court_hint] || 'supreme';
   if (encoding === 'base64') case_text = atob(case_text);
-  const caseId = crypto.randomUUID();
+  const caseId = citationToId(citation);
   const caseYear = (citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1];
-  await env.DB.prepare(`INSERT OR REPLACE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
+  await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
     .bind(caseId, citation, court, `${caseYear}-01-01`, case_text)
     .run();
   await env.CASE_QUEUE.send({ type: 'METADATA', citation });
@@ -1085,9 +1095,9 @@ async function handleFetchCaseUrl(body, env) {
   const abbrevMatch = citation.match(/\]\s+([A-Za-z]+)\s+\d/);
   const resolvedCourt = court || (abbrevMatch && courtMap[abbrevMatch[1]]) || 'supreme';
 
-  const caseId = crypto.randomUUID();
+  const caseId = citationToId(citation);
   const caseYear = (citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1];
-  await env.DB.prepare(`INSERT OR REPLACE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
+  await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
     .bind(caseId, citation, resolvedCourt, `${caseYear}-01-01`, plainText)
     .run();
   await env.CASE_QUEUE.send({ type: 'METADATA', citation });
@@ -1593,7 +1603,7 @@ async function handleLibraryList(env) {
       SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
              processed_date, summary_quality_score, 'case' AS doc_type,
              LENGTH(raw_text) AS raw_size, enriched, deep_enriched, subject_matter,
-             facts, holding, holdings_extracted,
+             facts, holding, holdings_extracted, principles_extracted,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation) AS chunk_count,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation AND embedded = 1) AS chunks_embedded
       FROM cases ORDER BY processed_date DESC
@@ -2726,9 +2736,12 @@ async function handleFetchSectionsByReference(request, env, corsHeaders) {
       const corpusRows = await env.DB.prepare(`
         SELECT id, id as chunk_id, COALESCE(enriched_text, raw_text) as text, NULL as section_number, NULL as heading, NULL as leg_title
         FROM secondary_sources
-        WHERE id LIKE '%' || ? || '%'
+        WHERE id LIKE '%s ' || ? || ' %'
+           OR id LIKE '%s ' || ? || '-%'
+           OR id LIKE '%s ' || ? || ','
+           OR id LIKE '%s ' || ?
         LIMIT 10
-      `).bind(ref.section_number).all();
+      `).bind(ref.section_number, ref.section_number, ref.section_number, ref.section_number).all();
       for (const row of corpusRows.results) {
         if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
       }
