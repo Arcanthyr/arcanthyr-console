@@ -52,7 +52,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | enrich_concepts.py | One-off concepts enrichment script — Arc v 4/enrich_concepts.py · expands CONCEPTS/TOPIC/JURISDICTION lines + adds search anchor sentence via GPT-4o-mini · hits fetch-secondary-raw to read, update-secondary-raw to write · run: python enrich_concepts.py · --dry-run and --limit N flags available · add to .gitignore |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
 | Scraper location | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `...\scraper_progress.json` · log: `...\scraper.log` · runs on Windows only (VPS IP blocked) |
-| Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (upsert). |
+| Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (INSERT OR IGNORE skips silently). |
 | run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
 | TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence |
@@ -171,7 +171,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 |---|---|
 | Qdrant general-docs-v2 | 10,333+ vectors · all 1,272 legislation sections re-embedded with Act name prefix · 1,174+ secondary sources · citation + source_id confirmed in all payloads · case chunks embedded |
 | D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs now citation-derived (backfilled session 34) |
-| D1 case_chunks | all done=1 (nightly cron complete session 31) · case-embed active via poller |
+| D1 case_chunks | 9,331 total · all done=1 · pending=0 (nightly cron complete session 31) · case-embed active via poller |
 | D1 secondary_sources | 1,174+ total · all enriched=1 · all embedded=1 |
 | enrichment_poller | RUNNING — case-embed active |
 | Cloudflare Queue | Nightly cron COMPLETE — all done=0 chunks cleared · cron still armed for new scraper cases |
