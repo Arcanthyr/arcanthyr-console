@@ -1301,6 +1301,24 @@ class Handler(BaseHTTPRequestHandler):
             status, result = process_document(body, WORKER_URL, NEXUS_KEY)
             self.send_json(status, result)
 
+        elif self.path == "/fetch-page":
+            if not self.check_auth(): return
+            body = self.read_body()
+            url = body.get("url", "")
+            if not url or "austlii.edu.au" not in url:
+                self.send_json(400, {"error": "url must be on austlii.edu.au"})
+                return
+            try:
+                resp = requests.get(url, headers={
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-AU,en;q=0.9',
+                }, timeout=30)
+                self.send_json(200, {"html": resp.text, "status": resp.status_code})
+            except Exception as e:
+                print(f"[!] Fetch page error: {e}")
+                self.send_json(200, {"error": str(e), "status": 0})
+
         else:
             self.send_json(404, {"error": "not found"})
 

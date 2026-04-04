@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 4 April 2026 (end of session 34) · Supersedes all prior versions
+Updated: 4 April 2026 (end of session 35) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -51,11 +51,12 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | fetch-secondary-raw | GET /api/pipeline/fetch-secondary-raw — paginated fetch of id + raw_text from secondary_sources · requires X-Nexus-Key · params: ?offset=N&limit=N (max 100) · returns {ok, chunks, total, offset} · deployed session 28 |
 | enrich_concepts.py | One-off concepts enrichment script — Arc v 4/enrich_concepts.py · expands CONCEPTS/TOPIC/JURISDICTION lines + adds search anchor sentence via GPT-4o-mini · hits fetch-secondary-raw to read, update-secondary-raw to write · run: python enrich_concepts.py · --dry-run and --limit N flags available · add to .gitignore |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
-| Scraper location | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `...\scraper_progress.json` · log: `...\scraper.log` · runs on Windows only (VPS IP blocked) |
+| Scraper location | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `...\scraper_progress.json` · log: `...\scraper.log` · runs on Windows only (Task Scheduler on local machine) |
 | Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (INSERT OR IGNORE skips silently). |
 | run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
-| TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence |
+| TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is NOT IP-blocked by AustLII (confirmed curl 200 session 35) |
+| runDailySync proxy | AustLII fetches routed through VPS `/fetch-page` endpoint (server.py) to avoid Cloudflare edge IP patterns · jade.io URLs fetch directly · `env` threaded through `handleFetchPage` and `fetchCaseContent` · deployed session 35 |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
@@ -165,18 +166,18 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 4 April 2026 (end of session 34)
+## SYSTEM STATE — 4 April 2026 (end of session 35)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 10,333+ vectors · all 1,272 legislation sections re-embedded with Act name prefix · 1,174+ secondary sources · citation + source_id confirmed in all payloads · case chunks embedded |
-| D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs now citation-derived (backfilled session 34) |
-| D1 case_chunks | 9,331 total · all done=1 · pending=0 (nightly cron complete session 31) · case-embed active via poller |
+| D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs citation-derived · 46 cases re-merged session 34, poller re-embedding |
+| D1 case_chunks | 9,331 total · all done=1 · pending=0 · case-embed active via poller |
 | D1 secondary_sources | 1,174+ total · all enriched=1 · all embedded=1 |
-| enrichment_poller | RUNNING — case-embed active |
+| enrichment_poller | RUNNING — case-embed active (re-embedding 46 re-merged cases) |
 | Cloudflare Queue | Nightly cron COMPLETE — all done=0 chunks cleared · cron still armed for new scraper cases |
-| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST · currently scraping TASSC 2017 · TAMagC 2018-2025 marked done (all 404s — AustLII outage, not structural gap) |
-| arcanthyr.com | Live — worker.js version 23cf95ba · INSERT OR IGNORE + citationToId deployed |
+| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST · currently scraping TASSC 2017 · TAMagC 2018-2025 marked done (AustLII outage confirmed, not structural gap — recover once AustLII back up) |
+| arcanthyr.com | Live — session 35 deploy · runDailySync now proxied through VPS · fetchCaseUrl UI bug fixed |
 | arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
 
 ---
@@ -209,9 +210,9 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-1. **Fix runDailySync proxy** — update to use fetch-page proxy instead of direct AustLII fetch · do NOT delete — feature needed for forward-looking new case capture once scraper works backwards
-2. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
-3. **TAMagC scraper recovery** — TAMagC 2018-2025 marked done in progress file after all-404 runs (AustLII outage confirmed, not structural) · once AustLII TAMagC page confirmed recovered: delete TAMagC_YYYY entries from `scraper_progress.json` and re-run scraper for those years
+1. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session · check IDs not already in secondary_sources before uploading (upload-corpus is destructive upsert)
+2. **TAMagC scraper recovery** — TAMagC 2018-2025 marked done in progress file after all-404 runs · AustLII TAMagC page confirmed temporarily down (returning 500 as at session 35), not a structural gap · once AustLII recovers: delete TAMagC_YYYY entries from `scraper_progress.json` and re-run scraper for those years
+3. **Run retrieval baseline** — 18-question baseline not run since session 31 · run after re-merge poller re-embed completes (46 cases re-merged session 34, poller re-embedding) · required before any server.py retrieval changes to have clean before/after
 4. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 
 ---
@@ -237,6 +238,18 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 
 ---
+
+## CHANGES THIS SESSION (session 35) — 4 April 2026
+
+- **Case chunk pass dedup fix** — `_qdrant_id` guard added to case chunk second-pass in `search_text()`. Previously deduped against `{c.get("_id") for c in chunks if "_id" in c}` — only matched chunks added by the case chunk pass itself (stored with key `_id`), never chunks from the main semantic pass (stored with `_qdrant_id`). Fix mirrors Pass 3 secondary source pattern: `existing_qdrant_ids_cc` built from all existing chunks' `_qdrant_id` values; guard checks `str(hit.id) in existing_qdrant_ids_cc`. Limit raised 4 → 6. Deployed via SCP + force-recreate. Confirmed: `added 6 case chunks` in logs on test query. Root cause: session 27 fix was committed to git (commit `5935df7`) but never SCP'd to VPS — third instance of the deploy-gap pattern.
+
+- **runDailySync proxy — end-to-end complete** — `POST /fetch-page` route added to `server.py`: validates `austlii.edu.au` domain, fetches with browser-like headers via `requests.get()`, returns `{html, status}`. `handleFetchPage` in `Worker.js` updated with `env` parameter (default null): routes AustLII URLs through VPS when env present, jade.io falls back to direct fetch. `env` threaded through `fetchCaseContent(url, preloadedHtml, env)` and all 7 `handleFetchPage` call sites (lines 190, 222, 694, 709, 739, 1069, 2945). VPS confirmed NOT IP-blocked by AustLII (curl returning 200) — old "VPS IP blocked" CLAUDE.md note was incorrect and has been removed.
+
+- **fetchCaseUrl bug fix** — `uploadUrl()` in `Upload.jsx` was calling `api.uploadCase({ url })` instead of the correct fetch-case-url endpoint. `upload-case` Worker handler destructures `case_text` and `citation` from body — `citation` was undefined, causing `citation.match()` to throw "Cannot read properties of undefined (reading 'trim')". Root cause: `api.fetchCaseUrl` method never existed in `api.js`; form author used nearest available method. Fix: `fetchCaseUrl()` added to `api.js` (calls `POST /api/legal/fetch-case-url`); `Upload.jsx` updated to call it. Frontend rebuilt and deployed.
+
+- **Session 34 git commits caught up** — `Worker.js` session 34 changes (citationToId, INSERT OR IGNORE, handleLibraryList principles_extracted, handleFetchSectionsByReference LIKE tightening) were deployed to Cloudflare in session 34 but never committed to git. Committed and pushed this session (commit `70151b1`).
+
+- **TAMagC AustLII outage confirmed** — manually checked AustLII TAMagC URL this session — returning 500. Temporary outage confirmed (not structural gap). TAMagC cases do exist on AustLII. Action deferred to Outstanding Priorities.
 
 ## CHANGES THIS SESSION (session 29) — 3 April 2026
 
