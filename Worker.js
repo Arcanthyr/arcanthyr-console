@@ -187,10 +187,7 @@ async function fetchRecentAustLIICases(env, limit = 50) {
     while (consecutiveMisses < 5 && allNewCases.length < limit) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${currentYear}/${num}.html`;
       try {
-        // ── Route through fetch-page proxy (Cloudflare edge IPs) ──────────
-        // Direct fetch risks IP-based blocks from AustLII. handleFetchPage
-        // uses the same headers and routing as the VPS scraper proxy endpoint.
-        const { html, status } = await handleFetchPage({ url });
+        const { html, status } = await handleFetchPage({ url }, env);
 
         if (status === 404 || status === 410) { consecutiveMisses++; num++; continue; }
         if (status !== 200) { num++; continue; }
@@ -213,7 +210,7 @@ async function fetchRecentAustLIICases(env, limit = 50) {
   return allNewCases.slice(0, limit);
 }
 
-async function fetchCaseContent(url, preloadedHtml = null) {
+async function fetchCaseContent(url, preloadedHtml = null, env = null) {
   // NOTE: case_name is NOT extracted here. Llama extracts it in summarizeCase().
   // This function only strips HTML and returns the plain text for AI processing.
   try {
@@ -221,8 +218,8 @@ async function fetchCaseContent(url, preloadedHtml = null) {
     if (preloadedHtml) {
       html = preloadedHtml;
     } else {
-      // ── Route through fetch-page proxy (Cloudflare edge IPs) ────────────
-      const { html: fetchedHtml, status } = await handleFetchPage({ url });
+      // ── Route through VPS proxy to avoid Cloudflare edge IP blocks ────────
+      const { html: fetchedHtml, status } = await handleFetchPage({ url }, env);
       if (status !== 200) return null;
       html = fetchedHtml;
     }
@@ -694,8 +691,7 @@ async function runYearBackfill(env, year) {
     while (consecutiveMisses < 5) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${year}/${num}.html`;
       try {
-        // ── Route through fetch-page proxy (Cloudflare edge IPs) ────────────
-        const { html, status } = await handleFetchPage({ url });
+        const { html, status } = await handleFetchPage({ url }, env);
         if (status === 404 || status === 410) { consecutiveMisses++; }
         else if (status === 200) {
           consecutiveMisses = 0;
@@ -710,7 +706,7 @@ async function runYearBackfill(env, year) {
       const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(caseData.citation).first();
       if (exists) continue;
       try {
-        const content = caseData.html ? await fetchCaseContent(null, caseData.html) : await fetchCaseContent(caseData.url);
+        const content = caseData.html ? await fetchCaseContent(null, caseData.html, env) : await fetchCaseContent(caseData.url, null, env);
         if (!content?.full_text || content.full_text.length < 100) { casesFailed++; continue; }
         const fullCaseData = { ...caseData, ...content };
         const summary = await summarizeCase(env, fullCaseData);
@@ -740,7 +736,7 @@ async function runDailySync(env) {
   for (const caseData of newCases) {
     if (casesProcessed >= dailyLimit) break;
     try {
-      const content = await fetchCaseContent(caseData.url, caseData.html || null);
+      const content = await fetchCaseContent(caseData.url, caseData.html || null, env);
       if (!content?.full_text || content.full_text.length < 100) {
         errors.push(`${caseData.citation}: Insufficient text`);
         casesFailed++;
@@ -1070,7 +1066,7 @@ async function handleFetchCaseUrl(body, env) {
   const allowed = url.includes('austlii.edu.au') || url.includes('jade.io');
   if (!allowed) throw new Error("Only austlii.edu.au and jade.io URLs are permitted");
 
-  const { html, status } = await handleFetchPage({ url });
+  const { html, status } = await handleFetchPage({ url }, env);
   if (status !== 200) throw new Error(`Fetch failed with HTTP ${status}`);
 
   const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
@@ -1979,12 +1975,24 @@ ${answерNote}`;
    Used by VPS scraper when its IP is blocked by AustLII.
    Only allows requests to austlii.edu.au for safety.
    ============================================================= */
-async function handleFetchPage(body) {
+async function handleFetchPage(body, env = null) {
   const { url } = body;
   const allowed = url && (url.includes('austlii.edu.au') || url.includes('jade.io'));
   if (!allowed) {
     throw new Error('Invalid or disallowed URL — only austlii.edu.au and jade.io are permitted');
   }
+  // Route AustLII fetches through VPS to avoid Cloudflare edge IP blocks
+  if (env && url.includes('austlii.edu.au')) {
+    const vpsRes = await fetch('https://nexus.arcanthyr.com/fetch-page', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': env.NEXUS_SECRET_KEY },
+      body: JSON.stringify({ url }),
+    });
+    const data = await vpsRes.json();
+    if (data.error && !data.html) throw new Error(data.error);
+    return { html: data.html || '', status: data.status };
+  }
+  // jade.io or no env — direct fetch
   const response = await fetch(url, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -2934,7 +2942,7 @@ export default {
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
-        else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body);
+        else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body, env);
         else if (action === "fetch-case-url" && request.method === "POST") result = await handleFetchCaseUrl(body, env);
         else if (action === "case-status" && request.method === "GET") {
           const citation = url.searchParams.get('citation');
