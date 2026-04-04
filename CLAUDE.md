@@ -96,9 +96,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
-## END-OF-SESSION CLAUDE.MD UPDATE PROCEDURE
+## END-OF-SESSION UPDATE PROCEDURE
 
-Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.md. Do all steps — do not skip any.
+Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.md. You must do all of the following — do not skip any step.
 
 **1. Outstanding Priorities — reconcile, don't append**
 - Read every item in the Outstanding Priorities list
@@ -112,24 +112,24 @@ Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.
 - Update any entry where the status has partially changed (e.g. one sub-issue fixed, another remains)
 
 **2. SYSTEM STATE table — refresh all counts**
-- Re-query or update every numeric value to reflect current actuals
+- Re-query or update every numeric value in the SYSTEM STATE table to reflect current actuals
 - Do not leave stale counts from a previous session
 
 **3. File header datestamp — update it**
 - Change the "Updated:" line at the top of CLAUDE.md to today's date and current session number
 - Update the datestamp in CLAUDE_arch.md header too
 
-**4. CHANGES THIS SESSION — write the new block**
+**4. CHANGES THIS SESSION — write the new block as normal**
 - Add the session block with what + why for each change
 
 **5. Verify before finishing**
-- Read back the Outstanding Priorities list after edits
-- Confirm no completed item remains
+- Read back the Outstanding Priorities list after your edits
+- Confirm no completed item remains in the list
 - Confirm no resolved KNOWN ISSUE remains
 - Confirm the datestamp is updated
 - Confirm SYSTEM STATE counts are current
 
-**Do not treat this as an append operation.** Outstanding Priorities and KNOWN ISSUES must reflect reality after this session, not accumulate history.
+**Do not treat this as an append operation.** The Outstanding Priorities list and KNOWN ISSUES must reflect reality after this session, not accumulate history.
 
 ---
 
@@ -269,6 +269,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **TAMagC AustLII outage diagnosed** — scraper marked TAMagC 2018–2025 as done after 5×404s per year. Confirmed AustLII TAMagC page was temporarily down, not structurally absent. TAMagC cases do exist on AustLII. Action deferred to Outstanding Priorities.
 
 - **Scraper status confirmed** — Task Scheduler tasks `run_scraper` and `run_scraper_evening` both Ready. Scraper actively running, currently working through TASSC 2017. 580 cases in D1 (394 supreme, 111 cca, 74 fullcourt, 1 magistrates).
+
+- **Re-merge fired — 46 cases** — `requeue-merge` with `target:remerge` fired for cases remaining after cron pass. 46 cases re-merged (expected ~330 — cron had already handled the majority). Why: cron cleared done=0 chunks overnight, triggering merges automatically for most cases; only 46 remained with deep_enriched=0 by the time manual re-merge ran.
 
 - **Scraper path corrected in CLAUDE.md** — full absolute path `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\` now in SESSION RULES.
 
