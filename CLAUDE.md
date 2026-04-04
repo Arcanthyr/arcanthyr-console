@@ -94,6 +94,43 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 
 ---
 
+## END-OF-SESSION CLAUDE.MD UPDATE PROCEDURE
+
+Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.md. Do all steps — do not skip any.
+
+**1. Outstanding Priorities — reconcile, don't append**
+- Read every item in the Outstanding Priorities list
+- Cross-check each item against CHANGES THIS SESSION and any work completed this session
+- For each item that is now complete: remove it entirely (do not leave it with a ✅ — delete the line)
+- For each item that is partially progressed: update the status text in place
+- Only then add new outstanding items for work that opened this session
+
+**1b. KNOWN ISSUES — prune and update**
+- Remove any entry the session changelog shows as resolved
+- Update any entry where the status has partially changed (e.g. one sub-issue fixed, another remains)
+
+**2. SYSTEM STATE table — refresh all counts**
+- Re-query or update every numeric value to reflect current actuals
+- Do not leave stale counts from a previous session
+
+**3. File header datestamp — update it**
+- Change the "Updated:" line at the top of CLAUDE.md to today's date and current session number
+- Update the datestamp in CLAUDE_arch.md header too
+
+**4. CHANGES THIS SESSION — write the new block**
+- Add the session block with what + why for each change
+
+**5. Verify before finishing**
+- Read back the Outstanding Priorities list after edits
+- Confirm no completed item remains
+- Confirm no resolved KNOWN ISSUE remains
+- Confirm the datestamp is updated
+- Confirm SYSTEM STATE counts are current
+
+**Do not treat this as an append operation.** Outstanding Priorities and KNOWN ISSUES must reflect reality after this session, not accumulate history.
+
+---
+
 ## POLLER DEPLOY VALIDATION PROCEDURE
 
 Use this checklist for any enrichment_poller.py change that affects Qdrant payloads or embed text. Two past fixes were documented as deployed but never reached the VPS — this procedure prevents recurrence.
