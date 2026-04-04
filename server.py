@@ -367,16 +367,17 @@ def search_text(body):
             query_filter=Filter(
                 must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
             ),
-            limit=4,
+            limit=6,
             score_threshold=0.35,
             with_payload=True,
         )
-        existing_ids = {c.get("_id") for c in chunks if "_id" in c}
+        existing_chunk_ids = {c.get("_id") for c in chunks if c.get("_id")}
+        existing_qdrant_ids_cc = {c.get("_qdrant_id") for c in chunks if c.get("_qdrant_id")}
         added_case_chunks = 0
         for hit in case_chunk_response.points:
             payload = hit.payload or {}
             chunk_id = payload.get("chunk_id", "")
-            if chunk_id and chunk_id in existing_ids:
+            if (chunk_id and chunk_id in existing_chunk_ids) or str(hit.id) in existing_qdrant_ids_cc:
                 continue
             chunks.append({
                 "score":        round(hit.score, 4),
@@ -393,8 +394,9 @@ def search_text(body):
                 "total_chunks": payload.get("total_chunks", 1),
                 "type":         "case_chunk",
                 "_id":          chunk_id,
+                "_qdrant_id":   str(hit.id),
             })
-            existing_ids.add(chunk_id)
+            existing_chunk_ids.add(chunk_id)
             added_case_chunks += 1
         if added_case_chunks:
             print(f"[+] Case chunk pass: added {added_case_chunks} case chunks (threshold 0.35)")
@@ -443,8 +445,6 @@ def search_text(body):
             if chunk_id:
                 existing_ids_sec.add(chunk_id)
             added_sec += 1
-        hit_ids = [h.payload.get("chunk_id", str(h.id)) for h in sec_source_response.points if h.payload]
-        print(f"[+] Secondary source hits: {hit_ids}")
         if added_sec:
             print(f"[+] Secondary source pass: added {added_sec} sources (threshold 0.25)")
     except Exception as e:
