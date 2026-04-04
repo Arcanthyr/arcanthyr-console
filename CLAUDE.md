@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 4 April 2026 (end of session 33) · Supersedes all prior versions
+Updated: 4 April 2026 (end of session 34) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -51,9 +51,11 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | fetch-secondary-raw | GET /api/pipeline/fetch-secondary-raw — paginated fetch of id + raw_text from secondary_sources · requires X-Nexus-Key · params: ?offset=N&limit=N (max 100) · returns {ok, chunks, total, offset} · deployed session 28 |
 | enrich_concepts.py | One-off concepts enrichment script — Arc v 4/enrich_concepts.py · expands CONCEPTS/TOPIC/JURISDICTION lines + adds search anchor sentence via GPT-4o-mini · hits fetch-secondary-raw to read, update-secondary-raw to write · run: python enrich_concepts.py · --dry-run and --limit N flags available · add to .gitignore |
 | Canonical categories | annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation — normalised 18 Mar 2026 |
-| Scraper location | `arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `arcanthyr-console\Local Scraper\scraper_progress.json` · log: `arcanthyr-console\Local Scraper\scraper.log` · runs on Windows only (VPS IP blocked) |
+| Scraper location | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `...\scraper_progress.json` · log: `...\scraper.log` · runs on Windows only (VPS IP blocked) |
 | Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (upsert). |
 | run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
+| cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
+| TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
@@ -163,18 +165,18 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 4 April 2026 (end of session 33)
+## SYSTEM STATE — 4 April 2026 (end of session 34)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 10,333+ vectors · all 1,272 legislation sections re-embedded with Act name prefix · 1,174+ secondary sources · citation + source_id confirmed in all payloads · case chunks embedded |
-| D1 cases | 551 total · all 551 deep_enriched=1 · 0 pending merge · all new-format principles (no IF/THEN remaining) |
+| D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs now citation-derived (backfilled session 34) |
 | D1 case_chunks | all done=1 (nightly cron complete session 31) · case-embed active via poller |
 | D1 secondary_sources | 1,174+ total · all enriched=1 · all embedded=1 |
 | enrichment_poller | RUNNING — case-embed active |
 | Cloudflare Queue | Nightly cron COMPLETE — all done=0 chunks cleared · cron still armed for new scraper cases |
-| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST (re-enabled session 31) |
-| arcanthyr.com | Live — worker.js version ae4b735c · Library Principles tab fix deployed |
+| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST · currently scraping TASSC 2017 · TAMagC 2018-2025 marked done (all 404s — AustLII outage, not structural gap) |
+| arcanthyr.com | Live — worker.js version 23cf95ba · INSERT OR IGNORE + citationToId deployed |
 | arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
 
 ---
@@ -208,19 +210,15 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 ## OUTSTANDING PRIORITIES
 
 1. **Fix runDailySync proxy** — update to use fetch-page proxy instead of direct AustLII fetch · do NOT delete — feature needed for forward-looking new case capture once scraper works backwards
-2. **handleFetchSectionsByReference LIKE tightening** — current `'%' || ? || '%'` on secondary_sources produces false positives (s38 matches IDs with 138) · low priority — retrieval baseline unaffected · tighten LIKE pattern to require `s` prefix before number
-3. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
-4. **Fix UI Secondary Sources upload path** — React UI POSTs to `/upload-corpus` instead of `/api/legal/upload-corpus` · one-line fix in arcanthyr-ui
-5. **Pass 3 debug log in server.py** — `chunk_id` debug log added to Pass 3 fires unconditionally · needs removal or conditionalization (e.g. guard behind env flag or only when results empty)
-6. **Myers v DPP retrieval test** — post-enrichment check still not run · run after next batch of secondary source uploads
-7. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+2. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session
+3. **TAMagC scraper recovery** — TAMagC 2018-2025 marked done in progress file after all-404 runs (AustLII outage confirmed, not structural) · once AustLII TAMagC page confirmed recovered: delete TAMagC_YYYY entries from `scraper_progress.json` and re-run scraper for those years
+4. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
 - **Corpus ... placeholders — 3 of 5 resolved** — part1.md:1282 and part2.md:2415 confirmed as legal elisions (not errors) · part2.md:381 `T...` fixed to `The` · remaining 2 genuine gaps: part2.md:1167 block_023 (`...BUT see below` dangling ref) and part2.md:1957 block_028 (`[Continues with specifics...]` placeholder) — both need source material from rag_blocks/, deferred to Procedure Prompt re-ingest
-- **UI Secondary Sources upload broken** — React UI posts to `/upload-corpus` (404) instead of `/api/legal/upload-corpus` · workaround: use PowerShell Invoke-WebRequest directly · fix is one-line path change in arcanthyr-ui
 - **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
@@ -253,6 +251,28 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Session 25 and 27 changelog entries corrected** — both marked with ⚠ "DESCRIBED AS DEPLOYED BUT NOT CONFIRMED ON VPS" with session 29 fix reference.
 
 - **Legislation Act-title prefix re-embed deferred** — audit confirmed session 25 fix never reached VPS (VPS `run_legislation_embedding_pass()` still uses `embed_text = s['text']`). Scheduled for next session after secondary source re-embed completes.
+
+## CHANGES THIS SESSION (session 34) — 4 April 2026
+
+- **handleFetchSectionsByReference LIKE tightening** — four-clause OR pattern deployed in Worker: `id LIKE '%s ' || ? || ' %' OR ... OR id LIKE '%s ' || ?`. Requires `s ` prefix and delimiter after section number. Fixes `s38` matching IDs containing `138`, `238` etc. Deployed worker.js version `7c60439c`.
+
+- **INSERT OR IGNORE fix — both upload handlers** — `handleUploadCase` and `handleFetchCaseUrl` both changed from `INSERT OR REPLACE` to `INSERT OR IGNORE`. Root cause: `citation TEXT NOT NULL UNIQUE` on the cases table meant `INSERT OR REPLACE` was deleting the existing row and re-inserting with a new UUID — resetting `enriched`, `deep_enriched`, `principles_extracted` etc. to zero on every scraper re-run. Fix: `INSERT OR IGNORE` skips silently if citation already exists, enrichment data preserved.
+
+- **Citation-derived ID migration** — `crypto.randomUUID()` replaced with `citationToId(citation)` in both upload handlers. Helper function `citationToId()` added above `handleUploadCase`. All 580 existing UUID rows backfilled via D1 UPDATE to citation-derived IDs (e.g. `2026-tassc-2`). Zero collisions confirmed across all 580 citations before migration. No Qdrant changes needed — Qdrant payloads reference `citation` not `cases.id`. No FK constraints on `cases.id` confirmed before running. Deployed worker.js version `23cf95ba`.
+
+- **Myers v DPP retrieval** — Qdrant point was present in D1 as `embedded=1` but missing from Qdrant index. Reset `embedded=0`, poller re-embedded, retrieval confirmed working.
+
+- **Pass 3 debug log removed** — `chunk_id` debug log (lines 446–447: hit_ids comprehension + unconditional print) removed from `server.py`. Deployed via SCP + force-recreate agent-general.
+
+- **UI changes deployed** — top nav capitalised (RESEARCH/LIBRARY/UPLOAD/COMPOSE) · research source filter tabs consolidated: TASSC/TASCCA/TASMC → single CASES tab (passes all case doc_types) · court filter chips capitalised on Library page · year filter chips added to Library cases table (dynamic from data, combinable with court filter) · Legislation Date Updated column added (reads `current_as_at` via `r.date`), moved after Status column · legislation titles are external links to legislation.tas.gov.au · Secondary Sources title/ID columns swapped (Title leftmost) · query processing indicator: blue italic pulsing text replaces Ask button while loading. Deployed frontend + worker.js.
+
+- **TAMagC AustLII outage diagnosed** — scraper marked TAMagC 2018–2025 as done after 5×404s per year. Confirmed AustLII TAMagC page was temporarily down, not structurally absent. TAMagC cases do exist on AustLII. Action deferred to Outstanding Priorities.
+
+- **Scraper status confirmed** — Task Scheduler tasks `run_scraper` and `run_scraper_evening` both Ready. Scraper actively running, currently working through TASSC 2017. 580 cases in D1 (394 supreme, 111 cca, 74 fullcourt, 1 magistrates).
+
+- **Scraper path corrected in CLAUDE.md** — full absolute path `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\` now in SESSION RULES.
+
+- **cases.id format documented in SESSION RULES** — citation-derived IDs, INSERT OR IGNORE behaviour, citationToId() location.
 
 ## CHANGES THIS SESSION (session 33) — 4 April 2026
 

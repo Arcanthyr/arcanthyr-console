@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 4 April 2026 (end of session 33). Upload every session alongside CLAUDE.md.*
+*Updated: 4 April 2026 (end of session 34). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -145,7 +145,9 @@ Upload.jsx accepts `.pdf`, `.docx`, `.txt` on Secondary Sources tab → reads as
 
 Key fix (session 32): `post_chunk_to_worker` was sending base64-encoded text with `encoding: "base64"` flag — Worker has no decode step, all chunks silently skipped. Fixed to send raw UTF-8.
 
-ID format: citation-derived slugs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format. Both valid. Re-uploading same doc overwrites cleanly via `INSERT OR REPLACE`.
+ID format: citation-derived slugs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format. Both valid. Re-uploading same doc skips silently via `INSERT OR IGNORE`.
+
+**cases.id format (session 34):** `cases.id` is now citation-derived (e.g. `2026-tassc-2`), not UUID. `citationToId()` helper in worker.js normalises citation → lowercase slug. Both `handleUploadCase` and `handleFetchCaseUrl` use `INSERT OR IGNORE` — re-uploading an existing citation is a no-op, enrichment data is preserved. All 580 pre-existing UUID rows were backfilled via D1 UPDATE. No Qdrant changes required — Qdrant payloads reference `citation` not `cases.id`.
 
 `.md` files on drop: load into textarea instead of triggering pipeline — intentional, allows preview/edit before submit.
 
@@ -288,7 +290,7 @@ cd "../Arc v 4" && npx wrangler deploy
 - `Landing.jsx` — immediate redirect to /research (auth removed session 17)
 - `Research.jsx` — query input, model toggle (Claude/Workers), filter chips, non-clickable source list, AI Summary auto-displays in reading pane after query
 - `Upload.jsx` — 3 tabs: Cases (file drop + AustLII URL input) / Secondary Sources (drag+drop .md/.txt) / Legislation (drag+drop .pdf/.txt)
-- `Library.jsx` — 3 tabs: cases/corpus/legislation · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33 — was incorrectly reading `c.holdings_extracted`) · `handleLibraryList` SELECT must include `principles_extracted` (added session 33)
+- `Library.jsx` — 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33) · year filter chips + court filter chips combinable · Legislation tab: Date Updated column (reads `current_as_at` via `r.date`), external link to legislation.tas.gov.au · Secondary Sources: Title column leftmost · `handleLibraryList` SELECT includes `principles_extracted` (session 33)
 - Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`
 
 **Production deploy (pending):**
