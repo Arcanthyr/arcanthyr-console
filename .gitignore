@@ -44,3 +44,6 @@ worker_pipeline_v2_diff_addendum.js
 
 # Wrangler runtime cache
 .wrangler/
+
+# Playwright test artifacts
+arcanthyr-ui/.playwright-mcp/
