@@ -1,9 +1,10 @@
 #!/bin/bash
 # retrieval_baseline.sh — run all 15 baseline questions against /search
 # Usage: bash retrieval_baseline.sh
-# Requires: KEY env var set
+# KEY is auto-read from ~/ai-stack/.env if not already exported
 
 ENDPOINT="http://localhost:18789/search"
+KEY="${KEY:-$(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)}"
 PASS=0
 FAIL=0
 PARTIAL=0

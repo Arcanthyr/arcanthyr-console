@@ -6,8 +6,9 @@ import sys
 import requests
 
 PROCEDURE_ONLY = False
+MASTER_ONLY    = False  # set True to ingest only master block chunks
 
-INPUT_FILE = r"C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\master_corpus_part1.md"
+INPUT_FILE = r"C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\master_corpus_part2.md"
 WORKER_ENDPOINT = "https://arcanthyr.com/api/legal/upload-corpus"
 DRY_RUN = "--dry-run" in sys.argv
 
@@ -21,7 +22,7 @@ separators = list(section_pattern.finditer(raw))
 
 # Split on headings where the following non-empty line starts with [DOMAIN:.
 heading_pattern = re.compile(
-    r"(?m)^(?P<heading>###? .+)\n(?=(?:\s*\n)*\[DOMAIN:)"
+    r"(?m)^(?P<heading>#+ .+)\n(?=(?:\s*\n)*\[[A-Z]+:)"
 )
 
 # chunks is a list of (block_type, chunk_text)
@@ -42,6 +43,8 @@ for i, sep in enumerate(separators):
 if PROCEDURE_ONLY:
     chunks = [(bt, c) for bt, c in chunks if bt == 'procedure']
     print(f"Total procedure chunks detected: {len(chunks)} (PROCEDURE_ONLY=True)")
+if MASTER_ONLY:
+    chunks = [(bt, c) for bt, c in chunks if bt == 'master']
 else:
     print(f"Total chunks detected: {len(chunks)}")
 
@@ -157,4 +160,4 @@ for citation, payload in payloads:
 
     time.sleep(1)
 
-print(f"\nDone â€” {total} chunks | {success} OK | {fail} FAIL")
+print(f"\nDone - {total} chunks | {success} OK | {fail} FAIL")

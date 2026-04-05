@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Backgrounds */
+  --bg-page:    #0A0C0E;
+  --bg-shell:   #111314;
+  --bg-topbar:  #0D0F10;
+
+  /* Surfaces */
+  --surface:    #141718;
+  --surface-hover: #1A1D20;
+
+  /* Borders */
+  --border:     #1E2124;
+  --border-em:  #252A2E;
+
+  /* Text */
+  --text-primary:   #E8E9EA;
+  --text-body:      #C8CDD2;
+  --text-secondary: #7A8087;
+  --text-muted:     #3D4247;
+  --text-faint:     #2E3235;
+
+  /* Accent */
+  --accent:     #4A9EFF;
+  --accent-dim: rgba(74, 158, 255, 0.15);
+
+  /* Status */
+  --green:  #3A7A3A;
+  --red:    #E84A4A;
+  --amber:  #E8A838;
+
+  /* Reading pane */
+  --pane-bg:   #F8F6F1;
+  --pane-text: #1A1818;
+  --pane-dim:  #6B6560;
+
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, textarea, select { font-family: inherit; outline: none; }
+a { color: var(--accent); text-decoration: none; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-em); border-radius: 3px; }
+
+@keyframes grid-scroll {
+  0%   { background-position: 0 0; }
+  100% { background-position: 0 50px; }
+}
