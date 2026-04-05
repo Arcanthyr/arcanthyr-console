@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 5 April 2026 (end of session 41). Upload every session alongside CLAUDE.md.*
+*Updated: 5 April 2026 (end of session 42). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -220,23 +220,59 @@ Worker routes exist but are dead — nothing calls them during query handling.
 
 **Actual pipeline — server.py search_text():**
 
-### Retrieval Pipeline (RRF Hybrid — session 41)
+### Retrieval Pipeline (Sequential Pass — session 42, reverted from RRF)
 
-1. **Single Qdrant RRF call** — `client.query_points()` with four Prefetch legs fused via `FusionQuery(RRF)`, overfetch limit=top_k*3:
-   - Leg A: unfiltered, threshold 0.45, limit top_k*2 (semantic)
-   - Leg B: concept vector unfiltered, threshold 0.45, limit top_k*2 (conditional — only if extract_legal_concepts() returns non-None)
-   - Leg C: type=case_chunk filter, threshold 0.35, limit 12
-   - Leg D: type=secondary_source filter, threshold 0.25, limit 12
-2. **Unified conversion** — fused_results.points → chunks list, all types, `_id` + `_qdrant_id` always set
-3. **Short legislation filter** — type=legislation + len < 200 removed
-4. **Court hierarchy re-rank** — within 0.005 RRF band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1)
-5. **BM25/FTS5 merge** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147) · multi-signal boost if chunk already in fused results · final sort + top_k cap
-6. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
+1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
+2. **Pass 2 — case chunks appended** — `type=case_chunk` filter, threshold 0.35, limit 8. Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
+3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2.
+4. **BM25/FTS5 append** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Multi-signal boost if chunk already in results. Final top_k cap (no re-sort — BM25 stays last).
+5. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
+
+**Why RRF was reverted (session 42):** RRF requires independent retrieval signals across legs. Leg B (extract_legal_concepts) used the same embedding model on a munged version of the same query — no independent signal. At ~10K vectors, same chunks dominated all legs, causing wrong-domain chunks to accumulate multi-leg RRF score via surface vocabulary overlap (e.g. self-defence "reasonable belief" scoring high on BRD query). Baseline regression: 10/5/0 → ~8/2/4.
 
 **Key implementation notes:**
-- Prefetch uses `filter=` not `query_filter=` — these differ from the outer `query_points()` call
-- `env_file:` in docker-compose.yml now supplies secrets to agent-general — do not re-add secret vars to `environment:` block
+- `env_file:` in docker-compose.yml supplies secrets to agent-general — do not re-add secret vars to `environment:` block
 - Force-recreate requires `AGENT_GENERAL_PORT=18789` prefix if running outside sourced shell (now in .env.config, should be automatic)
+
+### RRF retry conditions (Opus session 42)
+
+Do not retry RRF until all four conditions are met:
+1. **Corpus >50K vectors** — diversity across legs requires enough vectors that different legs surface genuinely different candidates
+2. **Independent retrieval signals** — Leg B needs a truly different signal: different embedding model, learned sparse encoder (SPLADE), or native BM25 as a prefetch leg
+3. **Per-leg diagnostics** — log each leg's top-3 independently before fusing so noise injection is visible
+4. **Comprehensive doctrine chunk coverage** — corpus gaps cause RRF to amplify wrong-domain chunks that happen to match query vocabulary
+
+### subject_matter filter — design for session 43
+
+**Problem:** Pass 1 is unfiltered — non-criminal case chunks (coronial, civil, administrative) can outscore criminal doctrine chunks on queries where witness/examination vocabulary appears in both domains. Corpus is 320 criminal / 393 non-criminal and scraper will worsen this ratio.
+
+**Confirmed misclassifications (audit required before any filter):**
+- Tasmania v Rattigan [2021] TASSC 28 — tagged administrative, is criminal
+- Tasmania v Pilling [2020] TASSC 13 — tagged administrative, is criminal
+- Tasmania v Pilling (No 2) [2020] TASSC 46 — tagged administrative, is criminal
+
+Full audit query:
+```sql
+SELECT citation, case_name, subject_matter FROM cases
+WHERE subject_matter != 'criminal'
+AND (case_name LIKE 'R v%' OR case_name LIKE 'Tasmania v%' OR case_name LIKE 'Police v%')
+```
+
+**Option A — Hard filter on Pass 2 (recommended, do after audit):**
+1. Audit and correct all misclassified cases in D1
+2. Add `subject_matter` to Worker route `fetch-case-chunks-for-embedding` SELECT (JOIN cases on citation)
+3. Add `subject_matter` to `enrichment_poller.py` case chunk metadata dict
+4. Reset all case chunks to `embedded=0` — poller re-embeds overnight (~4 hours)
+5. Add `subject_matter=criminal` filter to Pass 2 Qdrant query in server.py
+6. **Do NOT deploy server.py filter until steps 1–4 confirmed complete**
+
+**Option B — Score penalty (interim, no re-embed required):**
+- After Pass 2 returns chunks, batch D1 lookup for `subject_matter` by citation
+- Apply 0.80 score multiplier to non-criminal chunks before final sort
+- Degrades gracefully on misclassified cases (score reduction, not exclusion)
+- Limitation: only affects Pass 2 chunks, not Pass 1 — Q14-style failures (Pass 1 non-criminal chunks) are unaffected
+
+**Real systemic fix:** get `subject_matter` into Qdrant payload (requires re-embed) so Pass 1 can also be filtered. Option A's re-embed is a prerequisite for this regardless of filter approach.
 
 **Diagnostic rule:** empty or unexpected results → first check:
 `docker compose logs --tail=50 agent-general`
@@ -651,19 +687,19 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
-- **Qdrant-native RRF + BM25 synthetic scoring** — NEXT · replace four separate Qdrant calls with single prefetch+FusionQuery(RRF) call (Legs A-D: unfiltered, concept, case_chunk, secondary_source) · BM25 results get synthetic RRF scores (~rank 3 for exact section matches, ~rank 8 for case-by-ref) instead of 0.0 · court hierarchy re-rank preserved with recalibrated RRF band (~0.005) · prerequisite: verify Qdrant client version supports score_threshold in Prefetch blocks · full design: Opus consultation session 40
-- **Fix malformed corpus row** — DONE session 40 · stale Qdrant point deleted, correct point confirmed
-- **Restore Claude API key in VPS .env** — MOOT session 40 · Sol working, Wrangler secret is set · VPS .env reference was stale
-- **Retrieval baseline** — DONE session 40 · 10/5/0 · matches session 36
+- **subject_matter filter** — SESSION 43 · audit misclassifications → correct D1 → re-embed case chunks → deploy Pass 1/2 filter · full design in subject_matter filter section above
+- **Domain filter UI** — deferred until subject_matter audit + Option A re-embed complete · CC prompt ready
+- **Arcanthyr MCP server** — thin wrapper over server.py search + D1 routes · public HTTPS on VPS · colleagues connect via claude.ai Customize → Connectors (no local install) · AI-agnostic protocol — Claude, ChatGPT (when ready), local models, agent frameworks all usable · per-user API key auth on top of NEXUS_SECRET_KEY · build post-scraper-completion after subject_matter filter deployed
+- **Citation authority agent** — SQL traversal of authorities_extracted JSON across full corpus · frequency + treatment + court tier ranking · output ingested as secondary_source chunks · surfaces in retrieval naturally · run quarterly as cron · build post-scraper-completion
+- **Local/office deployment** — D1 SQLite export + Qdrant snapshot · office server (16GB RAM, SSD) · nightly VPS→local sync · MCP server points at local instance · Option C: cloud for pipeline, local for queries · SQLite adequate for small office, PostgreSQL migration path if needed
+- **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency — merge synthesis bypasses Pass 2 output
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
-- **FTS5 as mandatory third RRF source** — validate post-scraper-run
 - **Qwen3 UI toggle** — add third button to model toggle
 - **Nightly cron for xref_agent.py** — after scraper actively running
 - **Stare decisis layer** — surface treatment history from case_citations
-- **Agent work** — contradiction detection, coverage gap analysis, citation network traversal
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority

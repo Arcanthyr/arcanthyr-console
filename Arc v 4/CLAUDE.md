@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 5 April 2026 (end of session 41) · Supersedes all prior versions
+Updated: 5 April 2026 (end of session 42) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -177,19 +177,19 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 5 April 2026 (end of session 39)
+## SYSTEM STATE — 5 April 2026 (end of session 42)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 10,333+ vectors · all embedded · citation + source_id confirmed in all payloads |
-| D1 cases | 580 total · all deep_enriched=1 |
-| D1 case_chunks | 9,385 total · all done=1 · all embedded=1 · pending=0 |
-| D1 secondary_sources | 1,196 total · all embedded=1 |
+| Qdrant general-docs-v2 | vectors updated · citation + source_id confirmed in all payloads |
+| D1 cases | 722 total · 719 deep_enriched=1 |
+| D1 case_chunks | 11,729 total · 11,639 embedded · 90 pending poller |
+| D1 secondary_sources | 1,199 total · all embedded=1 |
 | enrichment_poller | RUNNING |
 | Cloudflare Queue | Clean — nightly cron armed |
-| Scraper | RUNNING — TAMagC 2018-2025 re-enabled session 37 · TASSC 2017 in progress |
-| arcanthyr.com | Live · session 37 deploy · FTS5 section reference upgrade |
-| Retrieval baseline | 10 pass / 5 partial / 0 miss — last run session 36 |
+| Scraper | RUNNING |
+| arcanthyr.com | Live · sequential pass retrieval restored |
+| Retrieval baseline | 10 pass / 5 partial / 0 miss — post-revert session 42 |
 
 ---
 
@@ -223,9 +223,13 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 3. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
-5. **Retrieval baseline** — DONE session 40 · 10 pass / 5 partial / 0 miss · matches session 36 · no regressions from block_023/028 additions · .env path bug in script fixed on VPS (.env → .env.secrets)
+5. **Retrieval baseline** — DONE session 42 · 10 pass / 5 partial / 0 miss · post-revert result matches session 40
 6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
-7. **Retrieval tuning** — SESSION 42 PRIORITY · baseline 11/5/0 after RRF deploy · partials: Q2 (BRD — belief test displacing criminal standard), Q4 (Boatwright probate chunk at pos 2), Q8 (s55 relevance chunk at pos 1 — CW v R not surfacing), Q10 (failure-to-give-evidence at pos 1, not corroboration), Q14 (coronial chunk at pos 1, not leading questions) · diagnosis required before fixes · likely causes: concept vector pulling wrong domain on Q2, insufficient type-diversity for Q8, court hierarchy band too tight/loose on Q10/Q14
+7. **subject_matter filter — SESSION 43 PRIORITY** — 320 criminal / 393 non-criminal in corpus · ratio worsening as scraper runs · misclassification audit required first (Tasmania v Rattigan, Tasmania v Pilling confirmed criminal but tagged administrative — full audit query in CLAUDE_arch.md) · Option A (hard filter, re-embed) recommended over Option B (score penalty, no re-embed) · full design in CLAUDE_arch.md subject_matter filter section · prerequisite: audit → correct D1 → re-embed → deploy server.py filter in that order
+8. **Domain filter UI — deferred pending subject_matter audit** — CC prompt drafted and ready · do not implement until misclassification audit complete and Option A re-embed done · implementation is one session once prerequisites met · full design in CLAUDE_arch.md subject_matter filter section
+9. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · deploy on VPS as public HTTPS endpoint · connect via claude.ai Customize → Connectors · per-user API key auth · buildable in one session · prerequisite: scraper completion + subject_matter filter deployed so MCP queries return clean criminal-scoped results
+10. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · produces ranked authority summaries per topic · ingest as secondary_source chunks via existing pipeline · no embedding changes · no new infrastructure · run quarterly as corpus maintenance cron · prerequisite: scraper completion (network too sparse at current volume)
+11. **Local/office deployment — post-MCP milestone** — export D1 as SQLite + Qdrant snapshot · run on office server or NAS · nightly sync from VPS pipeline · MCP server points at local instance for fast queries · prerequisite: MCP server built and validated first
 
 ---
 
@@ -236,13 +240,12 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
-- **subject_matter pending** — cases.subject_matter will populate as chunks complete · verify spot-check before using as retrieval filter
-- **subject_matter retrieval filter — parked** — investigated session 37 · non-criminal cases (admin, civil, family) are genuinely topically distinct · semantic search handles separation naturally · no retrieval pollution observed · feature not worth building · removed from roadmap
+- **subject_matter misclassification** — at least 3 criminal cases tagged administrative (Tasmania v Rattigan [2021] TASSC 28, Tasmania v Pilling [2020] TASSC 13, Tasmania v Pilling (No 2) [2020] TASSC 46) · confirmed via D1 audit · full misclassification audit required before subject_matter filter is applied · audit query in CLAUDE_arch.md
+- **update-secondary-raw 404 on space-containing IDs** — POST /api/pipeline/update-secondary-raw returns "not found" for secondary source IDs with spaces in them · workaround: use Cloudflare Developer Platform MCP direct D1 query · root cause undiagnosed
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
-- **RRF displacement — diagnosed session 40** — there is NO RRF in the code · results from Pass 2/3/BM25 just append sequentially after sorted Pass 1 block · BM25 hardcoded at score 0.0 · Pass 2/3 retain Qdrant scores but are never ranked against Pass 1 · Opus consultation recommends Qdrant-native RRF (prefetch+FusionQuery) + Python-side BM25 synthetic scoring · implementation pending (Outstanding Priority #7)
-- **Q8 partial — root cause confirmed** — s55 (0.7272) and CW v R (0.7239) both from Pass 1, 0.0033 cosine gap · both have court="" (tier 1) so court hierarchy doesn't help · fix: Qdrant-native RRF where CW v R appears in both unfiltered + case_chunk legs, getting summed RRF rank · not a CONCEPTS gap
+- **Q8 partial — root cause confirmed** — s55 (0.7272) and CW v R (0.7239) both from Pass 1, 0.0033 cosine gap · both have court="" (tier 1) so court hierarchy doesn't help · RRF was trialled session 41 but reverted (regression) · deferred until RRF retry conditions met (see CLAUDE_arch.md)
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 - **striprtf** — not installed in agent-general container · RTF uploads will error · python-docx is installed (added Dockerfile.agent session 27) so DOCX uploads work
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
@@ -266,6 +269,34 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **RRF displacement — full investigation and architectural decision** — discovered there is NO RRF in the codebase. Four separate Qdrant calls (Pass 1, concept search, Pass 2 case chunks, Pass 3 secondary sources) run sequentially. Pass 2/3 append after sorted+capped Pass 1 block. BM25 results hardcoded at score 0.0. No multi-signal reward — chunks appearing in multiple passes just deduped. CC read full `search_text()` function via hex-ssh. CC used Context7 to confirm Qdrant supports native RRF via `prefetch` + `FusionQuery`. Opus consultation recommended: Qdrant-native RRF (four legs in one call) + Python-side BM25 synthetic scoring. `extract_legal_concepts()` confirmed as regex-only (no latency concern for prefetch model). Implementation plan: Step 1 (Qdrant RRF) + Step 2 (BM25 scoring) together, then tune. Prerequisite: check Qdrant client version for prefetch score_threshold support. Why: systemic retrieval quality ceiling — all five persistent partials traced to lack of cross-pass ranking.
 
 - **CC vs manual SSH rule added** — simple read/run commands (baseline, logs, single queries) faster done manually via SSH. CC with hex-ssh for multi-step VPS file edits, diagnosis across multiple files, or replacing SCP round-trips.
+
+## CHANGES THIS SESSION (session 42) — 5 April 2026
+
+- **RRF implementation reverted — sequential passes restored** — session 41 RRF deployment caused retrieval regression: baseline moved from 10/5/0 (session 40) to ~8/2/4. Root cause: wrong-domain chunks accumulating multi-leg RRF score by matching surface vocabulary across legs — e.g. self-defence "reasonable belief" chunks scoring 1.5 on "beyond reasonable doubt" query by appearing in both unfiltered leg and concept leg. Sequential pass architecture restored (Pass 1 cosine → Pass 2 case chunks appended → Pass 3 secondary sources appended → BM25 last). Court hierarchy band restored to 0.05 on cosine scores. `extract_legal_concepts()` function deleted — was only used for Leg B. Post-revert baseline: 10/5/0, matching session 40. Why reverted: RRF requires independent retrieval signals across legs — Leg B was the same embedding model on a munged version of the same query, providing no independent signal. At ~10K vectors, same chunks dominated all legs. Why documented fully: Opus recommended RRF in session 40; implementation was technically correct but corpus and embedding architecture weren't ready for it.
+
+- **RRF retry conditions documented** — per Opus session 42 analysis, RRF should not be retried until: (1) corpus >50K vectors — diversity across legs requires enough vectors that different legs surface genuinely different candidates; (2) independent retrieval signals — Leg B needs a truly different signal such as a different embedding model, learned sparse encoder (SPLADE), or native BM25 as a prefetch leg; (3) per-leg diagnostics — log each leg's top-3 independently before fusing so noise injection is visible; (4) comprehensive doctrine chunk coverage — corpus gaps cause RRF to amplify wrong-domain chunks that happen to match query vocabulary. Added to CLAUDE_arch.md retrieval decisions section.
+
+- **Opus referral process — lesson learned** — Opus architectural recommendation (session 40) went straight to implementation without a post-deploy baseline rerun gate. Rule added: any Opus recommendation replacing working retrieval logic requires a baseline rerun as the first post-deploy step before further work. Rollback plan must be identified before implementation begins.
+
+- **Q2 CONCEPTS fixes — self-defence disambiguation** — three secondary source chunks updated via Cloudflare MCP direct D1 write (update-secondary-raw route returns 404 for IDs containing spaces): (1) Reasonableness of Belief in Defense Case Overview — CONCEPTS rewritten to scope explicitly to self-defence/honest and reasonable mistake, removing generic "legal standards" vocabulary that was matching BRD queries; (2) hoc-b057-m001-beyond-reasonable-doubt — CONCEPTS expanded with explicit BRD terms (beyond reasonable doubt, criminal standard, s141, Green v The Queen, Walters v R, acquittal); (3) hoc-brd-m001-beyond-reasonable-doubt-criminal-standard — raw_text cleaned (block header markup was embedded into vector), CONCEPTS confirmed comprehensive. All three reset to embedded=0 via MCP, poller re-embedding. Why: Q2 was returning self-defence "reasonable belief" chunks at pos 1 score 1.5 — semantic overlap on "reasonable" + "standard" vocabulary was beating two existing BRD chunks.
+
+- **BRD chunk — pre-existing corpus entry confirmed** — hoc-b057-m001-beyond-reasonable-doubt existed since session 13 (March 2026). Q2 failure was not a corpus gap — it was a CONCEPTS scoping problem on the competing self-defence chunks. New chunk hoc-brd-m001-beyond-reasonable-doubt-criminal-standard added as supplementary entry; raw_text cleaned of block header markup via MCP.
+
+- **subject_matter filter — deferred with full design documented** — Q14 ("leading questions examination in chief") partial diagnosed: coronial case_chunk (court=supreme, subject_matter=administrative) beating s37 legislation chunk by 0.0008 cosine — effectively noise. Root cause: Pass 1 is unfiltered, court hierarchy re-rank discriminates by court tier not by subject matter. Subject_matter misclassification confirmed as real risk before any filter is applied: Tasmania v Rattigan [2021] TASSC 28 and Tasmania v Pilling [2020] TASSC 13 both classified as "administrative" despite being criminal cases. Corpus is 320 criminal / 393 non-criminal (55% non-criminal) — ratio will worsen as scraper runs. Full design for next session: see CLAUDE_arch.md subject_matter filter section. Why deferred: misclassification audit required before filter can be safely applied; re-embed required to get subject_matter into Qdrant payload for Pass 1 filtering.
+
+- **update-secondary-raw 404 on IDs with spaces** — route returns "not found" for secondary source IDs containing spaces (e.g. "Reasonableness of Belief in Defense Case Overview"). Workaround: use Cloudflare Developer Platform MCP to write directly to D1. Root cause not diagnosed — likely the Worker route is doing an exact string match that fails on URL-encoded spaces. Added to known issues.
+
+- **System state** — 722 cases (719 deep_enriched) · 11,729 chunks (11,639 embedded, 90 pending poller) · 1,199 secondary sources (all embedded) · scraper running.
+
+- **Domain filter chip — trial implementation designed, not yet built** — UI design completed for a row of filter chips above the search input: [All] [Criminal] [Civil] [Administrative], defaulting to Criminal. Soft score penalty (0.80 multiplier) applied to non-matching case chunks in Pass 2 after a batched D1 subject_matter lookup. Isolated implementation designed: new DomainFilter.jsx component, one parameter added to Worker and server.py each, full revert is delete one file + remove ~10 lines across four files. Not yet implemented — deferred until subject_matter misclassification audit complete (Option A prerequisite). CC prompt fully drafted and ready for next session.
+
+- **Citation authority agent — architecture confirmed** — agent traversal over authorities_extracted JSON in D1 confirmed viable without any embedding or re-embed. Each case stores authorities_extracted as a structured JSON array with fields: name (cited case), treatment (cited/applied/considered/distinguished), proposition (what it was cited for). Pure SQL aggregation across the corpus produces citation frequency rankings per topic. Agent output to be ingested as secondary_source chunks via existing pipeline — surfaces naturally in retrieval, zero new infrastructure. Prerequisite: scraper completion (citation network only meaningful at scale). Scheduled as post-scraper-completion milestone.
+
+- **Arcanthyr MCP server — architecture confirmed, roadmap item added** — confirmed buildable as thin wrapper over existing server.py search endpoint and D1 routes. Colleagues connect via claude.ai Customize → Connectors — paste URL, one click, no local installation required. Available on Free (1 connector), Pro, Max, Team, Enterprise plans. Team/Enterprise: Owner adds once to org, colleagues enable individually. MCP server must be publicly reachable over HTTPS from Anthropic IP ranges — VPS already meets this requirement. Auth via per-user API keys on top of existing NEXUS_SECRET_KEY pattern. Protocol is AI-agnostic — ChatGPT, local models, LangChain agents can all call the same MCP tools once OpenAI MCP support is production-ready. Why significant: corpus becomes AI-agnostic asset; any AI is interchangeable reasoning layer on top.
+
+- **Local/office deployment — architecture confirmed, roadmap item added** — full corpus at scraper completion estimated 10-12GB (D1 ~1.5-2GB SQLite, Qdrant ~4-6GB vectors + payload, raw text ~5GB). Both components fully portable: D1 exports as standard SQLite, Qdrant has native snapshot/restore. Local deployment runs on spare PC or NAS (16GB RAM, SSD sufficient). Office sharing via local network: Qdrant + SQLite + server.py on office server, all practitioners hit same instance. Recommended end state: Option C — cloud VPS handles pipeline (scraper, enrichment, queue), nightly sync to local read replica for fast practitioner queries. SQLite concurrent write limitation noted — adequate for small office, PostgreSQL migration path available if needed at scale. Arcanthyr UI role in local deployment: corpus management and ingestion interface; MCP server for querying.
+
+- **"Leading authorities on X" query type — confirmed viable with current architecture** — current semantic retrieval surfaces relevant cases adequately for practitioner use (user can assess authority from returned list). Court hierarchy re-rank provides partial authority signal. Full citation-frequency ranking not required at current corpus size — meaningful only post-scraper-completion when network is dense enough to be reliable. authorities_extracted already being populated by pipeline on every case — no pipeline changes needed before the agent pass.
 
 ## CHANGES THIS SESSION (session 41) — 5 April 2026
 

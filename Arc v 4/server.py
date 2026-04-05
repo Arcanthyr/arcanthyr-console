@@ -3,7 +3,6 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from qdrant_client.models import Filter, FieldCondition, MatchValue
-from qdrant_client.models import Prefetch, FusionQuery, Fusion
 
 OLLAMA_HOST   = os.environ.get("OLLAMA_HOST", "http://ollama:11434")
 QDRANT_HOST   = os.environ.get("QDRANT_HOST", "http://qdrant-general:6333")
@@ -43,22 +42,6 @@ def extract_section_references(chunks):
                 refs.add(ref.upper())
     return [{"section_number": r} for r in refs]
 
-
-def extract_legal_concepts(query_text):
-    """
-    Extract key legal concepts from a natural language query for second-pass search.
-    Strips question words and common filler to leave searchable legal terms.
-    """
-    import re
-    # Remove common question/filler words
-    filler = r'\b(what|is|the|are|how|do|i|when|can|a|an|for|of|in|to|under|make|steps|test|definition|elements|does|my|do|handling|amounting|amounts|object|objecting)\b'
-    cleaned = re.sub(filler, '', query_text.lower(), flags=re.IGNORECASE).strip()
-    # Collapse whitespace
-    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
-    # Only use if meaningfully shorter than original
-    if len(cleaned) > 5 and cleaned != query_text.lower():
-        return cleaned
-    return None
 
 
 def fetch_sections_by_reference(references):
@@ -215,19 +198,15 @@ def delete_type(type_value):
 
 def search_text(body):
     """
-    Semantic search against Qdrant using native RRF fusion.
+    Semantic search against Qdrant using sequential passes.
 
-    Four prefetch legs (unfiltered semantic, concept vector, case_chunk, secondary_source)
-    are fused in a single Qdrant RRF call, then supplemented by BM25 section/case-law
-    results from D1.  Final list is sorted by score and capped to top_k.
+    Pass 1 — unfiltered cosine, threshold 0.45, top_k*2 candidates, re-ranked
+    by court hierarchy within 0.05 cosine band, capped to top_k.
+    Pass 2 — case_chunk filtered, threshold 0.35, limit 8, deduplicated, appended.
+    Pass 3 — secondary_source filtered, threshold 0.25, limit 8, deduplicated, appended.
+    BM25  — section references injected, always last.
 
-    Params:
-        query_text      - natural language query string (required)
-        top_k           - max chunks to return (default 6, max 12)
-        score_threshold - minimum cosine similarity for Leg A/B (default 0.45)
-
-    Returns list of chunk dicts, re-ranked by court hierarchy where
-    scores are within 0.005 of each other.
+    Returns list of chunk dicts ordered: Pass1 (court-reranked) + Pass2 + Pass3 + BM25.
     """
     query_text      = body.get("query_text", "").strip()
     top_k           = min(int(body.get("top_k", 6)), 12)
@@ -237,69 +216,11 @@ def search_text(body):
         raise ValueError("query_text is required")
 
     query_vector = embed(query_text)
-
     client = QdrantClient(url=QDRANT_HOST)
 
-    # ── Leg B: concept vector — compute before building prefetch list ────────
-    concept_query  = extract_legal_concepts(query_text)
-    concept_vector = embed(concept_query) if concept_query else None
-
-    # ── Build RRF prefetch legs ──────────────────────────────────────────────
-    prefetch_legs = [
-        # Leg A — unfiltered semantic (replaces Pass 1)
-        Prefetch(
-            query=query_vector,
-            limit=top_k * 2,
-            score_threshold=score_threshold,
-        ),
-        # Leg C — case chunks only (replaces Pass 2)
-        Prefetch(
-            query=query_vector,
-            query_filter=Filter(
-                must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
-            ),
-            limit=12,
-            score_threshold=0.35,
-        ),
-        # Leg D — secondary sources only (replaces Pass 3)
-        Prefetch(
-            query=query_vector,
-            query_filter=Filter(
-                must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
-            ),
-            limit=12,
-            score_threshold=0.25,
-        ),
-    ]
-
-    # Leg B inserted at position 1 only when extract_legal_concepts() returned non-None
-    if concept_vector is not None:
-        prefetch_legs.insert(1, Prefetch(
-            query=concept_vector,
-            limit=top_k * 2,
-            score_threshold=score_threshold,
-        ))
-
-    fused_results = client.query_points(
-        collection_name=COLLECTION,
-        prefetch=prefetch_legs,
-        query=FusionQuery(fusion=Fusion.RRF),
-        limit=top_k * 3,  # overfetch — final top_k cap applied after BM25 merge and re-rank
-        with_payload=True,
-    )
-
-    if not fused_results.points:
-        print(f"[*] Search: no results for query: {query_text[:80]}")
-        return []
-
-    print(f"[*] Search: {len(fused_results.points)} chunks from RRF fusion")
-
-    # ── Unified conversion loop (all types from all legs) ───────────────────
-    chunks = []
-    for hit in fused_results.points:
-        payload  = hit.payload or {}
-        chunk_id = payload.get("chunk_id", "")
-        chunks.append({
+    def hit_to_chunk(hit):
+        payload = hit.payload or {}
+        return {
             "score":        round(hit.score, 4),
             "citation":     payload.get("citation") or payload.get("chunk_id", "unknown"),
             "case_name":    payload.get("case_name", ""),
@@ -313,25 +234,74 @@ def search_text(body):
             "chunk":        payload.get("chunk", 0) or payload.get("chunk_index", 0),
             "total_chunks": payload.get("total_chunks", 1),
             "type":         payload.get("type", ""),
-            "_id":          chunk_id,        # chunk-level dedup — present for case_chunk, "" for others
-            "_qdrant_id":   str(hit.id),     # point-level dedup — always set
-        })
+            "_id":          payload.get("chunk_id", ""),
+            "_qdrant_id":   str(hit.id),
+        }
 
-    # Filter out legislation schedule entries — short sections with no legal reasoning
+    # ── Pass 1 — unfiltered semantic ─────────────────────────────────────────
+    p1 = client.query_points(
+        collection_name=COLLECTION,
+        query=query_vector,
+        limit=top_k * 2,
+        score_threshold=score_threshold,
+        with_payload=True,
+    )
+    chunks = [hit_to_chunk(h) for h in p1.points]
+
+    # Filter short legislation schedule entries
     chunks = [c for c in chunks if not (c.get("type") == "legislation" and len(c.get("text", "")) < 200)]
 
-    # ── Court hierarchy re-rank ──────────────────────────────────────────────
+    # Court hierarchy re-rank within 0.05 cosine band
     if len(chunks) > 1:
         top_score = chunks[0]["score"]
         def sort_key(c):
             tier  = COURT_HIERARCHY.get(c["court"], 1)
             score = c["score"]
-            if (top_score - score) <= 0.005:
+            if (top_score - score) <= 0.05:
                 return -(tier * 100 + score * 100)
             return -score * 100
         chunks.sort(key=sort_key)
 
-    print(f"[+] {len(chunks)} chunks after RRF re-ranking (pre-BM25)")
+    chunks = chunks[:top_k]
+    seen_ids = {c["_qdrant_id"] for c in chunks}
+
+    print(f"[*] Search: {len(chunks)} chunks from Pass 1")
+
+    # ── Pass 2 — case chunks ─────────────────────────────────────────────────
+    p2 = client.query_points(
+        collection_name=COLLECTION,
+        query=query_vector,
+        query_filter=Filter(
+            must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
+        ),
+        limit=8,
+        score_threshold=0.35,
+        with_payload=True,
+    )
+    for h in p2.points:
+        if str(h.id) not in seen_ids:
+            seen_ids.add(str(h.id))
+            chunks.append(hit_to_chunk(h))
+
+    print(f"[+] {len(chunks)} chunks after Pass 2")
+
+    # ── Pass 3 — secondary sources ───────────────────────────────────────────
+    p3 = client.query_points(
+        collection_name=COLLECTION,
+        query=query_vector,
+        query_filter=Filter(
+            must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
+        ),
+        limit=8,
+        score_threshold=0.25,
+        with_payload=True,
+    )
+    for h in p3.points:
+        if str(h.id) not in seen_ids:
+            seen_ids.add(str(h.id))
+            chunks.append(hit_to_chunk(h))
+
+    print(f"[+] {len(chunks)} chunks after Pass 3")
 
     # ── BM25 — fetch sections referenced in query text ───────────────────────
     query_refs = extract_section_references([{"text": query_text}])
