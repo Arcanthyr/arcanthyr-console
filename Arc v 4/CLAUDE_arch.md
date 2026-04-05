@@ -91,6 +91,30 @@ Full D1/Workers/KV/R2 access
 
 **MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
 
+**Skills — ~/.claude/skills/ (installed session 40)**
+
+*Pre-existing (session 38):*
+- `alirezarezvani-claude-skills` — 220+ skills: senior-architect, dependency-auditor, RAG architect, security auditor
+- `jezweb-claude-skills` — Cloudflare Workers, Vite+React, D1/Drizzle, Hono, shadcn, Tailwind v4
+- `vercel-agent-skills` — Web design guidelines (WCAG/UX audit) + React best practices
+
+*Superpowers (obra/superpowers — installed session 40):*
+- `systematic-debugging` — Auto-activates on bugs/failures; four-phase root-cause process before fixes
+- `verification-before-completion` — Auto-activates before claiming work done; enforces evidence-over-claims
+- `test-driven-development` — Auto-activates on feature/bugfix implementation; red-green-refactor
+- `subagent-driven-development` — Parallel subagents per task with review checkpoints between iterations
+
+*Antigravity (sickn33/antigravity-awesome-skills — installed session 40):*
+- `rag-engineer` — RAG systems: chunking, embeddings, hybrid search patterns
+- `vector-database-engineer` — Qdrant/pgvector index config, HNSW/IVF/PQ, hybrid search
+- `embedding-strategies` — Embedding model selection, chunking optimisation, domain fine-tuning
+- `python-pro` — Python 3.12+, uv, ruff, pydantic, async patterns
+- `async-python-patterns` — asyncio, aiohttp, concurrent I/O, WebSocket, background tasks
+- `docker-expert` — Multi-stage builds, container security hardening, compose patterns
+- `prompt-engineering` — Few-shot, chain-of-thought, structured outputs, agent behaviour
+- `context-window-management` — Token budgeting, context summarisation, serial position effects
+- `bash-linux` — Bash/Linux scripting patterns
+
 ---
 
 ### VPS Environment Files
