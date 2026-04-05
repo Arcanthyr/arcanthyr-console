@@ -254,6 +254,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 - **worker.js version** — `1a214936-5b13-429f-8efd-90d915e87413`
 
+- **arcanthyr-ui polish pass complete** — 10 fixes across tiers 1-3, commit `b9ffdc0`. Files changed: `index.css` (add @keyframes pulse), `ReadingPane.jsx` (aria-label on ×, Share + × hover feedback, ChunksTab pre→div), `Nav.jsx` (sigil accessible button wrap, NavLink hover bg), `Landing.jsx` (tagline contrast fix, grid-scroll overlay, pill hover fill). Skills installed at project level: `ui-ux-pro-max` (via uipro-cli), `superpowers` (systematic-debugging, software-architecture, using-git-worktrees), `varlock`. `.claude/` added to arcanthyr-ui `.gitignore`. Why: first dedicated UI polish pass — accessibility gaps, missing keyframes, hover feedback, and contrast failures addressed systematically using UI/UX Pro Max design system output.
+
 ## CHANGES THIS SESSION (session 36) — 5 April 2026
 
 - **Scraper Task Scheduler tasks re-enabled** — both `Arcanthyr Scraper` (8am AEST) and `run_scraper_evening` (6pm AEST) found Disabled (likely a Windows reboot reset). Re-enabled via PowerShell as Administrator. Scraper resumed from TASSC 2017/13. Why: tasks silently disabled, today's 8am run had not fired.
