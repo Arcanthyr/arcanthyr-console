@@ -12,6 +12,7 @@
 | VPS | Contabo · `31.220.86.192` · Ubuntu 24.04 · 23GB RAM · 6 vCPU |
 | Live site | `arcanthyr.com` (Cloudflare Worker custom domain) |
 | GitHub | `https://github.com/Arcanthyr/arcanthyr-console` |
+| Git root | `arcanthyr-console/` (monorepo since session 35) · `Arc v 4/`, `arcanthyr-ui/`, `Local Scraper/`, and root scripts all tracked here · git commands run from `arcanthyr-console/` · wrangler/npx commands still run from `Arc v 4/` |
 | Cloudflare plan | Workers Paid ($5/month) · Account ID: `def9cef091857f82b7e096def3faaa25` |
 
 **D1 vs Qdrant:**
@@ -268,7 +269,7 @@ cd "../Arc v 4" && npx wrangler deploy
 **Globe dependencies:** Three.js + @react-three/fiber + @react-three/drei · Earth texture from unpkg · lives on Compose page
 
 **Stack:** React + Vite
-**Repo location:** `arcanthyr-console/arcanthyr-ui/`
+**Repo location:** `arcanthyr-console/arcanthyr-ui/` — tracked in monorepo (no separate GitHub repo · absorbed session 35)
 **Dev server:** `npm run dev` from `arcanthyr-console/arcanthyr-ui/` · `http://localhost:5173`
 
 **API base (session 17+):**
@@ -304,18 +305,15 @@ cd "../Arc v 4" && npx wrangler deploy
 
 | File | Path |
 |---|---|
-| enrichment_poller.py | `Arc v 4/scripts/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
+| enrichment_poller.py | `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
 | server.py (nexus) | `Arc v 4/server.py` (local) · `~/ai-stack/agent-general/src/server.py` (VPS canonical) |
 | xref_agent.py | `Arc v 4/xref_agent.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
 | ingest_corpus.py | `arcanthyr-console/ingest_corpus.py` — run from there, NOT from `Arc v 4/` |
 | ingest_part2.py | `arcanthyr-console/ingest_part2.py` — standalone part2 ingest script |
-| reingest_duplicates.py | `arcanthyr-console/reingest_duplicates.py` |
-| gen_cleanup_sql.py | `arcanthyr-console/gen_cleanup_sql.py` |
-| retrieval_baseline.sh | VPS `~/retrieval_baseline.sh` — results in ~/retrieval_baseline_results.txt |
-| master_corpus_part1.md | `arcanthyr-console/Arc v 4/master_corpus_part1.md` — 488 chunks (session 12) |
-| master_corpus_part2.md | `arcanthyr-console/Arc v 4/master_corpus_part2.md` — 683 chunks (session 12) |
-| sentencing_first_offenders.md | `arcanthyr-console/` — 1 procedure chunk, ingested session 4 |
-| scripts/ | `Arc v 4/scripts/` — all support scripts committed 18 Mar 2026 |
+| retrieval_baseline.sh | `arcanthyr-console/retrieval_baseline.sh` (repo) · VPS `~/retrieval_baseline.sh` — results in ~/retrieval_baseline_results.txt |
+| master_corpus_part1.md | `arcanthyr-console/master_corpus_part1.md` — 488 chunks (session 12) |
+| master_corpus_part2.md | `arcanthyr-console/master_corpus_part2.md` — 683 chunks (session 12) |
+| sentencing_first_offenders.md | `arcanthyr-console/sentencing_first_offenders.md` — 1 procedure chunk, ingested session 4 |
 | worker.js | `Arc v 4/worker.js` |
 | CLAUDE.md | `Arc v 4/CLAUDE.md` |
 | CLAUDE_arch.md | `Arc v 4/CLAUDE_arch.md` |
@@ -474,8 +472,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 ### master_corpus files (session 12)
 
-- master_corpus_part1.md: 488 chunks · `Arc v 4/master_corpus_part1.md`
-- master_corpus_part2.md: 683 chunks · `Arc v 4/master_corpus_part2.md`
+- master_corpus_part1.md: 488 chunks · `arcanthyr-console/master_corpus_part1.md`
+- master_corpus_part2.md: 683 chunks · `arcanthyr-console/master_corpus_part2.md`
 - New corpus: preservation-focused Master prompt + Repair pass · hoc-b{N}-m{N}-{slug} citation format
 - Total: 1,171 chunks · all enriched=1 · poller embedding overnight
 

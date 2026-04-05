@@ -14,7 +14,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler/npx command |
 | Always specify terminal | Every command must state: which terminal (VS Code, PowerShell, SSH/VPS) AND which directory |
 | enrichment_poller | Runs as permanent Docker service `enrichment-poller` (restart: unless-stopped) — no tmux required · poller auto-restarts on crash/reboot · check logs: `docker compose logs --tail=20 enrichment-poller` |
-| git commits | `git add -A`, `git commit`, `git push origin master` — separately, no && |
+| git commits | Run from `arcanthyr-console/` root (monorepo root since session 35) · `git add -A`, `git commit`, `git push origin master` — separately, no && |
 | Pre-deploy check | Verify upload list shows only `public/` files — if `.env` or `.git` appear, stop |
 | wrangler d1 | Must run from `Arc v 4/` directory · always add `--remote` for live D1 |
 | PowerShell limits | No &&, no heredoc `<<'EOF'`, no grep (use Select-String), no head (use Select-Object -First N) |
@@ -77,14 +77,14 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Workers Paid | Cloudflare Workers Paid plan active ($5/month) — no neuron cap · purchased session 10 |
 | CLAUDE_decisions.md | Upload each session alongside CLAUDE.md + CLAUDE_arch.md · CC appends decisions directly · re-extract quarterly via extract_decisions.py |
 | Wrangler auth | If D1 queries return error 7403, run npx wrangler login to re-authenticate |
-| arcanthyr-ui git repo | `arcanthyr-ui` has its own git repo separate from `arcanthyr-console` · root: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui` · tracks `src/`, `package.json`, `vite.config.js`, `index.html` · initialised session 35 |
+| arcanthyr-ui git repo | `arcanthyr-ui` is part of the monorepo — tracked under `arcanthyr-console/arcanthyr-ui/` · no separate GitHub repo · git root is `arcanthyr-console/`, not `arcanthyr-ui/` · migrated session 35 (was briefly a separate repo, absorbed into monorepo same session) |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
 | arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ |
 | Model toggle names | Sol = Claude API (claude-sonnet) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
 | JWT secret | worker.js uses `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY` · no separate JWT_SECRET set in Wrangler — NEXUS_SECRET_KEY is signing key |
 | worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
 | Vite proxy IPv6 fix | proxy target hardcoded to `104.21.1.159` with `Host: arcanthyr.com` header + `secure: false` · Node.js on Windows prefers IPv6 but proxy fails · IPv4 workaround required |
-| wrangler deploy path | Always `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4"` — quotes required due to space in path |
+| wrangler deploy path | Always `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4"` — quotes required due to space in path · wrangler and npx commands run from `Arc v 4/` · git commands run from `arcanthyr-console/` root |
 | Merge synthesis | GPT-4o-mini synthesis call at merge time produces case-level principles from enriched_text · shared `performMerge()` function used by both CHUNK and MERGE handlers · falls back to raw concat on failure |
 | PRINCIPLES_SPEC | Updated session 22 — case-specific prose style, no IF/THEN, no type/confidence/source_mode fields · only affects Pass 2 (Qwen3) which is overwritten by merge anyway |
 | Bulk requeue danger | Never reset enriched=0 on all cases simultaneously — causes Pass 1 re-run + chunk re-split + GPT-4o-mini rate limit exhaustion · use requeue-merge for synthesis-only re-runs |
@@ -249,6 +249,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **fetchCaseUrl bug fix** — `uploadUrl()` in `Upload.jsx` was calling `api.uploadCase({ url })` instead of the correct fetch-case-url endpoint. `upload-case` Worker handler destructures `case_text` and `citation` from body — `citation` was undefined, causing `citation.match()` to throw "Cannot read properties of undefined (reading 'trim')". Root cause: `api.fetchCaseUrl` method never existed in `api.js`; form author used nearest available method. Fix: `fetchCaseUrl()` added to `api.js` (calls `POST /api/legal/fetch-case-url`); `Upload.jsx` updated to call it. Frontend rebuilt and deployed.
 
 - **Session 34 git commits caught up** — `Worker.js` session 34 changes (citationToId, INSERT OR IGNORE, handleLibraryList principles_extracted, handleFetchSectionsByReference LIKE tightening) were deployed to Cloudflare in session 34 but never committed to git. Committed and pushed this session (commit `70151b1`).
+
+- **Monorepo migration** — git root moved from `Arc v 4/` to `arcanthyr-console/`. Why: build artifacts were bleeding across the repo boundary (built JS copied into `Arc v 4/public/` from outside the repo root); two-layer bugs (e.g. session 33 wrong JSX field + missing Worker SQL field) required cross-repo context that CC couldn't see in one session; atomic commits across Worker and UI were impossible with separate repos. What was done: `arcanthyr-ui` separate git repo (initialised session 35, 2 commits) absorbed into monorepo; `Arc v 4/scripts/` directory removed (all files were duplicates of root-level scripts or one-off scripts that had already run); rogue terminal fragment files deleted (`d`, `npx`, `onnected`, `scp`, `wrangler`, `how HEAD:server.py...`); `public/assets/index-*.js` and `public/assets/index-*.css` added to `Arc v 4/.gitignore` (10 accumulated build artifacts removed from index); root `.gitignore` created at `arcanthyr-console/`; `ingest_corpus.py`, `ingest_part2.py`, `Local Scraper/`, `master_corpus_part1.md`, `master_corpus_part2.md`, `retrieval_baseline.sh`, `migrate_schema_v2*.sql`, `corpus_manifest.json`, `hogan_on_crime.md`, `sentencing_first_offenders.md`, `validate_ingest.ps1` all now tracked at monorepo root. New rule: git commands run from `arcanthyr-console/`; wrangler/npx commands still run from `Arc v 4/`.
 
 - **TAMagC AustLII outage confirmed** — manually checked AustLII TAMagC URL this session — returning 500. Temporary outage confirmed (not structural gap). TAMagC cases do exist on AustLII. Action deferred to Outstanding Priorities.
 

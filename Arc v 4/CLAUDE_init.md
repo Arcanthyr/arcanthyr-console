@@ -17,6 +17,16 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ## Commands
 
+### Git workflow (monorepo — session 35)
+```powershell
+# All git commands run from arcanthyr-console/ root
+cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console"
+git add -A
+git commit -m "message"
+git push origin master
+```
+**wrangler and npx commands still run from `Arc v 4/`** — git root and wrangler root are different directories.
+
 ### Deploy Worker
 ```bash
 # From "Arc v 4/" directory
@@ -186,7 +196,7 @@ Runs as permanent Docker service (`restart: unless-stopped`) — no tmux needed.
 
 ### ingest_corpus.py
 
-Lives at `arcanthyr-console\ingest_corpus.py` (one level above `Arc v 4/`). Block separator format must be:
+Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc v 4/`). Block separator format must be:
 ```
 <!-- block_NNN master -->
 ### Heading
