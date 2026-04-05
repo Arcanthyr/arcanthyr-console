@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 5 April 2026 (end of session 39) · Supersedes all prior versions
+Updated: 5 April 2026 (end of session 40) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -21,6 +21,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | CC brief pattern | Ask CC to read files and report state BEFORE making changes |
 | CC cannot run Python | Windows Store stub blocks it — run Python in PowerShell terminal directly |
 | CC vs SSH | CC for local file edits · SSH terminal for VPS runtime commands |
+| CC vs manual SSH | Simple read/run commands (baseline, logs, single queries) → SSH yourself, faster and cheaper · CC with hex-ssh for multi-step VPS file edits, diagnosis across multiple files, or anything replacing SCP round-trips · Rule: if it's one command and paste-back, do it manually |
 | Long-running scripts | Run directly in PowerShell terminal — CC too slow (confirmed: ingest runs, embed pass) |
 | Context window | Suggest restart proactively when conversation grows long |
 | MCP tools | CC has hex-ssh (direct VPS edit/upload without SCP), github, firecrawl, playwright, context7, fetch, sequential-thinking, magic — use these instead of manual SCP/git CLI where possible · Full tool list in CLAUDE_arch.md MCP SERVERS & TOOLS section · Never ask CC to read .env.secrets — grep individual keys only via remote-ssh |
@@ -220,8 +221,9 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 3. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
 4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
-5. **Retrieval baseline re-run** — deferred to session 38 · run after any corpus additions this session settle · script at `~/retrieval_baseline.sh` on VPS
-6. **Pass 2 (Qwen3) prompt quality review** — deferred to session 38 · Opus-level decision · PRINCIPLES_SPEC never updated for Qwen3-30b · review against current chunk output before changing
+5. **Retrieval baseline** — DONE session 40 · 10 pass / 5 partial / 0 miss · matches session 36 · no regressions from block_023/028 additions · .env path bug in script fixed on VPS (.env → .env.secrets)
+6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
+7. **Qdrant-native RRF + BM25 synthetic scoring** — NEXT · Opus-level decision session 40 · replaces four separate Qdrant calls with single prefetch+FusionQuery(RRF) call · BM25 results (D1-sourced) get synthetic RRF scores instead of 0.0 · court hierarchy re-rank preserved with recalibrated band · implementation: Step 1 (Qdrant RRF) + Step 2 (BM25 scoring) deploy together, then tune (Steps 3-4) · prerequisite: check Qdrant client version on VPS for prefetch score_threshold support · extract_legal_concepts() confirmed regex-only, no latency concern · full design in opus_prompt.md + Opus response
 
 ---
 
@@ -237,8 +239,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
-- **RRF displacement of case chunks** — case chunks only in semantic pass · investigate next session
-- **Q8 partial — s55 relevance chunk displacing tendency chunk** — "tendency evidence propensity similar fact" query returns s55 relevance chunk at position 1, CW v R at position 2 · not a CONCEPTS gap (CW v R now has full tendency/propensity terms) · likely a semantic proximity issue or RRF displacement · investigate if Q8 remains partial after 6 CONCEPTS re-embeds settle
+- **RRF displacement — diagnosed session 40** — there is NO RRF in the code · results from Pass 2/3/BM25 just append sequentially after sorted Pass 1 block · BM25 hardcoded at score 0.0 · Pass 2/3 retain Qdrant scores but are never ranked against Pass 1 · Opus consultation recommends Qdrant-native RRF (prefetch+FusionQuery) + Python-side BM25 synthetic scoring · implementation pending (Outstanding Priority #7)
+- **Q8 partial — root cause confirmed** — s55 (0.7272) and CW v R (0.7239) both from Pass 1, 0.0033 cosine gap · both have court="" (tier 1) so court hierarchy doesn't help · fix: Qdrant-native RRF where CW v R appears in both unfiltered + case_chunk legs, getting summed RRF rank · not a CONCEPTS gap
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 - **striprtf** — not installed in agent-general container · RTF uploads will error · python-docx is installed (added Dockerfile.agent session 27) so DOCX uploads work
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
@@ -248,6 +250,20 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 
 ---
+
+## CHANGES THIS SESSION (session 40) — 5 April 2026
+
+- **Header chunk null enriched_text documented** — `chunk_index=0` rows with `done=1, enriched_text IS NULL, embedded=1` confirmed as expected behavior, not pipeline fault. CHUNK v3 classifies as `header` type, writes no enriched prose. Poller falls back to `chunk_text`. 20 confirmed cases. Added to CLAUDE_arch.md case_chunks D1 schema section. Why: recurring question across sessions — documenting prevents re-investigation.
+
+- **Retrieval baseline rerun (session 40)** — 18 questions, 10 pass / 5 partial / 0 miss. Matches session 36 result. No regressions from block_023/028 corpus additions. `.env` path bug in `retrieval_baseline.sh` fixed on VPS (was reading `~/ai-stack/.env`, file is `.env.secrets`). Why: needed fresh baseline after session 37 corpus additions.
+
+- **Item 1 (Restore Claude API key) confirmed moot** — Sol (Claude API toggle) tested on arcanthyr.com and working. Wrangler secret `ANTHROPIC_API_KEY` is set and functional. VPS .env reference was stale context from when server.py used Claude API directly (now uses Qwen3). Removed from both roadmaps. Why: roadmap item was blocking other priorities unnecessarily.
+
+- **Item 2 (malformed corpus row) FIXED** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` stale Qdrant point (`b9bcd0d5`) deleted. D1 was already clean (fixed session 24). Correct point (`8f56e796`, `hoc-b054-m001-drug-treatment-orders`) confirmed present with correct `citation` and `source_id` payload. Correct block number: 054 (master_corpus_part2.md:13969). Removed from both roadmaps. Why: been on roadmap since session 13.
+
+- **RRF displacement — full investigation and architectural decision** — discovered there is NO RRF in the codebase. Four separate Qdrant calls (Pass 1, concept search, Pass 2 case chunks, Pass 3 secondary sources) run sequentially. Pass 2/3 append after sorted+capped Pass 1 block. BM25 results hardcoded at score 0.0. No multi-signal reward — chunks appearing in multiple passes just deduped. CC read full `search_text()` function via hex-ssh. CC used Context7 to confirm Qdrant supports native RRF via `prefetch` + `FusionQuery`. Opus consultation recommended: Qdrant-native RRF (four legs in one call) + Python-side BM25 synthetic scoring. `extract_legal_concepts()` confirmed as regex-only (no latency concern for prefetch model). Implementation plan: Step 1 (Qdrant RRF) + Step 2 (BM25 scoring) together, then tune. Prerequisite: check Qdrant client version for prefetch score_threshold support. Why: systemic retrieval quality ceiling — all five persistent partials traced to lack of cross-pass ranking.
+
+- **CC vs manual SSH rule added** — simple read/run commands (baseline, logs, single queries) faster done manually via SSH. CC with hex-ssh for multi-step VPS file edits, diagnosis across multiple files, or replacing SCP round-trips.
 
 ## CHANGES THIS SESSION (session 38) — 5 April 2026
 

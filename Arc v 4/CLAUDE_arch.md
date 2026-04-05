@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 5 April 2026 (end of session 37). Upload every session alongside CLAUDE.md.*
+*Updated: 5 April 2026 (end of session 40). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -577,7 +577,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller (falls back to chunk_text if null)
 - `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
 - `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
-- **Header chunk null enriched_text (expected)** — chunk_index=0 rows with done=1, enriched_text IS NULL, embedded=1 are normal, not a pipeline fault. CHUNK v3 classifies these as header type and intentionally writes no enriched prose. Poller correctly falls back to chunk_text for embedding. 20 confirmed cases as of session 40.
+- **Header chunk null enriched_text (expected)** — `chunk_index=0` rows with `done=1, enriched_text IS NULL, embedded=1` are normal, not a pipeline fault. CHUNK v3 classifies these as `header` type and intentionally writes no enriched prose. Poller correctly falls back to `chunk_text` for embedding. 20 confirmed cases as of session 40.
 
 ### ingest_corpus.py
 
@@ -645,10 +645,11 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
-- **Fix malformed corpus row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · D1 id and Qdrant chunk_id both need correcting · identify correct block number first
-- **Restore Claude API key in VPS .env** — console.anthropic.com login loop blocking access · contact support@anthropic.com · update both VPS .env and Wrangler secret once resolved
-- **Retrieval baseline re-run** — session 38 · run after session 37 corpus additions settle
-- **Pass 2 (Qwen3) prompt quality review** — session 38 · Opus-level decision · PRINCIPLES_SPEC never updated for Qwen3-30b · review against current chunk output before changing
+- **Qdrant-native RRF + BM25 synthetic scoring** — NEXT · replace four separate Qdrant calls with single prefetch+FusionQuery(RRF) call (Legs A-D: unfiltered, concept, case_chunk, secondary_source) · BM25 results get synthetic RRF scores (~rank 3 for exact section matches, ~rank 8 for case-by-ref) instead of 0.0 · court hierarchy re-rank preserved with recalibrated RRF band (~0.005) · prerequisite: verify Qdrant client version supports score_threshold in Prefetch blocks · full design: Opus consultation session 40
+- **Fix malformed corpus row** — DONE session 40 · stale Qdrant point deleted, correct point confirmed
+- **Restore Claude API key in VPS .env** — MOOT session 40 · Sol working, Wrangler secret is set · VPS .env reference was stale
+- **Retrieval baseline** — DONE session 40 · 10/5/0 · matches session 36
+- **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency — merge synthesis bypasses Pass 2 output
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
@@ -661,4 +662,3 @@ Source title uses chunk heading (not filename stem).
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
-- **RRF displacement of case chunks** — case chunks only in semantic pass · BM25/FTS5 secondary-source hits accumulate rank that outpaces case chunks · need to boost case_chunk RRF contribution or add explicit score-weighted pass
