@@ -577,6 +577,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller (falls back to chunk_text if null)
 - `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
 - `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
+- **Header chunk null enriched_text (expected)** — chunk_index=0 rows with done=1, enriched_text IS NULL, embedded=1 are normal, not a pipeline fault. CHUNK v3 classifies these as header type and intentionally writes no enriched prose. Poller correctly falls back to chunk_text for embedding. 20 confirmed cases as of session 40.
 
 ### ingest_corpus.py
 
