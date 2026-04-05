@@ -93,6 +93,28 @@ Full D1/Workers/KV/R2 access
 
 ---
 
+### VPS Environment Files
+
+`.env.secrets` — MANUAL ONLY, never read via CC or hex-ssh:
+- Contains: `RESEND_API_KEY`, `CLAUDE_API_KEY`, `NEXUS_SECRET_KEY`, `OPENAI_API_KEY`, `Nexus_arc_bridge_key`, `GITHUB_TOKEN`
+- Location: `~/ai-stack/.env.secrets`
+- chmod 600 — only readable by tom
+
+`.env.config` — CC-safe, no secrets:
+- Contains: non-sensitive config vars only (currently just a comment header — empty)
+- Location: `~/ai-stack/.env.config`
+- CC may freely read and edit this file
+
+`docker-compose.yml` references both files via `env_file: [.env.secrets, .env.config]`
+
+`.env.backup` — original combined `.env`, retained as backup at `~/ai-stack/.env.backup`
+
+When CC needs a secret value (e.g. for a health check), use remote-ssh to grep the specific key only:
+`grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2`
+Never ask CC to read the full `.env.secrets` file.
+
+---
+
 ## DOCKER INTERNAL HOSTNAMES — CRITICAL
 
 **`localhost` inside a Docker container refers to that container, not the VPS host. All inter-container calls must use Docker service names.**
