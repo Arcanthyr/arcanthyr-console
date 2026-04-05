@@ -46,7 +46,10 @@ export default function ReadingPane({ selected, answer, onShare, onClose }) {
               color: 'var(--text-secondary)',
               background: 'transparent',
               letterSpacing: '0.04em',
+              transition: 'color 0.2s, background 0.2s',
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
           >
             Share
           </button>
@@ -96,7 +99,10 @@ function CasePane({ selected, answer, onShare, onClose }) {
                 color: 'var(--text-secondary)',
                 background: 'transparent',
                 letterSpacing: '0.04em',
+                transition: 'color 0.2s, background 0.2s',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
             >
               Share
             </button>
@@ -104,6 +110,7 @@ function CasePane({ selected, answer, onShare, onClose }) {
             <button
               onClick={onClose}
               title="Close"
+              aria-label="Close"
               style={{
                 fontSize: '16px', padding: '3px 10px',
                 border: '1px solid var(--border)',
@@ -111,7 +118,10 @@ function CasePane({ selected, answer, onShare, onClose }) {
                 color: 'var(--text-muted)',
                 background: 'transparent',
                 lineHeight: 1,
+                transition: 'color 0.2s, border-color 0.2s, background 0.2s',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-em)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
             >
               ×
             </button>
@@ -167,7 +177,7 @@ function ChunksTab({ selected }) {
         <span>Chunk {i + 1}</span>
         {c.chunk_type && <span style={{ textTransform: 'capitalize' }}>{c.chunk_type}</span>}
       </div>
-      <pre style={{
+      <div style={{
         padding: '12px',
         fontSize: '12px',
         lineHeight: 1.7,
@@ -175,11 +185,9 @@ function ChunksTab({ selected }) {
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-word',
         background: 'var(--surface)',
-        margin: 0,
-        fontFamily: "'Libre Baskerville', serif",
       }}>
         {c.chunk_text}
-      </pre>
+      </div>
     </div>
   ));
 }

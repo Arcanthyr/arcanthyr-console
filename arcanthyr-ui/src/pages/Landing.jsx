@@ -30,6 +30,17 @@ export default function Landing() {
       overflow: 'hidden',
     }}>
 
+      {/* Subtle scrolling grid — uses grid-scroll keyframe from index.css */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: 'linear-gradient(rgba(74,158,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(74,158,255,0.03) 1px, transparent 1px)',
+        backgroundSize: '50px 50px',
+        animation: 'grid-scroll 12s linear infinite',
+        zIndex: 1,
+        pointerEvents: 'none',
+      }} />
+
       {/* ── Main content ── */}
       <div style={{
         position: 'relative',
@@ -77,7 +88,7 @@ export default function Landing() {
           transition={{ delay: 0.8, duration: 0.6 }}
           style={{
             fontSize: '11px', fontStyle: 'italic',
-            color: '#3D4247', letterSpacing: '0.05em',
+            color: '#7A8087', letterSpacing: '0.05em',
             marginBottom: '36px',
           }}
         >
@@ -116,10 +127,10 @@ export default function Landing() {
                 background: 'transparent', border: '1px solid #1E2124',
                 borderRadius: '20px', padding: '5px 14px', fontSize: '10px',
                 fontFamily: "'Libre Baskerville', serif", letterSpacing: '0.05em',
-                color: '#7A8087', cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s',
+                color: '#7A8087', cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s, background 0.2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#C8CDD2'; e.currentTarget.style.borderColor = '#252A2E'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#7A8087'; e.currentTarget.style.borderColor = '#1E2124'; }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#C8CDD2'; e.currentTarget.style.borderColor = '#252A2E'; e.currentTarget.style.background = 'rgba(74,158,255,0.05)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#7A8087'; e.currentTarget.style.borderColor = '#1E2124'; e.currentTarget.style.background = 'transparent'; }}
             >
               {s}
             </button>
