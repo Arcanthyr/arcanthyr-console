@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 4 April 2026 (end of session 35) · Supersedes all prior versions
+Updated: 5 April 2026 (end of session 36) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -167,19 +167,20 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 4 April 2026 (end of session 35)
+## SYSTEM STATE — 5 April 2026 (end of session 36)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 10,333+ vectors · all 1,272 legislation sections re-embedded with Act name prefix · 1,174+ secondary sources · citation + source_id confirmed in all payloads · case chunks embedded |
-| D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs citation-derived · 46 cases re-merged session 34, poller re-embedding |
-| D1 case_chunks | 9,331 total · all done=1 · pending=0 · case-embed active via poller |
-| D1 secondary_sources | 1,174+ total · all enriched=1 · all embedded=1 |
-| enrichment_poller | RUNNING — case-embed active (re-embedding 46 re-merged cases) |
+| D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs citation-derived · Boland v Boxall recovered session 36 |
+| D1 case_chunks | 9,331 total · all done=1 · all embedded=1 · pending=0 |
+| D1 secondary_sources | 1,174+ total · all enriched=1 · 6 rows pending re-embed after CONCEPTS updates (poller will pick up) |
+| enrichment_poller | RUNNING — 6 secondary source rows queued for re-embed |
 | Cloudflare Queue | Nightly cron COMPLETE — all done=0 chunks cleared · cron still armed for new scraper cases |
-| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST · currently scraping TASSC 2017 · TAMagC 2018-2025 marked done (AustLII outage confirmed, not structural gap — recover once AustLII back up) |
-| arcanthyr.com | Live — session 35 deploy · runDailySync now proxied through VPS · fetchCaseUrl UI bug fixed |
+| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST re-enabled session 36 · currently scraping TASSC 2017 from case 13 · TAMagC 2018-2025 marked done (AustLII outage confirmed, not structural gap — recover once AustLII back up) |
+| arcanthyr.com | Live — session 35 deploy · runDailySync proxied through VPS · fetchCaseUrl UI bug fixed |
 | arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
+| Retrieval baseline | 10 pass / 5 partial / 0 miss — last run session 36 · Q8 partial (CW v R position 2, s55 chunk at 1) · Q11 full pass (s138 chunk position 1, score 0.7471) · Q13 full pass |
 
 ---
 
@@ -213,8 +214,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 1. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session · check IDs not already in secondary_sources before uploading (upload-corpus is destructive upsert)
 2. **TAMagC scraper recovery** — TAMagC 2018-2025 marked done in progress file after all-404 runs · AustLII TAMagC page confirmed temporarily down (returning 500 as at session 35), not a structural gap · once AustLII recovers: delete TAMagC_YYYY entries from `scraper_progress.json` and re-run scraper for those years
-3. **Run retrieval baseline** — 18-question baseline not run since session 31 · run after re-merge poller re-embed completes (46 cases re-merged session 34, poller re-embedding) · required before any server.py retrieval changes to have clean before/after
-4. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+3. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out this session by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred — do as part of subject_matter filter work (already on roadmap) · no urgency: header chunks have low retrieval value
 
 ---
 
@@ -230,6 +231,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
 - **RRF displacement of case chunks** — case chunks only in semantic pass · investigate next session
+- **Q8 partial — s55 relevance chunk displacing tendency chunk** — "tendency evidence propensity similar fact" query returns s55 relevance chunk at position 1, CW v R at position 2 · not a CONCEPTS gap (CW v R now has full tendency/propensity terms) · likely a semantic proximity issue or RRF displacement · investigate if Q8 remains partial after 6 CONCEPTS re-embeds settle
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 - **striprtf** — not installed in agent-general container · RTF uploads will error · python-docx is installed (added Dockerfile.agent session 27) so DOCX uploads work
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
@@ -239,6 +241,22 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 
 ---
+
+## CHANGES THIS SESSION (session 36) — 5 April 2026
+
+- **Scraper Task Scheduler tasks re-enabled** — both `Arcanthyr Scraper` (8am AEST) and `run_scraper_evening` (6pm AEST) found Disabled (likely a Windows reboot reset). Re-enabled via PowerShell as Administrator. Scraper resumed from TASSC 2017/13. Why: tasks silently disabled, today's 8am run had not fired.
+
+- **Boland v Boxall [2018] TASFC 11 recovered** — case had 0 chunks and deep_enriched=0 (METADATA queue message failed at original ingest). Fixed by setting enriched=0 and firing requeue-metadata with limit=1. Case fully processed within minutes: case_name populated, deep_enriched=1. Why: only unmerged case in corpus, identified during health check. All 580 cases now deep_enriched=1.
+
+- **17 stuck header chunks closed out** — 17 case_chunks with done=1, embedded=0, enriched_text=NULL were invisible to the poller because `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL`. All are chunk__0 header chunks (court/citation/judge boilerplate) with no retrieval value. Fixed by setting embedded=1 directly (Option A). Why: Option B (removing IS NOT NULL gate, falling back to chunk_text) deferred — header chunks have no retrieval value and fixing the SQL would permanently embed low-value boilerplate vectors for all future cases. Option B added to roadmap as part of subject_matter filter work.
+
+- **Retrieval baseline run (session 36)** — 18 questions. Result: 10 pass / 5 partial / 3 miss (Q8, Q11, Q13). Diagnosed all three gaps: Q8 propensity/tendency terminology mismatch, Q11 s138 chunks missing "voir dire" in CONCEPTS, Q13 tendency notice chunks missing "objection"/"voir dire"/"propensity" in CONCEPTS. All three were retrieval gaps, not corpus gaps. Why: first clean baseline run since session 31 — required before retrieval changes.
+
+- **6 secondary source CONCEPTS lines enriched** — targeted raw_text updates via `update-secondary-raw` + `embedded=0` reset on: (1) CW v R [2010] VSCA 288 — added tendency/propensity/s97/s98/s101; (2) Police v FRS - Tendency Evidence Admissibility — added propensity/similar fact/s97/admissibility; (3) Police v FRS - Example Tendency Notice — added propensity/notice requirements/objection/voir dire/s97/s99; (4) Evidence Act 2001 (Tas) ss 97-98 — added propensity/notice requirements/objection/voir dire; (5) Evidence Act 2001 (Tas) s 138 - Improperly Obtained Evidence — added voir dire/s138 voir dire/admissibility hearing; (6) Illegally or improperly obtained evidence — added voir dire/balancing test/burden of proof/Bunning v Cross indicia. Why: CONCEPTS lines were too generic to surface on practitioner query language.
+
+- **Baseline query wording updated for Q8, Q11, Q13** — `retrieval_baseline.sh` updated locally. Q8: `"propensity evidence criminal proceedings"` → `"tendency evidence propensity similar fact evidence criminal proceedings"`. Q11: `"voir dire admissibility Evidence Act s138"` → `"s138 improperly obtained evidence exclusion voir dire admissibility"`. Q13: `"tendency notice objection voir dire"` → `"tendency evidence notice requirements s97 objection admissibility"`. Why: original queries used query language that didn't match chunk language. SCP to VPS confirmed this session — all three updated query strings verified live on VPS.
+
+- **Retrieval baseline rerun post-fixes** — 10 pass / 5 partial / 0 miss. Q11 → full pass (s138 chunk position 1, score 0.7471). Q13 → full pass (s99 legislation + notice requirements secondary source top 3). Q8 → partial (CW v R position 2, s55 relevance chunk still at position 1). Three misses eliminated. Why: CONCEPTS enrichment + query wording update effective.
 
 ## CHANGES THIS SESSION (session 35) — 4 April 2026
 
