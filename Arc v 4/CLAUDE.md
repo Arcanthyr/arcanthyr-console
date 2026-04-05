@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 5 April 2026 (end of session 37) · Supersedes all prior versions
+Updated: 5 April 2026 (end of session 39) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -23,6 +23,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | CC vs SSH | CC for local file edits · SSH terminal for VPS runtime commands |
 | Long-running scripts | Run directly in PowerShell terminal — CC too slow (confirmed: ingest runs, embed pass) |
 | Context window | Suggest restart proactively when conversation grows long |
+| MCP tools | CC has hex-ssh (direct VPS edit/upload without SCP), github, firecrawl, playwright, context7, fetch, sequential-thinking, magic — use these instead of manual SCP/git CLI where possible · Full tool list in CLAUDE_arch.md MCP SERVERS & TOOLS section |
 | D1 database name | arcanthyr (binding: DB, ID: 1b8ca95d-b8b3-421d-8c77-20f80432e1a0) |
 | Component quirks | Document in CLAUDE_arch.md Component Notes section |
 | qdrant-general host port | Host-side port is 6334 (not 6333) — docker-compose maps 127.0.0.1:6334->6333/tcp · always curl localhost:6334 from VPS host |
@@ -77,6 +78,12 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Workers Paid | Cloudflare Workers Paid plan active ($5/month) — no neuron cap · purchased session 10 |
 | CLAUDE_decisions.md | Upload each session alongside CLAUDE.md + CLAUDE_arch.md · CC appends decisions directly · re-extract quarterly via extract_decisions.py |
 | Wrangler auth | If D1 queries return error 7403, run npx wrangler login to re-authenticate |
+| Cloudflare MCP | Use `mcp__claude_ai_Cloudflare_Developer_Platform__*` tools to query D1, inspect Workers, check KV/R2/Queues — eliminates wrangler relay through Tom · Account: Virtual_wiseman.operations@hotmail.com · Account ID: def9cef091857f82b7e096def3faaa25 |
+| hex-ssh MCP | Project-scoped in `Arc v 4/.mcp.json` (gitignored) · Locked to ALLOWED_HOSTS=31.220.86.192, ALLOWED_DIRS=/home/tom/ai-stack, ALLOWED_LOCAL_DIRS=C:\Users\Hogan\OneDrive\Arcanthyr, REMOTE_SSH_MODE=safe · command: node · args: full path to server.mjs · key: id_ed25519 (passphrase removed session 39) |
+| hex-ssh reads VPS files | Use hex-ssh MCP in CC to read VPS files directly (server.py, enrichment_poller.py, logs) — no SCP required for reads · SCP still required for writes/deploys · tool: ssh-read-lines on host 31.220.86.192 user tom |
+| hex-ssh key | id_ed25519 passphrase removed session 39 — key loads cleanly via default path scan · no ssh-agent step required at session start · do not re-add passphrase |
+| hex-ssh .mcp.json | command: node · args: ["C:\Users\Hogan\AppData\Roaming\npm\node_modules\@levnikolaevich\hex-ssh-mcp\dist\server.mjs"] · env: ALLOWED_HOSTS, ALLOWED_DIRS, ALLOWED_LOCAL_DIRS, REMOTE_SSH_MODE |
+| Third-party tool security audit | Before installing any MCP server, plugin, or skills repo: audit every non-markdown file via Fetch MCP for raw content · Check for undisclosed outbound connections, platform onboarding, or credential harvesting · Delete any .mcp.json found in cloned skill repos before use |
 | arcanthyr-ui git repo | `arcanthyr-ui` is part of the monorepo — tracked under `arcanthyr-console/arcanthyr-ui/` · no separate GitHub repo · git root is `arcanthyr-console/`, not `arcanthyr-ui/` · migrated session 35 (was briefly a separate repo, absorbed into monorepo same session) |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
 | arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ |
@@ -167,7 +174,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 5 April 2026 (end of session 37)
+## SYSTEM STATE — 5 April 2026 (end of session 39)
 
 | Component | Status |
 |---|---|
@@ -211,10 +218,10 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-1. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
-2. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
-3. **Retrieval baseline re-run** — deferred to session 38 · run after any corpus additions this session settle · script at `~/retrieval_baseline.sh` on VPS
-4. **Pass 2 (Qwen3) prompt quality review** — deferred to session 38 · Opus-level decision · PRINCIPLES_SPEC never updated for Qwen3-30b · review against current chunk output before changing
+3. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
+5. **Retrieval baseline re-run** — deferred to session 38 · run after any corpus additions this session settle · script at `~/retrieval_baseline.sh` on VPS
+6. **Pass 2 (Qwen3) prompt quality review** — deferred to session 38 · Opus-level decision · PRINCIPLES_SPEC never updated for Qwen3-30b · review against current chunk output before changing
 
 ---
 
@@ -242,6 +249,22 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
+## CHANGES THIS SESSION (session 38) — 5 April 2026
+
+- **MCP server installation — full stack** — nine MCP servers now active: Cloudflare Developer Platform (claude.ai connector, already present), Cloudflare API (mcp.cloudflare.com, full 2500+ endpoint coverage in Code Mode, authenticated to Tom's account), GitHub (already present), Context7 (live Wrangler/Qdrant/Vite docs), Playwright (browser automation + UI testing post-deploy), Sequential Thinking (structured reasoning), Fetch (raw HTTP, mcp-server-fetch via Anthropic PyPI), Firecrawl (already present), Magic (already present). All user-scope (global). hex-ssh-mcp (@levnikolaevich/hex-ssh-mcp) installed project-scoped in `Arc v 4/.mcp.json` (gitignored), locked to VPS host/dirs with REMOTE_SSH_MODE=safe. Why: eliminates wrangler relay for D1/Workers/KV queries; eliminates manual SCP round-trips once ssh-agent is configured; provides live library docs to prevent stale API suggestions; enables post-deploy UI verification without manual browser testing.
+
+- **frontend-design plugin installed** — official Anthropic marketplace plugin (claude-plugins-official). Why: improves arcanthyr-ui console quality; targets production-grade UI patterns over generic AI aesthetics.
+
+- **Skills repos cloned to ~/.claude/skills/** — three repos: `vercel-agent-skills` (7 skills: react-best-practices, web-design-guidelines, composition-patterns, react-native-skills, deploy-to-vercel, vercel-cli-with-tokens, react-view-transitions), `jezweb-claude-skills` (10 plugin categories: cloudflare, frontend, design-assets, dev-tools, integrations, shopify, wordpress, writing, social-media, plus statusline-npm tool), `alirezarezvani-claude-skills` (200+ Gemini-format skills + 7 Claude commands: focused-fix, review, security-scan, seo-auditor, plugin-audit, update-docs, git sub-commands). `.mcp.json` found in alirezarezvani repo (contained undisclosed Tessl platform onboarding) — deleted from cloned copy before use.
+
+- **Security audit process established** — repeatable process for third-party tool adoption: audit every non-markdown file in candidate repo via Fetch MCP for raw content + Claude for Chrome for GitHub navigation before installation. Two findings this session: (1) `ancoleman/qdrant-rag-mcp` rejected — wrong embedding dimensions (384-dim default vs Arcanthyr's 1024-dim), would have created a parallel RAG system not a thin wrapper; (2) `alirezarezvani/claude-skills` .mcp.json contained undisclosed Tessl platform onboarding, deleted. All other repos cleared. Process documented in SESSION RULES.
+
+- **hex-ssh smoke test — partial** — MCP connected to 31.220.86.192 but failed with `Encrypted private OpenSSH key detected, but no passphrase given`. Windows ssh-agent not yet configured. Action deferred to Outstanding Priorities #1.
+
+- **`Arc v 4/.gitignore` updated** — `.mcp.json` added to prevent project-scoped MCP config (containing SSH key paths) from being committed.
+
+- **`Arc v 4/.mcp.json` created** — stores hex-ssh project config. Gitignored. Not committed.
+
 ## CHANGES THIS SESSION (session 37) — 5 April 2026
 
 - **handleFetchSectionsByReference FTS5 upgrade** — secondary sources section reference lookup upgraded from LIKE-only to dual LIKE+FTS5 pass. LIKE pass retained for structured IDs (e.g. `Evidence Act 2001 (Tas) s 38 - ...`). New FTS5 pass queries `secondary_sources_fts` with phrase MATCH on `"s N"` and `"section N"` — catches content-based references where chunk ID doesn't contain the section reference (e.g. `hoc-b048-m002`, `hoc-b049-m001`, `Irons v Moore`, `Prosecutor selection of witnesses`). Union of both result sets fed to server.py uncapped. Confirmed working via live D1 test — phrase query `"s 38"` returned 5 hits including 3 hoc-block content-based matches the LIKE pass missed. Worker version: `1a214936-5b13-429f-8efd-90d915e87413`. Why: LIKE on ID was silently missing all hoc-block chunks discussing a section in content but not encoding it in the ID.
@@ -255,6 +278,10 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **worker.js version** — `1a214936-5b13-429f-8efd-90d915e87413`
 
 - **arcanthyr-ui polish pass complete** — 10 fixes across tiers 1-3, commit `b9ffdc0`. Files changed: `index.css` (add @keyframes pulse), `ReadingPane.jsx` (aria-label on ×, Share + × hover feedback, ChunksTab pre→div), `Nav.jsx` (sigil accessible button wrap, NavLink hover bg), `Landing.jsx` (tagline contrast fix, grid-scroll overlay, pill hover fill). Skills installed at project level: `ui-ux-pro-max` (via uipro-cli), `superpowers` (systematic-debugging, software-architecture, using-git-worktrees), `varlock`. `.claude/` added to arcanthyr-ui `.gitignore`. Why: first dedicated UI polish pass — accessibility gaps, missing keyframes, hover feedback, and contrast failures addressed systematically using UI/UX Pro Max design system output.
+
+## CHANGES THIS SESSION (session 39) — 5 April 2026
+
+- **hex-ssh MCP unblocked** — hex-ssh was failing to connect on every session start. Root cause diagnosed: hex-ssh uses the `ssh2` Node library and reads the key file directly via `readFileSync` — no ssh-agent integration exists in the code. ssh-agent work was valid but irrelevant to hex-ssh. Two separate fixes required: (1) `.mcp.json` updated from `command: hex-ssh-mcp` (PS1 wrapper, unlaunchable by VS Code MCP host) to `command: node` with explicit path to `server.mjs`; (2) passphrase removed from `id_ed25519` via `ssh-keygen -p` — hex-ssh has no passphrase path so the key must be unencrypted. Smoke test passing: CC can now read VPS files directly without SCP. Why: deploy-gap pattern (sessions 25, 27, 35) was caused partly by inability to verify VPS file state from CC — hex-ssh closes this gap for read operations.
 
 ## CHANGES THIS SESSION (session 36) — 5 April 2026
 

@@ -23,6 +23,76 @@
 
 ---
 
+## MCP SERVERS & TOOLS
+
+### Claude.ai (available to Claude in every session)
+
+| Tool category | Tools |
+|---|---|
+| Web | `web_search`, `web_fetch`, `image_search` |
+| Files (container) | `bash_tool` (network disabled), `view`, `str_replace`, `create_file`, `present_files` |
+| Memory & history | `memory_user_edits`, `conversation_search`, `recent_chats` |
+| Visualisation | `visualize:show_widget`, `visualize:read_me` |
+| Utilities | `ask_user_input_v0`, `message_compose_v1`, `recipe_display_v0`, `weather_fetch`, `fetch_sports_data`, `places_search`, `places_map_display_v0`, `tool_search` |
+
+**MCP — Claude in Chrome** (browser automation on Tom's machine):
+`navigate`, `read_page`, `find`, `form_input`, `javascript_tool`, `get_page_text`, `read_console_messages`, `read_network_requests`, `computer` (mouse/keyboard/screenshot), `tabs_create/close/context`, `shortcuts_list/execute`, `file_upload`, `upload_image`, `resize_window`, `switch_browser`, `gif_creator`
+→ Use for: testing arcanthyr.com UI, inspecting network requests, reading browser console errors
+
+**MCP — Cloudflare Developer Platform** (claude.ai connector):
+`accounts_list`, `set_active_account`, `d1_database_create/delete/get/query`, `d1_databases_list`, `workers_list`, `workers_get_worker`, `workers_get_worker_code`, `kv_namespace_create/delete/get/update`, `kv_namespaces_list`, `r2_bucket_create/delete/get`, `r2_buckets_list`, `hyperdrive_config_*`, `search_cloudflare_documentation`, `migrate_pages_to_workers_guide`
+→ Use for: querying live D1 without wrangler, checking deployed worker versions, reading live worker.js code
+
+**MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
+
+---
+
+### Claude Code (CC — available in every CC session)
+
+**Built-in:** `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep`, `LS`, `WebFetch`, `TodoWrite`, `Task`, `NotebookRead/Edit`
+
+**MCP — cloudflare** (mcp.cloudflare.com):
+`mcp__cloudflare__execute`, `mcp__cloudflare__search`
+
+**MCP — Cloudflare Developer Platform** (claude.ai connector — same as Claude.ai above):
+Full D1/Workers/KV/R2 access
+
+**MCP — context7**:
+`resolve-library-id`, `query-docs`
+→ Use for: looking up current Cloudflare Workers API docs and other library documentation
+
+**MCP — fetch**:
+`mcp__fetch__fetch`
+→ Use for: fetching URLs directly from CC
+
+**MCP — firecrawl**:
+`firecrawl_scrape`, `firecrawl_crawl`, `firecrawl_check_crawl_status`, `firecrawl_search`, `firecrawl_extract`, `firecrawl_map`, `firecrawl_agent`, `firecrawl_agent_status`, `firecrawl_browser_create/delete/execute/list`
+→ Use for: JS-rendered web scraping (potential AustLII alternative to Python scraper)
+
+**MCP — github**:
+`get_file_contents`, `create_or_update_file`, `push_files`, `search_code`, `search_repositories`, `search_issues/users`, `get/list/create/update_issue`, `add_issue_comment`, `get/list/create_pull_request`, `get_pull_request_comments/files/reviews/status`, `create_pull_request_review`, `update_pull_request_branch`, `merge_pull_request`, `list_commits`, `create_branch`, `fork_repository`, `create_repository`
+→ Use for: reading/writing files on GitHub directly, creating issues and PRs — alternative to git CLI
+
+**MCP — hex-ssh**:
+`ssh-read-lines`, `ssh-write-chunk`, `ssh-edit-block`, `ssh-search-code`, `ssh-verify`, `ssh-upload`, `ssh-download`, `remote-ssh`
+→ Use for: reading and editing server.py and other VPS files directly without SCP; replaces manual SCP workflow for server.py edits
+
+**MCP — magic (21st.dev)**:
+`21st_magic_component_builder`, `21st_magic_component_refiner`, `21st_magic_component_inspiration`, `logo_search`
+→ Use for: UI component generation for arcanthyr-ui frontend work
+
+**MCP — playwright**:
+`browser_navigate`, `browser_navigate_back`, `browser_snapshot`, `browser_take_screenshot`, `browser_click`, `browser_type`, `browser_fill_form`, `browser_select_option`, `browser_hover`, `browser_drag`, `browser_press_key`, `browser_wait_for`, `browser_evaluate`, `browser_run_code`, `browser_file_upload`, `browser_handle_dialog`, `browser_console_messages`, `browser_network_requests`, `browser_tabs`, `browser_resize`, `browser_close`
+→ Use for: automated browser testing of arcanthyr.com from CC (headless)
+
+**MCP — sequential-thinking**:
+`sequentialthinking`
+→ Use for: complex multi-step reasoning tasks where structured chain-of-thought helps
+
+**MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
+
+---
+
 ## DOCKER INTERNAL HOSTNAMES — CRITICAL
 
 **`localhost` inside a Docker container refers to that container, not the VPS host. All inter-container calls must use Docker service names.**
