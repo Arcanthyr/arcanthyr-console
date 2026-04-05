@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 5 April 2026 (end of session 36) · Supersedes all prior versions
+Updated: 5 April 2026 (end of session 37) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -167,20 +167,19 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 5 April 2026 (end of session 36)
+## SYSTEM STATE — 5 April 2026 (end of session 37)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 10,333+ vectors · all 1,272 legislation sections re-embedded with Act name prefix · 1,174+ secondary sources · citation + source_id confirmed in all payloads · case chunks embedded |
-| D1 cases | 580 total · supreme: 394 · cca: 111 · fullcourt: 74 · magistrates: 1 · all deep_enriched=1 · all IDs citation-derived · Boland v Boxall recovered session 36 |
-| D1 case_chunks | 9,331 total · all done=1 · all embedded=1 · pending=0 |
-| D1 secondary_sources | 1,174+ total · all enriched=1 · 6 rows pending re-embed after CONCEPTS updates (poller will pick up) |
-| enrichment_poller | RUNNING — 6 secondary source rows queued for re-embed |
-| Cloudflare Queue | Nightly cron COMPLETE — all done=0 chunks cleared · cron still armed for new scraper cases |
-| Scraper | RUNNING — Task Scheduler 8am + 6pm AEST re-enabled session 36 · currently scraping TASSC 2017 from case 13 · TAMagC 2018-2025 marked done (AustLII outage confirmed, not structural gap — recover once AustLII back up) |
-| arcanthyr.com | Live — session 35 deploy · runDailySync proxied through VPS · fetchCaseUrl UI bug fixed |
-| arcanthyr-ui.pages.dev | DELETED — redundant Cloudflare Pages project removed |
-| Retrieval baseline | 10 pass / 5 partial / 0 miss — last run session 36 · Q8 partial (CW v R position 2, s55 chunk at 1) · Q11 full pass (s138 chunk position 1, score 0.7471) · Q13 full pass |
+| Qdrant general-docs-v2 | 10,333+ vectors · all embedded · citation + source_id confirmed in all payloads |
+| D1 cases | 580 total · all deep_enriched=1 |
+| D1 case_chunks | 9,385 total · all done=1 · all embedded=1 · pending=0 |
+| D1 secondary_sources | 1,196 total · all embedded=1 |
+| enrichment_poller | RUNNING |
+| Cloudflare Queue | Clean — nightly cron armed |
+| Scraper | RUNNING — TAMagC 2018-2025 re-enabled session 37 · TASSC 2017 in progress |
+| arcanthyr.com | Live · session 37 deploy · FTS5 section reference upgrade |
+| Retrieval baseline | 10 pass / 5 partial / 0 miss — last run session 36 |
 
 ---
 
@@ -212,10 +211,10 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-1. **Fix corpus content gaps** — block_023 (dangling `...BUT see below`) and block_028 (`[Continues with specifics...]`) need source material from `rag_blocks/` · defer to Procedure Prompt re-ingest session · check IDs not already in secondary_sources before uploading (upload-corpus is destructive upsert)
-2. **TAMagC scraper recovery** — TAMagC 2018-2025 marked done in progress file after all-404 runs · AustLII TAMagC page confirmed temporarily down (returning 500 as at session 35), not a structural gap · once AustLII recovers: delete TAMagC_YYYY entries from `scraper_progress.json` and re-run scraper for those years
-3. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
-4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out this session by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred — do as part of subject_matter filter work (already on roadmap) · no urgency: header chunks have low retrieval value
+1. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
+2. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
+3. **Retrieval baseline re-run** — deferred to session 38 · run after any corpus additions this session settle · script at `~/retrieval_baseline.sh` on VPS
+4. **Pass 2 (Qwen3) prompt quality review** — deferred to session 38 · Opus-level decision · PRINCIPLES_SPEC never updated for Qwen3-30b · review against current chunk output before changing
 
 ---
 
@@ -227,6 +226,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
 - **subject_matter pending** — cases.subject_matter will populate as chunks complete · verify spot-check before using as retrieval filter
+- **subject_matter retrieval filter — parked** — investigated session 37 · non-criminal cases (admin, civil, family) are genuinely topically distinct · semantic search handles separation naturally · no retrieval pollution observed · feature not worth building · removed from roadmap
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
@@ -241,6 +241,18 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 
 ---
+
+## CHANGES THIS SESSION (session 37) — 5 April 2026
+
+- **handleFetchSectionsByReference FTS5 upgrade** — secondary sources section reference lookup upgraded from LIKE-only to dual LIKE+FTS5 pass. LIKE pass retained for structured IDs (e.g. `Evidence Act 2001 (Tas) s 38 - ...`). New FTS5 pass queries `secondary_sources_fts` with phrase MATCH on `"s N"` and `"section N"` — catches content-based references where chunk ID doesn't contain the section reference (e.g. `hoc-b048-m002`, `hoc-b049-m001`, `Irons v Moore`, `Prosecutor selection of witnesses`). Union of both result sets fed to server.py uncapped. Confirmed working via live D1 test — phrase query `"s 38"` returned 5 hits including 3 hoc-block content-based matches the LIKE pass missed. Worker version: `1a214936-5b13-429f-8efd-90d915e87413`. Why: LIKE on ID was silently missing all hoc-block chunks discussing a section in content but not encoding it in the ID.
+
+- **TAMagC 2018-2025 recovery** — all 8 TAMagC year entries deleted from `scraper_progress.json`. AustLII TAMagC page confirmed back up (was returning 500 during sessions 34-36). Scraper will pick up TAMagC from case 1 for each year on next scheduled run. Why: entries were marked done during AustLII outage, blocking TAMagC from ever being scraped.
+
+- **subject_matter retrieval filter — investigated and parked** — proposed UI dropdown filter (All Cases / Criminal / Administrative / Civil) investigated. D1 audit showed non-criminal cases are genuinely topically distinct (planning tribunals, workers comp, contract disputes) — not causing retrieval pollution in practice. Baseline is 10 pass / 5 partial with no failures attributable to non-criminal noise. Feature parked — not worth building. Removed from roadmap. Why: solution looking for a problem that doesn't exist in the current corpus.
+
+- **Corpus content gaps — block_023 and block_028 authored and uploaded** — block_023 (quantity/possession/drug detection) and block_028 (Family Violence Act 2004 overview) drafted and uploaded via console. Both enriched=1 embedded=1 in D1. block_023 ID: `hoc-b023-m001-quantity-possession-detection-drug-offences`. block_028 ID: `manual-family-violence-act-2004-tas-key-provisions-and-practitioner-guidance` (auto-generated slug — modal was skipped on second upload, retrieval unaffected). Why: rag_blocks/ directory does not exist locally; source material for block_023 was genuinely empty in hogan_on_crime.md; both chunks required authoring rather than recovery.
+
+- **worker.js version** — `1a214936-5b13-429f-8efd-90d915e87413`
 
 ## CHANGES THIS SESSION (session 36) — 5 April 2026
 

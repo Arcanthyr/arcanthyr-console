@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 5 April 2026 (end of session 36). Upload every session alongside CLAUDE.md.*
+*Updated: 5 April 2026 (end of session 37). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -530,8 +530,8 @@ Source title uses chunk heading (not filename stem).
 
 - **Fix malformed corpus row** — `hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders` · D1 id and Qdrant chunk_id both need correcting · identify correct block number first
 - **Restore Claude API key in VPS .env** — console.anthropic.com login loop blocking access · contact support@anthropic.com · update both VPS .env and Wrangler secret once resolved
-- **handleFetchSectionsByReference LIKE fix** — replace ID slug LIKE match with FTS5 search
-- **subject_matter retrieval filter** — scope case chunk Qdrant pass to criminal cases for criminal law queries · pending cases.subject_matter population after overnight reprocess
+- **Retrieval baseline re-run** — session 38 · run after session 37 corpus additions settle
+- **Pass 2 (Qwen3) prompt quality review** — session 38 · Opus-level decision · PRINCIPLES_SPEC never updated for Qwen3-30b · review against current chunk output before changing
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
