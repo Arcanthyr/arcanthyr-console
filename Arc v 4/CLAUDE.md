@@ -1,5 +1,5 @@
 CLAUDE.md — Arcanthyr Session File
-Updated: 5 April 2026 (end of session 40) · Supersedes all prior versions
+Updated: 5 April 2026 (end of session 41) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -83,7 +83,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | hex-ssh MCP | Project-scoped in `Arc v 4/.mcp.json` (gitignored) · Locked to ALLOWED_HOSTS=31.220.86.192, ALLOWED_DIRS=/home/tom/ai-stack, ALLOWED_LOCAL_DIRS=C:\Users\Hogan\OneDrive\Arcanthyr, REMOTE_SSH_MODE=safe · command: node · args: full path to server.mjs · key: id_ed25519 (passphrase removed session 39) |
 | hex-ssh reads VPS files | Use hex-ssh MCP in CC to read VPS files directly (server.py, enrichment_poller.py, logs) — no SCP required for reads · SCP still required for writes/deploys · tool: ssh-read-lines on host 31.220.86.192 user tom |
 | hex-ssh key | id_ed25519 passphrase removed session 39 — key loads cleanly via default path scan · no ssh-agent step required at session start · do not re-add passphrase |
-| hex-ssh .mcp.json | command: node · args: ["C:\Users\Hogan\AppData\Roaming\npm\node_modules\@levnikolaevich\hex-ssh-mcp\dist\server.mjs"] · env: ALLOWED_HOSTS, ALLOWED_DIRS, ALLOWED_LOCAL_DIRS, REMOTE_SSH_MODE |
+| hex-ssh .mcp.json | command: node · args: ["C:\Users\Hogan\AppData\Roaming\npm\node_modules\@levnikolaevich\hex-ssh-mcp\dist\server.mjs"] · env: ALLOWED_HOSTS, ALLOWED_DIRS, ALLOWED_LOCAL_DIRS, REMOTE_SSH_MODE · registered user-scope in ~/.claude.json (session 41) — project .mcp.json retained but redundant |
 | Third-party tool security audit | Before installing any MCP server, plugin, or skills repo: audit every non-markdown file via Fetch MCP for raw content · Check for undisclosed outbound connections, platform onboarding, or credential harvesting · Delete any .mcp.json found in cloned skill repos before use |
 | arcanthyr-ui git repo | `arcanthyr-ui` is part of the monorepo — tracked under `arcanthyr-console/arcanthyr-ui/` · no separate GitHub repo · git root is `arcanthyr-console/`, not `arcanthyr-ui/` · migrated session 35 (was briefly a separate repo, absorbed into monorepo same session) |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
@@ -98,6 +98,8 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Bulk requeue danger | Never reset enriched=0 on all cases simultaneously — causes Pass 1 re-run + chunk re-split + GPT-4o-mini rate limit exhaustion · use requeue-merge for synthesis-only re-runs |
 | requeue-merge target param | body.target='remerge' queries deep_enriched=1 cases, resets each to 0 before enqueuing MERGE message · default (no target) queries deep_enriched=0 with runtime chunk check · added session 23 |
 | Opus referral triggers | Defer to Opus + extended thinking (always on) for: (1) Prompt engineering decisions — any LLM prompt that affects data quality at scale; (2) Architectural choices with downstream consequences (schema design, pipeline changes); (3) Any decision where getting it wrong requires a patch script, re-embed, or bulk data fix; (4) Design decisions affecting 100+ rows or Qdrant points. CC should flag these rather than answering directly. |
+| docker compose force-recreate | Always run with AGENT_GENERAL_PORT=18789 prefix when doing manual restarts — e.g. AGENT_GENERAL_PORT=18789 docker compose up -d --force-recreate agent-general — or the port will be assigned randomly and the baseline script will fail silently |
+| hex-ssh deploys | CC force-recreate via hex-ssh remote-ssh will always get ephemeral ports unless env is loaded — the docker-compose.yml fix (session 41) now handles this via env_file: but AGENT_GENERAL_PORT still needs to be in .env.config (added session 41) |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -223,7 +225,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
 5. **Retrieval baseline** — DONE session 40 · 10 pass / 5 partial / 0 miss · matches session 36 · no regressions from block_023/028 additions · .env path bug in script fixed on VPS (.env → .env.secrets)
 6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
-7. **Qdrant-native RRF + BM25 synthetic scoring** — NEXT · Opus-level decision session 40 · replaces four separate Qdrant calls with single prefetch+FusionQuery(RRF) call · BM25 results (D1-sourced) get synthetic RRF scores instead of 0.0 · court hierarchy re-rank preserved with recalibrated band · implementation: Step 1 (Qdrant RRF) + Step 2 (BM25 scoring) deploy together, then tune (Steps 3-4) · prerequisite: check Qdrant client version on VPS for prefetch score_threshold support · extract_legal_concepts() confirmed regex-only, no latency concern · full design in opus_prompt.md + Opus response
+7. **Retrieval tuning** — SESSION 42 PRIORITY · baseline 11/5/0 after RRF deploy · partials: Q2 (BRD — belief test displacing criminal standard), Q4 (Boatwright probate chunk at pos 2), Q8 (s55 relevance chunk at pos 1 — CW v R not surfacing), Q10 (failure-to-give-evidence at pos 1, not corroboration), Q14 (coronial chunk at pos 1, not leading questions) · diagnosis required before fixes · likely causes: concept vector pulling wrong domain on Q2, insufficient type-diversity for Q8, court hierarchy band too tight/loose on Q10/Q14
 
 ---
 
@@ -264,6 +266,26 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **RRF displacement — full investigation and architectural decision** — discovered there is NO RRF in the codebase. Four separate Qdrant calls (Pass 1, concept search, Pass 2 case chunks, Pass 3 secondary sources) run sequentially. Pass 2/3 append after sorted+capped Pass 1 block. BM25 results hardcoded at score 0.0. No multi-signal reward — chunks appearing in multiple passes just deduped. CC read full `search_text()` function via hex-ssh. CC used Context7 to confirm Qdrant supports native RRF via `prefetch` + `FusionQuery`. Opus consultation recommended: Qdrant-native RRF (four legs in one call) + Python-side BM25 synthetic scoring. `extract_legal_concepts()` confirmed as regex-only (no latency concern for prefetch model). Implementation plan: Step 1 (Qdrant RRF) + Step 2 (BM25 scoring) together, then tune. Prerequisite: check Qdrant client version for prefetch score_threshold support. Why: systemic retrieval quality ceiling — all five persistent partials traced to lack of cross-pass ranking.
 
 - **CC vs manual SSH rule added** — simple read/run commands (baseline, logs, single queries) faster done manually via SSH. CC with hex-ssh for multi-step VPS file edits, diagnosis across multiple files, or replacing SCP round-trips.
+
+## CHANGES THIS SESSION (session 41) — 5 April 2026
+
+- **Qdrant-native RRF implemented** — `search_text()` in server.py refactored: four separate `client.query_points()` calls (Pass 1, 1b, 2, 3) replaced with single call using `Prefetch` legs + `FusionQuery(fusion=Fusion.RRF)`, limit=top_k*3 (overfetch). Legs: A (unfiltered semantic, threshold 0.45), B (concept vector, conditional on concept_query non-None, threshold 0.45), C (case_chunk filtered, threshold 0.35), D (secondary_source filtered, threshold 0.25). Why: multi-signal reward for chunks appearing in multiple legs; resolves cosine score noise that caused Q8 partials; net code reduction.
+
+- **BM25 synthetic scoring implemented** — BM25/FTS5 results previously injected at score=0.0 now receive synthetic RRF-equivalent scores: `BM25_SCORE_EXACT_SECTION = 1/(60+3)` (~0.0159) for section ref matches, `BM25_SCORE_CASE_REF = 1/(60+8)` (~0.0147) for case-by-legislation-ref matches. Multi-signal boost added: if BM25 chunk already exists in fused Qdrant results, score is added rather than inserting duplicate. Final sort + top_k cap moved to after BM25 merge. Why: BM25 hits at 0.0 were not competing with Qdrant results — exact section reference matches now rank competitively.
+
+- **Court hierarchy band recalibrated** — band constant changed from 0.05 to 0.005. Why: RRF scores are ~0.015–0.025 range, not cosine 0–1 range; old band was too wide and meaningless on RRF scores.
+
+- **Unified conversion loop** — all Qdrant result types now use same conversion path post-fusion. Every chunk dict sets `_id = payload.get('chunk_id')` (present for case_chunk, None for others) and `_qdrant_id = str(hit.id)`. Why: case chunks previously had separate dedup key; unified path required for single fused result set.
+
+- **`query_filter` → `filter` fix** — Prefetch constructor parameter name corrected from `query_filter=` to `filter=`. Root cause: Pydantic validation error "Extra inputs are not permitted" — the installed qdrant-client version uses `filter=` not `query_filter=`. Symptom: zero chunks returned on all queries despite clean container startup. Why documented: parameter name differs from `query_points()` outer call which does use `query_filter=` — easy to confuse.
+
+- **docker-compose.yml env fix** — agent-general service had secret vars (`NEXUS_SECRET_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `WORKER_URL`) in `environment:` block using `${VAR}` interpolation. With no `.env` file present (only `.env.secrets` and `.env.config`), docker compose expanded these to blank strings, and `environment:` takes precedence over `env_file:` — so secrets were always blank inside the container. Fix: removed secret vars from `environment:` block entirely; they now come exclusively from `env_file: [.env.secrets, .env.config]`. Non-secret service-discovery vars (OLLAMA_HOST, QDRANT_HOST, OLLAMA_URL, QDRANT_URL) remain in `environment:`. Why: auth was silently failing on every search request.
+
+- **`AGENT_GENERAL_PORT=18789` added to `.env.config`** — port was undefined, causing docker compose to assign random ephemeral port on every restart. Baseline script targets 18789 hardcoded and was getting empty responses. Why: without this var set, every force-recreate requires manual `AGENT_GENERAL_PORT=18789` prefix.
+
+- **Baseline result: 11/5/0** — up from session 40 baseline of 10/5/0. Partial queries: Q2 (BRD standard — belief test surfacing instead), Q4 (Boatwright probate chunk at position 2 — wrong domain), Q8 (s55 relevance chunk still at position 1), Q10 (failure-to-give-evidence chunk at position 1, not corroboration warning), Q14 (coronial inquiry chunk at position 1, not leading questions doctrine). Retrieval tuning is priority for session 42.
+
+- **server.py version** — deployed with `query_filter` → `filter` fix, RRF + BM25 synthetic scoring live.
 
 ## CHANGES THIS SESSION (session 38) — 5 April 2026
 
@@ -567,6 +589,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## FUTURE ROADMAP
 
+- **Retrieval tuning — SESSION 42 PRIORITY** — baseline 11/5/0 after RRF deploy · partials: Q2 (BRD — belief test displacing criminal standard), Q4 (Boatwright probate chunk at pos 2), Q8 (s55 relevance chunk at pos 1 — CW v R not surfacing), Q10 (failure-to-give-evidence at pos 1, not corroboration), Q14 (coronial chunk at pos 1, not leading questions) · diagnosis required before fixes · likely causes: concept vector pulling wrong domain on Q2, insufficient type-diversity for Q8, court hierarchy band too tight/loose on Q10/Q14
 - **secondary_sources_fts backfill** — completed session 13
 - **Run retrieval baseline** — after chunk cleanup completes
 - **BRD doctrine chunk** — write and ingest: Criminal Code s13, Walters direction, Green v R — completed session 13

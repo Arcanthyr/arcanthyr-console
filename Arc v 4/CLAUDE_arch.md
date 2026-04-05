@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 5 April 2026 (end of session 40). Upload every session alongside CLAUDE.md.*
+*Updated: 5 April 2026 (end of session 41). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -220,17 +220,23 @@ Worker routes exist but are dead — nothing calls them during query handling.
 
 **Actual pipeline — server.py search_text():**
 
-### Retrieval Pipeline (Four-Pass Hybrid)
+### Retrieval Pipeline (RRF Hybrid — session 41)
 
-1. **Pass 1 — Semantic**: Qdrant cosine, threshold 0.45, collection general-docs-v2, top_k (default 6, cap 12)
-2. **Pass 1b — Concept search**: same collection unfiltered, threshold 0.45, top_k * 2
-3. **Pass 2 — Case chunks**: filtered type=case_chunk, threshold 0.35, limit 4
-4. **Pass 3 — Secondary sources**: filtered type=secondary_source, threshold 0.35, limit 4 (added session 27)
-5. **BM25/FTS5**: section references bypass scoring entirely, injected at score=0.0
-6. **RRF merge**: Reciprocal Rank Fusion across all passes
-7. **LLM synthesis**: top chunks sent to Claude API (Sol) or Qwen3 Workers AI (V'ger)
+1. **Single Qdrant RRF call** — `client.query_points()` with four Prefetch legs fused via `FusionQuery(RRF)`, overfetch limit=top_k*3:
+   - Leg A: unfiltered, threshold 0.45, limit top_k*2 (semantic)
+   - Leg B: concept vector unfiltered, threshold 0.45, limit top_k*2 (conditional — only if extract_legal_concepts() returns non-None)
+   - Leg C: type=case_chunk filter, threshold 0.35, limit 12
+   - Leg D: type=secondary_source filter, threshold 0.25, limit 12
+2. **Unified conversion** — fused_results.points → chunks list, all types, `_id` + `_qdrant_id` always set
+3. **Short legislation filter** — type=legislation + len < 200 removed
+4. **Court hierarchy re-rank** — within 0.005 RRF band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1)
+5. **BM25/FTS5 merge** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147) · multi-signal boost if chunk already in fused results · final sort + top_k cap
+6. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
 
-Court hierarchy re-ranks within 0.05 band: HCA (4) > CCA/FullCourt (3) > Supreme (2) > Magistrates (1).
+**Key implementation notes:**
+- Prefetch uses `filter=` not `query_filter=` — these differ from the outer `query_points()` call
+- `env_file:` in docker-compose.yml now supplies secrets to agent-general — do not re-add secret vars to `environment:` block
+- Force-recreate requires `AGENT_GENERAL_PORT=18789` prefix if running outside sourced shell (now in .env.config, should be automatic)
 
 **Diagnostic rule:** empty or unexpected results → first check:
 `docker compose logs --tail=50 agent-general`

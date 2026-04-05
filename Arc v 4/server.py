@@ -3,6 +3,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Prefetch, FusionQuery, Fusion
 
 OLLAMA_HOST   = os.environ.get("OLLAMA_HOST", "http://ollama:11434")
 QDRANT_HOST   = os.environ.get("QDRANT_HOST", "http://qdrant-general:6333")
@@ -24,6 +25,11 @@ COURT_HIERARCHY = {
     "supreme":     2,
     "magistrates": 1,
 }
+
+# Synthetic RRF scores for BM25 hits — 1/(60+rank)
+BM25_SCORE_EXACT_SECTION = 1 / (60 + 3)   # ~0.0159 — exact section ref match
+BM25_SCORE_CASE_REF      = 1 / (60 + 8)   # ~0.0147 — case-by-legislation-ref match
+BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match
 
 def extract_section_references(chunks):
     """Extract section number references from chunk text."""
@@ -209,15 +215,19 @@ def delete_type(type_value):
 
 def search_text(body):
     """
-    Semantic search against Qdrant.
+    Semantic search against Qdrant using native RRF fusion.
+
+    Four prefetch legs (unfiltered semantic, concept vector, case_chunk, secondary_source)
+    are fused in a single Qdrant RRF call, then supplemented by BM25 section/case-law
+    results from D1.  Final list is sorted by score and capped to top_k.
 
     Params:
         query_text      - natural language query string (required)
         top_k           - max chunks to return (default 6, max 12)
-        score_threshold - minimum cosine similarity (default 0.45)
+        score_threshold - minimum cosine similarity for Leg A/B (default 0.45)
 
     Returns list of chunk dicts, re-ranked by court hierarchy where
-    scores are within 0.05 of each other.
+    scores are within 0.005 of each other.
     """
     query_text      = body.get("query_text", "").strip()
     top_k           = min(int(body.get("top_k", 6)), 12)
@@ -230,45 +240,69 @@ def search_text(body):
 
     client = QdrantClient(url=QDRANT_HOST)
 
-    response = client.query_points(
-        collection_name=COLLECTION,
-        query=query_vector,
-        limit=top_k,
-        score_threshold=score_threshold,
-        with_payload=True,
-    )
-    results = response.points
+    # ── Leg B: concept vector — compute before building prefetch list ────────
+    concept_query  = extract_legal_concepts(query_text)
+    concept_vector = embed(concept_query) if concept_query else None
 
-    if not results:
-        print(f"[*] Search: no results above threshold {score_threshold} for query: {query_text[:80]}")
-        return []
+    # ── Build RRF prefetch legs ──────────────────────────────────────────────
+    prefetch_legs = [
+        # Leg A — unfiltered semantic (replaces Pass 1)
+        Prefetch(
+            query=query_vector,
+            limit=top_k * 2,
+            score_threshold=score_threshold,
+        ),
+        # Leg C — case chunks only (replaces Pass 2)
+        Prefetch(
+            query=query_vector,
+            query_filter=Filter(
+                must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
+            ),
+            limit=12,
+            score_threshold=0.35,
+        ),
+        # Leg D — secondary sources only (replaces Pass 3)
+        Prefetch(
+            query=query_vector,
+            query_filter=Filter(
+                must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
+            ),
+            limit=12,
+            score_threshold=0.25,
+        ),
+    ]
 
-    print(f"[*] Search: {len(results)} chunks above threshold {score_threshold}")
-
-    # Second-pass concept search — extract key legal terms and re-query
-    concept_query = extract_legal_concepts(query_text)
-    if concept_query and concept_query != query_text:
-        concept_vector = embed(concept_query)
-        concept_response = client.query_points(
-            collection_name=COLLECTION,
+    # Leg B inserted at position 1 only when extract_legal_concepts() returned non-None
+    if concept_vector is not None:
+        prefetch_legs.insert(1, Prefetch(
             query=concept_vector,
             limit=top_k * 2,
             score_threshold=score_threshold,
-            with_payload=True,
-        )
-        existing_ids = {hit.id for hit in results}
-        for hit in concept_response.points:
-            if hit.id not in existing_ids:
-                results.append(hit)
-                existing_ids.add(hit.id)
-        print(f"[+] Concept search '{concept_query}': added {len(concept_response.points)} candidates")
+        ))
 
+    fused_results = client.query_points(
+        collection_name=COLLECTION,
+        prefetch=prefetch_legs,
+        query=FusionQuery(fusion=Fusion.RRF),
+        limit=top_k * 3,  # overfetch — final top_k cap applied after BM25 merge and re-rank
+        with_payload=True,
+    )
+
+    if not fused_results.points:
+        print(f"[*] Search: no results for query: {query_text[:80]}")
+        return []
+
+    print(f"[*] Search: {len(fused_results.points)} chunks from RRF fusion")
+
+    # ── Unified conversion loop (all types from all legs) ───────────────────
     chunks = []
-    for hit in results:
-        payload = hit.payload or {}
+    for hit in fused_results.points:
+        payload  = hit.payload or {}
+        chunk_id = payload.get("chunk_id", "")
         chunks.append({
             "score":        round(hit.score, 4),
             "citation":     payload.get("citation") or payload.get("chunk_id", "unknown"),
+            "case_name":    payload.get("case_name", ""),
             "court":        payload.get("court", ""),
             "year":         payload.get("year", ""),
             "text":         payload.get("text", ""),
@@ -276,30 +310,30 @@ def search_text(body):
             "outcome":      payload.get("outcome", ""),
             "principles":   payload.get("principles", []),
             "legislation":  payload.get("legislation", []),
-            "chunk":        payload.get("chunk", 0),
+            "chunk":        payload.get("chunk", 0) or payload.get("chunk_index", 0),
             "total_chunks": payload.get("total_chunks", 1),
             "type":         payload.get("type", ""),
-            "_qdrant_id":   str(hit.id),
+            "_id":          chunk_id,        # chunk-level dedup — present for case_chunk, "" for others
+            "_qdrant_id":   str(hit.id),     # point-level dedup — always set
         })
 
-    # Filter out legislation schedule entries — short legislation sections with no legal reasoning
+    # Filter out legislation schedule entries — short sections with no legal reasoning
     chunks = [c for c in chunks if not (c.get("type") == "legislation" and len(c.get("text", "")) < 200)]
 
+    # ── Court hierarchy re-rank ──────────────────────────────────────────────
     if len(chunks) > 1:
         top_score = chunks[0]["score"]
         def sort_key(c):
             tier  = COURT_HIERARCHY.get(c["court"], 1)
             score = c["score"]
-            if (top_score - score) <= 0.05:
+            if (top_score - score) <= 0.005:
                 return -(tier * 100 + score * 100)
             return -score * 100
         chunks.sort(key=sort_key)
-        # Cap final results — allow more when concept search has added candidates
-        chunks = chunks[:top_k]
 
-    print(f"[+] Returning {len(chunks)} chunks after re-ranking")
+    print(f"[+] {len(chunks)} chunks after RRF re-ranking (pre-BM25)")
 
-    # BM25 — fetch sections referenced in query text only (not chunks, to avoid cascade noise)
+    # ── BM25 — fetch sections referenced in query text ───────────────────────
     query_refs = extract_section_references([{"text": query_text}])
     refs = [{"section_number": r["section_number"]} for r in query_refs]
     if refs:
@@ -309,8 +343,9 @@ def search_text(body):
         for s in extra_sections:
             if s['id'] not in existing_ids:
                 chunks.append({
-                    "score":          0.0,
+                    "score":          BM25_SCORE_EXACT_SECTION,
                     "citation":       s.get('leg_title') and f"{s['leg_title']} s {s['section_number']}" or s.get('chunk_id') or s.get('id', 'unknown'),
+                    "case_name":      "",
                     "court":          "",
                     "year":           "",
                     "text":           s['text'] or '',
@@ -320,15 +355,24 @@ def search_text(body):
                     "legislation":    [],
                     "chunk":          0,
                     "total_chunks":   1,
+                    "type":           "legislation",
+                    "_id":            "",
+                    "_qdrant_id":     "",
                     "section_number": s['section_number'],
                     "heading":        s['heading'] or '',
                     "leg_title":      s['leg_title'] or '',
                     "bm25":           True
                 })
                 added += 1
+            else:
+                # Multi-signal boost — chunk already found by Qdrant, add BM25 score
+                for c in chunks:
+                    if c.get('citation') == s['id'] or c.get('section_id') == s['id']:
+                        c['score'] = round(c['score'] + BM25_SCORE_EXACT_SECTION, 4)
+                        break
         print(f"[+] BM25: added {added} referenced sections")
 
-    # BM25 case-law layer — fetch cases citing same legislation sections
+    # ── BM25 case-law layer — fetch cases citing same legislation sections ────
     if refs:
         extra_cases = fetch_cases_by_legislation_ref(refs)
         added_cases = 0
@@ -337,7 +381,7 @@ def search_text(body):
             if citation and citation not in existing_ids:
                 existing_ids.add(citation)
                 chunks.append({
-                    "score":          0.0,
+                    "score":          BM25_SCORE_CASE_REF,
                     "citation":       citation,
                     "case_name":      c.get('case_name', ''),
                     "court":          c.get('court', ''),
@@ -349,6 +393,9 @@ def search_text(body):
                     "legislation":    [],
                     "chunk":          0,
                     "total_chunks":   1,
+                    "type":           "",
+                    "_id":            "",
+                    "_qdrant_id":     "",
                     "section_number": "",
                     "heading":        "",
                     "leg_title":      "",
@@ -356,101 +403,20 @@ def search_text(body):
                     "bm25_source":    "case_legislation_ref"
                 })
                 added_cases += 1
+            elif citation:
+                # Multi-signal boost — citation already in RRF results
+                for chunk in chunks:
+                    if chunk.get('citation') == citation:
+                        chunk['score'] = round(chunk['score'] + BM25_SCORE_CASE_REF, 4)
+                        break
         print(f"[+] BM25 cases: added {added_cases} cases citing referenced legislation")
 
-    # ── Case chunk second-pass retrieval ────────────────────────────────────
-    # Runs on every query — threshold 0.35 filters noise while preserving relevant case chunks.
-    try:
-        case_chunk_response = client.query_points(
-            collection_name=COLLECTION,
-            query=query_vector,
-            query_filter=Filter(
-                must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
-            ),
-            limit=6,
-            score_threshold=0.35,
-            with_payload=True,
-        )
-        existing_chunk_ids = {c.get("_id") for c in chunks if c.get("_id")}
-        existing_qdrant_ids_cc = {c.get("_qdrant_id") for c in chunks if c.get("_qdrant_id")}
-        added_case_chunks = 0
-        for hit in case_chunk_response.points:
-            payload = hit.payload or {}
-            chunk_id = payload.get("chunk_id", "")
-            if (chunk_id and chunk_id in existing_chunk_ids) or str(hit.id) in existing_qdrant_ids_cc:
-                continue
-            chunks.append({
-                "score":        round(hit.score, 4),
-                "citation":     payload.get("citation", "unknown"),
-                "case_name":    payload.get("case_name", ""),
-                "court":        payload.get("court", ""),
-                "year":         payload.get("year", ""),
-                "text":         payload.get("text", ""),
-                "summary":      payload.get("summary", ""),
-                "outcome":      payload.get("outcome", ""),
-                "principles":   payload.get("principles", []),
-                "legislation":  payload.get("legislation", []),
-                "chunk":        payload.get("chunk_index", 0),
-                "total_chunks": payload.get("total_chunks", 1),
-                "type":         "case_chunk",
-                "_id":          chunk_id,
-                "_qdrant_id":   str(hit.id),
-            })
-            existing_chunk_ids.add(chunk_id)
-            added_case_chunks += 1
-        if added_case_chunks:
-            print(f"[+] Case chunk pass: added {added_case_chunks} case chunks (threshold 0.35)")
-    except Exception as e:
-        print(f"[!] Case chunk pass error: {e}")
-    # ── End case chunk pass ─────────────────────────────────────────────────
+    # ── Final sort + cap ─────────────────────────────────────────────────────
+    # Re-sort after BM25 injection (scores may have changed via boost) then cap.
+    chunks.sort(key=lambda c: -c["score"])
+    chunks = chunks[:top_k]
 
-    # ── Pass 3: secondary source second-pass retrieval ───────────────────────
-    # Runs on every query — lower threshold 0.35 catches secondary sources that
-    # fall below the main 0.45 threshold but are still relevant.
-    try:
-        sec_source_response = client.query_points(
-            collection_name=COLLECTION,
-            query=query_vector,
-            query_filter=Filter(
-                must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
-            ),
-            limit=8,
-            score_threshold=0.25,
-            with_payload=True,
-        )
-        existing_ids_sec = {c.get("citation") for c in chunks if c.get("citation")}
-        existing_qdrant_ids_sec = {c.get("_qdrant_id") for c in chunks if c.get("_qdrant_id")}
-        added_sec = 0
-        for hit in sec_source_response.points:
-            payload = hit.payload or {}
-            citation = payload.get("citation", "")
-            chunk_id = citation or payload.get("chunk_id", "")
-            if (chunk_id and chunk_id in existing_ids_sec) or str(hit.id) in existing_qdrant_ids_sec:
-                continue
-            chunks.append({
-                "score":        round(hit.score, 4),
-                "citation":     citation or payload.get("chunk_id") or payload.get("source_id") or "unknown",
-                "court":        payload.get("court", ""),
-                "year":         payload.get("year", ""),
-                "text":         payload.get("text", ""),
-                "summary":      payload.get("summary", ""),
-                "outcome":      payload.get("outcome", ""),
-                "principles":   payload.get("principles", []),
-                "legislation":  payload.get("legislation", []),
-                "chunk":        payload.get("chunk", 0),
-                "total_chunks": payload.get("total_chunks", 1),
-                "type":         "secondary_source",
-                "_qdrant_id":   str(hit.id),
-            })
-            if chunk_id:
-                existing_ids_sec.add(chunk_id)
-            added_sec += 1
-        if added_sec:
-            print(f"[+] Secondary source pass: added {added_sec} sources (threshold 0.25)")
-    except Exception as e:
-        print(f"[!] Secondary source pass error: {e}")
-    # ── End secondary source pass ────────────────────────────────────────────
-
+    print(f"[+] Returning {len(chunks)} chunks after BM25 merge and final cap")
     return chunks
 
 def query_qwen(body):
