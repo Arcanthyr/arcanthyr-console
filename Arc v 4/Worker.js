@@ -2741,8 +2741,10 @@ async function handleFetchSectionsByReference(request, env, corsHeaders) {
       for (const row of rows.results) {
         if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
       }
-      const corpusRows = await env.DB.prepare(`
-        SELECT id, id as chunk_id, COALESCE(enriched_text, raw_text) as text, NULL as section_number, NULL as heading, NULL as leg_title
+      // LIKE pass — catches structured IDs e.g. "Evidence Act s 38 - ..."
+      const ssLikeRows = await env.DB.prepare(`
+        SELECT id, id as chunk_id, COALESCE(enriched_text, raw_text) as text,
+               NULL as section_number, NULL as heading, NULL as leg_title
         FROM secondary_sources
         WHERE id LIKE '%s ' || ? || ' %'
            OR id LIKE '%s ' || ? || '-%'
@@ -2750,7 +2752,21 @@ async function handleFetchSectionsByReference(request, env, corsHeaders) {
            OR id LIKE '%s ' || ?
         LIMIT 10
       `).bind(ref.section_number, ref.section_number, ref.section_number, ref.section_number).all();
-      for (const row of corpusRows.results) {
+
+      // FTS5 pass — catches content-based references in raw_text and title
+      const ssFtsRows = await env.DB.prepare(`
+        SELECT ss.id, ss.id as chunk_id, COALESCE(ss.enriched_text, ss.raw_text) as text,
+               NULL as section_number, NULL as heading, NULL as leg_title
+        FROM secondary_sources_fts fts
+        JOIN secondary_sources ss ON ss.id = fts.source_id
+        WHERE secondary_sources_fts MATCH '"s ' || ? || '"'
+           OR secondary_sources_fts MATCH '"section ' || ? || '"'
+        LIMIT 10
+      `).bind(ref.section_number, ref.section_number).all();
+
+      // Union both result sets — existing seen Set dedup handles overlaps
+      const ssRows = { results: [...(ssLikeRows.results || []), ...(ssFtsRows.results || [])] };
+      for (const row of ssRows.results) {
         if (!seen.has(row.id)) { seen.add(row.id); results.push(row); }
       }
     }
