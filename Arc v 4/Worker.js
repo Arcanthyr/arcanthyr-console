@@ -266,7 +266,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   const exists = await env.DB.prepare("SELECT id, enriched FROM cases WHERE citation = ?").bind(citation).first();
   if (exists && exists.enriched === 1) throw new Error(`Case ${citation} already exists and is fully processed`);
 
-  const truncatedText = caseText.length > 100000 ? caseText.substring(0, 100000) : caseText;
+  const truncatedText = caseText.length > 200000 ? caseText.substring(0, 200000) : caseText;
 
   const caseData = {
     citation,
