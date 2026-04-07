@@ -2305,9 +2305,11 @@ GOOD (case-specific, tells you why THIS case matters):
 - "A 12-month suspended sentence was appropriate for a first-offender domestic assault involving a single punch causing bruising, where the offender had completed a behavioural change program and the victim did not support a custodial sentence"
 - "The appellant's failure to disclose gambling debts totalling $180,000 was fatal to her Testators Family Maintenance claim because adequate provision cannot be assessed without full financial disclosure"
 
-Output ONLY a JSON array of principle objects. No markdown fences. No commentary. Start with [
+Output ONLY a valid JSON object with two keys: "principles" and "holdings". No markdown fences. No commentary. The first character must be {
 
-Each object: { "principle": "case-specific statement (1-2 sentences)", "statute_refs": ["Act (Jurisdiction) s X"], "keywords": ["topic1", "topic2"] }`;
+"principles": array of principle objects, each: { "principle": "case-specific statement (1-2 sentences)", "statute_refs": ["Act (Jurisdiction) s X"], "keywords": ["topic1", "topic2"] }
+
+"holdings": array of 1-4 holdings — the court's direct answer to each issue decided. Each holding must be a concrete one-sentence statement of what the court ruled. For interlocutory rulings and pre-trial applications, state the specific outcome (e.g. "The court admitted the complainant's representations made on 21 March about 21 March events under s 65(2)(b) but excluded those made on 21 March about 19 March events as not satisfying the 'shortly after' requirement"). For final judgments, state verdict and outcome. Empty array if no clear holdings can be extracted.`;
 
       const synthUser = [
         `Case: ${caseRow.case_name} (${citation}, ${caseRow.court})`,
@@ -2346,11 +2348,16 @@ Each object: { "principle": "case-specific statement (1-2 sentences)", "statute_
         || synthData.choices?.[0]?.message?.reasoning_content
         || "";
       const synthRaw = synthContent.trim();
-      const jsonStart = synthRaw.indexOf('[');
-      const jsonEnd = synthRaw.lastIndexOf(']');
-      if (jsonStart === -1 || jsonEnd === -1) throw new Error(`No JSON array in synthesis response: ${synthRaw.slice(0, 200)}`);
-      synthesisedPrinciples = JSON.parse(synthRaw.slice(jsonStart, jsonEnd + 1));
-      console.log(`[queue] synthesis complete for ${citation} — ${synthesisedPrinciples.length} principles`);
+      const jsonStart = synthRaw.indexOf('{');
+      const jsonEnd = synthRaw.lastIndexOf('}');
+      if (jsonStart === -1 || jsonEnd === -1) throw new Error(`No JSON object in synthesis response: ${synthRaw.slice(0, 200)}`);
+      const synthParsed = JSON.parse(synthRaw.slice(jsonStart, jsonEnd + 1));
+      synthesisedPrinciples = Array.isArray(synthParsed.principles) ? synthParsed.principles : Array.isArray(synthParsed) ? synthParsed : [];
+      const synthesisedHoldings = Array.isArray(synthParsed.holdings) ? synthParsed.holdings : [];
+      if (synthesisedHoldings.length > 0) {
+        allHoldings.push(...synthesisedHoldings);
+      }
+      console.log(`[queue] synthesis complete for ${citation} — ${synthesisedPrinciples.length} principles, ${synthesisedHoldings.length} holdings`);
     } catch (e) {
       console.error(`[queue] synthesis failed for ${citation}, falling back to raw concat:`, e.message);
       synthesisedPrinciples = allPrinciples;
