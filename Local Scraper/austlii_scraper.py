@@ -21,8 +21,8 @@ logging.basicConfig(
 )
 
 # ── Config ────────────────────────────────────────────────────────────────────
-COURTS = ['TASSC', 'TASCCA', 'TASFC', 'TAMagC']
-YEARS = list(range(2025, 2004, -1))  # 2025 down to 2005
+COURTS = ['TASSC', 'TASCCA', 'TASFC', 'TASMC']
+YEARS = list(range(2025, 1999, -1))  # 2025 down to 2000
 UPLOAD_URL = 'https://arcanthyr.com/api/legal/upload-case'
 
 # Max cases per session — at 10-20s average delay, 100 cases ≈ 17-33 minutes.
@@ -282,7 +282,7 @@ def main():
             consecutive_misses = 0
             num = 1
 
-            while consecutive_misses < 5:
+            while consecutive_misses < 20:
                 if cases_this_session >= MAX_CASES_PER_SESSION:
                     logging.info(f'Session limit ({MAX_CASES_PER_SESSION}) reached — stopping.')
                     save_progress(progress)
