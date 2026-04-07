@@ -364,6 +364,8 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 
 **Synthesis error handling:** catch block logs `[queue] synthesis failed for {citation}, falling back to raw concat: {error}` and sets `synthesisedPrinciples = allPrinciples` (old format with `type`/`confidence`). No retry. If synthesis fails, case gets old-format principles silently — check Worker real-time logs to diagnose.
 
+**NOTE (session 43):** Merge synthesis output schema changed. synthSystem now requests `{"principles": [...], "holdings": []}` JSON object instead of a bare array. Parser extracts both keys. `synthesisedHoldings` is pushed into `allHoldings` before the D1 write. Fallback path (synthesis failure) unchanged — falls back to chunk-level `allHoldings`.
+
 ---
 
 ## NEXUS SERVER.PY — ROUTES AND GLOBALS
@@ -517,6 +519,8 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 - Behavioural jitter: 7% chance 25-45s additional pause
 - Business hours gate in scraper handles time window
 - Exit code 2 = business hours gate fired (normal/expected outside hours)
+
+**NOTE (session 43):** Correct AustLII court code for Magistrates Court is TASMC (not TAMagC). The scraper COURTS list has been corrected. The Worker's AUSTLII_COURTS map still uses TAMagC as the internal court label → TAMagC AustLII path — this may also need updating if the Worker's legacy daily sync is ever re-enabled.
 
 ### backfill_case_chunk_names.py
 

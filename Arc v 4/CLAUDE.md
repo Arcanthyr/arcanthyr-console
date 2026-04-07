@@ -100,6 +100,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Opus referral triggers | Defer to Opus + extended thinking (always on) for: (1) Prompt engineering decisions — any LLM prompt that affects data quality at scale; (2) Architectural choices with downstream consequences (schema design, pipeline changes); (3) Any decision where getting it wrong requires a patch script, re-embed, or bulk data fix; (4) Design decisions affecting 100+ rows or Qdrant points. CC should flag these rather than answering directly. |
 | docker compose force-recreate | Always run with AGENT_GENERAL_PORT=18789 prefix when doing manual restarts — e.g. AGENT_GENERAL_PORT=18789 docker compose up -d --force-recreate agent-general — or the port will be assigned randomly and the baseline script will fail silently |
 | hex-ssh deploys | CC force-recreate via hex-ssh remote-ssh will always get ephemeral ports unless env is loaded — the docker-compose.yml fix (session 41) now handles this via env_file: but AGENT_GENERAL_PORT still needs to be in .env.config (added session 41) |
+| Upload case text limit | `worker.js` line ~269 — `caseText.length > 200000 ? caseText.substring(0, 200000) : caseText` · raised from 100K to 200K session 43 · not in scraper · limit applies to both `handleUploadCase` and `handleFetchCaseUrl` |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -177,17 +178,17 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 5 April 2026 (end of session 42)
+## SYSTEM STATE — 7 April 2026 (end of session 43)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | vectors updated · citation + source_id confirmed in all payloads |
-| D1 cases | 722 total · 719 deep_enriched=1 |
-| D1 case_chunks | 11,729 total · 11,639 embedded · 90 pending poller |
+| D1 cases | 729 total · 726 deep_enriched=1 |
+| D1 case_chunks | 11,793 total · 11,793 embedded · 0 pending poller |
 | D1 secondary_sources | 1,199 total · all embedded=1 |
 | enrichment_poller | RUNNING |
 | Cloudflare Queue | Clean — nightly cron armed |
-| Scraper | RUNNING |
+| Scraper | RUNNING (TASMC court code fix deployed) |
 | arcanthyr.com | Live · sequential pass retrieval restored |
 | Retrieval baseline | 10 pass / 5 partial / 0 miss — post-revert session 42 |
 
@@ -615,6 +616,24 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Bulk requeue race condition documented** — root cause of overnight stall: all 548 cases × ~15 chunks = ~8,000 simultaneous GPT-4o-mini calls hit rate limits; chunks exhausted max_retries=2 before rate limits eased; queue went silent. Not foreseeable — first time all cases requeued simultaneously. Fix: max_retries=5 + batched requeue approach for future bulk operations.
 
 - **worker.js version** — `ba8bafa0`
+
+## CHANGES THIS SESSION (session 43) — 7 April 2026
+
+- **Scraper court code fix: TAMagC → TASMC** — scraper was using TAMagC as the AustLII court code for the Magistrates Court but the correct code is TASMC. Every magistrates year was silently completing with 0 cases (AustLII returned 500, which bumped consecutive_misses to 5 immediately). Fixed in austlii_scraper.py COURTS list. Commit d8ca371. Why: confirmed via direct AustLII URL check — TAMagC path returns 500, TASMC path returns valid cases.
+
+- **Scraper consecutive_misses raised 5 → 20** — low-volume courts and older years have non-sequential case numbering. A gap of 6+ between valid cases caused premature year completion. Raised threshold to 20 to tolerate sparse numbering. Same commit. Why: explained the missing CCA and fullcourt cases pre-2010.
+
+- **Scraper year floor extended 2005 → 2000** — AustLII has Tasmanian cases back to at least 2000 for most courts. Extended YEARS = list(range(2025, 1999, -1)). Same commit.
+
+- **TAMagC entries cleared from scraper_progress.json** — all 21 TAMagC_YYYY entries removed so the scraper re-runs those years under the correct TASMC court code. TASSC/TASCCA/TASFC entries left intact.
+
+- **performMerge holdings fix** — holdings_extracted was always [] on interlocutory rulings because the merge synthesis prompt only asked for a bare principles array. Changed synthSystem to request {"principles": [...], "holdings": [...]} JSON object. Updated parser to extract both keys; synthesisedHoldings pushed into allHoldings before D1 write. Fallback path (synthesis failure) unchanged. Commit dcbded5. Verified working: [2025] TASSC 10 remerged under new prompt produced non-empty holdings_extracted. Why: diagnosed via manual review of [2025] TASSC 6 — Wood J made four distinct admissibility rulings, none captured in holdings_extracted.
+
+- **Enrichment quality audit — [2025] TASSC 6** — full chunk-by-chunk review against judgment text. Chunk typing accurate, enriched_text quality good, authority chain captured correctly. Two gaps identified: (1) empty holdings_extracted on interlocutory rulings (fixed above), (2) s 361A Criminal Code procedural mechanism not captured in enriched_text (deferred — low retrieval priority). One minor bug: chunk__10 had subject_matter "unknown" instead of "criminal" — isolated, not fixed.
+
+- **agent-sensitive crash-loop — confirmed benign pre-existing issue** — no server.py has ever been deployed to the agent-sensitive container. Not a regression. No action required.
+
+- **worker.js version** — `dcbded5`
 
 ---
 
