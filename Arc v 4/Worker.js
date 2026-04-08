@@ -3137,6 +3137,40 @@ export default {
       }
     }
 
+    /* ── EMAIL DIGEST ROUTES ──────────────────────────────────── */
+    if (url.pathname === '/digest') {
+      if (request.method === 'GET') {
+        const html = await env.EMAIL_DIGEST.get('email-digest:latest');
+        if (!html) {
+          return new Response(
+            `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Arcanthyr Digest</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d0f;color:#b0b0b8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;align-items:center;justify-content:center;min-height:100vh}.card{border:1px solid #2a2a32;border-radius:6px;padding:2rem 2.5rem;max-width:420px;text-align:center}h1{color:#e8e8f0;font-size:1rem;font-weight:600;letter-spacing:.04em;margin-bottom:.75rem}.sub{font-size:.8rem;color:#55555f}</style></head><body><div class="card"><h1>ARCANTHYR DIGEST</h1><p class="sub">No digest available yet.</p></div></body></html>`,
+            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+          );
+        }
+        return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+      }
+
+      if (request.method === 'POST') {
+        const authHeader = request.headers.get('Authorization') || '';
+        const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+        if (!env.DIGEST_API_KEY || token !== env.DIGEST_API_KEY) {
+          return json({ error: 'Unauthorized' }, 401);
+        }
+        const contentType = request.headers.get('Content-Type') || '';
+        let digestHtml;
+        if (contentType.includes('application/json')) {
+          let body;
+          try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
+          digestHtml = body.html || body.content || '';
+        } else {
+          digestHtml = await request.text();
+        }
+        if (!digestHtml) return json({ error: 'Empty body' }, 400);
+        await env.EMAIL_DIGEST.put('email-digest:latest', digestHtml);
+        return json({ ok: true });
+      }
+    }
+
     return new Response("Not found", { status: 404, headers: corsHeaders });
   },
 

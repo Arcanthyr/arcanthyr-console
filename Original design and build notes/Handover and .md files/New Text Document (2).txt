@@ -1,0 +1,19 @@
+ARCANTHYR — SUPPLEMENTARY STATE DUMP — 8 MAR 2026
+PDF extraction remaining issues
+Column garbling in s.38(b) and s.38(4) persists — pdfminer boxes_flow=None sorts top-to-bottom but can't split two-column text within a single text box. The word order scramble in "(b) a matter of which the witness may reasonably be to have knowledge" is in the source text box itself, not a sorting issue. Only fix is AustLII HTML source. The cleanText pipeline (strip page headers, Act No lines, Part headers, s.XX cross-refs, lone page numbers) is working correctly — page noise is stripped before section parsing.
+bodyStartMatch logic
+Looks for \n\d+[A-Z]?\.?\s+[A-Z][^\n]{3,}\n\( — section line followed immediately by ( on next line. This works for the Evidence Act because subsections start with (1). May fail for Acts where the first section has no subsections (body starts with plain prose). Worth monitoring on next legislation upload.
+sectionPattern relaxation risk
+Changed from \s{2,} to \s+ — this means single-space matches are now valid section starts. Could produce false positives on inline references like "section 38 applies". Mitigated by the seenSections dedup and the capital-letter heading check, but worth noting if spurious sections appear in future uploads.
+Qdrant chunk count anomaly
+Evidence Act was ingesting as 115 chunks (old), then 94 (after first re-ingest), then 8 (TOC-only ingest), now unknown post-fix — the current Qdrant vectors for evidence-act-2001-tas are from the mid-session run with partial fixes. This is why Priority 1 next session is a clean delete + re-upload.
+nexus /delete endpoint
+Uses qdrant_client client.delete() with Filter+FieldCondition+MatchValue on citation field. Returns the Qdrant operation result object directly. Not tested end-to-end yet — Library delete → Qdrant purge path was added this session but the Evidence Act re-ingests after that point were done via upload (not delete+upload), so the /delete endpoint has not been exercised in production.
+docker-compose.yml edit
+python src/server.py changed to python -u src/server.py for both agent-general entries. This change is on the VPS only — not in any git repo. If docker-compose.yml is ever reset or redeployed from a repo copy, the -u flag will be lost and logs will go silent again.
+Test 1.pdf
+Located at /home/tom/ai-stack/agent-general/Test 1.pdf inside container at /app/docs/Test 1.pdf. Appears to be a scanned/image PDF — pdfminer extraction hangs on it. Not useful for testing. Ignore.
+Scraper error backlog
+~20 scraper errors noted pre-pause. Not reviewed this session. Review before resuming bulk ingest.
+legal.html View Case button
+Opens legal.html#citation=[encoded] in new tab. Hash param is not yet read by legal.html — case does not auto-load. This is a front-end only change needed in legal.html, no Worker changes required.

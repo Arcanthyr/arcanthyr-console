@@ -658,3 +658,34 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
+
+## CHANGES THIS SESSION (session 45) — 8 April 2026
+
+- **Diagnosed scraper corpus gaps** — D1 case counts for 2005–2017 were severely low (e.g. TASSC 2017: 12, TASSC 2015: 0, nothing pre-2007 except 2 TASSC). Root cause: session 43 fixes (TASMC court code, consecutive_misses=20, year floor 2000) were committed at 8:11 PM on 7 April but the scraper had already run that morning under the old config. All pre-2018 years had been marked "done" in scraper_progress.json under the old consecutive_misses=5 threshold, causing premature completion with sparse results.
+
+- **Reset scraper_progress.json** — Cleared all 2017-and-earlier entries from scraper_progress.json using a Python one-liner. Kept 2018–2026 for TASSC/TASCCA/TASFC (counts look healthy). TASMC entries were already cleared in session 43. Scraper will now re-run ~72 court/year combinations (TASSC/TASCCA/TASFC 2000–2017 + all TASMC 2000–2026 + TASCCA_2025/TASFC_2025 which were missing entirely).
+
+- **Diagnosed Task Scheduler missed-run behaviour** — Scraper tasks fired at 7:03 PM when PC was turned on (missed scheduled times while off/sleeping). Both tasks hit the business hours guard (08:00–18:00 AEST) and exited immediately. LastTaskResult code 2147946720 confirms this pattern.
+
+- **Set WakeToRun=True on both scraper tasks** — `Arcanthyr Scraper` and `run_scraper_evening` tasks updated via PowerShell `Set-ScheduledTask`. PC will now wake from sleep at scheduled times. Verified: both show WakeToRun: True.
+
+- **Corpus status at session close** — 729 cases, 726 enriched, 3 not enriched; 11,793 chunks all done and embedded. Significant case count increase expected after tomorrow's 11 AM scraper run.
+
+## CHANGES THIS SESSION (session 44) — 7 April 2026
+
+- **Built end-to-end daily email digest pipeline** — Created EMAIL_DIGEST KV namespace on Cloudflare (id: 9ea5773d11ac40ce9904ca21c602e9f4). Added GET /digest and POST /digest routes to existing Arcanthyr Worker. Added DIGEST_API_KEY Wrangler secret for POST auth. CoWork scheduled task POSTs digest HTML to arcanthyr.com/digest every weekday at 6am. Set up Windows Task Scheduler tasks to wake PC at 6am and sleep at 6:15am on weekdays. arcanthyr.com/digest now live and serving.
+
+- **Added Daily Digest ↗ link button to research page** — Placed in model toggle row (Research.jsx line 160), right-aligned via marginLeft: 'auto'. Pill style matches inactive Sol/V'ger toggle buttons. Opens arcanthyr.com/digest in new tab.
+
+- **Resolved deployment issue: Cloudflare edge cache** — Vite bundle hash did not change across three clean builds (content was identical). Cloudflare edge cache served old JS. Fixed via dashboard cache purge (Caching → Configuration → Purge Everything). Button became visible immediately after purge.
+
+**Completed**
+- arcanthyr.com/digest live and serving
+- CoWork task scheduled and activated
+- Daily Digest button visible on research page
+- Wake/sleep tasks registered in Task Scheduler
+
+**Key learnings / gotchas**
+- Vite bundle hash may not change even after clean dist delete if file content is identical — Cloudflare edge cache can serve stale assets; purge via dashboard when this happens
+- `cp -r` in PowerShell without `-Force` silently fails on existing directories — always use `-Force`
+- Empty string env values in `.codex/config.toml` override inherited Windows user env vars for Codex-launched MCP processes — omit keys entirely to rely on inheritance

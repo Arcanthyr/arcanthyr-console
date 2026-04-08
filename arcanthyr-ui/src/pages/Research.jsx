@@ -157,6 +157,22 @@ export default function Research() {
                 {m === 'claude' ? 'Sol' : "V'ger"}
               </button>
             ))}
+            <a
+              href="https://arcanthyr.com/digest"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                marginLeft: 'auto',
+                padding: '3px 10px', borderRadius: '12px', fontSize: '11px',
+                background: 'var(--surface)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border)',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Daily Digest ↗
+            </a>
           </div>
 
           {/* Filter chips */}

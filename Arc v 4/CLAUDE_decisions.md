@@ -3282,3 +3282,9 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 - **Fixed performMerge synthesis to extract holdings alongside principles** — synthesis prompt previously returned a bare principles array. Interlocutory rulings (bail, hearsay applications, voir dire) were producing empty holdings_extracted because no single chunk contained a complete holding. Synthesis pass reads all enriched reasoning text and is better positioned to identify the overall ruling. Changed output schema to {principles, holdings} object.
 
 - **Deferred s 361A procedural mechanism capture in CHUNK enriched_text** — gap identified in quality audit of [2025] TASSC 6. Procedural mechanism (how the application was brought) not being captured. Deferred: header/procedural chunks have low retrieval weight, and the mechanism is usually visible in the catchwords which are embedded in chunk__0 enriched_text anyway. Low priority fix.
+
+## Session 45 decisions — 8 April 2026
+
+- **Kept 2018–2026 in scraper_progress.json, cleared 2017 and earlier** — D1 counts for 2018–2026 look healthy (70–99 cases/year across courts); pre-2018 counts were too low to trust (consecutive_misses=5 caused premature year completion). Clearing only the suspect years avoids unnecessary re-scraping of good data.
+
+- **Set WakeToRun=True on both scraper scheduled tasks rather than adding BIOS RTC wake** — PC is sleeping not fully powered off; WakeToRun is sufficient and simpler. BIOS route noted as fallback if PC is ever fully powered off at scheduled times.

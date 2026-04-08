@@ -203,3 +203,12 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 [DOMAIN:]
 ```
 `upload-corpus` is destructive upsert — do not re-run against already-ingested citations.
+
+---
+
+### Scraper — Task Scheduler notes
+
+| Item | Detail |
+|---|---|
+| Scraper Task Scheduler | WakeToRun=True set on both tasks (Arcanthyr Scraper, run_scraper_evening) — PC wakes from sleep at scheduled time · if tasks ever recreated, re-run: `$task = Get-ScheduledTask -TaskName "X"; $task.Settings.WakeToRun = $true; Set-ScheduledTask -InputObject $task` |
+| scraper_progress.json path | Lives at `arcanthyr-console\Local Scraper\scraper_progress.json` — NOT at `C:\Users\Hogan\OneDrive\Arcanthyr\Local Scraper\` (that path does not exist) |
