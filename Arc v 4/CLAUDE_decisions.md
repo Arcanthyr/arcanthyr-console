@@ -3288,3 +3288,5 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 - **Kept 2018–2026 in scraper_progress.json, cleared 2017 and earlier** — D1 counts for 2018–2026 look healthy (70–99 cases/year across courts); pre-2018 counts were too low to trust (consecutive_misses=5 caused premature year completion). Clearing only the suspect years avoids unnecessary re-scraping of good data.
 
 - **Set WakeToRun=True on both scraper scheduled tasks rather than adding BIOS RTC wake** — PC is sleeping not fully powered off; WakeToRun is sufficient and simpler. BIOS route noted as fallback if PC is ever fully powered off at scheduled times.
+
+- **handleUploadCorpus FTS5 fallback: confirm row before propagating error** — D1 FTS5 writes can time out after the main row write has already committed. Rather than a blanket suppress, the fallback does a SELECT confirmation first — if the row isn't there, the original error propagates unchanged. This avoids masking genuine failures while handling the known FTS5 timeout pattern safely.

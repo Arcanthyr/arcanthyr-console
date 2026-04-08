@@ -671,6 +671,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 - **Corpus status at session close** — 729 cases, 726 enriched, 3 not enriched; 11,793 chunks all done and embedded. Significant case count increase expected after tomorrow's 11 AM scraper run.
 
+- **handleUploadCorpus FTS5 timeout fallback** — wrapped main INSERT + FTS5 INSERT in try/catch. On error, does `SELECT id FROM secondary_sources WHERE id = ?` to confirm whether the row landed. If confirmed: returns 200 with `{ success: true, warning: "FTS5 index timeout — row confirmed written" }`. If not confirmed: rethrows original error. Why: FTS5 virtual table writes can time out on D1 after the main row write has already committed — previously this surfaced as a 500 to the caller even though the data was safe.
+
 ## CHANGES THIS SESSION (session 44) — 7 April 2026
 
 - **Built end-to-end daily email digest pipeline** — Created EMAIL_DIGEST KV namespace on Cloudflare (id: 9ea5773d11ac40ce9904ca21c602e9f4). Added GET /digest and POST /digest routes to existing Arcanthyr Worker. Added DIGEST_API_KEY Wrangler secret for POST auth. CoWork scheduled task POSTs digest HTML to arcanthyr.com/digest every weekday at 6am. Set up Windows Task Scheduler tasks to wake PC at 6am and sleep at 6:15am on weekdays. arcanthyr.com/digest now live and serving.

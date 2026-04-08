@@ -181,6 +181,7 @@ function CorpusTab() {
   const [modalTitle, setModalTitle] = useState('');
   const [modalSlug, setModalSlug] = useState('');
   const [modalCategory, setModalCategory] = useState('doctrine');
+  const [modalSourceType, setModalSourceType] = useState('');
   const [jobId, setJobId] = useState(null);
   const [jobStatus, setJobStatus] = useState(null);
   const fileRef = useRef();
@@ -260,10 +261,10 @@ function CorpusTab() {
       await doUpload({});
       return;
     }
-    const firstLine = text.trim().split('\n')[0].slice(0, 80);
-    setModalTitle(firstLine);
-    setModalSlug(`manual-${toSlug(firstLine)}`);
+    setModalTitle('');
+    setModalSlug('');
     setModalCategory('doctrine');
+    setModalSourceType('');
     setShowModal(true);
   }
 
@@ -282,7 +283,7 @@ function CorpusTab() {
         await api.uploadCorpus({ text });
         setResult(`✓ Ingested: ${citationMatch[1].trim()}`);
       } else {
-        const r = await api.formatAndUpload({ text, mode: 'single', title: modalValues.title, slug: modalValues.slug, category: modalValues.category });
+        const r = await api.formatAndUpload({ text, mode: 'single', title: modalValues.title, slug: modalValues.slug, category: modalValues.category, source_type: modalValues.source_type });
         setResult(`✓ ${r.result?.count || 'Uploaded'} chunks ingested`);
       }
       setText('');
@@ -355,7 +356,7 @@ function CorpusTab() {
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
           backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
           justifyContent: 'center', zIndex: 100,
-        }} onClick={() => setShowModal(false)}>
+        }}>
           <div style={{
             background: 'var(--surface)', border: '1px solid var(--border-em)',
             borderRadius: '8px', padding: '28px', width: '480px', maxWidth: '90vw',
@@ -364,24 +365,23 @@ function CorpusTab() {
               Confirm chunk details
             </div>
             <label style={labelStyle}>Title</label>
-            <input value={modalTitle} onChange={e => {
-              setModalTitle(e.target.value);
-              setModalSlug(`manual-${toSlug(e.target.value)}`);
-            }} style={inputStyle} />
-            <label style={labelStyle}>Citation slug</label>
-            <input value={modalSlug} onChange={e => setModalSlug(e.target.value)} style={inputStyle} />
+            <input value={modalTitle} onChange={e => setModalTitle(e.target.value)} placeholder="Document title" style={inputStyle} />
+            <label style={labelStyle}>Reference ID</label>
+            <input value={modalSlug} onChange={e => setModalSlug(e.target.value)} placeholder="e.g. sentencing-act-commentary-2024" style={inputStyle} />
             <label style={labelStyle}>Category</label>
             <select value={modalCategory} onChange={e => setModalCategory(e.target.value)} style={inputStyle}>
               {['annotation', 'case authority', 'procedure', 'doctrine', 'checklist', 'practice note', 'script', 'legislation'].map(c => (
                 <option key={c}>{c}</option>
               ))}
             </select>
+            <label style={labelStyle}>Source type</label>
+            <input value={modalSourceType} onChange={e => setModalSourceType(e.target.value)} placeholder="textbook | article | practice note | commentary | judgment" style={inputStyle} />
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '20px' }}>
               <button onClick={() => setShowModal(false)} style={{ color: 'var(--text-secondary)', fontSize: '13px', padding: '8px 16px' }}>
                 Cancel
               </button>
               <button
-                onClick={() => doUpload({ title: modalTitle, slug: modalSlug, category: modalCategory })}
+                onClick={() => doUpload({ title: modalTitle, slug: modalSlug, category: modalCategory, source_type: modalSourceType })}
                 style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: '13px', padding: '8px 20px', borderRadius: '4px' }}
               >
                 Upload

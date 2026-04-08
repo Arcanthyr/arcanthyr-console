@@ -1364,23 +1364,35 @@ async function handleUploadCorpus(body, env) {
   }
 
   // Record in D1 secondary_sources — upsert on conflict so re-ingest overwrites stale rows
-  await env.DB.prepare(`
-    INSERT INTO secondary_sources
-    (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
-    VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
-    ON CONFLICT(id) DO UPDATE SET
-      raw_text = excluded.raw_text,
-      title = excluded.title,
-      category = COALESCE(excluded.category, secondary_sources.category),
-      enriched_text = excluded.enriched_text,
-      enriched = excluded.enriched,
-      embedded = 0
-  `).bind(citation, source || citation, doc_type || null, text, new Date().toISOString(), category ?? 'doctrine').run();
+  try {
+    await env.DB.prepare(`
+      INSERT INTO secondary_sources
+      (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
+      VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        raw_text = excluded.raw_text,
+        title = excluded.title,
+        category = COALESCE(excluded.category, secondary_sources.category),
+        enriched_text = excluded.enriched_text,
+        enriched = excluded.enriched,
+        embedded = 0
+    `).bind(citation, source || citation, doc_type || null, text, new Date().toISOString(), category ?? 'doctrine').run();
 
-  await env.DB.prepare(
-    `INSERT OR REPLACE INTO secondary_sources_fts (rowid, source_id, title, raw_text)
-     SELECT rowid, id, title, raw_text FROM secondary_sources WHERE id = ?`
-  ).bind(citation).run();
+    await env.DB.prepare(
+      `INSERT OR REPLACE INTO secondary_sources_fts (rowid, source_id, title, raw_text)
+       SELECT rowid, id, title, raw_text FROM secondary_sources WHERE id = ?`
+    ).bind(citation).run();
+  } catch (err) {
+    // FTS5 index writes can time out on D1 while the main row write succeeds.
+    // Confirm the row landed before deciding whether to propagate.
+    const check = await env.DB.prepare(
+      `SELECT id FROM secondary_sources WHERE id = ?`
+    ).bind(citation).first();
+    if (check) {
+      return { success: true, citation, chunks_stored: 0, warning: "FTS5 index timeout — row confirmed written" };
+    }
+    throw err;
+  }
 
   return { citation, chunks_stored: 0, message: "Corpus chunk recorded in D1." };
 }
@@ -1493,7 +1505,7 @@ function parseFormattedChunks(text) {
 }
 
 async function handleFormatAndUpload(body, env) {
-  let { text, category: defaultCategory, mode, slug, title } = body;
+  let { text, category: defaultCategory, mode, slug, title, source_type } = body;
   if (!text?.trim()) throw new Error('Missing required field: text');
 
   let chunkUnits;
@@ -1569,7 +1581,7 @@ async function handleFormatAndUpload(body, env) {
     await env.DB.prepare(`
       INSERT INTO secondary_sources
       (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
-      VALUES (?, ?, ?, null, null, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
+      VALUES (?, ?, ?, null, ?, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
       ON CONFLICT(id) DO UPDATE SET
         raw_text = excluded.raw_text,
         title = excluded.title,
@@ -1577,7 +1589,7 @@ async function handleFormatAndUpload(body, env) {
         enriched_text = excluded.enriched_text,
         enriched = excluded.enriched,
         embedded = 0
-    `).bind(citation, heading, null, unit, now, category).run();
+    `).bind(citation, heading, source_type || null, new Date().toISOString().split('T')[0], unit, now, category).run();
 
     await env.DB.prepare(
       `INSERT OR REPLACE INTO secondary_sources_fts (rowid, source_id, title, raw_text)
@@ -2661,7 +2673,7 @@ async function handleFetchForEmbedding(request, env, corsHeaders) {
   try {
     const urlObj = new URL(request.url);
     const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
-    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text, category FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY id LIMIT ?`).bind(batch).all();
+    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text, category, source_type FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY id LIMIT ?`).bind(batch).all();
     return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });

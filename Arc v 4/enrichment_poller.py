@@ -698,7 +698,8 @@ def run_embedding_pass(batch: int) -> dict:
             'chunk_index': chunk.get('chunk_index', 0),
             'text':        embed_text[:5000],
             'type':        'secondary_source',
-            'category':    chunk.get('category', 'doctrine')
+            'category':    chunk.get('category', 'doctrine'),
+            'source_type': chunk.get('source_type', '')
         }
 
         log.info(f'[EMBED] {i}/{len(chunks)} chunk_id={chunk_id}')
