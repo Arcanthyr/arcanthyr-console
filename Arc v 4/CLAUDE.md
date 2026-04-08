@@ -691,3 +691,37 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - Vite bundle hash may not change even after clean dist delete if file content is identical — Cloudflare edge cache can serve stale assets; purge via dashboard when this happens
 - `cp -r` in PowerShell without `-Force` silently fails on existing directories — always use `-Force`
 - Empty string env values in `.codex/config.toml` override inherited Windows user env vars for Codex-launched MCP processes — omit keys entirely to rely on inheritance
+
+## Session 39 — 2026-04-08
+
+### What we did
+- Fixed secondary source upload modal: backdrop click-outside dismiss removed — modal now only closes on explicit Cancel or successful upload
+- Simplified upload modal from prefilled 3 fields to clean 4-field form: Title, Reference ID, Category, Source type
+- Removed prefill logic that auto-populated Title and Citation slug from first line of pasted text
+- Removed tags, author, date_published from modal UI — tags deferred to enrichment poller, date auto-set at upload time
+- Added source_type field to D1 insert and Qdrant upsert payload
+- Extended handleFetchForEmbedding SELECT to return source_type
+- Confirmed upload.jsx lives in arcanthyr-ui/src/Upload.jsx (React, not vanilla JS)
+- Test upload (hearsay doctrine chunk) confirmed clean — source_type and date_published verified in D1
+- Noted SCP path correction: canonical enrichment_poller.py path is agent-general/src/enrichment_poller.py (not enrichment-poller/)
+
+### Completed
+- Modal dismiss bug fixed
+- Upload modal UX simplified to 4 fields with placeholders
+- source_type stored in D1 and Qdrant on upload
+- date_published auto-set to upload date in Worker
+- Worker deployed: c4eff825
+- Vite build: index-BlprLfZD.js
+- enrichment_poller.py deployed to VPS, container force-recreated cleanly
+- Git commit: a32231d
+
+### Deferred
+- Tag generation for secondary sources — enrichment poller to handle (better model, full text visibility)
+- arcanthyr-session-closer skill update (skill confirmed but step 2 confirmation loop did not trigger correctly — to be reviewed)
+
+### Key learnings / gotchas
+- enrichment_poller.py canonical VPS path is agent-general/src/enrichment_poller.py — not enrichment-poller/enrichment_poller.py (that path does not exist)
+- Upload.jsx is React (arcanthyr-ui/src/), not vanilla JS in public/app.js — app.js no longer exists since React migration
+
+### Platform state
+Worker c4eff825 live. Modal fixed and simplified. source_type now flows from upload UI → D1 → Qdrant. Enrichment poller running cleanly on VPS.

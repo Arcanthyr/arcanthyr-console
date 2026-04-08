@@ -708,3 +708,11 @@ Source title uses chunk heading (not filename stem).
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
+
+### Secondary Sources Upload — Session 39 changes
+- Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
+- source_type passed from modal → Worker handleFormatAndUpload → D1 secondary_sources.source_type
+- date_published auto-set to upload date (new Date().toISOString().split('T')[0]) in Worker — not collected from UI
+- tags remain '[]' on insert — to be populated by enrichment poller in future
+- handleFetchForEmbedding SELECT now returns source_type
+- Qdrant secondary source upsert payload now includes source_type field

@@ -3290,3 +3290,10 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 - **Set WakeToRun=True on both scraper scheduled tasks rather than adding BIOS RTC wake** — PC is sleeping not fully powered off; WakeToRun is sufficient and simpler. BIOS route noted as fallback if PC is ever fully powered off at scheduled times.
 
 - **handleUploadCorpus FTS5 fallback: confirm row before propagating error** — D1 FTS5 writes can time out after the main row write has already committed. Rather than a blanket suppress, the fallback does a SELECT confirmation first — if the row isn't there, the original error propagates unchanged. This avoids masking genuine failures while handling the known FTS5 timeout pattern safely.
+
+## Session 39 decisions — 8 April 2026
+
+- **Tags for secondary sources deferred to enrichment poller, not generated at upload time** — poller uses GPT-4o-mini with full document text, yielding better tag quality at no extra cost vs a Workers AI call at upload time
+- **Author field dropped from secondary source upload modal** — no retrieval value; not worth the UI noise
+- **date_published auto-set to upload timestamp in Worker rather than collected from user** — upload date is always known and sufficient for D1 display purposes
+- **source_type added to Qdrant payload (not tags/author/date)** — only field among the new additions with meaningful retrieval/filter value at embedding time
