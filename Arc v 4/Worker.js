@@ -3454,7 +3454,7 @@ Rules:
           `).bind(
             pass1.case_name || null,
             pass1.judge || null,
-            pass1.parties || null,
+            Array.isArray(pass1.parties) ? pass1.parties.join(', ') : (pass1.parties || null),
             pass1.facts || null,
             Array.isArray(pass1.issues) ? pass1.issues.join('; ') : (pass1.issues || null),
             citation

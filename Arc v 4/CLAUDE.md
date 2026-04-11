@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 11 April 2026 (end of session 45) · Supersedes all prior versions
+Updated: 11 April 2026 (end of session 48) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -818,3 +818,38 @@ Secondary sources re-embed in progress (~25 min, 50/cycle). All other pipeline c
 
 ### Platform state
 Worker f267f1af live. Sentencing synthesis now receives full judgment text. 331+ cases re-merging via queue — check results next session.
+
+## CHANGES THIS SESSION (session 48) — 11 April 2026
+
+### What we did
+- Confirmed secondary_sources re-embed complete: 1,201 → 0 remaining
+- Confirmed procedure_notes null count (723/738) is expected — bulk of corpus predates procedure pass (session 17); no backfill action needed
+- Diagnosed and fixed parties stringify bug in worker.js METADATA handler — Qwen3 returns `parties` as array, D1 threw `D1_TYPE_ERROR: Type 'object' not supported`. Fix: `Array.isArray` guard with `.join(", ")` before D1 bind (same pattern as `issues` field)
+- Deployed fix (version b4869e6d)
+- Requeued 3 cases stuck at enriched=0: 2022-tasmc-1 (the parties bug victim), 2016-tassc-51, 2016-tascca-7 — all reprocessed successfully
+- Observed AustLII cron timeout on TAMagC/2026 (all 9 fetches ConnectTimeoutError) — transient AustLII issue, no code fix needed
+
+### Parallel session: Scraper audit & fix
+- Scraper appeared to achieve zero cases; TASMC 2026 never ran
+- Root cause 1: TASMC added to COURTS (session 43) but YEARS ceiling was 2025 — range now starts at 2026
+- Root cause 2: AustLII HTTP 500s treated as 404s — 30-min outage could burn 20 consecutive_misses and mark year "done" with 0 cases. TASMC_2025 had 100% 500 rate. TASMC_2024 missed cases 1–12, TASMC_2023 missed cases 5–16
+- Fixes applied: (1) 500 retry logic — sleep 60–90s + one retry before counting miss, (2) per-court year ranges via COURT_YEARS dict replacing single YEARS range, (3) loop reordered to court-outer, (4) progress.json cleared TASMC 2023/2024/2025, (5) log string fix /5→/20
+- Scraper confirmed working: 34 cases scraped (TASCCA_2025: 5, TASMC_2024: 4, TASMC_2023: 3, TASMC_2022: 8, TASMC_2021: 18+)
+
+### Completed
+- Secondary sources re-embed (session 46 carry-over) — done
+- Parties array stringify fix — deployed and verified
+- Scraper 500-retry and per-court year ranges — deployed in parallel session
+
+### Deferred
+- Re-run Q2 BRD baseline query (carried from session 46)
+- Procedure Prompt second pass backfill (321 criminal cases) — gated behind Pass 2 quality review
+- Remaining baseline failures — not investigated
+
+### Key learnings / gotchas
+- parties field uses join(", ") not JSON.stringify() — it's a display field, not parsed back
+- Wrangler tail started before a deploy doesn't reliably show new version output — always start fresh tail after deploy
+- AustLII 500s are transient and affect all courts — scraper must distinguish 500 (retry) from 404 (real miss)
+
+### Platform state
+Cases: 738 deep_enriched. Secondary sources: 1,201 all embedded (re-embed complete). Scraper: operational with 500-retry logic, per-court year ranges, TASMC backfill in progress.

@@ -3322,3 +3322,13 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 **[2026-04-11]** *Expand sentencing_found guard clause*
 
 > Appeal courts that varied or reviewed (rather than imposed) a sentence were returning sentencing_found: false under the old guard clause. Updated to explicitly cover imposed/varied/confirmed/reviewed. Only returns false for judgments with no sentence quantum discussion at all.
+
+## Session 48 decisions — 11 April 2026
+
+**[2026-04-11]** *Parties field D1 binding fix*
+
+Qwen3 returns `parties` as a JSON array. D1 can't bind JS arrays directly → `D1_TYPE_ERROR`. Two options: `JSON.stringify()` (preserves structure, needs parse on read) or `.join(", ")` (flat string, display-ready). Chose join — parties is only used for display in case detail view, never parsed back into an array. Matches how `issues` was already handled.
+
+**[2026-04-11]** *Scraper 500 vs 404 handling*
+
+AustLII returns HTTP 500 during transient outages. Previous scraper treated 500 identically to 404 (increment consecutive_misses), so a 30-min outage window could exhaust the miss threshold and mark a year "done" with 0 cases. Fix: on 500, sleep 60–90s and retry once before counting as miss. Capped at one retry to prevent infinite loops during extended outages. Separate per-court year ranges also added (COURT_YEARS dict) so TASMC range could start at 2026 without affecting other courts.

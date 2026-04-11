@@ -21,8 +21,14 @@ logging.basicConfig(
 )
 
 # ── Config ────────────────────────────────────────────────────────────────────
-COURTS = ['TASSC', 'TASCCA', 'TASFC', 'TASMC']
-YEARS = list(range(2025, 1999, -1))  # 2025 down to 2000
+# Per-court year ranges (newest first). AustLII coverage varies by court:
+# TASSC/TASMC go back to 2005; TASCCA/TASFC only reliably from 2010.
+COURT_YEARS = {
+    'TASSC':  list(range(2026, 2004, -1)),  # 2026 down to 2005
+    'TASCCA': list(range(2026, 2009, -1)),  # 2026 down to 2010
+    'TASFC':  list(range(2026, 2009, -1)),  # 2026 down to 2010
+    'TASMC':  list(range(2025, 2004, -1)),  # 2025 down to 2005
+}
 UPLOAD_URL = 'https://arcanthyr.com/api/legal/upload-case'
 
 # Max cases per session — at 10-20s average delay, 100 cases ≈ 17-33 minutes.
@@ -270,8 +276,8 @@ def main():
     logging.info('=== Scraper started ===')
     cases_this_session = 0
 
-    for year in YEARS:
-        for court in COURTS:
+    for court, years in COURT_YEARS.items():
+        for year in years:
             key = f'{court}_{year}'
 
             if progress.get(key) == 'done':
@@ -295,9 +301,23 @@ def main():
                     upload_status = upload_case(html, court, year, num)
                     logging.info(f'{court}/{year}/{num} → uploaded (HTTP {upload_status})')
                     cases_this_session += 1
+                elif status == 500:
+                    # AustLII server error — transient. Back off and retry once.
+                    # If the retry also 500s, count as a miss and move on.
+                    logging.warning(f'{court}/{year}/{num} → 500 (backing off 60-90s, retrying once)')
+                    time.sleep(random.uniform(60, 90))
+                    html2, status2 = scrape_case(court, year, num)
+                    if html2:
+                        consecutive_misses = 0
+                        upload_status = upload_case(html2, court, year, num)
+                        logging.info(f'{court}/{year}/{num} → uploaded after retry (HTTP {upload_status})')
+                        cases_this_session += 1
+                    else:
+                        consecutive_misses += 1
+                        logging.warning(f'{court}/{year}/{num} → {status2} after retry (miss {consecutive_misses}/20)')
                 else:
                     consecutive_misses += 1
-                    logging.info(f'{court}/{year}/{num} → {status} (miss {consecutive_misses}/5)')
+                    logging.info(f'{court}/{year}/{num} → {status} (miss {consecutive_misses}/20)')
 
                 num += 1
 
