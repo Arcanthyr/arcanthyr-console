@@ -755,3 +755,35 @@ Worker c4eff825 live. Modal fixed and simplified. source_type now flows from upl
 **Key learnings / gotchas**
 - docker compose `${VAR}` in ports mapping is interpolated from `.env` only at parse time — `env_file:` injects into container environment only, not compose's own variable substitution. Invariant ports should always be hardcoded.
 - Pydantic validation: use log-and-skip pattern (not fail-hard) — overly strict schema would block valid rows on edge cases; retry opportunity preserved by not marking embedded=1 on failure.
+
+## CHANGES THIS SESSION (session 46) — 11 April 2026
+
+### What we did
+- Diagnosed Q2 (BRD) baseline retrieval failure — chunks existed but scored too low (0.5073 / 0.4831) to surface over "reasonable belief" chunks (0.5522)
+- Root cause: [CONCEPTS:...] header at start of raw_text was dominant embedding signal, drifting BRD vectors into "reasonable/belief" neighbourhood
+- Manually patched both BRD chunks with clean enriched_text prose, set embedded=0
+- Identified 124 HOC chunks + 1,073 other secondary sources with same problem (901 using Concepts: format, 110 using [CONCEPTS:] format)
+- Deployed poller fix: strip both CONCEPTS header formats from embed text and text payload field before Qdrant upsert (regex at line 695)
+- Reset 1,201 secondary_sources rows to embedded=0 for full re-embed
+- Created ~/ai-stack/.env with pinned port vars — docker compose was assigning ephemeral ports due to missing env file, breaking host-side diagnostic tooling
+- Confirmed case_chunks unaffected (2 false positives mid-chunk, regex ^ does not match)
+
+### Completed
+- .env created on VPS with stable port bindings (QDRANT_GENERAL_PORT=6334, QDRANT_SENSITIVE_PORT=6335, OLLAMA_PORT=11434, AGENT_SENSITIVE_PORT=18791)
+- Poller CONCEPTS strip deployed and confirmed running (grep + container mtime verified)
+- 1,201 secondary sources reset to embedded=0, re-embed in progress at session close
+- BRD chunk enriched_text patched manually
+
+### Deferred
+- Verify re-embed completes clean: SELECT COUNT(*) FROM secondary_sources WHERE embedded=0 should return 0 — check at start of next session
+- Re-run Q2 BRD baseline query after re-embed to confirm fix
+- Remaining baseline failures — not investigated this session
+
+### Key learnings / gotchas
+- Docker host port bindings are ephemeral when compose env vars are unset — always confirm ports via docker compose ps before host-side curl diagnostics
+- Ollama has no host port binding by default — exec into agent-general container for any host-side embedding calls: docker exec agent-general python3 -c "..."
+- Qdrant search() method removed in newer qdrant-client — use query_points() instead
+- HOC secondary sources were ingested with enriched=1 directly, bypassing the enrichment poller, so enriched_text stayed NULL and dirty raw_text went to embedder
+
+### Platform state
+Secondary sources re-embed in progress (~25 min, 50/cycle). All other pipeline components healthy. Case count: 729 (+149 since session 45), 11,793 chunks all embedded.

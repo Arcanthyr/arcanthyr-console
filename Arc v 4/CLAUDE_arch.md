@@ -135,6 +135,8 @@ Full D1/Workers/KV/R2 access
 
 `.env.backup` — original combined `.env`, retained as backup at `~/ai-stack/.env.backup`
 
+**`~/ai-stack/.env` (session 46):** Created with pinned port vars — `QDRANT_GENERAL_PORT=6334`, `QDRANT_SENSITIVE_PORT=6335`, `OLLAMA_PORT=11434`, `AGENT_SENSITIVE_PORT=18791`. Previously missing, causing docker compose to assign ephemeral host ports on each `compose up`. Qdrant now reliably reachable from VPS host at `localhost:6334`. Ollama has no host port binding — use `docker exec agent-general` for any host-side embedding calls (e.g. `docker exec agent-general python3 -c "..."`).
+
 When CC needs a secret value (e.g. for a health check), use remote-ssh to grep the specific key only:
 `grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2`
 Never ask CC to read the full `.env.secrets` file.
@@ -539,6 +541,8 @@ Volume-mounted at `./agent-general/src:/app/src`. Runs as permanent Docker servi
 **Cases enrichment path:** handled by Cloudflare Queue consumer (Worker), not the poller. METADATA message → Pass 1 metadata + chunk split. CHUNK messages → per-chunk principle extraction → merge with synthesis.
 
 **Default batch:** 50 · **Loop sleep:** 15 seconds
+
+**CONCEPTS header strip (session 46):** Poller strips `[CONCEPTS:...]` and `Concepts:...` header lines from the start of embed text before the Ollama embedding call and before populating the Qdrant `text` payload field. Regex: `re.sub(r'^\[?concepts:[^\]\n]*\]?\s*\n+', '', text, flags=re.IGNORECASE)`. Deployed at line 695 of enrichment_poller.py. Root cause: for secondary sources with NULL enriched_text, the CONCEPTS header was the dominant embedding signal, drifting vectors away from the actual doctrine content.
 
 ### enrichment_poller.py — payload text limits (fixed session 9)
 

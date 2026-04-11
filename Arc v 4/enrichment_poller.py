@@ -692,6 +692,7 @@ def run_embedding_pass(batch: int) -> dict:
         chunk_id     = chunk['id']
         # Prefer enriched_text for embedding; fall back to raw text
         embed_text   = chunk.get('enriched_text') or chunk.get('raw_text', '')
+        embed_text   = re.sub(r'^\[?concepts:[^\]\n]*\]?\s*\n+', '', embed_text, flags=re.IGNORECASE).strip()
         metadata     = {
             'citation':    chunk.get('id', ''),
             'source_id':   chunk.get('id', ''),

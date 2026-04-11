@@ -3302,3 +3302,11 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 
 - **[2026-04-11] Hardcode agent-general port as 18789 in docker-compose.yml** — docker compose interpolates `${VAR}` in ports mapping from `.env` only at parse time; `env_file:` applies to container env only; invariant single-instance ports should always be hardcoded to avoid ephemeral port assignment on restart
 - **[2026-04-11] Pydantic validation uses log-and-skip pattern, not fail-hard** — overly strict schema could reject valid rows on edge cases (e.g. short case_name); skip preserves retry opportunity by not marking embedded=1; failures are queryable via Docker logs
+
+## Session 46 decisions — 11 April 2026
+
+- **[2026-04-11] Strip CONCEPTS headers in poller before embedding** — `[CONCEPTS:]` and `Concepts:` headers were the dominant semantic signal in raw_text for all secondary sources with NULL enriched_text, polluting vectors and causing retrieval misses (confirmed: BRD chunks scored 0.48–0.51, losing to "reasonable belief" chunks at 0.55). Regex strip applied to both embed text and Qdrant text payload field.
+
+- **[2026-04-11] Re-embed all 1,201 secondary sources with NULL enriched_text** — reset embedded=0 after poller fix deployed; cleaner vectors expected across all HOC doctrine, legislation annotation, and manually ingested secondary chunks.
+
+- **[2026-04-11] Created ~/ai-stack/.env with pinned port vars** — docker compose was silently assigning ephemeral ports due to missing env file; host-side diagnostic tooling (curl to Qdrant, Ollama) was broken without this fix.
