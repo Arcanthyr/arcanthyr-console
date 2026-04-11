@@ -175,6 +175,9 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 - **server.py**: All direct calls to `localhost:18789` require `X-Nexus-Key`.
 - **Qdrant**: VPS host port is `6334` (not 6333) — always `curl localhost:6334` from host.
 - **Search endpoint**: expects field `query_text` (not `query`).
+- **Route/column verification**: Never construct commands with route paths or D1 column names inferred from context — ask CC to grep/read source first. Confirmed failure mode: /api/pipeline/requeue-merge (wrong), criminal column (does not exist).
+- **handleRequeueMerge citation scope**: citation parameter in requeue-merge body does NOT scope the requeue — target="remerge" always requeues full eligible corpus. Verify before firing.
+- **retrieval_baseline.sh**: Now 31 queries (Q1–Q31). Pre-RRF baseline saved at ~/retrieval_baseline_pre_rrf.txt — do not overwrite. Post-RRF baseline saves to ~/retrieval_baseline_post_rrf.txt
 
 ---
 

@@ -3332,3 +3332,17 @@ Qwen3 returns `parties` as a JSON array. D1 can't bind JS arrays directly → `D
 **[2026-04-11]** *Scraper 500 vs 404 handling*
 
 AustLII returns HTTP 500 during transient outages. Previous scraper treated 500 identically to 404 (increment consecutive_misses), so a 30-min outage window could exhaust the miss threshold and mark a year "done" with 0 cases. Fix: on 500, sleep 60–90s and retry once before counting as miss. Capped at one retry to prevent infinite loops during extended outages. Separate per-court year ranges also added (COURT_YEARS dict) so TASMC range could start at 2026 without affecting other courts.
+
+## Session 49 decisions — 11 April 2026
+
+**Retrieval baseline expanded to 31 queries before RRF overhaul**
+Added Q19–Q31 covering sentencing range, manifestly excessive appeals, suspended sentence breach, non-parole period, search warrant execution, committal procedure, bail principles, appeal against conviction, provocation, FVO variation, FVO contravention sentencing, expert evidence, right to silence. Rationale: 18-query baseline was evidence-law heavy and insufficient for fair pre/post RRF comparison across all practice areas.
+
+**Pre-RRF baseline saved as ~/retrieval_baseline_pre_rrf.txt**
+Locked before any retrieval pipeline changes. This is the comparison file for the RRF overhaul.
+
+**RRF overhaul confirmed ready for implementation — no further Opus consultation**
+Opus spec from April 5 session is complete. Four-leg prefetch design, Python-side BM25 synthetic merge, phased rollout (Step 1 → baseline → Step 2). Implementation session can proceed directly using that spec.
+
+**Route/column names must be verified from source before use in commands**
+Pattern: I generated /api/pipeline/requeue-merge (wrong) and WHERE criminal=1 (wrong column) without verifying. Rule added: ask CC to grep/read before constructing any command with route paths or column names not explicitly confirmed this session.

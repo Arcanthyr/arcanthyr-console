@@ -853,3 +853,39 @@ Worker f267f1af live. Sentencing synthesis now receives full judgment text. 331+
 
 ### Platform state
 Cases: 738 deep_enriched. Secondary sources: 1,201 all embedded (re-embed complete). Scraper: operational with 500-retry logic, per-court year ranges, TASMC backfill in progress.
+
+## CHANGES THIS SESSION (session 49) — 11 April 2026
+
+### What we did
+- Confirmed Q2 BRD baseline fixed — secondary_sources now surfacing top results after session 46 re-embed. Re-embed confirmed working.
+- Case count: 802 total, 802 deep_enriched (+64 since session 48). Scraper healthy — TASSC/TASCCA/TASFC done 2018–2026, TASMC done 2018–2025.
+- Diagnosed procedure_notes low count (16/373 criminal cases) — root cause confirmed as queue still draining from session 47 requeue-merge, not a pipeline failure. isSentencingCase() and SENTENCING_SYNTHESIS_PROMPT both confirmed correct.
+- Fired second requeue-merge (requeued=250) — inadvertently requeued full corpus again (citation parameter not scoped in handleRequeueMerge). Harmless/idempotent.
+- Confirmed sentencing synthesis working from tail logs — cases showing "sentencing pass for X — N sentencing principles added" and "no sentencing content found" for non-sentencing judgments (correct behaviour).
+- Confirmed subject_matter values are bare strings ('criminal', 'administrative', etc.) — isSentencingCase() Check 1 fires correctly for all 373 criminal cases.
+- Expanded retrieval_baseline.sh from 18 to 31 queries — added Q19–Q31 covering sentencing, criminal procedure, appeals, family violence, expert evidence, right to silence.
+- Saved pre-RRF baseline: ~/retrieval_baseline_pre_rrf.txt (287 lines, all 31 queries).
+- Confirmed Opus RRF overhaul spec already exists (session ~40, April 5) — design complete, ready for implementation session. No further Opus consultation needed.
+
+### Completed
+- Q2 BRD baseline confirmed fixed
+- Scraper progress reviewed — healthy, 2018+ done
+- procedure_notes diagnosis — pipeline correct, queue was draining
+- retrieval_baseline.sh expanded to 31 queries
+- Pre-RRF baseline saved
+
+### Deferred
+- Check final procedure_notes count after queue fully drains (run: `SELECT COUNT(*) FROM cases WHERE subject_matter='criminal' AND procedure_notes IS NOT NULL`)
+- RRF retrieval pipeline overhaul — implementation session, use Opus spec from April 5 session. Run baseline before and after (pre-change file: ~/retrieval_baseline_pre_rrf.txt).
+- Corpus content gaps (Q10, Q14, Q31) — defer until scraper runs further back
+- Scraper coverage review (extend pre-2018) — defer, review tomorrow
+- Procedure Prompt second pass backfill — gated behind Pass 2 quality review
+
+### Key learnings / gotchas
+- Route paths and D1 column names must be verified from source before use in commands — do not infer. Ask CC to grep/read first.
+- handleRequeueMerge() does not scope by citation — any requeue-merge call with target="remerge" requeues the full eligible corpus regardless of citation parameter. Verify before firing.
+- isSentencingCase() Check 1 fires on bare 'criminal' string — confirmed correct, not the bottleneck
+- Queue counts mid-drain show artificially low procedure_notes — always check queue state before diagnosing synthesis failures
+
+### Platform state
+Cases: 802 total, 802 deep_enriched. Secondary sources: 1,201 all embedded. Scraper: healthy, running back through 2017 and earlier. Sentencing synthesis: working correctly. Pre-RRF baseline saved.
