@@ -131,6 +131,8 @@ Full D1/Workers/KV/R2 access
 
 `docker-compose.yml` references both files via `env_file: [.env.secrets, .env.config]`
 
+**agent-general port** — hardcoded `127.0.0.1:18789->18789/tcp` in docker-compose.yml since session 45 · previously used `${AGENT_GENERAL_PORT}` variable which was never read at compose parse time (only `.env` is read for port interpolation, not `env_file:`) · do not revert to variable form
+
 `.env.backup` — original combined `.env`, retained as backup at `~/ai-stack/.env.backup`
 
 When CC needs a secret value (e.g. for a health check), use remote-ssh to grep the specific key only:

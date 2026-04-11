@@ -1,5 +1,9 @@
+@CLAUDE_arch.md
+@CLAUDE_decisions.md
+@CLAUDE_init.md
+
 CLAUDE.md — Arcanthyr Session File
-Updated: 5 April 2026 (end of session 42) · Supersedes all prior versions
+Updated: 11 April 2026 (end of session 45) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -56,6 +60,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Scraper location | `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Local Scraper\austlii_scraper.py` · progress file: `...\scraper_progress.json` · log: `...\scraper.log` · runs on Windows only (Task Scheduler on local machine) |
 | Scraper progress file | No per-case resume — file only stores `{court}_{year}: "done"` or absent. Scraper always starts from case 1 for any unfinished court/year. Re-uploading already-ingested cases is harmless (INSERT OR IGNORE skips silently). |
 | run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
+| Scraper wake tasks | Dedicated SYSTEM-level wake tasks created (session 46): `WakeForScraper` fires 10:55 AM daily, `WakeForScraperEvening` fires 4:55 PM daily · both have WakeToRun=True · wakes PC 5 min before scraper runs at 11:00 AM and 5:00 PM AEST · created as SYSTEM/HIGHEST so wake works from sleep without user login |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
 | TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is NOT IP-blocked by AustLII (confirmed curl 200 session 35) |
 | runDailySync proxy | AustLII fetches routed through VPS `/fetch-page` endpoint (server.py) to avoid Cloudflare edge IP patterns · jade.io URLs fetch directly · `env` threaded through `handleFetchPage` and `fetchCaseContent` · deployed session 35 |
@@ -101,6 +106,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | docker compose force-recreate | Always run with AGENT_GENERAL_PORT=18789 prefix when doing manual restarts — e.g. AGENT_GENERAL_PORT=18789 docker compose up -d --force-recreate agent-general — or the port will be assigned randomly and the baseline script will fail silently |
 | hex-ssh deploys | CC force-recreate via hex-ssh remote-ssh will always get ephemeral ports unless env is loaded — the docker-compose.yml fix (session 41) now handles this via env_file: but AGENT_GENERAL_PORT still needs to be in .env.config (added session 41) |
 | Upload case text limit | `worker.js` line ~269 — `caseText.length > 200000 ? caseText.substring(0, 200000) : caseText` · raised from 100K to 200K session 43 · not in scraper · limit applies to both `handleUploadCase` and `handleFetchCaseUrl` |
+| docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -178,7 +184,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 7 April 2026 (end of session 43)
+## SYSTEM STATE — 11 April 2026 (end of session 45)
 
 | Component | Status |
 |---|---|
@@ -190,7 +196,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 | Cloudflare Queue | Clean — nightly cron armed |
 | Scraper | RUNNING (TASMC court code fix deployed) |
 | arcanthyr.com | Live · sequential pass retrieval restored |
-| Retrieval baseline | 10 pass / 5 partial / 0 miss — post-revert session 42 |
+| Retrieval baseline | 10 pass / 5 partial / 0 miss — session 45 |
 
 ---
 
@@ -222,9 +228,6 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-3. **Ingest Validation Layer (Pydantic)** — DEFERRED · Pydantic validation guard for enrichment_poller.py. Validates enrichment output before writes to Qdrant/D1. Catches malformed metadata at ingest time rather than during retrieval. Status: Deferred — the two bugs it would have caught are fixed at source, corpus is clean, no bulk ingests imminent. Build when next bulk operation or model swap is approaching. Scope: (1) schemas.py — CaseChunk + SecondarySourceChunk Pydantic models, (2) try/catch validation wrapper around Qdrant write calls in poller, (3) optional validation_failures D1 table for logging bad rows. Isolated to poller only — no changes to worker.js, server.py, or frontend. Schema constraints: citation required not optional, case_name min length (catches single-word division labels), chunk_text min length, type literal enum ("case", "secondary_source"). Architecture context: poller runs in Docker on VPS (~/ai-stack/agent-general), writes to Qdrant general-docs-v2 and D1 arcanthyr. Pattern: AutoBe/Typia — define schema tightly, validate on output, log structured errors. Trigger condition: next bulk ingest or model swap.
-4. **Option B — header chunk embed fix** — `handleFetchCaseChunksForEmbedding` SQL has `AND enriched_text IS NOT NULL` gate · 17 header chunks (chunk__0 boilerplate) were stuck at embedded=0 invisible to poller · closed out session 36 by setting embedded=1 directly (Option A) · Option B: remove IS NOT NULL gate, fall back to chunk_text for embedding · deferred · no urgency: header chunks have low retrieval value
-5. **Retrieval baseline** — DONE session 42 · 10 pass / 5 partial / 0 miss · post-revert result matches session 40
 6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
 7. **subject_matter filter — SESSION 43 PRIORITY** — 320 criminal / 393 non-criminal in corpus · ratio worsening as scraper runs · misclassification audit required first (Tasmania v Rattigan, Tasmania v Pilling confirmed criminal but tagged administrative — full audit query in CLAUDE_arch.md) · Option A (hard filter, re-embed) recommended over Option B (score penalty, no re-embed) · full design in CLAUDE_arch.md subject_matter filter section · prerequisite: audit → correct D1 → re-embed → deploy server.py filter in that order
 8. **Domain filter UI — deferred pending subject_matter audit** — CC prompt drafted and ready · do not implement until misclassification audit complete and Option A re-embed done · implementation is one session once prerequisites met · full design in CLAUDE_arch.md subject_matter filter section
@@ -254,6 +257,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
+- **Q2 (BRD standard) regression** — was partial in session 42, now a clean miss in session 45 baseline · returning honest/reasonable mistake chunks instead of BRD doctrine · likely corpus gap — BRD secondary source chunk may not be embedded · diagnose at start of next session
 
 ---
 
@@ -659,6 +663,10 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup script** — re-run gen_cleanup_sql.py if new Word-derived corpus chunks ingested
 
+## CHANGES THIS SESSION (session 46) — 11 April 2026
+
+- **Dedicated scraper wake tasks created** — `WakeForScraper` (10:55 AM daily) and `WakeForScraperEvening` (4:55 PM daily) created via `schtasks /create` as SYSTEM/HIGHEST. WakeToRun=True confirmed on both via `Get-ScheduledTask`. Why: session 45 set WakeToRun on the scraper tasks themselves (`Arcanthyr Scraper`, `run_scraper_evening`) but those run as user Hogan — SYSTEM-level dedicated wake tasks are more reliable for waking from sleep. Pattern mirrors session 44 email digest wake tasks. Scraper runs fire 5 minutes after the wake signal at 11:00 AM and 5:00 PM.
+
 ## CHANGES THIS SESSION (session 45) — 8 April 2026
 
 - **Diagnosed scraper corpus gaps** — D1 case counts for 2005–2017 were severely low (e.g. TASSC 2017: 12, TASSC 2015: 0, nothing pre-2007 except 2 TASSC). Root cause: session 43 fixes (TASMC court code, consecutive_misses=20, year floor 2000) were committed at 8:11 PM on 7 April but the scraper had already run that morning under the old config. All pre-2018 years had been marked "done" in scraper_progress.json under the old consecutive_misses=5 threshold, causing premature completion with sparse results.
@@ -725,3 +733,25 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ### Platform state
 Worker c4eff825 live. Modal fixed and simplified. source_type now flows from upload UI → D1 → Qdrant. Enrichment poller running cleanly on VPS.
+
+## CHANGES THIS SESSION (session 45) — 11 April 2026
+
+- **Pydantic ingest validation layer deployed** — schemas.py created at `/home/tom/ai-stack/agent-general/src/schemas.py` with three models: CaseChunkPayload, SecondarySourcePayload, LegislationPayload. Validation wrapped around all three Qdrant upsert call sites in enrichment_poller.py (lines 711, 800, 877). On ValidationError: logs warning with full error + payload, skips upsert, does NOT mark embedded=1 — row stays available for retry. Container restarted cleanly, smoke test passed. Why: forward protection as scraper adds volume — catches malformed GPT output before it poisons Qdrant.
+
+- **Header chunk embed fix (Option B) deployed** — removed `AND cc.enriched_text IS NOT NULL` gate from `/api/pipeline/fetch-case-chunks-for-embedding` SQL in worker.js. Poller now picks up header chunks (done=1, enriched_text=NULL, embedded=0) and embeds via chunk_text fallback. Worker version d45dd83d. Git commit 17d8f9c. Why: scraper adding new cases daily, each generating a header chunk that would silently accumulate at embedded=0 indefinitely. Pre-fix audit confirmed 0 currently stuck (existing corpus clean).
+
+- **agent-general port hardcoded in docker-compose.yml** — replaced `${AGENT_GENERAL_PORT}` with `18789` directly in ports mapping. Root cause: docker compose interpolates `${VAR}` in ports at parse time from `.env` only — `env_file:` is container-only and does not apply at compose parse time. `.env.config` was correct but never read for interpolation. Result: agent-general was binding to ephemeral port 32773, making baseline script fail silently (live retrieval unaffected as Worker calls via nexus.arcanthyr.com tunnel). Fix is permanent — no variable prefix required on future restarts.
+
+- **Retrieval baseline run** — session 45 result: 10 pass / 5 partial / 0 miss. Same as session 42. Q2 (BRD standard) regressed from partial to miss. Persistent partials: Q4 (Boatwright probate chunk at #2), Q8 (s55 relevance chunk at #1), Q14 (coronial inquiry chunk at #1). No new failures.
+
+- **arcanthyr-session-closer skill fixed** — removed Step 2 (preview/confirmation block) from SKILL.md. Skill now goes directly from Step 1 (analyse) to Step 2 (output CC prompt). Fixes the confirmation loop that prevented the skill from firing cleanly in session 39.
+
+**Completed**
+- Outstanding priority #3 (Pydantic validation layer) — done
+- Outstanding priority #4 (Option B header chunk fix) — done
+- Outstanding priority #5 (retrieval baseline re-run) — done
+- docker-compose.yml port hardcode — done
+
+**Key learnings / gotchas**
+- docker compose `${VAR}` in ports mapping is interpolated from `.env` only at parse time — `env_file:` injects into container environment only, not compose's own variable substitution. Invariant ports should always be hardcoded.
+- Pydantic validation: use log-and-skip pattern (not fail-hard) — overly strict schema would block valid rows on edge cases; retry opportunity preserved by not marking embedded=1 on failure.

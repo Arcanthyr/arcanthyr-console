@@ -3297,3 +3297,8 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 - **Author field dropped from secondary source upload modal** — no retrieval value; not worth the UI noise
 - **date_published auto-set to upload timestamp in Worker rather than collected from user** — upload date is always known and sufficient for D1 display purposes
 - **source_type added to Qdrant payload (not tags/author/date)** — only field among the new additions with meaningful retrieval/filter value at embedding time
+
+## Session 45 decisions — 11 April 2026
+
+- **[2026-04-11] Hardcode agent-general port as 18789 in docker-compose.yml** — docker compose interpolates `${VAR}` in ports mapping from `.env` only at parse time; `env_file:` applies to container env only; invariant single-instance ports should always be hardcoded to avoid ephemeral port assignment on restart
+- **[2026-04-11] Pydantic validation uses log-and-skip pattern, not fail-hard** — overly strict schema could reject valid rows on edge cases (e.g. short case_name); skip preserves retry opportunity by not marking embedded=1; failures are queryable via Docker logs
