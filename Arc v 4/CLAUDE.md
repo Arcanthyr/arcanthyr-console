@@ -1,6 +1,4 @@
 @CLAUDE_arch.md
-@CLAUDE_decisions.md
-@CLAUDE_init.md
 
 CLAUDE.md — Arcanthyr Session File
 Updated: 11 April 2026 (end of session 45) · Supersedes all prior versions
@@ -14,6 +12,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 |---|---|
 | Read this file first | Always |
 | Upload both files | Upload CLAUDE.md AND CLAUDE_arch.md at the start of every session — both are required |
+| Conditional file loading | Load CLAUDE_init.md only when the task involves CLI commands, wrangler deploys, Docker/SSH ops, or PowerShell scripting · Load CLAUDE_decisions.md only when making architectural changes, evaluating design tradeoffs, or when a past decision is directly relevant · Do not load either speculatively |
 | Diagnose from actual output | Before recommending any fix |
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler/npx command |
 | Always specify terminal | Every command must state: which terminal (VS Code, PowerShell, SSH/VPS) AND which directory |
@@ -787,3 +786,35 @@ Worker c4eff825 live. Modal fixed and simplified. source_type now flows from upl
 
 ### Platform state
 Secondary sources re-embed in progress (~25 min, 50/cycle). All other pipeline components healthy. Case count: 729 (+149 since session 45), 11,793 chunks all embedded.
+
+## CHANGES THIS SESSION (session 47) — 11 April 2026
+
+### What we did
+- Reviewed Opus design consultation on sentencing extraction quality (263/313 criminal cases with procedure_notes = NULL)
+- Root cause confirmed: cases processed before session 22 never ran sentencing second pass — not a prompt or classification failure
+- Deployed three fixes to worker.js (version f267f1af):
+  1. Removed chunk_type filter from sentencingTexts in performMerge() — all chunks now fed to SENTENCING_SYNTHESIS_PROMPT (was reasoning/mixed/procedural only, excluding evidence chunks containing prior history, victim impact, personal circumstances)
+  2. Updated sentencing_found guard clause — now covers varied/confirmed/reviewed sentences (appeal courts that vary rather than impose were returning false)
+  3. Added concurrent/cumulative, time served, ancillary orders to procedure_notes extraction checklist
+- Fired requeue-merge for 331 criminal cases (+ accidental 726 full requeue from CC — harmless, idempotent)
+- Re-merge in progress at session close — 12/331 criminal cases completed at last check, rest still processing
+
+### Completed
+- Sentencing synthesis input fix (all chunk types) — deployed
+- Sentencing guard clause expansion — deployed
+- Procedure_notes extraction fields expanded — deployed
+- Requeue-merge fired for full corpus
+
+### Deferred
+- Spot-check procedure_notes results after queue drains — run count query at start of next session
+- Option C (CHUNK-level sentencing enriched_text branch) — deferred to retrieval tuning phase; synthesis fix sufficient for now
+- Verify session 46 secondary_sources re-embed completed (SELECT COUNT(*) FROM secondary_sources WHERE embedded=0)
+- Re-run Q2 BRD baseline query after re-embed
+
+### Key learnings / gotchas
+- requeue-merge with target "remerge" sets deep_enriched=0 before re-enqueuing — spot-check counts will show regression mid-processing, not a bug
+- PowerShell curl is alias for Invoke-WebRequest — use Invoke-WebRequest with -Headers @{} hashtable syntax, not -H string syntax
+- CC will suggest additional requeue commands unprompted — verify before running to avoid duplicate work
+
+### Platform state
+Worker f267f1af live. Sentencing synthesis now receives full judgment text. 331+ cases re-merging via queue — check results next session.

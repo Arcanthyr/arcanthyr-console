@@ -3310,3 +3310,15 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 - **[2026-04-11] Re-embed all 1,201 secondary sources with NULL enriched_text** — reset embedded=0 after poller fix deployed; cleaner vectors expected across all HOC doctrine, legislation annotation, and manually ingested secondary chunks.
 
 - **[2026-04-11] Created ~/ai-stack/.env with pinned port vars** — docker compose was silently assigning ephemeral ports due to missing env file; host-side diagnostic tooling (curl to Qdrant, Ollama) was broken without this fix.
+
+**[2026-04-11]** *Sentencing extraction — include all chunk types in synthesis input*
+
+> Root cause of 263/313 criminal cases with NULL procedure_notes: cases were processed before session 22 when sentencing second pass was implemented. Secondary issue: sentencingTexts in performMerge() filtered to reasoning/mixed/procedural chunks only, excluding evidence chunks that contain the sentencing matrix (prior history, victim impact, personal circumstances) for first-instance sentencing remarks. Fix: removed chunk_type filter entirely — all chunk_text now fed to SENTENCING_SYNTHESIS_PROMPT. The 40k char cap still prevents token blowout.
+
+**[2026-04-11]** *Defer Option C (CHUNK-level sentencing enriched_text branch)*
+
+> Option C would add a conditional branch to the CHUNK v3 prompt: for criminal cases, write structured 150-250 word sentencing extractions instead of generic 80-word evidence descriptions. Retrieval benefit is real (Qdrant search for sentencing facts would improve), but synthesis quality fix via Option A (include all chunks in merge input) is sufficient. Deferred to retrieval tuning phase. Cost if implemented: ~$15-20 GPT for 729-case CHUNK re-run.
+
+**[2026-04-11]** *Expand sentencing_found guard clause*
+
+> Appeal courts that varied or reviewed (rather than imposed) a sentence were returning sentencing_found: false under the old guard clause. Updated to explicitly cover imposed/varied/confirmed/reviewed. Only returns false for judgments with no sentence quantum discussion at all.

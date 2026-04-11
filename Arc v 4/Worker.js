@@ -2209,14 +2209,16 @@ const SENTENCING_SYNTHESIS_PROMPT = `You are a legal research assistant extracti
 
 You will receive the case facts, issues, and the raw text of reasoning sections from the judgment. Extract the sentencing analysis ONLY if the court imposed or varied a sentence.
 
-If this judgment does not contain sentencing analysis (e.g. it is an interlocutory ruling, a liability-only decision, or an acquittal), respond with:
+If this judgment does not discuss any sentence quantum — for example, it is purely interlocutory, a liability-only decision, an acquittal, or an evidence ruling — respond with:
 {"sentencing_found": false}
+
+If the court imposed, varied, confirmed, or reviewed a sentence, respond with sentencing_found: true even if the court did not itself impose the final sentence (e.g., appeal allowed, remitted for resentencing).
 
 Otherwise, respond with a JSON object:
 
 {
   "sentencing_found": true,
-  "procedure_notes": "Structured prose summary (200-400 words) covering: offence(s) charged and maximum statutory penalty, plea (guilty/not guilty/mixed), sentence imposed (type + quantum for each count), key aggravating factors the court identified, key mitigating factors the court identified, comparable cases the court cited for sentencing range, any discount methodology (early plea, cooperation, totality), any suspended sentence conditions or non-parole period, court's reasoning on why this sentence was appropriate.",
+  "procedure_notes": "Structured prose summary (200-400 words) covering: offence(s) charged and maximum statutory penalty, plea (guilty/not guilty/mixed), sentence imposed (type + quantum for each count), key aggravating factors the court identified, key mitigating factors the court identified, comparable cases the court cited for sentencing range, any discount methodology (early plea, cooperation, totality), any suspended sentence conditions or non-parole period, court's reasoning on why this sentence was appropriate, whether sentences are concurrent or cumulative, any declaration of time served or backdating, any ancillary orders (compensation, restraining orders, sex offender registration, forfeiture, licence disqualification).",
   "sentencing_principles": [
     {
       "principle": "Case-specific sentencing proposition (1-2 sentences). Must state the offence type, offender characteristics, and sentence imposed — not a generic sentencing rule.",
@@ -2385,8 +2387,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
       const sentencingTexts = [];
       for (const chunk of allChunks.results) {
         try {
-          const data = JSON.parse(chunk.principles_json || '{}');
-          if (['reasoning', 'mixed', 'procedural'].includes(data.chunk_type) && chunk.chunk_text) {
+          if (chunk.chunk_text) {
             sentencingTexts.push(chunk.chunk_text);
           }
         } catch (e) {}

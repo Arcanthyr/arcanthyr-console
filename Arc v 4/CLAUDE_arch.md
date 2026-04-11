@@ -581,7 +581,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `handleLegalQuery()` | Claude API (claude-sonnet-4-20250514) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
-### Sentencing Second Pass (session 31)
+### Sentencing Second Pass (session 31, updated session 47)
 
 - Constant: `SENTENCING_SYNTHESIS_PROMPT` — module level in worker.js
 - Helper: `isSentencingCase(caseRow, allChunks)` — three checks: (1) `subject_matter='criminal'`, (2) sentencing keyword regex across `principles_json`, (3) issues string scan
@@ -591,6 +591,9 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Non-destructive: non-sentencing criminal cases return `sentencing_found=false`, no extra cost beyond the one GPT call
 - Triggered by `requeue-merge` automatically — no separate route needed
 - `subject_matter` must be included in both CHUNK and MERGE handler SELECTs and passed through the inline `caseRow` object to `performMerge` — omitting it silently breaks Check 1
+- **sentencingTexts input (session 47):** reads chunk_text from ALL chunks (no type filter) — previously filtered to reasoning/mixed/procedural only, which excluded evidence chunks containing prior history, victim impact, and personal circumstances
+- **sentencing_found guard (session 47):** returns true for imposed, varied, confirmed, or reviewed sentences — only returns false for judgments with no sentence quantum discussion at all (interlocutory, acquittal, evidence ruling)
+- **procedure_notes coverage (session 47):** includes concurrent/cumulative sentences, time served declarations, backdating, and ancillary orders (compensation, restraining orders, sex offender registration, forfeiture, licence disqualification)
 
 ### worker.js — admin routes
 
