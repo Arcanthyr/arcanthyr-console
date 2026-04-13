@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 13 April 2026 (end of session 52) · Supersedes all prior versions
+Updated: 13 April 2026 (end of session 53) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -202,7 +202,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · cache loaded 1,234 entries |
 | Baseline (31 queries) | 12 pass / ~13 partial / 3 miss (corpus gap) |
-| procedure_notes | 90/516 criminal cases (17%) · repair batches in progress |
+| procedure_notes | 89/516 at session start · fix deployed · full requeue running overnight · verify count next session |
 
 ---
 
@@ -984,3 +984,25 @@ Cases: 802 total, 802 deep_enriched. Secondary sources: 1,201 all embedded. Scra
 
 ### Platform state
 Cases: 1,234+ (scraper running). Case chunks: 18,271+ all embedded. Secondary sources: 1,201 all embedded. truncation_log: 20 flagged cases. Scraper: running. enrichment_poller: running.
+
+## CHANGES THIS SESSION (session 53) — 13 April 2026
+
+- **procedure_notes health check** — 89/516 criminal cases (17%) at session start, flat from session 52 close. Repair batches from prior sessions had stalled. Full diagnosis run this session.
+
+- **Root cause confirmed — two bugs in sentencing synthesis:**
+  1. CHUNK handler `performMerge` call (worker.js line 3498) was constructing an inline caseRow that dropped `holding` — even though the DB fetch at line 3227 includes `holding`, it was omitted from `{ case_name, court, facts, issues, subject_matter }`. The session 50 sentUser prompt addition of `Outcome (Pass 1 summary): ${caseRow.holding}` was silently receiving `undefined` for all cases processed via the normal scraper CHUNK path. MERGE handler (requeue-merge path) was already correct — explains why prior requeue-merge passes partially worked.
+  2. `max_completion_tokens: 2000` insufficient for complex multi-party sentencing cases — model output truncated mid-JSON, `JSON.parse` threw SyntaxError, caught silently by catch block, `procedure_notes` stayed null.
+  3. Secondary: 25-second `AbortController` timeout too short for large cases (16+ chunks, ~48K char sentencing input) under concurrent queue load.
+
+- **Test-first diagnosis methodology** — Before any code change, reset 3 cases to `deep_enriched=0` via Cloudflare MCP D1: Oh Marris [2023] TASCCA 1 (16 chunks, large), Hawdon [2022] TASCCA 4 (medium), Burns [2022] TASSC 43 (short). Fired default requeue-merge. D1 spot-check confirmed: Hawdon ✅ procedure_notes written, Burns ✅ procedure_notes written, Oh Marris ❌ still null. Size-dependent failure confirmed without touching code.
+
+- **Three fixes deployed — worker.js version f02624fa:**
+  1. `sentTimeout`: `25000` → `45000` ms
+  2. `max_completion_tokens`: `2000` → `4000` (sentencing synthesis OpenAI call only — main synthesis and CHUNK enrichment unchanged)
+  3. CHUNK handler inline caseRow: added `holding: caseRow?.holding` — fixes all new scraper cases going forward
+
+- **Fix verified** — Reset Oh Marris to `deep_enriched=0`, fired requeue-merge, checked D1 after 60s: procedure_notes confirmed written ("The respondent was convicted of one count of rape and one count of indecent assault..."). Hardest test case passing.
+
+- **Full requeue-merge fired** — `target:'remerge'` PowerShell loop queued ~1750 MERGE messages across ~7 iterations before being stopped. Race condition noted: queue processes MERGE messages and resets `deep_enriched` to 1, loop then re-picks those cases. Loop stopped manually at ~7 × 250. Duplicate processing is idempotent — procedure_notes will be correctly written or overwritten. Processing overnight on Cloudflare. Verify count at next session start.
+
+- **D1 spot-check — 157 confirmed sentencing cases with NULL procedure_notes** — identified via SQL query on holding/issues fields containing sentencing language. Breakdown by court: Supreme 258/319 null, CCA 124/149 null, Magistrates 39/42 null, Fullcourt 6/6 null. Overnight requeue expected to resolve majority.

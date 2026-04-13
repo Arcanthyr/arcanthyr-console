@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 13 April 2026 (end of session 52). Upload every session alongside CLAUDE.md.*
+*Updated: 13 April 2026 (end of session 53). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -627,6 +627,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **procedure_notes coverage (session 47):** includes concurrent/cumulative sentences, time served declarations, backdating, and ancillary orders (compensation, restraining orders, sex offender registration, forfeiture, licence disqualification)
 - **sentUser context (session 50):** `caseRow.holding` (Pass 1 outcome) added to sentUser prompt as `Outcome (Pass 1 summary)` before chunk texts. Requires `holding` field in both CHUNK handler and MERGE handler caseRow SELECTs. Root cause: Pass 1 sentence quantum was never reaching sentencing synthesis — chunk-level allHoldings is often empty for CCA appeal cases where no single chunk captures the full disposition.
 - **Input cap (session 50):** Raised from 40K to 120K chars. Previous 40K cap was truncating sentencing content from long CCA judgments (24+ chunks, ~60K chars total). gpt-4o-mini supports 128K token context — 120K chars ≈ 30K tokens, well within limit. 25-second AbortController provides timeout protection regardless of input size.
+- **Timeout and token limits (session 53):** `sentTimeout` raised from 25s to 45s — large cases (16+ chunks, ~48K chars input) were hitting the abort threshold under concurrent queue load. `max_completion_tokens` raised from 2000 to 4000 — complex multi-party sentencing responses were being truncated mid-JSON, causing silent SyntaxError in the catch block and null `procedure_notes`. Both changes apply to the sentencing synthesis OpenAI call only (not main synthesis or CHUNK enrichment).
+- **CHUNK handler holding fix (session 53):** CHUNK handler `performMerge` call now includes `holding: caseRow?.holding` in the inline caseRow. Previously `holding` was fetched at line 3227 but dropped when constructing the inline object — `caseRow.holding` was `undefined` in `sentUser` for all cases processed via the normal scraper path. MERGE handler (requeue-merge path) was already correct via its explicit DB fetch.
 
 ### worker.js — admin routes
 

@@ -3394,3 +3394,14 @@ Why: At ~20K vectors with a single embedding model, all retrieval legs use the s
 **Context:** CC str_replace broke a template literal in worker.js, causing wrangler deploy to fail with unterminated string literal.
 **Decision:** Mandatory `node --check worker.js` after any CC edit, before deploying.
 **Rationale:** CC works from context window snippets and can clip multi-line template strings at boundaries. `node --check` catches parse errors in <1 second. Zero cost, prevents wasted deploy cycles.
+
+## Session 53 decisions — 13 April 2026
+
+**Test-first before code change on timeout hypothesis**
+Before modifying the sentencing synthesis timeout or token limit, reset 3 representative cases (short, medium, large) and checked D1 directly after requeue. Confirmed size-dependent failure (short/medium passed, large failed) without writing a line of code. This approach — D1 spot-check rather than tail log scrolling — is the correct diagnostic pattern for queue consumer failures going forward.
+
+**Raise sentencing synthesis limits conservatively, not maximally**
+Timeout raised 25s → 45s (not 60s+) and tokens raised 2000 → 4000 (not 8000). GPT-4o-mini procedure_notes + 2-4 principles should complete within 4000 tokens for all realistic cases. Overly large limits increase cost and slow queue throughput unnecessarily.
+
+**Stop requeue-merge loop on race condition detection**
+When requeue-merge loop returned 250 × 7+ iterations for a 1234-case corpus, identified race condition (queue processing resets deep_enriched=1, loop re-picks). Stopped loop manually. ~1750 messages already queued is sufficient — idempotent overwrite is acceptable. Rule: for future bulk requeue-merge operations, fire exactly ceil(total_cases / 250) calls manually rather than looping until zero.
