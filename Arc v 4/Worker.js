@@ -2207,14 +2207,15 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
 
 const SENTENCING_SYNTHESIS_PROMPT = `You are a legal research assistant extracting sentencing analysis from an Australian court judgment for a practitioner research database.
 
-You will receive the case facts, issues, and the raw text of reasoning sections from the judgment. Extract the sentencing analysis ONLY if the court imposed or varied a sentence.
+You will receive the case facts, issues, and the raw text of reasoning sections from the judgment.
 
-If this judgment does not discuss any sentence quantum — for example, it is purely interlocutory, a liability-only decision, an acquittal, or an evidence ruling — respond with:
-{"sentencing_found": false}
+DECISION RULE: Read the reasoning sections below. If they contain discussion of any sentence — imposed, varied, confirmed, upheld on appeal, or reviewed (including where the court dismissed a sentence appeal and confirmed the sentence below) — respond with sentencing_found: true and extract the analysis.
 
-If the court imposed, varied, confirmed, or reviewed a sentence, respond with sentencing_found: true even if the court did not itself impose the final sentence (e.g., appeal allowed, remitted for resentencing).
+Respond with {"sentencing_found": false} ONLY if the reasoning sections contain NO discussion of sentence quantum at all — no custodial term, fine, community service order, suspended sentence, non-parole period, or equivalent. Examples of false cases: purely interlocutory rulings, liability-only decisions, acquittals, evidence rulings, bail applications, costs arguments.
 
-Otherwise, respond with a JSON object:
+If in doubt — if the text mentions any specific penalty, sentence length, or sentencing consideration — respond with sentencing_found: true.
+
+Respond with a JSON object:
 
 {
   "sentencing_found": true,
@@ -2401,15 +2402,17 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
           ``,
           `Issues: ${JSON.stringify(caseRow.issues)}`,
           ``,
-          `Holdings: ${JSON.stringify(allHoldings)}`,
+          `Outcome (Pass 1 summary): ${caseRow.holding || 'Not extracted'}`,
+          ``,
+          `Holdings (chunk-level): ${JSON.stringify(allHoldings)}`,
           ``,
           `Judgment reasoning sections (${sentencingTexts.length} sections):`,
           sentencingTexts.join('\n\n---\n\n')
         ].join('\n');
 
-        // Cap input to avoid token overflow — ~40k chars ≈ ~10k tokens
-        const cappedSentUser = sentUser.length > 40000
-          ? sentUser.substring(0, 40000) + '\n\n[TRUNCATED — remaining sections omitted]'
+        // Cap input — gpt-4o-mini supports 128K token context; 120k chars ≈ 30k tokens, well within limit
+        const cappedSentUser = sentUser.length > 120000
+          ? sentUser.substring(0, 120000) + '\n\n[TRUNCATED — remaining sections omitted]'
           : sentUser;
 
         const sentCtrl = new AbortController();
@@ -2535,10 +2538,17 @@ async function handleRequeueMerge(request, env, corsHeaders) {
     const limit = body.limit ? parseInt(body.limit) : 250;
     let requeued = 0;
     if (body.target === 'remerge') {
-      // Re-merge cases already deep_enriched=1 (bad/old-format principles) — reset then enqueue
-      const { results: candidates } = await env.DB.prepare(
-        `SELECT citation FROM cases WHERE deep_enriched = 1 LIMIT ?`
-      ).bind(limit).all();
+      // Re-merge cases already deep_enriched=1 — reset then enqueue
+      // If citation provided, scope to that case only; otherwise full corpus
+      let query, bindings;
+      if (body.citation) {
+        query = `SELECT citation FROM cases WHERE deep_enriched = 1 AND citation = ? LIMIT ?`;
+        bindings = [body.citation, limit];
+      } else {
+        query = `SELECT citation FROM cases WHERE deep_enriched = 1 LIMIT ?`;
+        bindings = [limit];
+      }
+      const { results: candidates } = await env.DB.prepare(query).bind(...bindings).all();
       for (const row of candidates) {
         await env.DB.prepare(`UPDATE cases SET deep_enriched = 0 WHERE citation = ?`).bind(row.citation).run();
         await env.CASE_QUEUE.send({ type: 'MERGE', citation: row.citation });
@@ -3205,7 +3215,7 @@ export default {
           if (!row) throw new Error(`No chunk found for ${citation} index ${chunk_index}`);
 
           const caseRow = await env.DB.prepare(
-            `SELECT case_name, court, facts, issues, judge, case_date, subject_matter FROM cases WHERE citation = ?`
+            `SELECT case_name, court, facts, issues, judge, case_date, subject_matter, holding FROM cases WHERE citation = ?`
           ).bind(citation).first();
 
           const totalChunks = msg.body.total_chunks || 0;
@@ -3391,7 +3401,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
         } else if (type === 'MERGE') {
           // MERGE message — re-run merge step for a case with all chunks already done
           const mergeCaseRow = await env.DB.prepare(
-            `SELECT case_name, court, facts, issues, subject_matter FROM cases WHERE citation = ?`
+            `SELECT case_name, court, facts, issues, subject_matter, holding FROM cases WHERE citation = ?`
           ).bind(citation).first();
           if (!mergeCaseRow) throw new Error(`No case row for ${citation}`);
 

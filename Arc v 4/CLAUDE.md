@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 11 April 2026 (end of session 48) · Supersedes all prior versions
+Updated: 13 April 2026 (end of session 50) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -27,6 +27,8 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | CC vs manual SSH | Simple read/run commands (baseline, logs, single queries) → SSH yourself, faster and cheaper · CC with hex-ssh for multi-step VPS file edits, diagnosis across multiple files, or anything replacing SCP round-trips · Rule: if it's one command and paste-back, do it manually |
 | Long-running scripts | Run directly in PowerShell terminal — CC too slow (confirmed: ingest runs, embed pass) |
 | Context window | Suggest restart proactively when conversation grows long |
+| CC effort | Set to High permanently — maximum effort on all responses |
+| Adaptive thinking | Disabled |
 | MCP tools | CC has hex-ssh (direct VPS edit/upload without SCP), github, firecrawl, playwright, context7, fetch, sequential-thinking, magic — use these instead of manual SCP/git CLI where possible · Full tool list in CLAUDE_arch.md MCP SERVERS & TOOLS section · Never ask CC to read .env.secrets — grep individual keys only via remote-ssh |
 | D1 database name | arcanthyr (binding: DB, ID: 1b8ca95d-b8b3-421d-8c77-20f80432e1a0) |
 | Component quirks | Document in CLAUDE_arch.md Component Notes section |
@@ -183,19 +185,18 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 11 April 2026 (end of session 45)
+## SYSTEM STATE — 13 April 2026 (end of session 50)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | vectors updated · citation + source_id confirmed in all payloads |
-| D1 cases | 729 total · 726 deep_enriched=1 |
-| D1 case_chunks | 11,793 total · 11,793 embedded · 0 pending poller |
-| D1 secondary_sources | 1,199 total · all embedded=1 |
+| D1 cases | 1,234 total · 1,234 deep_enriched=1 |
+| D1 case_chunks | 18,271 total · 18,271 embedded · 0 pending poller |
+| D1 secondary_sources | 1,201 total · all embedded=1 |
 | enrichment_poller | RUNNING |
-| Cloudflare Queue | Clean — nightly cron armed |
-| Scraper | RUNNING (TASMC court code fix deployed) |
-| arcanthyr.com | Live · sequential pass retrieval restored |
-| Retrieval baseline | 10 pass / 5 partial / 0 miss — session 45 |
+| Cloudflare Queue | requeue-merge in progress (1,234 cases) — verify procedure_notes count next session |
+| Scraper | RUNNING |
+| arcanthyr.com | Live |
 
 ---
 
@@ -889,3 +890,31 @@ Cases: 738 deep_enriched. Secondary sources: 1,201 all embedded (re-embed comple
 
 ### Platform state
 Cases: 802 total, 802 deep_enriched. Secondary sources: 1,201 all embedded. Scraper: healthy, running back through 2017 and earlier. Sentencing synthesis: working correctly. Pre-RRF baseline saved.
+
+## CHANGES THIS SESSION (session 50) — 13 April 2026
+
+### What we did
+- **Corpus progress check** — 1,234 total cases (all deep_enriched=1), up from 802 at session 49 close (+432 from scraper). 18,271 case chunks all done and embedded, up from 11,793. Secondary sources: 1,201 all embedded. Scraper actively running.
+
+- **procedure_notes coverage gap diagnosed** — Found 72/513 criminal cases with procedure_notes (14%). CCA coverage only 10% (15/149) — severely low given CCA primarily handles sentencing appeals. Diagnosed two root causes via D1 queries and chunk inspection on Roland v Tasmania [2016] TASCCA 20 (24 chunks, ~60K chars total):
+  1. `cases.holding` field (Pass 1 extracted outcome containing sentence quantum) was never passed to the sentencing synthesis prompt — absent from both caseRow SELECTs in CHUNK and MERGE handlers
+  2. 40K char cap on sentencingTexts was truncating long judgments before reaching sentencing discussion. CCA judgments handle conviction grounds first (chunks 1–13), sentencing last (chunks 21–23). Cap cut off at approximately chunk 13 — model never saw the sentencing content.
+
+- **Four fixes applied to worker.js and deployed**:
+  1. CHUNK handler caseRow SELECT: added `holding` field
+  2. MERGE handler caseRow SELECT: added `holding` field
+  3. sentUser context: added `Outcome (Pass 1 summary): ${caseRow.holding || 'Not extracted'}` before chunk texts — gives model sentence quantum even when truncation occurs
+  4. 40K cap raised to 120K chars — gpt-4o-mini supports 128K token context; previous cap was ~12× more conservative than necessary
+
+- **Single-case test passed** — Reset Roland v Tasmania [2016] TASCCA 20 to deep_enriched=0, fired MERGE with limit=1. Within 2 minutes: deep_enriched=1, correct procedure_notes written ("Initially sentenced to three years imprisonment, the trial judge backdated..."). No timeout issues.
+
+- **Full requeue-merge fired** — `{"target":"remerge"}` for all 1,234 cases at session close. Queue draining.
+
+### Key learnings / gotchas
+- 40K sentencing cap was an undocumented default from session 31 with no recorded rationale. gpt-4o-mini input processing is parallelised — 120K input adds ~1–2 seconds over 40K. The 25-second AbortController provides adequate timeout protection.
+- `cases.holding` (Pass 1 outcome) is a more reliable source of sentence quantum than chunk-level `allHoldings` for CCA appeals — it captures the disposition section that may not fall cleanly within any single chunk.
+
+### Deferred
+- Verify final procedure_notes count after queue drains: `SELECT COUNT(*) FROM cases WHERE subject_matter='criminal' AND procedure_notes IS NOT NULL`
+- Q2 BRD baseline rerun (carried from session 46/49)
+- RRF retrieval pipeline overhaul — next major piece of work (Opus spec from session 40 ready)

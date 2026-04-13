@@ -3346,3 +3346,15 @@ Opus spec from April 5 session is complete. Four-leg prefetch design, Python-sid
 
 **Route/column names must be verified from source before use in commands**
 Pattern: I generated /api/pipeline/requeue-merge (wrong) and WHERE criminal=1 (wrong column) without verifying. Rule added: ask CC to grep/read before constructing any command with route paths or column names not explicitly confirmed this session.
+
+## Session 50 decisions — 13 April 2026
+
+**Sentencing synthesis cap raised 40K → 120K chars**
+- Context: 40K cap set in session 31 without documented rationale. gpt-4o-mini supports 128K token context; 40K ≈ 10K tokens is ~12× more conservative than necessary. CCA judgments of 24+ chunks have ~60K chars total — sentencing discussion in last 3–4 chunks was being truncated silently.
+- Decision: raise to 120K chars. Verified no timeout issues on Roland v Tasmania (24 chunks). 25-second AbortController is the real timeout protection and remains unchanged.
+- Alternative considered: reversing chunk order so sentencing chunks come first under the cap. Rejected — adding caseRow.holding to context is simpler and more reliable as a primary fix.
+
+**caseRow.holding added to sentencing synthesis prompt**
+- Context: `cases.holding` (Pass 1 extracted outcome) contains explicit sentence quantum (e.g. "sentenced to three years imprisonment, backdated to August 9, 2015"). This field was in D1 but never passed to sentencing synthesis — absent from both CHUNK and MERGE handler caseRow SELECTs.
+- Decision: add `holding` to both SELECTs; surface as `Outcome (Pass 1 summary)` in sentUser before chunk texts. Appears before the 120K truncation point regardless of judgment length.
+- Why important for CCA: CCA sentencing appeal judgments often confirm or vary a sentence without re-stating the quantum in the reasoning chunks — it appears only in the Pass 1 extracted holding.

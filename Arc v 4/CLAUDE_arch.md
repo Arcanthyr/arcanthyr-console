@@ -88,6 +88,12 @@ Full D1/Workers/KV/R2 access
 **MCP — sequential-thinking**:
 `sequentialthinking`
 → Use for: complex multi-step reasoning tasks where structured chain-of-thought helps
+→ Installed globally as `mcp-server-sequential-thinking` (v2025.12.18) — config updated from npx to direct binary (session 49). Restart CC after any reinstall.
+
+**MCP tools vs auto-activating skills — key distinction:**
+- **MCP tools** (hex-ssh, sequential-thinking, playwright, context7, fetch, firecrawl, github, magic, cloudflare) — require **explicit invocation** by CC. They do not trigger automatically under any condition.
+- **Superpowers skills** (systematic-debugging, verification-before-completion, test-driven-development) — **auto-activate** on matching conditions (bug/failure reported; about to claim work complete; implementing a feature/bugfix). No invocation needed.
+- **code-simplifier** — built-in Claude Code plugin (tengu_amber_lattice plugin system), already enabled in `~/.claude.json`. Not a separate MCP server. The `/simplify` skill covers the same purpose explicitly.
 
 **MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
 
@@ -594,6 +600,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **sentencingTexts input (session 47):** reads chunk_text from ALL chunks (no type filter) — previously filtered to reasoning/mixed/procedural only, which excluded evidence chunks containing prior history, victim impact, and personal circumstances
 - **sentencing_found guard (session 47):** returns true for imposed, varied, confirmed, or reviewed sentences — only returns false for judgments with no sentence quantum discussion at all (interlocutory, acquittal, evidence ruling)
 - **procedure_notes coverage (session 47):** includes concurrent/cumulative sentences, time served declarations, backdating, and ancillary orders (compensation, restraining orders, sex offender registration, forfeiture, licence disqualification)
+- **sentUser context (session 50):** `caseRow.holding` (Pass 1 outcome) added to sentUser prompt as `Outcome (Pass 1 summary)` before chunk texts. Requires `holding` field in both CHUNK handler and MERGE handler caseRow SELECTs. Root cause: Pass 1 sentence quantum was never reaching sentencing synthesis — chunk-level allHoldings is often empty for CCA appeal cases where no single chunk captures the full disposition.
+- **Input cap (session 50):** Raised from 40K to 120K chars. Previous 40K cap was truncating sentencing content from long CCA judgments (24+ chunks, ~60K chars total). gpt-4o-mini supports 128K token context — 120K chars ≈ 30K tokens, well within limit. 25-second AbortController provides timeout protection regardless of input size.
 
 ### worker.js — admin routes
 
