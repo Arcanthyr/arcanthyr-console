@@ -3372,3 +3372,25 @@ Why: Attempted to add "distinct from George v Rockett" to BRD enriched_text — 
 **RRF deferred: corpus prerequisites not met**
 Decision: Deferred RRF implementation to a future session when corpus exceeds 50K vectors.
 Why: At ~20K vectors with a single embedding model, all retrieval legs use the same signal. Wrong-domain chunks accumulate multi-leg RRF score via surface vocabulary overlap — same regression observed in session 41 (reverted in session 42). Prerequisites per Opus session 42 analysis: corpus >50K vectors, independent retrieval signals across legs, per-leg diagnostics, comprehensive doctrine coverage. None met at current scale.
+
+## Session 52 decisions — 13 April 2026
+
+### 500K case text cap (not 2M)
+**Context:** Raised case text truncation cap from 200K. Considered 2M.
+**Decision:** 500K cap across all handlers.
+**Rationale:** Each chunk generates one GPT-4o-mini call. 500K = ~167 chunks (~$1.67/case). 2M = ~667 chunks (~$6.67/case) plus queue congestion blocking other cases and OpenAI rate limit risk. 500K is generous for Tasmanian case law — even long CCA multi-ground appeals fit comfortably. Truncation logging captures anything that does hit the cap for manual review.
+
+### No automatic re-fetch for truncated cases
+**Context:** Considered building an automatic AustLII re-fetch into the truncation resolution workflow.
+**Decision:** No automatic re-fetch. User deletes the truncated case and re-uploads via existing upload page.
+**Rationale:** Keeps the feature simple. The existing upload flow (paste URL) already handles fresh case ingestion. Adding a re-fetch path would duplicate the upload pipeline with a special uncapped variant. The truncation_log + Library UI gives visibility; the fix path is manual but adequate for the low volume of affected cases (20 backfilled).
+
+### Option B (chunk before truncate) rejected
+**Context:** Proposed chunking full text before truncating for storage, so all content enters case_chunks even if cases.full_text is capped.
+**Decision:** Rejected — not compatible with async architecture.
+**Rationale:** Chunking happens in the METADATA queue consumer, which reads cases.full_text from D1. The queue exists to avoid 30s Worker timeout on large cases. Moving chunking into the upload handler would defeat the async design. Raising the cap (Option A) achieves the same goal without restructuring the pipeline.
+
+### node --check validation rule for CC edits
+**Context:** CC str_replace broke a template literal in worker.js, causing wrangler deploy to fail with unterminated string literal.
+**Decision:** Mandatory `node --check worker.js` after any CC edit, before deploying.
+**Rationale:** CC works from context window snippets and can clip multi-line template strings at boundaries. `node --check` catches parse errors in <1 second. Zero cost, prevents wasted deploy cycles.

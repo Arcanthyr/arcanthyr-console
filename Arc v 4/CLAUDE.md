@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 13 April 2026 (end of session 51) · Supersedes all prior versions
+Updated: 13 April 2026 (end of session 52) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -106,7 +106,9 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Opus referral triggers | Defer to Opus + extended thinking (always on) for: (1) Prompt engineering decisions — any LLM prompt that affects data quality at scale; (2) Architectural choices with downstream consequences (schema design, pipeline changes); (3) Any decision where getting it wrong requires a patch script, re-embed, or bulk data fix; (4) Design decisions affecting 100+ rows or Qdrant points. CC should flag these rather than answering directly. |
 | docker compose force-recreate | Always run with AGENT_GENERAL_PORT=18789 prefix when doing manual restarts — e.g. AGENT_GENERAL_PORT=18789 docker compose up -d --force-recreate agent-general — or the port will be assigned randomly and the baseline script will fail silently |
 | hex-ssh deploys | CC force-recreate via hex-ssh remote-ssh will always get ephemeral ports unless env is loaded — the docker-compose.yml fix (session 41) now handles this via env_file: but AGENT_GENERAL_PORT still needs to be in .env.config (added session 41) |
-| Upload case text limit | `worker.js` line ~269 — `caseText.length > 200000 ? caseText.substring(0, 200000) : caseText` · raised from 100K to 200K session 43 · not in scraper · limit applies to both `handleUploadCase` and `handleFetchCaseUrl` |
+| Upload case text limit | 500K char cap · `handleFetchCaseUrl` and `handleUploadCase` both cap at 500,000 chars · `processCaseUpload` line ~269 also 500K but is dead code (neither handler calls it) · truncation events logged to `truncation_log` D1 table · raised from 200K session 43, corrected session 52 |
+| worker.js syntax check | After any CC edit to worker.js, run `node --check worker.js` from `Arc v 4/` before `wrangler deploy` — catches unterminated strings, missing brackets, and other parse errors that would fail the build |
+| truncation_log table | D1 table tracking cases truncated on upload · columns: id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved · status values: flagged/confirmed/replaced · `GET /api/pipeline/truncation-status` (no auth) returns flagged entries · `POST /api/pipeline/truncation-resolve` (X-Nexus-Key) for confirm/delete actions |
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
 | Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
 
@@ -940,3 +942,45 @@ Cases: 802 total, 802 deep_enriched. Secondary sources: 1,201 all embedded. Scra
 - **Embedding contamination lesson — CRITICAL** — During Q2 fix, added "distinct from George v Rockett prescribed belief test" disambiguation language to BRD enriched_text. This caused BRD chunks to drop out of top 6 entirely (from 0.54 to <0.51). Root cause: "this is NOT about X" language in an embedding text pulls the vector toward X just as much as "this IS about X." The model cannot reason about negation — it just sees semantic proximity to X. **Rule: never add cross-domain disambiguation to enriched_text. Put domain anchors on the COMPETING chunks only. Keep target chunk embedding text purely about the target domain.** Added to KNOWN ISSUES as CONCEPTS-adjacent vocabulary contamination.
 
 - **worker.js `GET /api/pipeline/case-subjects` route** — Added at line ~3090 (after bm25-corpus block). Returns `{subjects: {citation: subject_matter}}` for all 1,234 cases. No auth required (non-sensitive read). Required for server.py `get_subject_matter_cache()` hourly refresh.
+
+## CHANGES THIS SESSION (session 52) — 13 April 2026
+
+### What we did
+- **Truncation feedback loop — FULL FEATURE SHIPPED** — End-to-end implementation: detection, persistence, backfill, scraper warnings, and console UI.
+
+  **D1 schema:** New `truncation_log` table (id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved). `status` values: flagged/confirmed/replaced. `ON CONFLICT DO UPDATE` resets to flagged on re-scrape.
+
+  **Worker changes (worker.js):**
+  - Case text caps corrected: `handleFetchCaseUrl` was already at 500K (not 200K as documented), `handleUploadCase` was uncapped. Both now uniformly 500K with truncation logging. `processCaseUpload` (dead code — neither handler calls it) updated 200K→500K for consistency.
+  - Truncation detection: both upload handlers now write to `truncation_log` D1 table when truncation fires (before the substring). Source field set to 'scraper' or 'manual_upload' per handler.
+  - `GET /api/pipeline/truncation-status` — returns all truncation_log entries, no auth required (same pattern as case-subjects).
+  - `POST /api/pipeline/truncation-resolve` — X-Nexus-Key required. Actions: 'confirm' (sets status=confirmed) or 'delete' (removes case + chunks + truncation_log entry).
+  - Build error from CC str_replace cutting a template literal — fixed. Added `node --check worker.js` validation rule.
+
+  **Scraper (austlii_scraper.py):** Console warnings added — `logging.warning` at >2M chars (Worker truncation threshold), `logging.info` at >200K chars (old cap comparison). Local file, no VPS deploy needed.
+
+  **Backfill:** 20 cases flagged as potentially truncated via `LENGTH(full_text) >= 199000` query. Inserted into truncation_log with `original_length=-1` (unknown — retroactive), `source='backfill'`, `status='flagged'`.
+
+  **Console UI (Library.jsx):**
+  - Fetches `/api/pipeline/truncation-status` on mount, builds truncationMap for flagged entries.
+  - CasesTable status column: red "Incomplete" pill badge for truncated cases (replaces normal status dot). Click opens TruncationModal.
+  - TruncationModal: shows citation, source, obtained chars; for original_length=-1 shows "retroactively flagged" note; for known originals shows original/missing/percentage. Nexus key input (persists in Library state). Confirm Index and Delete Case buttons with busy state + error handling. window.confirm guard on delete.
+  - Auth pattern matched from PipelineStatus.jsx. CSS variables matched: var(--red), var(--surface), var(--border-em), var(--amber).
+
+- **EMAIL_DIGEST KV namespace identified** — KV binding `EMAIL_DIGEST` (ID: 9ea5773d11ac40ce9904ca21c602e9f4) used by email/contact management features and runDailySync email summary. Previously undocumented in MDs.
+
+### Key learnings / gotchas
+- CLAUDE.md had stale "200K cap" reference — actual state was handleFetchCaseUrl at 500K, handleUploadCase uncapped, processCaseUpload 200K (dead code). Always have CC grep actual values before assuming documented state is correct.
+- 500K cap chosen over 2M to limit chunk explosion: 500K case = ~167 chunks/GPT calls (~$1.67); 2M case = ~667 chunks (~$6.67) plus queue congestion and OpenAI rate limit risk.
+- Option B (chunk full text before truncating for storage) rejected — chunking happens in async queue consumer reading from D1 `cases.full_text`, so the text must be stored at full (or capped) length before the consumer runs. Can't reorder without breaking the async architecture.
+- CC str_replace can clip multi-line template literals at context window boundaries — always run `node --check worker.js` after CC edits before deploying.
+- `processCaseUpload` at worker.js line ~269 is dead code — neither `handleUploadCase` nor `handleFetchCaseUrl` calls it.
+
+### Deferred
+- Verify procedure_notes count after queue drain (carried from session 50)
+- Q2 BRD baseline rerun (carried from session 46/49)
+- Sentencing extraction fix implementation (carried)
+- subject_matter filter: audit remaining misclassifications (carried)
+
+### Platform state
+Cases: 1,234+ (scraper running). Case chunks: 18,271+ all embedded. Secondary sources: 1,201 all embedded. truncation_log: 20 flagged cases. Scraper: running. enrichment_poller: running.

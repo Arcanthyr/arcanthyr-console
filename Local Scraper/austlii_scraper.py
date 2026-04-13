@@ -251,6 +251,17 @@ def upload_case(html, court, year, num):
 
     citation = f'[{year}] {court} {num}'
 
+    if len(text) > 2_000_000:
+        logging.warning(
+            f'TRUNCATION ALERT: {citation} is {len(text):,} chars'
+            f' — will be truncated to 2,000,000 at Worker'
+        )
+    elif len(text) > 200_000:
+        logging.info(
+            f'LARGE CASE: {citation} is {len(text):,} chars'
+            f' (previously would have been truncated at 200K)'
+        )
+
     try:
         r = requests.post(UPLOAD_URL, json={
             'case_text': base64.b64encode(text.encode()).decode(),

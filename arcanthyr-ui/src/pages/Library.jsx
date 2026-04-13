@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
 
+const BASE = 'https://arcanthyr.com';
+
 const TABS = ['CASES', 'SECONDARY SOURCES', 'LEGISLATION'];
 
 const COURT_COLORS = {
@@ -43,9 +45,13 @@ export default function Library() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedCase, setSelectedCase] = useState(null);
+  const [truncationMap, setTruncationMap] = useState({});
+  const [selectedTruncation, setSelectedTruncation] = useState(null);
+  const [nexusKey, setNexusKey] = useState('');
 
   useEffect(() => {
     load();
+    loadTruncations();
   }, []);
 
   async function load() {
@@ -60,12 +66,46 @@ export default function Library() {
     }
   }
 
+  function loadTruncations() {
+    fetch(`${BASE}/api/pipeline/truncation-status`)
+      .then(r => r.json())
+      .then(d => {
+        const map = {};
+        (d.truncations || []).forEach(t => {
+          if (t.status === 'flagged') map[t.id] = t;
+        });
+        setTruncationMap(map);
+      })
+      .catch(err => console.warn('Truncation status fetch failed:', err));
+  }
+
   async function handleDelete(docType, id) {
     if (!confirm(`Delete ${id}?`)) return;
     try {
-      fetch(`https://arcanthyr.com/api/legal/library/delete/${docType}/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      fetch(`${BASE}/api/legal/library/delete/${docType}/${encodeURIComponent(id)}`, { method: 'DELETE' });
       await load();
     } catch (e) { alert(e.message); }
+  }
+
+  async function handleTruncationConfirm(id) {
+    await fetch(`${BASE}/api/pipeline/truncation-resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': nexusKey },
+      body: JSON.stringify({ id, action: 'confirm' }),
+    });
+    setTruncationMap(prev => { const next = { ...prev }; delete next[id]; return next; });
+    setSelectedTruncation(null);
+  }
+
+  async function handleTruncationDelete(id) {
+    await fetch(`${BASE}/api/pipeline/truncation-resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': nexusKey },
+      body: JSON.stringify({ id, action: 'delete' }),
+    });
+    setTruncationMap(prev => { const next = { ...prev }; delete next[id]; return next; });
+    setData(prev => prev ? { ...prev, cases: (prev.cases || []).filter(c => c.id !== id) } : prev);
+    setSelectedTruncation(null);
   }
 
   return (
@@ -92,7 +132,7 @@ export default function Library() {
           {error && <div style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</div>}
           {data && (
             <>
-              {tab === 0 && <CasesTable rows={data.cases || []} onDelete={handleDelete} onSelect={setSelectedCase} selectedId={selectedCase?.id} />}
+              {tab === 0 && <CasesTable rows={data.cases || []} onDelete={handleDelete} onSelect={setSelectedCase} selectedId={selectedCase?.id} truncationMap={truncationMap} onTruncationClick={setSelectedTruncation} />}
               {tab === 1 && <CorpusTable rows={data.secondary || []} onDelete={handleDelete} />}
               {tab === 2 && <LegislationTable rows={data.legislation || []} onDelete={handleDelete} />}
             </>
@@ -100,12 +140,23 @@ export default function Library() {
         </div>
         {selectedCase && <CaseReadingPane c={selectedCase} onClose={() => setSelectedCase(null)} />}
       </div>
+
+      {selectedTruncation && (
+        <TruncationModal
+          record={selectedTruncation}
+          nexusKey={nexusKey}
+          onNexusKeyChange={setNexusKey}
+          onConfirm={handleTruncationConfirm}
+          onDelete={handleTruncationDelete}
+          onClose={() => setSelectedTruncation(null)}
+        />
+      )}
     </div>
   );
 }
 
 /* ── Cases table ───────────────────────────────────────────── */
-function CasesTable({ rows, onDelete, onSelect, selectedId }) {
+function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTruncationClick }) {
   const [search, setSearch] = useState('');
   const [courtFilter, setCourtFilter] = useState([]);
   const [yearFilter, setYearFilter] = useState([]);
@@ -182,7 +233,20 @@ function CasesTable({ rows, onDelete, onSelect, selectedId }) {
               <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
                 {r.chunks_embedded}/{r.chunk_count}
               </td>
-              <td style={td}>{statusDot(r)}</td>
+              <td style={td}>
+                {truncationMap[r.id] ? (
+                  <button
+                    onClick={e => { e.stopPropagation(); onTruncationClick({ ...truncationMap[r.id], case: r }); }}
+                    style={{
+                      background: 'var(--red)', color: '#fff', border: 'none',
+                      borderRadius: '12px', padding: '2px 10px', fontSize: '11px',
+                      fontWeight: 700, cursor: 'pointer',
+                    }}
+                  >
+                    Incomplete
+                  </button>
+                ) : statusDot(r)}
+              </td>
               <td style={td}>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {url && r.enriched && (
@@ -360,3 +424,150 @@ function CaseReadingPane({ c, onClose }) {
     </div>
   );
 }
+
+/* ── Truncation modal ──────────────────────────────────────── */
+function TruncationModal({ record, nexusKey, onNexusKeyChange, onConfirm, onDelete, onClose }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  const obtained = record.obtained_length || 200000;
+  const hasOriginal = record.original_length > 0;
+  const pct = hasOriginal ? Math.round(obtained / record.original_length * 100) : null;
+  const missing = hasOriginal ? record.original_length - obtained : null;
+  const citation = record.citation || record.case?.ref || record.case?.citation || record.id;
+
+  async function doAction(action) {
+    if (!nexusKey) { setErr('Admin key required'); return; }
+    if (action === 'delete' && !window.confirm('Delete this case and all its chunks? This cannot be undone.')) return;
+    setBusy(true);
+    setErr('');
+    try {
+      if (action === 'delete') await onDelete(record.id);
+      else await onConfirm(record.id);
+    } catch (e) {
+      setErr(e.message);
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'rgba(0,0,0,0.65)', display: 'flex',
+        alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          background: 'var(--surface)',
+          border: '1px solid var(--border-em)',
+          borderRadius: '10px',
+          padding: '28px',
+          maxWidth: '460px',
+          width: '90%',
+          color: 'var(--text-primary)',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--amber)', marginBottom: '20px' }}>
+          ⚠ Case Truncated
+        </div>
+
+        {/* Detail grid */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: '90px 1fr',
+          gap: '9px 14px', fontSize: '13px', marginBottom: '18px',
+        }}>
+          <span style={labelStyle}>Citation</span>
+          <span style={{ fontFamily: 'monospace', fontSize: '12px', color: 'var(--text-secondary)', wordBreak: 'break-all' }}>{citation}</span>
+
+          <span style={labelStyle}>Source</span>
+          <span style={{ color: 'var(--text-body)' }}>{(record.source || '—').replace(/_/g, ' ')}</span>
+
+          <span style={labelStyle}>Obtained</span>
+          <span style={{ color: 'var(--text-body)' }}>{obtained.toLocaleString()} characters</span>
+
+          {hasOriginal ? (
+            <>
+              <span style={labelStyle}>Original</span>
+              <span style={{ color: 'var(--text-body)' }}>{record.original_length.toLocaleString()} characters ({pct}%)</span>
+
+              <span style={labelStyle}>Missing</span>
+              <span style={{ color: 'var(--red)' }}>~{missing.toLocaleString()} characters</span>
+            </>
+          ) : (
+            <>
+              <span style={labelStyle}>Original</span>
+              <span style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>Unknown</span>
+            </>
+          )}
+        </div>
+
+        {/* Retroactive note */}
+        {record.original_length === -1 && (
+          <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.6 }}>
+            Original size unknown — this case was flagged retroactively. No specific data on extent of deficiency.
+          </div>
+        )}
+
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: 1.6 }}>
+          This case was truncated on upload. Content beyond the character limit was not indexed.
+        </div>
+
+        {/* Admin key */}
+        <input
+          value={nexusKey}
+          onChange={e => onNexusKeyChange(e.target.value)}
+          placeholder="Admin key"
+          type="password"
+          style={{
+            width: '100%', padding: '7px 10px', fontSize: '12px',
+            background: 'var(--surface-hover)', border: '1px solid var(--border)',
+            borderRadius: '4px', color: 'var(--text-primary)',
+            marginBottom: err ? '10px' : '16px', boxSizing: 'border-box',
+          }}
+        />
+
+        {err && (
+          <div style={{ fontSize: '12px', color: 'var(--red)', marginBottom: '14px' }}>{err}</div>
+        )}
+
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button
+            onClick={() => !busy && doAction('confirm')}
+            disabled={busy}
+            style={{
+              padding: '7px 16px', fontSize: '12px', fontWeight: 600,
+              background: 'var(--surface-hover)', border: '1px solid var(--border-em)',
+              borderRadius: '6px', color: 'var(--text-body)',
+              cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
+            }}
+          >
+            Confirm Index
+          </button>
+          <button
+            onClick={() => !busy && doAction('delete')}
+            disabled={busy}
+            style={{
+              padding: '7px 16px', fontSize: '12px', fontWeight: 600,
+              background: 'rgba(232,74,74,0.12)', border: '1px solid rgba(232,74,74,0.4)',
+              borderRadius: '6px', color: 'var(--red)',
+              cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
+            }}
+          >
+            Delete Case
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const labelStyle = {
+  color: 'var(--text-muted)', textTransform: 'uppercase',
+  fontSize: '11px', letterSpacing: '0.07em', paddingTop: '1px',
+};

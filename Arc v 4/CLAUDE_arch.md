@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 13 April 2026 (end of session 51). Upload every session alongside CLAUDE.md.*
+*Updated: 13 April 2026 (end of session 52). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -44,6 +44,9 @@
 → Use for: querying live D1 without wrangler, checking deployed worker versions, reading live worker.js code
 
 **MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
+
+**KV Namespace — EMAIL_DIGEST** (ID: 9ea5773d11ac40ce9904ca21c602e9f4):
+Used by email/contact management features (Resend email composer, contact list) and `runDailySync` email summary. Bound in `wrangler.toml`.
 
 ---
 
@@ -514,6 +517,19 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
     tokenize='porter'
 );
 ```
+
+---
+
+## D1 DATABASE — KEY TABLES
+
+| Table | Primary Key | Key columns |
+|---|---|---|
+| `cases` | `id` TEXT (citation-derived) | `citation`, `court`, `case_name`, `facts`, `issues`, `holding`, `principles_extracted`, `holdings_extracted`, `authorities_extracted`, `subject_matter`, `enriched`, `deep_enriched`, `procedure_notes` |
+| `case_chunks` | `id` TEXT (`{citation}__chunk__{N}`) | `citation`, `chunk_index`, `chunk_text`, `enriched_text`, `principles_json`, `done`, `embedded` |
+| `secondary_sources` | `id` TEXT | `title`, `raw_text`, `enriched_text`, `category`, `source_type`, `enriched`, `embedded` |
+| `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
+| `legislation_sections` | `id` TEXT | `leg_id`, `section_number`, `heading`, `text`, `embedded` |
+| `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
 
 ---
 

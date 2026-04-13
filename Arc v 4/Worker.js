@@ -266,7 +266,7 @@ async function processCaseUpload(env, caseText, citation, caseName, court) {
   const exists = await env.DB.prepare("SELECT id, enriched FROM cases WHERE citation = ?").bind(citation).first();
   if (exists && exists.enriched === 1) throw new Error(`Case ${citation} already exists and is fully processed`);
 
-  const truncatedText = caseText.length > 200000 ? caseText.substring(0, 200000) : caseText;
+  const truncatedText = caseText.length > 500000 ? caseText.substring(0, 500000) : caseText;
 
   const caseData = {
     citation,
@@ -1049,6 +1049,24 @@ async function handleUploadCase(body, env) {
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   court = court || courtMap[court_hint] || 'supreme';
   if (encoding === 'base64') case_text = atob(case_text);
+  if (case_text.length > 500000) {
+    console.warn(`TRUNCATION: ${citation} — ${case_text.length} chars → 500,000`);
+    try {
+      await env.DB.prepare(`
+        INSERT INTO truncation_log (id, citation, original_length, truncated_to, source, status, date_truncated)
+        VALUES (?, ?, ?, 500000, ?, 'flagged', ?)
+        ON CONFLICT(id) DO UPDATE SET
+          original_length = excluded.original_length,
+          source = excluded.source,
+          status = 'flagged',
+          date_truncated = excluded.date_truncated,
+          date_resolved = NULL
+      `).bind(citationToId(citation), citation, case_text.length, 'manual_upload', new Date().toISOString()).run();
+    } catch (e) {
+      console.error(`truncation_log write failed for ${citation}:`, e);
+    }
+    case_text = case_text.substring(0, 500000);
+  }
   const caseId = citationToId(citation);
   const caseYear = (citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1];
   await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
@@ -1071,11 +1089,10 @@ async function handleFetchCaseUrl(body, env) {
 
   const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
   const content = contentMatch ? contentMatch[1] : html;
-  const plainText = content
+  let plainText = content
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim()
-    .substring(0, 500000);
+    .trim();
 
   if (!plainText) throw new Error("No text content extracted from URL");
 
@@ -1086,6 +1103,25 @@ async function handleFetchCaseUrl(body, env) {
     if (m) citation = `[${m[2]}] ${m[1].toUpperCase()} ${m[3]}`;
   }
   if (!citation) throw new Error("citation required — could not be auto-detected from URL");
+
+  if (plainText.length > 500000) {
+    console.warn(`TRUNCATION: ${citation} — ${plainText.length} chars → 500,000`);
+    try {
+      await env.DB.prepare(`
+        INSERT INTO truncation_log (id, citation, original_length, truncated_to, source, status, date_truncated)
+        VALUES (?, ?, ?, 500000, ?, 'flagged', ?)
+        ON CONFLICT(id) DO UPDATE SET
+          original_length = excluded.original_length,
+          source = excluded.source,
+          status = 'flagged',
+          date_truncated = excluded.date_truncated,
+          date_resolved = NULL
+      `).bind(citationToId(citation), citation, plainText.length, 'scraper', new Date().toISOString()).run();
+    } catch (e) {
+      console.error(`truncation_log write failed for ${citation}:`, e);
+    }
+    plainText = plainText.substring(0, 500000);
+  }
 
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   const abbrevMatch = citation.match(/\]\s+([A-Za-z]+)\s+\d/);
@@ -2416,7 +2452,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
           : sentUser;
 
         const sentCtrl = new AbortController();
-        const sentTimeout = setTimeout(() => sentCtrl.abort(), 25000);
+        const sentTimeout = setTimeout(() => sentCtrl.abort(), 45000);
         const sentResponse = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -2425,7 +2461,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
           },
           body: JSON.stringify({
             model: "gpt-4o-mini-2024-07-18",
-            max_completion_tokens: 2000,
+            max_completion_tokens: 4000,
             messages: [
               { role: "system", content: SENTENCING_SYNTHESIS_PROMPT },
               { role: "user", content: cappedSentUser }
@@ -2572,6 +2608,54 @@ async function handleRequeueMerge(request, env, corsHeaders) {
     return new Response(JSON.stringify({ ok: true, requeued }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleTruncationStatus(request, env) {
+  const { results } = await env.DB.prepare(`
+    SELECT id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved
+    FROM truncation_log
+    ORDER BY date_truncated DESC
+  `).all();
+  return new Response(JSON.stringify({ truncations: results }), {
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+  });
+}
+
+async function handleTruncationResolve(request, env) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) {
+    return new Response(JSON.stringify({ error: 'Unauthorised' }), {
+      status: 401, headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  const { id, action } = await request.json();
+  if (!id || !['confirm', 'delete'].includes(action)) {
+    return new Response(JSON.stringify({ error: 'id and action (confirm|delete) required' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  if (action === 'confirm') {
+    await env.DB.prepare(
+      `UPDATE truncation_log SET status = 'confirmed', date_resolved = ? WHERE id = ?`
+    ).bind(new Date().toISOString(), id).run();
+    return new Response(JSON.stringify({ ok: true, status: 'confirmed' }), {
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
+  }
+
+  if (action === 'delete') {
+    const caseRow = await env.DB.prepare('SELECT citation FROM cases WHERE id = ?').bind(id).first();
+    if (caseRow) {
+      await env.DB.prepare('DELETE FROM case_chunks WHERE citation = ?').bind(caseRow.citation).run();
+      await env.DB.prepare('DELETE FROM cases WHERE id = ?').bind(id).run();
+    }
+    await env.DB.prepare('DELETE FROM truncation_log WHERE id = ?').bind(id).run();
+    return new Response(JSON.stringify({ ok: true, status: 'deleted' }), {
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
   }
 }
 
@@ -3096,6 +3180,14 @@ export default {
       return new Response(JSON.stringify({ subjects }), { headers: corsHeaders });
     }
 
+    if (url.pathname === '/api/pipeline/truncation-status' && request.method === 'GET') {
+      return handleTruncationStatus(request, env);
+    }
+
+    if (url.pathname === '/api/pipeline/truncation-resolve' && request.method === 'POST') {
+      return handleTruncationResolve(request, env);
+    }
+
     /* ── INGEST ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ingest/")) {
       if (!rateLimit(`${ip}:ingest`, 10, 60_000)) return json({ error: "Ingest rate limit exceeded." }, 429);
@@ -3403,7 +3495,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
             }
 
             // Merge all chunk results via synthesis
-            await performMerge(citation, { case_name: caseRow?.case_name, court: caseRow?.court, facts: caseRow?.facts, issues: caseRow?.issues, subject_matter: caseRow?.subject_matter }, env);
+            await performMerge(citation, { case_name: caseRow?.case_name, court: caseRow?.court, facts: caseRow?.facts, issues: caseRow?.issues, subject_matter: caseRow?.subject_matter, holding: caseRow?.holding }, env);
           }
           msg.ack();
 
