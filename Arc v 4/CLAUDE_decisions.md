@@ -3358,3 +3358,17 @@ Pattern: I generated /api/pipeline/requeue-merge (wrong) and WHERE criminal=1 (w
 - Context: `cases.holding` (Pass 1 extracted outcome) contains explicit sentence quantum (e.g. "sentenced to three years imprisonment, backdated to August 9, 2015"). This field was in D1 but never passed to sentencing synthesis — absent from both CHUNK and MERGE handler caseRow SELECTs.
 - Decision: add `holding` to both SELECTs; surface as `Outcome (Pass 1 summary)` in sentUser before chunk texts. Appears before the 120K truncation point regardless of judgment length.
 - Why important for CCA: CCA sentencing appeal judgments often confirm or vary a sentence without re-stating the quantum in the reasoning chunks — it appears only in the Pass 1 extracted holding.
+
+## Session 51 decisions — 13 April 2026
+
+**Subject_matter filter: cache-based penalty over Option A re-embed**
+Decision: Implemented hourly in-memory cache (SM_PENALTY=0.65) rather than Option A (full case chunk re-embed to get subject_matter into Qdrant payload).
+Why: Option A requires ~4-hour re-embed of 18K+ case chunks and full misclassification audit first. Cache approach required zero re-embed, deployed in one session, and fixed all three target partials (Q4/Q10/Q14). Option A remains available for future enhancement (enables native Qdrant filtering in Pass 1 without cache overhead).
+
+**Q2 BRD fix: disambiguation anchors on competing chunks, pure text on target chunks**
+Decision: Fixed Q2 by adding domain anchor sentences to 6 competing secondary source chunks rather than adding disambiguation language to BRD enriched_text.
+Why: Attempted to add "distinct from George v Rockett" to BRD enriched_text — this caused BRD chunks to drop out of top-6 entirely. The embedding model cannot reason about negation; "I am not about X" is semantically equivalent to "I am about X." Rule established: disambiguation belongs on competing chunks; target chunk text must be purely about the target domain.
+
+**RRF deferred: corpus prerequisites not met**
+Decision: Deferred RRF implementation to a future session when corpus exceeds 50K vectors.
+Why: At ~20K vectors with a single embedding model, all retrieval legs use the same signal. Wrong-domain chunks accumulate multi-leg RRF score via surface vocabulary overlap — same regression observed in session 41 (reverted in session 42). Prerequisites per Opus session 42 analysis: corpus >50K vectors, independent retrieval signals across legs, per-leg diagnostics, comprehensive doctrine coverage. None met at current scale.

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 5 April 2026 (end of session 42). Upload every session alongside CLAUDE.md.*
+*Updated: 13 April 2026 (end of session 51). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -232,8 +232,8 @@ Worker routes exist but are dead — nothing calls them during query handling.
 
 ### Retrieval Pipeline (Sequential Pass — session 42, reverted from RRF)
 
-1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
-2. **Pass 2 — case chunks appended** — `type=case_chunk` filter, threshold 0.35, limit 8. Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
+1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty()` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
+2. **Pass 2 — case chunks appended** — `type=case_chunk` filter, threshold 0.35, limit 8. `apply_sm_penalty()` applied to each hit before dedup check. Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
 3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2.
 4. **BM25/FTS5 append** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Multi-signal boost if chunk already in results. Final top_k cap (no re-sort — BM25 stays last).
 5. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
@@ -268,21 +268,22 @@ WHERE subject_matter != 'criminal'
 AND (case_name LIKE 'R v%' OR case_name LIKE 'Tasmania v%' OR case_name LIKE 'Police v%')
 ```
 
-**Option A — Hard filter on Pass 2 (recommended, do after audit):**
-1. Audit and correct all misclassified cases in D1
-2. Add `subject_matter` to Worker route `fetch-case-chunks-for-embedding` SELECT (JOIN cases on citation)
-3. Add `subject_matter` to `enrichment_poller.py` case chunk metadata dict
-4. Reset all case chunks to `embedded=0` — poller re-embeds overnight (~4 hours)
-5. Add `subject_matter=criminal` filter to Pass 2 Qdrant query in server.py
-6. **Do NOT deploy server.py filter until steps 1–4 confirmed complete**
+**DEPLOYED session 51 — Cache-based penalty (Option C):**
+- Hourly in-memory cache loaded from `GET /api/pipeline/case-subjects` Worker route
+- `SM_PENALTY = 0.65`, `SM_ALLOW = {'criminal', 'mixed'}` globals in server.py
+- `get_subject_matter_cache()` — loads cache, refreshes if >3600s stale or empty
+- `apply_sm_penalty(chunk)` — if `type=case_chunk` and citation's SM not in SM_ALLOW, multiply score by 0.65
+- Applied in Pass 1 (after scoring, before court hierarchy re-rank) AND in Pass 2 append loop
+- **Critical**: re-sort by penalised scores BEFORE computing `top_score` for court hierarchy band
+- Misclassification audit: Pilling cases correctly administrative (workers comp); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69); Tasmania v Rattigan status unverified
 
-**Option B — Score penalty (interim, no re-embed required):**
-- After Pass 2 returns chunks, batch D1 lookup for `subject_matter` by citation
-- Apply 0.80 score multiplier to non-criminal chunks before final sort
-- Degrades gracefully on misclassified cases (score reduction, not exclusion)
-- Limitation: only affects Pass 2 chunks, not Pass 1 — Q14-style failures (Pass 1 non-criminal chunks) are unaffected
+**Option A — Qdrant payload re-embed (deferred):**
+- Would enable native Qdrant filter on `subject_matter` field in Pass 1 query
+- Requires: JOIN cases in `fetch-case-chunks-for-embedding` route, add `subject_matter` to poller metadata dict, reset all case chunks embedded=0, full re-embed
+- Lower priority now that cache penalty is delivering results (Q4, Q10, Q14 fixed)
+- Prerequisite: complete misclassification audit before re-embed
 
-**Real systemic fix:** get `subject_matter` into Qdrant payload (requires re-embed) so Pass 1 can also be filtered. Option A's re-embed is a prerequisite for this regardless of filter approach.
+**Real systemic fix:** get `subject_matter` into Qdrant payload (requires re-embed) so Pass 1 can filter at Qdrant level without cache. Option A's re-embed is a prerequisite for this.
 
 **Diagnostic rule:** empty or unexpected results → first check:
 `docker compose logs --tail=50 agent-general`
@@ -549,6 +550,14 @@ Volume-mounted at `./agent-general/src:/app/src`. Runs as permanent Docker servi
 **Default batch:** 50 · **Loop sleep:** 15 seconds
 
 **CONCEPTS header strip (session 46):** Poller strips `[CONCEPTS:...]` and `Concepts:...` header lines from the start of embed text before the Ollama embedding call and before populating the Qdrant `text` payload field. Regex: `re.sub(r'^\[?concepts:[^\]\n]*\]?\s*\n+', '', text, flags=re.IGNORECASE)`. Deployed at line 695 of enrichment_poller.py. Root cause: for secondary sources with NULL enriched_text, the CONCEPTS header was the dominant embedding signal, drifting vectors away from the actual doctrine content.
+
+### Embedding text contamination rule (session 51)
+
+**Never add cross-domain disambiguation to enriched_text or raw_text body text.**
+
+Example of what went wrong: adding "distinct from the George v Rockett prescribed belief test" to BRD chunk enriched_text caused the BRD chunks to drop out of top-6 results entirely. The embedding model cannot reason about negation — "I am NOT about X" is semantically equivalent to "I am about X." The model sees proximity to X either way.
+
+**Rule:** Put domain anchor sentences on COMPETING chunks only (e.g., "POLICE OFFICER PRESCRIBED BELIEF STANDARD — this is about police powers, not standard of proof"). Keep the TARGET chunk's embedding text purely about the target domain. Zero cross-references to what it is not.
 
 ### enrichment_poller.py — payload text limits (fixed session 9)
 

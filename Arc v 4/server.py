@@ -30,6 +30,36 @@ BM25_SCORE_EXACT_SECTION = 1 / (60 + 3)   # ~0.0159 — exact section ref match
 BM25_SCORE_CASE_REF      = 1 / (60 + 8)   # ~0.0147 — case-by-legislation-ref match
 BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match
 
+# Subject-matter filter — applied to case chunks in Pass 1 + Pass 2.
+# Non-criminal case chunks receive a score penalty so they do not displace
+# criminal doctrine in the final ranked list. Confirmed via session 51 audit:
+# corpus is 513 criminal / 721 non-criminal; Q4, Q10, Q14 partials caused by
+# administrative case chunks outscoring criminal doctrine in Pass 1.
+# Score × 0.65 on non-criminal/non-mixed chunks.  Kill switch: set to 1.0.
+SM_PENALTY       = 0.65
+SM_ALLOW         = {'criminal', 'mixed'}  # subject_matter values that bypass penalty
+_sm_cache        = {}   # citation → subject_matter
+_sm_cache_ts     = 0.0  # epoch timestamp of last load
+
+def get_subject_matter_cache():
+    """Return citation→subject_matter dict, refreshed hourly from Worker."""
+    global _sm_cache, _sm_cache_ts
+    now = time.time()
+    if now - _sm_cache_ts > 3600 or not _sm_cache:
+        try:
+            r = requests.get(
+                f"{WORKER_URL}/api/pipeline/case-subjects",
+                headers={"X-Nexus-Key": NEXUS_KEY},
+                timeout=10
+            )
+            r.raise_for_status()
+            _sm_cache    = r.json().get("subjects", {})
+            _sm_cache_ts = now
+            print(f"[*] Subject-matter cache loaded: {len(_sm_cache)} entries")
+        except Exception as e:
+            print(f"[!] Subject-matter cache load failed: {e}")
+    return _sm_cache
+
 def extract_section_references(chunks):
     """Extract section number references from chunk text."""
     refs = set()
@@ -216,7 +246,8 @@ def search_text(body):
         raise ValueError("query_text is required")
 
     query_vector = embed(query_text)
-    client = QdrantClient(url=QDRANT_HOST)
+    client       = QdrantClient(url=QDRANT_HOST)
+    sm_cache     = get_subject_matter_cache()
 
     def hit_to_chunk(hit):
         payload = hit.payload or {}
@@ -238,6 +269,14 @@ def search_text(body):
             "_qdrant_id":   str(hit.id),
         }
 
+    def apply_sm_penalty(chunk):
+        """Apply subject-matter penalty to non-criminal case chunks in-place."""
+        if chunk.get("type") == "case_chunk":
+            sm = sm_cache.get(chunk.get("citation", ""), "unknown")
+            if sm not in SM_ALLOW:
+                chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
+        return chunk
+
     # ── Pass 1 — unfiltered semantic ─────────────────────────────────────────
     p1 = client.query_points(
         collection_name=COLLECTION,
@@ -251,7 +290,20 @@ def search_text(body):
     # Filter short legislation schedule entries
     chunks = [c for c in chunks if not (c.get("type") == "legislation" and len(c.get("text", "")) < 200)]
 
-    # Court hierarchy re-rank within 0.05 cosine band
+    # Apply subject-matter penalty before court hierarchy re-rank so that
+    # non-criminal case chunks do not receive hierarchy boost within the band.
+    for c in chunks:
+        apply_sm_penalty(c)
+
+    sm_penalised = sum(1 for c in chunks if c.get("type") == "case_chunk"
+                       and sm_cache.get(c.get("citation", ""), "unknown") not in SM_ALLOW)
+    if sm_penalised:
+        print(f"[*] SM penalty applied to {sm_penalised} non-criminal case chunks in Pass 1")
+
+    # Re-sort by penalised scores so that top_score is correct for band calculation.
+    chunks.sort(key=lambda c: -c["score"])
+
+    # Court hierarchy re-rank within 0.05 cosine band (on penalised scores)
     if len(chunks) > 1:
         top_score = chunks[0]["score"]
         def sort_key(c):
@@ -281,7 +333,7 @@ def search_text(body):
     for h in p2.points:
         if str(h.id) not in seen_ids:
             seen_ids.add(str(h.id))
-            chunks.append(hit_to_chunk(h))
+            chunks.append(apply_sm_penalty(hit_to_chunk(h)))
 
     print(f"[+] {len(chunks)} chunks after Pass 2")
 

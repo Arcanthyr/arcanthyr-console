@@ -3087,6 +3087,15 @@ export default {
       return new Response(JSON.stringify({ rows: results }), { headers: corsHeaders });
     }
 
+    if (url.pathname === '/api/pipeline/case-subjects' && request.method === 'GET') {
+      // Returns full citation→subject_matter map for server.py subject_matter filter cache.
+      const { results } = await env.DB.prepare(
+        `SELECT citation, subject_matter FROM cases`
+      ).all();
+      const subjects = Object.fromEntries(results.map(r => [r.citation, r.subject_matter || 'unknown']));
+      return new Response(JSON.stringify({ subjects }), { headers: corsHeaders });
+    }
+
     /* ── INGEST ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ingest/")) {
       if (!rateLimit(`${ip}:ingest`, 10, 60_000)) return json({ error: "Ingest rate limit exceeded." }, 429);

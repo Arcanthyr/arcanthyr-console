@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 13 April 2026 (end of session 50) · Supersedes all prior versions
+Updated: 13 April 2026 (end of session 51) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -108,6 +108,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | hex-ssh deploys | CC force-recreate via hex-ssh remote-ssh will always get ephemeral ports unless env is loaded — the docker-compose.yml fix (session 41) now handles this via env_file: but AGENT_GENERAL_PORT still needs to be in .env.config (added session 41) |
 | Upload case text limit | `worker.js` line ~269 — `caseText.length > 200000 ? caseText.substring(0, 200000) : caseText` · raised from 100K to 200K session 43 · not in scraper · limit applies to both `handleUploadCase` and `handleFetchCaseUrl` |
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
+| Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
@@ -185,18 +186,21 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 13 April 2026 (end of session 50)
+## SYSTEM STATE — 13 April 2026 (end of session 51)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | vectors updated · citation + source_id confirmed in all payloads |
-| D1 cases | 1,234 total · 1,234 deep_enriched=1 |
-| D1 case_chunks | 18,271 total · 18,271 embedded · 0 pending poller |
+| Qdrant general-docs-v2 | vectors updated · 6 secondary source chunks re-embedded this session |
+| D1 cases | 1,234+ (scraper running) · all deep_enriched=1 |
+| D1 case_chunks | 18,271+ · all embedded |
 | D1 secondary_sources | 1,201 total · all embedded=1 |
 | enrichment_poller | RUNNING |
-| Cloudflare Queue | requeue-merge in progress (1,234 cases) — verify procedure_notes count next session |
+| Cloudflare Queue | drained |
 | Scraper | RUNNING |
 | arcanthyr.com | Live |
+| Subject matter filter | LIVE · SM_PENALTY=0.65 · cache loaded 1,234 entries |
+| Baseline (31 queries) | 12 pass / ~13 partial / 3 miss (corpus gap) |
+| procedure_notes | 90/516 criminal cases (17%) · repair batches in progress |
 
 ---
 
@@ -229,8 +233,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 ## OUTSTANDING PRIORITIES
 
 6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
-7. **subject_matter filter — SESSION 43 PRIORITY** — 320 criminal / 393 non-criminal in corpus · ratio worsening as scraper runs · misclassification audit required first (Tasmania v Rattigan, Tasmania v Pilling confirmed criminal but tagged administrative — full audit query in CLAUDE_arch.md) · Option A (hard filter, re-embed) recommended over Option B (score penalty, no re-embed) · full design in CLAUDE_arch.md subject_matter filter section · prerequisite: audit → correct D1 → re-embed → deploy server.py filter in that order
-8. **Domain filter UI — deferred pending subject_matter audit** — CC prompt drafted and ready · do not implement until misclassification audit complete and Option A re-embed done · implementation is one session once prerequisites met · full design in CLAUDE_arch.md subject_matter filter section
+7. **subject_matter filter — DEPLOYED session 51 (cache-based penalty)** — SM_PENALTY=0.65 applied to non-criminal/non-mixed case_chunk results in Pass 1 and Pass 2 via hourly in-memory cache from `GET /api/pipeline/case-subjects` Worker route · misclassification audit partially complete: Pilling cases correctly administrative (workers comp — not criminal); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69) · full audit recommended before Option A (Qdrant payload re-embed) — low urgency now that cache penalty is delivering results · Tasmania v Rattigan audit status unverified this session
+8. **Domain filter UI — potentially unblockable** — SM filter now live server-side · UI chip (All / Criminal / Administrative / Civil) would communicate filter param through Worker to server.py · prerequisite: confirm misclassification audit complete so filter is reliable · CC prompt drafted and ready
 9. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · deploy on VPS as public HTTPS endpoint · connect via claude.ai Customize → Connectors · per-user API key auth · buildable in one session · prerequisite: scraper completion + subject_matter filter deployed so MCP queries return clean criminal-scoped results
 10. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · produces ranked authority summaries per topic · ingest as secondary_source chunks via existing pipeline · no embedding changes · no new infrastructure · run quarterly as corpus maintenance cron · prerequisite: scraper completion (network too sparse at current volume)
 11. **Local/office deployment — post-MCP milestone** — export D1 as SQLite + Qdrant snapshot · run on office server or NAS · nightly sync from VPS pipeline · MCP server points at local instance for fast queries · prerequisite: MCP server built and validated first
@@ -241,10 +245,11 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 - **Corpus ... placeholders — 3 of 5 resolved** — part1.md:1282 and part2.md:2415 confirmed as legal elisions (not errors) · part2.md:381 `T...` fixed to `The` · remaining 2 genuine gaps: part2.md:1167 block_023 (`...BUT see below` dangling ref) and part2.md:1957 block_028 (`[Continues with specifics...]` placeholder) — both need source material from rag_blocks/, deferred to Procedure Prompt re-ingest
 - **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
+- **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · monitor as new chunks are ingested — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
-- **subject_matter misclassification** — at least 3 criminal cases tagged administrative (Tasmania v Rattigan [2021] TASSC 28, Tasmania v Pilling [2020] TASSC 13, Tasmania v Pilling (No 2) [2020] TASSC 46) · confirmed via D1 audit · full misclassification audit required before subject_matter filter is applied · audit query in CLAUDE_arch.md
+- **subject_matter misclassification — partially resolved** — Pilling entries in prior KNOWN ISSUES were incorrect: Tasmania v Pilling [2020] TASSC 13 and [2020] TASSC 46 are workers compensation cases, correctly classified as administrative · 3 genuine misclassifications corrected this session ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69 → all set to criminal) · Tasmania v Rattigan [2021] TASSC 28 audit status unverified · full audit still recommended before Option A Qdrant re-embed
 - **update-secondary-raw 404 on space-containing IDs** — POST /api/pipeline/update-secondary-raw returns "not found" for secondary source IDs with spaces in them · workaround: use Cloudflare Developer Platform MCP direct D1 query · root cause undiagnosed
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
@@ -257,7 +262,6 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
-- **Q2 (BRD standard) regression** — was partial in session 42, now a clean miss in session 45 baseline · returning honest/reasonable mistake chunks instead of BRD doctrine · likely corpus gap — BRD secondary source chunk may not be embedded · diagnose at start of next session
 
 ---
 
@@ -918,3 +922,21 @@ Cases: 802 total, 802 deep_enriched. Secondary sources: 1,201 all embedded. Scra
 - Verify final procedure_notes count after queue drains: `SELECT COUNT(*) FROM cases WHERE subject_matter='criminal' AND procedure_notes IS NOT NULL`
 - Q2 BRD baseline rerun (carried from session 46/49)
 - RRF retrieval pipeline overhaul — next major piece of work (Opus spec from session 40 ready)
+
+## CHANGES THIS SESSION (session 51) — 13 April 2026
+
+- **procedure_notes coverage confirmed** — 90/516 criminal cases (17.4%) at session start, up from 16/373 (4.3%) at session 49. 22 cases still processing at check (queue draining from session 50 requeue). Code fixes from session 50 (120K cap, `cases.holding` field) confirmed working. Batched requeue PowerShell script provided: 3×40 cases with 3-min gaps via `Invoke-WebRequest` loop — avoids GPT-4o-mini rate limit exhaustion from simultaneous synthesis calls.
+
+- **RRF deferred — subject_matter filter implemented instead** — Corpus at ~20K vectors vs required 50K minimum for RRF; single embedding model (no independent retrieval signals across legs). Prerequisites not met. Pre-RRF baseline preserved at `~/retrieval_baseline_pre_rrf.txt`. Subject_matter filter implemented as higher-impact change requiring no re-embed.
+
+- **subject_matter filter — LIVE** — Cache-based penalty approach (no case chunk re-embed required). New Worker route `GET /api/pipeline/case-subjects` returns full `{citation: subject_matter}` map for all cases (no X-Nexus-Key required). New server.py globals: `SM_PENALTY = 0.65`, `SM_ALLOW = {'criminal', 'mixed'}`, `_sm_cache`, `_sm_cache_ts`, `get_subject_matter_cache()` (hourly refresh via requests.get to Worker). `apply_sm_penalty()` applied to `case_chunk` type results in Pass 1 (after scoring, before court hierarchy re-rank) and in Pass 2 append loop. **Bug fix**: added `chunks.sort(key=lambda c: -c["score"])` between penalty application and court hierarchy re-rank — without this, `top_score` used the pre-penalty sort order making the cosine band wrong. Worker deployed via wrangler. Server.py deployed and verified (grep confirmed SM_PENALTY, get_subject_matter_cache, apply_sm_penalty all present). SM cache loaded on first search: 1,234 entries. Baseline wins: Q4 (tendency evidence clean), Q10 (s164 corroboration now at position 1 — was failure-to-give-evidence chunk), Q14 (s37 leading questions now at position 1 — coronial inquiry chunk gone).
+
+- **Misclassification audit** — Prior KNOWN ISSUES entries for Tasmania v Pilling [2020] TASSC 13 and Tasmania v Pilling (No 2) [2020] TASSC 46 were incorrect — both are workers compensation cases, correctly classified as administrative. Three genuine misclassifications corrected via Cloudflare MCP D1 UPDATE to `subject_matter='criminal'`: [2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69.
+
+- **Full 31-query retrieval baseline run** — Post-SM filter. 12 clear passes / ~13 partials / 3 miss (all corpus gaps). SM filter wins confirmed: Q4, Q10, Q14. Q8 improved: s55 relevance chunk now at position 3 (was position 1). Q2 regression identified and fixed (see below). Corpus gap misses: Q24 (committal procedure), Q27 (provocation/manslaughter), Q31 (right to silence) — no doctrine in corpus, require new chunks.
+
+- **Q2 BRD fix — multi-round disambiguation** — Root cause: session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text. Honest/reasonable mistake and police-powers chunks (Reasonableness of Belief, annotation, George v Rockett definition, hoc-b023 prescribed belief, Samoukovic v Brown, Innes v Weate discretion) have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries. Fix: updated raw_text of all 6 competing chunks to add strong domain anchor sentences at the start of body text (MISTAKE OF FACT DEFENCE / POLICE OFFICER PRESCRIBED BELIEF STANDARD / POLICE OFFICER DISCRETION prefixes), reset embedded=0, re-embedded via poller. BRD enriched_text (hoc-b057, hoc-brd) reverted to clean BRD-only vocabulary after a contamination incident (see lesson below). Result: hoc-b057 at position 1 (0.5568) for BRD queries.
+
+- **Embedding contamination lesson — CRITICAL** — During Q2 fix, added "distinct from George v Rockett prescribed belief test" disambiguation language to BRD enriched_text. This caused BRD chunks to drop out of top 6 entirely (from 0.54 to <0.51). Root cause: "this is NOT about X" language in an embedding text pulls the vector toward X just as much as "this IS about X." The model cannot reason about negation — it just sees semantic proximity to X. **Rule: never add cross-domain disambiguation to enriched_text. Put domain anchors on the COMPETING chunks only. Keep target chunk embedding text purely about the target domain.** Added to KNOWN ISSUES as CONCEPTS-adjacent vocabulary contamination.
+
+- **worker.js `GET /api/pipeline/case-subjects` route** — Added at line ~3090 (after bm25-corpus block). Returns `{subjects: {citation: subject_matter}}` for all 1,234 cases. No auth required (non-sensitive read). Required for server.py `get_subject_matter_cache()` hourly refresh.
