@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 13 April 2026 (end of session 53). Upload every session alongside CLAUDE.md.*
+*Updated: 14 April 2026 (end of session 55). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -639,7 +639,9 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Writes only `procedure_notes` and appends to `principles_extracted` via read-modify-write. Does NOT touch deep_enriched, does NOT re-run main synthesis, does NOT use the queue
 - NULL procedure_notes is the implicit retry flag — failed cases stay in result set
 - Returns: `{ ok, processed, skippedNotSentencing, failed, candidatesInBatch, remaining, errors }`
-- **STATUS: Deployed but PAUSED** — quality testing scored 10.7/25 average across 3 cases. Do not fire until SENTENCING_SYNTHESIS_PROMPT is revised and passes 5-case validation at 19+/25. See session 54 changes for six failure modes.
+- **STATUS: ACTIVE** — SENTENCING_SYNTHESIS_PROMPT rewritten session 55 and validated (classification 6/6, fabrication 0). Safe to fire.
+- **Session 55 prompt rewrite:** Three-step prompt — Step 1 classifies case type (first_instance/sentence_appeal/sentence_review vs non-sentencing) with explicit positive/negative case lists; Step 2 extracts with different schemas for first-instance vs appeal/review (appeal schema includes original sentence, appellate standard applied, House v The Queen, grounds, outcome); Step 3 formats JSON. Input is ALL chunk_text (no type filtering — this was already the case pre-session-55, the prompt just mislabeled it as "reasoning sections"). Output includes `case_type` field (logged, not stored to D1). Key instruction: "never invent comparable cases — only include cases explicitly cited in the judgment text."
+- **Citation targeting (session 55):** accepts optional `body.citations` array. If present: queries `WHERE citation IN (...)` with no `procedure_notes IS NULL` constraint (re-runs work). If absent: original sweep query (`subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1`).
 
 ### sentencing_status column (recommended — not yet implemented)
 

@@ -2241,21 +2241,50 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
   }
 }
 
-const SENTENCING_SYNTHESIS_PROMPT = `You are a legal research assistant extracting sentencing analysis from an Australian court judgment for a practitioner research database.
+const SENTENCING_SYNTHESIS_PROMPT = `You are a legal research assistant extracting sentencing information from an Australian court judgment for a practitioner research database used by criminal prosecutors.
 
-You will receive the case facts, issues, and the raw text of reasoning sections from the judgment.
+You will receive case metadata and the FULL TEXT of the judgment (all sections — header, facts, evidence, reasoning, and orders).
 
-DECISION RULE: Read the reasoning sections below. If they contain discussion of any sentence — imposed, varied, confirmed, upheld on appeal, or reviewed (including where the court dismissed a sentence appeal and confirmed the sentence below) — respond with sentencing_found: true and extract the analysis.
+STEP 1 — CLASSIFICATION
 
-Respond with {"sentencing_found": false} ONLY if the reasoning sections contain NO discussion of sentence quantum at all — no custodial term, fine, community service order, suspended sentence, non-parole period, or equivalent. Examples of false cases: purely interlocutory rulings, liability-only decisions, acquittals, evidence rulings, bail applications, costs arguments.
+Determine whether this judgment contains sentencing content. Apply these rules in order:
 
-If in doubt — if the text mentions any specific penalty, sentence length, or sentencing consideration — respond with sentencing_found: true.
+SENTENCING CASE (sentencing_found: true):
+- First-instance sentencing remarks or comments on passing sentence
+- Sentence appeals where the court confirms, varies, or substitutes a sentence
+- Sentence reviews (e.g. Magistrates Court sentence reviewed by Supreme Court)
+- Re-sentencing after a successful appeal
+- Any judgment that imposes, confirms, varies, or reviews a specific sentence (custodial term, fine, CCO, probation, suspended sentence, CSO, drug treatment order)
+
+NOT A SENTENCING CASE (sentencing_found: false):
+- Trial judgments on guilt/liability only (verdict without sentence)
+- Fact-finding hearings or special hearings
+- Dangerous criminal applications (even though they discuss prior sentences)
+- Bail applications
+- Evidentiary rulings, interlocutory decisions, procedural orders
+- Acquittals
+- Appeal judgments that address conviction only and remit for re-sentencing without imposing a sentence
+- Costs, compensation-only, or civil proceedings
+- Fitness to stand trial determinations
+
+If the judgment discusses sentencing principles in the abstract but does not impose or review a specific sentence for this offender, return sentencing_found: false.
+
+STEP 2 — EXTRACTION (only if sentencing_found: true)
+
+For FIRST-INSTANCE sentencing (trial court imposing sentence):
+Extract from the judgment text: the offence(s) and statutory provisions, plea, sentence imposed for each count, aggravating factors identified by the court, mitigating factors identified by the court, personal circumstances of the offender (age, employment, family, health, substance use, mental health), criminal history/prior convictions as described by the court, any victim impact evidence, comparable cases CITED BY THE COURT (do not add any the court did not cite), discount methodology if discussed (early plea, cooperation, totality), concurrent/cumulative structure, non-parole period, suspended sentence conditions, time served or backdating, ancillary orders (compensation, forfeiture, licence disqualification, sex offender registration, restraining orders).
+
+For APPEAL/REVIEW cases (appellate court reviewing sentence):
+Also extract: what the original sentence was, what the appeal court varied it to (if varied), the grounds of appeal, whether the appeal was allowed or dismissed, the appellate standard applied (e.g. manifest excess/inadequacy, House v The Queen, error of principle, De Simoni), and the court's key reasons for the appellate outcome.
+
+STEP 3 — FORMAT
 
 Respond with a JSON object:
 
 {
   "sentencing_found": true,
-  "procedure_notes": "Structured prose summary (200-400 words) covering: offence(s) charged and maximum statutory penalty, plea (guilty/not guilty/mixed), sentence imposed (type + quantum for each count), key aggravating factors the court identified, key mitigating factors the court identified, comparable cases the court cited for sentencing range, any discount methodology (early plea, cooperation, totality), any suspended sentence conditions or non-parole period, court's reasoning on why this sentence was appropriate, whether sentences are concurrent or cumulative, any declaration of time served or backdating, any ancillary orders (compensation, restraining orders, sex offender registration, forfeiture, licence disqualification).",
+  "case_type": "first_instance" | "sentence_appeal" | "sentence_review",
+  "procedure_notes": "Structured prose summary (250-500 words). For first-instance cases: lead with the offence(s) and sentence imposed, then cover personal circumstances, criminal history, aggravating/mitigating factors, comparable cases cited, and the court's reasoning. For appeal/review cases: lead with the original sentence and the appellate outcome (allowed/dismissed/varied), then cover the grounds, the appellate standard applied, and the court's reasons. Always state specific sentence quantum (e.g. '3 years imprisonment with 18-month non-parole period', not 'a term of imprisonment'). Always state the offender's age and any prior convictions mentioned. Never invent comparable cases — only include cases explicitly cited in the judgment text.",
   "sentencing_principles": [
     {
       "principle": "Case-specific sentencing proposition (1-2 sentences). Must state the offence type, offender characteristics, and sentence imposed — not a generic sentencing rule.",
@@ -2265,6 +2294,8 @@ Respond with a JSON object:
   ]
 }
 
+If sentencing_found is false, respond ONLY with: {"sentencing_found": false}
+
 PRINCIPLES RULES:
 - 2-4 sentencing principles maximum
 - Each must be a concrete statement of what THIS court decided for THIS offender — not a restatement of statutory requirements
@@ -2272,6 +2303,9 @@ PRINCIPLES RULES:
 - GOOD: "A 3-year imprisonment with 18-month non-parole period was appropriate for a single count of aggravated assault (s 172 Criminal Code) where the offender used a weapon, the victim suffered permanent scarring, and the offender had no prior convictions but showed limited remorse"
 - BAD: "Section 11 of the Sentencing Act requires the court to consider the nature of the offence" (statute restatement)
 - GOOD: "The sentencing discount for an early guilty plea was limited to 10% (rather than the usual 20-25%) because the plea was entered only after the committal hearing and the Crown case was overwhelming"
+- For appeal cases, principles should capture what the appellate court found about the original sentence, not just restate the original sentencing
+
+CRITICAL: Only reference comparable cases that appear in the judgment text. Do not invent or suggest cases from your own knowledge.
 
 Output ONLY valid JSON. No markdown fences. No commentary. The first character must be {`;
 
@@ -2442,7 +2476,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
           ``,
           `Holdings (chunk-level): ${JSON.stringify(allHoldings)}`,
           ``,
-          `Judgment reasoning sections (${sentencingTexts.length} sections):`,
+          `Full judgment text (${sentencingTexts.length} sections):`,
           sentencingTexts.join('\n\n---\n\n')
         ].join('\n');
 
@@ -2484,6 +2518,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
 
           if (sentResult.sentencing_found) {
             procedureNotes = sentResult.procedure_notes || null;
+            const caseType = sentResult.case_type || 'unknown';
 
             // Append sentencing principles to main principles array
             if (Array.isArray(sentResult.sentencing_principles) && sentResult.sentencing_principles.length > 0) {
@@ -2491,7 +2526,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
                 ...synthesisedPrinciples,
                 ...sentResult.sentencing_principles
               ];
-              console.log(`[queue] sentencing pass for ${citation} — ${sentResult.sentencing_principles.length} sentencing principles added`);
+              console.log(`[queue] sentencing pass for ${citation} [${caseType}] — ${sentResult.sentencing_principles.length} sentencing principles added`);
             }
           } else {
             console.log(`[queue] sentencing pass for ${citation} — no sentencing content found`);
@@ -2618,15 +2653,30 @@ async function handleRequeueMerge(request, env, corsHeaders) {
 // transient errors (rate limits, timeouts) stay in the result set for the next
 // run — the NULL procedure_notes IS the retry flag. Mirrors the sentencing block
 // of performMerge() exactly so output parity is guaranteed.
-async function runSentencingBackfill(env, limit = 15) {
-  const { results: cases } = await env.DB.prepare(`
-    SELECT citation, case_name, court, subject_matter, facts, issues, holding, principles_extracted
-    FROM cases
-    WHERE subject_matter = 'criminal'
-      AND procedure_notes IS NULL
-      AND deep_enriched = 1
-    LIMIT ?
-  `).bind(limit).all();
+async function runSentencingBackfill(env, limit = 15, citations = null) {
+  let cases;
+  if (citations && citations.length > 0) {
+    // Citation-targeted mode: process only the specified cases, regardless of procedure_notes state
+    const placeholders = citations.map(() => '?').join(', ');
+    const { results } = await env.DB.prepare(`
+      SELECT citation, case_name, court, subject_matter, facts, issues, holding, principles_extracted
+      FROM cases
+      WHERE citation IN (${placeholders})
+        AND deep_enriched = 1
+    `).bind(...citations).all();
+    cases = results;
+  } else {
+    // Sweep mode: next N unprocessed criminal cases
+    const { results } = await env.DB.prepare(`
+      SELECT citation, case_name, court, subject_matter, facts, issues, holding, principles_extracted
+      FROM cases
+      WHERE subject_matter = 'criminal'
+        AND procedure_notes IS NULL
+        AND deep_enriched = 1
+      LIMIT ?
+    `).bind(limit).all();
+    cases = results;
+  }
 
   let processed = 0;
   let skippedNotSentencing = 0;
@@ -2692,7 +2742,7 @@ async function runSentencingBackfill(env, limit = 15) {
         ``,
         `Holdings (chunk-level): ${JSON.stringify(allHoldings)}`,
         ``,
-        `Judgment reasoning sections (${sentencingTexts.length} sections):`,
+        `Full judgment text (${sentencingTexts.length} sections):`,
         sentencingTexts.join('\n\n---\n\n')
       ].join('\n');
 
@@ -2755,11 +2805,13 @@ async function runSentencingBackfill(env, limit = 15) {
       }
 
       const procedureNotes = sentResult.procedure_notes || null;
+      const caseType = sentResult.case_type || 'unknown';
       if (!procedureNotes) {
         console.log(`[backfill] ${citation} — sentencing_found=true but no procedure_notes in response`);
         skippedNotSentencing++;
         continue;
       }
+      console.log(`[backfill] ${citation} [${caseType}] — procedure_notes extracted`);
 
       // Append sentencing principles to existing principles_extracted (read-modify-write)
       let updatedPrinciples = null;
@@ -2824,8 +2876,9 @@ async function handleSentencingBackfill(request, env, corsHeaders) {
     const body = await request.json().catch(() => ({}));
     const requested = parseInt(body.limit) || 15;
     const limit = Math.min(Math.max(requested, 1), 30); // hard cap [1, 30]
+    const citations = Array.isArray(body.citations) && body.citations.length > 0 ? body.citations : null;
 
-    const result = await runSentencingBackfill(env, limit);
+    const result = await runSentencingBackfill(env, limit, citations);
 
     return new Response(JSON.stringify({ ok: true, ...result }), {
       headers: { 'Content-Type': 'application/json', ...corsHeaders }

@@ -215,5 +215,5 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 |---|---|
 | Scraper Task Scheduler | WakeToRun=True set on both tasks (Arcanthyr Scraper, run_scraper_evening) — PC wakes from sleep at scheduled time · if tasks ever recreated, re-run: `$task = Get-ScheduledTask -TaskName "X"; $task.Settings.WakeToRun = $true; Set-ScheduledTask -InputObject $task` |
 | scraper_progress.json path | Lives at `arcanthyr-console\Local Scraper\scraper_progress.json` — NOT at `C:\Users\Hogan\OneDrive\Arcanthyr\Local Scraper\` (that path does not exist) |
-| Sentencing backfill route | `POST /api/admin/backfill-sentencing` (X-Nexus-Key) — direct-write sentencing pass, limit 1–30 per call. **Currently PAUSED** — quality failure in session 54, do not fire until SENTENCING_SYNTHESIS_PROMPT is revised and validated. See session 54 CLAUDE.md for failure modes. |
+| Sentencing backfill route | `POST /api/admin/backfill-sentencing` (X-Nexus-Key) — direct-write sentencing pass, limit 1–30 per call. Accepts optional `body.citations` array for targeted runs (session 55). SENTENCING_SYNTHESIS_PROMPT revised and validated session 55 — classification 6/6, fabrication 0. Safe to fire. |
 | scraper_progress.json | 8 stale entries cleared session 54. Safe to re-scrape already-ingested citations — INSERT OR IGNORE skips silently. |

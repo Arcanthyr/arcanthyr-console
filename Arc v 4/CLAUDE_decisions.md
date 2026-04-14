@@ -3425,3 +3425,18 @@ Proposed adding a UI warning on the Library reading pane for pre-revision proced
 
 **[2026-04-14] Confirmed: quality and architecture fixes are sequential, not parallel**
 Quality fix (prompt revision + validation) must precede architecture fix (sentencing_status column), which must precede backfill, which must precede cron. Running the backfill route under a bad prompt contaminates the corpus and makes the architecture fix misleading (populating 'success' on hallucinated notes). Resist the temptation to tackle architecture while quality is broken.
+
+## Session 55 decisions — 14 April 2026
+
+### Decision: Option A (prompt-only fix) over Option B (re-enrichment) for sentencing extraction
+- **Problem:** procedure_notes quality was failing — thin generalizations, mislabeled inputs, hallucinated comparables, no appellate framing
+- **Root cause:** NOT that evidence chunks were excluded from input (they weren't — code reads ALL chunks). The prompt said "reasoning sections" which primed the model to skip factual content, and the decision rule didn't cover non-sentencing criminal judgments
+- **Option A (chosen):** Rewrite the prompt only. No code changes to input assembly except renaming the label. No re-enrichment, no re-embedding, zero upstream changes
+- **Option B (rejected):** Revise CHUNK prompt to produce richer evidence enriched_text, then re-embed all evidence chunks. Risk: changes embedding content in Qdrant, alters retrieval behaviour corpus-wide, requires full retrieval baseline rerun. Rejected because it bundles a retrieval change with a sentencing fix
+- **Why A wins:** enriched_text does double duty — it's the embedding source AND the synthesis input. Touching enriched_text to fix sentencing would change retrieval vectors for all evidence chunks. Option A isolates the fix to the sentencing synthesis step only
+
+### Decision: Null all 89 existing procedure_notes before validation
+- **Why:** Session 54 identified quality failures. Leaving bad data in place while testing new prompt would contaminate any corpus-level quality assessment. Clean slate ensures the backfill route only writes new-prompt outputs
+
+### Decision: case_type logged but not stored to D1
+- **Why:** Informational for validation logs. If it proves useful for future filtering (e.g. separate retrieval behaviour for appeals vs first-instance), a column can be added later. No schema change needed now

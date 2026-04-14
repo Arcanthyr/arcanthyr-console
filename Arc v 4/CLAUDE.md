@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 13 April 2026 (end of session 53) · Supersedes all prior versions
+Updated: 14 April 2026 (end of session 55) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -1053,3 +1053,20 @@ Cases: 1,234+ (scraper running). Case chunks: 18,271+ all embedded. Secondary so
 
 ### Platform state
 Cases: 1,295. Case chunks: 19,008 total, 50 done=0 (enrichment in progress), 0 embedded=0. Secondary sources: 1,201 all embedded. procedure_notes: 88/571 criminal cases (15%). truncation_log: 20 flagged. Scraper: running (8 stale entries cleared). enrichment_poller: running.
+
+## CHANGES THIS SESSION (session 55) — 14 April 2026
+
+- **Session-open health checks:** 1,382 cases, 0 enrichment queue, 0 embedding backlog. All pipelines clear.
+- **89 procedure_notes nulled:** `UPDATE cases SET procedure_notes = NULL WHERE procedure_notes IS NOT NULL AND subject_matter = 'criminal'` — previous outputs were actively misleading (session 54 quality failure). 89 rows confirmed nulled before any new work.
+- **Phase 0 sentencing diagnosis:** Reconstructed [2020] TASSC 44 (Stanley v Koehler) chunk-by-chunk. Key finding: the "evidence chunks excluded from synthesis input" assumption was WRONG — the code already reads chunk_text from ALL chunks with no type filter. The sentencing extraction failure is purely prompt-level, not input-assembly. Evidence content (priors, personal circumstances, offence facts) is being passed to the model — the model just wasn't extracting it because the prompt said "reasoning sections" and had a weak decision rule.
+- **SENTENCING_SYNTHESIS_PROMPT rewritten:** Four changes to worker.js:
+  1. Full prompt replacement — Step 1 classification with explicit positive/negative case lists (now correctly excludes fact-finding, dangerous criminal applications, conviction-only appeals); Step 2 extraction split by first_instance/sentence_appeal/sentence_review; "never invent comparable cases" instruction; appeal-specific fields (original sentence, appellate standard, House v The Queen)
+  2. Input label changed: "Judgment reasoning sections" → "Full judgment text"
+  3. case_type field logged in performMerge parsing (not stored to D1)
+  4. Same label fix + case_type log added to backfill route
+- **Backfill route citation targeting added (by CC):** handleSentencingBackfill now accepts `body.citations` array to target specific cases. If absent, falls back to original sweep query. No procedure_notes IS NULL constraint when citations provided (re-runs work).
+- **5-case validation — PASSED:**
+  - Classification 6/6: Stanley (true ✅), Lockwood (true ✅), Smart (correctly false — conviction appeal/acquittal), Sudani (correctly false — s85(2) admissibility ruling), Dalton-Smith (correctly false — limitation period ruling), Barnes (true ✅), Venn (true ✅)
+  - Fabrication: zero across all outputs — every claim verified against full AustLII judgment text
+  - Quantum: stated in all sentencing cases (Barnes $650+6mo+conviction, Venn $250→$850+12mo CCO, Stanley 6mo+18mo cumulative=2yr)
+  - **Backfill route safe to unpause**
