@@ -3405,3 +3405,23 @@ Timeout raised 25s → 45s (not 60s+) and tokens raised 2000 → 4000 (not 8000)
 
 **Stop requeue-merge loop on race condition detection**
 When requeue-merge loop returned 250 × 7+ iterations for a 1234-case corpus, identified race condition (queue processing resets deep_enriched=1, loop re-picks). Stopped loop manually. ~1750 messages already queued is sufficient — idempotent overwrite is acceptable. Rule: for future bulk requeue-merge operations, fire exactly ceil(total_cases / 250) calls manually rather than looping until zero.
+
+## Session 54 decisions — 14 April 2026
+
+**[2026-04-14] Scraper progress.json audit — 8 entries cleared**
+Removed TASSC_2025, TASFC_2025, TASSC_2024, TASCCA_2024, TASFC_2024, TASCCA_2017, TASFC_2017, TASSC_2007. Root causes: 2024/2025 marked done under old consecutive_misses=5 config before session 43 fix; 2017 CCA/fullcourt completed with zero results (AustLII numbering gaps exceeded threshold); 2007 TASSC aborted mid-run on 500 outage. TASMC ceiling (2025) left unchanged — no 2026 magistrates cases exist on AustLII. INSERT OR IGNORE makes re-scraping already-ingested cases safe.
+
+**[2026-04-14] Sentencing backfill route built but paused on quality failure**
+Built runSentencingBackfill + admin route. Architectural design confirmed correct by Opus. Quality testing failed: 3 test cases averaged 10.7/25 (threshold 14/25). Decision: do not process remaining 482 candidates under current prompt. Existing 89 notes are quality-suspect. Backfill route remains deployed but must not be fired until SENTENCING_SYNTHESIS_PROMPT passes a 5-case validation.
+
+**[2026-04-14] Six failure modes identified in SENTENCING_SYNTHESIS_PROMPT**
+(1) Wrong-document classification — hedges instead of sentencing_found:false on non-sentencing judgments. (2) Hallucinated comparables — invents "court relied on comparable cases" when zero are cited. (3) Hallucinated principles — invokes generic sentencing concepts not in the source. (4) Mitigating factor blindness — denies mitigating factors the source explicitly enumerates. (5) Sentence structure terminology errors — conflates global/concurrent/cumulative. (6) Missing appellate analytical structure — misses the legal test, appellate reasoning, and appeal court's own comparators for sentence appeals. Fix requires prompt rewrite with stronger negative gate, no-comparables rule, no-principles rule, mitigating factor checklist, sentence structure precision, and appellate posture detection. Phase 0 (TASMC test) first to confirm model-level vs prompt-level fix.
+
+**[2026-04-14] sentencing_status column deferred pending prompt fix**
+Opus recommended adding sentencing_status TEXT (NULL/'success'/'failed'/'not_sentencing') to cases table to fix the observability gap in procedure_notes IS NULL. Decision: implement after SENTENCING_SYNTHESIS_PROMPT revision is validated. Rationale: column is only useful once the prompt produces trustworthy output — populating 'success' on bad notes creates a false signal. Implement as part of the same deploy as the revised prompt.
+
+**[2026-04-14] Reject "QUALITY UNDER REVIEW" UI warning for existing 89 notes**
+Proposed adding a UI warning on the Library reading pane for pre-revision procedure_notes. Rejected: adds temporary UI complexity, the 89 notes are actively misleading practitioners, and the chunks in D1 are the real evidence — not the generated notes. Decision: set existing 89 notes back to NULL at the start of next session before any other work. The re-process step after prompt revision will rebuild them correctly.
+
+**[2026-04-14] Confirmed: quality and architecture fixes are sequential, not parallel**
+Quality fix (prompt revision + validation) must precede architecture fix (sentencing_status column), which must precede backfill, which must precede cron. Running the backfill route under a bad prompt contaminates the corpus and makes the architecture fix misleading (populating 'success' on hallucinated notes). Resist the temptation to tackle architecture while quality is broken.

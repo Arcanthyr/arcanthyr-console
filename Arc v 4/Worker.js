@@ -2611,6 +2611,233 @@ async function handleRequeueMerge(request, env, corsHeaders) {
   }
 }
 
+// ── Sentencing backfill — direct-write sentencing pass for cases that missed it ──
+// Targets cases where deep_enriched=1 but procedure_notes IS NULL. Bypasses the
+// queue and the atomic gate on deep_enriched, writing only procedure_notes (and
+// appending sentencing principles to principles_extracted). Cases that fail
+// transient errors (rate limits, timeouts) stay in the result set for the next
+// run — the NULL procedure_notes IS the retry flag. Mirrors the sentencing block
+// of performMerge() exactly so output parity is guaranteed.
+async function runSentencingBackfill(env, limit = 15) {
+  const { results: cases } = await env.DB.prepare(`
+    SELECT citation, case_name, court, subject_matter, facts, issues, holding, principles_extracted
+    FROM cases
+    WHERE subject_matter = 'criminal'
+      AND procedure_notes IS NULL
+      AND deep_enriched = 1
+    LIMIT ?
+  `).bind(limit).all();
+
+  let processed = 0;
+  let skippedNotSentencing = 0;
+  let failed = 0;
+  const errors = [];
+
+  for (const caseRow of cases) {
+    const citation = caseRow.citation;
+    try {
+      // Fetch chunks — done=1 guard since we are bypassing the normal merge gate
+      const allChunks = await env.DB.prepare(`
+        SELECT principles_json, chunk_text, enriched_text
+        FROM case_chunks
+        WHERE citation = ? AND done = 1
+        ORDER BY chunk_index
+      `).bind(citation).all();
+
+      if (!allChunks.results || allChunks.results.length === 0) {
+        console.log(`[backfill] no done chunks for ${citation}, skipping`);
+        skippedNotSentencing++;
+        continue;
+      }
+
+      // Build allHoldings from chunk principles_json (mirrors performMerge line 2306-2314)
+      const allHoldings = [];
+      for (const chunk of allChunks.results) {
+        try {
+          const data = JSON.parse(chunk.principles_json || '{}');
+          if (data.holdings) allHoldings.push(...data.holdings);
+        } catch (e) {}
+      }
+
+      // Sentencing detection — three-check OR (subject_matter, principles_json keywords, issues keywords)
+      if (!isSentencingCase(caseRow, allChunks.results)) {
+        console.log(`[backfill] ${citation} not a sentencing case, skipping`);
+        skippedNotSentencing++;
+        continue;
+      }
+
+      // Collect chunk_text from ALL chunks (no type filter — mirrors session 47 fix)
+      const sentencingTexts = [];
+      for (const chunk of allChunks.results) {
+        try {
+          if (chunk.chunk_text) sentencingTexts.push(chunk.chunk_text);
+        } catch (e) {}
+      }
+
+      if (sentencingTexts.length === 0) {
+        console.log(`[backfill] ${citation} has no chunk_text, skipping`);
+        skippedNotSentencing++;
+        continue;
+      }
+
+      // Build sentUser — exact replica of performMerge lines 2434-2447
+      const sentUser = [
+        `Case: ${caseRow.case_name} (${citation}, ${caseRow.court})`,
+        ``,
+        `Facts: ${caseRow.facts || ''}`,
+        ``,
+        `Issues: ${JSON.stringify(caseRow.issues)}`,
+        ``,
+        `Outcome (Pass 1 summary): ${caseRow.holding || 'Not extracted'}`,
+        ``,
+        `Holdings (chunk-level): ${JSON.stringify(allHoldings)}`,
+        ``,
+        `Judgment reasoning sections (${sentencingTexts.length} sections):`,
+        sentencingTexts.join('\n\n---\n\n')
+      ].join('\n');
+
+      // 120K cap — same as performMerge line 2450
+      const cappedSentUser = sentUser.length > 120000
+        ? sentUser.substring(0, 120000) + '\n\n[TRUNCATED — remaining sections omitted]'
+        : sentUser;
+
+      // OpenAI call — same params as performMerge sentencing pass (gpt-4o-mini, 4000 tokens, 45s)
+      const sentCtrl = new AbortController();
+      const sentTimeout = setTimeout(() => sentCtrl.abort(), 45000);
+      let sentResponse;
+      try {
+        sentResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${env.OPENAI_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini-2024-07-18",
+            max_completion_tokens: 4000,
+            messages: [
+              { role: "system", content: SENTENCING_SYNTHESIS_PROMPT },
+              { role: "user", content: cappedSentUser }
+            ]
+          }),
+          signal: sentCtrl.signal
+        });
+      } finally {
+        clearTimeout(sentTimeout);
+      }
+
+      if (!sentResponse.ok) {
+        // 429 rate limit, 500, etc — leave NULL for next run
+        throw new Error(`OpenAI ${sentResponse.status}: ${(await sentResponse.text()).slice(0, 200)}`);
+      }
+
+      const sentData = await sentResponse.json();
+      const sentContent = sentData.choices?.[0]?.message?.content
+        || sentData.choices?.[0]?.message?.reasoning_content
+        || "";
+      const sentRaw = sentContent.trim();
+
+      const jsonStart = sentRaw.indexOf('{');
+      const jsonEnd = sentRaw.lastIndexOf('}');
+      if (jsonStart === -1 || jsonEnd === -1) {
+        throw new Error(`No JSON object in response: ${sentRaw.slice(0, 200)}`);
+      }
+
+      const sentResult = JSON.parse(sentRaw.slice(jsonStart, jsonEnd + 1));
+
+      if (!sentResult.sentencing_found) {
+        console.log(`[backfill] ${citation} — model returned sentencing_found:false`);
+        // Note: this case will keep coming back on every sweep. Acceptable —
+        // the model is allowed to disagree with isSentencingCase() heuristics.
+        // If a meaningful number accumulate, add a sentencing_checked column.
+        skippedNotSentencing++;
+        continue;
+      }
+
+      const procedureNotes = sentResult.procedure_notes || null;
+      if (!procedureNotes) {
+        console.log(`[backfill] ${citation} — sentencing_found=true but no procedure_notes in response`);
+        skippedNotSentencing++;
+        continue;
+      }
+
+      // Append sentencing principles to existing principles_extracted (read-modify-write)
+      let updatedPrinciples = null;
+      if (Array.isArray(sentResult.sentencing_principles) && sentResult.sentencing_principles.length > 0) {
+        try {
+          const existing = JSON.parse(caseRow.principles_extracted || '[]');
+          const existingArr = Array.isArray(existing) ? existing : [];
+          updatedPrinciples = JSON.stringify([...existingArr, ...sentResult.sentencing_principles]);
+        } catch (e) {
+          console.error(`[backfill] failed to parse existing principles for ${citation}: ${e.message}`);
+          // Don't fail the whole case — write procedure_notes without appending principles
+        }
+      }
+
+      // Write to D1 — only the fields the backfill is responsible for
+      if (updatedPrinciples) {
+        await env.DB.prepare(`
+          UPDATE cases SET procedure_notes = ?, principles_extracted = ? WHERE citation = ?
+        `).bind(procedureNotes, updatedPrinciples, citation).run();
+      } else {
+        await env.DB.prepare(`
+          UPDATE cases SET procedure_notes = ? WHERE citation = ?
+        `).bind(procedureNotes, citation).run();
+      }
+
+      console.log(`[backfill] ${citation} — procedure_notes written (${procedureNotes.length} chars)`);
+      processed++;
+
+    } catch (e) {
+      console.error(`[backfill] failed for ${citation}: ${e.message}`);
+      failed++;
+      errors.push({ citation, error: e.message.slice(0, 200) });
+    }
+  }
+
+  // Remaining count for visibility
+  const remaining = await env.DB.prepare(`
+    SELECT COUNT(*) as cnt FROM cases
+    WHERE subject_matter = 'criminal' AND procedure_notes IS NULL AND deep_enriched = 1
+  `).first();
+
+  return {
+    processed,
+    skippedNotSentencing,
+    failed,
+    candidatesInBatch: cases.length,
+    remaining: remaining.cnt,
+    errors: errors.slice(0, 10)
+  };
+}
+
+async function handleSentencingBackfill(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) {
+    return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+
+  try {
+    const body = await request.json().catch(() => ({}));
+    const requested = parseInt(body.limit) || 15;
+    const limit = Math.min(Math.max(requested, 1), 30); // hard cap [1, 30]
+
+    const result = await runSentencingBackfill(env, limit);
+
+    return new Response(JSON.stringify({ ok: true, ...result }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }
+    });
+  }
+}
+
 async function handleTruncationStatus(request, env) {
   const { results } = await env.DB.prepare(`
     SELECT id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved
@@ -3125,6 +3352,7 @@ export default {
     if (url.pathname === '/api/admin/requeue-metadata' && request.method === 'POST') return handleRequeueMetadata(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-merge' && request.method === 'POST') return handleRequeueMerge(request, env, corsHeaders);
+    if (url.pathname === '/api/admin/backfill-sentencing' && request.method === 'POST') return handleSentencingBackfill(request, env, corsHeaders);
 
     /* ── INGEST ROUTES (proxy to nexus) ─────────────────────── */
     if (url.pathname === '/api/ingest/process-document' && request.method === 'POST') {

@@ -630,6 +630,21 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Timeout and token limits (session 53):** `sentTimeout` raised from 25s to 45s — large cases (16+ chunks, ~48K chars input) were hitting the abort threshold under concurrent queue load. `max_completion_tokens` raised from 2000 to 4000 — complex multi-party sentencing responses were being truncated mid-JSON, causing silent SyntaxError in the catch block and null `procedure_notes`. Both changes apply to the sentencing synthesis OpenAI call only (not main synthesis or CHUNK enrichment).
 - **CHUNK handler holding fix (session 53):** CHUNK handler `performMerge` call now includes `holding: caseRow?.holding` in the inline caseRow. Previously `holding` was fetched at line 3227 but dropped when constructing the inline object — `caseRow.holding` was `undefined` in `sentUser` for all cases processed via the normal scraper path. MERGE handler (requeue-merge path) was already correct via its explicit DB fetch.
 
+### Sentencing Backfill Route (session 54)
+
+- Admin route: `POST /api/admin/backfill-sentencing` — X-Nexus-Key auth, accepts `{"limit": N}` clamped to [1,30]
+- Function: `runSentencingBackfill(env, limit)` in worker.js (alongside performMerge)
+- Targets: `subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1`
+- Mirrors performMerge() sentencing block exactly: same chunk fetch, same allHoldings construction, same sentUser structure (120K cap), same OpenAI parameters (gpt-4o-mini-2024-07-18, max_completion_tokens 4000, 45s AbortController), same isSentencingCase() guard
+- Writes only `procedure_notes` and appends to `principles_extracted` via read-modify-write. Does NOT touch deep_enriched, does NOT re-run main synthesis, does NOT use the queue
+- NULL procedure_notes is the implicit retry flag — failed cases stay in result set
+- Returns: `{ ok, processed, skippedNotSentencing, failed, candidatesInBatch, remaining, errors }`
+- **STATUS: Deployed but PAUSED** — quality testing scored 10.7/25 average across 3 cases. Do not fire until SENTENCING_SYNTHESIS_PROMPT is revised and passes 5-case validation at 19+/25. See session 54 changes for six failure modes.
+
+### sentencing_status column (recommended — not yet implemented)
+
+Opus recommendation from session 54: add `sentencing_status TEXT DEFAULT NULL` to cases table. Values: NULL (not attempted), 'success', 'failed', 'not_sentencing'. Fixes the observability gap where `procedure_notes IS NULL` is overloaded. In performMerge(): write 'not_sentencing' if isSentencingCase()=false, 'success' alongside procedure_notes on success, 'failed' in catch block. The `WHERE sentencing_status='failed'` query replaces the heuristic keyword approach for targeting retries. Not yet implemented — prerequisite is prompt revision first.
+
 ### worker.js — admin routes
 
 | Route | Method | Purpose |

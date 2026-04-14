@@ -1006,3 +1006,50 @@ Cases: 1,234+ (scraper running). Case chunks: 18,271+ all embedded. Secondary so
 - **Full requeue-merge fired** — `target:'remerge'` PowerShell loop queued ~1750 MERGE messages across ~7 iterations before being stopped. Race condition noted: queue processes MERGE messages and resets `deep_enriched` to 1, loop then re-picks those cases. Loop stopped manually at ~7 × 250. Duplicate processing is idempotent — procedure_notes will be correctly written or overwritten. Processing overnight on Cloudflare. Verify count at next session start.
 
 - **D1 spot-check — 157 confirmed sentencing cases with NULL procedure_notes** — identified via SQL query on holding/issues fields containing sentencing language. Breakdown by court: Supreme 258/319 null, CCA 124/149 null, Magistrates 39/42 null, Fullcourt 6/6 null. Overnight requeue expected to resolve majority.
+
+## CHANGES THIS SESSION (session 54) — 14 April 2026
+
+### Health checks
+- **Session-open health checks run:** 1,295 cases, 50 chunks done=0 (poller clearing), 0 embedding backlog, 0 secondary source backlog. Secondary source re-embed from session 53 confirmed complete.
+- **procedure_notes count:** 88/571 criminal cases (15%) — effectively flat from session 53 close (89/516). The overnight bulk requeue-merge (~1750 messages) produced zero improvement. Root cause confirmed as Theory B: OpenAI rate limit 429s swallowed silently by the catch block, deep_enriched=1 written permanently, cases locked out of retry.
+
+### Scraper audit
+- **8 stale progress.json entries cleared** via CC — TASSC_2025, TASFC_2025, TASSC_2024, TASCCA_2024, TASFC_2024, TASCCA_2017, TASFC_2017, TASSC_2007. Root causes: 2024/2025 were marked done prematurely under old consecutive_misses=5 config (session 43 fix came after); 2017 CCA/fullcourt completed with zero results; 2007 TASSC aborted mid-run on AustLII 500 outage. Scraper will re-run these on next scheduled sessions.
+- **TASMC ceiling confirmed correct** — COURT_YEARS['TASMC'] tops at 2025. No 2026 magistrates cases exist on AustLII, so no change needed.
+- **truncation_log original_length=-1 bug noted** — all 20 backfill-flagged cases have original_length=-1 because the backfill INSERT used -1 as placeholder for unknown pre-truncation length. Scraper path also has this bug — worker does not capture pre-truncation length before the substring call. Minor fix deferred.
+- **Three 2026 cases at 50,000 chars** (TASSC 2, 3, 5) — truncated at old 50K limit from before the 500K upgrade. Should be deleted and re-fetched at full length. Deferred.
+
+### Sentencing backfill route — built, deployed, then paused on quality failure
+- **runSentencingBackfill(env, limit) + POST /api/admin/backfill-sentencing** deployed (worker.js version dd196b8f). Architectural design is correct: direct-write pass bypassing queue and deep_enriched gate, targets subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1, mirrors performMerge() sentencing block exactly, writes only procedure_notes and appends to principles_extracted. NULL procedure_notes acts as implicit retry flag.
+- **Smoke test passed:** {processed:1, skippedNotSentencing:2, failed:0, remaining:482} — architecturally sound.
+- **Quality verification failed:** Three test cases graded by reconstructing actual D1 chunks (both cases well within 120K cap — failures are model failures, not input failures):
+  - Field v Reardon [2006] TASSC 20 (sentence appeal): 13/25
+  - Tasmania v Lockwood [2023] TASSC 5 (disputed-facts hearing reasons — NOT a sentencing): 7/25
+  - Smillie v Tasmania [2017] TASCCA 26 (CCA sentence appeal): 12/25
+  - Average: 10.7/25. Rollout paused (threshold is 14/25).
+
+### Six quality failure modes identified in SENTENCING_SYNTHESIS_PROMPT
+1. **Wrong-document classification** — model receives non-sentencing criminal judgments (fact-finding reasons, dangerous criminal applications, interlocutory rulings) and hedges instead of returning sentencing_found:false
+2. **Hallucinated comparables** — model writes "the court relied on comparable cases" even when zero are cited; most damaging failure for sentencing-range research
+3. **Hallucinated reasoning principles** — model invokes "general deterrence", "community protection", "rehabilitation potential" when source doesn't contain them
+4. **Mitigating factor blindness** — model says "no substantial mitigating factors" even when source explicitly enumerates them
+5. **Sentence structure terminology errors** — model conflates global / concurrent / cumulative sentences
+6. **Missing appellate analytical structure** — for appeals, model misses the legal test applied (House v The King, Dinsdale v The Queen), appellate reasoning, and the appeal court's own comparators
+
+### Architectural gap confirmed (from late-session Opus consultation in Cowork)
+- **sentencing_status column recommended** — `procedure_notes IS NULL` is overloaded: means both "correctly null" and "failed silently." One column (`sentencing_status TEXT`: NULL / 'success' / 'failed' / 'not_sentencing') fixes observability and makes retry precise. `WHERE sentencing_status='failed'` replaces the heuristic 186-case keyword query. See decisions log for full design.
+
+### Deferred
+- Phase 0: test one clean TASMC first-instance sentencing via D1 chunks — determines whether fix is prompt revision or model upgrade
+- SENTENCING_SYNTHESIS_PROMPT revision (6 failure modes documented above)
+- sentencing_status D1 column + performMerge() instrumentation
+- Re-process existing 89 procedure_notes under new prompt
+- Resume backfill only after 5-case validation set scores 19+/25 average
+- Existing 89 procedure_notes: set back to NULL before next session (misleading in current state)
+- truncation_log original_length=-1 fix
+- Three 50K-truncated 2026 cases re-fetch
+- subject_matter filter (carried)
+- Q2 BRD baseline rerun (carried)
+
+### Platform state
+Cases: 1,295. Case chunks: 19,008 total, 50 done=0 (enrichment in progress), 0 embedded=0. Secondary sources: 1,201 all embedded. procedure_notes: 88/571 criminal cases (15%). truncation_log: 20 flagged. Scraper: running (8 stale entries cleared). enrichment_poller: running.
