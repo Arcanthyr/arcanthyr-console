@@ -52,6 +52,21 @@ def make_id(*parts: str) -> str:
 def today() -> str:
     return datetime.now(timezone.utc).strftime('%Y-%m-%d')
 
+def upgrade_treatment(treatment, why):
+    if treatment != 'cited' or not why:
+        return treatment
+    why_lower = why.lower()
+    if any(w in why_lower for w in ['applied', 'applying', 'followed', 'adopting']):
+        return 'applied'
+    if any(w in why_lower for w in ['distinguished', 'distinguishing', 'different facts']):
+        return 'distinguished'
+    if any(w in why_lower for w in ['overruled', 'disapproved', 'not followed']):
+        return 'not followed'
+    if any(w in why_lower for w in ['referred to', 'noted', 'mentioned']):
+        return 'referred to'
+    return treatment
+
+
 def fetch_cases_page(offset: int) -> list:
     """Fetch one page of cases with xref data from Worker."""
     resp = requests.get(
@@ -74,7 +89,7 @@ def write_citation_rows(rows: list) -> int:
         f"{WORKER_URL}/api/pipeline/write-citations",
         json={'rows': rows},
         headers=NEXUS_HEADERS,
-        timeout=30,
+        timeout=120,
     )
     resp.raise_for_status()
     data = resp.json()
@@ -88,7 +103,7 @@ def write_legislation_rows(rows: list) -> int:
         f"{WORKER_URL}/api/pipeline/write-legislation-refs",
         json={'rows': rows},
         headers=NEXUS_HEADERS,
-        timeout=30,
+        timeout=120,
     )
     resp.raise_for_status()
     data = resp.json()
@@ -123,6 +138,7 @@ def process_citations(cases: list) -> list:
                 continue
             treatment = auth.get('treatment', '').strip().lower() or None
             why = auth.get('why', '').strip() or None
+            treatment = upgrade_treatment(treatment, why)
             row_id = make_id(citing, cited)
             rows.append({
                 'id':          row_id,

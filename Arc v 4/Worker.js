@@ -2171,11 +2171,12 @@ async function handleFetchCasesForXref(request, env, corsHeaders) {
     const offset = parseInt(url.searchParams.get('offset') || '0');
     const limit = parseInt(url.searchParams.get('limit') || '100');
     const { results } = await env.DB.prepare(`
-      SELECT citation, authorities_extracted, legislation_extracted
+      SELECT citation, authorities_extracted, legislation_extracted, subject_matter
       FROM cases
       WHERE authorities_extracted IS NOT NULL
         AND authorities_extracted != '[]'
         AND authorities_extracted != ''
+        AND subject_matter IN ('criminal', 'mixed')
       ORDER BY citation
       LIMIT ? OFFSET ?
     `).bind(limit, offset).all();
@@ -2198,12 +2199,14 @@ async function handleWriteCitations(request, env, corsHeaders) {
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
     });
     let inserted = 0;
-    for (const row of rows) {
-      const result = await env.DB.prepare(`
-        INSERT OR IGNORE INTO case_citations (id, citing_case, cited_case, treatment, why, date_added)
-        VALUES (?, ?, ?, ?, ?, ?)
-      `).bind(row.id, row.citing_case, row.cited_case, row.treatment || null, row.why || null, row.date_added).run();
-      if (result.meta?.changes > 0) inserted++;
+    const CHUNK = 100;
+    for (let i = 0; i < rows.length; i += CHUNK) {
+      const stmts = rows.slice(i, i + CHUNK).map(row =>
+        env.DB.prepare(`INSERT OR IGNORE INTO case_citations (id, citing_case, cited_case, treatment, why, date_added) VALUES (?, ?, ?, ?, ?, ?)`)
+          .bind(row.id, row.citing_case, row.cited_case, row.treatment || null, row.why || null, row.date_added)
+      );
+      const results = await env.DB.batch(stmts);
+      inserted += results.reduce((sum, r) => sum + (r.meta?.changes || 0), 0);
     }
     return new Response(JSON.stringify({ ok: true, inserted }), {
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -2224,12 +2227,14 @@ async function handleWriteLegislationRefs(request, env, corsHeaders) {
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
     });
     let inserted = 0;
-    for (const row of rows) {
-      const result = await env.DB.prepare(`
-        INSERT OR IGNORE INTO case_legislation_refs (id, citation, legislation_ref, date_added)
-        VALUES (?, ?, ?, ?)
-      `).bind(row.id, row.citation, row.legislation_ref, row.date_added).run();
-      if (result.meta?.changes > 0) inserted++;
+    const CHUNK = 100;
+    for (let i = 0; i < rows.length; i += CHUNK) {
+      const stmts = rows.slice(i, i + CHUNK).map(row =>
+        env.DB.prepare(`INSERT OR IGNORE INTO case_legislation_refs (id, citation, legislation_ref, date_added) VALUES (?, ?, ?, ?)`)
+          .bind(row.id, row.citation, row.legislation_ref, row.date_added)
+      );
+      const results = await env.DB.batch(stmts);
+      inserted += results.reduce((sum, r) => sum + (r.meta?.changes || 0), 0);
     }
     return new Response(JSON.stringify({ ok: true, inserted }), {
       headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -2451,6 +2456,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
 
   // ── Sentencing second pass (conditional) ────────────────────────────────────
   let procedureNotes = null;
+  let sentencingStatus = null;
 
   if (isSentencingCase(caseRow, allChunks.results)) {
     try {
@@ -2519,6 +2525,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
           if (sentResult.sentencing_found) {
             procedureNotes = sentResult.procedure_notes || null;
             const caseType = sentResult.case_type || 'unknown';
+            sentencingStatus = procedureNotes ? 'success' : 'failed';
 
             // Append sentencing principles to main principles array
             if (Array.isArray(sentResult.sentencing_principles) && sentResult.sentencing_principles.length > 0) {
@@ -2529,6 +2536,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
               console.log(`[queue] sentencing pass for ${citation} [${caseType}] — ${sentResult.sentencing_principles.length} sentencing principles added`);
             }
           } else {
+            sentencingStatus = 'not_sentencing';
             console.log(`[queue] sentencing pass for ${citation} — no sentencing content found`);
           }
         } else {
@@ -2536,9 +2544,12 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
         }
       }
     } catch (e) {
+      sentencingStatus = 'failed';
       console.error(`[queue] sentencing pass failed for ${citation}:`, e.message);
       // Non-fatal — case still gets doctrine principles from main synthesis
     }
+  } else {
+    sentencingStatus = 'not_sentencing';
   }
 
   await env.DB.prepare(`
@@ -2549,7 +2560,8 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
       authorities_extracted = ?,
       subject_matter = ?,
       holding = ?,
-      procedure_notes = ?
+      procedure_notes = ?,
+      sentencing_status = ?
     WHERE citation = ?
   `).bind(
     JSON.stringify(synthesisedPrinciples),
@@ -2559,6 +2571,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
     subject_matter,
     chunkHoldingStr,
     procedureNotes,
+    sentencingStatus,
     citation
   ).run();
   console.log(`[queue] merge complete for ${citation} — ${synthesisedPrinciples.length} principles${procedureNotes ? ' + sentencing notes' : ''}`);
@@ -2647,12 +2660,12 @@ async function handleRequeueMerge(request, env, corsHeaders) {
 }
 
 // ── Sentencing backfill — direct-write sentencing pass for cases that missed it ──
-// Targets cases where deep_enriched=1 but procedure_notes IS NULL. Bypasses the
-// queue and the atomic gate on deep_enriched, writing only procedure_notes (and
-// appending sentencing principles to principles_extracted). Cases that fail
-// transient errors (rate limits, timeouts) stay in the result set for the next
-// run — the NULL procedure_notes IS the retry flag. Mirrors the sentencing block
-// of performMerge() exactly so output parity is guaranteed.
+// Targets cases where deep_enriched=1 but sentencing_status IS NULL or 'failed'.
+// Bypasses the queue and the atomic gate on deep_enriched, writing only
+// procedure_notes, principles_extracted, and sentencing_status. sentencing_status
+// is the retry flag: NULL = not yet attempted, 'failed' = retryable error,
+// 'not_sentencing' = stable skip. Mirrors the sentencing block of performMerge()
+// exactly so output parity is guaranteed.
 async function runSentencingBackfill(env, limit = 15, citations = null) {
   let cases;
   if (citations && citations.length > 0) {
@@ -2666,12 +2679,12 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
     `).bind(...citations).all();
     cases = results;
   } else {
-    // Sweep mode: next N unprocessed criminal cases
+    // Sweep mode: next N unprocessed or failed criminal cases
     const { results } = await env.DB.prepare(`
       SELECT citation, case_name, court, subject_matter, facts, issues, holding, principles_extracted
       FROM cases
       WHERE subject_matter = 'criminal'
-        AND procedure_notes IS NULL
+        AND (sentencing_status IS NULL OR sentencing_status = 'failed')
         AND deep_enriched = 1
       LIMIT ?
     `).bind(limit).all();
@@ -2712,6 +2725,7 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
       // Sentencing detection — three-check OR (subject_matter, principles_json keywords, issues keywords)
       if (!isSentencingCase(caseRow, allChunks.results)) {
         console.log(`[backfill] ${citation} not a sentencing case, skipping`);
+        await env.DB.prepare('UPDATE cases SET sentencing_status = ? WHERE citation = ?').bind('not_sentencing', citation).run();
         skippedNotSentencing++;
         continue;
       }
@@ -2797,9 +2811,7 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
 
       if (!sentResult.sentencing_found) {
         console.log(`[backfill] ${citation} — model returned sentencing_found:false`);
-        // Note: this case will keep coming back on every sweep. Acceptable —
-        // the model is allowed to disagree with isSentencingCase() heuristics.
-        // If a meaningful number accumulate, add a sentencing_checked column.
+        await env.DB.prepare('UPDATE cases SET sentencing_status = ? WHERE citation = ?').bind('not_sentencing', citation).run();
         skippedNotSentencing++;
         continue;
       }
@@ -2808,6 +2820,7 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
       const caseType = sentResult.case_type || 'unknown';
       if (!procedureNotes) {
         console.log(`[backfill] ${citation} — sentencing_found=true but no procedure_notes in response`);
+        await env.DB.prepare('UPDATE cases SET sentencing_status = ? WHERE citation = ?').bind('failed', citation).run();
         skippedNotSentencing++;
         continue;
       }
@@ -2829,12 +2842,12 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
       // Write to D1 — only the fields the backfill is responsible for
       if (updatedPrinciples) {
         await env.DB.prepare(`
-          UPDATE cases SET procedure_notes = ?, principles_extracted = ? WHERE citation = ?
-        `).bind(procedureNotes, updatedPrinciples, citation).run();
+          UPDATE cases SET procedure_notes = ?, principles_extracted = ?, sentencing_status = ? WHERE citation = ?
+        `).bind(procedureNotes, updatedPrinciples, 'success', citation).run();
       } else {
         await env.DB.prepare(`
-          UPDATE cases SET procedure_notes = ? WHERE citation = ?
-        `).bind(procedureNotes, citation).run();
+          UPDATE cases SET procedure_notes = ?, sentencing_status = ? WHERE citation = ?
+        `).bind(procedureNotes, 'success', citation).run();
       }
 
       console.log(`[backfill] ${citation} — procedure_notes written (${procedureNotes.length} chars)`);
@@ -2842,6 +2855,9 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
 
     } catch (e) {
       console.error(`[backfill] failed for ${citation}: ${e.message}`);
+      try {
+        await env.DB.prepare('UPDATE cases SET sentencing_status = ? WHERE citation = ?').bind('failed', citation).run();
+      } catch (_) {}
       failed++;
       errors.push({ citation, error: e.message.slice(0, 200) });
     }
@@ -2850,7 +2866,9 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
   // Remaining count for visibility
   const remaining = await env.DB.prepare(`
     SELECT COUNT(*) as cnt FROM cases
-    WHERE subject_matter = 'criminal' AND procedure_notes IS NULL AND deep_enriched = 1
+    WHERE subject_matter = 'criminal'
+      AND (sentencing_status IS NULL OR sentencing_status = 'failed')
+      AND deep_enriched = 1
   `).first();
 
   return {
