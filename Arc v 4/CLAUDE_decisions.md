@@ -3440,3 +3440,11 @@ Quality fix (prompt revision + validation) must precede architecture fix (senten
 
 ### Decision: case_type logged but not stored to D1
 - **Why:** Informational for validation logs. If it proves useful for future filtering (e.g. separate retrieval behaviour for appeals vs first-instance), a column can be added later. No schema change needed now
+
+## Session 56 decisions — 14 April 2026
+
+**Stale roadmap audit performed** — cross-referenced all outstanding items against conversation history and live D1 data. Items removed as resolved: bare-year case_name appending (patched session 26, D1 clean), Pass 2 Qwen3 prompt review (quality confirmed acceptable, merge synthesis bypasses it), Phase 0 TASMC diagnosis (done session 55), backfill validation gate (passed session 55), Q2 BRD baseline (fixed session 46), re-process 89 procedure_notes (covered by active backfill). Rationale: CLAUDE.md was accumulating stale items that created false work and obscured genuine priorities. Clean slate approach — only confirmed-outstanding items remain.
+
+**subject_matter filter Part 3 sequencing** — Part 3 (reset embedded=0 on ~19,000 case_chunks) deliberately deferred to overnight run. Rationale: re-embed takes 2–3 hours; running during active session would degrade retrieval for the duration. Retrieval continues working throughout (old vectors stay in place until overwritten). server.py filter must not be deployed until embedded=0 count returns 0 — deploying early silently kills all case chunk retrieval for un-re-embedded points.
+
+**Qdrant point ID format** — case chunk point IDs are hashed to UUIDs, not stored as raw citation strings. Direct lookup by `"[2025] TASSC 32__chunk__11"` fails with format error. Use scroll with payload filter to find points. Document this in component notes if not already present.

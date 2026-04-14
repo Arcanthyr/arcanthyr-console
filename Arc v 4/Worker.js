@@ -3387,7 +3387,7 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-case-chunks-for-embedding' && request.method === 'GET') {
       const batch = parseInt(url.searchParams.get('batch') || '10');
       const { results } = await env.DB.prepare(
-        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, c.case_name
+        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, c.case_name, c.subject_matter
  FROM case_chunks cc
  LEFT JOIN cases c ON c.citation = cc.citation
  WHERE cc.done = 1 AND cc.embedded = 0 LIMIT ?`

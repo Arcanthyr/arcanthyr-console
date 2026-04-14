@@ -1070,3 +1070,28 @@ Cases: 1,295. Case chunks: 19,008 total, 50 done=0 (enrichment in progress), 0 e
   - Fabrication: zero across all outputs — every claim verified against full AustLII judgment text
   - Quantum: stated in all sentencing cases (Barnes $650+6mo+conviction, Venn $250→$850+12mo CCO, Stanley 6mo+18mo cumulative=2yr)
   - **Backfill route safe to unpause**
+
+## CHANGES THIS SESSION (session 56) — 14 April 2026
+
+### Sentencing backfill
+- **Backfill running unattended on VPS** — loop script firing batches of 5 via `/api/admin/backfill-sentencing`, ~237 cases remaining at session start, ETA ~80 min from session open. Quality spot-checked: Medical Council penalty appeals, workplace safety cases, H v DPP — specific sentence dates, quantum, and conditions captured correctly. Zero fabrication visible.
+- **305 NOT_SENTENCING sentinel rows confirmed** — cases that pass keyword heuristic in D1 but fail `isSentencingCase()` on chunk inspection. These are NOT_SENTENCING strings in procedure_notes, not real data. Note added: these will need cleanup if `sentencing_status` column is ever added.
+
+### Stale roadmap items identified and removed
+- **Bare-year case_name appending** — confirmed resolved via D1 query (GLOB found zero real hits). Session 26 patch fully cleaned existing data. New cases coming in via scraper are clean. Removed from outstanding items.
+- **Pass 2 Qwen3 prompt quality review** — confirmed low priority in CLAUDE_arch.md and verified via live D1 sample (1381/1382 cases have principles, quality looks case-specific). Removed as active task. Roadmap entry already marked "DEFERRED · low urgency — merge synthesis bypasses Pass 2 output" — confirmed correct.
+- **Phase 0 TASMC diagnosis** — completed in session 55 (Stanley v Koehler chunk reconstruction). Already done. Removed from deferred list.
+- **Backfill validation gate** — 5-case validation PASSED in session 55 (6/6 classification, zero fabrication). Backfill unpaused and running. Removed from deferred list.
+- **Citation authority agent** — confirmed built in session 15 (`xref_agent.py`, `case_citations` and `case_legislation_refs` tables exist). What remains is only the nightly cron setup, which is a separate roadmap item. Corrected roadmap entry accordingly.
+- **Q2 BRD baseline** — confirmed fixed after session 46 secondary source re-embed. Baseline history shows 14 pass/3 partial. "Carried" note was stale. Removed.
+- **Re-process 89 procedure_notes** — covered by the currently running backfill. Removed from deferred list.
+
+### subject_matter filter — Parts 1 and 2 deployed
+- **Part 1 — worker.js** `fetch-case-chunks-for-embedding` route: added `c.subject_matter` to SELECT (already had LEFT JOIN cases). Deployed version `1393e405`.
+- **Part 2 — enrichment_poller.py**: added `'subject_matter': chunk.get('subject_matter') or 'unknown'` to case chunk metadata dict at line 783. Applied directly on VPS via hex-ssh. Container restarted.
+- **End-to-end verification**: Worker route confirmed returning `subject_matter` field. Qdrant spot-check confirmed new points contain `subject_matter: "unknown"` (correct for new unmerged cases) in payload. Parts 1 and 2 fully confirmed.
+- **Part 3 deferred to tonight**: `UPDATE case_chunks SET embedded = 0` — fires before sleep, poller re-embeds ~19,000 chunks overnight. Existing criminal cases will come through as `"criminal"` after re-embed. server.py filter (`MatchAny(any=["criminal","mixed"])`) to be deployed tomorrow morning after confirming embedded=0 count is zero.
+- **Part 3 command** (PowerShell, `Arc v 4/`): `npx wrangler d1 execute arcanthyr --remote --command "UPDATE case_chunks SET embedded = 0"`
+
+### Platform state
+Cases: 1,382. Secondary sources: 1,201. Case chunks: ~19,000. procedure_notes: running backfill (target >400/571 criminal cases). subject_matter filter: Parts 1+2 deployed, Part 3 pending tonight.

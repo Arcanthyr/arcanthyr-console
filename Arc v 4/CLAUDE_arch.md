@@ -752,13 +752,13 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
-- **subject_matter filter** — SESSION 43 · audit misclassifications → correct D1 → re-embed case chunks → deploy Pass 1/2 filter · full design in subject_matter filter section above
+- **subject_matter filter** — Parts 1+2 deployed session 56 (Worker route JOIN + poller metadata dict). Part 3 pending: reset `embedded=0` on all case_chunks tonight, poller re-embeds overnight. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter morning after Part 3 confirms complete. Do NOT deploy filter until `SELECT COUNT(*) FROM case_chunks WHERE embedded=0` returns 0.
 - **Domain filter UI** — deferred until subject_matter audit + Option A re-embed complete · CC prompt ready
 - **Arcanthyr MCP server** — thin wrapper over server.py search + D1 routes · public HTTPS on VPS · colleagues connect via claude.ai Customize → Connectors (no local install) · AI-agnostic protocol — Claude, ChatGPT (when ready), local models, agent frameworks all usable · per-user API key auth on top of NEXUS_SECRET_KEY · build post-scraper-completion after subject_matter filter deployed
-- **Citation authority agent** — SQL traversal of authorities_extracted JSON across full corpus · frequency + treatment + court tier ranking · output ingested as secondary_source chunks · surfaces in retrieval naturally · run quarterly as cron · build post-scraper-completion
+- **Citation authority agent (xref_agent.py)** — BUILT session 15. `xref_agent.py` deployed on VPS, `case_citations` and `case_legislation_refs` tables populated. Outstanding: nightly cron setup (see separate cron item) and stare decisis layer in UI.
 - **Local/office deployment** — D1 SQLite export + Qdrant snapshot · office server (16GB RAM, SSD) · nightly VPS→local sync · MCP server points at local instance · Option C: cloud for pipeline, local for queries · SQLite adequate for small office, PostgreSQL migration path if needed
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
-- **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency — merge synthesis bypasses Pass 2 output
+- **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
