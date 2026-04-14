@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 14 April 2026 (end of session 55). Upload every session alongside CLAUDE.md.*
+*Updated: 14 April 2026 (end of session 57). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -643,9 +643,9 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Session 55 prompt rewrite:** Three-step prompt — Step 1 classifies case type (first_instance/sentence_appeal/sentence_review vs non-sentencing) with explicit positive/negative case lists; Step 2 extracts with different schemas for first-instance vs appeal/review (appeal schema includes original sentence, appellate standard applied, House v The Queen, grounds, outcome); Step 3 formats JSON. Input is ALL chunk_text (no type filtering — this was already the case pre-session-55, the prompt just mislabeled it as "reasoning sections"). Output includes `case_type` field (logged, not stored to D1). Key instruction: "never invent comparable cases — only include cases explicitly cited in the judgment text."
 - **Citation targeting (session 55):** accepts optional `body.citations` array. If present: queries `WHERE citation IN (...)` with no `procedure_notes IS NULL` constraint (re-runs work). If absent: original sweep query (`subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1`).
 
-### sentencing_status column (recommended — not yet implemented)
+### sentencing_status column (deployed session 57)
 
-Opus recommendation from session 54: add `sentencing_status TEXT DEFAULT NULL` to cases table. Values: NULL (not attempted), 'success', 'failed', 'not_sentencing'. Fixes the observability gap where `procedure_notes IS NULL` is overloaded. In performMerge(): write 'not_sentencing' if isSentencingCase()=false, 'success' alongside procedure_notes on success, 'failed' in catch block. The `WHERE sentencing_status='failed'` query replaces the heuristic keyword approach for targeting retries. Not yet implemented — prerequisite is prompt revision first.
+`sentencing_status TEXT` added to cases table via `ALTER TABLE`. Values: NULL (not yet processed), 'success' (procedure_notes written), 'failed' (isSentencingCase=true but extraction failed), 'not_sentencing' (isSentencingCase=false). Implemented in both `performMerge()` and `runSentencingBackfill()`. Sweep query updated to `sentencing_status IS NULL OR sentencing_status='failed'` for precise retries. 305 NOT_SENTENCING sentinel strings cleaned from procedure_notes in same deployment. Use `WHERE sentencing_status='failed'` for targeted retry runs.
 
 ### worker.js — admin routes
 
@@ -655,6 +655,14 @@ Opus recommendation from session 54: add `sentencing_status TEXT DEFAULT NULL` t
 | `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
 | `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
+
+### xref_agent.py (session 57)
+- Location: VPS `~/ai-stack/agent-general/src/xref_agent.py`
+- Cron: `0 3 * * *` in tom's crontab — logs to `~/ai-stack/xref_agent.log`
+- Filters: `subject_matter IN ('criminal', 'mixed')` — civil/admin excluded
+- Treatment upgrade: `upgrade_treatment()` post-processes `'cited'` using `why` keywords → applied/distinguished/not followed/referred to
+- Idempotent: `INSERT OR IGNORE` with SHA1 IDs — safe to re-run
+- Worker batch writes: `env.DB.batch()` in 100-row chunks (not sequential await)
 
 ### Qdrant payload field names
 
@@ -676,6 +684,7 @@ Opus recommendation from session 54: add `sentencing_status TEXT DEFAULT NULL` t
 - `subject_matter TEXT` — added session 14 · values: criminal/civil/administrative/family/mixed/unknown · derived at merge step from most frequent chunk-level classification
 - `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete and merge runs
 - `procedure_notes TEXT` — populated by sentencing second pass for criminal judgments · NULL for non-criminal or non-sentencing cases
+- `sentencing_status TEXT` — added session 57 · values: NULL (not yet processed) / 'success' (procedure_notes written) / 'failed' (isSentencingCase=true but extraction failed) / 'not_sentencing' (isSentencingCase=false) · use `WHERE sentencing_status='failed'` for precise retry targeting
 
 ### case_chunks D1 schema
 
@@ -752,19 +761,16 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
-- **subject_matter filter** — Parts 1+2 deployed session 56 (Worker route JOIN + poller metadata dict). Part 3 pending: reset `embedded=0` on all case_chunks tonight, poller re-embeds overnight. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter morning after Part 3 confirms complete. Do NOT deploy filter until `SELECT COUNT(*) FROM case_chunks WHERE embedded=0` returns 0.
+- **subject_matter filter** — Parts 1+2+3 deployed (Worker route JOIN, poller metadata dict, case_chunks re-embed overnight). Deploy server.py `MatchAny(any=["criminal","mixed"])` on Pass 3 once `SELECT COUNT(*) FROM case_chunks WHERE embedded=0` returns 0. Do NOT deploy filter until confirmed.
 - **Domain filter UI** — deferred until subject_matter audit + Option A re-embed complete · CC prompt ready
-- **Arcanthyr MCP server** — thin wrapper over server.py search + D1 routes · public HTTPS on VPS · colleagues connect via claude.ai Customize → Connectors (no local install) · AI-agnostic protocol — Claude, ChatGPT (when ready), local models, agent frameworks all usable · per-user API key auth on top of NEXUS_SECRET_KEY · build post-scraper-completion after subject_matter filter deployed
-- **Citation authority agent (xref_agent.py)** — BUILT session 15. `xref_agent.py` deployed on VPS, `case_citations` and `case_legislation_refs` tables populated. Outstanding: nightly cron setup (see separate cron item) and stare decisis layer in UI.
+- **Citation authority agent (xref_agent.py)** — COMPLETE. Tables populated: 5,340 case_citations, 4,056 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: stare decisis UI layer (see below).
+- **Stare decisis UI layer** — surface citation treatment history in case detail view. Data source: `case_citations` (5,340 rows, criminal/mixed only) and `case_legislation_refs` (4,056 rows). Show: cited-by count, treatment breakdown (applied/distinguished/not followed), which cases this case cites. Frontend build on case detail panel — no backend work needed, data already in D1.
 - **Local/office deployment** — D1 SQLite export + Qdrant snapshot · office server (16GB RAM, SSD) · nightly VPS→local sync · MCP server points at local instance · Option C: cloud for pipeline, local for queries · SQLite adequate for small office, PostgreSQL migration path if needed
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
 - **Cloudflare Browser Rendering /crawl** — Free plan. For Tasmanian Supreme Court sentencing remarks
-- **Qwen3 UI toggle** — add third button to model toggle
-- **Nightly cron for xref_agent.py** — after scraper actively running
-- **Stare decisis layer** — surface treatment history from case_citations
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority

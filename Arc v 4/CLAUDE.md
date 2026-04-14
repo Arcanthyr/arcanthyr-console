@@ -1095,3 +1095,41 @@ Cases: 1,295. Case chunks: 19,008 total, 50 done=0 (enrichment in progress), 0 e
 
 ### Platform state
 Cases: 1,382. Secondary sources: 1,201. Case chunks: ~19,000. procedure_notes: running backfill (target >400/571 criminal cases). subject_matter filter: Parts 1+2 deployed, Part 3 pending tonight.
+
+## CHANGES THIS SESSION (session 57) — 14 April 2026
+
+### Session-open health checks
+- Cases: 1,423. Embed backlog: 309 (subject_matter Part 3 re-embed in progress from overnight). Sentencing backfill: 120 real procedure_notes at session open (backfill running).
+
+### Roadmap audit — items confirmed already done and struck off
+- **Sentencing extraction fix** — confirmed fully implemented and backfill running. Memory was stale. Removed from list.
+- **Word/PDF drag-drop upload** — confirmed built and working end-to-end in session 27. Removed from list.
+- **Qwen3 UI toggle (third button)** — confirmed in session history: recommendation was to skip the third button, two-button Sol/V'ger toggle is correct as-is. Scratched.
+- **Arcanthyr MCP server** — evaluated and dismissed: UI already does retrieval + synthesis; MCP wrapper just adds a layer with no meaningful gain over existing web UI. Scratched.
+- **Citation authority agent build** — confirmed built in session 15 (xref_agent.py, case_citations and case_legislation_refs tables exist). Roadmap entry corrected; only cron setup remained.
+
+### sentencing_status column (item 6)
+- `ALTER TABLE cases ADD COLUMN sentencing_status TEXT` — additive, no pipeline impact
+- `performMerge()` in worker.js: added `sentencingStatus` variable tracking three outcome paths — `'success'` (sentencing_found=true + procedureNotes non-null), `'failed'` (isSentencingCase=true but pass threw or returned no notes), `'not_sentencing'` (isSentencingCase=false). Written to final `UPDATE cases SET`.
+- `runSentencingBackfill()`: same three outcome paths + status written on all D1 write paths including catch block. Sweep query updated to `sentencing_status IS NULL OR 'failed'` for precise retries.
+- Deployed worker.js version `f2da1503`.
+- Cleanup: `UPDATE cases SET sentencing_status = 'not_sentencing', procedure_notes = NULL WHERE procedure_notes = 'NOT_SENTENCING'` — 305 rows cleaned. Sentinel strings removed from procedure_notes.
+- Backfill: `UPDATE cases SET sentencing_status = 'success' WHERE procedure_notes IS NOT NULL AND procedure_notes != 'NOT_SENTENCING'` — 126 rows marked success.
+- Final state: 126 success, 310 not_sentencing, 1,056 NULL (non-criminal or awaiting backfill).
+
+### truncation_log cleanup + re-fetch (item 5)
+- Diagnosed: 20 entries all with `original_length=-1` and `source=backfill` — false positives from backfill script hitting its 120K prompt cap, not actual 500K raw_text truncation. CC confirmed no code fix needed (no `source='backfill'` write exists in worker.js — entries were from a one-time session 52 D1 command).
+- 18 false positives marked confirmed: `UPDATE truncation_log SET status='confirmed', date_resolved=datetime('now') WHERE source='backfill' AND citation NOT IN ('[2022] TASSC 11','[2021] TASSC 27')`.
+- Two genuinely over-500K cases deleted and re-fetched: `[2022] TASSC 11` (774K) and `[2021] TASSC 27` (549K). Both hit 500K again on re-fetch — genuinely enormous judgments. Both queued through full METADATA → CHUNK → MERGE pipeline. In progress at session close.
+
+### xref_agent.py — criminal filter + treatment upgrade + nightly cron
+- **Fix 1 — Criminal filter**: `handleFetchCasesForXref` in worker.js updated — added `AND subject_matter IN ('criminal', 'mixed')` to SQL, added `subject_matter` to SELECT. Civil/administrative cases excluded from citation network.
+- **Fix 2 — Treatment upgrade**: `upgrade_treatment()` function added to xref_agent.py — post-processes `treatment='cited'` using `why` field keywords to upgrade to `applied`, `distinguished`, `not followed`, `referred to`. Already-specific values left untouched.
+- **Batch D1 writes**: `handleWriteCitations` and `handleWriteLegislationRefs` in worker.js switched from sequential `await`-per-row to `env.DB.batch()` in 100-row chunks — fixed 30s Worker timeout on large batches.
+- **Python timeout**: `write_citation_rows` and `write_legislation_rows` raised from 30s to 120s.
+- **Full corpus run**: 563 criminal/mixed cases processed. 5,340 case_citations rows, 4,056 case_legislation_refs rows inserted. Treatment breakdown: 214 applied, 233 referred to, 33 distinguished, 17 not followed (upgraded from cited). [2026] TASSC 1 (civil) correctly excluded — 0 new inserts confirmed.
+- **Nightly cron**: added to VPS crontab for `tom` user — `0 3 * * *`, logs to `~/ai-stack/xref_agent.log`.
+- Deployed worker.js version `b654b868`. xref_agent.py synced to local repo and committed.
+
+### Platform state
+Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + two re-fetched large cases in progress). Secondary sources: 1,201. procedure_notes: 126 success / 310 not_sentencing / 1,056 NULL. case_citations: 5,340. case_legislation_refs: 4,056. subject_matter filter: Parts 1+2 deployed; Part 3 re-embed in progress — server.py filter deploy pending embed backlog = 0.

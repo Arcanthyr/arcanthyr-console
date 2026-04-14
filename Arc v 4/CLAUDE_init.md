@@ -178,6 +178,8 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 - **Route/column verification**: Never construct commands with route paths or D1 column names inferred from context — ask CC to grep/read source first. Confirmed failure mode: /api/pipeline/requeue-merge (wrong), criminal column (does not exist).
 - **handleRequeueMerge citation scope**: citation parameter in requeue-merge body does NOT scope the requeue — target="remerge" always requeues full eligible corpus. Verify before firing.
 - **retrieval_baseline.sh**: Now 31 queries (Q1–Q31). Pre-RRF baseline saved at ~/retrieval_baseline_pre_rrf.txt — do not overwrite. Post-RRF baseline saves to ~/retrieval_baseline_post_rrf.txt
+- **xref_agent cron**: VPS crontab (tom user) — `0 3 * * *` daily — logs to `~/ai-stack/xref_agent.log` — runs `--mode both` across criminal/mixed cases only · check logs: `tail -50 ~/ai-stack/xref_agent.log`
+- **sentencing_status column**: Added session 57 — use `WHERE sentencing_status='failed'` for precise sentencing retry targeting · 'not_sentencing' replaces old NOT_SENTENCING sentinel strings in procedure_notes
 
 ---
 

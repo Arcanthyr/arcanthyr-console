@@ -3448,3 +3448,23 @@ Quality fix (prompt revision + validation) must precede architecture fix (senten
 **subject_matter filter Part 3 sequencing** — Part 3 (reset embedded=0 on ~19,000 case_chunks) deliberately deferred to overnight run. Rationale: re-embed takes 2–3 hours; running during active session would degrade retrieval for the duration. Retrieval continues working throughout (old vectors stay in place until overwritten). server.py filter must not be deployed until embedded=0 count returns 0 — deploying early silently kills all case chunk retrieval for un-re-embedded points.
 
 **Qdrant point ID format** — case chunk point IDs are hashed to UUIDs, not stored as raw citation strings. Direct lookup by `"[2025] TASSC 32__chunk__11"` fails with format error. Use scroll with payload filter to find points. Document this in component notes if not already present.
+
+## Session 57 decisions — 14 April 2026
+
+### Arcanthyr MCP server — scratched
+Evaluated and dismissed. The web UI already does full retrieval + Qwen3 synthesis. An MCP wrapper would just relay Qwen3's output through Claude — no meaningful gain, double synthesis cost, auth complexity. Not worth building.
+
+### Qwen3 UI toggle (third button) — confirmed already resolved
+Session history confirmed this was discussed and closed in a prior session. Sol/V'ger two-button toggle is correct. The `legal-query-qwen` route is a legacy VPS path predating Workers AI. No third button needed.
+
+### xref_agent criminal filter — criminal/mixed only
+Decision: filter `fetch-cases-for-xref` to `subject_matter IN ('criminal', 'mixed')`. Rationale: Arcanthyr's purpose is Tasmanian criminal law research; civil/administrative citation data adds noise without value. The 5 pre-existing rows from [2026] TASSC 1 (a civil standing case) were left in place as pre-existing data but will not be added to further.
+
+### xref_agent treatment upgrade — deterministic keyword lookup, not LLM
+Decision: post-process `treatment='cited'` using keyword matching on the `why` field rather than a second LLM call. Rationale: the `why` text already contains enough signal for reliable upgrades (e.g. "applied the test in" → applied); an LLM pass would add latency and cost for marginal gain. Deterministic and auditable.
+
+### sentencing_status column — additive observability fix
+Decision: add `sentencing_status TEXT` to cases table with values NULL/'success'/'failed'/'not_sentencing'. Rationale: `procedure_notes IS NULL` was overloaded — meant both "not yet processed" and "failed silently." `WHERE sentencing_status='failed'` now enables precise retry targeting without heuristic keyword queries. 305 NOT_SENTENCING sentinel strings cleaned from procedure_notes in same operation.
+
+### truncation_log -1 entries — false positives, no code fix needed
+Decision: mark 18 of 20 truncation_log entries as confirmed without re-fetching. Rationale: all 18 had raw_text under 500K and deep_enriched=1 — they were never actually truncated. The -1 values came from a one-time session 52 D1 command, not a code bug. Only [2022] TASSC 11 and [2021] TASSC 27 (genuinely over 500K) required re-fetch.
