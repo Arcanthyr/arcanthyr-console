@@ -761,7 +761,7 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
-- **subject_matter filter** — Parts 1+2+3 deployed (Worker route JOIN, poller metadata dict, case_chunks re-embed overnight). Deploy server.py `MatchAny(any=["criminal","mixed"])` on Pass 3 once `SELECT COUNT(*) FROM case_chunks WHERE embedded=0` returns 0. Do NOT deploy filter until confirmed.
+- **subject_matter filter** — Part 1 (Worker route JOIN) confirmed deployed. Part 2 (poller metadata dict) deployed session 60. Part 3 (re-embed backlog ~7,046 chunks) in progress — poller writing correct payloads from session 60 onwards. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter on Pass 3 once backlog clears to 0.
 - **Domain filter UI** — deferred until subject_matter audit + Option A re-embed complete · CC prompt ready
 - **Citation authority agent (xref_agent.py)** — COMPLETE. Tables populated: 5,340 case_citations, 4,056 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: stare decisis UI layer (see below).
 - **Stare decisis UI layer** — surface citation treatment history in case detail view. Data source: `case_citations` (5,340 rows, criminal/mixed only) and `case_legislation_refs` (4,056 rows). Show: cited-by count, treatment breakdown (applied/distinguished/not followed), which cases this case cites. Frontend build on case detail panel — no backend work needed, data already in D1.
@@ -814,3 +814,5 @@ Ambient clips (8 preset phrases × 2 voices) are served as static Cloudflare CDN
 Live TTS (query responses read aloud) routes: Browser → Worker `/api/tts` → `nexus.arcanthyr.com/tts` → `server.py:18789/tts` → MOSS-TTS at `172.19.0.1:18083`. MOSS-TTS synthesis takes ~2m13s on CPU — to be replaced with OpenAI TTS API next session.
 
 Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge interface `br-09b8cf509a2d` for port 18083. Rule persisted in `/etc/iptables/rules.v4`.
+
+- **TTS**: MOSS-TTS replaced session 60 with OpenAI TTS API (`tts-1`, onyx/nova voices). Static MP3 replacement planned next session — `/tts` route and Worker proxy will be removed entirely once static files deployed.

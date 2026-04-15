@@ -1241,3 +1241,14 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 - Port 18083: locked to Docker bridge only (ACCEPT from br-09b8cf509a2d, DROP all others)
 - Port 3000: locked to loopback only
 - NEXUS_SECRET_KEY rotation still pending (exposed session 58)
+
+## CHANGES THIS SESSION (session 60) — 15 Apr 2026
+
+- **VPS key path corrected**: All VPS curl commands updated — correct path is `~/ai-stack/.env.secrets`, not `~/ai-stack/.env`. NEXUS_SECRET_KEY lives in `.env.secrets` alongside OPENAI_API_KEY and other secrets. `.env` does not contain keys.
+- **OpenAI TTS swap**: MOSS-TTS fully replaced in server.py. `/tts` route now calls `https://api.openai.com/v1/audio/speech` with `tts-1` model, `onyx` (male) / `nova` (female) voice mapping, returns MP3 bytes. All MOSS-TTS globals, PHRASE_CACHE, prime_tts_cache() thread, and 172.19.0.1:18083 references removed. Sub-1s latency confirmed. SCP + force-recreate agent-general deployed.
+- **subject_matter poller fix (Part 2)**: `subject_matter` field added to case chunk Qdrant metadata dict in enrichment_poller.py (after `case_name`). Was never SCPd to VPS despite session 57 notes claiming it was deployed. Part 1 (Worker route JOIN) confirmed already deployed. SCP + force-recreate enrichment-poller deployed. New chunks embedding from this point will have subject_matter in Qdrant payload.
+- **Sentencing extraction gap confirmed resolved**: D1 check shows 257 success / 340 not_sentencing / 0 failed / 0 null for criminal cases. Memory item was stale — fix completed sessions 55–56.
+- **subject_matter filter (server.py) still deferred**: Cannot deploy until existing case chunk Qdrant points are re-embedded with subject_matter payload. Backlog currently 7,046 chunks (grown from scraper activity). Poller now writing correct payloads — filter deployable once backlog clears.
+- **Static TTS approach decided**: Next session will replace all live TTS API calls with pre-generated static MP3s. 72 sample files being generated (9 voices × 8 phrases) for voice selection. Once voice chosen, final MP3s committed to `public/Voices/`, frontend wired to play on triggers, `/tts` route removed from server.py and Worker entirely.
+- **legal-query 500 diagnosed**: Was transient nexus 524 (Cloudflare timeout on VPS search endpoint). server.py confirmed healthy via direct curl. Resolved without code changes.
+- **Worker error logging gap noted**: Legal route catch block returns `json({ error: err.message }, 500)` but never console.errors — error only visible in browser network tab response body, not in wrangler tail.

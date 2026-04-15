@@ -57,7 +57,7 @@ docker compose ps
 
 ### VPS: server.py health check
 ```bash
-curl localhost:18789/status -H "X-Nexus-Key: $(grep NEXUS_SECRET_KEY ~/ai-stack/.env | cut -d= -f2)"
+curl localhost:18789/status -H "X-Nexus-Key: $(grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2)"
 ```
 
 ### SCP server.py (canonical copy is on VPS — always pull before editing)
@@ -170,7 +170,7 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 
 ### Auth & External Services
 
-- **Admin routes** (Worker): `X-Nexus-Key` header required. Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env` on VPS.
+- **Admin routes** (Worker): `X-Nexus-Key` header required. Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2` on VPS.
 - **upload-corpus route**: No `X-Nexus-Key` — uses `User-Agent: Mozilla/5.0 (compatible; Arcanthyr/1.0)`.
 - **server.py**: All direct calls to `localhost:18789` require `X-Nexus-Key`.
 - **Qdrant**: VPS host port is `6334` (not 6333) — always `curl localhost:6334` from host.
@@ -220,20 +220,10 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 | Sentencing backfill route | `POST /api/admin/backfill-sentencing` (X-Nexus-Key) — direct-write sentencing pass, limit 1–30 per call. Accepts optional `body.citations` array for targeted runs (session 55). SENTENCING_SYNTHESIS_PROMPT revised and validated session 55 — classification 6/6, fabrication 0. Safe to fire. |
 | scraper_progress.json | 8 stale entries cleared session 54. Safe to re-scrape already-ingested citations — INSERT OR IGNORE skips silently. |
 
-### MOSS-TTS-Nano
-- Service: sudo systemctl status/start/restart moss-tts
-- Test TTS locally on VPS: curl -s -X POST http://localhost:18083/api/generate -F "text=Hello" -F "prompt_audio=@/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_8.wav" | python3 -c "import sys,json,base64; d=json.load(sys.stdin); open('/tmp/test.wav','wb').write(base64.b64decode(d['audio_base64']))"
-- Test /tts route: curl -s -X POST http://localhost:18789/tts -H "Content-Type: application/json" -H "X-Nexus-Key: KEY" -d '{"text":"Hello","voice":"male"}' --output /tmp/test.wav
-- NEXUS_SECRET_KEY is in local .env only (Arc v 4/.env) — not on VPS
-- Voice assets: en_8.wav (male default), en_6.wav (female), ambient clips in assets/ambient_male/ and assets/ambient/
-- MOSS-TTS must bind 0.0.0.0: `sudo sed -i 's/--host 127.0.0.1/--host 0.0.0.0/' /etc/systemd/system/moss-tts.service && sudo systemctl daemon-reload && sudo systemctl restart moss-tts.service`
-- If TTS returns `{"error": "TTS service unavailable"}` — check MOSS-TTS binding: `ss -tlnp | grep 18083` must show `0.0.0.0:18083`
-- Container reaches MOSS-TTS via Docker bridge gateway `172.19.0.1:18083` — not 127.0.0.1
-- NEXUS_SECRET_KEY rotation pending (exposed in session 58 conversation history) — generate new key, wrangler secret put, update VPS .env
-
-### MOSS-TTS — session 59 updates
-- All `127.0.0.1:18083` references in server.py corrected to `172.19.0.1:18083` (Docker bridge gateway, not container loopback)
-- iptables rule required for container→host on port 18083: `sudo iptables -I INPUT -i br-09b8cf509a2d -p tcp --dport 18083 -j ACCEPT` — persisted in `/etc/iptables/rules.v4`
-- Bridge interface name `br-09b8cf509a2d` derived from Docker network ID — will change if `ai-stack_general-net` is recreated
-- MOSS-TTS synthesis: ~2m13s per phrase on CPU — not viable for real-time; to be replaced with OpenAI TTS next session
-- Static ambient WAVs: `Arc v 4/public/Voices/ambient/` and `Arc v 4/public/Voices/ambient_male/` — 16 files, served from Cloudflare CDN
+### TTS — session 60
+- MOSS-TTS fully replaced with OpenAI TTS API in server.py session 60
+- Route calls `https://api.openai.com/v1/audio/speech`, model `tts-1`, onyx (male) / nova (female)
+- Static MP3 replacement in progress next session — /tts route will be removed from server.py and Worker
+- 8 phrases being pre-generated: welcome, searching, processing, complete, error, no_results, uploading, uploaded
+- Files will live in `Arc v 4/public/Voices/` served from Cloudflare CDN
+- OPENAI_API_KEY confirmed in `~/ai-stack/.env.secrets`, injected into agent-general via env_file

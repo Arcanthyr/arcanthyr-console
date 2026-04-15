@@ -3524,3 +3524,17 @@ ufw was removed as a side effect of installing iptables-persistent. Decision: ac
 
 **NEXUS_SECRET_KEY rotation deferred**
 Key was exposed in session 58 conversation history. Risk assessed as low (Anthropic systems, not public). Rotation deferred — not forgotten. Must be done before any colleague access or MCP server rollout.
+
+## Session 60 decisions — 15 Apr 2026
+
+**VPS .env.secrets path — corrected in CLAUDE.md**
+Correct path for all VPS secret lookups is `~/ai-stack/.env.secrets`. CLAUDE.md had `~/ai-stack/.env` which returns nothing. Both NEXUS_SECRET_KEY and OPENAI_API_KEY are in `.env.secrets`. Standard curl pattern: `grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2`.
+
+**OpenAI TTS over MOSS-TTS**
+MOSS-TTS synthesises at ~2m13s per phrase on CPU — not viable for real-time. Replaced with OpenAI `tts-1` API. Sub-1s latency confirmed. onyx (male) / nova (female) default mapping. No local model dependency.
+
+**Static MP3s over live TTS API**
+Decision: replace all live TTS calls with pre-generated static MP3s served from Cloudflare CDN. Rationale: zero latency, no API cost per play, no server dependency, simpler frontend. Phrases are fixed and known — no dynamic TTS needed. 72 samples (9 voices × 8 phrases) generated for voice selection. Implementation next session: commit MP3s to public/Voices/, wire frontend triggers, remove /tts route from server.py and Worker.
+
+**subject_matter Part 2 was never deployed**
+Session 57 close notes incorrectly stated Parts 1+2 deployed. VPS code check this session confirmed Part 2 (poller metadata dict) was absent. Classic SCP failure mode — session notes confirmed deployed without verifying VPS file. Part 1 confirmed via worker.js code inspection. Part 2 fixed and deployed this session. Part 3 re-embed running naturally via backlog.
