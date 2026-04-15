@@ -462,6 +462,24 @@ def extract_unprocessed(response_text: str) -> Optional[str]:
 
 # ── Embedding ───────────────────────────────────────────────────
 
+def strip_frontmatter(text):
+    """Strip frontmatter before embedding.
+    Case 1: --- block (opening fence + any mix of field lines/blank lines + optional closing fence).
+            Only fires when ^--- present — never touches non-frontmatter rows.
+    Case 2: bare inline [CONCEPTS:] / Concepts: line (session-46 behaviour, narrow)."""
+    text = re.sub(
+        r'^---\s*\n'
+        r'(?:'
+          r'(?:\*{0,2}\[?(?:concepts|topic|jurisdiction|domain|author|date|source):[^\n]*\]?\*{0,2})\n'
+          r'|\n'
+        r')+'
+        r'(?:---\s*\n)?',
+        '', text, flags=re.IGNORECASE
+    )
+    text = re.sub(r'^\[?concepts:[^\n]*\n+', '', text, flags=re.IGNORECASE)
+    return text.strip()
+
+
 def get_embedding(text: str) -> list[float]:
     """Get pplx-embed embedding from Ollama."""
     if len(text) > 8000:
@@ -692,7 +710,7 @@ def run_embedding_pass(batch: int) -> dict:
         chunk_id     = chunk['id']
         # Prefer enriched_text for embedding; fall back to raw text
         embed_text   = chunk.get('enriched_text') or chunk.get('raw_text', '')
-        embed_text   = re.sub(r'^\[?concepts:[^\]\n]*\]?\s*\n+', '', embed_text, flags=re.IGNORECASE).strip()
+        embed_text   = strip_frontmatter(embed_text)
         metadata     = {
             'citation':    chunk.get('id', ''),
             'source_id':   chunk.get('id', ''),

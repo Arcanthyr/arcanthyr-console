@@ -1166,3 +1166,44 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 - Root cause not yet confirmed — suspected query embedding mismatch or retrieval scoring issue
 - Deferred to next session — terminal state issue prevented VPS curl diagnostic
 - Key finding: NEXUS_SECRET_KEY is NOT stored on VPS — only in local .env at Arc v 4/.env and injected via Worker
+
+## CHANGES THIS SESSION (session 58) — 15 April 2026
+
+### Retrieval diagnostic — "elements of assault" returning no results
+- Root cause identified: 114 secondary source rows have YAML-style `---` frontmatter in `raw_text`; poller strip regex (session 46) used `^` anchor that never matched because `---\n` precedes `[CONCEPTS:]`
+- Session 46 mass re-embed reinforced the problem — dirty text was re-embedded with fresh vectors
+- Milligan and Harrison chunks identified as unfixable (body content was citation fragment only, ~93–104 chars) — deleted
+
+### enrichment_poller.py — strip_frontmatter() rewrite
+- Replaced single-line CONCEPTS regex at line 695 with dual-case `strip_frontmatter()` function
+- Case 1: anchored `---` block strip with blank-line tolerance (handles `---\nCONCEPTS\nTOPIC\nJURISDICTION\n---\n` and variants)
+- Case 2: bare inline `[CONCEPTS:]` / `Concepts:` line (session-46 behaviour preserved)
+- Validated ALL PASS across 6 test cases including mid-body safety check before writing
+- SCP'd to VPS, agent-general force-recreated, confirmed running new code
+
+### ingest_corpus.py — Concepts: prepend removed
+- Removed `Concepts: {concepts}\n\n{prose}` prepend from text assembly before POST
+- Nothing downstream reads the prefix from raw_text — confirmed by reading Worker upload handler and server.py ingest path
+- Future rows now land in D1 with clean prose only
+
+### D1 — 113 secondary source raw_text rows cleaned
+- strip_frontmatter() applied in Python to all 114 `---`-prefixed rows, cleaned text written back to D1
+- embedded=0 reset on all 113 changed rows (1 no-op: markdown horizontal rule, not frontmatter)
+- Re-embed in progress via enrichment-poller — ~63 remaining at session close, completing in background
+
+### FTS5 note (deferred)
+- 113 secondary_sources_fts rows still hold old dirty text
+- Will update naturally on next INSERT OR REPLACE for those IDs
+- No breakage, low priority
+
+### TTS diagnostic — server-side working, container networking issue identified
+- Root cause: MOSS-TTS was binding on 127.0.0.1 only; agent-general container cannot reach host loopback
+- Fix applied: systemd service updated to `--host 0.0.0.0`; server.py updated to call `172.19.0.1:18083`
+- docker-compose.yml: MOSS-TTS audio assets mount added (`/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio` → same path in container)
+- Direct host curl to 172.19.0.1:18083 returns 221KB WAV — MOSS-TTS itself confirmed working
+- Remaining issue: container still cannot reach 172.19.0.1:18083 despite MOSS-TTS binding on 0.0.0.0 — unresolved, carry to next session
+- /query endpoint on server.py confirmed dead code — nothing in worker.js calls it; both Sol and V'ger paths use /search for retrieval
+
+### Key rotation reminder (low priority)
+- NEXUS_SECRET_KEY was exposed in conversation history this session
+- Rotate when convenient: generate new key, wrangler secret put, update VPS .env

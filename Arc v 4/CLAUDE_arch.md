@@ -802,3 +802,7 @@ browser → POST /api/tts (Worker) → POST /tts (server.py:18789) → POST /api
 - Read button on: research answer display, case summary cards, AI Summary tab in case panel
 - Ambient triggers: welcome (first interaction/session), searching (query submit), complete/no_results/error (query result)
 - Voice toggle: Male/Female pills in Nav (no mute button)
+- MOSS-TTS must bind on `0.0.0.0` (not `127.0.0.1`) for agent-general container to reach it via Docker bridge gateway `172.19.0.1:18083`
+- systemd service file: `/etc/systemd/system/moss-tts.service` — `--host 0.0.0.0 --port 18083`
+- docker-compose.yml agent-general volumes: MOSS-TTS audio assets mounted at `/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio`
+- server.py `/query` endpoint is dead code — nothing calls it; all retrieval goes through `/search`

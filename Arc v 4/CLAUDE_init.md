@@ -226,3 +226,7 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 - Test /tts route: curl -s -X POST http://localhost:18789/tts -H "Content-Type: application/json" -H "X-Nexus-Key: KEY" -d '{"text":"Hello","voice":"male"}' --output /tmp/test.wav
 - NEXUS_SECRET_KEY is in local .env only (Arc v 4/.env) — not on VPS
 - Voice assets: en_8.wav (male default), en_6.wav (female), ambient clips in assets/ambient_male/ and assets/ambient/
+- MOSS-TTS must bind 0.0.0.0: `sudo sed -i 's/--host 127.0.0.1/--host 0.0.0.0/' /etc/systemd/system/moss-tts.service && sudo systemctl daemon-reload && sudo systemctl restart moss-tts.service`
+- If TTS returns `{"error": "TTS service unavailable"}` — check MOSS-TTS binding: `ss -tlnp | grep 18083` must show `0.0.0.0:18083`
+- Container reaches MOSS-TTS via Docker bridge gateway `172.19.0.1:18083` — not 127.0.0.1
+- NEXUS_SECRET_KEY rotation pending (exposed in session 58 conversation history) — generate new key, wrangler secret put, update VPS .env

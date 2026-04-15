@@ -3493,3 +3493,20 @@ Decision: mark 18 of 20 truncation_log entries as confirmed without re-fetching.
 ### Ambient clips as live TTS (static file hosting deferred)
 **Decision:** Ambient clips call /api/tts live rather than serving pre-generated static files
 **Reason:** Pre-generated files require static asset hosting infrastructure not yet set up. Live calls add 1-3s latency but are simpler. Revisit when latency becomes noticeable in practice.
+
+## Session 58 decisions — 15 April 2026
+
+**Strip at source, not at embed time (ingest_corpus.py)**
+Decision: remove `Concepts:` prepend from ingest_corpus.py rather than stripping in poller. Rationale: stripping what you just constructed is wasteful; nothing downstream reads the prefix; clean at source is always preferable to cleaning downstream.
+
+**strip_frontmatter() dual-case design**
+Decision: two-case function rather than block-only regex. Case 1 handles `---` delimited blocks (107 of 114 affected rows); Case 2 handles bare inline headers (remaining rows, session-46 format). Validated against 6 test cases including mid-body safety check before writing to any file.
+
+**D1 raw_text cleaned in place alongside embedded=0 reset**
+Decision: clean raw_text in D1 at same time as resetting embedded=0, not just re-embedding over dirty text. Rationale: if future pipeline runs raw_text without strip logic, dirt re-emerges; cleaning at source prevents silent re-corruption.
+
+**Opus deferred for embed_quality feedback loop design**
+Decision: immediate fixes (regex patch, D1 clean, delete broken chunks) handled by CC this session. Systemic quality feedback loop (embed_quality column, pre-embed validation, zero-result logging) deferred to Opus consultation before implementation. Rationale: schema changes and pipeline validation logic affecting all future embeds warrant Opus review.
+
+**MOSS-TTS networking: 0.0.0.0 bind required**
+Decision: MOSS-TTS systemd service must bind on 0.0.0.0, not 127.0.0.1. Rationale: Docker containers cannot reach host loopback; bridge gateway 172.19.0.1 is the correct target but only works if the host service listens on all interfaces.

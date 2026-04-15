@@ -83,11 +83,7 @@ for block_type, chunk in chunks:
     if len(sample_metadata) < 3:
         sample_metadata.append((heading, meta))
 
-    concepts = meta.get('CONCEPTS', '')
-    if concepts:
-        text = f"Concepts: {concepts}\n\n{prose}"
-    else:
-        text = prose
+    text = prose
 
     citation = meta.get('CITATION') or heading_to_slug(heading)
     if PROCEDURE_ONLY and not citation.endswith(' [procedure]'):
