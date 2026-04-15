@@ -269,7 +269,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## CHANGES THIS SESSION (session 40) — 5 April 2026
 
-- **Header chunk null enriched_text documented** — `chunk_index=0` rows with `done=1, enriched_text IS NULL, embedded=1` confirmed as expected behavior, not pipeline fault. CHUNK v3 classifies as `header` type, writes no enriched prose. Poller falls back to `chunk_text`. 20 confirmed cases. Added to CLAUDE_arch.md case_chunks D1 schema section. Why: recurring question across sessions — documenting prevents re-investigation.
+- **Header chunk null enriched_text documented** — `chunk_index=0` rows with `done=1, enriched_text IS NULL` are intentionally never embedded. `fetch-case-chunks-for-embedding` SQL excludes them via `AND cc.enriched_text IS NOT NULL` — they sit permanently at `embedded=0`. Accurate backlog query: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`. The poller Python skip guard (`if skipped:`) is now a harmless safety net — header chunks never reach it. Why: decided not to embed chunk_text fallback for header chunks (court/citation/judge boilerplate has no retrieval value).
 
 - **Retrieval baseline rerun (session 40)** — 18 questions, 10 pass / 5 partial / 0 miss. Matches session 36 result. No regressions from block_023/028 corpus additions. `.env` path bug in `retrieval_baseline.sh` fixed on VPS (was reading `~/ai-stack/.env`, file is `.env.secrets`). Why: needed fresh baseline after session 37 corpus additions.
 

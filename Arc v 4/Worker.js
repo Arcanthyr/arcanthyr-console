@@ -3533,7 +3533,7 @@ export default {
         `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, c.case_name, c.subject_matter
  FROM case_chunks cc
  LEFT JOIN cases c ON c.citation = cc.citation
- WHERE cc.done = 1 AND cc.embedded = 0 LIMIT ?`
+ WHERE cc.done = 1 AND cc.embedded = 0 AND cc.enriched_text IS NOT NULL LIMIT ?`
       ).bind(batch).all();
       return new Response(JSON.stringify({ chunks: results }), { headers: corsHeaders });
     }

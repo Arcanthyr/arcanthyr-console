@@ -697,10 +697,10 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 - `id TEXT PRIMARY KEY` — format: `{citation}__chunk__{N}`
 - Full column list: `id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded`
-- `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller (falls back to chunk_text if null)
+- `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller · no chunk_text fallback — chunks with null enriched_text are excluded at SQL level
 - `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
 - `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
-- **Header chunk null enriched_text (expected)** — `chunk_index=0` rows with `done=1, enriched_text IS NULL, embedded=1` are normal, not a pipeline fault. CHUNK v3 classifies these as `header` type and intentionally writes no enriched prose. Poller correctly falls back to `chunk_text` for embedding. 20 confirmed cases as of session 40.
+- **Header chunk null enriched_text (intentionally unembedded)** — `chunk_index=0` rows with `done=1, enriched_text IS NULL` sit permanently at `embedded=0`. CHUNK v3 classifies these as `header` type and intentionally writes no enriched prose. `fetch-case-chunks-for-embedding` excludes them via `AND cc.enriched_text IS NOT NULL` — they never enter the poller cycle. The poller Python skip guard is a harmless safety net. Accurate backlog count: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`.
 
 ### ingest_corpus.py
 
