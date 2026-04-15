@@ -38,6 +38,68 @@ BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match
 # Score × 0.65 on non-criminal/non-mixed chunks.  Kill switch: set to 1.0.
 SM_PENALTY       = 0.65
 SM_ALLOW         = {'criminal', 'mixed'}  # subject_matter values that bypass penalty
+
+# TTS phrase cache — pre-generated WAV files for fixed ambient phrases.
+# These match the PRESETS dict in arcanthyr-ui/src/utils/tts.js exactly.
+TTS_CACHE_DIR   = "/app/src/tts_cache"   # inside agent-general bind mount — persists across recreates
+TTS_VOICE_FILES = {
+    "male":   "/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_8.wav",
+    "female": "/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_6.wav",
+}
+_AMBIENT_PHRASES = [
+    "Welcome to Arcanthyr. How may I be of service today?",
+    "Processing your request, please stand by.",
+    "Searching the case database.",
+    "Analysing your query.",
+    "Your results are ready.",
+    "Something went wrong. Please try again.",
+    "No results found for your query.",
+    "Loading, please wait.",
+]
+# Populated at startup by prime_tts_cache(): normalised_text → {voice: file_path}
+PHRASE_CACHE = {}
+
+def _phrase_key(text):
+    """Normalise TTS text for phrase-cache lookup."""
+    return re.sub(r'\s+', ' ', text.strip().lower())
+
+def prime_tts_cache():
+    """Generate WAV files for all ambient phrases. Runs as a daemon thread at
+    startup; silently skips phrases if MOSS-TTS is unavailable."""
+    import hashlib
+    os.makedirs(TTS_CACHE_DIR, exist_ok=True)
+    for phrase in _AMBIENT_PHRASES:
+        key = _phrase_key(phrase)
+        PHRASE_CACHE[key] = {}
+        slug = hashlib.sha1(phrase.encode()).hexdigest()[:10]
+        for voice, prompt_path in TTS_VOICE_FILES.items():
+            cache_path = os.path.join(TTS_CACHE_DIR, f"{voice}_{slug}.wav")
+            PHRASE_CACHE[key][voice] = cache_path
+            if os.path.exists(cache_path):
+                print(f"[TTS cache] already cached {voice}: {phrase[:50]}")
+                continue
+            try:
+                with open(prompt_path, "rb") as f:
+                    prompt_audio = f.read()
+                resp = requests.post(
+                    "http://172.19.0.1:18083/api/generate",
+                    files={
+                        "text": (None, phrase),
+                        "prompt_audio": ("prompt.wav", prompt_audio, "audio/wav"),
+                    },
+                    timeout=90,
+                )
+                resp.raise_for_status()
+                audio_b64 = resp.json().get("audio_base64", "")
+                if audio_b64:
+                    with open(cache_path, "wb") as out:
+                        out.write(base64.b64decode(audio_b64))
+                    print(f"[TTS cache] primed {voice}: {phrase[:50]}")
+                else:
+                    print(f"[TTS cache] no audio returned for {voice}: {phrase[:50]}")
+            except Exception as e:
+                print(f"[TTS cache] failed {voice}: {phrase[:50]}: {e}")
+
 _sm_cache        = {}   # citation → subject_matter
 _sm_cache_ts     = 0.0  # epoch timestamp of last load
 
@@ -1316,6 +1378,21 @@ class Handler(BaseHTTPRequestHandler):
             if not text:
                 self.send_json(400, {"error": "text field required"})
                 return
+            # Serve from phrase cache if available (zero MOSS-TTS latency)
+            cache_key = _phrase_key(text)
+            cached_path = PHRASE_CACHE.get(cache_key, {}).get(voice)
+            if cached_path and os.path.exists(cached_path):
+                try:
+                    with open(cached_path, "rb") as f:
+                        wav_bytes = f.read()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "audio/wav")
+                    self.send_header("Content-Length", len(wav_bytes))
+                    self.end_headers()
+                    self.wfile.write(wav_bytes)
+                    return
+                except Exception as e:
+                    print(f"[TTS cache] read error for '{cache_key}': {e} — falling back to MOSS-TTS")
             if voice == "male":
                 prompt_audio_path = "/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_8.wav"
             else:
@@ -1324,7 +1401,7 @@ class Handler(BaseHTTPRequestHandler):
                 with open(prompt_audio_path, "rb") as f:
                     prompt_audio = f.read()
                 resp = requests.post(
-                    "http://127.0.0.1:18083/api/generate",
+                    "http://172.19.0.1:18083/api/generate",
                     files={
                         "text": (None, text),
                         "prompt_audio": ("prompt.wav", prompt_audio, "audio/wav"),
@@ -1344,7 +1421,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(wav_bytes)
             except requests.exceptions.ConnectionError:
-                print("[!] TTS error: MOSS-TTS not reachable at 127.0.0.1:18083")
+                print("[!] TTS error: MOSS-TTS not reachable at 172.19.0.1:18083")
                 self.send_json(503, {"error": "TTS service unavailable"})
             except requests.exceptions.HTTPError as e:
                 print(f"[!] TTS error: {e}")
@@ -1358,6 +1435,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(404, {"error": "not found"})
 
 if __name__ == "__main__":
+    threading.Thread(target=prime_tts_cache, daemon=True, name="tts-cache-primer").start()
     server = HTTPServer(("0.0.0.0", PORT), Handler)
     print(f"Nexus ingest server running on port {PORT}")
     server.serve_forever()
