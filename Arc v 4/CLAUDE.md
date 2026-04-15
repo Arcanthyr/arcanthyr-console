@@ -239,7 +239,6 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 8. **Domain filter UI — potentially unblockable** — SM filter now live server-side · UI chip (All / Criminal / Administrative / Civil) would communicate filter param through Worker to server.py · prerequisite: confirm misclassification audit complete so filter is reliable · CC prompt drafted and ready
 9. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · deploy on VPS as public HTTPS endpoint · connect via claude.ai Customize → Connectors · per-user API key auth · buildable in one session · prerequisite: scraper completion + subject_matter filter deployed so MCP queries return clean criminal-scoped results
 10. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · produces ranked authority summaries per topic · ingest as secondary_source chunks via existing pipeline · no embedding changes · no new infrastructure · run quarterly as corpus maintenance cron · prerequisite: scraper completion (network too sparse at current volume)
-11. **Local/office deployment — post-MCP milestone** — export D1 as SQLite + Qdrant snapshot · run on office server or NAS · nightly sync from VPS pipeline · MCP server points at local instance for fast queries · prerequisite: MCP server built and validated first
 
 ---
 
