@@ -719,6 +719,12 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - **Last run: 22 Mar 2026 (session 13) — 14 pass / 3 partial / 0 fail (new corpus)**
 - Q2 BRD partial (BRD chunk now ingested — verify next run) · Q9 guilty plea partial (corpus gap) · Q13 case_chunk RRF noise
 
+### retrieval_baseline.sh — KEY extraction
+- KEY is read from `~/ai-stack/.env.secrets` (not `.env` — `.env` does not contain secrets)
+- `cut -d= -f2-` required (not `cut -d= -f2`) — base64 keys end with `=` padding; `-f2` drops it, causing silent auth failure
+- Always `unset KEY` before running if KEY was manually exported in the current shell session
+- Baseline broken as of session 61 end — direct curl works, script still returns 0 chunks — unresolved
+
 ### Word artifact cleanup
 
 - **gen_cleanup_sql.py** — run locally, strips Word formatting artifacts from raw_text
@@ -762,7 +768,7 @@ Source title uses chunk heading (not filename stem).
 ## FUTURE ROADMAP
 
 - **subject_matter filter** — Part 1 (Worker route JOIN) confirmed deployed. Part 2 (poller metadata dict) deployed session 60. Part 3 (re-embed backlog ~7,046 chunks) in progress — poller writing correct payloads from session 60 onwards. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter on Pass 3 once backlog clears to 0.
-- **Domain filter UI** — deferred until subject_matter audit + Option A re-embed complete · CC prompt ready
+- **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
 - **Citation authority agent (xref_agent.py)** — COMPLETE. Tables populated: 5,340 case_citations, 4,056 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: stare decisis UI layer (see below).
 - **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
 - **Stare decisis UI layer** — surface citation treatment history in case detail view. Data source: `case_citations` (5,340 rows, criminal/mixed only) and `case_legislation_refs` (4,056 rows). Show: cited-by count, treatment breakdown (applied/distinguished/not followed), which cases this case cites. Frontend build on case detail panel — no backend work needed, data already in D1.

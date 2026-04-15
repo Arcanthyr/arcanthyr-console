@@ -5,9 +5,9 @@ import ResultCard from '../components/ResultCard';
 import ReadingPane from '../components/ReadingPane';
 import ShareModal from '../components/ShareModal';
 import { api } from '../api';
-import { playAmbient, unlockAudio } from '../utils/tts';
 
 const FILTERS = ['ALL', 'CASES', 'CORPUS', 'LEGISLATION'];
+const DOMAIN_FILTERS = ['ALL', 'CRIMINAL', 'ADMINISTRATIVE', 'CIVIL'];
 
 export default function Research() {
   const [searchParams] = useSearchParams();
@@ -20,6 +20,7 @@ export default function Research() {
   const [showShare, setShowShare] = useState(false);
   const [error, setError] = useState('');
   const [model, setModel] = useState('workers');
+  const [subjectFilter, setSubjectFilter] = useState('all');
   const [selected, setSelected] = useState(null);
 
   // Auto-run query if pre-populated from landing page search
@@ -39,23 +40,16 @@ export default function Research() {
     setAnswer('');
     setSources([]);
     setSelected(null);
-    playAmbient('searching');
     try {
-      const data = await api.query(q.trim(), model);
+      const data = await api.query(q.trim(), model, subjectFilter);
       const r = data.result || data;
       const ans = r.answer || r.response || '';
       const raw = r.results || r.sources || [];
       setAnswer(ans);
       setResults(raw);
       setSources(r.sources || []);
-      if (ans || raw.length > 0) {
-        playAmbient('complete');
-      } else {
-        playAmbient('no_results');
-      }
     } catch (e) {
       setError(e.message);
-      playAmbient('error');
     } finally {
       setLoading(false);
     }
@@ -63,7 +57,6 @@ export default function Research() {
 
   async function handleQuery(e) {
     e?.preventDefault();
-    unlockAudio(); // user gesture — unlock AudioContext before async query
     handleQueryWith(query);
   }
 
@@ -185,7 +178,26 @@ export default function Research() {
             </a>
           </div>
 
-          {/* Filter chips */}
+          {/* Domain filter chips */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px 16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', marginRight: '2px' }}>Domain</span>
+            {DOMAIN_FILTERS.map(f => (
+              <button
+                key={f}
+                onClick={() => setSubjectFilter(f.toLowerCase())}
+                style={{
+                  padding: '3px 10px', borderRadius: '12px', fontSize: '11px',
+                  background: subjectFilter === f.toLowerCase() ? 'var(--accent-dim)' : 'var(--surface)',
+                  color: subjectFilter === f.toLowerCase() ? 'var(--accent)' : 'var(--text-secondary)',
+                  border: `1px solid ${subjectFilter === f.toLowerCase() ? 'var(--accent)' : 'var(--border)'}`,
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {/* Source type filter chips */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '10px 16px', borderBottom: '1px solid var(--border)' }}>
             {FILTERS.map(f => (
               <button

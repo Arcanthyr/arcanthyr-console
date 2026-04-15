@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
+import StareDecisisSection from '../components/StareDecisisSection';
 
 const BASE = 'https://arcanthyr.com';
 
@@ -138,7 +139,7 @@ export default function Library() {
             </>
           )}
         </div>
-        {selectedCase && <CaseReadingPane c={selectedCase} onClose={() => setSelectedCase(null)} />}
+        {selectedCase && <CaseReadingPane c={selectedCase} onClose={() => setSelectedCase(null)} cases={data?.cases || []} onSelect={setSelectedCase} />}
       </div>
 
       {selectedTruncation && (
@@ -368,7 +369,7 @@ const td = { padding: '10px 12px', borderBottom: '1px solid var(--border)', vert
 const tdMono = { ...td, fontFamily: 'monospace', fontSize: '12px', color: 'var(--text-secondary)' };
 
 /* ── Case reading pane ─────────────────────────────────────── */
-function CaseReadingPane({ c, onClose }) {
+function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
   const url = austliiUrl(c.ref || c.citation);
 
   return (
@@ -420,6 +421,13 @@ function CaseReadingPane({ c, onClose }) {
             }
           })()}
         </div>
+        <StareDecisisSection
+          citation={c.ref}
+          onSelectCase={(citation) => {
+            const match = cases.find(x => x.ref === citation);
+            if (match) onSelect(match);
+          }}
+        />
       </div>
     </div>
   );

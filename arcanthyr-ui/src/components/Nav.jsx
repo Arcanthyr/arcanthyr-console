@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { getVoice, setVoice } from '../utils/tts';
 
 const links = [
   { to: '/research', label: 'RESEARCH' },
@@ -11,13 +9,6 @@ const links = [
 
 export default function Nav() {
   const navigate = useNavigate();
-  const [voice, setVoiceState] = useState(getVoice);
-
-  function toggleVoice() {
-    const next = voice === 'male' ? 'female' : 'male';
-    setVoice(next);
-    setVoiceState(next);
-  }
 
   return (
     <nav style={{
@@ -77,28 +68,6 @@ export default function Nav() {
         </NavLink>
       ))}
 
-      {/* Voice toggle — right side */}
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-        <button
-          onClick={toggleVoice}
-          title={`Switch to ${voice === 'male' ? 'female' : 'male'} voice`}
-          style={{
-            padding: '3px 10px',
-            borderRadius: '12px',
-            fontSize: '11px',
-            background: 'var(--surface)',
-            color: 'var(--text-secondary)',
-            border: '1px solid var(--border)',
-            letterSpacing: '0.04em',
-            cursor: 'pointer',
-            transition: 'color 0.15s, background 0.15s',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.background = 'var(--surface-hover)'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; }}
-        >
-          {voice === 'male' ? 'Male' : 'Female'}
-        </button>
-      </div>
     </nav>
   );
 }

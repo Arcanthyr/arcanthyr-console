@@ -240,9 +240,10 @@ def search_text(body):
 
     Returns list of chunk dicts ordered: Pass1 (court-reranked) + Pass2 + Pass3 + BM25.
     """
-    query_text      = body.get("query_text", "").strip()
-    top_k           = min(int(body.get("top_k", 6)), 12)
-    score_threshold = float(body.get("score_threshold", 0.45))
+    query_text           = body.get("query_text", "").strip()
+    top_k                = min(int(body.get("top_k", 6)), 12)
+    score_threshold      = float(body.get("score_threshold", 0.45))
+    subject_matter_filter = (body.get("subject_matter_filter") or "").strip().lower() or None
 
     if not query_text:
         raise ValueError("query_text is required")
@@ -434,6 +435,19 @@ def search_text(body):
                         chunk['score'] = round(chunk['score'] + BM25_SCORE_CASE_REF, 4)
                         break
         print(f"[+] BM25 cases: added {added_cases} cases citing referenced legislation")
+
+    # ── Domain filter — hard exclude non-matching case chunks ────────────────
+    if subject_matter_filter and subject_matter_filter != 'all':
+        accepted = {'criminal', 'mixed'} if subject_matter_filter == 'criminal' else {subject_matter_filter}
+        pre_filter_count = len(chunks)
+        chunks = [
+            c for c in chunks
+            if c.get('type') != 'case_chunk'
+            or sm_cache.get(c.get('citation', ''), 'unknown') in accepted
+        ]
+        excluded = pre_filter_count - len(chunks)
+        if excluded:
+            print(f"[*] Domain filter '{subject_matter_filter}': excluded {excluded} case chunks")
 
     # ── Final sort + cap ─────────────────────────────────────────────────────
     # Re-sort after BM25 injection (scores may have changed via boost) then cap.

@@ -1044,10 +1044,22 @@ function citationToId(citation) {
     .replace(/^-|-$/g, '');
 }
 
+function courtFromCitation(citation) {
+  if (!citation) return null;
+  const c = citation.toUpperCase();
+  if (c.includes('TASMC') || c.includes('TAMAGC')) return 'magistrates';
+  if (c.includes('TASCCA')) return 'cca';
+  if (c.includes('TASFC')) return 'fullcourt';
+  if (c.includes('TASSC')) return 'supreme';
+  return null;
+}
+
 async function handleUploadCase(body, env) {
   let { case_text, citation, case_name, court, court_hint, encoding } = body;
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   court = court || courtMap[court_hint] || 'supreme';
+  const citationCourtOverride = courtFromCitation(citation);
+  if (citationCourtOverride) court = citationCourtOverride;
   if (encoding === 'base64') case_text = atob(case_text);
   if (case_text.length > 500000) {
     console.warn(`TRUNCATION: ${citation} — ${case_text.length} chars → 500,000`);
@@ -1126,11 +1138,12 @@ async function handleFetchCaseUrl(body, env) {
   const courtMap = { 'TASSC': 'supreme', 'TASCCA': 'cca', 'TASFC': 'fullcourt', 'TAMagC': 'magistrates' };
   const abbrevMatch = citation.match(/\]\s+([A-Za-z]+)\s+\d/);
   const resolvedCourt = court || (abbrevMatch && courtMap[abbrevMatch[1]]) || 'supreme';
+  const finalCourt = courtFromCitation(citation) || resolvedCourt;
 
   const caseId = citationToId(citation);
   const caseYear = (citation.match(/\[(\d{4})\]/) || [null, new Date().getFullYear()])[1];
   await env.DB.prepare(`INSERT OR IGNORE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`)
-    .bind(caseId, citation, resolvedCourt, `${caseYear}-01-01`, plainText)
+    .bind(caseId, citation, finalCourt, `${caseYear}-01-01`, plainText)
     .run();
   await env.CASE_QUEUE.send({ type: 'METADATA', citation });
   return { queued: true, citation };
@@ -1710,6 +1723,47 @@ async function handleLibraryDelete(docType, id, env) {
   return { ok: true, deleted: id };
 }
 
+async function handleCaseAuthority(citation, env) {
+  const [citedByRes, citesRes, legRes] = await Promise.all([
+    env.DB.prepare(`
+      SELECT cc.citing_case, cc.treatment, cc.why,
+             c.court, c.case_name
+      FROM case_citations cc
+      LEFT JOIN cases c ON c.citation = cc.citing_case
+      WHERE cc.cited_case = ?
+      ORDER BY cc.treatment ASC
+    `).bind(citation).all(),
+    env.DB.prepare(`
+      SELECT cc.cited_case, cc.treatment, cc.why,
+             c.court, c.case_name
+      FROM case_citations cc
+      LEFT JOIN cases c ON c.citation = cc.cited_case
+      WHERE cc.citing_case = ?
+      ORDER BY cc.treatment ASC
+    `).bind(citation).all(),
+    env.DB.prepare(`
+      SELECT legislation_ref
+      FROM case_legislation_refs
+      WHERE citation = ?
+      ORDER BY legislation_ref ASC
+    `).bind(citation).all()
+  ]);
+
+  const treatmentSummary = (citedByRes.results || []).reduce((acc, r) => {
+    const t = r.treatment || 'mentioned';
+    acc[t] = (acc[t] || 0) + 1;
+    return acc;
+  }, {});
+
+  return {
+    cited_by: citedByRes.results || [],
+    cited_by_count: (citedByRes.results || []).length,
+    treatment_summary: treatmentSummary,
+    cites: citesRes.results || [],
+    legislation: (legRes.results || []).map(r => r.legislation_ref)
+  };
+}
+
 async function handleLegislationSearch(body, env) {
   const { query } = body;
   if (!query || !query.trim()) throw new Error("Missing query");
@@ -1889,7 +1943,7 @@ async function fetchSectionContext(sectionNum, actName, env) {
          → grounded answer with source citations
    ============================================================= */
 async function handleLegalQuery(body, env) {
-  const { query, top_k, score_threshold } = body;
+  const { query, top_k, score_threshold, subject_matter_filter } = body;
   if (!query || !query.trim()) throw new Error("query field required");
 
   // ── Step 1: Retrieve relevant chunks from Qdrant via nexus ──
@@ -1903,6 +1957,7 @@ async function handleLegalQuery(body, env) {
       query_text: query.trim(),
       top_k: top_k || 6,
       score_threshold: score_threshold || 0.45,
+      subject_matter_filter: subject_matter_filter || null,
     }),
   });
 
@@ -2057,7 +2112,7 @@ async function handleFetchPage(body, env = null) {
    Fast, free tier ~1000 queries/day. Section detection included.
    ============================================================= */
 async function handleLegalQueryWorkersAI(body, env) {
-  const { query, top_k, score_threshold } = body;
+  const { query, top_k, score_threshold, subject_matter_filter } = body;
   if (!query || !query.trim()) throw new Error("query field required");
 
   // ── Step 1: Qdrant search via nexus ──────────────────────────
@@ -2068,6 +2123,7 @@ async function handleLegalQueryWorkersAI(body, env) {
       query_text: query.trim(),
       top_k: top_k || 6,
       score_threshold: score_threshold || 0.45,
+      subject_matter_filter: subject_matter_filter || null,
     }),
   });
   if (!nexusRes.ok) throw new Error(`Nexus search failed: ${nexusRes.status}`);
@@ -3355,6 +3411,11 @@ export default {
         else if (action === "upload-corpus" && request.method === "POST") result = await handleUploadCorpus(body, env);
         else if (action === "format-and-upload" && request.method === "POST") result = await handleFormatAndUpload(body, env);
         else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
+        else if (action === "case-authority" && request.method === "GET") {
+          const citation = url.searchParams.get('citation');
+          if (!citation) return json({ error: 'citation required' }, 400);
+          result = await handleCaseAuthority(decodeURIComponent(citation), env);
+        }
         else if (action === "cases" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.cases; }
         else if (action === "corpus" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.secondary; }
         else if (action === "legislation" && request.method === "GET") { const lib = await handleLibraryList(env); result = lib.legislation; }
@@ -3382,7 +3443,7 @@ export default {
         }
         else return json({ error: "Invalid legal endpoint" }, 404);
         return json({ result });
-      } catch (err) { return json({ error: err.message }, 500); }
+      } catch (err) { console.error('legal-query error:', err); return json({ error: err.message }, 500); }
     }
 
     /* ── PIPELINE ROUTES ─────────────────────────────────────── */

@@ -188,21 +188,21 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 13 April 2026 (end of session 51)
+## SYSTEM STATE — 15 April 2026 (end of session 61)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | vectors updated · 6 secondary source chunks re-embedded this session |
-| D1 cases | 1,234+ (scraper running) · all deep_enriched=1 |
-| D1 case_chunks | 18,271+ · all embedded |
+| Qdrant general-docs-v2 | vectors updating · case chunk re-embed in progress (3,849 backlog) |
+| D1 cases | 1,573 (scraper running) · all deep_enriched=1 · supreme 1,204 · cca 203 · fullcourt 97 · magistrates 69 |
+| D1 case_chunks | embedded=0: 3,849 (poller running) |
 | D1 secondary_sources | 1,201 total · all embedded=1 |
 | enrichment_poller | RUNNING |
 | Cloudflare Queue | drained |
 | Scraper | RUNNING |
 | arcanthyr.com | Live |
-| Subject matter filter | LIVE · SM_PENALTY=0.65 · cache loaded 1,234 entries |
-| Baseline (31 queries) | 12 pass / ~13 partial / 3 miss (corpus gap) |
-| procedure_notes | 89/516 at session start · fix deployed · full requeue running overnight · verify count next session |
+| Subject matter filter | LIVE · SM_PENALTY=0.65 · Domain filter UI LIVE (ALL/CRIMINAL/ADMINISTRATIVE/CIVIL) |
+| Baseline (31 queries) | BROKEN — returns 0 chunks after NEXUS rotation · fix in progress |
+| procedure_notes | 319 success / ~340 not_sentencing |
 
 ---
 
@@ -236,7 +236,6 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
 7. **subject_matter filter — DEPLOYED session 51 (cache-based penalty)** — SM_PENALTY=0.65 applied to non-criminal/non-mixed case_chunk results in Pass 1 and Pass 2 via hourly in-memory cache from `GET /api/pipeline/case-subjects` Worker route · misclassification audit partially complete: Pilling cases correctly administrative (workers comp — not criminal); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69) · full audit recommended before Option A (Qdrant payload re-embed) — low urgency now that cache penalty is delivering results · Tasmania v Rattigan audit status unverified this session
-8. **Domain filter UI — potentially unblockable** — SM filter now live server-side · UI chip (All / Criminal / Administrative / Civil) would communicate filter param through Worker to server.py · prerequisite: confirm misclassification audit complete so filter is reliable · CC prompt drafted and ready
 9. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · deploy on VPS as public HTTPS endpoint · connect via claude.ai Customize → Connectors · per-user API key auth · buildable in one session · prerequisite: scraper completion + subject_matter filter deployed so MCP queries return clean criminal-scoped results
 10. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · produces ranked authority summaries per topic · ingest as secondary_source chunks via existing pipeline · no embedding changes · no new infrastructure · run quarterly as corpus maintenance cron · prerequisite: scraper completion (network too sparse at current volume)
 
@@ -263,6 +262,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
+- **Retrieval baseline broken** — all 31 queries return 0 chunks after NEXUS rotation · direct curl with pasted key works · script KEY extraction fixed (env path + cut -d= -f2-) but still failing at session close · unresolved · do not rely on baseline results until diagnosed next session
 
 ---
 
@@ -1251,3 +1251,40 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 - **Static TTS approach decided**: Next session will replace all live TTS API calls with pre-generated static MP3s. 72 sample files being generated (9 voices × 8 phrases) for voice selection. Once voice chosen, final MP3s committed to `public/Voices/`, frontend wired to play on triggers, `/tts` route removed from server.py and Worker entirely.
 - **legal-query 500 diagnosed**: Was transient nexus 524 (Cloudflare timeout on VPS search endpoint). server.py confirmed healthy via direct curl. Resolved without code changes.
 - **Worker error logging gap noted**: Legal route catch block returns `json({ error: err.message }, 500)` but never console.errors — error only visible in browser network tab response body, not in wrangler tail.
+
+## CHANGES THIS SESSION (session 61) — 15 April 2026
+
+### Citation pattern court validation (worker.js)
+- Added `courtFromCitation()` helper just before `handleUploadCase` — deterministic court derivation from citation string: TASMC/TAMagC → magistrates, TASCCA → cca, TASFC → fullcourt, TASSC → supreme, null for no match
+- Applied in both `handleUploadCase` (overrides court after court_hint fallback chain) and `handleFetchCaseUrl` (`finalCourt = courtFromCitation(citation) || resolvedCourt`)
+- Why: AI-extracted court field was wrong on some cases (TASMC cases classified as supreme in prior sessions); citation pattern is deterministic and should always win
+- Deployed `fe065c15-54cd-491a-ad2a-db6c38b04937` · verified: 5 sampled TASMC rows confirmed court='magistrates'
+
+### Worker error logging fix (worker.js)
+- Added `console.error('legal-query error:', err)` to legal route catch block
+- Why: errors were only visible in browser network tab response body, not in wrangler tail — silent failures impossible to diagnose remotely
+
+### NEXUS key rotation
+- New key generated, updated in three places: Cloudflare Worker secret (wrangler secret put), VPS ~/ai-stack/.env.secrets, local Arc v 4/.env
+- Why: key was exposed in session 58 conversation history — long overdue rotation
+
+### Domain filter UI (Research.jsx, api.js, worker.js, server.py)
+- Research.jsx: added `subjectFilter` state (default 'all'), domain chip row ALL/CRIMINAL/ADMINISTRATIVE/CIVIL styled identically to existing chips, passes subjectFilter to api.query
+- api.js: `query()` accepts subjectFilter as third arg, sends `subject_matter_filter: null` when 'all' (server ignores null), otherwise lowercase value
+- worker.js: both `handleLegalQuery` and `handleLegalQueryWorkersAI` destructure `subject_matter_filter` from body and forward to nexus /search
+- server.py: `subject_matter_filter` read from body at top of `search_text()`; exclusion pass runs just before final sort — hard-excludes case_chunk entries whose citation's sm_cache value isn't in the accepted set (criminal filter accepts criminal+mixed; other filters exact match); secondary sources and legislation pass through untouched; ALL omits param entirely, existing SM_PENALTY behaviour unchanged
+- Deployed Worker `65aa5a6c-6e4d-4a0d-bdf4-8f8e0fe9be77` + VPS force-recreate confirmed healthy
+- Why: server-side SM filter was already live but user had no way to explicitly scope queries to a domain
+
+### Retrieval baseline — BROKEN (unresolved, carry to next session)
+- Baseline returning 0 chunks on all 31 queries after NEXUS key rotation
+- Root cause partially diagnosed: script was reading KEY from ~/ai-stack/.env (no longer contains key) — fixed to ~/ai-stack/.env.secrets
+- Additional fix applied: `cut -d= -f2` → `cut -d= -f2-` to preserve trailing `=` in base64 key
+- Despite both fixes, baseline still returns 0 — direct curl with pasted key works fine, health check OK
+- Unresolved at session close — do not rely on baseline results until fixed next session
+
+### Synthesis feedback loop — design complete
+- Full build plan documented as standalone file `SYNTHESIS_FEEDBACK_LOOP_BUILD_PLAN.md`
+- Self-contained: CC can implement without prior conversation context
+- Prerequisites: subject_matter filter live (done), embedding backlog cleared (in progress — 3,849 chunks remaining at session close)
+- Not yet built — scheduled for next session once backlog clears

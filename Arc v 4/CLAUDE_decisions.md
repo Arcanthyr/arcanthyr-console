@@ -3538,3 +3538,17 @@ Decision: replace all live TTS calls with pre-generated static MP3s served from 
 
 **subject_matter Part 2 was never deployed**
 Session 57 close notes incorrectly stated Parts 1+2 deployed. VPS code check this session confirmed Part 2 (poller metadata dict) was absent. Classic SCP failure mode — session notes confirmed deployed without verifying VPS file. Part 1 confirmed via worker.js code inspection. Part 2 fixed and deployed this session. Part 3 re-embed running naturally via backlog.
+
+## Session 61 decisions — 15 April 2026
+
+**Citation pattern validation overrides AI extraction**
+Decision: `courtFromCitation()` uses deterministic citation pattern match to override AI-extracted court value in both upload handlers. Returns null for no match (AI value preserved). Applied at ingest time, not as a backfill.
+Rationale: Citation patterns (TASMC, TASSC, TASCCA, TASFC) are unambiguous identifiers. AI extraction has demonstrably misclassified court values (session 49: 69 TASMC cases marked supreme). Deterministic check has zero false positive risk for known Tasmanian court codes.
+
+**Domain filter uses cache-based exclusion, not Qdrant hard filter**
+Decision: When user selects a domain filter, server.py hard-excludes case_chunks whose citation maps to a non-matching subject_matter in the in-memory sm_cache, rather than using Qdrant MatchAny payload filter.
+Rationale: Qdrant payload hard filter requires all case chunks to have correct subject_matter in their Qdrant payload. Embedding backlog (~3,849 chunks) means many existing points lack subject_matter in payload. Cache-based approach uses D1-derived data which is fully populated. Will be swapped to Qdrant payload filter once backlog clears and re-embed completes.
+
+**Synthesis feedback loop: curated not automatic**
+Decision: Saved answers go to a staging queue (approved=0 in secondary_sources) before ingestion. Tom reviews and approves before embedding. No auto-ingestion path.
+Rationale: Legal knowledge base where accuracy is the whole point. A bad auto-saved answer would be retrievable and self-reinforcing in future queries. Review gate is the only acceptable design. Approved field defaults to 1 for all existing rows — only synthesised rows land with approved=0.

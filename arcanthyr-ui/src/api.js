@@ -15,15 +15,19 @@ export const api = {
   login:   () => Promise.resolve({ ok: true }),
   logout:  () => Promise.resolve({ ok: true }),
 
-  query: (query_text, model = 'claude') => req('POST',
+  query: (query_text, model = 'claude', subjectFilter = null) => req('POST',
     model === 'workers' ? '/api/legal/legal-query-workers-ai' : '/api/legal/legal-query',
-    { query: query_text }),
+    {
+      query: query_text,
+      subject_matter_filter: subjectFilter && subjectFilter !== 'all' ? subjectFilter.toLowerCase() : null,
+    }),
 
   cases:         ()           => req('GET',  '/api/legal/cases'),
   corpus:        ()           => req('GET',  '/api/legal/corpus'),
   legislation:   ()           => req('GET',  '/api/legal/legislation'),
   library:       ()           => req('GET',  '/api/legal/library'),
   caseStatus:    (citation)   => req('GET',  `/api/legal/case-status?citation=${encodeURIComponent(citation)}`),
+  caseAuthority: (citation)   => req('GET',  `/api/legal/case-authority?citation=${encodeURIComponent(citation)}`),
   share:         (body)       => req('POST', '/api/legal/share', body),
   requeueChunks: (nexusKey)   => req('POST', '/api/admin/requeue-chunks', {}, { 'X-Nexus-Key': nexusKey }),
 
