@@ -806,3 +806,11 @@ browser → POST /api/tts (Worker) → POST /tts (server.py:18789) → POST /api
 - systemd service file: `/etc/systemd/system/moss-tts.service` — `--host 0.0.0.0 --port 18083`
 - docker-compose.yml agent-general volumes: MOSS-TTS audio assets mounted at `/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio`
 - server.py `/query` endpoint is dead code — nothing calls it; all retrieval goes through `/search`
+
+### TTS Architecture (session 59)
+
+Ambient clips (8 preset phrases × 2 voices) are served as static Cloudflare CDN assets from `/Voices/ambient/` and `/Voices/ambient_male/`. These are pre-recorded WAV files — no server involved.
+
+Live TTS (query responses read aloud) routes: Browser → Worker `/api/tts` → `nexus.arcanthyr.com/tts` → `server.py:18789/tts` → MOSS-TTS at `172.19.0.1:18083`. MOSS-TTS synthesis takes ~2m13s on CPU — to be replaced with OpenAI TTS API next session.
+
+Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge interface `br-09b8cf509a2d` for port 18083. Rule persisted in `/etc/iptables/rules.v4`.

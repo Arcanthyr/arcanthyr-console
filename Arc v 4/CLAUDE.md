@@ -1207,3 +1207,37 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 ### Key rotation reminder (low priority)
 - NEXUS_SECRET_KEY was exposed in conversation history this session
 - Rotate when convenient: generate new key, wrangler secret put, update VPS .env
+
+## CHANGES THIS SESSION (session 59) — 15 April 2026
+
+### TTS — iptables fix for Docker→host networking
+- Root cause: iptables was blocking Docker bridge (`br-09b8cf509a2d`) from reaching host port 18083 (MOSS-TTS)
+- Fix: added INPUT ACCEPT rule for bridge interface on 18083, DROP rule blocking external access to 18083
+- Replaced `ufw` with `iptables-persistent` (ufw was removed as a side effect of install)
+- Rules persisted to `/etc/iptables/rules.v4` — survive reboot
+- Port 3000 (Open WebUI) locked to loopback only
+
+### TTS — static ambient clips
+- 16 WAV files (8 phrases × 2 voices) saved to `Arc v 4/public/Voices/ambient/` and `Arc v 4/public/Voices/ambient_male/`
+- `tts.js` updated: `playAmbient` now serves from Cloudflare CDN edge (`/Voices/ambient[_male]/<key>.wav`) — zero latency, no VPS round-trip
+- `playTTS` gains `_TEXT_TO_KEY` reverse map for static shortcut on preset phrases
+- Extracted `_ensureCtx()` and `_decodeAndPlay()` helpers (deduplication)
+- Fallback to `/api/tts` if static file unavailable
+- Deployed as Worker version `15ddb84a`
+
+### MOSS-TTS — status
+- MOSS-TTS confirmed working end-to-end (localhost:18789/tts returns 166KB WAV)
+- However synthesis takes ~2m13s per phrase on CPU — unsuitable for real-time use
+- Decision: replace MOSS-TTS with OpenAI TTS API next session (~20 lines in server.py)
+- MOSS-TTS service left running but dormant; primer thread in server.py logs warnings and exits gracefully
+- `server.py`: all `127.0.0.1:18083` references corrected to `172.19.0.1:18083`
+
+### Secondary sources re-embed
+- Confirmed complete: 1,201 rows, 0 with `embedded=0`
+
+### Security
+- ufw removed (side effect of iptables-persistent install) — ufw chains in memory survived but won't persist on reboot
+- Raw table (`*raw PREROUTING`) confirmed as the actual firewall protecting Qdrant (6334), server.py (18789), n8n (5678)
+- Port 18083: locked to Docker bridge only (ACCEPT from br-09b8cf509a2d, DROP all others)
+- Port 3000: locked to loopback only
+- NEXUS_SECRET_KEY rotation still pending (exposed session 58)

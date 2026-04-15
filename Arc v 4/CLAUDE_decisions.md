@@ -3510,3 +3510,17 @@ Decision: immediate fixes (regex patch, D1 clean, delete broken chunks) handled 
 
 **MOSS-TTS networking: 0.0.0.0 bind required**
 Decision: MOSS-TTS systemd service must bind on 0.0.0.0, not 127.0.0.1. Rationale: Docker containers cannot reach host loopback; bridge gateway 172.19.0.1 is the correct target but only works if the host service listens on all interfaces.
+
+## Session 59 decisions — 15 April 2026
+
+**Replace MOSS-TTS with OpenAI TTS API**
+MOSS-TTS-Nano on CPU takes ~2m13s per synthesis — confirmed by `time curl` test. Unsuitable for any real-time use. OpenAI TTS (`tts-1` model) returns audio in 1-2 seconds at ~$0.015/1M chars. Decision: replace the MOSS-TTS block in server.py `/tts` route with OpenAI API call next session. Static WAV files handle all preset phrases; OpenAI handles live read-aloud of query responses only.
+
+**Static WAV files over server-side TTS caching**
+Initial plan was to prime a server-side WAV cache at startup. Abandoned in favour of serving pre-recorded files directly from Cloudflare CDN as static assets. Simpler, zero latency, zero VPS involvement, no startup delay. Files live in `public/Voices/` and are deployed with the Worker.
+
+**iptables-persistent over ufw**
+ufw was removed as a side effect of installing iptables-persistent. Decision: accept this — the raw iptables rules already in place (from Docker) provide equivalent protection for core services. iptables-persistent saves rules to `/etc/iptables/rules.v4` on reboot. ufw chains in the filter table are empty passthrough and harmless.
+
+**NEXUS_SECRET_KEY rotation deferred**
+Key was exposed in session 58 conversation history. Risk assessed as low (Anthropic systems, not public). Rotation deferred — not forgotten. Must be done before any colleague access or MCP server rollout.

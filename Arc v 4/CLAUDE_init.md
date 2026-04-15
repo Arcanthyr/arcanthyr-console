@@ -230,3 +230,10 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 - If TTS returns `{"error": "TTS service unavailable"}` — check MOSS-TTS binding: `ss -tlnp | grep 18083` must show `0.0.0.0:18083`
 - Container reaches MOSS-TTS via Docker bridge gateway `172.19.0.1:18083` — not 127.0.0.1
 - NEXUS_SECRET_KEY rotation pending (exposed in session 58 conversation history) — generate new key, wrangler secret put, update VPS .env
+
+### MOSS-TTS — session 59 updates
+- All `127.0.0.1:18083` references in server.py corrected to `172.19.0.1:18083` (Docker bridge gateway, not container loopback)
+- iptables rule required for container→host on port 18083: `sudo iptables -I INPUT -i br-09b8cf509a2d -p tcp --dport 18083 -j ACCEPT` — persisted in `/etc/iptables/rules.v4`
+- Bridge interface name `br-09b8cf509a2d` derived from Docker network ID — will change if `ai-stack_general-net` is recreated
+- MOSS-TTS synthesis: ~2m13s per phrase on CPU — not viable for real-time; to be replaced with OpenAI TTS next session
+- Static ambient WAVs: `Arc v 4/public/Voices/ambient/` and `Arc v 4/public/Voices/ambient_male/` — 16 files, served from Cloudflare CDN
