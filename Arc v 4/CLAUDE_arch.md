@@ -783,3 +783,22 @@ Source title uses chunk heading (not filename stem).
 - tags remain '[]' on insert — to be populated by enrichment poller in future
 - handleFetchForEmbedding SELECT now returns source_type
 - Qdrant secondary source upsert payload now includes source_type field
+
+### MOSS-TTS-Nano service
+- Path: ~/ai-stack/MOSS-TTS-Nano
+- Port: 18083 (localhost only, never public)
+- Systemd: moss-tts.service (enabled, auto-start)
+- Runtime: Python 3.12 venv at ~/ai-stack/MOSS-TTS-Nano/venv
+- Model: 0.1B params, CPU-only, ~990MB RAM
+- Voice assets: assets/audio/en_8.wav (male default), assets/audio/en_6.wav (female)
+- Ambient clips: assets/ambient_male/ (en_8), assets/ambient/ (en_6)
+- API: POST /api/generate — multipart form, returns { audio_base64: "..." }
+
+### TTS request chain
+browser → POST /api/tts (Worker) → POST /tts (server.py:18789) → POST /api/generate (MOSS-TTS:18083) → WAV bytes back
+
+### Frontend TTS
+- src/utils/tts.js — singleton service, Web Audio API, voice pref in localStorage
+- Read button on: research answer display, case summary cards, AI Summary tab in case panel
+- Ambient triggers: welcome (first interaction/session), searching (query submit), complete/no_results/error (query result)
+- Voice toggle: Male/Female pills in Nav (no mute button)

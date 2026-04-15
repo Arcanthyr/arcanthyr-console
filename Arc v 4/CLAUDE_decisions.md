@@ -3468,3 +3468,28 @@ Decision: add `sentencing_status TEXT` to cases table with values NULL/'success'
 
 ### truncation_log -1 entries — false positives, no code fix needed
 Decision: mark 18 of 20 truncation_log entries as confirmed without re-fetching. Rationale: all 18 had raw_text under 500K and deep_enriched=1 — they were never actually truncated. The -1 values came from a one-time session 52 D1 command, not a code bug. Only [2022] TASSC 11 and [2021] TASSC 27 (genuinely over 500K) required re-fetch.
+
+## Session decisions — 15 Apr 2026
+
+### Web Audio API over HTMLAudioElement for TTS playback
+**Decision:** Use AudioContext/Web Audio API instead of HTMLAudioElement
+**Reason:** Browser autoplay policies block HTMLAudioElement without prior user gesture. Web Audio API with unlockAudio() called synchronously in click/submit handlers bypasses this reliably across browsers and iOS.
+
+### CPU-only torch install
+**Decision:** Install torch with --index-url https://download.pytorch.org/whl/cpu
+**Reason:** Default torch install pulls 2GB+ CUDA/cuDNN wheels. VPS has no GPU so CUDA is wasteful. CPU-only build is ~250MB and functionally identical for this use case.
+
+### NEXUS_SECRET_KEY not on VPS
+**Decision/Finding:** The NEXUS_SECRET_KEY is not stored on the VPS — it lives in the local .env and is injected into the Worker as an environment variable. VPS curl diagnostics must use the key from the local .env directly.
+
+### Voice preference in localStorage (D1 deferred)
+**Decision:** Store voice preference in localStorage for now, D1 sync deferred
+**Reason:** Single-user platform, localStorage is sufficient. D1 sync adds schema changes with no immediate benefit. Revisit when multi-device access becomes a regular workflow.
+
+### Mute button removed
+**Decision:** Remove global mute toggle from UI
+**Reason:** OS/browser-level muting is sufficient. UI mute adds complexity and visual noise with no meaningful benefit over system controls.
+
+### Ambient clips as live TTS (static file hosting deferred)
+**Decision:** Ambient clips call /api/tts live rather than serving pre-generated static files
+**Reason:** Pre-generated files require static asset hosting infrastructure not yet set up. Live calls add 1-3s latency but are simpler. Revisit when latency becomes noticeable in practice.

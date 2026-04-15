@@ -219,3 +219,10 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 | scraper_progress.json path | Lives at `arcanthyr-console\Local Scraper\scraper_progress.json` — NOT at `C:\Users\Hogan\OneDrive\Arcanthyr\Local Scraper\` (that path does not exist) |
 | Sentencing backfill route | `POST /api/admin/backfill-sentencing` (X-Nexus-Key) — direct-write sentencing pass, limit 1–30 per call. Accepts optional `body.citations` array for targeted runs (session 55). SENTENCING_SYNTHESIS_PROMPT revised and validated session 55 — classification 6/6, fabrication 0. Safe to fire. |
 | scraper_progress.json | 8 stale entries cleared session 54. Safe to re-scrape already-ingested citations — INSERT OR IGNORE skips silently. |
+
+### MOSS-TTS-Nano
+- Service: sudo systemctl status/start/restart moss-tts
+- Test TTS locally on VPS: curl -s -X POST http://localhost:18083/api/generate -F "text=Hello" -F "prompt_audio=@/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_8.wav" | python3 -c "import sys,json,base64; d=json.load(sys.stdin); open('/tmp/test.wav','wb').write(base64.b64decode(d['audio_base64']))"
+- Test /tts route: curl -s -X POST http://localhost:18789/tts -H "Content-Type: application/json" -H "X-Nexus-Key: KEY" -d '{"text":"Hello","voice":"male"}' --output /tmp/test.wav
+- NEXUS_SECRET_KEY is in local .env only (Arc v 4/.env) — not on VPS
+- Voice assets: en_8.wav (male default), en_6.wav (female), ambient clips in assets/ambient_male/ and assets/ambient/

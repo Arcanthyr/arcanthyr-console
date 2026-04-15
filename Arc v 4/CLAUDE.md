@@ -1133,3 +1133,36 @@ Cases: 1,382. Secondary sources: 1,201. Case chunks: ~19,000. procedure_notes: r
 
 ### Platform state
 Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + two re-fetched large cases in progress). Secondary sources: 1,201. procedure_notes: 126 success / 310 not_sentencing / 1,056 NULL. case_citations: 5,340. case_legislation_refs: 4,056. subject_matter filter: Parts 1+2 deployed; Part 3 re-embed in progress — server.py filter deploy pending embed backlog = 0.
+
+## CHANGES THIS SESSION (session — 15 Apr 2026)
+
+### MOSS-TTS-Nano — installed and integrated
+- Cloned repo to ~/ai-stack/MOSS-TTS-Nano on VPS
+- Installed CPU-only torch (torch==2.7.0+cpu, torchaudio==2.7.0+cpu) to avoid 2GB CUDA download
+- Installed all requirements including WeTextProcessing/pynini via conda-forge
+- Confirmed inference working via infer.py test (en_2.wav reference audio)
+- Evaluated all available English voices: en_2, en_3, en_4, en_6, en_7, en_8 (en_1/en_5 not present in repo)
+- Selected en_8 (male) as default voice, en_6 (female) as toggle alternative
+- Generated ambient clip sets for both voices (8 clips each):
+  - assets/ambient/ — en_6 (female): welcome, processing, searching, thinking, complete, error, no_results, loading
+  - assets/ambient_male/ — en_8 (male): same 8 clips
+- Set up systemd service (moss-tts.service) — enabled, running on 127.0.0.1:18083, auto-starts on boot
+- Service confirmed active: ~990MB RAM, CPU-only inference
+
+### TTS integration — server.py + Worker + frontend
+- Added /tts route to server.py: POST, X-Nexus-Key auth, body { text, voice: "male"|"female" }, calls MOSS-TTS at 127.0.0.1:18083, returns raw WAV bytes as audio/wav. Voice defaults to female if omitted.
+- Added /api/tts route to Worker (version da147055): forwards to VPS /tts with X-Nexus-Key, returns WAV blob with CORS headers
+- Frontend TTS feature (version d05ea653 → 09186cc1):
+  - src/utils/tts.js — singleton, generation counter for race condition prevention, onAudioStop pub/sub, playTTS/playAmbient/stopAll/getVoice/setVoice. Web Audio API (AudioContext) used — NOT HTMLAudioElement (fixes iOS/browser autoplay restrictions). unlockAudio() called synchronously in click/submit handlers before any await.
+  - src/components/ReadButton.jsx — 🔊/⏹/⟳ states, stopPropagation, subscribes to onAudioStop
+  - src/components/Nav.jsx — Male/Female pill toggle (no gender symbols), mute button removed
+  - src/pages/Research.jsx — searching/complete/no_results/error ambient clips fire-and-forget on query lifecycle
+  - src/App.jsx — welcome clip on first user interaction per session (sessionStorage flag), NOT setTimeout
+- Voice preference stored in localStorage under arcanthyr_tts_voice (D1 sync deferred)
+- Mute removed — users mute at OS/browser level
+
+### Retrieval issue identified — not resolved
+- Query "elements of assault" returned no relevant results despite 14 assault-related secondary sources in D1 (all embedded=1)
+- Root cause not yet confirmed — suspected query embedding mismatch or retrieval scoring issue
+- Deferred to next session — terminal state issue prevented VPS curl diagnostic
+- Key finding: NEXUS_SECRET_KEY is NOT stored on VPS — only in local .env at Arc v 4/.env and injected via Worker

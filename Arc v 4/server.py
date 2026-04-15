@@ -1307,6 +1307,53 @@ class Handler(BaseHTTPRequestHandler):
                 print(f"[!] Fetch page error: {e}")
                 self.send_json(200, {"error": str(e), "status": 0})
 
+
+        elif self.path == "/tts":
+            if not self.check_auth(): return
+            body = self.read_body()
+            text = body.get("text", "").strip()
+            voice = body.get("voice", "female").strip().lower()
+            if not text:
+                self.send_json(400, {"error": "text field required"})
+                return
+            if voice == "male":
+                prompt_audio_path = "/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_8.wav"
+            else:
+                prompt_audio_path = "/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio/en_6.wav"
+            try:
+                with open(prompt_audio_path, "rb") as f:
+                    prompt_audio = f.read()
+                resp = requests.post(
+                    "http://127.0.0.1:18083/api/generate",
+                    files={
+                        "text": (None, text),
+                        "prompt_audio": ("prompt.wav", prompt_audio, "audio/wav"),
+                    },
+                    timeout=60
+                )
+                resp.raise_for_status()
+                result = resp.json()
+                audio_b64 = result.get("audio_base64", "")
+                if not audio_b64:
+                    self.send_json(503, {"error": "TTS returned no audio"})
+                    return
+                wav_bytes = base64.b64decode(audio_b64)
+                self.send_response(200)
+                self.send_header("Content-Type", "audio/wav")
+                self.send_header("Content-Length", len(wav_bytes))
+                self.end_headers()
+                self.wfile.write(wav_bytes)
+            except requests.exceptions.ConnectionError:
+                print("[!] TTS error: MOSS-TTS not reachable at 127.0.0.1:18083")
+                self.send_json(503, {"error": "TTS service unavailable"})
+            except requests.exceptions.HTTPError as e:
+                print(f"[!] TTS error: {e}")
+                self.send_json(503, {"error": f"TTS service error: {e}"})
+            except Exception as e:
+                print(f"[!] TTS error: {e}")
+                self.send_json(503, {"error": str(e)})
+
+
         else:
             self.send_json(404, {"error": "not found"})
 

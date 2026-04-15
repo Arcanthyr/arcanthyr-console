@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PrincipleCard from './PrincipleCard';
+import ReadButton from './ReadButton';
 
 export default function ReadingPane({ selected, answer, onShare, onClose }) {
   // Empty state — no selection, no answer
@@ -34,8 +35,11 @@ export default function ReadingPane({ selected, answer, onShare, onClose }) {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <div style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-            AI Summary
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
+              AI Summary
+            </div>
+            {answer && <ReadButton getText={() => answer} />}
           </div>
           <button
             onClick={onShare}
@@ -146,9 +150,17 @@ function CasePane({ selected, answer, onShare, onClose }) {
         {tab === 0 && <PrinciplesTab selected={selected} />}
         {tab === 1 && <ChunksTab selected={selected} />}
         {tab === 2 && (
-          <div style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.85 }}>
-            {answer || <EmptyState>Run a query to see the AI summary.</EmptyState>}
-          </div>
+          answer
+            ? <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                  <ReadButton getText={() => answer} />
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                    Read aloud
+                  </span>
+                </div>
+                <div style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.85 }}>{answer}</div>
+              </>
+            : <EmptyState>Run a query to see the AI summary.</EmptyState>
         )}
       </div>
     </div>

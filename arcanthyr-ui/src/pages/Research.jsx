@@ -5,6 +5,7 @@ import ResultCard from '../components/ResultCard';
 import ReadingPane from '../components/ReadingPane';
 import ShareModal from '../components/ShareModal';
 import { api } from '../api';
+import { playAmbient, unlockAudio } from '../utils/tts';
 
 const FILTERS = ['ALL', 'CASES', 'CORPUS', 'LEGISLATION'];
 
@@ -38,15 +39,23 @@ export default function Research() {
     setAnswer('');
     setSources([]);
     setSelected(null);
+    playAmbient('searching');
     try {
       const data = await api.query(q.trim(), model);
       const r = data.result || data;
-      setAnswer(r.answer || r.response || '');
+      const ans = r.answer || r.response || '';
       const raw = r.results || r.sources || [];
+      setAnswer(ans);
       setResults(raw);
       setSources(r.sources || []);
+      if (ans || raw.length > 0) {
+        playAmbient('complete');
+      } else {
+        playAmbient('no_results');
+      }
     } catch (e) {
       setError(e.message);
+      playAmbient('error');
     } finally {
       setLoading(false);
     }
@@ -54,6 +63,7 @@ export default function Research() {
 
   async function handleQuery(e) {
     e?.preventDefault();
+    unlockAudio(); // user gesture — unlock AudioContext before async query
     handleQueryWith(query);
   }
 

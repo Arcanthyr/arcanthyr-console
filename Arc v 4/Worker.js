@@ -3487,6 +3487,30 @@ export default {
       return handleTruncationResolve(request, env);
     }
 
+    /* ── TTS ROUTE ───────────────────────────────────────────── */
+    if (url.pathname === '/api/tts' && request.method === 'POST') {
+      try {
+        const body = await request.json();
+        const vpsRes = await fetch('https://nexus.arcanthyr.com/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': env.NEXUS_SECRET_KEY },
+          body: JSON.stringify(body),
+        });
+        if (!vpsRes.ok) {
+          const errData = await vpsRes.json().catch(() => ({ error: 'TTS service error' }));
+          return new Response(JSON.stringify(errData), {
+            status: vpsRes.status,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        const wavBytes = await vpsRes.arrayBuffer();
+        return new Response(wavBytes, {
+          status: 200,
+          headers: { 'Content-Type': 'audio/wav', 'Access-Control-Allow-Origin': '*' },
+        });
+      } catch (err) { return json({ error: err.message }, 502); }
+    }
+
     /* ── INGEST ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ingest/")) {
       if (!rateLimit(`${ip}:ingest`, 10, 60_000)) return json({ error: "Ingest rate limit exceeded." }, 429);
