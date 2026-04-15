@@ -177,8 +177,7 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 - **Search endpoint**: expects field `query_text` (not `query`).
 - **Route/column verification**: Never construct commands with route paths or D1 column names inferred from context — ask CC to grep/read source first. Confirmed failure mode: /api/pipeline/requeue-merge (wrong), criminal column (does not exist).
 - **handleRequeueMerge citation scope**: citation parameter in requeue-merge body does NOT scope the requeue — target="remerge" always requeues full eligible corpus. Verify before firing.
-- **retrieval_baseline.sh**: Now 31 queries (Q1–Q31). Pre-RRF baseline saved at ~/retrieval_baseline_pre_rrf.txt — do not overwrite. Post-RRF baseline saves to ~/retrieval_baseline_post_rrf.txt
-- **retrieval_baseline.sh KEY fix**: KEY must be read with `cut -d= -f2-` (not `-f2`) to preserve trailing `=` in base64 key · always `unset KEY` before running if KEY was manually set in current shell · reads from `~/ai-stack/.env.secrets` (not `.env`)
+- **retrieval_baseline.sh**: 31 queries (Q1–Q31). KEY reads from `~/ai-stack/.env.secrets` with `cut -d= -f2-` (preserve trailing `=` in base64 key). Pre-RRF baseline at `~/retrieval_baseline_pre_rrf.txt` — do not overwrite. Always `unset KEY` before running if KEY was manually set in current shell. **BROKEN at session 61 close** — direct curl works but script returns 0 chunks; diagnose at start of next session before relying on baseline results.
 - **xref_agent cron**: VPS crontab (tom user) — `0 3 * * *` daily — logs to `~/ai-stack/xref_agent.log` — runs `--mode both` across criminal/mixed cases only · check logs: `tail -50 ~/ai-stack/xref_agent.log`
 - **sentencing_status column**: Added session 57 — use `WHERE sentencing_status='failed'` for precise sentencing retry targeting · 'not_sentencing' replaces old NOT_SENTENCING sentinel strings in procedure_notes
 

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 14 April 2026 (end of session 57). Upload every session alongside CLAUDE.md.*
+*Updated: 15 April 2026 (end of session 62). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -482,6 +482,7 @@ cd "../Arc v 4" && npx wrangler deploy
 | enrichment_poller.py | `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
 | server.py (nexus) | `Arc v 4/server.py` (local) · `~/ai-stack/agent-general/src/server.py` (VPS canonical) |
 | xref_agent.py | `Arc v 4/xref_agent.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
+| corpus_health_check.py | `Arc v 4/corpus_health_check.py` (repo) · `~/ai-stack/agent-general/src/corpus_health_check.py` (VPS) · cron: `0 2 1 * *` · logs to `~/ai-stack/health_check.log` |
 | ingest_corpus.py | `arcanthyr-console/ingest_corpus.py` — run from there, NOT from `Arc v 4/` |
 | ingest_part2.py | `arcanthyr-console/ingest_part2.py` — standalone part2 ingest script |
 | retrieval_baseline.sh | `arcanthyr-console/retrieval_baseline.sh` (repo) · VPS `~/retrieval_baseline.sh` — results in ~/retrieval_baseline_results.txt |
@@ -530,6 +531,8 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
 | `legislation_sections` | `id` TEXT | `leg_id`, `section_number`, `heading`, `text`, `embedded` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
+| `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
+| `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
 
 ---
 
@@ -655,6 +658,10 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
 | `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
+| `/api/admin/health-reports` | GET | List all health check reports (summary only, no report_json), DESC, LIMIT 24 · X-Nexus-Key |
+| `/api/admin/health-reports/:id` | GET | Single health check report including full report_json · X-Nexus-Key |
+| `/api/admin/health-reports` | POST | Write monthly health check report (id, summary_text, report_json, cluster_count, contradiction_count, gap_count) · X-Nexus-Key |
+| `/api/admin/health-clusters` | POST | Write cluster assignments batch (run_id, run_date, assignments[]) via D1 batch() · X-Nexus-Key |
 
 ### xref_agent.py (session 57)
 - Location: VPS `~/ai-stack/agent-general/src/xref_agent.py`

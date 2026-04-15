@@ -25,6 +25,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | CC cannot run Python | Windows Store stub blocks it — run Python in PowerShell terminal directly |
 | CC vs SSH | CC for local file edits · SSH terminal for VPS runtime commands |
 | CC vs manual SSH | Simple read/run commands (baseline, logs, single queries) → SSH yourself, faster and cheaper · CC with hex-ssh for multi-step VPS file edits, diagnosis across multiple files, or anything replacing SCP round-trips · Rule: if it's one command and paste-back, do it manually |
+| Session closer verification | After CC runs the session close commit, always run `git status` from arcanthyr-console/ root to confirm all claimed new files are actually present — session closer has a known failure mode of logging "created" for files never written to disk |
 | Long-running scripts | Run directly in PowerShell terminal — CC too slow (confirmed: ingest runs, embed pass) |
 | Context window | Suggest restart proactively when conversation grows long |
 | CC effort | Set to High permanently — maximum effort on all responses |
@@ -37,7 +38,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | Rogue d file | Delete with `Remove-Item "c:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\d"` if it reappears — commit deletion |
 | server.py auth | All direct calls to localhost:18789 require header `X-Nexus-Key` · Get value: `grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets` on VPS · "unauthorized" = missing or wrong key |
 | server.py search field | Search endpoint expects `query_text` (not `query`) · "query_text is required" = wrong field name · endpoint: `POST localhost:18789/search` |
-| retrieval_baseline.sh | KEY now auto-reads from ~/ai-stack/.env — no manual export needed · still requires query_text field · results in ~/retrieval_baseline_results.txt |
+| retrieval_baseline.sh | KEY auto-reads from `~/ai-stack/.env.secrets` using `cut -d= -f2-` (preserve trailing `=`) · results in ~/retrieval_baseline_results.txt · pre-RRF baseline at ~/retrieval_baseline_pre_rrf.txt — do not overwrite · 31 queries (Q1–Q31) · run after any retrieval architecture change before further work |
 | ingest_corpus.py | Lives at `arcanthyr-console\ingest_corpus.py` (NOT inside `Arc v 4/`) · INPUT_FILE hardcoded — change manually · PROCEDURE_ONLY=False for full corpus ingest · Block separator format MUST be `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` followed by `### Heading` then `[DOMAIN:]` on next line · Use Python (not PowerShell Out-File) to create corpus files — PowerShell BOM/encoding corrupts block separators · upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations |
 | ingest_part2.py | Lives at `arcanthyr-console\ingest_part2.py` — standalone copy of ingest_corpus.py with INPUT_FILE hardcoded to master_corpus_part2.md and PROCEDURE_ONLY=False |
 | FTS5 wipe before re-ingest | Before any corpus re-ingest run: `DELETE FROM secondary_sources_fts` via wrangler d1 — INSERT OR REPLACE fix deployed session 12 (version 2d3716de) so this should no longer be needed, but if 500 errors appear on upload-corpus, wipe FTS5 first |
@@ -1288,3 +1289,32 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 - Self-contained: CC can implement without prior conversation context
 - Prerequisites: subject_matter filter live (done), embedding backlog cleared (in progress — 3,849 chunks remaining at session close)
 - Not yet built — scheduled for next session once backlog clears
+
+## CHANGES THIS SESSION (session 62) — 15 April 2026
+
+### Retrieval baseline — fixed and locked
+- Root cause confirmed: `cut -d= -f2` stripped trailing `=` from base64 NEXUS key → 401 on every query. Session 61 documented this fix as applied but it never landed on VPS.
+- VPS `~/retrieval_baseline.sh` patched via sed — now uses `cut -d= -f2-`
+- Local `arcanthyr-console/retrieval_baseline.sh` also fixed: wrong source file (`.env` → `.env.secrets`) corrected alongside the cut fix
+- Baseline locked (session 62, post-KEY-fix, mid-reindex): 10 pass / 11 partial / 8 miss / 3 ungraded
+- Regression vs session 51 (12P/13Pa/3M) attributed to embed backlog (container up 25 min at test time, 3,849+ chunks not yet in Qdrant) — not a code regression. Re-run required once backlog clears.
+- Q16/Q17/Q18 returned "old format" chunks — ungraded, diagnosis deferred
+
+### SYNTHESIS_FEEDBACK_LOOP_BUILD_PLAN.md — recovered and committed
+- File was documented as created in session 61 closer but was never committed or saved to VPS — session closer generated a false "created" entry
+- Recovered from local copy, encoding corruption fixed (â/Â·/â¡ artifacts → clean dashes/bullets/checkboxes), committed to repo
+- CC flagged 6 stale references in the plan before implementation: RRF reference stale (reverted session 42), approved column default confirmed, source_type already in handleFetchForEmbedding, raw_text vs content column name, subject_matter prerequisites met, Part 3 backlog confirmation required before build
+- Not yet built — awaiting embed backlog clear
+
+### Corpus Health Check — full build complete
+- New D1 tables: `health_check_reports` (id, created_at, summary_text, report_json, cluster_count, contradiction_count, gap_count) and `health_check_clusters` (run_id, chunk_id, cluster_label, run_date)
+- Worker deploy `8080a084` — 4 new admin routes: GET /api/admin/health-reports (list), GET /api/admin/health-reports/:id (detail), POST /api/admin/health-reports (VPS write), POST /api/admin/health-clusters (batch cluster assignments)
+- fetch-secondary-raw extended to return title and category alongside id/raw_text
+- VPS: `corpus_health_check.py` at `~/ai-stack/agent-general/src/` — uses raw requests (no openai SDK, matches poller pattern), paginated fetch of all 1,201 secondary source chunks, GPT-4o-mini clustering pre-pass then contradiction + gap check per cluster, writes report to Worker on completion
+- Monthly cron: `0 2 1 * *` → logs to `~/ai-stack/health_check.log`
+- UI: `/health-reports` page — admin key gate, list table (date/clusters/contradictions/gaps/View), detail pane (high-confidence contradictions first with why/why-not callouts, intra-cluster gaps grouped by cluster label, cross-domain references collapsed, small/error clusters in audit notes section)
+- First test run confirmed: report 55195b94 — 13 clusters, 1 high-confidence contradiction, 28 intra-cluster gaps across 1,201 secondary sources
+- Cluster stability diff check marked TODO in script — implement after second run
+
+### Session workflow note
+- When working from Claude.ai and SSH/VPS access is needed, task it through CC — CC can bash directly to the VPS without SCP round-trips
