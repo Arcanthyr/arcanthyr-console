@@ -2965,6 +2965,70 @@ async function handleSentencingBackfill(request, env, corsHeaders) {
   }
 }
 
+/* ── HEALTH CHECK REPORT ROUTES ──────────────────────────── */
+
+async function handleGetHealthReports(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const rows = await env.DB.prepare(`
+      SELECT id, created_at, summary_text, cluster_count, contradiction_count, gap_count
+      FROM health_check_reports
+      ORDER BY created_at DESC
+      LIMIT 24
+    `).all();
+    return new Response(JSON.stringify(rows.results), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleGetHealthReport(request, env, corsHeaders, reportId) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const row = await env.DB.prepare(`SELECT * FROM health_check_reports WHERE id=?`).bind(reportId).first();
+    if (!row) return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    // Parse report_json back to object for the client
+    const result = { ...row, report_json: JSON.parse(row.report_json) };
+    return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handlePostHealthReport(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const body = await request.json();
+    const { id, summary_text, report_json, cluster_count, contradiction_count, gap_count } = body;
+    if (!id || !report_json) return new Response(JSON.stringify({ error: 'id and report_json required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    await env.DB.prepare(`
+      INSERT INTO health_check_reports (id, created_at, summary_text, report_json, cluster_count, contradiction_count, gap_count)
+      VALUES (?, datetime('now'), ?, ?, ?, ?, ?)
+    `).bind(id, summary_text || null, JSON.stringify(report_json), cluster_count || 0, contradiction_count || 0, gap_count || 0).run();
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handlePostHealthClusters(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { run_id, run_date, assignments } = await request.json();
+    if (!run_id || !Array.isArray(assignments)) return new Response(JSON.stringify({ error: 'run_id and assignments required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    const stmt = env.DB.prepare(`INSERT OR REPLACE INTO health_check_clusters (run_id, chunk_id, cluster_label, run_date) VALUES (?, ?, ?, ?)`);
+    const batch = assignments.map(a => stmt.bind(run_id, a.chunk_id, a.cluster_label, run_date));
+    await env.DB.batch(batch);
+    return new Response(JSON.stringify({ success: true, count: assignments.length }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 async function handleTruncationStatus(request, env) {
   const { results } = await env.DB.prepare(`
     SELECT id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved
@@ -3182,7 +3246,7 @@ async function handleFetchSecondaryRaw(request, env, corsHeaders) {
     const limit = Math.min(parseInt(urlObj.searchParams.get('limit') || '50'), 100);
     const [countResult, dataResult] = await Promise.all([
       env.DB.prepare(`SELECT COUNT(*) as total FROM secondary_sources`).first(),
-      env.DB.prepare(`SELECT id, raw_text FROM secondary_sources ORDER BY id LIMIT ? OFFSET ?`).bind(limit, offset).all(),
+      env.DB.prepare(`SELECT id, title, category, raw_text FROM secondary_sources ORDER BY id LIMIT ? OFFSET ?`).bind(limit, offset).all(),
     ]);
     return new Response(JSON.stringify({ ok: true, chunks: dataResult.results, total: countResult.total, offset }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
@@ -3485,6 +3549,15 @@ export default {
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-merge' && request.method === 'POST') return handleRequeueMerge(request, env, corsHeaders);
     if (url.pathname === '/api/admin/backfill-sentencing' && request.method === 'POST') return handleSentencingBackfill(request, env, corsHeaders);
+
+    /* ── HEALTH CHECK ROUTES ─────────────────────────────────── */
+    if (url.pathname === '/api/admin/health-reports' && request.method === 'GET') return handleGetHealthReports(request, env, corsHeaders);
+    if (url.pathname.startsWith('/api/admin/health-reports/') && request.method === 'GET') {
+      const reportId = url.pathname.slice('/api/admin/health-reports/'.length);
+      return handleGetHealthReport(request, env, corsHeaders, reportId);
+    }
+    if (url.pathname === '/api/admin/health-reports' && request.method === 'POST') return handlePostHealthReport(request, env, corsHeaders);
+    if (url.pathname === '/api/admin/health-clusters' && request.method === 'POST') return handlePostHealthClusters(request, env, corsHeaders);
 
     /* ── INGEST ROUTES (proxy to nexus) ─────────────────────── */
     if (url.pathname === '/api/ingest/process-document' && request.method === 'POST') {

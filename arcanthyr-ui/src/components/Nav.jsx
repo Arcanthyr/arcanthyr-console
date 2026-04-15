@@ -1,10 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 
 const links = [
-  { to: '/research', label: 'RESEARCH' },
-  { to: '/library',  label: 'LIBRARY'  },
-  { to: '/upload',   label: 'UPLOAD'   },
-  { to: '/compose',  label: 'COMPOSE'  },
+  { to: '/research',       label: 'RESEARCH' },
+  { to: '/library',        label: 'LIBRARY'  },
+  { to: '/upload',         label: 'UPLOAD'   },
+  { to: '/compose',        label: 'COMPOSE'  },
+  { to: '/health-reports', label: 'CORPUS'   },
 ];
 
 export default function Nav() {
