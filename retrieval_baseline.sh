@@ -1,5 +1,5 @@
 #!/bin/bash
-# retrieval_baseline.sh — run all 15 baseline questions against /search
+# retrieval_baseline.sh — run all 31 baseline questions against /search
 # Usage: bash retrieval_baseline.sh
 # KEY is auto-read from ~/ai-stack/.env.secrets if not already exported
 
@@ -25,7 +25,7 @@ run_query() {
 import sys, json
 d = json.load(sys.stdin)
 for i, c in enumerate(d.get('chunks', [])[:3]):
-    print(f'  [{i+1}] score={c[\"score\"]:.4f} type={c[\"type\"]} | {c[\"text\"][:120].strip()}')
+    print(f'  [{i+1}] score={c[\"score\"]:.4f} type={c[\"type\"]} citation={c.get(\"citation\",\"\")[:60]} | {c[\"text\"][:120].strip()}')
 "
     echo ""
 }
@@ -45,30 +45,22 @@ run_query 12 "hostile witness procedure cross examination"
 run_query 13 "tendency evidence notice requirements s97 objection admissibility"
 run_query 14 "leading questions examination in chief"
 run_query 15 "family violence evidence complainant credibility"
-
-# Q16 — Natural language, no citation, tests case chunk pass at 0.15 threshold
-echo "Q16: neill-fraser dna secondary transfer"
-RESULT=$(curl -s -X POST http://localhost:18789/search \
-  -H "Content-Type: application/json" \
-  -H "X-Nexus-Key: $KEY" \
-  -d '{"query_text": "neill fraser dna secondary transfer"}')
-echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); chunks=d.get('chunks',[]); print(f'  chunks: {len(chunks)}'); [print(f'  [{c.get(\"score\",0):.4f}] {c.get(\"source\",\"\")[:80]}') for c in chunks[:4]]"
-
-# Q17 — Doctrine question, no section reference
-echo "Q17: self-defence honest belief mistake of fact"
-RESULT=$(curl -s -X POST http://localhost:18789/search \
-  -H "Content-Type: application/json" \
-  -H "X-Nexus-Key: $KEY" \
-  -d '{"query_text": "self-defence honest belief mistake of fact"}')
-echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); chunks=d.get('chunks',[]); print(f'  chunks: {len(chunks)}'); [print(f'  [{c.get(\"score\",0):.4f}] {c.get(\"source\",\"\")[:80]}') for c in chunks[:4]]"
-
-# Q18 — Procedural rights, natural language, tests procedure corpus
-echo "Q18: what happens if an accused person refuses to give evidence"
-RESULT=$(curl -s -X POST http://localhost:18789/search \
-  -H "Content-Type: application/json" \
-  -H "X-Nexus-Key: $KEY" \
-  -d '{"query_text": "what happens if an accused person refuses to give evidence"}')
-echo "$RESULT" | python3 -c "import sys,json; d=json.load(sys.stdin); chunks=d.get('chunks',[]); print(f'  chunks: {len(chunks)}'); [print(f'  [{c.get(\"score\",0):.4f}] {c.get(\"source\",\"\")[:80]}') for c in chunks[:4]]"
+run_query 16 "neill fraser dna secondary transfer"
+run_query 17 "self-defence honest belief mistake of fact"
+run_query 18 "what happens if an accused person refuses to give evidence"
+run_query 19 "sentencing range aggravated assault Tasmania"
+run_query 20 "manifestly excessive sentence appeal grounds"
+run_query 21 "suspended sentence breach consequences"
+run_query 22 "non-parole period setting principles"
+run_query 23 "search warrant execution requirements Tasmania"
+run_query 24 "committal hearing procedure indictable offence"
+run_query 25 "bail application principles Tasmania"
+run_query 26 "appeal against conviction unreasonable verdict"
+run_query 27 "provocation defence manslaughter Tasmania"
+run_query 28 "family violence order variation grounds"
+run_query 29 "contravention family violence order sentencing"
+run_query 30 "expert evidence opinion admissibility"
+run_query 31 "right to silence direction jury"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Done."
