@@ -1318,3 +1318,38 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 
 ### Session workflow note
 - When working from Claude.ai and SSH/VPS access is needed, task it through CC — CC can bash directly to the VPS without SCP round-trips
+
+## CHANGES THIS SESSION (session 63) — 15 April 2026
+
+### What we did
+- Diagnosed and fixed poller 401 crash-loop (root cause: NEXUS_SECRET_KEY baked into container at creation time before session 61 key rotation — `docker compose restart` preserves frozen env, `force-recreate` re-reads env_file)
+- Fixed retrieval_baseline.sh Q16/17/18 — both local and VPS copies had different breakage; all 31 queries now use `run_query` function; local + VPS synced; committed 5061614
+- Deleted Milligan/Harrison stubs from D1 (2 rows), FTS5 (2 entries), Qdrant (2 points b84c64cc + c939d742) — session 58 claimed deletion but they were never deleted
+- Confirmed procedure_notes status: 360 criminal null-pn cases all have sentencing_status='not_sentencing' — zero failures, session 47 fix ran clean
+- Restored `AND cc.enriched_text IS NOT NULL` gate to `fetch-case-chunks-for-embedding` SQL in worker.js (session 45 removed it expecting a chunk_text fallback that was never added) — header chunks now never enter the poller cycle; Worker 3ddbcf68 deployed
+- Updated CLAUDE.md session 40 header chunk note and CLAUDE_arch.md to reflect intentional non-embedding of header chunks
+- Verified overnight run: poller clean, no skip messages, Qdrant at 24,008 baseline, chunk backlog 3,794 (accurate count excluding header chunks)
+
+### Key findings
+- CLAUDE.md "retrieval_baseline.sh BROKEN" note was stale — script was working; session 62 fix had landed correctly
+- Sentencing fix (session 47) confirmed complete — no further action needed
+- Word/PDF drag-and-drop upload confirmed complete (previously listed as outstanding — removed from roadmap)
+- chunk__0 entries with enriched_text are legitimate (not all first chunks are headers — depends on CHUNK v3 classification); SQL gate correctly excludes only null-enriched_text rows
+
+### Completed
+- Retrieval baseline Q16/17/18 fix — all 31 queries functional, local + VPS in sync
+- Milligan/Harrison Qdrant/D1/FTS5 cleanup
+- Poller 401 fix (force-recreate, key now correct in fresh container)
+- Header chunk embed gate restored in worker.js
+
+### Deferred
+- subject_matter filter (3-part: Worker route, poller metadata dict, case chunk re-embed)
+- AustLII MCP integration (multi-session build)
+- Citation authority agent
+- Arcanthyr MCP server
+- Static TTS MP3s (session 60 in-progress)
+- Check Qdrant point count at next session open to confirm overnight embed progress (baseline: 24,008)
+- Run accurate backlog check at session open: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`
+
+### Platform state
+Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Backlog 3,794 at session close. Secondary sources fully embedded (backlog 0). Qdrant baseline 24,008 points.

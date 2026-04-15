@@ -197,6 +197,19 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 
 Runs as permanent Docker service (`restart: unless-stopped`) — no tmux needed. Embeds from `enriched_text` when present, falls back to `chunk_text`. After any secondary_sources ingest, manually set `enriched=1` via wrangler d1 — new rows land with `enriched=0` and the poller won't process them until updated.
 
+### docker compose restart vs force-recreate — KEY RULE
+`docker compose restart` stops and restarts the same container instance — the environment baked in at container creation time stays frozen. After any key rotation or env_file change (`NEXUS_SECRET_KEY` or other secrets), always use:
+```bash
+docker compose up -d --force-recreate <service-name>
+```
+`force-recreate` creates a new container that reads the current `env_file`, picking up rotated keys. This was the root cause of the session 63 poller 401 crash-loop: container created before session 61 key rotation kept the old NEXUS_SECRET_KEY through every restart until force-recreated.
+
+Also: if poller is 401-ing against the Worker but direct curl to server.py works, the mismatch is between the Worker's wrangler secret and what the poller's container has. Check with:
+```bash
+docker compose exec enrichment-poller printenv NEXUS_SECRET_KEY
+```
+If blank or wrong → force-recreate, do not restart.
+
 ---
 
 ### ingest_corpus.py

@@ -186,6 +186,10 @@ Do NOT run the poller manually via `docker compose exec` anymore — the service
 
 **Never test API routes via SSH from PowerShell** — SSH quoting mangles auth headers. SSH to VPS first, then run curl locally.
 
+**Header chunks:** `chunk_index=0` rows with `enriched_text=NULL` are intentionally never embedded. The `AND cc.enriched_text IS NOT NULL` gate in `fetch-case-chunks-for-embedding` excludes them at the Worker level — they never enter the poller cycle. They sit permanently at `embedded=0`. Accurate backlog query: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`.
+
+**docker compose restart vs force-recreate:** After any key rotation or `env_file` change, always use `docker compose up -d --force-recreate <service>`. `docker compose restart` stops and restarts the same container — the environment baked in at creation time stays frozen. `force-recreate` creates a new container that re-reads `env_file`, picking up rotated keys. Root cause of session 63 poller 401 crash-loop: container created before session 61 NEXUS rotation kept the old key through every restart until force-recreated. Diagnose: `docker compose exec enrichment-poller printenv NEXUS_SECRET_KEY` — if blank or wrong, force-recreate.
+
 ---
 
 ## DATA FLOW PIPELINE (v2 — CURRENT)
