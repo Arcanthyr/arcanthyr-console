@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 17 April 2026 (end of session 67). Upload every session alongside CLAUDE.md.*
+*Updated: 17 April 2026 (end of session 68). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -617,6 +617,15 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Queried via Worker POST `/api/pipeline/fts-search`
 - Gated by `BM25_FTS_ENABLED = True` in server.py
 
+**D1 FTS5 (`case_chunks_fts`) — session 68:**
+- Worker route: `GET /api/pipeline/case-chunks-fts-search` (deployed `d90ab456`)
+- server.py: `fetch_case_chunks_fts(query_text)` function written locally, NOT YET DEPLOYED (blocked on re-embed baseline)
+- Stop-word filtered, OR-joined terms (max 8), 10s timeout
+- Wired into `search_text()` after existing BM25 case-law layer, before domain filter
+- SM penalty applied, deduped against seen_ids + existing_ids, multi-signal boost on overlap
+- Append mode: `BM25_SCORE_KEYWORD ≈ 0.0139` — cannot displace semantic results
+- Interleave evaluation deferred: see `BM25_INTERLEAVE_EVALUATION_PLAN.md`
+
 ### Workers AI (Cloudflare) — model and usage inventory
 
 **Current model:** `@cf/qwen/qwen3-30b-a3b-fp8` — used for ALL Workers AI calls.
@@ -677,6 +686,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
 | `/api/pipeline/fts-search-chunks` | GET | FTS5 search over case_chunks_fts · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet |
+| `/api/pipeline/case-chunks-fts-search` | GET | FTS5 search over case_chunks_fts with cases JOIN · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet (800 chars), case_name, court, subject_matter |
+| `/api/pipeline/feedback` | POST | Write synthesis feedback · body: query_id, chunk_id, feedback_type (helpful/unhelpful/irrelevant/hallucinated), comment · X-Nexus-Key · returns {ok, id} |
 | `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
 | `/api/admin/health-reports` | GET | List all health check reports (summary only, no report_json), DESC, LIMIT 24 · X-Nexus-Key |
 | `/api/admin/health-reports/:id` | GET | Single health check report including full report_json · X-Nexus-Key |
@@ -688,6 +699,10 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 query_log table populated by inline INSERT in both `handleLegalQuery` (Claude API path) and `handleLegalQueryWorkersAI` (Workers AI path). Fires after retrieval results assembled, before synthesis LLM call. Non-fatal — catch block logs error but does not break queries. client_version field enables A/B comparison across deploys.
 
 Indexes: timestamp, query_type, bm25_fired. Analysis queries documented in `The Vault/arcanthyr-query-logging-and-collision-analysis.md`.
+
+### Stare decisis — handleCaseAuthority (session 68)
+
+`handleCaseAuthority(citation, env)` resolves the corpus citation to a `case_name` via D1 lookup, then uses the case_name for the "cited_by" query (`WHERE LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?))`). Root cause: `case_citations.cited_case` stores authority names extracted by GPT in xref_agent.py (`auth.get('name')` — e.g. "House v The King"), not bracket citations ("[1936] HCA 40"). The "cites" direction works directly because `citing_case` stores corpus citations. The LEFT JOIN to `cases` on `citing_case` enriches results with `court` and `case_name` for display. Deployed and verified session 68 — 33 cited_by results for a well-cited case, treatment pills rendering correctly.
 
 ### xref_agent.py (session 57)
 - Location: VPS `~/ai-stack/agent-general/src/xref_agent.py`

@@ -138,6 +138,30 @@ def fetch_cases_by_legislation_ref(references):
         return []
 
 
+def fetch_case_chunks_fts(query_text):
+    """Fetch case chunks from D1 FTS5 index via Worker route (keyword recall)."""
+    if not query_text or not query_text.strip():
+        return []
+    try:
+        # Build FTS5 query: extract meaningful terms, skip stop words
+        stop = {'the','a','an','in','of','to','for','and','or','is','was','are','on','by','at','it','with','as','from','that','this','not','what','how','do','does','can','if'}
+        terms = [w for w in re.sub(r'[^\w\s]', '', query_text.lower()).split() if w not in stop and len(w) > 2]
+        if not terms:
+            return []
+        fts_query = ' OR '.join(terms[:8])  # cap to 8 terms for performance
+        resp = requests.get(
+            f"{WORKER_URL}/api/pipeline/case-chunks-fts-search",
+            params={"q": fts_query, "limit": "8"},
+            headers={"X-Nexus-Key": NEXUS_KEY},
+            timeout=10
+        )
+        resp.raise_for_status()
+        return resp.json().get("chunks", [])
+    except Exception as e:
+        print(f"[!] case_chunks_fts fetch error: {e}")
+        return []
+
+
 def chunk_text(text):
     words = text.split()
     chunks, i = [], 0
@@ -416,9 +440,9 @@ def search_text(body):
     # ── BM25 — fetch sections referenced in query text ───────────────────────
     query_refs = extract_section_references([{"text": query_text}])
     refs = [{"section_number": r["section_number"]} for r in query_refs]
+    existing_ids = {c.get('section_id') or c.get('citation') for c in chunks}
     if refs:
         extra_sections = fetch_sections_by_reference(refs)
-        existing_ids = {c.get('section_id') or c.get('citation') for c in chunks}
         added = 0
         for s in extra_sections:
             if s['id'] not in existing_ids:
@@ -490,6 +514,53 @@ def search_text(body):
                         chunk['score'] = round(chunk['score'] + BM25_SCORE_CASE_REF, 4)
                         break
         print(f"[+] BM25 cases: added {added_cases} cases citing referenced legislation")
+
+    # ── BM25 case_chunks_fts — keyword recall across all case chunk enriched_text ──
+    fts_chunks = fetch_case_chunks_fts(query_text)
+    fts_added = 0
+    for fc in fts_chunks:
+        chunk_id = fc.get('chunk_id', '')
+        citation = fc.get('citation', '')
+        # Dedup against everything already collected
+        if chunk_id in seen_ids or citation in existing_ids:
+            # Multi-signal boost — already in results
+            for c in chunks:
+                if c.get('_id') == chunk_id or c.get('citation') == citation:
+                    c['score'] = round(c['score'] + BM25_SCORE_KEYWORD, 4)
+                    break
+            continue
+        # Apply SM penalty before adding
+        sm_val = sm_cache.get(citation, 'unknown') if sm_cache else 'unknown'
+        raw_score = BM25_SCORE_KEYWORD
+        if sm_val not in SM_ALLOW:
+            raw_score = round(raw_score * SM_PENALTY, 4)
+        seen_ids.add(chunk_id)
+        existing_ids.add(citation)
+        chunks.append({
+            "score":          raw_score,
+            "citation":       citation,
+            "case_name":      fc.get('case_name', ''),
+            "court":          fc.get('court', ''),
+            "year":           "",
+            "text":           fc.get('enriched_text', ''),
+            "summary":        "",
+            "outcome":        "",
+            "principles":     [],
+            "legislation":    [],
+            "chunk":          0,
+            "total_chunks":   1,
+            "type":           "case_chunk",
+            "_id":            chunk_id,
+            "_qdrant_id":     "",
+            "section_number": "",
+            "heading":        "",
+            "leg_title":      "",
+            "bm25":           True,
+            "bm25_source":    "case_chunks_fts"
+        })
+        fts_added += 1
+    if fts_added or fts_chunks:
+        print(f"[+] BM25 case_chunks_fts: added {fts_added}, boosted {len(fts_chunks) - fts_added} existing")
 
     # ── Domain filter — hard exclude non-matching case chunks ────────────────
     if subject_matter_filter and subject_matter_filter != 'all':

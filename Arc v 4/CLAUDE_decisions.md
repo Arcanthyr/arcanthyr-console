@@ -3646,4 +3646,20 @@ Rationale: This is the third occurrence of the deploy-gap pattern (sessions 25, 
 
 **subject_matter audit: Rattigan confirmed correctly classified**
 Decision: Tasmania v Rattigan [2021] TASSC 28 confirmed as workers compensation case — correctly classified as administrative. Full audit complete, no further misclassifications found. Prior KNOWN ISSUES entry was flagging a non-issue.
+
+## Session 68 decisions — 17 April 2026
+
+### BM25 case_chunks_fts: append at low score, not interleave
+- **Decision:** Deploy BM25 case_chunks_fts hits appended at `BM25_SCORE_KEYWORD = 1/(60+12) ≈ 0.0139` — they cannot displace semantic results. Only competitive mechanism is multi-signal boost if a BM25 hit already exists in semantic results.
+- **Why:** Interleaving (giving BM25 hits score 0.50 to compete with mid-tier semantic) risks the same vocabulary-overlap failure that killed RRF in session 41 — wrong-domain chunks accumulating competitive score via surface term overlap. Append-first lets us baseline the recall improvement without displacement risk.
+- **Evaluation gate:** Documented in BM25_INTERLEAVE_EVALUATION_PLAN.md. Interleave only after Part A baseline shows no regression and interleave adds measurable improvement.
+
+### Stare decisis cited_by: match on case_name, not citation
+- **Decision:** Resolve citation→case_name in handleCaseAuthority before the cited_by query, matching against case_name (case-insensitive, trimmed) instead of citation.
+- **Why:** `case_citations.cited_case` stores authority names extracted by GPT ("House v The King"), not bracket citations. This is by design in xref_agent.py — GPT extracts `auth.get('name')` which is the case name as cited in the judgment text. Changing xref_agent to extract bracket citations would be fragile (many cited authorities don't have bracket citations in the citing judgment). Matching on name is the correct direction.
+- **Risk:** Case name collisions (e.g. "R v Smith" could match multiple cases). Mitigated by case-insensitive exact match — partial matches won't fire. Accepted risk: Tasmanian corpus has mostly unique case names.
+
+### query_id generation: Option B (inline UUID at handler start)
+- **Decision:** Generate `queryId = crypto.randomUUID()` at the start of both query handlers, return in response as `query_id`, use as foreign key for synthesis_feedback.
+- **Why:** Simpler than Option A (separate pre-query INSERT) — query_log row and feedback rows share the same UUID without requiring a pre-query D1 round-trip. query_id is available for the zero-result early return path and the normal path equally.
 Rationale: D1 audit of all 26 R v / Tasmania v / Police v cases with non-criminal subject_matter confirmed no misclassifications. Subject_matter accuracy is now validated for the filter pipeline.

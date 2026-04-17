@@ -1724,15 +1724,33 @@ async function handleLibraryDelete(docType, id, env) {
 }
 
 async function handleCaseAuthority(citation, env) {
+  // Resolve citation to case_name for cited_by lookup.
+  // case_citations.cited_case stores authority NAMES (e.g. "House v The King"),
+  // not bracket citations — so we must match on case_name, not citation.
+  const nameRow = await env.DB.prepare(
+    `SELECT case_name FROM cases WHERE citation = ? LIMIT 1`
+  ).bind(citation).first();
+  const caseName = nameRow?.case_name || '';
+  // Strip "[YYYY] COURT N" suffix — some case_names include the full citation
+  // but cited_case entries store the short party name (e.g. "Shaw v Tasmania")
+  const shortName = caseName.replace(/\s*\[\d{4}\].*$/, '').trim();
+
+  // cited_by: who in the corpus cites THIS case (by name match)
+  // cites: what authorities does THIS case cite (by citation match — citing_case stores citations)
+  const citedByQuery = caseName
+    ? env.DB.prepare(`
+        SELECT cc.citing_case, cc.treatment, cc.why,
+               c.court, c.case_name
+        FROM case_citations cc
+        LEFT JOIN cases c ON c.citation = cc.citing_case
+        WHERE LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?1))
+           OR LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?2))
+        ORDER BY cc.treatment ASC
+      `).bind(caseName, shortName).all()
+    : Promise.resolve({ results: [] });
+
   const [citedByRes, citesRes, legRes] = await Promise.all([
-    env.DB.prepare(`
-      SELECT cc.citing_case, cc.treatment, cc.why,
-             c.court, c.case_name
-      FROM case_citations cc
-      LEFT JOIN cases c ON c.citation = cc.citing_case
-      WHERE cc.cited_case = ?
-      ORDER BY cc.treatment ASC
-    `).bind(citation).all(),
+    citedByQuery,
     env.DB.prepare(`
       SELECT cc.cited_case, cc.treatment, cc.why,
              c.court, c.case_name
@@ -1945,6 +1963,7 @@ async function fetchSectionContext(sectionNum, actName, env) {
 async function handleLegalQuery(body, env) {
   const { query, top_k, score_threshold, subject_matter_filter } = body;
   if (!query || !query.trim()) throw new Error("query field required");
+  const queryId = crypto.randomUUID();
 
   // ── Step 1: Retrieve relevant chunks from Qdrant via nexus ──
   const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
@@ -1975,10 +1994,17 @@ async function handleLegalQuery(body, env) {
 
   // ── Step 2: Build context ────────────────────────────────────
   if (chunks.length === 0 && !sectionContext) {
+    // Log zero-result queries too
+    try {
+      await env.DB.prepare(
+        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
+      ).bind(queryId, query.trim(), new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v67-feedback').run();
+    } catch (_le) { console.error('query_log insert failed (zero-result):', _le); }
     return {
       answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
       sources: [],
       chunk_count: 0,
+      query_id: queryId,
     };
   }
 
@@ -2037,12 +2063,12 @@ ${answерNote}`;
     await env.DB.prepare(
       `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
     ).bind(
-      crypto.randomUUID(), _qs, new Date().toISOString(),
+      queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
       JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
       JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      chunks.length, 'v65-system-review'
+      chunks.length, 'v67-feedback'
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -2086,7 +2112,7 @@ ${answерNote}`;
     ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
     : caseSources;
 
-  return { answer, sources, chunk_count: chunks.length, model: "claude" };
+  return { answer, sources, chunk_count: chunks.length, model: "claude", query_id: queryId };
 }
 
 
@@ -2132,6 +2158,7 @@ async function handleFetchPage(body, env = null) {
 async function handleLegalQueryWorkersAI(body, env) {
   const { query, top_k, score_threshold, subject_matter_filter } = body;
   if (!query || !query.trim()) throw new Error("query field required");
+  const queryId = crypto.randomUUID();
 
   // ── Step 1: Qdrant search via nexus ──────────────────────────
   const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
@@ -2214,12 +2241,12 @@ async function handleLegalQueryWorkersAI(body, env) {
     await env.DB.prepare(
       `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
     ).bind(
-      crypto.randomUUID(), _qs, new Date().toISOString(),
+      queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
       JSON.stringify(orderedChunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
       JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      orderedChunks.length, 'v65-system-review'
+      orderedChunks.length, 'v67-feedback'
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -2249,7 +2276,7 @@ async function handleLegalQueryWorkersAI(body, env) {
     ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
     : caseSources;
 
-  return { answer, sources, chunk_count: orderedChunks.length, model: "workers-ai" };
+  return { answer, sources, chunk_count: orderedChunks.length, model: "workers-ai", query_id: queryId };
 }
 
 /* =============================================================
@@ -3618,6 +3645,52 @@ export default {
     }
     if (url.pathname === '/api/admin/health-reports' && request.method === 'POST') return handlePostHealthReport(request, env, corsHeaders);
     if (url.pathname === '/api/admin/health-clusters' && request.method === 'POST') return handlePostHealthClusters(request, env, corsHeaders);
+
+    /* ── FEEDBACK ROUTE ─────────────────────────────────────── */
+    if (url.pathname === '/api/pipeline/feedback' && request.method === 'POST') {
+      const key = request.headers.get('X-Nexus-Key');
+      if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: corsHeaders });
+      try {
+        const body = await request.json();
+        const { query_id, chunk_id, feedback_type, comment } = body;
+        const allowed = ['helpful', 'unhelpful', 'irrelevant', 'hallucinated'];
+        if (!feedback_type || !allowed.includes(feedback_type)) {
+          return new Response(JSON.stringify({ error: `feedback_type must be one of: ${allowed.join(', ')}` }), { status: 400, headers: corsHeaders });
+        }
+        if (!query_id) return new Response(JSON.stringify({ error: 'query_id required' }), { status: 400, headers: corsHeaders });
+        await env.DB.prepare(
+          `INSERT INTO synthesis_feedback (id, query_id, chunk_id, feedback_type, comment, created_at) VALUES (?1,?2,?3,?4,?5,?6)`
+        ).bind(crypto.randomUUID(), query_id, chunk_id || null, feedback_type, comment || null, new Date().toISOString()).run();
+        return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders });
+      } catch (err) {
+        console.error('feedback insert error:', err);
+        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
+      }
+    }
+
+    /* ── CASE CHUNKS FTS SEARCH (for server.py BM25 pass) ──── */
+    if (url.pathname === '/api/pipeline/case-chunks-fts-search' && request.method === 'GET') {
+      const key = request.headers.get('X-Nexus-Key');
+      if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: corsHeaders });
+      try {
+        const q = url.searchParams.get('q');
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '8'), 20);
+        if (!q) return new Response(JSON.stringify({ error: 'q required' }), { status: 400, headers: corsHeaders });
+        const result = await env.DB.prepare(
+          `SELECT fts.chunk_id, fts.citation, SUBSTR(fts.enriched_text, 1, 800) as enriched_text,
+                  c.case_name, c.court, c.subject_matter
+           FROM case_chunks_fts fts
+           LEFT JOIN cases c ON c.citation = fts.citation
+           WHERE case_chunks_fts MATCH ?1
+           ORDER BY rank
+           LIMIT ?2`
+        ).bind(q, limit).all();
+        return new Response(JSON.stringify({ chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      } catch (err) {
+        console.error('case-chunks-fts-search error:', err);
+        return new Response(JSON.stringify({ error: err.message, chunks: [] }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
+    }
 
     /* ── INGEST ROUTES (proxy to nexus) ─────────────────────── */
     if (url.pathname === '/api/ingest/process-document' && request.method === 'POST') {

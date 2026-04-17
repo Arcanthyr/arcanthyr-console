@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 17 April 2026 (end of session 67) · Supersedes all prior versions
+Updated: 17 April 2026 (end of session 68) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -189,25 +189,26 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 17 April 2026 (end of session 67)
+## SYSTEM STATE — 17 April 2026 (end of session 68)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | FULL RE-EMBED IN PROGRESS — vocabulary anchor prepend deployed, ~26,400 chunks re-embedding |
-| D1 cases | 1,820 (scraper running) · 1,819 deep_enriched=1 |
-| D1 case_chunks | 25,253 total · embedded=0: 25,236 (re-embed running with vocabulary anchors) |
-| D1 secondary_sources | 1,199 total · embedded=0: 1,199 (re-embed running with vocabulary anchors) |
+| Qdrant general-docs-v2 | FULL RE-EMBED IN PROGRESS — vocabulary anchor prepend deployed, ~24,700 chunks re-embedding |
+| D1 cases | 1,820 (scraper running) · 1,819 deep_enriched=1 · 1 stuck ([2023] TASSC 6 — needs requeue-merge) |
+| D1 case_chunks | 25,253 total · embedded=0: 24,400 (re-embed running with vocabulary anchors) |
+| D1 secondary_sources | 1,199 total · embedded=0: 299 (re-embed running with vocabulary anchors) |
 | D1 case_chunks_fts | 25,236 rows — FTS5 index on case chunk enriched_text |
-| D1 query_log | 0 rows — query logging table live, wired in worker.js (INSERT may not be firing — see Task K) |
-| D1 quarantined_chunks | 0 rows · NEW — stub quarantine table with signal columns, ready for post-baseline activation |
-| D1 synthesis_feedback | 0 rows · NEW — feedback loop table with type constraint, ready for route wiring |
-| D1 case_citations | 5,340 rows |
-| D1 case_legislation_refs | 4,056 rows |
+| D1 query_log | 1 row — CONFIRMED WORKING session 68 (was 0 rows — deploy gap from session 65) |
+| D1 quarantined_chunks | 0 rows · stub quarantine table with signal columns, ready for post-baseline activation |
+| D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback), frontend thumbs pending CC build |
+| D1 case_citations | 6,959 rows (xref cron productive — up from 5,340 at session 67) |
+| D1 case_legislation_refs | 5,147 rows (up from 4,056 at session 67) |
 | enrichment_poller | RUNNING — vocabulary anchor functions deployed · DO NOT MODIFY OR RESTART until re-embed completes |
 | Cloudflare Queue | drained |
 | Scraper | RUNNING |
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE (ALL/CRIMINAL/ADMINISTRATIVE/CIVIL) |
+| Stare decisis UI | LIVE — cited_by name-match fix deployed session 68 · tested: 33 cited_by for well-cited case, treatment pills rendering, legislation refs populated |
 | Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · RE-RUN REQUIRED after re-embed completes |
 | procedure_notes | 319 success / ~340 not_sentencing |
 
@@ -241,14 +242,14 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (25,236 case chunks + 1,199 secondary sources re-embedding with vocabulary anchors). When both `embedded=0` counts hit zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
-2. **Stub quarantine (Step 1 from session 64)** — soft-quarantine secondary_source rows with raw_text <300 chars; filter flag in Qdrant + quarantined_chunks D1 table (already created session 66); not hard delete. 253 stubs identified. Build after re-embed baseline confirms vocabulary anchor impact.
-3. **case_chunks_fts BM25 pass — DEPLOY GAP** — session 65 changelog claims deployed but code is ABSENT from both local and VPS server.py. BM25_SCORE_KEYWORD constant defined at line 31 but unused. Re-implement after re-embed completes so baseline can isolate its impact. Third occurrence of deploy-gap pattern (sessions 25, 27, 65).
-4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. server.py change only. Evaluate after vocabulary anchors + FTS5 are baselined.
-5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped.
-6. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
-7. **Stare decisis UI layer (Task H)** — CC session 67 found StareDecisisSection.jsx already exists and is wired into case detail reading pane. Verify it's rendering correctly and data is populating from case_citations/case_legislation_refs. May already be complete.
-8. **Query log INSERT verification (Task K)** — query_log table has 0 rows despite being wired in session 65. CC confirmed INSERT statement exists in worker.js but table is still empty. Check if the INSERT is firing correctly — may be in a dead code path or behind a condition that never triggers.
+1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (24,400 case chunks + 299 secondary sources re-embedding with vocabulary anchors). When both `embedded=0` counts hit zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
+2. **Deploy server.py BM25 case_chunks_fts pass** — code written and tested locally (session 68). `fetch_case_chunks_fts()` function + wiring into `search_text()` after existing BM25 layers. BLOCKED on re-embed completion — deploy after baseline so impact can be isolated. SCP + force-recreate required.
+3. **Stub quarantine (Step 1 from session 64)** — soft-quarantine secondary_source rows with raw_text <300 chars; filter flag in Qdrant + quarantined_chunks D1 table (already created session 66); not hard delete. 253 stubs identified. Build after re-embed baseline confirms vocabulary anchor impact.
+4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. Evaluation plan documented in `BM25_INTERLEAVE_EVALUATION_PLAN.md` (Arcanthyr Nexus). Evaluate after vocabulary anchors + FTS5 append are baselined.
+5. **Frontend thumbs up/down UI** — synthesis_feedback route live (POST /api/pipeline/feedback), query_id returned in both query handler responses. Frontend build needed in arcanthyr-ui (CC prompt documented in session 68 transcript). Requires CC session with arcanthyr-ui access.
+6. **Stuck case [2023] TASSC 6** — 14 chunks all done but deep_enriched=0 (merge never fired). Needs requeue-merge: `Invoke-WebRequest -Uri "https://arcanthyr.com/api/admin/requeue-merge" -Method POST -Headers @{"X-Nexus-Key"=$key;"Content-Type"="application/json"} -Body '{"target":"remerge","limit":1}' -UseBasicParsing`
+7. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped.
+8. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
 
 ---
 
@@ -1400,6 +1401,22 @@ Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Bac
 - Generic synonyms ("the provision", "the rule") are used instead of specific terms ("s138", "tendency notice requirements")
 - Full structured Opus consultation prompt prepared and handed to Tom — to be taken to fresh Opus session
 - Opus to advise: prompt additions for both Master Prompt and CHUNK v3, validation test design, retroactive fix for existing thin chunks using preserved Concepts data
+
+## CHANGES THIS SESSION (session 68) — 17 April 2026
+
+- **query_log INSERT — deploy gap confirmed and fixed** — query_log table had 0 rows despite INSERT statements existing in worker.js. Root cause: session 65 deploy gap (code never reached production). Redeployed with version `44f7cfc4`, confirmed working — D1 shows 1 row after first test query. Both `handleLegalQuery` and `handleLegalQueryWorkersAI` now log: query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version (`v67-feedback`). Zero-result early return path also logs. `query_id` (UUID) added to both handlers and returned in response body for feedback loop wiring.
+
+- **synthesis_feedback route wired** — `POST /api/pipeline/feedback` added to worker.js. X-Nexus-Key auth. Validates `feedback_type` against `['helpful','unhelpful','irrelevant','hallucinated']`. Requires `query_id` and `chunk_id`. Writes to `synthesis_feedback` D1 table with UUID id. Frontend thumbs up/down build documented as CC prompt (arcanthyr-ui not accessible from Cowork session).
+
+- **BM25 case_chunks_fts pass — Worker route deployed, server.py written locally** — New Worker route `GET /api/pipeline/case-chunks-fts-search`: FTS5 MATCH query with JOIN to cases table, returns chunk_id/citation/enriched_text(800)/case_name/court/subject_matter, X-Nexus-Key auth, limit max 50. New server.py function `fetch_case_chunks_fts(query_text)`: stop-word filtering, OR-joined terms (max 8), 10s timeout. Wired into `search_text()` after existing BM25 case-law layer, before domain filter. Applies `apply_sm_penalty()`, dedupes against `seen_ids` + `existing_ids`, multi-signal boosts existing matches with `BM25_SCORE_KEYWORD` (~0.0139). Bug fix: `existing_ids` initialization moved before `if refs:` block (was inside it — would have caused NameError on queries with no section refs). **Server.py deploy BLOCKED on re-embed** — deploy after baseline so BM25 impact can be isolated.
+
+- **BM25 interleave evaluation plan documented** — `BM25_INTERLEAVE_EVALUATION_PLAN.md` created in Arcanthyr Nexus. Design: start interleave score at 0.50 (just above Pass 1 threshold 0.45), only interleave novel hits not already in `seen_ids`, re-sort within appended pool only (strong Pass 1 results untouchable). Decision gate: pass count ≥ Part A baseline, zero pass→fail regressions allowed. Deferred until Part A (append at 0.0139) is deployed and baselined.
+
+- **Stare decisis cited_by fix — deployed and verified** — `case_citations.cited_case` stores authority NAMES ("House v The King") extracted by xref_agent.py GPT, not bracket citations. `handleCaseAuthority` cited_by query was matching citation against name — always empty. Fix: resolves citation→case_name via `SELECT case_name FROM cases WHERE citation = ? LIMIT 1`, then matches `WHERE LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?))` on case_name. Verified live: well-cited case returned 33 cited_by results with correct treatment pills (Cited/Applied), legislation refs populated, zero-cited case correctly showing 0. Worker version `d90ab456`.
+
+- **Corpus health audit** — D1 counts refreshed via Cloudflare MCP: 1,820 cases (1,819 deep_enriched), 25,253 chunks (24,400 embed backlog from re-embed), 1,199 secondary sources (299 embed backlog), 6,959 case_citations (up from 5,340 — xref nightly cron productive), 5,147 case_legislation_refs (up from 4,056). One stuck case: [2023] TASSC 6 — 14 chunks all done, deep_enriched=0 (merge never fired). Requeue-merge command documented in Outstanding Priorities.
+
+- **worker.js version** — `d90ab456` (final, includes all session 68 changes: query_log fix, synthesis_feedback route, case-chunks-fts-search route, stare decisis cited_by name-match fix)
 
 ### Opus retrieval regression review — key conclusions
 - Five failure modes confirmed (A, A′, B, C, D) — A and C are the active levers
