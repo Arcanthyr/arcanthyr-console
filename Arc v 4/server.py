@@ -39,6 +39,32 @@ BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match
 SM_PENALTY       = 0.65
 SM_ALLOW         = {'criminal', 'mixed'}  # subject_matter values that bypass penalty
 
+# ── Legislation relevance whitelist ──────────────────────────────────────
+# Core criminal Acts are NEVER penalised (multiplier 1.0).
+# Adjacent criminal Acts receive a mild penalty (0.85) unless the query
+# contains a keyword bridge, in which case they are also exempt.
+# All other legislation receives the standard SM_PENALTY (0.65).
+# Session 65: prevents irrelevant legislation (e.g. Misuse of Drugs Act s1)
+# from displacing criminal doctrine chunks in Pass 1.
+LEG_WHITELIST_CORE = {
+    'evidence act',
+    'criminal code',
+    'sentencing act',
+    'bail act',
+    'justices act',
+    'criminal justice (mental impairment) act',
+    'cj(mi)a',
+    'criminal law (detention and interrogation) act',
+}
+LEG_WHITELIST_ADJACENT = {
+    'misuse of drugs act':                 {'drug', 'drugs', 'trafficking', 'possession', 'substance', 'precursor'},
+    'police offences act':                 {'police', 'offence', 'public order', 'disorderly', 'trespass'},
+    'road safety (alcohol and drugs) act': {'drink driving', 'dui', 'alcohol', 'drug driving', 'breath test', 'blood alcohol'},
+    'firearms act':                        {'firearm', 'firearms', 'weapon', 'gun', 'ammunition', 'prohibited weapon'},
+    'family violence act':                 {'family violence', 'dvo', 'fvo', 'restraining order', 'protection order', 'domestic violence'},
+}
+LEG_PENALTY_ADJACENT = 0.85   # mild penalty for adjacent Acts without keyword bridge
+
 
 _sm_cache        = {}   # citation → subject_matter
 _sm_cache_ts     = 0.0  # epoch timestamp of last load
@@ -272,12 +298,34 @@ def search_text(body):
             "_qdrant_id":   str(hit.id),
         }
 
-    def apply_sm_penalty(chunk):
-        """Apply subject-matter penalty to non-criminal case chunks in-place."""
-        if chunk.get("type") == "case_chunk":
+    def apply_sm_penalty(chunk, query_text_lower=''):
+        """Apply subject-matter penalty to non-criminal case chunks and
+        non-core legislation chunks in-place."""
+        ctype = chunk.get("type", "")
+        if ctype == "case_chunk":
             sm = sm_cache.get(chunk.get("citation", ""), "unknown")
             if sm not in SM_ALLOW:
                 chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
+        elif ctype == "legislation":
+            title = (chunk.get("leg_title") or chunk.get("citation") or "").lower()
+            # Core criminal Acts — always exempt
+            if any(core in title for core in LEG_WHITELIST_CORE):
+                pass  # multiplier 1.0
+            else:
+                # Check adjacent Acts
+                matched_adjacent = False
+                for adj_name, keywords in LEG_WHITELIST_ADJACENT.items():
+                    if adj_name in title:
+                        matched_adjacent = True
+                        # Keyword bridge: if query mentions this Act's domain, exempt it
+                        if any(kw in query_text_lower for kw in keywords):
+                            pass  # multiplier 1.0
+                        else:
+                            chunk["score"] = round(chunk["score"] * LEG_PENALTY_ADJACENT, 4)
+                        break
+                if not matched_adjacent:
+                    # Non-criminal legislation — full penalty
+                    chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
         return chunk
 
     # ── Pass 1 — unfiltered semantic ─────────────────────────────────────────
@@ -295,13 +343,20 @@ def search_text(body):
 
     # Apply subject-matter penalty before court hierarchy re-rank so that
     # non-criminal case chunks do not receive hierarchy boost within the band.
+    # Also penalises non-core legislation (session 65 whitelist).
+    query_text_lower = query_text.lower()
     for c in chunks:
-        apply_sm_penalty(c)
+        apply_sm_penalty(c, query_text_lower)
 
     sm_penalised = sum(1 for c in chunks if c.get("type") == "case_chunk"
                        and sm_cache.get(c.get("citation", ""), "unknown") not in SM_ALLOW)
+    leg_penalised = sum(1 for c in chunks if c.get("type") == "legislation"
+                        and not any(core in (c.get("leg_title") or c.get("citation") or "").lower()
+                                    for core in LEG_WHITELIST_CORE))
     if sm_penalised:
         print(f"[*] SM penalty applied to {sm_penalised} non-criminal case chunks in Pass 1")
+    if leg_penalised:
+        print(f"[*] Legislation penalty applied to {leg_penalised} non-core legislation chunks in Pass 1")
 
     # Re-sort by penalised scores so that top_score is correct for band calculation.
     chunks.sort(key=lambda c: -c["score"])
@@ -336,7 +391,7 @@ def search_text(body):
     for h in p2.points:
         if str(h.id) not in seen_ids:
             seen_ids.add(str(h.id))
-            chunks.append(apply_sm_penalty(hit_to_chunk(h)))
+            chunks.append(apply_sm_penalty(hit_to_chunk(h), query_text_lower))
 
     print(f"[+] {len(chunks)} chunks after Pass 2")
 

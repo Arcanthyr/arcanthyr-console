@@ -46,10 +46,24 @@ function CasesTab() {
   const [urlUploading, setUrlUploading] = useState(false);
   const [urlError, setUrlError] = useState('');
 
-  function onDrop(e) {
+  async function onDrop(e) {
     e.preventDefault();
     const files = [...(e.dataTransfer?.files || e.target.files || [])];
-    const newFiles = files.map(f => ({ file: f, citation: '', court: 'TASCCA', ocr: false }));
+    const newFiles = await Promise.all(files.map(f => new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const text = (ev.target.result || '').slice(0, 1000);
+        const citationMatch = text.match(/\[(\d{4})\]\s+(TASSC|TASCCA|TASMC|TASFC)\s+(\d+)/i);
+        const courtMap = { TASSC: 'TASSC', TASCCA: 'TASCCA', TASMC: 'TASMC', TASFC: 'TASSC' };
+        const citation = citationMatch
+          ? `[${citationMatch[1]}] ${citationMatch[2].toUpperCase()} ${citationMatch[3]}`
+          : '';
+        const court = citationMatch ? (courtMap[citationMatch[2].toUpperCase()] || 'TASCCA') : 'TASCCA';
+        resolve({ file: f, citation, court, ocr: false });
+      };
+      reader.onerror = () => resolve({ file: f, citation: '', court: 'TASCCA', ocr: false });
+      reader.readAsText(f.slice(0, 4096));
+    })));
     setStaged(s => [...s, ...newFiles]);
   }
 
@@ -170,6 +184,18 @@ function CasesTab() {
   );
 }
 
+/* ── RTF stripper ──────────────────────────────────────────── */
+function stripRtf(rtf) {
+  let text = rtf.replace(/\{\\fonttbl[^}]*\}/g, '');
+  text = text.replace(/\{\\colortbl[^}]*\}/g, '');
+  text = text.replace(/\\[a-z]+[-]?\d*[ ]?/gi, '');
+  text = text.replace(/\{|\}/g, '');
+  text = text.replace(/\\\n/g, '\n');
+  text = text.replace(/\\\*/g, '');
+  text = text.replace(/[\\][^a-z]/gi, '');
+  return text.replace(/\n{3,}/g, '\n\n').trim();
+}
+
 /* ── Corpus tab ────────────────────────────────────────────── */
 function CorpusTab() {
   const [text, setText] = useState('');
@@ -243,6 +269,13 @@ function CorpusTab() {
       const reader = new FileReader();
       reader.onload = ev => setText(ev.target.result);
       reader.readAsText(file);
+    } else if (ext === 'rtf') {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        console.warn('RTF file detected — stripping control sequences. Please verify extracted text.');
+        setText(stripRtf(ev.target.result));
+      };
+      reader.readAsText(file);
     } else if (['pdf', 'docx', 'txt'].includes(ext)) {
       startProcessDocument(file);
     }
@@ -251,7 +284,17 @@ function CorpusTab() {
   function handleFileInput(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    startProcessDocument(file);
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'rtf') {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        console.warn('RTF file detected — stripping control sequences. Please verify extracted text.');
+        setText(stripRtf(ev.target.result));
+      };
+      reader.readAsText(file);
+    } else {
+      startProcessDocument(file);
+    }
     e.target.value = '';
   }
 
@@ -316,9 +359,9 @@ function CorpusTab() {
           ? 'Drop file here'
           : isProcessing
           ? 'Processing…'
-          : 'Drop .pdf, .docx or .txt to process via VPS · Drop .md to load into text area · or click to browse'}
+          : 'Drop .pdf, .docx or .txt to process via VPS · Drop .md or .rtf to load into text area · or click to browse'}
       </div>
-      <input ref={fileRef} type="file" accept=".pdf,.docx,.txt" onChange={handleFileInput} style={{ display: 'none' }} />
+      <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.rtf" onChange={handleFileInput} style={{ display: 'none' }} />
 
       {isProcessing && jobStatus && (
         <div style={{ marginBottom: '12px', fontSize: '13px', color: 'var(--text-secondary)', padding: '10px 12px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px' }}>

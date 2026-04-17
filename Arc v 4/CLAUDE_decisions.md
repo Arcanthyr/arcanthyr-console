@@ -3625,3 +3625,25 @@ Rationale: Embedding vector determined entirely by body prose (Concepts strip pe
 **[2026-04-17]** *Cowork writes, CC deploys* — score 6, workflow
 
 > Established workflow split: Cowork (claude.ai) handles all analysis, D1 queries via Cloudflare MCP, and file edits in the Arc v 4 mount. CC handles deploy commands only (wrangler deploy, SCP, docker compose). Eliminates lengthy CC supplementary prompts — CC gets surgical edits instead of page-long instructions. hex-ssh MCP for Cowork would close the remaining VPS read gap.
+
+## Session 66-67 decisions — 17 April 2026
+
+**Legislation penalty: 3-tier whitelist with keyword bridge**
+Decision: Extend apply_sm_penalty() to legislation chunks using a whitelist-based system rather than uniform penalty or uniform exemption.
+Rationale: Uniform exemption (pre-session 66 state) allowed non-criminal legislation to outrank correct doctrine chunks (Q1 common assault beaten by Misuse of Drugs Act s1). Uniform penalty would suppress correct Evidence Act / Criminal Code / Sentencing Act hits. Whitelist is the only approach that fixes regression without introducing new false negatives. Keyword bridge on adjacent Acts (e.g. query containing "drug" exempts Misuse of Drugs Act) prevents over-penalising contextually relevant non-core legislation. LEG_PENALTY_ADJACENT set at 0.85 — lighter than full SM_PENALTY 0.65 because adjacent Acts are often topically relevant, just not the primary target.
+
+**handleRequeueMerge scoping: array bypass of deep_enriched gate**
+Decision: body.citations array skips the deep_enriched=1 constraint; body.citation (singular) and unscoped calls retain it.
+Rationale: Explicit citation targeting implies deliberate re-processing — the caller knows which cases to hit. The deep_enriched gate exists to prevent accidental bulk re-runs, which is irrelevant when specific citations are named. Removing the gate only for explicit targeting preserves safety for batch operations.
+
+**Query expansion deferred behind re-embed baseline**
+Decision: Do not implement query expansion until vocabulary anchor re-embed completes and is baselined.
+Rationale: Vocabulary anchors (session 65) and query expansion solve the same recall problem from different ends — anchor enriches the embedding, expansion enriches the query. Building both simultaneously prevents isolating which change improved results. If anchors close the gap, expansion may be unnecessary. If they don't, expansion's marginal impact can be measured cleanly.
+
+**Deploy gap pattern — third occurrence documented**
+Decision: case_chunks_fts BM25 pass from session 65 confirmed absent from server.py. Added to outstanding priorities for re-implementation after re-embed completes.
+Rationale: This is the third occurrence of the deploy-gap pattern (sessions 25, 27, 65) where session closer logged code as deployed but it never reached VPS. Pattern is now well-documented. Implementation deferred to avoid conflating BM25 impact with vocabulary anchor impact in baseline comparisons.
+
+**subject_matter audit: Rattigan confirmed correctly classified**
+Decision: Tasmania v Rattigan [2021] TASSC 28 confirmed as workers compensation case — correctly classified as administrative. Full audit complete, no further misclassifications found. Prior KNOWN ISSUES entry was flagging a non-issue.
+Rationale: D1 audit of all 26 R v / Tasmania v / Police v cases with non-criminal subject_matter confirmed no misclassifications. Subject_matter accuracy is now validated for the filter pipeline.

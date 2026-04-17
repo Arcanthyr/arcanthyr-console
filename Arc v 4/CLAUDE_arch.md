@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 17 April 2026 (end of session 65). Upload every session alongside CLAUDE.md.*
+*Updated: 17 April 2026 (end of session 67). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -239,7 +239,7 @@ Worker routes exist but are dead — nothing calls them during query handling.
 
 ### Retrieval Pipeline (Sequential Pass — session 42, reverted from RRF)
 
-1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty()` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
+1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty(chunk, query_text_lower)` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`; legislation chunks penalised via 3-tier whitelist: `LEG_WHITELIST_CORE` Acts exempt (1.0), `LEG_WHITELIST_ADJACENT` Acts penalised at `LEG_PENALTY_ADJACENT=0.85` unless keyword bridge matches query, all other legislation at `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
 2. **Pass 2 — case chunks appended** — `type=case_chunk` filter, threshold 0.35, limit 8. `apply_sm_penalty()` applied to each hit before dedup check. Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
 3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2.
 4. **BM25/FTS5 append** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Multi-signal boost if chunk already in results. Final top_k cap (no re-sort — BM25 stays last).
@@ -539,6 +539,8 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
+| `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · empty, ready for post-baseline activation |
+| `synthesis_feedback` | `id` TEXT (UUID) | Query feedback — `query_id`, `chunk_id`, `feedback_type` (CHECK: helpful/unhelpful/irrelevant/hallucinated), `comment`, `created_at` · empty, ready for route wiring |
 
 ---
 

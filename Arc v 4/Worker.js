@@ -2714,10 +2714,16 @@ async function handleRequeueMerge(request, env, corsHeaders) {
     const limit = body.limit ? parseInt(body.limit) : 250;
     let requeued = 0;
     if (body.target === 'remerge') {
-      // Re-merge cases already deep_enriched=1 — reset then enqueue
-      // If citation provided, scope to that case only; otherwise full corpus
+      // Re-merge cases — reset deep_enriched then enqueue MERGE message.
+      // Scoping: body.citations (array) > body.citation (string) > full corpus.
+      // When citations are explicitly provided, skip deep_enriched constraint
+      // (force remerge regardless of current state).
       let query, bindings;
-      if (body.citation) {
+      if (Array.isArray(body.citations) && body.citations.length > 0) {
+        const placeholders = body.citations.map(() => '?').join(',');
+        query = `SELECT citation FROM cases WHERE citation IN (${placeholders}) LIMIT ?`;
+        bindings = [...body.citations, limit];
+      } else if (body.citation) {
         query = `SELECT citation FROM cases WHERE deep_enriched = 1 AND citation = ? LIMIT ?`;
         bindings = [body.citation, limit];
       } else {

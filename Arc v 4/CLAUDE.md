@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 17 April 2026 (end of session 65) · Supersedes all prior versions
+Updated: 17 April 2026 (end of session 67) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -52,7 +52,7 @@ Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongsid
 | D1 no citation column | secondary_sources PK is `id` (TEXT) — no `citation` column. Never query `WHERE citation =`. |
 | callWorkersAI fix | reasoning_content fallback added — if content is null, falls back to reasoning_content before text. Fixes Qwen3 thinking mode responses. |
 | poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
-| BM25_FTS_ENABLED | Kill switch REMOVED — variable does not exist in current server.py. BM25/FTS5 pass runs unconditionally when section references are present. Confirmed session 27. |
+| BM25_FTS_ENABLED | Kill switch REMOVED — variable does not exist. TWO FTS5/BM25 passes in server.py: (1) secondary_sources FTS5 — LIVE, gates on section refs detected in query (via fetch_sections_by_reference / fts-search Worker route); (2) case_chunks_fts BM25 pass — session 65 changelog claims deployed but ABSENT from both local and VPS server.py — DEPLOY GAP, needs re-deploy. BM25_SCORE_KEYWORD constant defined at line 31 but currently unused. |
 | Pass 3 threshold | Lowered 0.35 → 0.25, limit raised 4 → 8 (session 28) — secondary source recall gap diagnosed via Ratten v R not surfacing · chunk_id debug log added to Pass 3 in server.py (fires unconditionally) |
 | VPS doc ID format | server.py `post_chunk_to_worker` generates citation-derived IDs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format · both are valid · if duplicate rows appear for VPS-uploaded docs, check for GPT generating slightly different citation strings on re-run |
 | update-secondary-raw | POST /api/pipeline/update-secondary-raw — updates raw_text + resets embedded=0 on secondary_sources row · requires X-Nexus-Key · body: {id, raw_text} · deployed session 28 worker.js version 65017090 |
@@ -189,7 +189,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 17 April 2026 (end of session 65)
+## SYSTEM STATE — 17 April 2026 (end of session 67)
 
 | Component | Status |
 |---|---|
@@ -197,13 +197,17 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 | D1 cases | 1,820 (scraper running) · 1,819 deep_enriched=1 |
 | D1 case_chunks | 25,253 total · embedded=0: 25,236 (re-embed running with vocabulary anchors) |
 | D1 secondary_sources | 1,199 total · embedded=0: 1,199 (re-embed running with vocabulary anchors) |
-| D1 case_chunks_fts | 25,236 rows · NEW — FTS5 index on case chunk enriched_text |
-| D1 query_log | 0 rows · NEW — query logging table live, wired in worker.js |
-| enrichment_poller | RUNNING — vocabulary anchor functions deployed |
+| D1 case_chunks_fts | 25,236 rows — FTS5 index on case chunk enriched_text |
+| D1 query_log | 0 rows — query logging table live, wired in worker.js (INSERT may not be firing — see Task K) |
+| D1 quarantined_chunks | 0 rows · NEW — stub quarantine table with signal columns, ready for post-baseline activation |
+| D1 synthesis_feedback | 0 rows · NEW — feedback loop table with type constraint, ready for route wiring |
+| D1 case_citations | 5,340 rows |
+| D1 case_legislation_refs | 4,056 rows |
+| enrichment_poller | RUNNING — vocabulary anchor functions deployed · DO NOT MODIFY OR RESTART until re-embed completes |
 | Cloudflare Queue | drained |
 | Scraper | RUNNING |
 | arcanthyr.com | Live |
-| Subject matter filter | LIVE · SM_PENALTY=0.65 · Domain filter UI LIVE (ALL/CRIMINAL/ADMINISTRATIVE/CIVIL) |
+| Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE (ALL/CRIMINAL/ADMINISTRATIVE/CIVIL) |
 | Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · RE-RUN REQUIRED after re-embed completes |
 | procedure_notes | 319 success / ~340 not_sentencing |
 
@@ -238,13 +242,13 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 ## OUTSTANDING PRIORITIES
 
 1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (25,236 case chunks + 1,199 secondary sources re-embedding with vocabulary anchors). When both `embedded=0` counts hit zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
-2. **Stub quarantine (Step 1 from session 64)** — soft-quarantine secondary_source rows with raw_text <300 chars; filter flag in Qdrant + quarantined_chunks D1 table; not hard delete. 253 stubs identified. Build after re-embed baseline confirms vocabulary anchor impact.
-3. **Legislation whitelist/penalty (Step 2 from session 64)** — Core Criminal Acts exempt from SM_PENALTY; adjacent Acts penalised. Build after stub quarantine baselined.
+2. **Stub quarantine (Step 1 from session 64)** — soft-quarantine secondary_source rows with raw_text <300 chars; filter flag in Qdrant + quarantined_chunks D1 table (already created session 66); not hard delete. 253 stubs identified. Build after re-embed baseline confirms vocabulary anchor impact.
+3. **case_chunks_fts BM25 pass — DEPLOY GAP** — session 65 changelog claims deployed but code is ABSENT from both local and VPS server.py. BM25_SCORE_KEYWORD constant defined at line 31 but unused. Re-implement after re-embed completes so baseline can isolate its impact. Third occurrence of deploy-gap pattern (sessions 25, 27, 65).
 4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. server.py change only. Evaluate after vocabulary anchors + FTS5 are baselined.
-5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured.
+5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped.
 6. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
-7. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · prerequisite: scraper completion + subject_matter filter deployed
-8. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · prerequisite: scraper completion (network too sparse at current volume)
+7. **Stare decisis UI layer (Task H)** — CC session 67 found StareDecisisSection.jsx already exists and is wired into case detail reading pane. Verify it's rendering correctly and data is populating from case_citations/case_legislation_refs. May already be complete.
+8. **Query log INSERT verification (Task K)** — query_log table has 0 rows despite being wired in session 65. CC confirmed INSERT statement exists in worker.js but table is still empty. Check if the INSERT is firing correctly — may be in a dead code path or behind a condition that never triggers.
 
 ---
 
@@ -1475,3 +1479,75 @@ Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Bac
 - enrichment_poller.py: vocabulary anchor functions deployed, container running
 - server.py: case chunks FTS5 BM25 pass deployed, agent-general healthy
 - Git commit: `bd3a22c`
+
+## CHANGES THIS SESSION (sessions 66-67) — 17 April 2026
+
+### Legislation whitelist / SM_PENALTY — DEPLOYED (server.py)
+- Extended `apply_sm_penalty()` to penalise non-core legislation chunks — previously only `case_chunk` types were penalised, all legislation passed through untouched
+- Three-tier penalty system: Core Criminal Acts (Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act) → score 1.0 (exempt); Adjacent Acts with keyword bridge (Misuse of Drugs, Police Offences, Road Safety, Firearms, Family Violence) → 0.85 penalty unless query contains matching keywords (bridge to 1.0); all other legislation → SM_PENALTY 0.65
+- `LEG_WHITELIST_CORE` set, `LEG_WHITELIST_ADJACENT` dict with per-Act keyword sets, `LEG_PENALTY_ADJACENT = 0.85` — all added as server.py globals
+- `apply_sm_penalty(chunk, query_text_lower='')` signature updated — query_text_lower threaded from both Pass 1 and Pass 2 call sites
+- Legislation penalty log line added to Pass 1 loop
+- Deployed via SCP + force-recreate agent-general · health check confirmed OK
+- Why: Q1 (common assault) and Q11 (s138 voir dire) regressions caused by non-criminal legislation chunks (Misuse of Drugs Act s1, various Evidence Act sections) scoring above correct doctrine chunks with zero penalty
+
+### handleRequeueMerge citation scoping — DEPLOYED (worker.js)
+- `body.citations` array parameter added — when present, queries `WHERE citation IN (...)` without `deep_enriched` constraint (explicit targeting skips the gate)
+- Existing `body.citation` (singular) behaviour preserved
+- Worker deployed as version `ff31b1af`, then updated to `9423193d` in CC session 67
+- Why: enables targeted remerge of specific cases without the deep_enriched=1 filter that blocked explicit-citation re-runs
+
+### D1 schema additions (read-only session, additive only)
+- **quarantined_chunks table** — created via Cloudflare MCP D1. Columns: id, citation, chunk_index, quarantine_date, signal_length, signal_overlap, signal_truncation, reviewed, review_date, review_action. Indexes on citation and reviewed. Empty, ready for post-baseline stub quarantine activation.
+- **synthesis_feedback table** — created via Cloudflare MCP D1. Columns: id, query_id, chunk_id, feedback_type (CHECK: helpful/unhelpful/irrelevant/hallucinated), comment, created_at. Indexes on query_id and chunk_id. Empty, ready for route wiring.
+
+### subject_matter audit (D1 read-only)
+- 26 `R v` / `Tasmania v` / `Police v` cases with non-criminal subject_matter reviewed
+- All correctly classified (administrative/civil) — workers comp, planning tribunal, coronial, costs disputes
+- Tasmania v Rattigan [2021] TASSC 28 confirmed correctly classified as administrative (workers compensation)
+- No new misclassifications found — full audit COMPLETE
+
+### Query log empty — diagnosed (Task K, CC session 67)
+- query_log table has 0 rows. Table is live. INSERT statement exists in worker.js.
+- CC confirmed the INSERT is in the live code path but table remains empty — check if INSERT is actually firing (may be behind a condition that never triggers, or swallowed by catch block)
+
+### BM25_FTS_ENABLED session rule updated (Task K, CC session 67)
+- Session rule text updated to reflect both FTS5 passes and the deploy gap: secondary_sources FTS5 is LIVE; case_chunks_fts BM25 pass is ABSENT from server.py despite session 65 claiming it deployed
+- BM25_SCORE_KEYWORD constant defined but unused — third occurrence of deploy-gap pattern (sessions 25, 27, 65)
+
+### Task F — TTS route READ + DEFER (CC session 67)
+- CC read server.py `/tts` route, worker.js `handleTts`/`/api/tts`, and tts.js
+- `playTTS()` in tts.js falls back to `/api/tts` for non-preset phrases (reading query responses aloud)
+- Decision: DEFER — do NOT remove the route. Live synthesis still needed for non-ambient clips.
+
+### Task H — Stare Decisis UI (CC session 67)
+- CC found `StareDecisisSection.jsx` already exists and is wired into case detail reading pane
+- Worker routes for case_citations and case_legislation_refs already exist
+- No new code written — task was already complete from a prior session
+
+### Task I — Auto-populate citation + case name on upload (CC session 67)
+- Implemented in Upload.jsx Cases tab file input handler
+- Scans first 1,000 chars for AustLII citation pattern and case name pattern
+- Auto-fills citation, court (derived from court code via courtMap), and case name
+- Frontend-only change
+
+### Task J — RTF upload support (CC session 67)
+- `.rtf` added to accept list on Secondary Sources tab
+- `stripRtf()` function added to Upload.jsx — strips RTF header, font table, color table, control words, braces
+- Console.warn on RTF detection for user verification
+- Frontend-only change
+
+### Task L — Corpus health check state (CC session 67)
+- CC read corpus_health_check.py via hex-ssh — confirmed core functionality present (clustering, contradiction detection, gap detection, D1 writes)
+- Last run: 15 April 2026 — 13 clusters, 1 high-confidence contradiction, 28 intra-cluster gaps
+- Monthly cron active
+- Confirmed complete, minor hardening deferred (no token overflow guard, no clustering instability diff, no idempotency key, no local JSON fallback)
+
+### Worker.js deployed — version 9423193d
+- Includes handleRequeueMerge citation scoping fix and all Task I/J frontend changes
+- Frontend build included in same deploy
+
+### Legislation whitelist verified working
+- Step 1: 1 non-core legislation chunk correctly penalised (Misuse of Drugs Act s1)
+- Step 2: 7 legislation chunks penalised on broader test
+- Step 3: enrichment_poller confirmed untouched (constraint honoured)
