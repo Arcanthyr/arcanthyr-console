@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 15 April 2026 (end of session 62). Upload every session alongside CLAUDE.md.*
+*Updated: 17 April 2026 (end of session 65). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -535,6 +535,8 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
 | `legislation_sections` | `id` TEXT | `leg_id`, `section_number`, `heading`, `text`, `embedded` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
+| `query_log` | `id` TEXT (UUID) | `query_text`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version` |
+| `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
 
@@ -573,6 +575,17 @@ Volume-mounted at `./agent-general/src:/app/src`. Runs as permanent Docker servi
 **Default batch:** 50 · **Loop sleep:** 15 seconds
 
 **CONCEPTS header strip (session 46):** Poller strips `[CONCEPTS:...]` and `Concepts:...` header lines from the start of embed text before the Ollama embedding call and before populating the Qdrant `text` payload field. Regex: `re.sub(r'^\[?concepts:[^\]\n]*\]?\s*\n+', '', text, flags=re.IGNORECASE)`. Deployed at line 695 of enrichment_poller.py. Root cause: for secondary sources with NULL enriched_text, the CONCEPTS header was the dominant embedding signal, drifting vectors away from the actual doctrine content.
+
+### Embedding-time vocabulary prepend (session 65)
+
+Two functions in enrichment_poller.py construct retrieval-optimized embedding text by extracting stored metadata and prepending a "Key terms:" anchor before the embedding model sees the text:
+
+- `build_secondary_embedding_text(raw_text, enriched_text=None)` — extracts CONCEPTS, ACT, CASE, TOPIC from raw_text header lines; builds "Key terms: {act}; {concepts}; {case_ref}." anchor; prepends before body (enriched_text if available, otherwise stripped raw_text)
+- `build_case_chunk_embedding_text(enriched_text, principles_json_str)` — extracts legislation refs (first 3) and key_authorities names (first 3) from principles_json; builds "Key terms:" anchor; prepends before enriched_text
+
+The anchor is for the embedding model ONLY. Qdrant `text` payload remains body-only (strip_frontmatter result). The anchor is NOT stored in D1 — it's computed on the fly.
+
+Debug log: `[EMBED_ANCHOR]` confirms anchor presence and embed_text length per chunk.
 
 ### Embedding text contamination rule (session 51)
 
@@ -661,11 +674,18 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/requeue-chunks` | POST | Re-enqueues done=0 chunks · accepts `{"limit":N}` |
 | `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
+| `/api/pipeline/fts-search-chunks` | GET | FTS5 search over case_chunks_fts · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet |
 | `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
 | `/api/admin/health-reports` | GET | List all health check reports (summary only, no report_json), DESC, LIMIT 24 · X-Nexus-Key |
 | `/api/admin/health-reports/:id` | GET | Single health check report including full report_json · X-Nexus-Key |
 | `/api/admin/health-reports` | POST | Write monthly health check report (id, summary_text, report_json, cluster_count, contradiction_count, gap_count) · X-Nexus-Key |
 | `/api/admin/health-clusters` | POST | Write cluster assignments batch (run_id, run_date, assignments[]) via D1 batch() · X-Nexus-Key |
+
+### Query logging (session 65)
+
+query_log table populated by inline INSERT in both `handleLegalQuery` (Claude API path) and `handleLegalQueryWorkersAI` (Workers AI path). Fires after retrieval results assembled, before synthesis LLM call. Non-fatal — catch block logs error but does not break queries. client_version field enables A/B comparison across deploys.
+
+Indexes: timestamp, query_type, bm25_fired. Analysis queries documented in `The Vault/arcanthyr-query-logging-and-collision-analysis.md`.
 
 ### xref_agent.py (session 57)
 - Location: VPS `~/ai-stack/agent-general/src/xref_agent.py`

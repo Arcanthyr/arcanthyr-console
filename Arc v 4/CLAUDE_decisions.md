@@ -3607,3 +3607,21 @@ Rationale: Uniform legislation exemption (current state) allows Misuse of Drugs 
 **Enrichment prompt fix: vocabulary front-loading**
 Decision: Master Prompt and CHUNK prompt v3 to be revised to instruct GPT-4o-mini to open body prose with explicit statute section, defined doctrine term, and key case citations rather than generic synonyms.
 Rationale: Embedding vector determined entirely by body prose (Concepts strip permanent). Body prose that opens with "the provision confers a discretion" rather than "s138 Evidence Act confers a discretion to exclude improperly obtained evidence" produces a vector that drifts to generic legal space. Front-loading specialist vocabulary is the only way to ensure the correct chunk ranks correctly after the strip. Opus consultation prompt prepared and referred.
+
+## Session 65 decisions — 17 April 2026
+
+**[2026-04-17]** *Vocabulary anchoring at embedding time, not enrichment time* — score 10, architectural
+
+> The Opus consultation (session 64) diagnosed vocabulary anchoring as an enrichment prompt problem. The system review (session 65) reframed it: the metadata needed for anchoring (CONCEPTS, ACT, CASE, legislation, key_authorities) is already extracted and stored in D1. It's discarded at embedding time by strip_frontmatter(). The fix is to extract it and prepend as a "Key terms:" anchor before the embedding model sees the text. This is better than enrichment prompt changes because: (1) applies retroactively to all existing content via re-embed, (2) iteratable without GPT cost, (3) doesn't conflict with Master Prompt fidelity or CHUNK v3 classification logic, (4) metadata quality is already good.
+
+**[2026-04-17]** *Case chunks FTS5 index — closing the BM25 coverage gap* — score 8, retrieval
+
+> Case chunks had zero BM25/keyword coverage. Secondary sources had FTS5 since session 3. Named-section queries ("s 138 Evidence Act") and named-case queries relied entirely on vector similarity for case chunk retrieval. With 25,000+ case chunks, this was a significant gap. Added case_chunks_fts (FTS5, porter tokenizer) with a parallel BM25 pass in server.py and a new fts-search-chunks Worker route.
+
+**[2026-04-17]** *Query logging as infrastructure before optimization* — score 7, operational
+
+> Deployed query_log table to capture every retrieval query with enough context for post-hoc analysis: paraphrastic vs doctrine-naming split, weak retrieval detection (top score < 0.55), and before/after comparison via client_version. Wired inline in both query handlers. Non-fatal pattern — logging failure cannot break queries.
+
+**[2026-04-17]** *Cowork writes, CC deploys* — score 6, workflow
+
+> Established workflow split: Cowork (claude.ai) handles all analysis, D1 queries via Cloudflare MCP, and file edits in the Arc v 4 mount. CC handles deploy commands only (wrangler deploy, SCP, docker compose). Eliminates lengthy CC supplementary prompts — CC gets surgical edits instead of page-long instructions. hex-ssh MCP for Cowork would close the remaining VPS read gap.

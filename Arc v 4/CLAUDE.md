@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 14 April 2026 (end of session 55) · Supersedes all prior versions
+Updated: 17 April 2026 (end of session 65) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
 ---
@@ -189,20 +189,22 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-## SYSTEM STATE — 15 April 2026 (end of session 61)
+## SYSTEM STATE — 17 April 2026 (end of session 65)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | vectors updating · case chunk re-embed in progress (3,849 backlog) |
-| D1 cases | 1,573 (scraper running) · all deep_enriched=1 · supreme 1,204 · cca 203 · fullcourt 97 · magistrates 69 |
-| D1 case_chunks | embedded=0: 3,849 (poller running) |
-| D1 secondary_sources | 1,201 total · all embedded=1 |
-| enrichment_poller | RUNNING |
+| Qdrant general-docs-v2 | FULL RE-EMBED IN PROGRESS — vocabulary anchor prepend deployed, ~26,400 chunks re-embedding |
+| D1 cases | 1,820 (scraper running) · 1,819 deep_enriched=1 |
+| D1 case_chunks | 25,253 total · embedded=0: 25,236 (re-embed running with vocabulary anchors) |
+| D1 secondary_sources | 1,199 total · embedded=0: 1,199 (re-embed running with vocabulary anchors) |
+| D1 case_chunks_fts | 25,236 rows · NEW — FTS5 index on case chunk enriched_text |
+| D1 query_log | 0 rows · NEW — query logging table live, wired in worker.js |
+| enrichment_poller | RUNNING — vocabulary anchor functions deployed |
 | Cloudflare Queue | drained |
 | Scraper | RUNNING |
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · Domain filter UI LIVE (ALL/CRIMINAL/ADMINISTRATIVE/CIVIL) |
-| Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · regressions: Q1 (common assault), Q11 (s138 voir dire) |
+| Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · RE-RUN REQUIRED after re-embed completes |
 | procedure_notes | 319 success / ~340 not_sentencing |
 
 ---
@@ -235,10 +237,14 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ## OUTSTANDING PRIORITIES
 
-6. **Pass 2 (Qwen3) prompt quality review** — DEFERRED · low urgency since merge synthesis bypasses Pass 2 output entirely · PRINCIPLES_SPEC never updated for Qwen3-30b but has no practical effect
-7. **subject_matter filter — DEPLOYED session 51 (cache-based penalty)** — SM_PENALTY=0.65 applied to non-criminal/non-mixed case_chunk results in Pass 1 and Pass 2 via hourly in-memory cache from `GET /api/pipeline/case-subjects` Worker route · misclassification audit partially complete: Pilling cases correctly administrative (workers comp — not criminal); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69) · full audit recommended before Option A (Qdrant payload re-embed) — low urgency now that cache penalty is delivering results · Tasmania v Rattigan audit status unverified this session
-9. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · deploy on VPS as public HTTPS endpoint · connect via claude.ai Customize → Connectors · per-user API key auth · buildable in one session · prerequisite: scraper completion + subject_matter filter deployed so MCP queries return clean criminal-scoped results
-10. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · produces ranked authority summaries per topic · ingest as secondary_source chunks via existing pipeline · no embedding changes · no new infrastructure · run quarterly as corpus maintenance cron · prerequisite: scraper completion (network too sparse at current volume)
+1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (25,236 case chunks + 1,199 secondary sources re-embedding with vocabulary anchors). When both `embedded=0` counts hit zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
+2. **Stub quarantine (Step 1 from session 64)** — soft-quarantine secondary_source rows with raw_text <300 chars; filter flag in Qdrant + quarantined_chunks D1 table; not hard delete. 253 stubs identified. Build after re-embed baseline confirms vocabulary anchor impact.
+3. **Legislation whitelist/penalty (Step 2 from session 64)** — Core Criminal Acts exempt from SM_PENALTY; adjacent Acts penalised. Build after stub quarantine baselined.
+4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. server.py change only. Evaluate after vocabulary anchors + FTS5 are baselined.
+5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured.
+6. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
+7. **Arcanthyr MCP server — post-scraper milestone** — thin wrapper over existing server.py search + D1 routes · prerequisite: scraper completion + subject_matter filter deployed
+8. **Citation authority agent — post-scraper milestone** — pure SQL traversal over authorities_extracted · prerequisite: scraper completion (network too sparse at current volume)
 
 ---
 
@@ -263,8 +269,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
-- **Q1 retrieval regression (common assault)** — s35(1) Police Offences "Mental Elements" chunk exists and scores 0.4759 but Misuse of Drugs Act s1 is scoring higher (0.4966) at pos 1. Was a pass in session 51. Likely CONCEPTS strip side-effect from session 46 — assault chunk lost semantic disambiguation. Fix: add domain anchor sentence to competing drug chunks or to the assault chunk itself (following embedding contamination rule: only anchor on competing chunks).
-- **Q11 retrieval regression (s138 voir dire)** — was PASS after session 36 CONCEPTS enrichment. Now returning s134/s82/s91 (Evidence Act exclusions, wrong sections). s138 chunk vocabulary must have narrowed during the session 46 mass re-embed. Fix: re-enrich the s138 chunk CONCEPTS to include explicit "voir dire", "improperly obtained", "s138" terms and reset embedded=0.
+- **Q1 retrieval regression (common assault)** — Misuse of Drugs Act s1 scoring above assault chunk. Vocabulary anchor prepend (session 65) may resolve by anchoring both chunks to their correct domains. Re-test after re-embed completes.
+- **Q11 retrieval regression (s138 voir dire)** — returning wrong Evidence Act sections. Vocabulary anchor prepend (session 65) will re-inject CONCEPTS terms (s138, voir dire, improperly obtained) at embedding time without re-enrichment. Re-test after re-embed completes.
 
 ---
 
@@ -1405,3 +1411,67 @@ Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Bac
 - Enrichment prompt fix — pending Opus session
 - Vocab injection pass (Step 3) — pending Opus session + prompt fix
 - Q27 (provocation), Q31 (right to silence) — confirmed corpus gaps, need authorship
+
+## CHANGES THIS SESSION (session 65) — 17 April 2026
+
+### Full system review — enrichment and retrieval architecture
+- Reviewed Opus vocabulary anchoring consultation, wiki articles (9 RAG/retrieval articles), and full worker.js code
+- Core finding: vocabulary anchoring problem should be solved at EMBEDDING TIME, not enrichment time — metadata (CONCEPTS, ACT, CASE, legislation, key_authorities) already extracted and stored, just discarded before embedding
+- Full review document written: `The Vault/arcanthyr-system-review-enrichment-and-retrieval.md` — 8 prioritised recommendations
+- Query logging schema and collision cluster analysis written: `The Vault/arcanthyr-query-logging-and-collision-analysis.md`
+
+### Embedding-time vocabulary prepend — DEPLOYED (enrichment_poller.py)
+- Two new functions: `build_secondary_embedding_text(raw_text, enriched_text)` and `build_case_chunk_embedding_text(enriched_text, principles_json_str)`
+- Secondary sources: extracts CONCEPTS, ACT, CASE, TOPIC from raw_text header lines, builds "Key terms:" anchor sentence, prepends before body text
+- Case chunks: extracts legislation refs and key_authorities from principles_json, builds "Key terms:" anchor, prepends before enriched_text
+- Anchor is for embedding model only — Qdrant `text` payload stays body-only
+- Debug logging: `[EMBED_ANCHOR]` log line confirms anchor presence per chunk
+- Why: gives every existing chunk better vectors on re-embed without re-enrichment — iteratable by changing the function and re-embedding
+
+### case_chunks_fts — NEW FTS5 index (D1 + worker.js + server.py)
+- D1: `CREATE VIRTUAL TABLE case_chunks_fts USING fts5(chunk_id UNINDEXED, citation UNINDEXED, enriched_text, tokenize='porter')`
+- Backfilled 25,236 rows from existing case_chunks with enriched_text
+- worker.js: FTS5 sync added to CHUNK handler — INSERT OR REPLACE into case_chunks_fts after enriched_text write
+- worker.js: new route `GET /api/pipeline/fts-search-chunks` — FTS5 MATCH query on case_chunks_fts, X-Nexus-Key auth
+- server.py: case chunks BM25 pass added — queries fts-search-chunks for section refs, assigns BM25_SCORE_EXACT_SECTION, boosts existing chunks or appends new ones
+- Why: case chunks had zero BM25/keyword coverage — named-section and named-case queries were vector-only on the case chunk side
+
+### query_log — NEW query logging table (D1 + worker.js)
+- D1: `query_log` table with id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, query_type, target_chunk_id, target_rank, session_id, client_version
+- 3 indexes: timestamp, query_type, bm25_fired
+- worker.js: INSERT into query_log in both handleLegalQuery (Claude API) and handleLegalQueryWorkersAI (Workers AI) after retrieval, before synthesis
+- client_version set to 'v65-system-review' for A/B comparison post re-embed
+- Why: infrastructure for measuring retrieval quality — paraphrastic vs doctrine-naming split, weak retrieval detection, before/after comparison
+
+### CHUNK v3 enriched_text spec tightened (worker.js, forward-only)
+- Reasoning chunk opening sentence spec changed from "Open with one sentence identifying the legal issue addressed" to explicit requirement: name the statute section, defined doctrine, or authoritative case — no generic descriptions
+- Why: prevents future enriched_text from using paraphrastic framing that drifts vectors to generic space
+
+### Master Prompt TOPIC field tightened (worker.js, forward-only)
+- TOPIC instruction now requires specific statute section number or defined doctrine term
+- Why: TOPIC feeds into the embedding-time anchor (recommendation #1) — its quality directly affects retrieval
+
+### CHUNK v3 subject_matter context hint (worker.js, forward-only)
+- Added `Subject matter (from metadata): ${caseRow?.subject_matter}` to CHUNK handler userContent
+- Why: provides context to reduce per-chunk subject_matter misclassification without changing prompt instructions
+
+### fetch-case-chunks-for-embedding — principles_json added to SELECT (worker.js)
+- Route now returns cc.principles_json alongside enriched_text
+- Why: dependency for build_case_chunk_embedding_text() which extracts legislation and key_authorities from principles_json
+
+### Full re-embed triggered
+- `UPDATE secondary_sources SET embedded = 0` — 1,199 rows
+- `UPDATE case_chunks SET embedded = 0 WHERE enriched_text IS NOT NULL` — 25,236 rows
+- Poller re-embedding with vocabulary anchors — ETA overnight completion
+- Why: all existing content benefits from vocabulary anchor prepend without re-enrichment
+
+### Cowork vs CC workflow clarified
+- Cowork (claude.ai) handles: architecture analysis, D1 queries via Cloudflare MCP, file reads/writes in Arc v 4 mount, document drafting
+- CC handles: wrangler deploy, SCP to VPS, docker compose commands
+- Going forward: Cowork writes all file edits, CC runs deploy commands only
+
+### Deployed versions
+- worker.js: `e1426f30`
+- enrichment_poller.py: vocabulary anchor functions deployed, container running
+- server.py: case chunks FTS5 BM25 pass deployed, agent-general healthy
+- Git commit: `bd3a22c`
