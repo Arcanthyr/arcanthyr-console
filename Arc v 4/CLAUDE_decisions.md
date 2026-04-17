@@ -3585,3 +3585,25 @@ Decision: restore `AND cc.enriched_text IS NOT NULL` gate to `fetch-case-chunks-
 
 **force-recreate vs restart for env changes**
 Decision: always use `docker compose up -d --force-recreate <service>` after any key rotation or env_file change. `docker compose restart` preserves the environment baked in at container creation — the new key never reaches the running process. Documented as a session rule to prevent recurrence.
+
+## Session 64 decisions — 17 April 2026
+
+**CONCEPTS strip confirmed permanent**
+Decision: Do not restore Concepts headers for future content. Strip stays in enrichment_poller.py.
+Rationale: Session 46 diagnosis was correct — headers pollute vectors when body prose is already rich. The failure mode is not the strip but the assumption that all body prose is self-sufficient. The fix is upstream in enrichment prompts, not restoring the header dependency.
+
+**Stub quarantine: soft-quarantine not hard delete**
+Decision: Stub chunks identified by the detector go to a quarantined_chunks D1 table and are filter-flagged in Qdrant, not hard-deleted from either store.
+Rationale: Hard Qdrant deletes are irreversible without re-embedding. Corpus impact of quarantine needs verification via baseline gate before permanent removal. Reversibility is non-negotiable given two previous incidents of silent corpus damage (session 26 payload bug, session 46 CONCEPTS strip side-effect).
+
+**Do not use GPT-4o-mini to expand stub content from titles**
+Decision: Stubs where source is unavailable are quarantined or deleted, not expanded via LLM.
+Rationale: LLM synthesis without source material for legal content carries unacceptable hallucination risk. A fabricated legal proposition that enters the retrieval layer becomes citable fiction. Opus flagged this explicitly. Zero tolerance.
+
+**Legislation penalty: whitelist approach**
+Decision: Extend SM_PENALTY to legislation chunks except a whitelist of Core Criminal Acts. Adjacent Acts penalised unless keyword bridge matches query topic.
+Rationale: Uniform legislation exemption (current state) allows Misuse of Drugs Act s1 to outrank correct common assault chunks (Q1 confirmed regression). Uniform extension of penalty would silently kill correct Evidence Act / Criminal Code hits. Whitelist is the only approach that fixes the regression without introducing new false negatives.
+
+**Enrichment prompt fix: vocabulary front-loading**
+Decision: Master Prompt and CHUNK prompt v3 to be revised to instruct GPT-4o-mini to open body prose with explicit statute section, defined doctrine term, and key case citations rather than generic synonyms.
+Rationale: Embedding vector determined entirely by body prose (Concepts strip permanent). Body prose that opens with "the provision confers a discretion" rather than "s138 Evidence Act confers a discretion to exclude improperly obtained evidence" produces a vector that drifts to generic legal space. Front-loading specialist vocabulary is the only way to ensure the correct chunk ranks correctly after the strip. Opus consultation prompt prepared and referred.

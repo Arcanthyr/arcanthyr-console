@@ -202,7 +202,7 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 | Scraper | RUNNING |
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · Domain filter UI LIVE (ALL/CRIMINAL/ADMINISTRATIVE/CIVIL) |
-| Baseline (31 queries) | BROKEN — returns 0 chunks after NEXUS rotation · fix in progress |
+| Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · regressions: Q1 (common assault), Q11 (s138 voir dire) |
 | procedure_notes | 319 success / ~340 not_sentencing |
 
 ---
@@ -263,7 +263,8 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
-- **Retrieval baseline broken** — all 31 queries return 0 chunks after NEXUS rotation · direct curl with pasted key works · script KEY extraction fixed (env path + cut -d= -f2-) but still failing at session close · unresolved · do not rely on baseline results until diagnosed next session
+- **Q1 retrieval regression (common assault)** — s35(1) Police Offences "Mental Elements" chunk exists and scores 0.4759 but Misuse of Drugs Act s1 is scoring higher (0.4966) at pos 1. Was a pass in session 51. Likely CONCEPTS strip side-effect from session 46 — assault chunk lost semantic disambiguation. Fix: add domain anchor sentence to competing drug chunks or to the assault chunk itself (following embedding contamination rule: only anchor on competing chunks).
+- **Q11 retrieval regression (s138 voir dire)** — was PASS after session 36 CONCEPTS enrichment. Now returning s134/s82/s91 (Evidence Act exclusions, wrong sections). s138 chunk vocabulary must have narrowed during the session 46 mass re-embed. Fix: re-enrich the s138 chunk CONCEPTS to include explicit "voir dire", "improperly obtained", "s138" terms and reset embedded=0.
 
 ---
 
@@ -1353,3 +1354,54 @@ Cases: 1,492. Case chunks: ~21,458 total. Embed backlog: 184 (Part 3 re-embed + 
 
 ### Platform state
 Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Backlog 3,794 at session close. Secondary sources fully embedded (backlog 0). Qdrant baseline 24,008 points.
+
+## CHANGES THIS SESSION (session 64) — 17 April 2026
+
+### Retrieval baseline — confirmed fixed, stale BROKEN flag cleared
+- CLAUDE.md "BROKEN" flag on retrieval_baseline.sh was stale — session 63 fix (correct env path + cut -d= -f2-) was confirmed live on VPS this session via 4-step diagnostic
+- Direct curl, manual KEY replication, and KEY extraction all confirmed working
+- Baseline script is fully operational — do not mark as broken
+
+### Retrieval baseline — full 31-query run completed (session 64 baseline)
+- Score: 10 pass / 13 partial / 8 fail (Q1–Q31)
+- Previous comparable baseline (April 11, Q1–Q18 only): 10 pass / 5 partial / 0 fail
+- New failures confirmed: Q11 (s138 voir dire), Q13 (tendency notice objection), Q16 (Neill-Fraser DNA), Q23 (fitness to stand trial), Q1 regression (common assault)
+- Q27, Q31 confirmed corpus gaps (provocation/manslaughter, right to silence)
+- Baseline saved as ~/retrieval_baseline_results_apr16.txt on VPS
+
+### Root cause diagnosis — two primary failure modes identified
+- **Failure Mode A (stub chunks):** Two confirmed offenders in secondary_sources:
+  - `"Stealing by Finding - Definition"` — raw_text ~70 chars, generic legal vocabulary, surfaces on Q19/Q23
+  - `"Wilson v Judges [2025] TASSC 10 - Automatism summary"` — truncated/corrupt body (~100 chars), "burden of proof/medical evidence" vocabulary surfaces on Q13/Q16
+  - 253 secondary_source rows confirmed under 300 chars raw_text (stub universe)
+  - Wilson v Judges is Failure Mode A′ (corrupt ingestion, not thin source) — fix is re-ingest, not expand
+- **Failure Mode C (legislation exempt from SM_PENALTY):** Q11 and Q1 caused by legislation chunks (s88/s52/s56; Misuse of Drugs Act s1) scoring above correct secondary source chunks with no penalty
+- Failure Mode B (vocab-sparse prose / CONCEPTS strip victim) was NOT confirmed for known regression queries — s138 chunks and tendency notice chunks both have rich body prose containing specialist vocabulary already
+
+### CONCEPTS strip — diagnosis updated
+- CONCEPTS strip in poller (session 46) was correct and stays
+- CONCEPTS strings are PRESERVED in D1 raw_text for 1,081/1,199 secondary source rows (90%)
+- The strip only removes them from the embedding call — raw_text in D1 is untouched
+- Session 46 assumption that "all body prose is rich enough to stand alone" was partially wrong — 253 thin chunks exist that depended on CONCEPTS for embedding signal
+- True fix: body prose must be self-sufficient; specialist vocabulary should be front-loaded in body, not patched via header
+
+### Enrichment prompt fix — referred to Opus
+- Diagnosis: Master Prompt and CHUNK prompt v3 do not consistently instruct GPT-4o-mini to front-load specialist vocabulary (statute sections, defined doctrine terms, case citations) in opening sentences
+- Generic synonyms ("the provision", "the rule") are used instead of specific terms ("s138", "tendency notice requirements")
+- Full structured Opus consultation prompt prepared and handed to Tom — to be taken to fresh Opus session
+- Opus to advise: prompt additions for both Master Prompt and CHUNK v3, validation test design, retroactive fix for existing thin chunks using preserved Concepts data
+
+### Opus retrieval regression review — key conclusions
+- Five failure modes confirmed (A, A′, B, C, D) — A and C are the active levers
+- Do NOT use GPT-4o-mini to expand stubs from titles — hallucination risk for legal content, unacceptable
+- Stub remediation: soft-quarantine (filter flag in Qdrant + quarantined_chunks D1 table) not hard delete — reversible
+- Legislation penalty: whitelist approach — Core Criminal Acts (Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act) exempt; adjacent Acts (Misuse of Drugs, Police Offences etc.) penalised unless keyword bridge matches query
+- Sequencing: Step 0 (baseline freeze) → Step 1 (stub quarantine) → Step 2 (legislation whitelist) → Step 3 (vocab injection, deferred pending Opus prompt session) → Step 4 (re-baseline)
+- Step 3 cost is LOW: 1,081 rows have Concepts terms recoverable from raw_text — no LLM re-derivation needed for most rows
+
+### Outstanding after this session
+- Stub quarantine (Step 1) — not yet built
+- Legislation whitelist/penalty (Step 2) — not yet built
+- Enrichment prompt fix — pending Opus session
+- Vocab injection pass (Step 3) — pending Opus session + prompt fix
+- Q27 (provocation), Q31 (right to silence) — confirmed corpus gaps, need authorship

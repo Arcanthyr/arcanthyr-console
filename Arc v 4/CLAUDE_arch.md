@@ -734,7 +734,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - KEY is read from `~/ai-stack/.env.secrets` (not `.env` — `.env` does not contain secrets)
 - `cut -d= -f2-` required (not `cut -d= -f2`) — base64 keys end with `=` padding; `-f2` drops it, causing silent auth failure
 - Always `unset KEY` before running if KEY was manually exported in the current shell session
-- Baseline broken as of session 61 end — direct curl works, script still returns 0 chunks — unresolved
+- **Confirmed working as of session 64** — session 61/63 breakage (wrong env path + cut -d= -f2 stripping base64 padding) confirmed fixed session 63, verified session 64 via 4-step diagnostic · script reads KEY from ~/ai-stack/.env.secrets with cut -d= -f2- · always unset KEY before running if KEY was manually exported · current baseline: 10/13/8 (session 64, 31 queries) · saved at ~/retrieval_baseline_results_apr16.txt
 
 ### Word artifact cleanup
 
@@ -778,6 +778,11 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
+- **Retrieval regression fixes (session 64 — NEXT PRIORITY):**
+  - Step 1: Stub quarantine — soft-quarantine secondary_source rows with raw_text <300 chars AND truncation markers AND title-body overlap >0.6; filter flag in Qdrant (not hard delete); quarantined_chunks D1 table; re-run baseline gate: pass count ≥ 10, no pass→fail regressions
+  - Step 2: Legislation whitelist/penalty — Core Criminal Acts exempt from SM_PENALTY (Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act); adjacent Acts (Misuse of Drugs, Police Offences, Road Safety, Firearms, Family Violence) penalised at 0.65 (or 0.75); keyword bridge for adjacent Act exemption per query; re-run baseline gate: Q1 common assault and Q11 s138 must improve, no pass→fail regressions
+  - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2); deferred pending enrichment prompt Opus session
+  - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64
 - **subject_matter filter** — Part 1 (Worker route JOIN) confirmed deployed. Part 2 (poller metadata dict) deployed session 60. Part 3 (re-embed backlog ~7,046 chunks) in progress — poller writing correct payloads from session 60 onwards. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter on Pass 3 once backlog clears to 0.
 - **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
 - **Citation authority agent (xref_agent.py)** — COMPLETE. Tables populated: 5,340 case_citations, 4,056 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: stare decisis UI layer (see below).
