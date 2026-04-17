@@ -1491,7 +1491,7 @@ INSIDE "## FORMATTED CHUNKS":
 For each chunk, output EXACTLY this structure:
 
 # <Heading text - descriptive and specific to the doctrinal unit; NOT a summary sentence>
-[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <one of: annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line topic label using source-grounded language; may include "test is/requires/court considers" if supported>] [CONCEPTS: <comma-separated key terms present in the body; aim for ~5>] [CITATION: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}] [ACT: <Act name(s) if substantively discussed, else None>] [CASE: <case citation(s) if substantively discussed, else None>]
+[DOMAIN: Tasmanian Criminal Law] [CATEGORY: <one of: annotation | case authority | doctrine | checklist | practice note | legislation>] [TYPE: <same as CATEGORY>] [TOPIC: <one-line topic label; MUST include the specific statute section number (e.g. "s 138 Evidence Act 2001") or defined doctrine term (e.g. "tendency notice requirements") if one exists; may include "test is/requires/court considers" if supported by the source>] [CONCEPTS: <comma-separated key terms present in the body; aim for ~5>] [CITATION: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}] [ACT: <Act name(s) if substantively discussed, else None>] [CASE: <case citation(s) if substantively discussed, else None>]
 
 <Blank line>
 
@@ -1501,7 +1501,7 @@ METADATA FIELD RULES:
 - DOMAIN: always exactly "Tasmanian Criminal Law"
 - CATEGORY: choose the best fit from the canonical list (do NOT use procedure/script here)
 - TYPE: set equal to CATEGORY
-- TOPIC: one line; descriptive label only; MUST NOT replace the body; do not write "This chunk covers..."
+- TOPIC: one line; MUST include the specific statute section number or defined doctrine term if one exists; descriptive label only; MUST NOT replace the body; do not write "This chunk covers..."
 - CONCEPTS: include concepts actually present in the body (no invention); aim for about 5
 - CITATION slug: must be ASCII lower-case, digits and hyphens only, no spaces.
   Pattern: hoc-b{BLOCK_NUMBER}-m{CHUNK_INDEX}-{short-topic-kebab}
@@ -2028,6 +2028,24 @@ ${citationRules}
 
 ${answерNote}`;
 
+  // ── Query logging ─────────────────────────────────────────────
+  try {
+    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
+    const _refs = []; let _m;
+    const _qs = query.trim();
+    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
+    await env.DB.prepare(
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
+    ).bind(
+      crypto.randomUUID(), _qs, new Date().toISOString(),
+      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
+      JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
+      JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
+      JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
+      chunks.length, 'v65-system-review'
+    ).run();
+  } catch (_le) { console.error('query_log insert failed:', _le); }
+
   // ── Step 3: Call Claude API ──────────────────────────────────
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -2186,6 +2204,24 @@ async function handleLegalQueryWorkersAI(body, env) {
     : (sectionContext && !hasCases)
       ? `Explain ${sectionContext.label} clearly. Do not invent case law - note that no cases interpreting this section have been ingested yet.`
       : `Cite the case citation when relying on a specific case.`;
+
+  // ── Query logging ─────────────────────────────────────────────
+  try {
+    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
+    const _refs = []; let _m;
+    const _qs = query.trim();
+    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
+    await env.DB.prepare(
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
+    ).bind(
+      crypto.randomUUID(), _qs, new Date().toISOString(),
+      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
+      JSON.stringify(orderedChunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
+      JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
+      JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
+      orderedChunks.length, 'v65-system-review'
+    ).run();
+  } catch (_le) { console.error('query_log insert failed:', _le); }
 
   // ── Step 3: Workers AI inference ─────────────────────────────
   const response = await env.AI.run(WORKERS_AI_MODEL, {
@@ -3193,6 +3229,23 @@ async function handleFetchForEmbedding(request, env, corsHeaders) {
   }
 }
 
+async function handleFtsSearchChunks(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const urlObj = new URL(request.url);
+    const q = urlObj.searchParams.get('q');
+    const limit = Math.min(parseInt(urlObj.searchParams.get('limit') || '10'), 50);
+    if (!q) return new Response(JSON.stringify({ error: 'q required' }), { status: 400, headers: corsHeaders });
+    const result = await env.DB.prepare(
+      `SELECT chunk_id, citation, SUBSTR(enriched_text, 1, 500) as enriched_text FROM case_chunks_fts WHERE case_chunks_fts MATCH ?1 LIMIT ?2`
+    ).bind(q, limit).all();
+    return new Response(JSON.stringify({ results: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 async function handleFetchEmbedded(_request, env, corsHeaders) {
   const key = _request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -3527,10 +3580,11 @@ export default {
     if (url.pathname === '/api/pipeline/write-citations' && request.method === 'POST') return handleWriteCitations(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/write-legislation-refs' && request.method === 'POST') return handleWriteLegislationRefs(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-cases-by-legislation-ref' && request.method === 'POST') return handleFetchCasesByLegislationRef(request, env, corsHeaders);
+    if (url.pathname === '/api/pipeline/fts-search-chunks' && request.method === 'GET') return handleFtsSearchChunks(request, env, corsHeaders);
     if (url.pathname === '/api/pipeline/fetch-case-chunks-for-embedding' && request.method === 'GET') {
       const batch = parseInt(url.searchParams.get('batch') || '10');
       const { results } = await env.DB.prepare(
-        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, c.case_name, c.subject_matter
+        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, cc.principles_json, c.case_name, c.subject_matter
  FROM case_chunks cc
  LEFT JOIN cases c ON c.citation = cc.citation
  WHERE cc.done = 1 AND cc.embedded = 0 AND cc.enriched_text IS NOT NULL LIMIT ?`
@@ -3785,6 +3839,7 @@ export default {
             `Date: ${caseRow?.case_date || 'Not stated'}`,
             `Chunk: ${chunk_index + 1} of ${totalChunks}`,
             `Hint: ${roleHint}`,
+            `Subject matter (from metadata): ${caseRow?.subject_matter || 'Not yet classified'}`,
             `Case context — Facts: ${caseRow?.facts || ''}`,
             `Case context — Issues: ${caseRow?.issues || ''}`,
             ``,
@@ -3859,7 +3914,7 @@ FIELD SPECIFICATIONS:
 
 enriched_text is REQUIRED and is the primary field for semantic embedding.
 
-For reasoning chunks (200-350 words): Open with one sentence identifying the legal issue addressed. State the principle or test in the judge's own doctrinal terms. For each authority cited, state what specific principle it stands for in this case. Include 1-2 verbatim sentences from the judicial reasoning in quotation marks. Note any statutory provisions interpreted. Close with the specific conclusion reached.
+For reasoning chunks (200-350 words): Open with one sentence that explicitly names the statute section (e.g. "s 138 of the Evidence Act 2001 (Tas)"), defined doctrine (e.g. "the totality principle"), or authoritative case (e.g. "Mill v The Queen") that this chunk applies. Do not use generic descriptions like "the provision" or "the legal issue" — name the specific legal object. Then state the principle or test in the judge's own doctrinal terms. For each authority cited, state what specific principle it stands for in this case. Include 1-2 verbatim sentences from the judicial reasoning in quotation marks. Note any statutory provisions interpreted. Close with the specific conclusion reached.
 
 For evidence chunks (80-150 words): Open with "This chunk contains [witness testimony / cross-examination / factual narrative] regarding [specific topic]." Summarise factual content. Note what legal issue it is relevant to. Do NOT state legal principles.
 
@@ -3933,6 +3988,17 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
           await env.DB.prepare(
             `UPDATE case_chunks SET principles_json = ?, enriched_text = ?, done = 1 WHERE citation = ? AND chunk_index = ?`
           ).bind(JSON.stringify(extracted), enrichedText, citation, chunk_index).run();
+
+          // Sync to case_chunks_fts for BM25 keyword search
+          if (enrichedText) {
+            try {
+              await env.DB.prepare(
+                `INSERT OR REPLACE INTO case_chunks_fts (chunk_id, citation, enriched_text) VALUES (?1, ?2, ?3)`
+              ).bind(chunkId, citation, enrichedText).run();
+            } catch (ftsErr) {
+              console.error('case_chunks_fts sync failed:', ftsErr);
+            }
+          }
 
           // Check if all chunks done — if so, attempt atomic merge claim
           const pending = await env.DB.prepare(
