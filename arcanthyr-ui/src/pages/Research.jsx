@@ -22,6 +22,13 @@ export default function Research() {
   const [model, setModel] = useState('workers');
   const [subjectFilter, setSubjectFilter] = useState('all');
   const [selected, setSelected] = useState(null);
+  const [queryId, setQueryId] = useState(null);
+  const [nexusKey, setNexusKey] = useState(() => localStorage.getItem('arcanthyr_nexus_key') || '');
+
+  function handleNexusKeyChange(k) {
+    setNexusKey(k);
+    localStorage.setItem('arcanthyr_nexus_key', k);
+  }
 
   // Auto-run query if pre-populated from landing page search
   useEffect(() => {
@@ -40,6 +47,7 @@ export default function Research() {
     setAnswer('');
     setSources([]);
     setSelected(null);
+    setQueryId(null);
     try {
       const data = await api.query(q.trim(), model, subjectFilter);
       const r = data.result || data;
@@ -48,6 +56,7 @@ export default function Research() {
       setAnswer(ans);
       setResults(raw);
       setSources(r.sources || []);
+      setQueryId(r.query_id || null);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -243,6 +252,10 @@ export default function Research() {
         <ReadingPane
           selected={selected}
           answer={answer}
+          query={query}
+          queryId={queryId}
+          nexusKey={nexusKey}
+          onNexusKeyChange={handleNexusKeyChange}
           onShare={() => setShowShare(true)}
           onClose={() => setSelected(null)}
         />

@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { api } from '../api';
 import PrincipleCard from './PrincipleCard';
 
-export default function ReadingPane({ selected, answer, onShare, onClose }) {
+const SAVE_CATEGORIES = ['annotation', 'doctrine', 'practice note', 'checklist'];
+
+export default function ReadingPane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange, onShare, onClose }) {
   // Empty state — no selection, no answer
   if (!selected && !answer) {
     return (
@@ -58,15 +61,24 @@ export default function ReadingPane({ selected, answer, onShare, onClose }) {
         </div>
         <div style={{ flex: 1, overflow: 'auto', padding: '28px 32px' }}>
           <div style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.85 }}>{answer}</div>
+          {answer && (
+            <SaveFlagPanel
+              query={query}
+              answer={answer}
+              queryId={queryId}
+              nexusKey={nexusKey}
+              onNexusKeyChange={onNexusKeyChange}
+            />
+          )}
         </div>
       </div>
     );
   }
 
-  return <CasePane selected={selected} answer={answer} onShare={onShare} onClose={onClose} />;
+  return <CasePane selected={selected} answer={answer} query={query} queryId={queryId} nexusKey={nexusKey} onNexusKeyChange={onNexusKeyChange} onShare={onShare} onClose={onClose} />;
 }
 
-function CasePane({ selected, answer, onShare, onClose }) {
+function CasePane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange, onShare, onClose }) {
   const [tab, setTab] = useState(0);
   const TABS = ['Principles', 'Chunks', 'AI Summary'];
 
@@ -149,10 +161,221 @@ function CasePane({ selected, answer, onShare, onClose }) {
         {tab === 1 && <ChunksTab selected={selected} />}
         {tab === 2 && (
           answer
-            ? <div style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.85 }}>{answer}</div>
+            ? (
+              <>
+                <div style={{ fontSize: '14px', color: 'var(--text-primary)', lineHeight: 1.85 }}>{answer}</div>
+                <SaveFlagPanel
+                  query={query}
+                  answer={answer}
+                  queryId={queryId}
+                  nexusKey={nexusKey}
+                  onNexusKeyChange={onNexusKeyChange}
+                />
+              </>
+            )
             : <EmptyState>Run a query to see the AI summary.</EmptyState>
         )}
       </div>
+    </div>
+  );
+}
+
+function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saveTitle, setSaveTitle] = useState('');
+  const [saveCategory, setSaveCategory] = useState('annotation');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [flagged, setFlagged] = useState(false);
+  const [flagging, setFlagging] = useState(false);
+  const [showKeyInput, setShowKeyInput] = useState(false);
+
+  function openSave() {
+    setSaveTitle((query || '').slice(0, 120));
+    setSaveOpen(true);
+    setSaveError('');
+  }
+
+  async function confirmSave() {
+    if (!saveTitle.trim()) { setSaveError('Title is required'); return; }
+    setSaving(true);
+    setSaveError('');
+    try {
+      await api.saveToNexus({
+        text: answer,
+        mode: 'single',
+        title: saveTitle.trim(),
+        slug: 'nexus-save-' + Date.now(),
+        category: saveCategory,
+        approved: 0,
+      });
+      setSaved(true);
+      setSaveOpen(false);
+    } catch (e) {
+      setSaveError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function doFlag(key) {
+    const k = key !== undefined ? key : nexusKey;
+    if (!k) { setShowKeyInput(true); return; }
+    setFlagging(true);
+    try {
+      await api.flagSynthesis(
+        { query_id: queryId, chunk_id: null, feedback_type: 'unhelpful', comment: '' },
+        k
+      );
+      setFlagged(true);
+      setShowKeyInput(false);
+    } catch {
+      // silently fail — non-critical quality signal
+    } finally {
+      setFlagging(false);
+    }
+  }
+
+  return (
+    <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+        {/* Save to Nexus */}
+        {!saved ? (
+          <button
+            onClick={openSave}
+            disabled={saveOpen || saving}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              padding: '5px 12px', fontSize: '11px', borderRadius: '4px',
+              border: '1px solid var(--border)', background: 'transparent',
+              color: 'var(--text-secondary)', letterSpacing: '0.04em',
+              cursor: saveOpen ? 'default' : 'pointer', opacity: saveOpen ? 0.6 : 1,
+              transition: 'color 0.2s, border-color 0.2s, background 0.2s',
+            }}
+            onMouseEnter={e => { if (!saveOpen) { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--border-em)'; } }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+          >
+            ⊕ Save to Nexus
+          </button>
+        ) : (
+          <span style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.04em' }}>✓ Saved to Nexus</span>
+        )}
+
+        {/* Flag */}
+        {!flagged ? (
+          <button
+            onClick={() => doFlag()}
+            disabled={flagging}
+            style={{
+              fontSize: '11px', padding: '5px 10px', background: 'transparent',
+              border: 'none', color: 'var(--text-muted)', cursor: flagging ? 'default' : 'pointer',
+              letterSpacing: '0.04em', transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--red)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+          >
+            {flagging ? '…' : '⚑ Flag'}
+          </button>
+        ) : (
+          <span style={{ fontSize: '11px', color: 'var(--red)', letterSpacing: '0.04em' }}>⚑ Flagged</span>
+        )}
+      </div>
+
+      {/* Inline key input for Flag (only when key not yet set) */}
+      {showKeyInput && !flagged && (
+        <div style={{ marginTop: '8px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <input
+            type="password"
+            value={nexusKey}
+            onChange={e => onNexusKeyChange(e.target.value)}
+            placeholder="Admin key"
+            style={{
+              padding: '4px 8px', fontSize: '11px', width: '180px',
+              background: 'var(--surface)', border: '1px solid var(--border)',
+              borderRadius: '4px', color: 'var(--text-primary)',
+            }}
+          />
+          <button
+            onClick={() => doFlag(nexusKey)}
+            style={{ fontSize: '11px', padding: '4px 10px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+          >
+            Submit
+          </button>
+          <button
+            onClick={() => setShowKeyInput(false)}
+            style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+
+      {/* Save panel */}
+      {saveOpen && (
+        <div style={{
+          marginTop: '12px', padding: '16px', background: 'var(--surface)',
+          border: '1px solid var(--border)', borderRadius: '6px',
+        }}>
+          <div style={{ marginBottom: '10px' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+              Title
+            </label>
+            <input
+              value={saveTitle}
+              onChange={e => setSaveTitle(e.target.value.slice(0, 120))}
+              style={{
+                width: '100%', padding: '6px 10px', fontSize: '12px', boxSizing: 'border-box',
+                background: 'var(--surface-hover)', border: '1px solid var(--border)',
+                borderRadius: '4px', color: 'var(--text-primary)',
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.07em', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+              Category
+            </label>
+            <select
+              value={saveCategory}
+              onChange={e => setSaveCategory(e.target.value)}
+              style={{
+                padding: '6px 10px', fontSize: '12px',
+                background: 'var(--surface-hover)', border: '1px solid var(--border)',
+                borderRadius: '4px', color: 'var(--text-primary)',
+              }}
+            >
+              {SAVE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div style={{
+            maxHeight: '160px', overflow: 'auto', padding: '8px 10px', marginBottom: '12px',
+            background: 'var(--bg-shell)', border: '1px solid var(--border)', borderRadius: '4px',
+            fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6,
+          }}>
+            {answer}
+          </div>
+          {saveError && <div style={{ fontSize: '11px', color: 'var(--red)', marginBottom: '8px' }}>{saveError}</div>}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              onClick={confirmSave}
+              disabled={saving}
+              style={{
+                padding: '6px 16px', fontSize: '12px', fontWeight: 600,
+                background: 'var(--accent)', color: '#fff', borderRadius: '4px',
+                cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
+              }}
+            >
+              {saving ? 'Saving…' : 'Confirm'}
+            </button>
+            <button
+              onClick={() => { setSaveOpen(false); setSaveError(''); }}
+              style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

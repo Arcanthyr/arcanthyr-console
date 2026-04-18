@@ -49,6 +49,8 @@ export default function Library() {
   const [truncationMap, setTruncationMap] = useState({});
   const [selectedTruncation, setSelectedTruncation] = useState(null);
   const [nexusKey, setNexusKey] = useState('');
+  const [pendingItems, setPendingItems] = useState([]);
+  const [pendingLoading, setPendingLoading] = useState(false);
 
   useEffect(() => {
     load();
@@ -78,6 +80,31 @@ export default function Library() {
         setTruncationMap(map);
       })
       .catch(err => console.warn('Truncation status fetch failed:', err));
+  }
+
+  async function loadPending(key) {
+    const k = key !== undefined ? key : nexusKey;
+    if (!k) return;
+    setPendingLoading(true);
+    try {
+      const r = await api.fetchPendingNexus(k);
+      setPendingItems(r.items || []);
+    } catch {
+      setPendingItems([]);
+    } finally {
+      setPendingLoading(false);
+    }
+  }
+
+  async function handleApprove(id) {
+    await api.approveSecondary({ id, action: 'approve' }, nexusKey);
+    setPendingItems(prev => prev.filter(i => i.id !== id));
+  }
+
+  async function handleReject(id) {
+    if (!window.confirm('Delete this saved answer?')) return;
+    await api.approveSecondary({ id, action: 'reject' }, nexusKey);
+    setPendingItems(prev => prev.filter(i => i.id !== id));
   }
 
   async function handleDelete(docType, id) {
@@ -134,7 +161,19 @@ export default function Library() {
           {data && (
             <>
               {tab === 0 && <CasesTable rows={data.cases || []} onDelete={handleDelete} onSelect={setSelectedCase} selectedId={selectedCase?.id} truncationMap={truncationMap} onTruncationClick={setSelectedTruncation} />}
-              {tab === 1 && <CorpusTable rows={data.secondary || []} onDelete={handleDelete} />}
+              {tab === 1 && (
+                <>
+                  <PendingReviewSection
+                    items={pendingItems}
+                    loading={pendingLoading}
+                    nexusKey={nexusKey}
+                    onNexusKeyChange={(k) => { setNexusKey(k); loadPending(k); }}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                  />
+                  <CorpusTable rows={data.secondary || []} onDelete={handleDelete} />
+                </>
+              )}
               {tab === 2 && <LegislationTable rows={data.legislation || []} onDelete={handleDelete} />}
             </>
           )}
@@ -261,6 +300,111 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
         }}
       />
     </>
+  );
+}
+
+/* ── Pending Review section ────────────────────────────────── */
+function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onApprove, onReject }) {
+  const [busy, setBusy] = useState({});
+
+  async function doApprove(id) {
+    setBusy(b => ({ ...b, [id]: true }));
+    try { await onApprove(id); } catch (e) { alert(e.message); }
+    setBusy(b => ({ ...b, [id]: false }));
+  }
+
+  async function doReject(id) {
+    setBusy(b => ({ ...b, [id]: true }));
+    try { await onReject(id); } catch (e) { alert(e.message); }
+    setBusy(b => ({ ...b, [id]: false }));
+  }
+
+  return (
+    <div style={{ marginBottom: '24px' }}>
+      {/* Key + load row */}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '12px' }}>
+        <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+          Pending Review
+          {items.length > 0 && (
+            <span style={{
+              marginLeft: '6px', padding: '1px 7px', borderRadius: '10px', fontSize: '10px',
+              background: 'rgba(255,165,0,0.18)', color: 'var(--amber)',
+            }}>{items.length}</span>
+          )}
+        </span>
+        {!nexusKey && (
+          <input
+            type="password"
+            placeholder="Admin key to load"
+            value={nexusKey}
+            onChange={e => onNexusKeyChange(e.target.value)}
+            style={{
+              padding: '3px 8px', fontSize: '11px', width: '160px',
+              background: 'var(--surface)', border: '1px solid var(--border)',
+              borderRadius: '4px', color: 'var(--text-primary)',
+            }}
+          />
+        )}
+        {loading && <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Loading…</span>}
+      </div>
+
+      {items.length === 0 && !loading && nexusKey && (
+        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '8px' }}>
+          No pending items.
+        </div>
+      )}
+
+      {items.map(item => (
+        <div key={item.id} style={{
+          padding: '12px 14px', marginBottom: '8px',
+          background: 'rgba(255,165,0,0.06)',
+          border: '1px solid rgba(255,165,0,0.25)',
+          borderRadius: '6px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '2px' }}>{item.title}</div>
+              <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                <span style={{ textTransform: 'capitalize' }}>{item.category}</span>
+                {item.date_added && <span>{item.date_added.slice(0, 10)}</span>}
+              </div>
+              <div style={{
+                fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6,
+                overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+              }}>
+                {(item.raw_text || '').slice(0, 300)}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+              <button
+                onClick={() => doApprove(item.id)}
+                disabled={busy[item.id]}
+                style={{
+                  padding: '5px 12px', fontSize: '11px', fontWeight: 600,
+                  background: 'rgba(74,255,130,0.12)', border: '1px solid rgba(74,255,130,0.35)',
+                  borderRadius: '4px', color: 'var(--green)',
+                  cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
+                }}
+              >
+                ✓ Approve
+              </button>
+              <button
+                onClick={() => doReject(item.id)}
+                disabled={busy[item.id]}
+                style={{
+                  padding: '5px 10px', fontSize: '11px',
+                  background: 'transparent', border: '1px solid rgba(232,74,74,0.3)',
+                  borderRadius: '4px', color: 'var(--red)',
+                  cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 

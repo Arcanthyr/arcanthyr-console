@@ -1554,7 +1554,8 @@ function parseFormattedChunks(text) {
 }
 
 async function handleFormatAndUpload(body, env) {
-  let { text, category: defaultCategory, mode, slug, title, source_type } = body;
+  let { text, category: defaultCategory, mode, slug, title, source_type, approved } = body;
+  const approvedVal = approved === 0 ? 0 : 1;
   if (!text?.trim()) throw new Error('Missing required field: text');
 
   let chunkUnits;
@@ -1629,8 +1630,8 @@ async function handleFormatAndUpload(body, env) {
 
     await env.DB.prepare(`
       INSERT INTO secondary_sources
-      (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category)
-      VALUES (?, ?, ?, null, ?, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?)
+      (id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched, embedded, category, approved)
+      VALUES (?, ?, ?, null, ?, '[]', '[]', '[]', ?, 1, ?, 1, 0, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         raw_text = excluded.raw_text,
         title = excluded.title,
@@ -1638,7 +1639,7 @@ async function handleFormatAndUpload(body, env) {
         enriched_text = excluded.enriched_text,
         enriched = excluded.enriched,
         embedded = 0
-    `).bind(citation, heading, source_type || null, new Date().toISOString().split('T')[0], unit, now, category).run();
+    `).bind(citation, heading, source_type || null, new Date().toISOString().split('T')[0], unit, now, category, approvedVal).run();
 
     await env.DB.prepare(
       `INSERT OR REPLACE INTO secondary_sources_fts (rowid, source_id, title, raw_text)
@@ -3255,8 +3256,40 @@ async function handleFetchForEmbedding(request, env, corsHeaders) {
   try {
     const urlObj = new URL(request.url);
     const batch = Math.min(parseInt(urlObj.searchParams.get('batch') || '10'), 50);
-    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text, category, source_type FROM secondary_sources WHERE enriched = 1 AND embedded = 0 ORDER BY id LIMIT ?`).bind(batch).all();
+    const result = await env.DB.prepare(`SELECT id, title, raw_text, enriched_text, category, source_type FROM secondary_sources WHERE enriched = 1 AND embedded = 0 AND approved = 1 ORDER BY id LIMIT ?`).bind(batch).all();
     return new Response(JSON.stringify({ ok: true, chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handlePendingNexus(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const result = await env.DB.prepare(
+      `SELECT id, title, category, raw_text, date_added FROM secondary_sources WHERE approved = 0 ORDER BY date_added DESC`
+    ).all();
+    return new Response(JSON.stringify({ ok: true, items: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
+async function handleApproveSecondary(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const { id, action } = await request.json();
+    if (!id || !action) return new Response(JSON.stringify({ ok: false, error: 'id and action required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    if (action === 'approve') {
+      await env.DB.prepare(`UPDATE secondary_sources SET approved = 1 WHERE id = ?`).bind(id).run();
+    } else if (action === 'reject') {
+      await env.DB.prepare(`DELETE FROM secondary_sources WHERE id = ? AND approved = 0`).bind(id).run();
+    } else {
+      return new Response(JSON.stringify({ ok: false, error: 'Invalid action — must be approve or reject' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    }
+    return new Response(JSON.stringify({ ok: true, action }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   }
@@ -3636,6 +3669,8 @@ export default {
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-merge' && request.method === 'POST') return handleRequeueMerge(request, env, corsHeaders);
     if (url.pathname === '/api/admin/backfill-sentencing' && request.method === 'POST') return handleSentencingBackfill(request, env, corsHeaders);
+    if (url.pathname === '/api/admin/pending-nexus' && request.method === 'GET') return handlePendingNexus(request, env, corsHeaders);
+    if (url.pathname === '/api/admin/approve-secondary' && request.method === 'POST') return handleApproveSecondary(request, env, corsHeaders);
 
     /* ── HEALTH CHECK ROUTES ─────────────────────────────────── */
     if (url.pathname === '/api/admin/health-reports' && request.method === 'GET') return handleGetHealthReports(request, env, corsHeaders);

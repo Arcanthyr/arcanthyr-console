@@ -112,4 +112,49 @@ export const api = {
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     return data;
   },
+
+  saveToNexus: async (body) => {
+    const res = await fetch(`${BASE}/api/legal/format-and-upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (compatible; Arcanthyr/1.0)',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  },
+
+  flagSynthesis: async (body, nexusKey) => {
+    const res = await fetch(`${BASE}/api/pipeline/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': nexusKey },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  },
+
+  fetchPendingNexus: async (nexusKey) => {
+    const res = await fetch(`${BASE}/api/admin/pending-nexus`, {
+      headers: { 'X-Nexus-Key': nexusKey },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  },
+
+  approveSecondary: async (body, nexusKey) => {
+    const res = await fetch(`${BASE}/api/admin/approve-secondary`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': nexusKey },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  },
 };
