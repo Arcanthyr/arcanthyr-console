@@ -3663,3 +3663,25 @@ Decision: Tasmania v Rattigan [2021] TASSC 28 confirmed as workers compensation 
 - **Decision:** Generate `queryId = crypto.randomUUID()` at the start of both query handlers, return in response as `query_id`, use as foreign key for synthesis_feedback.
 - **Why:** Simpler than Option A (separate pre-query INSERT) — query_log row and feedback rows share the same UUID without requiring a pre-query D1 round-trip. query_id is available for the zero-result early return path and the normal path equally.
 Rationale: D1 audit of all 26 R v / Tasmania v / Police v cases with non-criminal subject_matter confirmed no misclassifications. Subject_matter accuracy is now validated for the filter pipeline.
+
+## Session 69 decisions — 18 April 2026
+
+**Save to Nexus: approved column default 1 for backwards compatibility**
+Decision: `ALTER TABLE secondary_sources ADD COLUMN approved INTEGER DEFAULT 1` — all existing 1,199 rows auto-set to approved=1. Only Save to Nexus rows land with approved=0.
+Rationale: Setting default to 0 would break the poller gate (`AND approved = 1`) for all existing rows, requiring a mass UPDATE before embed could proceed. Default 1 means zero disruption to existing pipeline.
+
+**Query history: soft delete, not hard delete**
+Decision: query_log entries use `deleted INTEGER DEFAULT 0` soft delete. Row stays in D1 for analytics, just hidden from UI.
+Rationale: query_log serves dual purpose — analytics (query patterns, model usage, retrieval scoring) and user-facing history. Hard deleting would destroy analytics data. Soft delete preserves both functions.
+
+**Query history: no auth on read/delete routes**
+Decision: GET /api/research/history and POST /api/research/history-delete require no X-Nexus-Key.
+Rationale: Read-only history is non-sensitive (user's own queries on a single-user system). Soft delete is reversible and also non-destructive. Adding auth would require threading the Nexus key through the Research page JS — unnecessary complexity for a single-user deployment.
+
+**PowerShell Split("=",2)[1] for base64 key extraction**
+Decision: All PowerShell key extraction patterns updated from `Split("=")[1]` to `Split("=",2)[1]`.
+Rationale: Base64 keys end with `=` padding characters. `Split("=")` produces 3+ array elements; `[1]` picks the middle segment, dropping the trailing `=`. `Split("=",2)` limits to 2 parts: everything before the first `=` and everything after (including trailing `=`). Same root cause as the bash `cut -d= -f2` vs `cut -d= -f2-` fix in sessions 61-63.
+
+**Save to Nexus delete action: full Qdrant + FTS5 + D1 cleanup**
+Decision: Delete action on approved secondary sources removes from all three stores (Qdrant vectors, FTS5 index, D1 row), not just D1.
+Rationale: Leaving orphaned Qdrant vectors after D1 delete would cause retrieval to return results that can't be resolved to source text. FTS5 orphans would cause stale BM25 hits. All three stores must be cleaned atomically.

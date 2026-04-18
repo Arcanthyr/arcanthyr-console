@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 17 April 2026 (end of session 68). Upload every session alongside CLAUDE.md.*
+*Updated: 18 April 2026 (end of session 69). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -535,7 +535,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
 | `legislation_sections` | `id` TEXT | `leg_id`, `section_number`, `heading`, `text`, `embedded` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
-| `query_log` | `id` TEXT (UUID) | `query_text`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version` |
+| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version` |
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
@@ -688,6 +688,10 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/pipeline/fts-search-chunks` | GET | FTS5 search over case_chunks_fts · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet |
 | `/api/pipeline/case-chunks-fts-search` | GET | FTS5 search over case_chunks_fts with cases JOIN · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet (800 chars), case_name, court, subject_matter |
 | `/api/pipeline/feedback` | POST | Write synthesis feedback · body: query_id, chunk_id, feedback_type (helpful/unhelpful/irrelevant/hallucinated), comment · X-Nexus-Key · returns {ok, id} |
+| `/api/admin/approve-secondary` | POST | Approve/reject/delete secondary source · actions: approve (set approved=1), reject (DELETE WHERE approved=0), delete (Qdrant + FTS5 + D1 cleanup regardless of approved status) · X-Nexus-Key |
+| `/api/admin/pending-nexus` | GET | List secondary_sources WHERE approved=0 · returns id, title, category, raw_text, date_added · X-Nexus-Key |
+| `/api/research/history` | GET | Fetch 50 most recent query_log entries with answer_text · WHERE deleted=0 AND answer_text IS NOT NULL · no auth |
+| `/api/research/history-delete` | POST | Soft-delete query_log entry (SET deleted=1) · body: {id} · no auth |
 | `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
 | `/api/admin/health-reports` | GET | List all health check reports (summary only, no report_json), DESC, LIMIT 24 · X-Nexus-Key |
 | `/api/admin/health-reports/:id` | GET | Single health check report including full report_json · X-Nexus-Key |
@@ -699,6 +703,28 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 query_log table populated by inline INSERT in both `handleLegalQuery` (Claude API path) and `handleLegalQueryWorkersAI` (Workers AI path). Fires after retrieval results assembled, before synthesis LLM call. Non-fatal — catch block logs error but does not break queries. client_version field enables A/B comparison across deploys.
 
 Indexes: timestamp, query_type, bm25_fired. Analysis queries documented in `The Vault/arcanthyr-query-logging-and-collision-analysis.md`.
+
+**Answer storage (session 69):** `answer_text TEXT` and `model TEXT` columns added to query_log. Both `handleLegalQuery` and `handleLegalQueryWorkersAI` now store the full synthesis answer and model identifier ("sol"/"vger") in the existing query_log INSERT. `deleted INTEGER DEFAULT 0` added for soft-delete from history UI. Non-fatal — if the write fails, the query still returns normally.
+
+### Save to Nexus (session 69)
+
+Synthesis answer promotion loop. Good AI answers can be saved back into secondary_sources corpus with human review gate.
+
+**Flow:** Research page Save to Nexus button → inline confirmation panel (title editable, category dropdown) → POST to `/api/legal/format-and-upload` with `mode: 'single'`, `approved: 0` → D1 row created with `approved=0` → poller skips (SQL gate `AND approved = 1`) → Library Pending Review section shows row → Approve → `approved=1` → poller embeds to Qdrant → answer surfaces in future retrieval.
+
+**Delete action:** `POST /api/admin/approve-secondary` with `action: "delete"` — removes from Qdrant (via server.py /delete), FTS5, and D1 regardless of approved status. Only shown on nexus-save rows.
+
+**Date in IDs:** Slug format `nexus-save-{YYYY-MM-DD}-{timestamp}`. Title pre-filled with `${queryText} (${today})`.
+
+### Query history (session 69)
+
+Browse, re-read, and promote past queries without re-querying.
+
+**Panel:** Collapsible side panel on Research page. Shows 50 most recent queries with answer_text. Each entry: truncated query text (~60 chars), date+time, model pill (Sol/V'ger). Click loads cached answer in reading pane and populates search input. Does NOT re-run query.
+
+**Actions per entry:** Save to Nexus (same flow as synthesis panel), Delete (soft delete, fade-out animation).
+
+**Auto-refresh:** New query results auto-prepend to history list (optimistic UI using returned query_id).
 
 ### Stare decisis — handleCaseAuthority (session 68)
 
@@ -723,7 +749,7 @@ Indexes: timestamp, query_type, bm25_fired. Analysis queries documented in `The 
 - PK is `id` (TEXT) — populated from CITATION metadata field in corpus
 - **No `citation` column exists** — do not query for it. Always use `id`.
 - Canonical category values: annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation
-- Full column list: `id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched_text, enriched, embedded, enrichment_error, category, embedding_model, embedding_version`
+- Full column list: `id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched_text, enriched, embedded, enrichment_error, category, embedding_model, embedding_version, approved`
 
 ### cases D1 schema notes
 
