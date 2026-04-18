@@ -127,6 +127,9 @@ export const api = {
     return data;
   },
 
+  getQueryHistory:    ()     => req('GET',  '/api/query/history'),
+  deleteQueryHistory: (id)   => req('POST', '/api/query/history/delete', { id }),
+
   flagSynthesis: async (body, nexusKey) => {
     const res = await fetch(`${BASE}/api/pipeline/feedback`, {
       method: 'POST',

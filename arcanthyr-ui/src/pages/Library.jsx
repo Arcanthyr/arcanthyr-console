@@ -107,6 +107,13 @@ export default function Library() {
     setPendingItems(prev => prev.filter(i => i.id !== id));
   }
 
+  async function handleDeleteNexus(id) {
+    if (!window.confirm('Permanently delete this saved answer from D1 and Qdrant?')) return;
+    await api.approveSecondary({ id, action: 'delete' }, nexusKey);
+    setPendingItems(prev => prev.filter(i => i.id !== id));
+    setData(prev => prev ? { ...prev, secondary: (prev.secondary || []).filter(r => r.id !== id) } : prev);
+  }
+
   async function handleDelete(docType, id) {
     if (!confirm(`Delete ${id}?`)) return;
     try {
@@ -170,8 +177,9 @@ export default function Library() {
                     onNexusKeyChange={(k) => { setNexusKey(k); loadPending(k); }}
                     onApprove={handleApprove}
                     onReject={handleReject}
+                    onDeleteNexus={handleDeleteNexus}
                   />
-                  <CorpusTable rows={data.secondary || []} onDelete={handleDelete} />
+                  <CorpusTable rows={data.secondary || []} onDelete={handleDelete} onDeleteNexus={handleDeleteNexus} />
                 </>
               )}
               {tab === 2 && <LegislationTable rows={data.legislation || []} onDelete={handleDelete} />}
@@ -304,7 +312,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
 }
 
 /* ── Pending Review section ────────────────────────────────── */
-function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onApprove, onReject }) {
+function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onApprove, onReject, onDeleteNexus }) {
   const [busy, setBusy] = useState({});
 
   async function doApprove(id) {
@@ -316,6 +324,12 @@ function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onAp
   async function doReject(id) {
     setBusy(b => ({ ...b, [id]: true }));
     try { await onReject(id); } catch (e) { alert(e.message); }
+    setBusy(b => ({ ...b, [id]: false }));
+  }
+
+  async function doDelete(id) {
+    setBusy(b => ({ ...b, [id]: true }));
+    try { await onDeleteNexus(id); } catch (e) { alert(e.message); }
     setBusy(b => ({ ...b, [id]: false }));
   }
 
@@ -400,6 +414,19 @@ function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onAp
               >
                 ✕
               </button>
+              <button
+                onClick={() => doDelete(item.id)}
+                disabled={busy[item.id]}
+                title="Delete from D1 and Qdrant"
+                style={{
+                  padding: '5px 8px', fontSize: '11px',
+                  background: 'transparent', border: '1px solid rgba(232,74,74,0.2)',
+                  borderRadius: '4px', color: 'var(--text-muted)',
+                  cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
+                }}
+              >
+                🗑
+              </button>
             </div>
           </div>
         </div>
@@ -409,13 +436,14 @@ function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onAp
 }
 
 /* ── Corpus table ──────────────────────────────────────────── */
-function CorpusTable({ rows, onDelete }) {
+function CorpusTable({ rows, onDelete, onDeleteNexus }) {
   return (
     <Table
       cols={['Title / Domain', 'ID', 'Category', 'Status', 'Actions']}
       rows={rows}
       renderRow={r => {
         const isMalformed = (r.id || '').includes('{');
+        const isNexusSave = (r.id || '').startsWith('nexus-save-');
         return (
           <tr key={r.id} style={{ background: isMalformed ? 'rgba(232,74,74,0.05)' : 'transparent' }}>
             <td style={td}>
@@ -432,7 +460,10 @@ function CorpusTable({ rows, onDelete }) {
             <td style={td}>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {isMalformed && <span style={{ fontSize: '11px', color: 'var(--red)' }}>Malformed</span>}
-                <button onClick={() => onDelete('secondary', r.id)} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
+                {isNexusSave
+                  ? <button onClick={() => onDeleteNexus(r.id)} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
+                  : <button onClick={() => onDelete('secondary', r.id)} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
+                }
               </div>
             </td>
           </tr>

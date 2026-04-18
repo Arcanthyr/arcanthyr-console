@@ -192,7 +192,8 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
   const [showKeyInput, setShowKeyInput] = useState(false);
 
   function openSave() {
-    setSaveTitle((query || '').slice(0, 120));
+    const today = new Date().toISOString().slice(0, 10);
+    setSaveTitle(`${(query || '').slice(0, 100)} (${today})`);
     setSaveOpen(true);
     setSaveError('');
   }
@@ -206,7 +207,7 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
         text: answer,
         mode: 'single',
         title: saveTitle.trim(),
-        slug: 'nexus-save-' + Date.now(),
+        slug: `nexus-save-${new Date().toISOString().slice(0, 10)}-${Date.now()}`,
         category: saveCategory,
         approved: 0,
       });

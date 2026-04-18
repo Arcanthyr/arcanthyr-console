@@ -1998,8 +1998,8 @@ async function handleLegalQuery(body, env) {
     // Log zero-result queries too
     try {
       await env.DB.prepare(
-        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
-      ).bind(queryId, query.trim(), new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v67-feedback').run();
+        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
+      ).bind(queryId, query.trim(), new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v68-history', 'No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.', 'claude').run();
     } catch (_le) { console.error('query_log insert failed (zero-result):', _le); }
     return {
       answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
@@ -2055,24 +2055,6 @@ ${citationRules}
 
 ${answерNote}`;
 
-  // ── Query logging ─────────────────────────────────────────────
-  try {
-    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
-    const _refs = []; let _m;
-    const _qs = query.trim();
-    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
-    await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
-    ).bind(
-      queryId, _qs, new Date().toISOString(),
-      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
-      JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
-      JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
-      JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      chunks.length, 'v67-feedback'
-    ).run();
-  } catch (_le) { console.error('query_log insert failed:', _le); }
-
   // ── Step 3: Call Claude API ──────────────────────────────────
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -2097,6 +2079,24 @@ ${answерNote}`;
   const claudeData = await claudeRes.json();
   const answer = claudeData.content?.[0]?.text || "No response from model.";
 
+  // ── Query logging ─────────────────────────────────────────────
+  try {
+    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
+    const _refs = []; let _m;
+    const _qs = query.trim();
+    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
+    await env.DB.prepare(
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
+    ).bind(
+      queryId, _qs, new Date().toISOString(),
+      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
+      JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
+      JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
+      JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
+      chunks.length, 'v68-history', answer.slice(0, 2000), 'claude'
+    ).run();
+  } catch (_le) { console.error('query_log insert failed:', _le); }
+
   // ── Step 4: Return answer + deduplicated source list ─────────
   const seen = new Set();
   const caseSources = chunks
@@ -2116,6 +2116,43 @@ ${answерNote}`;
   return { answer, sources, chunk_count: chunks.length, model: "claude", query_id: queryId };
 }
 
+
+/* =============================================================
+   QUERY HISTORY
+   ============================================================= */
+async function handleGetQueryHistory(request, env, corsHeaders) {
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT id, query_text, answer_text, model, timestamp
+       FROM query_log
+       WHERE deleted IS NULL OR deleted != 1
+       ORDER BY timestamp DESC
+       LIMIT 50`
+    ).all();
+    return new Response(JSON.stringify({ ok: true, history: results || [] }), {
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  } catch (err) {
+    console.error('handleGetQueryHistory error:', err);
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
+}
+
+async function handleDeleteQueryHistory(request, env, corsHeaders) {
+  try {
+    const { id } = await request.json();
+    if (!id) return new Response(JSON.stringify({ ok: false, error: 'id required' }), { status: 400, headers: corsHeaders });
+    await env.DB.prepare(`UPDATE query_log SET deleted = 1 WHERE id = ?`).bind(id).run();
+    return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders });
+  } catch (err) {
+    console.error('handleDeleteQueryHistory error:', err);
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500, headers: corsHeaders,
+    });
+  }
+}
 
 /* =============================================================
    FETCH-PAGE PROXY
@@ -2233,24 +2270,6 @@ async function handleLegalQueryWorkersAI(body, env) {
       ? `Explain ${sectionContext.label} clearly. Do not invent case law - note that no cases interpreting this section have been ingested yet.`
       : `Cite the case citation when relying on a specific case.`;
 
-  // ── Query logging ─────────────────────────────────────────────
-  try {
-    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
-    const _refs = []; let _m;
-    const _qs = query.trim();
-    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
-    await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`
-    ).bind(
-      queryId, _qs, new Date().toISOString(),
-      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
-      JSON.stringify(orderedChunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
-      JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
-      JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      orderedChunks.length, 'v67-feedback'
-    ).run();
-  } catch (_le) { console.error('query_log insert failed:', _le); }
-
   // ── Step 3: Workers AI inference ─────────────────────────────
   const response = await env.AI.run(WORKERS_AI_MODEL, {
     messages: [
@@ -2266,6 +2285,24 @@ async function handleLegalQueryWorkersAI(body, env) {
     response?.choices?.[0]?.text?.trim() ||
     response?.response?.trim() ||
     "No response from model.";
+
+  // ── Query logging ─────────────────────────────────────────────
+  try {
+    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
+    const _refs = []; let _m;
+    const _qs = query.trim();
+    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
+    await env.DB.prepare(
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
+    ).bind(
+      queryId, _qs, new Date().toISOString(),
+      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
+      JSON.stringify(orderedChunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
+      JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
+      JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
+      orderedChunks.length, 'v68-history', answer.slice(0, 2000), 'workers-ai'
+    ).run();
+  } catch (_le) { console.error('query_log insert failed:', _le); }
 
   // ── Step 4: Return ───────────────────────────────────────────
   const seen = new Set();
@@ -3286,8 +3323,21 @@ async function handleApproveSecondary(request, env, corsHeaders) {
       await env.DB.prepare(`UPDATE secondary_sources SET approved = 1 WHERE id = ?`).bind(id).run();
     } else if (action === 'reject') {
       await env.DB.prepare(`DELETE FROM secondary_sources WHERE id = ? AND approved = 0`).bind(id).run();
+    } else if (action === 'delete') {
+      // Delete regardless of approved status — for removing mistakenly approved items
+      await env.DB.prepare(`DELETE FROM secondary_sources_fts WHERE source_id = ?`).bind(id).run();
+      await env.DB.prepare(`DELETE FROM secondary_sources WHERE id = ?`).bind(id).run();
+      try {
+        await fetch('https://nexus.arcanthyr.com/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': env.NEXUS_SECRET_KEY },
+          body: JSON.stringify({ citation: id }),
+        });
+      } catch (e) {
+        console.error('Nexus delete failed (non-fatal):', e.message);
+      }
     } else {
-      return new Response(JSON.stringify({ ok: false, error: 'Invalid action — must be approve or reject' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      return new Response(JSON.stringify({ ok: false, error: 'Invalid action — must be approve, reject, or delete' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
     return new Response(JSON.stringify({ ok: true, action }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
@@ -3702,6 +3752,10 @@ export default {
         return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
       }
     }
+
+    /* ── QUERY HISTORY ROUTES ───────────────────────────────── */
+    if (url.pathname === '/api/query/history' && request.method === 'GET') return handleGetQueryHistory(request, env, corsHeaders);
+    if (url.pathname === '/api/query/history/delete' && request.method === 'POST') return handleDeleteQueryHistory(request, env, corsHeaders);
 
     /* ── CASE CHUNKS FTS SEARCH (for server.py BM25 pass) ──── */
     if (url.pathname === '/api/pipeline/case-chunks-fts-search' && request.method === 'GET') {

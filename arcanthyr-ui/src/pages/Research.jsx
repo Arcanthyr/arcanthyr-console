@@ -24,11 +24,17 @@ export default function Research() {
   const [selected, setSelected] = useState(null);
   const [queryId, setQueryId] = useState(null);
   const [nexusKey, setNexusKey] = useState(() => localStorage.getItem('arcanthyr_nexus_key') || '');
+  const [history, setHistory] = useState([]);
 
   function handleNexusKeyChange(k) {
     setNexusKey(k);
     localStorage.setItem('arcanthyr_nexus_key', k);
   }
+
+  // Fetch query history on mount
+  useEffect(() => {
+    api.getQueryHistory().then(d => setHistory(d.history || [])).catch(() => {});
+  }, []);
 
   // Auto-run query if pre-populated from landing page search
   useEffect(() => {
@@ -56,12 +62,37 @@ export default function Research() {
       setAnswer(ans);
       setResults(raw);
       setSources(r.sources || []);
-      setQueryId(r.query_id || null);
+      const qid = r.query_id || null;
+      setQueryId(qid);
+      if (qid) {
+        setHistory(prev => [{
+          id: qid,
+          query_text: q.trim(),
+          answer_text: ans,
+          model: r.model || model,
+          timestamp: new Date().toISOString(),
+        }, ...prev.filter(h => h.id !== qid).slice(0, 49)]);
+      }
     } catch (e) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
+  }
+
+  function loadHistoryItem(item) {
+    setQuery(item.query_text);
+    setAnswer(item.answer_text || '');
+    setResults([]);
+    setSources([]);
+    setQueryId(item.id);
+    setSelected(null);
+    setError('');
+  }
+
+  async function deleteHistoryItem(id) {
+    setHistory(prev => prev.filter(h => h.id !== id));
+    api.deleteQueryHistory(id).catch(() => {});
   }
 
   async function handleQuery(e) {
@@ -245,6 +276,43 @@ export default function Research() {
                 />
               );
             })}
+
+            {/* Query History */}
+            {history.length > 0 && (
+              <div style={{ borderTop: filtered.length > 0 ? '1px solid var(--border)' : 'none', marginTop: filtered.length > 0 ? '8px' : 0 }}>
+                <div style={{ padding: '10px 16px 6px', fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                  Recent Queries
+                </div>
+                {history.map(h => (
+                  <div
+                    key={h.id}
+                    style={{
+                      padding: '8px 16px',
+                      borderBottom: '1px solid var(--border)',
+                      display: 'flex', alignItems: 'flex-start', gap: '8px',
+                      cursor: 'pointer',
+                      background: queryId === h.id ? 'var(--accent-dim)' : 'transparent',
+                    }}
+                    onClick={() => loadHistoryItem(h)}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '13px', color: 'var(--text-primary)', lineHeight: 1.4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {h.query_text}
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', display: 'flex', gap: '8px' }}>
+                        <span>{h.model === 'claude' ? 'Sol' : "V'ger"}</span>
+                        <span>{new Date(h.timestamp).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={e => { e.stopPropagation(); deleteHistoryItem(h.id); }}
+                      style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '13px', padding: '2px 4px', lineHeight: 1 }}
+                      title="Remove from history"
+                    >✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
