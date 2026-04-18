@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 April 2026 (end of session 69). Upload every session alongside CLAUDE.md.*
+*Updated: 18 April 2026 (end of session 70). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -841,6 +841,9 @@ Source title uses chunk heading (not filename stem).
 
 ## FUTURE ROADMAP
 
+*Canonical location for all roadmap items. CLAUDE.md carries only OUTSTANDING PRIORITIES (current sprint). This section is reconciled at session close — completed items removed, new items added.*
+
+- **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
 - **Retrieval regression fixes (session 64 — NEXT PRIORITY):**
   - Step 1: Stub quarantine — soft-quarantine secondary_source rows with raw_text <300 chars AND truncation markers AND title-body overlap >0.6; filter flag in Qdrant (not hard delete); quarantined_chunks D1 table; re-run baseline gate: pass count ≥ 10, no pass→fail regressions
   - Step 2: Legislation whitelist/penalty — Core Criminal Acts exempt from SM_PENALTY (Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act); adjacent Acts (Misuse of Drugs, Police Offences, Road Safety, Firearms, Family Violence) penalised at 0.65 (or 0.75); keyword bridge for adjacent Act exemption per query; re-run baseline gate: Q1 common assault and Q11 s138 must improve, no pass→fail regressions
