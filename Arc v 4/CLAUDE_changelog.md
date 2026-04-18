@@ -7,6 +7,20 @@ Load condition: Load when investigating a past session's changes, debugging a re
 
 ---
 
+## CHANGES THIS SESSION (session 68) — 17 April 2026
+
+- **query_log INSERT — deploy gap confirmed and fixed** — query_log table had 0 rows despite INSERT statements existing in worker.js. Root cause: session 65 deploy gap (code never reached production). Redeployed with version `44f7cfc4`, confirmed working — D1 shows 1 row after first test query. Both `handleLegalQuery` and `handleLegalQueryWorkersAI` now log: query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version (`v67-feedback`). Zero-result early return path also logs. `query_id` (UUID) added to both handlers and returned in response body for feedback loop wiring.
+
+- **synthesis_feedback route wired** — `POST /api/pipeline/feedback` added to worker.js. X-Nexus-Key auth. Validates `feedback_type` against `['helpful','unhelpful','irrelevant','hallucinated']`. Requires `query_id` and `chunk_id`. Writes to `synthesis_feedback` D1 table with UUID id. Frontend thumbs up/down build documented as CC prompt (arcanthyr-ui not accessible from Cowork session).
+
+- **BM25 case_chunks_fts pass — Worker route deployed, server.py written locally** — New Worker route `GET /api/pipeline/case-chunks-fts-search`: FTS5 MATCH query with JOIN to cases table, returns chunk_id/citation/enriched_text(800)/case_name/court/subject_matter, X-Nexus-Key auth, limit max 50. New server.py function `fetch_case_chunks_fts(query_text)`: stop-word filtering, OR-joined terms (max 8), 10s timeout. Wired into `search_text()` after existing BM25 case-law layer, before domain filter. Applies `apply_sm_penalty()`, dedupes against `seen_ids` + `existing_ids`, multi-signal boosts existing matches with `BM25_SCORE_KEYWORD` (~0.0139). Bug fix: `existing_ids` initialization moved before `if refs:` block (was inside it — would have caused NameError on queries with no section refs). **Server.py deploy BLOCKED on re-embed** — deploy after baseline so BM25 impact can be isolated.
+
+- **BM25 interleave evaluation plan documented** — `BM25_INTERLEAVE_EVALUATION_PLAN.md` created in Arcanthyr Nexus. Design: start interleave score at 0.50 (just above Pass 1 threshold 0.45), only interleave novel hits not already in `seen_ids`, re-sort within appended pool only (strong Pass 1 results untouchable). Decision gate: pass count ≥ Part A baseline, zero pass→fail regressions allowed. Deferred until Part A (append at 0.0139) is deployed and baselined.
+
+- **Stare decisis cited_by fix — deployed and verified** — `case_citations.cited_case` stores authority NAMES ("House v The King") extracted by xref_agent.py GPT, not bracket citations. `handleCaseAuthority` cited_by query was matching citation against name — always empty. Fix: resolves citation→case_name via `SELECT case_name FROM cases WHERE citation = ? LIMIT 1`, then matches `WHERE LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?))` on case_name. Verified live: well-cited case returned 33 cited_by results with correct treatment pills (Cited/Applied), legislation refs populated, zero-cited case correctly showing 0. Worker version `d90ab456`.
+
+---
+
 ## CHANGES THIS SESSION (sessions 66-67) — 17 April 2026
 
 ### Legislation whitelist / SM_PENALTY — DEPLOYED (server.py)

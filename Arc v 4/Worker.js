@@ -1918,6 +1918,166 @@ function resolveActTitle(actName) {
   return actName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 }
 
+/* =============================================================
+   LEGISLATION CASE SEARCH — normaliseSectionQuery
+   Parses a free-form legislation query string into { sectionNum, actFrag }.
+   Designed as a single-responsibility helper so the stare decisis panel can
+   call /api/legal/search-by-legislation with the raw query string and all
+   normalisation happens here in the Worker (single source of truth).
+
+   sectionNum: alphanumeric section (e.g. "138", "16", "42AC") — or null.
+   actFrag:    lowercased act name fragment (e.g. "evidence act") — or null.
+   ============================================================= */
+function normaliseSectionQuery(raw) {
+  const q = (raw || '').trim();
+  if (!q) return null;
+
+  // Extract section number — handles: s 138, s.138, section 138, s138, ss 138, ss138
+  // Captures the alphanumeric suffix (42AC, 16A, 138) but not sub-clause brackets
+  const secMatch = q.match(/\bss?(?:ection)?\.?\s*(\d+[A-Za-z]{0,3})/i);
+  const sectionNum = secMatch ? secMatch[1] : null;
+
+  // Act fragment — strip section ref + sub-clauses, jurisdiction tag, year, "of the", then lowercase
+  const actFrag = q
+    .replace(/\bss?(?:ection)?\.?\s*\d+[A-Za-z]{0,3}(?:\s*\([^)]*\))*/gi, '')
+    .replace(/\((?:Tas|NSW|Vic|Qld|SA|WA|NT|ACT|Cth)\)/gi, '')
+    .replace(/\b(?:1[89]\d{2}|20\d{2})\b/g, '')
+    .replace(/\bof\s+the\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+
+  return { sectionNum, actFrag: actFrag || null };
+}
+
+/* =============================================================
+   GET /api/legal/search-by-legislation
+   Returns cases that cite a specific legislation section, drawn directly
+   from case_legislation_refs.  Pure SQL — no LLM, no VPS, no auth.
+   Follows the same no-auth pattern as handleLibraryList.
+
+   Query params:
+     q      — raw search string, e.g. "s 138 Evidence Act"
+     limit  — default 50, max 100
+     offset — pagination offset, default 0
+
+   Response shape (designed for stare decisis panel reuse):
+     { ok, query: { raw, sectionNum, actFrag },
+       results: [{ citation, case_name, court, case_date, holding,
+                   subject_matter, matched_refs }],
+       limit, offset, has_more, treatment_gap }
+
+   treatment_gap: true — case_legislation_refs has no treatment/context column
+   (applied / considered / interpreted). This is a gap in xref_agent.py;
+   the flag surfaces it to callers rather than silently omitting the field.
+   ============================================================= */
+async function handleSearchByLegislation(url, env) {
+  const q      = (url.searchParams.get('q') || '').trim();
+  const limit  = Math.min(Math.max(parseInt(url.searchParams.get('limit')  || '50', 10), 1), 100);
+  const offset = Math.max(parseInt(url.searchParams.get('offset') || '0', 10), 0);
+
+  const parsed = normaliseSectionQuery(q);
+  if (!parsed) return { ok: false, error: 'Missing query parameter q' };
+
+  const { sectionNum, actFrag } = parsed;
+  if (!sectionNum && !actFrag) {
+    return { ok: false, error: 'Could not parse a section number or act name from query' };
+  }
+
+  // Court ordering uses the actual stored D1 values (lowercase abbreviations)
+  const courtOrder = `CASE c.court WHEN 'cca' THEN 0 WHEN 'fullcourt' THEN 1 WHEN 'supreme' THEN 2 WHEN 'magistrates' THEN 3 ELSE 4 END`;
+
+  let stmt, params;
+
+  if (sectionNum && actFrag) {
+    // Both section + act — most precise.
+    // Six LIKE patterns cover the full format variation observed in case_legislation_refs:
+    //   "s N " (space after)   "s N(" (sub-clause)   "sN " / "sN("  (no space before digit)
+    //   "s N"  (end-of-string bare ref like "s 138")  "sN" (ditto, no space)
+    const sl1 = `%s ${sectionNum} %`;
+    const sl2 = `%s ${sectionNum}(%`;
+    const sl3 = `%s${sectionNum} %`;
+    const sl4 = `%s${sectionNum}(%`;
+    const sl5 = `s ${sectionNum}`;
+    const sl6 = `s${sectionNum}`;
+    const al  = `%${actFrag}%`;
+    stmt = env.DB.prepare(`
+      SELECT DISTINCT c.citation, c.case_name, c.court, c.case_date,
+             c.holding, c.subject_matter,
+             GROUP_CONCAT(clr.legislation_ref, ' | ') AS matched_refs
+      FROM case_legislation_refs clr
+      JOIN cases c ON c.citation = clr.citation
+      WHERE (
+            clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+      )
+        AND LOWER(clr.legislation_ref) LIKE LOWER(?)
+      GROUP BY c.citation
+      ORDER BY ${courtOrder}, c.case_date DESC
+      LIMIT ? OFFSET ?`);
+    params = [sl1, sl2, sl3, sl4, sl5, sl6, al, limit, offset];
+
+  } else if (sectionNum) {
+    // Section only — broader; may return many results across multiple acts
+    const sl1 = `%s ${sectionNum} %`;
+    const sl2 = `%s ${sectionNum}(%`;
+    const sl3 = `%s${sectionNum} %`;
+    const sl4 = `%s${sectionNum}(%`;
+    const sl5 = `s ${sectionNum}`;
+    const sl6 = `s${sectionNum}`;
+    stmt = env.DB.prepare(`
+      SELECT DISTINCT c.citation, c.case_name, c.court, c.case_date,
+             c.holding, c.subject_matter,
+             GROUP_CONCAT(clr.legislation_ref, ' | ') AS matched_refs
+      FROM case_legislation_refs clr
+      JOIN cases c ON c.citation = clr.citation
+      WHERE (
+            clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+         OR clr.legislation_ref LIKE ?
+      )
+      GROUP BY c.citation
+      ORDER BY ${courtOrder}, c.case_date DESC
+      LIMIT ? OFFSET ?`);
+    params = [sl1, sl2, sl3, sl4, sl5, sl6, limit, offset];
+
+  } else {
+    // Act name only — broad; useful for "Evidence Act" without a specific section
+    const al = `%${actFrag}%`;
+    stmt = env.DB.prepare(`
+      SELECT DISTINCT c.citation, c.case_name, c.court, c.case_date,
+             c.holding, c.subject_matter,
+             GROUP_CONCAT(clr.legislation_ref, ' | ') AS matched_refs
+      FROM case_legislation_refs clr
+      JOIN cases c ON c.citation = clr.citation
+      WHERE LOWER(clr.legislation_ref) LIKE LOWER(?)
+      GROUP BY c.citation
+      ORDER BY ${courtOrder}, c.case_date DESC
+      LIMIT ? OFFSET ?`);
+    params = [al, limit, offset];
+  }
+
+  const { results } = await stmt.bind(...params).all();
+  return {
+    ok: true,
+    query: { raw: q, sectionNum, actFrag },
+    results: results || [],
+    limit,
+    offset,
+    has_more: (results || []).length === limit,
+    // No treatment/context column in case_legislation_refs (applied/considered/interpreted).
+    // xref_agent.py should be extended to extract treatment for legislation refs.
+    treatment_gap: true,
+  };
+}
+
 /* Fetch a section from D1 and format as context block. Returns null if not found.
    For Criminal Code queries without a part specified, tries all parts sequentially. */
 async function fetchSectionContext(sectionNum, actName, env) {
@@ -3661,6 +3821,7 @@ export default {
           result = await handleLibraryDelete(docType, docId, env);
         }
         else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);
+        else if (action === "search-by-legislation" && request.method === "GET") result = await handleSearchByLegislation(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);

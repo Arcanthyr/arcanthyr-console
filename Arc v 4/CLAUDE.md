@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 18 April 2026 (end of session 70) · Supersedes all prior versions
+Updated: 18 April 2026 (end of session 71) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
 
@@ -11,13 +11,13 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | RE-EMBED IN PROGRESS — vocabulary anchor prepend deployed, ~12,600 case chunks remaining (down from 24,700) |
+| Qdrant general-docs-v2 | RE-EMBED IN PROGRESS — vocabulary anchor prepend deployed, ~7,549 case chunks remaining (~70% complete) |
 | D1 cases | 1,820 (scraper running) · 1,820 deep_enriched=1 · 0 stuck |
-| D1 case_chunks | 25,253 total · embedded=0: ~12,600 (re-embed ~50% complete with vocabulary anchors) |
-| D1 secondary_sources | 1,200 total (1,199 corpus + 1 nexus-save) · embedded=0: 0 (secondary source re-embed complete) |
+| D1 case_chunks | 25,253 total · embedded=0: ~7,549 (re-embed ~70% complete with vocabulary anchors) |
+| D1 secondary_sources | 1,201 total (1,200 corpus + 1 nexus-save) · embedded=0: ~2 (s94 chunk + nexus-save pending poller cycle) |
 | D1 case_chunks_fts | 25,236 rows — FTS5 index on case chunk enriched_text |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
-| D1 quarantined_chunks | 0 rows · stub quarantine table with signal columns, ready for post-baseline activation |
+| D1 quarantined_chunks | 253 rows · stub quarantine D1 complete · Qdrant script + server.py patch pre-staged at C:\Users\Hogan\OneDrive\Arcanthyr\ · filter deploy held for post-baseline |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows |
@@ -36,11 +36,11 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 ## OUTSTANDING PRIORITIES
 
-1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (~12,600 case chunks remaining, secondary sources complete). When `embedded=0` count hits zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
+1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (~7,549 case chunks remaining, ~70% complete). When `embedded=0` count hits zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
 2. **Deploy server.py BM25 case_chunks_fts pass** — code written and tested locally (session 68). `fetch_case_chunks_fts()` function + wiring into `search_text()` after existing BM25 layers. BLOCKED on re-embed completion — deploy after baseline so impact can be isolated. SCP + force-recreate required.
-3. **Stub quarantine (Step 1 from session 64)** — soft-quarantine secondary_source rows with raw_text <300 chars; filter flag in Qdrant + quarantined_chunks D1 table (already created session 66); not hard delete. 253 stubs identified. Build after re-embed baseline confirms vocabulary anchor impact.
+3. **Stub quarantine (Step 1 from session 64)** — D1 complete (253 rows in quarantined_chunks). Scripts pre-staged: `quarantine_stubs.py` (Qdrant payload updater) + `server_py_quarantine_patch.txt` (server.py must_not filter) both at `C:\Users\Hogan\OneDrive\Arcanthyr\`. Deploy sequence after baseline: (1) run quarantine_stubs.py on VPS to set quarantined=true on 253 Qdrant points, (2) apply server.py must_not patch to Pass 3 query, (3) SCP + force-recreate agent-general, (4) re-run baseline for isolated delta. Gate: pass count ≥ 13, zero P→F regressions.
 4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. Evaluation plan documented in `BM25_INTERLEAVE_EVALUATION_PLAN.md` (Arcanthyr Nexus). Evaluate after vocabulary anchors + FTS5 append are baselined.
-5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped.
+5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped. Steps 3 and 4 (vocabulary injection + enrichment prompt fix) also explicitly deferred until post-re-embed baseline analysis complete — may be deprioritised if vocabulary anchors produce strong improvement.
 6. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
 
 ---
@@ -66,6 +66,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Scraper no per-case resume** — progress file only stores court_year: "done"
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
+- **Health check false positive (tendency evidence contradiction)** — "Tendency Evidence Exclusion in Bail Hearings" vs "Tendency Evidence Requirements and Admissibility" flagged as contradiction by GPT-4o-mini health check. Not a genuine contradiction — s 94 EA correctly exempts bail proceedings from tendency/coincidence rules; the two chunks describe different contexts. Resolved by s94 chunk ingested session 71. Monitor in next health check run.
 - **Q1 retrieval regression (common assault)** — Misuse of Drugs Act s1 scoring above assault chunk. Vocabulary anchor prepend (session 65) may resolve by anchoring both chunks to their correct domains. Re-test after re-embed completes.
 - **Q11 retrieval regression (s138 voir dire)** — returning wrong Evidence Act sections. Vocabulary anchor prepend (session 65) will re-inject CONCEPTS terms (s138, voir dire, improperly obtained) at embedding time without re-enrichment. Re-test after re-embed completes.
 
@@ -77,7 +78,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 |---|---|
 | Read this file first | Always |
 | Upload both files | Upload CLAUDE.md AND CLAUDE_arch.md at the start of every session — both are required |
-| Conditional file loading | Load CLAUDE_init.md only when the task involves CLI commands, wrangler deploys, Docker/SSH ops, or PowerShell scripting · Load CLAUDE_decisions.md only when making architectural changes, evaluating design tradeoffs, or when a past decision is directly relevant · Load CLAUDE_changelog.md only when investigating past sessions or debugging regressions to a specific date · Do not load any speculatively |
+| Conditional file loading | If the task involves CLI commands, wrangler deploys, Docker/SSH ops, or PowerShell scripting — ask Tom to upload CLAUDE_init.md before proceeding · If making architectural changes, evaluating design tradeoffs, or referencing a past decision — ask Tom to upload CLAUDE_decisions.md · If investigating past sessions or debugging a regression to a specific date — ask Tom to upload CLAUDE_changelog.md · Do not request any speculatively |
 | Diagnose from actual output | Before recommending any fix |
 | PowerShell setup | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` at start of every PS session — required before any wrangler/npx command |
 | Always specify terminal | Every command must state: which terminal (VS Code, PowerShell, SSH/VPS) AND which directory |
@@ -212,37 +213,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Worker versions this session** — `96751a35` (Save to Nexus + Flag), `b7fbe37f` (delete action + date title), `c0312c37` (date in ID slug), `9bde6961` (query history)
 - **Git commits this session** — `40eb0f9`, `104925a`
 
-## CHANGES THIS SESSION (session 68) — 17 April 2026
-
-- **query_log INSERT — deploy gap confirmed and fixed** — query_log table had 0 rows despite INSERT statements existing in worker.js. Root cause: session 65 deploy gap (code never reached production). Redeployed with version `44f7cfc4`, confirmed working — D1 shows 1 row after first test query. Both `handleLegalQuery` and `handleLegalQueryWorkersAI` now log: query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version (`v67-feedback`). Zero-result early return path also logs. `query_id` (UUID) added to both handlers and returned in response body for feedback loop wiring.
-
-- **synthesis_feedback route wired** — `POST /api/pipeline/feedback` added to worker.js. X-Nexus-Key auth. Validates `feedback_type` against `['helpful','unhelpful','irrelevant','hallucinated']`. Requires `query_id` and `chunk_id`. Writes to `synthesis_feedback` D1 table with UUID id. Frontend thumbs up/down build documented as CC prompt (arcanthyr-ui not accessible from Cowork session).
-
-- **BM25 case_chunks_fts pass — Worker route deployed, server.py written locally** — New Worker route `GET /api/pipeline/case-chunks-fts-search`: FTS5 MATCH query with JOIN to cases table, returns chunk_id/citation/enriched_text(800)/case_name/court/subject_matter, X-Nexus-Key auth, limit max 50. New server.py function `fetch_case_chunks_fts(query_text)`: stop-word filtering, OR-joined terms (max 8), 10s timeout. Wired into `search_text()` after existing BM25 case-law layer, before domain filter. Applies `apply_sm_penalty()`, dedupes against `seen_ids` + `existing_ids`, multi-signal boosts existing matches with `BM25_SCORE_KEYWORD` (~0.0139). Bug fix: `existing_ids` initialization moved before `if refs:` block (was inside it — would have caused NameError on queries with no section refs). **Server.py deploy BLOCKED on re-embed** — deploy after baseline so BM25 impact can be isolated.
-
-- **BM25 interleave evaluation plan documented** — `BM25_INTERLEAVE_EVALUATION_PLAN.md` created in Arcanthyr Nexus. Design: start interleave score at 0.50 (just above Pass 1 threshold 0.45), only interleave novel hits not already in `seen_ids`, re-sort within appended pool only (strong Pass 1 results untouchable). Decision gate: pass count ≥ Part A baseline, zero pass→fail regressions allowed. Deferred until Part A (append at 0.0139) is deployed and baselined.
-
-- **Stare decisis cited_by fix — deployed and verified** — `case_citations.cited_case` stores authority NAMES ("House v The King") extracted by xref_agent.py GPT, not bracket citations. `handleCaseAuthority` cited_by query was matching citation against name — always empty. Fix: resolves citation→case_name via `SELECT case_name FROM cases WHERE citation = ? LIMIT 1`, then matches `WHERE LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?))` on case_name. Verified live: well-cited case returned 33 cited_by results with correct treatment pills (Cited/Applied), legislation refs populated, zero-cited case correctly showing 0. Worker version `d90ab456`.
-
-- **Corpus health audit** — D1 counts refreshed via Cloudflare MCP: 1,820 cases (1,819 deep_enriched), 25,253 chunks (24,400 embed backlog from re-embed), 1,199 secondary sources (299 embed backlog), 6,959 case_citations (up from 5,340 — xref nightly cron productive), 5,147 case_legislation_refs (up from 4,056). One stuck case: [2023] TASSC 6 — 14 chunks all done, deep_enriched=0 (merge never fired). Requeue-merge command documented in Outstanding Priorities.
-
-- **worker.js version** — `d90ab456` (final, includes all session 68 changes: query_log fix, synthesis_feedback route, case-chunks-fts-search route, stare decisis cited_by name-match fix)
-
-### Opus retrieval regression review — key conclusions
-- Five failure modes confirmed (A, A′, B, C, D) — A and C are the active levers
-- Do NOT use GPT-4o-mini to expand stubs from titles — hallucination risk for legal content, unacceptable
-- Stub remediation: soft-quarantine (filter flag in Qdrant + quarantined_chunks D1 table) not hard delete — reversible
-- Legislation penalty: whitelist approach — Core Criminal Acts (Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act) exempt; adjacent Acts (Misuse of Drugs, Police Offences etc.) penalised unless keyword bridge matches query
-- Sequencing: Step 0 (baseline freeze) → Step 1 (stub quarantine) → Step 2 (legislation whitelist) → Step 3 (vocab injection, deferred pending Opus prompt session) → Step 4 (re-baseline)
-- Step 3 cost is LOW: 1,081 rows have Concepts terms recoverable from raw_text — no LLM re-derivation needed for most rows
-
-### Outstanding after this session
-- Stub quarantine (Step 1) — not yet built
-- Legislation whitelist/penalty (Step 2) — not yet built
-- Enrichment prompt fix — pending Opus session
-- Vocab injection pass (Step 3) — pending Opus session + prompt fix
-- Q27 (provocation), Q31 (right to silence) — confirmed corpus gaps, need authorship
-
 ## CHANGES THIS SESSION (session 70) — 18 April 2026
 
 - **CLAUDE.md restructured — 1,598 → 413 lines (74% reduction)** — reordered from rules-first to state-first layout: SYSTEM STATE → OUTSTANDING PRIORITIES → KNOWN ISSUES → SESSION RULES → changelog (last 3 sessions) → END-OF-SESSION/POLLER/BASELINE procedures. Operational content now in first 190 lines. Truncation-tolerance note added to SESSION RULES table. CLAUDE_changelog.md conditional loading rule added. Why: 82% of CLAUDE.md was changelog history (sessions 21–69); context dilution was degrading Claude's attention to operational rules. Context engineering wiki article recommends 150–200 line context files; 413 is within the 500-line skill-file ceiling.
@@ -256,6 +226,26 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Structure review document produced** — `CLAUDE_MD_STRUCTURE_REVIEW.md` written to Arcanthyr Nexus with analysis of all four questions (archival cutoff, file split validity, conversation archive home, truncation fix), risk assessments per recommendation, and implementation sequencing.
 
 - **Key decisions this session** — 3-session retention window (not date-based or relevance-based); state-first section order (not rules-first); CLAUDE_changelog.md as separate fifth file (not folded into CLAUDE_decisions.md); conversation archive reasoning → CLAUDE_decisions.md, rich flows → Vault wiki; skip hand-maintained CLAUDE_decisions.md summary (rely on conditional loading + future extract_decisions.py enhancement if needed).
+
+---
+
+## CHANGES THIS SESSION (session 71) — 18 April 2026
+
+- **Stub quarantine — D1 complete, scripts pre-staged** — D1: 253 rows inserted into `quarantined_chunks` via `INSERT OR IGNORE ... SELECT FROM secondary_sources WHERE LENGTH(TRIM(COALESCE(raw_text,''))) < 300`. All 253 confirmed `embedded=1`. Qdrant backfill script (`quarantine_stubs.py`) and server.py `must_not` patch (`server_py_quarantine_patch.txt`) written and saved to `C:\Users\Hogan\OneDrive\Arcanthyr\`. Server.py filter intentionally NOT deployed — held for post-re-embed baseline so stub quarantine impact is measured as isolated delta from vocabulary anchor delta. Why: conflating both changes in one baseline measurement would prevent isolating which intervention helped.
+
+- **Step 2 legislation whitelist — confirmed already live on VPS** — grep confirmed `LEG_WHITELIST_CORE`, `LEG_WHITELIST_ADJACENT`, `LEG_PENALTY_ADJACENT=0.85` all present and wired in live server.py. CLAUDE_arch.md roadmap entry was stale. Removed from roadmap.
+
+- **Stare decisis UI — confirmed already live** — Opus inspection of compiled bundle confirmed `caseAuthority()` API, cited-by pill, treatment summary pills, and cited-by/cites-to list sections all deployed. CLAUDE_arch.md roadmap entry was stale. Removed from roadmap.
+
+- **Steps 3 and 4 explicitly gated on embedding analysis** — Step 3 (vocabulary injection) and Step 4 (enrichment prompt fix) both deferred until post-re-embed baseline measured. If vocabulary anchors produce strong improvement, both may be deprioritised indefinitely. Outstanding Priorities updated.
+
+- **Health check report reviewed (run 2026-04-15)** — 13 clusters, 1 contradiction (false positive — see KNOWN ISSUES), 28 gaps triaged: ~8 stub-driven (resolved by quarantine filter deploy), ~15 false gaps (content exists, health check AI couldn't reach it through thin referencing chunks), ~5 genuine authoring candidates: s 94 bail exemption (actioned this session), Parker v Tasmania, Garcie v Lusted, common purpose doctrine, A v Roughan s 11A.
+
+- **s 94 Evidence Act chunk authored and ingested** — New secondary source: "Evidence Act 2001 (Tas) s 94 — Tendency and Coincidence Rules Excluded from Bail Hearings". Category: doctrine. 2,226 chars. Pre-formatted block, bypassed GPT call. In D1 `embedded=0`, poller will embed next cycle. Resolves health check false-positive contradiction and fills bail cluster gap — s 94 was referenced as assumed knowledge in a 102-char stub (now quarantined) with no substantive explanatory chunk.
+
+- **Legislation section search in Library — built and deployed (session 71)** — New feature allowing practitioners to search for cases by legislation section reference, drawn directly from the `case_legislation_refs` D1 table. Pure SQL — no LLM, no VPS, no Qdrant involved. New Worker route: `GET /api/legal/search-by-legislation?q=…&limit=50&offset=0` — no auth required, follows same unauthenticated pattern as `handleLibraryList`. Accepts free-form query string (e.g. "s 138 Evidence Act", "section 16 Criminal Code") and returns matching cases with citation, case name, court, date, holding, subject matter, and all matched legislation refs (GROUP_CONCAT). Court ordering: cca → fullcourt → supreme → magistrates, then case_date DESC. Limit/offset pagination. Returns `treatment_gap: true` on every response to flag that `case_legislation_refs` has no treatment/context column — gap for xref_agent.py to address. New helper: `normaliseSectionQuery(raw)` in worker.js — extracts `sectionNum` and `actFrag` from raw query string, strips "s ", "section", ".", jurisdiction tags, years, "of the". Three SQL code paths: section + act (most precise, six LIKE patterns covering all stored formats), section-only (broader), act-only (broadest). Data quality audit: 5,147 rows, 88.9% have section number in LIKE-matchable form, 7.6% act-only refs, zero null/empty rows. Frontend: `CasesTable` in Library.jsx extended with two-button mode toggle ("Name / Citation" / "Legislation section"). New `LegislationResultsTable` component (columns: Citation, Case, Court, Year, Matched sections, Holding). Clicking result opens existing reading pane normally. Files changed: `Arc v 4/worker.js`, `arcanthyr-ui/src/api.js`, `arcanthyr-ui/src/pages/Library.jsx`.
+
+- **SYSTEM STATE check rule added** — Two tasks sent to Opus this session that were already live (legislation whitelist, stare decisis UI). Root cause: SYSTEM STATE table not checked before proposing work. Rule added: always check SYSTEM STATE before suggesting any item as outstanding work.
 
 ---
 
@@ -353,3 +343,4 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 **Note:** Baseline rerun required after chunk cleanup completes and poller re-embeds.
 
 ---
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

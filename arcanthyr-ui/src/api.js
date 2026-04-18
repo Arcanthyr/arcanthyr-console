@@ -28,6 +28,8 @@ export const api = {
   library:       ()           => req('GET',  '/api/legal/library'),
   caseStatus:    (citation)   => req('GET',  `/api/legal/case-status?citation=${encodeURIComponent(citation)}`),
   caseAuthority: (citation)   => req('GET',  `/api/legal/case-authority?citation=${encodeURIComponent(citation)}`),
+  searchByLegislation: (q, limit = 50, offset = 0) =>
+    req('GET', `/api/legal/search-by-legislation?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`),
   share:         (body)       => req('POST', '/api/legal/share', body),
   requeueChunks: (nexusKey)   => req('POST', '/api/admin/requeue-chunks', {}, { 'X-Nexus-Key': nexusKey }),
 

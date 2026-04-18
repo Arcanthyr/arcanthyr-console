@@ -204,13 +204,29 @@ export default function Library() {
 }
 
 /* ── Cases table ───────────────────────────────────────────── */
+const modeBtnStyle = (active) => ({
+  padding: '5px 14px', fontSize: '12px', borderRadius: '4px', cursor: 'pointer',
+  background: active ? 'rgba(74,158,255,0.15)' : 'transparent',
+  border: `1px solid ${active ? '#4A9EFF' : 'var(--border)'}`,
+  color: active ? '#4A9EFF' : 'var(--text-secondary)',
+});
+
 function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTruncationClick }) {
+  // Name/citation search state
   const [search, setSearch] = useState('');
   const [courtFilter, setCourtFilter] = useState([]);
   const [yearFilter, setYearFilter] = useState([]);
 
+  // Legislation section search state
+  const [searchMode, setSearchMode] = useState('name');     // 'name' | 'legislation'
+  const [legQuery, setLegQuery] = useState('');
+  const [legResults, setLegResults] = useState(null);       // null = not searched yet
+  const [legLoading, setLegLoading] = useState(false);
+  const [legOffset, setLegOffset] = useState(0);
+  const [legHasMore, setLegHasMore] = useState(false);
+
   const courts = [...new Set(rows.map(r => r.court).filter(Boolean))].sort();
-  const years = [...new Set(rows.map(r => r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0]).filter(Boolean))].sort().reverse();
+  const years  = [...new Set(rows.map(r => r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0]).filter(Boolean))].sort().reverse();
 
   const filtered = rows.filter(r => {
     const matchSearch = !search ||
@@ -234,79 +250,176 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     color: active ? '#4A9EFF' : 'var(--text-secondary)',
   });
 
+  function handleModeSwitch(mode) {
+    setSearchMode(mode);
+    setLegResults(null);
+    setLegQuery('');
+    setLegOffset(0);
+    setLegHasMore(false);
+  }
+
+  async function runLegSearch(q, offset = 0) {
+    if (!q.trim()) return;
+    setLegLoading(true);
+    try {
+      const r = await api.searchByLegislation(q, 50, offset);
+      const incoming = r.result?.results ?? r.results ?? [];
+      setLegResults(offset === 0 ? incoming : [...(legResults || []), ...incoming]);
+      setLegHasMore(r.result?.has_more ?? r.has_more ?? false);
+      setLegOffset(offset);
+    } catch (e) {
+      console.error('Legislation search failed:', e);
+      if (offset === 0) setLegResults([]);
+    } finally {
+      setLegLoading(false);
+    }
+  }
+
   return (
     <>
-      <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search citation or case name…"
-          style={{ padding: '8px 12px', fontSize: '13px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', width: '100%', boxSizing: 'border-box' }}
-        />
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {courts.map(c => (
-            <button key={c} onClick={() => toggleChip(courtFilter, setCourtFilter, c)} style={chipStyle(courtFilter.includes(c))}>{c}</button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {years.map(y => (
-            <button key={y} onClick={() => toggleChip(yearFilter, setYearFilter, y)} style={chipStyle(yearFilter.includes(y))}>{y}</button>
-          ))}
-        </div>
+      {/* Search mode toggle */}
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+        <button onClick={() => handleModeSwitch('name')} style={modeBtnStyle(searchMode === 'name')}>
+          Name / Citation
+        </button>
+        <button onClick={() => handleModeSwitch('legislation')} style={modeBtnStyle(searchMode === 'legislation')}>
+          Legislation section
+        </button>
       </div>
-      <Table
-        cols={['Citation', 'Title / Subject', 'Court', 'Chunks', 'Status', 'Actions']}
-        rows={filtered}
-        renderRow={r => {
-          const url = austliiUrl(r.ref || r.citation);
-          const isMalformed = (r.ref || '').includes('{');
-          const isSelected = r.id === selectedId;
-          return (
-            <tr
-              key={r.id}
-              onClick={() => onSelect(r)}
-              style={{
-                opacity: isMalformed ? 0.6 : 1,
-                cursor: 'pointer',
-                background: isSelected ? 'var(--surface-hover)' : 'transparent',
-                borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
-              }}
+
+      {searchMode === 'name' ? (
+        /* ── Name / citation search (existing behaviour) ── */
+        <>
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search citation or case name…"
+              style={{ padding: '8px 12px', fontSize: '13px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {courts.map(c => (
+                <button key={c} onClick={() => toggleChip(courtFilter, setCourtFilter, c)} style={chipStyle(courtFilter.includes(c))}>{c}</button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {years.map(y => (
+                <button key={y} onClick={() => toggleChip(yearFilter, setYearFilter, y)} style={chipStyle(yearFilter.includes(y))}>{y}</button>
+              ))}
+            </div>
+          </div>
+          <Table
+            cols={['Citation', 'Title / Subject', 'Court', 'Chunks', 'Status', 'Actions']}
+            rows={filtered}
+            renderRow={r => {
+              const url = austliiUrl(r.ref || r.citation);
+              const isMalformed = (r.ref || '').includes('{');
+              const isSelected = r.id === selectedId;
+              return (
+                <tr
+                  key={r.id}
+                  onClick={() => onSelect(r)}
+                  style={{
+                    opacity: isMalformed ? 0.6 : 1,
+                    cursor: 'pointer',
+                    background: isSelected ? 'var(--surface-hover)' : 'transparent',
+                    borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
+                  }}
+                >
+                  <td style={tdMono}>{r.ref || r.citation}</td>
+                  <td style={td}>
+                    <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.title}</div>
+                    {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
+                  </td>
+                  <td style={td}>{courtTag(r.court)}</td>
+                  <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
+                    {r.chunks_embedded}/{r.chunk_count}
+                  </td>
+                  <td style={td}>
+                    {truncationMap[r.id] ? (
+                      <button
+                        onClick={e => { e.stopPropagation(); onTruncationClick({ ...truncationMap[r.id], case: r }); }}
+                        style={{
+                          background: 'var(--red)', color: '#fff', border: 'none',
+                          borderRadius: '12px', padding: '2px 10px', fontSize: '11px',
+                          fontWeight: 700, cursor: 'pointer',
+                        }}
+                      >
+                        Incomplete
+                      </button>
+                    ) : statusDot(r)}
+                  </td>
+                  <td style={td}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {url && r.enriched && (
+                        <a href={url} target="_blank" rel="noopener" onClick={e => e.stopPropagation()} style={{ fontSize: '11px', color: 'var(--accent)' }}>AustLII ↗</a>
+                      )}
+                      <button onClick={e => { e.stopPropagation(); onDelete('case', r.ref || r.id); }} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            }}
+          />
+        </>
+      ) : (
+        /* ── Legislation section search ── */
+        <div>
+          <form
+            onSubmit={e => { e.preventDefault(); runLegSearch(legQuery); }}
+            style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}
+          >
+            <input
+              value={legQuery}
+              onChange={e => setLegQuery(e.target.value)}
+              placeholder="e.g. s 138 Evidence Act, section 16 Criminal Code, s 75 Sentencing Act"
+              style={{ flex: 1, padding: '8px 12px', fontSize: '13px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', boxSizing: 'border-box' }}
+            />
+            <button
+              type="submit"
+              disabled={legLoading || !legQuery.trim()}
+              style={{ padding: '8px 18px', fontSize: '13px', background: 'rgba(74,158,255,0.15)', border: '1px solid #4A9EFF', borderRadius: '4px', color: '#4A9EFF', cursor: 'pointer', whiteSpace: 'nowrap', opacity: (legLoading || !legQuery.trim()) ? 0.5 : 1 }}
             >
-              <td style={tdMono}>{r.ref || r.citation}</td>
-              <td style={td}>
-                <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.title}</div>
-                {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
-              </td>
-              <td style={td}>{courtTag(r.court)}</td>
-              <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                {r.chunks_embedded}/{r.chunk_count}
-              </td>
-              <td style={td}>
-                {truncationMap[r.id] ? (
-                  <button
-                    onClick={e => { e.stopPropagation(); onTruncationClick({ ...truncationMap[r.id], case: r }); }}
-                    style={{
-                      background: 'var(--red)', color: '#fff', border: 'none',
-                      borderRadius: '12px', padding: '2px 10px', fontSize: '11px',
-                      fontWeight: 700, cursor: 'pointer',
-                    }}
-                  >
-                    Incomplete
-                  </button>
-                ) : statusDot(r)}
-              </td>
-              <td style={td}>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {url && r.enriched && (
-                    <a href={url} target="_blank" rel="noopener" onClick={e => e.stopPropagation()} style={{ fontSize: '11px', color: 'var(--accent)' }}>AustLII ↗</a>
-                  )}
-                  <button onClick={e => { e.stopPropagation(); onDelete('case', r.ref || r.id); }} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
-                </div>
-              </td>
-            </tr>
-          );
-        }}
-      />
+              {legLoading ? 'Searching…' : 'Search'}
+            </button>
+          </form>
+
+          {legResults === null && !legLoading && (
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
+              Search by section reference — e.g. "s 138 Evidence Act" or "section 16 Criminal Code"
+            </div>
+          )}
+
+          {legResults !== null && !legLoading && legResults.length === 0 && (
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
+              No cases found for this section.
+            </div>
+          )}
+
+          {legResults !== null && legResults.length > 0 && (
+            <>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
+                {legResults.length} case{legResults.length !== 1 ? 's' : ''}{legHasMore ? '+' : ''} · ordered by court hierarchy, then date
+              </div>
+              <LegislationResultsTable
+                results={legResults}
+                rows={rows}
+                onSelect={onSelect}
+                selectedId={selectedId}
+              />
+              {legHasMore && (
+                <button
+                  onClick={() => runLegSearch(legQuery, legOffset + 50)}
+                  disabled={legLoading}
+                  style={{ marginTop: '14px', padding: '6px 18px', fontSize: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                >
+                  {legLoading ? 'Loading…' : 'Load more'}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 }
@@ -512,6 +625,58 @@ function LegislationTable({ rows, onDelete }) {
 }
 
 /* ── Shared ────────────────────────────────────────────────── */
+
+/* ── Legislation results table ─────────────────────────────── */
+function LegislationResultsTable({ results, rows, onSelect, selectedId }) {
+  // When a result is clicked, prefer the full library row so the reading pane
+  // gets all fields (facts, principles_extracted, etc.). Falls back to the
+  // partial legislation-search row if the case isn't in the library list yet.
+  function selectRow(r) {
+    const full = rows.find(x => (x.ref || x.citation) === r.citation);
+    onSelect(full || { ...r, ref: r.citation, title: r.case_name, date: r.case_date });
+  }
+
+  return (
+    <Table
+      cols={['Citation', 'Case', 'Court', 'Year', 'Matched sections', 'Holding']}
+      rows={results}
+      renderRow={r => {
+        const isSelected = r.citation === selectedId || r.citation === (rows.find(x => x.id === selectedId)?.ref);
+        return (
+          <tr
+            key={r.citation}
+            onClick={() => selectRow(r)}
+            style={{
+              cursor: 'pointer',
+              background: isSelected ? 'var(--surface-hover)' : 'transparent',
+              borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
+            }}
+          >
+            <td style={tdMono}>{r.citation}</td>
+            <td style={td}>
+              <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
+              {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
+            </td>
+            <td style={td}>{courtTag(r.court)}</td>
+            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+              {r.case_date?.slice(0, 4) || '—'}
+            </td>
+            <td style={{ ...td, maxWidth: '200px' }}>
+              {r.matched_refs?.split(' | ').map((ref, i) => (
+                <div key={i} style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--text-secondary)', marginBottom: '2px' }}>{ref}</div>
+              ))}
+            </td>
+            <td style={{ ...td, maxWidth: '220px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                {r.holding || '—'}
+              </div>
+            </td>
+          </tr>
+        );
+      }}
+    />
+  );
+}
 
 function Table({ cols, rows, renderRow }) {
   return (

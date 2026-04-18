@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 April 2026 (end of session 70). Upload every session alongside CLAUDE.md.*
+*Updated: 18 April 2026 (end of session 71). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -539,7 +539,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
-| `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · empty, ready for post-baseline activation |
+| `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · 253 rows · Qdrant filter deploy held for post-baseline |
 | `synthesis_feedback` | `id` TEXT (UUID) | Query feedback — `query_id`, `chunk_id`, `feedback_type` (CHECK: helpful/unhelpful/irrelevant/hallucinated), `comment`, `created_at` · empty, ready for route wiring |
 
 ---
@@ -846,14 +846,13 @@ Source title uses chunk heading (not filename stem).
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
 - **Retrieval regression fixes (session 64 — NEXT PRIORITY):**
   - Step 1: Stub quarantine — soft-quarantine secondary_source rows with raw_text <300 chars AND truncation markers AND title-body overlap >0.6; filter flag in Qdrant (not hard delete); quarantined_chunks D1 table; re-run baseline gate: pass count ≥ 10, no pass→fail regressions
-  - Step 2: Legislation whitelist/penalty — Core Criminal Acts exempt from SM_PENALTY (Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act); adjacent Acts (Misuse of Drugs, Police Offences, Road Safety, Firearms, Family Violence) penalised at 0.65 (or 0.75); keyword bridge for adjacent Act exemption per query; re-run baseline gate: Q1 common assault and Q11 s138 must improve, no pass→fail regressions
-  - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2); deferred pending enrichment prompt Opus session
-  - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64
+  - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — explicitly gated on post-re-embed baseline analysis. May be deprioritised if vocabulary anchors produce strong improvement.
+  - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64. DEFERRED — same gate as Step 3.
 - **subject_matter filter** — Part 1 (Worker route JOIN) confirmed deployed. Part 2 (poller metadata dict) deployed session 60. Part 3 (re-embed backlog ~7,046 chunks) in progress — poller writing correct payloads from session 60 onwards. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter on Pass 3 once backlog clears to 0.
+- **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
 - **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
 - **Citation authority agent (xref_agent.py)** — COMPLETE. Tables populated: 5,340 case_citations, 4,056 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: stare decisis UI layer (see below).
 - **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
-- **Stare decisis UI layer** — surface citation treatment history in case detail view. Data source: `case_citations` (5,340 rows, criminal/mixed only) and `case_legislation_refs` (4,056 rows). Show: cited-by count, treatment breakdown (applied/distinguished/not followed), which cases this case cites. Frontend build on case detail panel — no backend work needed, data already in D1.
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
