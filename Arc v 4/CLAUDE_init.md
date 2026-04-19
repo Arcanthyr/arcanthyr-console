@@ -281,3 +281,28 @@ Third-party MCP server for AustLII/Jade case search. Runs on VPS, registered in 
 - `/fetch-page` is a URL-param FastAPI endpoint (`GET /fetch-page?url=...`) — takes a URL and returns rendered content
 - Does NOT speak the HTTP CONNECT proxy protocol — cannot be used as `HTTPS_PROXY` target
 - If a third-party tool needs central outbound gating, either stand up a real proxy (Squid/mitmproxy) or modify the tool to call `/fetch-page` explicitly per-URL
+
+### auslaw-mcp `search_cases` timeout
+
+- AustLII CGI endpoint slowness, not IP block. Use `search_by_citation` for known citations (round-trips fast). `search_cases` retry on short queries only.
+- Same backend as Quick Search Phase 2 (`/fetch-page` proxy to sinosrch.cgi) — Phase 2 build will need timeout tolerance.
+
+### server.py `/search` top_k cap
+
+- Line 296: `top_k = min(int(body.get("top_k", 6)), 12)`. Hard-caps at 12 regardless of client request.
+- BM25 FTS new-chunk recall structurally gated by this cap. When running `retrieval_baseline.sh` or any curl test, requesting top_k > 12 silently returns only 12.
+
+### server.py must_not quarantine filter
+
+- LIVE on all three Qdrant passes. `grep -c "must_not" /home/tom/ai-stack/agent-general/src/server.py` must return 3 after any edit.
+- If it returns a different number, a patch has accidentally removed or duplicated one of the filters.
+
+### BM25 FTS deploy location
+
+- `fetch_case_chunks_fts()` at server.py line ~141, call site inside `search_text()` after case-law BM25 block, before domain filter.
+- Chunks tagged `bm25_source="case_chunks_fts"`. Case-law BM25 layer uses `bm25_source="case_legislation_ref"` — two distinct FTS pathways, both live.
+
+### qvenv for VPS Python scripts
+
+- `/tmp/qvenv` — venv on VPS host with `qdrant-client` installed, created session 73 for quarantine_stubs.py (qdrant-client not on system Python, and script hardcodes localhost:6334 so couldn't run inside agent-general container).
+- Activate with `source /tmp/qvenv/bin/activate`. Reusable for any future VPS-host Python work touching Qdrant directly.

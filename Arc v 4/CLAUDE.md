@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 19 April 2026 (end of session 72) · Supersedes all prior versions
+Updated: 19 April 2026 (end of session 73) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
 
@@ -13,11 +13,11 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 |---|---|
 | Qdrant general-docs-v2 | RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
-| D1 case_chunks | 26,051 total · embedded=0: 0 (re-embed COMPLETE) |
-| D1 secondary_sources | 1,201 total · embedded=0: 1 (pending poller cycle) |
+| D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
+| D1 secondary_sources | 1,201 total · embedded=0: 1 (orphaned Nexus save nexus-save-2026-04-18-1776478272663, null enriched_text — pending investigation) |
 | D1 case_chunks_fts | 25,236 rows — FTS5 index on case chunk enriched_text |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
-| D1 quarantined_chunks | 253 rows · stub quarantine D1 complete · Qdrant script + server.py patch pre-staged at C:\Users\Hogan\OneDrive\Arcanthyr\ · filter deploy held for post-baseline |
+| D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all three passes (Pass 1, Pass 2, Pass 3) |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows |
@@ -29,21 +29,28 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | Stare decisis UI | LIVE |
 | Save to Nexus | LIVE — approved column, approval gate, pending review in Library, delete action (D1+FTS5+Qdrant cleanup) |
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
-| Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · RE-RUN REQUIRED after re-embed completes |
+| Baseline (31 queries) | 24P / 4Pa / 3M — session 73 (19 Apr 2026) · post-reembed + stub-quarantine + BM25-FTS-append deploy · up from 13P/9Pa/9M at session 64 |
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) |
+| BM25 case_chunks_fts | LIVE — server.py fetch_case_chunks_fts() deployed, append+boost mode, top_k=12 server-side cap limits new-chunk promotion (interleave design Priority #1 addresses) |
 
 ---
 
 ## OUTSTANDING PRIORITIES
 
-1. **Re-embed baseline rerun** — BLOCKED on re-embed completion (~7,549 case chunks remaining, ~70% complete). When `embedded=0` count hits zero, run full 31-query baseline. Compare against session 64 (13P/9Pa/9M). This is the validation gate for the session 65 system review fixes.
-2. **Deploy server.py BM25 case_chunks_fts pass** — code written and tested locally (session 68). `fetch_case_chunks_fts()` function + wiring into `search_text()` after existing BM25 layers. BLOCKED on re-embed completion — deploy after baseline so impact can be isolated. SCP + force-recreate required.
-3. **Stub quarantine (Step 1 from session 64)** — D1 complete (253 rows in quarantined_chunks). Scripts pre-staged: `quarantine_stubs.py` (Qdrant payload updater) + `server_py_quarantine_patch.txt` (server.py must_not filter) both at `C:\Users\Hogan\OneDrive\Arcanthyr\`. Deploy sequence after baseline: (1) run quarantine_stubs.py on VPS to set quarantined=true on 253 Qdrant points, (2) apply server.py must_not patch to Pass 3 query, (3) SCP + force-recreate agent-general, (4) re-run baseline for isolated delta. Gate: pass count ≥ 13, zero P→F regressions.
-4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. Evaluation plan documented in `BM25_INTERLEAVE_EVALUATION_PLAN.md` (Arcanthyr Nexus). Evaluate after vocabulary anchors + FTS5 append are baselined.
-5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped. Steps 3 and 4 (vocabulary injection + enrichment prompt fix) also explicitly deferred until post-re-embed baseline analysis complete — may be deprioritised if vocabulary anchors produce strong improvement.
-6. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
-7. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'` — caps runaway OCR), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide written as `github-mcp-setup.md`, not executed — existing `github` MCP is already wired up so low priority).
+1. **BM25 interleave vs append — evaluate interleaving over append** — Current append+boost mode confirmed working (24P/4Pa/3M baseline) but limited by server.py `/search` top_k=12 hard cap at line 296. FTS new-chunk hits (score ~0.009 raw, ~0.006 post-SM-penalty) cannot crack top-12 when semantic fills slots 1–12 with scores 0.45+. Evaluation plan documented in `BM25_INTERLEAVE_EVALUATION_PLAN.md` (Arcanthyr Nexus): start interleave score at 0.50 (just above Pass 1 threshold 0.45), only interleave novel hits not already in seen_ids, re-sort within appended pool only. Decision gate: pass count ≥ 24 (current), zero P→F regressions on the 24 passing queries. Sequencing: build after vocabulary-alias work (see #2).
+
+2. **Practitioner↔statutory vocabulary aliasing — new category of anchor work** — Q12 ("hostile witness") confirmed this session as vocabulary mismatch: corpus uses "unfavourable witness" (statutory), practitioners query "hostile witness" (vernacular). FTS cannot bridge because keyword doesn't appear in source text. Fix is at embedding time: add vernacular aliases to vocabulary anchor for s 38 EA chunks. Likely candidates from current baseline partials: Q10 (corroboration), Q14 (leading questions), Q23 (search warrant execution), Q24 (committal hearing) — all procedural queries where Hogan-on-Crime phrasing differs from practitioner vocabulary. Audit pass: identify pairs, add to vocabulary anchor, re-embed affected chunks only (not full re-embed). 
+
+3. **subject_matter filter Part 3** — Pass 3 server.py MatchAny filter (`criminal`, `mixed`). Re-embed complete so payload field is current. Unblocked but low expected win — SM_PENALTY (0.65) already doing similar work. Deploy only if a baseline regression surfaces on a domain-specific query.
+
+4. **Query expansion** — rewrite user query into 3–4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI on the retrieval side. Build after interleave + aliasing are measured — vocabulary anchors + FTS + interleave may close enough of the gap to deprioritise this.
+
+5. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'`), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
+
+6. **Quick Search tab (arcanthyr.com practitioner UI)** — Build plan finalised in session 73 (conversation-external — not built, see handover notes). Three phases: corpus FTS keyword search (Phase 1), AustLII external via `/fetch-page` (Phase 2 — watch for CGI slowness inherited from auslaw-mcp `search_cases` timeout issue), query_log `search_type` extension (Phase 4). Phase 3 Jade link button is gravy. Phase 5 (full-judgment fetch + reading pane with cached HTML, 30-day TTL `austlii_cache` D1 table) added as separate extension. Track 2 (remote MCP at `auslaw.arcanthyr.com`) explicitly deferred — auslaw-mcp in CC covers 90% of the use case. Build after retrieval-side priorities (#1–#4) are cleared.
+
+7. **Orphaned Nexus save** — secondary_source id `nexus-save-2026-04-18-1776478272663` has `embedded=0` with null `enriched_text`. Not a re-embed straggler — looks like an orphaned Save-to-Nexus that never completed enrichment. Investigate next session: is it a stuck row that needs manual enrichment, a deletion candidate, or a symptom of a Save-to-Nexus handler bug?
 
 ---
 
@@ -69,9 +76,9 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 - **Health check false positive (tendency evidence contradiction)** — "Tendency Evidence Exclusion in Bail Hearings" vs "Tendency Evidence Requirements and Admissibility" flagged as contradiction by GPT-4o-mini health check. Not a genuine contradiction — s 94 EA correctly exempts bail proceedings from tendency/coincidence rules; the two chunks describe different contexts. Resolved by s94 chunk ingested session 71. Monitor in next health check run.
-- **Q1 retrieval regression (common assault)** — Misuse of Drugs Act s1 scoring above assault chunk. Vocabulary anchor prepend (session 65) may resolve by anchoring both chunks to their correct domains. Re-test after re-embed completes.
-- **Q11 retrieval regression (s138 voir dire)** — returning wrong Evidence Act sections. Vocabulary anchor prepend (session 65) will re-inject CONCEPTS terms (s138, voir dire, improperly obtained) at embedding time without re-enrichment. Re-test after re-embed completes.
-- **auslaw-mcp `search_cases` timeout** — full-text searches via `search_cases` tool timeout against AustLII CGI endpoint · NOT an IP block (VPS not rate-limited) · `search_by_citation` round-trips instantly proving connectivity fine · root cause is AustLII CGI endpoint slowness · workaround: use `search_by_citation` for known citations, retry `search_cases` on short queries only
+- **/search top_k=12 server-side cap limits BM25 new-chunk recall** — server.py `/search` handler (line 296) hard-caps at 12 results regardless of requested top_k. FTS new-chunk hits (raw ~0.009) cannot surface when semantic fills slots 1–12. BM25 append value is therefore concentrated in the boost path (raising scores on already-returned chunks), not the new-chunk path. This is the core limitation that BM25 interleave (Priority #1) is designed to address. NOT a bug — expected behaviour of append+rank ordering.
+- **Q12 miss confirmed as vocabulary mismatch, not retrieval defect** — corpus uses statutory term "unfavourable witness" throughout (Hogan on Crime + EA + cases); practitioners query "hostile witness". FTS cannot bridge. Resolution is practitioner↔statutory aliasing on s 38 EA chunks (Priority #2). Holds as MISS until that work lands.
+- **Q16 (Neill-Fraser) and Q27 (provocation) confirmed as corpus content gaps** — Q16: no appellate Neill-Fraser material in corpus. Q27: provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Both are authoring decisions, not retrieval defects. Do not treat as retrieval priorities.
 
 ---
 
@@ -191,22 +198,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 70) — 18 April 2026
-
-- **CLAUDE.md restructured — 1,598 → 413 lines (74% reduction)** — reordered from rules-first to state-first layout: SYSTEM STATE → OUTSTANDING PRIORITIES → KNOWN ISSUES → SESSION RULES → changelog (last 3 sessions) → END-OF-SESSION/POLLER/BASELINE procedures. Operational content now in first 190 lines. Truncation-tolerance note added to SESSION RULES table. CLAUDE_changelog.md conditional loading rule added. Why: 82% of CLAUDE.md was changelog history (sessions 21–69); context dilution was degrading Claude's attention to operational rules. Context engineering wiki article recommends 150–200 line context files; 413 is within the 500-line skill-file ceiling.
-
-- **CLAUDE_changelog.md created** — new fifth file archiving 49 session changelog blocks (sessions 21–65) in reverse chronological order, 1,176 lines. Load condition: "Load when investigating past sessions or debugging regressions to a specific date." Conditional loading rule added to SESSION RULES table. Why: changelog history has reference value for regression debugging but zero session-start operational value; moving it to a conditionally-loaded file preserves access without context cost.
-
-- **FUTURE ROADMAP moved to CLAUDE_arch.md exclusively** — removed from CLAUDE.md, CLAUDE_arch.md section marked as canonical location with reconciliation note. "Agent work (post-corpus validation)" item added (was only in the CLAUDE.md copy). Why: roadmap is architectural aspiration, not operational instruction; having it in both files caused reconciliation drift at session close.
-
-- **Session-closer skill updated** — new insertion point (before `## END-OF-SESSION UPDATE PROCEDURE`, not append-to-end), archival step for oldest changelog block (maintains 3-block retention window), roadmap reconciliation step against CLAUDE_arch.md FUTURE ROADMAP, verification step (grep for 3 blocks, confirm insertion point, read back priorities/issues). Written to Arcanthyr Nexus as `UPDATED_SESSION_CLOSER_SKILL.md` (Cowork skills dir is read-only). Why: session-closer is a hard dependency of the restructure — without the updated insertion logic, the closer would append changelogs at the end of the file and break the layout on first post-restructure run.
-
-- **Structure review document produced** — `CLAUDE_MD_STRUCTURE_REVIEW.md` written to Arcanthyr Nexus with analysis of all four questions (archival cutoff, file split validity, conversation archive home, truncation fix), risk assessments per recommendation, and implementation sequencing.
-
-- **Key decisions this session** — 3-session retention window (not date-based or relevance-based); state-first section order (not rules-first); CLAUDE_changelog.md as separate fifth file (not folded into CLAUDE_decisions.md); conversation archive reasoning → CLAUDE_decisions.md, rich flows → Vault wiki; skip hand-maintained CLAUDE_decisions.md summary (rely on conditional loading + future extract_decisions.py enhancement if needed).
-
----
-
 ## CHANGES THIS SESSION (session 71) — 18 April 2026
 
 - **Stub quarantine — D1 complete, scripts pre-staged** — D1: 253 rows inserted into `quarantined_chunks` via `INSERT OR IGNORE ... SELECT FROM secondary_sources WHERE LENGTH(TRIM(COALESCE(raw_text,''))) < 300`. All 253 confirmed `embedded=1`. Qdrant backfill script (`quarantine_stubs.py`) and server.py `must_not` patch (`server_py_quarantine_patch.txt`) written and saved to `C:\Users\Hogan\OneDrive\Arcanthyr\`. Server.py filter intentionally NOT deployed — held for post-re-embed baseline so stub quarantine impact is measured as isolated delta from vocabulary anchor delta. Why: conflating both changes in one baseline measurement would prevent isolating which intervention helped.
@@ -240,6 +231,27 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Session artefacts produced** — `audit-auslaw-mcp.sh` (clone-only static audit script), `github-mcp-setup.md` (guide for official `github/github-mcp-server` with read-only PAT + `--read-only` flag), `claude-code-prompts.md` (two self-contained CC prompts for audit + GitHub MCP install), `auslaw-mcp-deployment-prompt.md` (six-phase hardened deployment prompt: prep → ask → clone/modify → validate → first-run+tcpdump → go/no-go). All saved to session outputs.
 
 - **Deferred this session** — (1) rate budget in `/fetch-page` to protect daily scraper allowance, (2) compose resource limits (`mem_limit: 1g`, `cpus: '1.0'`), (3) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]`), (4) GitHub MCP install (guide written, existing `github` MCP already wired). Tracked as Outstanding Priority #7.
+
+## CHANGES THIS SESSION (session 73) — 19 April 2026
+
+- **Three-stage retrieval deploy — 13P/9Pa/9M (session 64) → 24P/4Pa/3M (session 73)** — +11 passes, −5 partials, −6 misses across one session's work. Zero P→F regressions at any intermediate checkpoint. Stages:
+  1. Vocabulary-anchor re-embed completion (pre-session work concluded this session with first baseline rerun): 13P/9Pa/9M → 18P/7Pa/6M.
+  2. Stub quarantine deploy across all three Qdrant passes: 18P/7Pa/6M → 22P/6Pa/3M.
+  3. BM25 case_chunks_fts pass deployed (append+boost mode): 22P/6Pa/3M → 24P/4Pa/3M.
+
+- **Stub quarantine — Qdrant payload update + server.py must_not filter across all three passes** — (a) `quarantine_stubs.py` executed on VPS via host venv at `/tmp/qvenv`; set `quarantined=true` on 253 Qdrant points (all `source_table='secondary_sources'`, `quarantine_reason='stub_short_text'`). Dry-run verified count=253 before real run. (b) server.py Pass 3 patched first with `must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]` inside the existing `Filter(must=[type=secondary_source])` block. (c) Design gap discovered during filter-efficacy smoke test: "Activation for Young Offenders - Public Interest" (a quarantined stub) still appearing at 0.5008 via Pass 1 (which had no type filter, no quarantine filter). Same `must_not` clause extended to Pass 1 (new `query_filter=Filter(must_not=[...])` added — no existing Filter to extend) and Pass 2 (appended to existing `Filter(must=[type=case_chunk])` — defence-in-depth since case_chunks have no `quarantined` field, so it's a no-op for that pass). Final state: 3 `must_not` occurrences in server.py, one per pass. Verified via Q31 + Q16 canaries (both previously showed the stub at #1; both now show legitimate authorities).
+
+- **BM25 case_chunks_fts pass — session 68 code deployed to VPS** — session 68 had written `fetch_case_chunks_fts()` + call site into the local `Arc v 4/server.py` but never SCP'd to VPS (session-closer false-commit pattern). Located at local lines 141–162 (function) + 519 (call site). Extracted as three hunks and applied to live VPS server.py as surgical additions (not whole-file overwrite — would have clobbered the three `must_not` patches landed earlier in the session). Pre-deploy verification: `BM25_SCORE_KEYWORD` (1/(60+12)≈0.0139), `SM_PENALTY` (0.65), `SM_ALLOW` ({'criminal','mixed'}), `seen_ids`, `sm_cache` all confirmed already defined on live VPS in correct scope. `existing_ids` initialization moved out of `if refs:` block per session 68 spec (prevents NameError on queries with no section refs). FTS pass calls Worker `GET /api/pipeline/case-chunks-fts-search` (already live since session 68), stop-word filters query, OR-joins up to 8 terms, 10s timeout. New chunks tagged `bm25_source="case_chunks_fts"`; existing chunks get additive `BM25_SCORE_KEYWORD` boost.
+
+- **top_k=12 server-side cap identified during Phase 4 canary** — CC found server.py line 296: `top_k = min(int(body.get("top_k", 6)), 12)` — `/search` endpoint hard-caps at 12 regardless of requested top_k. FTS new-chunk recall is therefore structurally gated: FTS hits score ~0.009 raw, semantic hits score 0.45+, so new FTS chunks cannot surface into final output when semantic fills top 12. BM25 append value is concentrated in the boost path (confirmed via Q7 lifting 0.6633→0.6772, Q21 lifting 0.6600→0.6739, Q9 lifting 0.6424→0.7016 flipping Pa→P). New-chunk path dormant until interleave lands. Logged as KNOWN ISSUES entry. Interleave evaluation (new Priority #1) specifically addresses.
+
+- **Q12 diagnosis — "hostile witness" vs "unfavourable witness"** — Tom confirmed corpus uses statutory term throughout (Hogan on Crime, EA, cases); "hostile witness" is practitioner vernacular not present in source text. FTS cannot bridge (keyword not in corpus). New category of anchor work identified: practitioner↔statutory vocabulary aliasing, distinct from session 65's domain-language anchoring. Added as new Priority #2. Likely candidates for same treatment from baseline partials: Q10, Q14, Q23, Q24.
+
+- **Quick Search + auslaw-mcp integration architecture review** — Reviewed the two build plans (No-MCP and MCP versions) against the newly-deployed auslaw-mcp. Conclusion: Quick Search corpus FTS + AustLII proxy tab for arcanthyr.com (different user: practitioner at bar table) is orthogonal to auslaw-mcp (developer/researcher in CC sessions). Phase 2 AustLII keyword search will inherit the AustLII CGI slowness documented in the auslaw-mcp `search_cases` timeout KNOWN ISSUE — worth building timeout tolerance into the Phase 2 UX. Phase 5 (full-judgment fetch + reading pane) remains worth building directly against `/fetch-page` rather than routing through an auslaw-mcp HTTP bridge. Track 2 (remote MCP at `auslaw.arcanthyr.com`) deferred indefinitely — auslaw-mcp in CC covers 90% of the use case; the remaining 10% (browser-based claude.ai sessions needing auslaw tools) is too narrow to justify the nginx/SSL/subdomain/auth/maintenance tax. Added as Priority #6 but deliberately ranked below retrieval-side work.
+
+- **Deploy pattern — mid-session patching without whole-file SCP** — The BM25 FTS deploy successfully demonstrated: (1) identify session-written code in local copy, (2) map to live VPS file via line-number recon after intervening patches shifted positions, (3) verify all module-level constants/helpers referenced by new code exist in live VPS, (4) produce unified diff against live VPS (not local), (5) check for Filter-block overlap with earlier patches, (6) apply surgically via hex-ssh. Pattern is reusable for any future "session N code written locally, not deployed" backlog.
+
+- **Session-closer false-commit pattern observed again** — Session 68 closer logged `fetch_case_chunks_fts()` as deployed; VPS file did not contain it. CLAUDE.md already flags this as known session-closer failure mode. No new mitigation — grep verification step in this closer and Tom's `git status` post-commit rule remain the controls.
 
 ---
 

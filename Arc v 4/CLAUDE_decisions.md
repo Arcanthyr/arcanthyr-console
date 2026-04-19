@@ -3745,3 +3745,32 @@ Decided against adding a "Recent Decisions" summary to the top of CLAUDE_decisio
 **[2026-04-19]** *Scope drift flagged mid-session; Tom chose to finish* — score 7, assistant
 
 > Initial ask was "is auslaw-mcp safe to install?" Work expanded through audit → hardening plan → deployment → runtime validation. Flagged explicitly mid-session that this was beyond the original question. Tom's call: finish the hardening pass now rather than ship a half-audited install. Pattern to recognise in future audit sessions: the audit itself answers "is it safe enough for your threat model *as-is*?"; hardening is a separate decision that should be called out rather than absorbed silently.
+
+## Session 73 decisions — 19 April 2026
+
+### Decision: Deploy stub quarantine before BM25 FTS (flipped CLAUDE.md priority order)
+**Context:** CLAUDE.md listed BM25 FTS deploy as Priority #2, stub quarantine as #3.
+**Decision:** Deploy quarantine first. Reasoning: (a) smaller, bounded change — single must_not filter + payload flag on 253 known points, low deploy risk; (b) sequencing logic — quarantine removes noise, BM25 adds signal; removing noise first gives BM25 a cleaner floor against which to measure its contribution. Doing BM25 first would mean quarantine's subsequent cleanup partially masks BM25 gains.
+**Outcome:** Validated — quarantine moved 18P→22P, BM25 moved 22P→24P. Clean separable deltas.
+
+### Decision: Extend stub quarantine filter to all three passes (not just Pass 3)
+**Context:** Original patch targeted only Pass 3 (secondary_source pass) because quarantined rows are all secondary_sources.
+**Decision:** Extend must_not to Pass 1 (new Filter wrapper) and Pass 2 (append to existing Filter) after Phase 4 canary revealed "Activation for Young Offenders - Public Interest" leaking through Pass 1 at 0.5008.
+**Reasoning:** Pass 1 was unfiltered, so any secondary_source point scoring above the 0.45 Pass-1 threshold bypassed the Pass-3-only filter. Defence-in-depth applied to Pass 2 even though case_chunks have no quarantined field — protects against future payload schema changes.
+**Outcome:** Q31 + Q16 canaries confirmed stub-absent post-fix. Baseline +4P delta validated.
+
+### Decision: Apply BM25 FTS as surgical patch, not whole-file SCP
+**Context:** Session 68 wrote fetch_case_chunks_fts() into local server.py but never deployed to VPS. Simplest approach would have been SCP'ing local file up.
+**Decision:** Extract the three BM25 hunks from local copy, apply to live VPS file via hex-ssh.
+**Reasoning:** Earlier in this session, three must_not quarantine patches landed on the live VPS server.py via hex-ssh. Local copy did not have them. Whole-file SCP would have silently reverted the quarantine work. Surgical extraction preserves both changesets.
+**Pattern:** Reusable for any future "session N code written locally, not deployed" scenario when intervening VPS patches exist.
+
+### Decision: Defer Track 2 (remote MCP at auslaw.arcanthyr.com) indefinitely
+**Context:** Original MCP build plan proposed hosting auslaw-mcp as remote MCP via subdomain + nginx + SSL + custom Claude.ai connector. Intent: access auslaw tools from browser-based Claude.ai sessions on any machine.
+**Decision:** Don't build. auslaw-mcp is now live via CC on Windows (session 72). That covers 90% of the use case. The remaining 10% (browser-based claude.ai sessions needing auslaw tools, e.g. from work terminal) is narrow and the build tax is high: nginx config, subdomain + SSL, auth scheme, stdio→HTTP transport layer, ongoing maintenance when upstream updates. Not worth it until specific browser-MCP friction is encountered repeatedly.
+**Related decision (session 57):** "Arcanthyr MCP server — scratched" was a different context (wrapper over Arcanthyr synthesis) but the same reasoning applies: auth complexity + maintenance overhead + marginal gain.
+
+### Decision: Quick Search Phase 5 full-judgment fetch against /fetch-page, not auslaw-mcp HTTP bridge
+**Context:** auslaw-mcp has strong AustLII HTML parsing with paragraph numbers + OCR fallback. Tempting to use it as backend for the arcanthyr.com Phase 5 reading pane.
+**Decision:** Build Phase 5 directly against existing /fetch-page, render sanitised HTML (preserving paragraph numbers — not stripped text), cache in new `austlii_cache` D1 table with 30-day TTL, fall back to "Open on AustLII" link on fetch failure.
+**Reasoning:** /fetch-page is already proven and already on the VPS. auslaw-mcp is stdio-only — would require a FastAPI wrapper to expose HTTP, new surface and new maintenance. If parsing quality proves inadequate later, retrofit an auslaw-mcp bridge — but don't build preemptively for a problem not yet encountered.

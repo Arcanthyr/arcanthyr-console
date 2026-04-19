@@ -1,9 +1,25 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–69 · 26 March 2026 – 18 April 2026*
+*Sessions 21–70 · 26 March 2026 – 18 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure)*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 70) — 18 April 2026
+
+- **CLAUDE.md restructured — 1,598 → 413 lines (74% reduction)** — reordered from rules-first to state-first layout: SYSTEM STATE → OUTSTANDING PRIORITIES → KNOWN ISSUES → SESSION RULES → changelog (last 3 sessions) → END-OF-SESSION/POLLER/BASELINE procedures. Operational content now in first 190 lines. Truncation-tolerance note added to SESSION RULES table. CLAUDE_changelog.md conditional loading rule added. Why: 82% of CLAUDE.md was changelog history (sessions 21–69); context dilution was degrading Claude's attention to operational rules. Context engineering wiki article recommends 150–200 line context files; 413 is within the 500-line skill-file ceiling.
+
+- **CLAUDE_changelog.md created** — new fifth file archiving 49 session changelog blocks (sessions 21–65) in reverse chronological order, 1,176 lines. Load condition: "Load when investigating past sessions or debugging regressions to a specific date." Conditional loading rule added to SESSION RULES table. Why: changelog history has reference value for regression debugging but zero session-start operational value; moving it to a conditionally-loaded file preserves access without context cost.
+
+- **FUTURE ROADMAP moved to CLAUDE_arch.md exclusively** — removed from CLAUDE.md, CLAUDE_arch.md section marked as canonical location with reconciliation note. "Agent work (post-corpus validation)" item added (was only in the CLAUDE.md copy). Why: roadmap is architectural aspiration, not operational instruction; having it in both files caused reconciliation drift at session close.
+
+- **Session-closer skill updated** — new insertion point (before `## END-OF-SESSION UPDATE PROCEDURE`, not append-to-end), archival step for oldest changelog block (maintains 3-block retention window), roadmap reconciliation step against CLAUDE_arch.md FUTURE ROADMAP, verification step (grep for 3 blocks, confirm insertion point, read back priorities/issues). Written to Arcanthyr Nexus as `UPDATED_SESSION_CLOSER_SKILL.md` (Cowork skills dir is read-only). Why: session-closer is a hard dependency of the restructure — without the updated insertion logic, the closer would append changelogs at the end of the file and break the layout on first post-restructure run.
+
+- **Structure review document produced** — `CLAUDE_MD_STRUCTURE_REVIEW.md` written to Arcanthyr Nexus with analysis of all four questions (archival cutoff, file split validity, conversation archive home, truncation fix), risk assessments per recommendation, and implementation sequencing.
+
+- **Key decisions this session** — 3-session retention window (not date-based or relevance-based); state-first section order (not rules-first); CLAUDE_changelog.md as separate fifth file (not folded into CLAUDE_decisions.md); conversation archive reasoning → CLAUDE_decisions.md, rich flows → Vault wiki; skip hand-maintained CLAUDE_decisions.md summary (rely on conditional loading + future extract_decisions.py enhancement if needed).
 
 ---
 

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 April 2026 (end of session 72). Upload every session alongside CLAUDE.md.*
+*Updated: 19 April 2026 (end of session 73). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -848,9 +848,8 @@ Source title uses chunk heading (not filename stem).
 *Canonical location for all roadmap items. CLAUDE.md carries only OUTSTANDING PRIORITIES (current sprint). This section is reconciled at session close — completed items removed, new items added.*
 
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
-- **Retrieval regression fixes (session 64 — NEXT PRIORITY):**
-  - Step 1: Stub quarantine — soft-quarantine secondary_source rows with raw_text <300 chars AND truncation markers AND title-body overlap >0.6; filter flag in Qdrant (not hard delete); quarantined_chunks D1 table; re-run baseline gate: pass count ≥ 10, no pass→fail regressions
-  - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — explicitly gated on post-re-embed baseline analysis. May be deprioritised if vocabulary anchors produce strong improvement.
+- **Retrieval regression fixes (session 64 — remaining steps deferred):**
+  - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
   - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64. DEFERRED — same gate as Step 3.
 - **subject_matter filter** — Part 1 (Worker route JOIN) confirmed deployed. Part 2 (poller metadata dict) deployed session 60. Part 3 (re-embed backlog ~7,046 chunks) in progress — poller writing correct payloads from session 60 onwards. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter on Pass 3 once backlog clears to 0.
 - **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
@@ -871,6 +870,8 @@ Source title uses chunk heading (not filename stem).
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
 - **Auto-populate citation and case name from uploaded file** — when a file is dropped or selected in the upload UI, scan the first 1,000 characters for AustLII citation pattern (`[YYYY] TASSC/TASMC/TASCCA/TASFC N`) and case name pattern (R v Name, DPP v Name, X v Y). Auto-fill the citation and case name fields; derive and set the court dropdown from the court code. Frontend-only change in `app.js` — no Worker or D1 changes needed. Reduces manual entry errors on upload.
 - **RTF support on upload** — add `.rtf` to the upload form's accept list in the Secondary Sources tab. Add an RTF text stripper in `app.js` (strip RTF control words and markup, extract plain text) before passing to the existing upload pipeline. Frontend-only change. Low effort, occasionally useful for older legal documents exported from Word as RTF.
+- **Practitioner↔statutory vocabulary aliasing pass** — new anchor category, distinct from session 65 domain-language anchoring. Scope: identify vernacular↔statutory pairs (confirmed: "hostile witness"↔"unfavourable witness"; candidates: Q10 corroboration, Q14 leading questions, Q23 search warrant execution, Q24 committal hearing). Add vernacular aliases to vocabulary anchor for affected chunks. Re-embed affected chunks only, not full corpus.
+- **Quick Search practitioner UI tab (arcanthyr.com)** — Phase 1 (corpus FTS), Phase 2 (AustLII proxy via /fetch-page), Phase 3 (Jade link button), Phase 4 (query_log search_type extension), Phase 5 (full-judgment fetch + austlii_cache D1 table with 30-day TTL + HTML-preserving render). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
 
 ### Secondary Sources Upload — Session 39 changes
 - Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
@@ -912,3 +913,30 @@ Live TTS (query responses read aloud) routes: Browser → Worker `/api/tts` → 
 Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge interface `br-09b8cf509a2d` for port 18083. Rule persisted in `/etc/iptables/rules.v4`.
 
 - **TTS**: MOSS-TTS replaced session 60 with OpenAI TTS API (`tts-1`, onyx/nova voices). Static MP3 replacement planned next session — `/tts` route and Worker proxy will be removed entirely once static files deployed.
+
+### server.py /search top_k cap
+
+- Hard-caps at 12 at line 296 regardless of client top_k parameter: `top_k = min(int(body.get("top_k", 6)), 12)`
+- BM25 append-mode new-chunk promotion is structurally limited by this; interleave design (Priority #1) addresses by inserting FTS hits above the 0.45 Pass-1 threshold before the top_k trim
+- When running `retrieval_baseline.sh` or any curl test, requesting top_k > 12 silently returns only 12
+
+### server.py must_not quarantine filter
+
+- Deployed on all three Qdrant passes (Pass 1 wrapped new Filter, Pass 2 extended existing Filter, Pass 3 extended existing Filter)
+- Defence-in-depth: Pass 2 filter is a no-op on case_chunks (no quarantined field) but catches future payload changes
+- Confirm `grep -c "must_not" /home/tom/ai-stack/agent-general/src/server.py` returns 3 after any server.py edit
+
+### BM25 FTS deploy pattern
+
+- Worker route (`/api/pipeline/case-chunks-fts-search`) is Cloudflare edge, auth'd with X-Nexus-Key
+- server.py `fetch_case_chunks_fts()` calls it via `requests.get` with 10s timeout; stop-word filter + OR-join up to 8 terms
+- Chunks returned with `bm25_source="case_chunks_fts"` tag; dedup against `seen_ids` (chunk_id) and `existing_ids` (citation)
+- Boost path adds `BM25_SCORE_KEYWORD` (~0.0139) to already-returned chunks; new-chunk path dormant until interleave lands
+- Separate `bm25_source` value for case-law layer (`"case_legislation_ref"`) — two distinct BM25 pathways, both live
+
+### qvenv — VPS host Python venv for Qdrant scripts
+
+- Path: `/tmp/qvenv` — venv on VPS host with `qdrant-client` installed, created session 73 for `quarantine_stubs.py`
+- qdrant-client not on system Python, and quarantine script hardcodes `localhost:6334` so couldn't run inside agent-general container
+- Activate: `source /tmp/qvenv/bin/activate`
+- Reusable for any future VPS-host Python work touching Qdrant directly; `/tmp` may be cleared on reboot — recreate if missing
