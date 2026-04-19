@@ -56,9 +56,10 @@ docker compose ps
 ```
 
 ### VPS: server.py health check
-```bash
-curl localhost:18789/status -H "X-Nexus-Key: $(grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2)"
-```
+
+Service proof-of-life: `docker compose logs --tail=20 agent-general | grep 'Nexus ingest server running'` — server.py does not expose /status or /health. If the line is present and dated after the file mtime, the container is running current code.
+
+Container name discovery: run `docker compose ps` from `~/ai-stack` — Compose v2 naming varies. Do not hardcode container names with `-1` suffix.
 
 ### SCP server.py (canonical copy is on VPS — always pull before editing)
 ```powershell

@@ -1,9 +1,29 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–70 · 26 March 2026 – 18 April 2026*
+*Sessions 21–71 · 26 March 2026 – 18 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure)*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 71) — 18 April 2026
+
+- **Stub quarantine — D1 complete, scripts pre-staged** — D1: 253 rows inserted into `quarantined_chunks` via `INSERT OR IGNORE ... SELECT FROM secondary_sources WHERE LENGTH(TRIM(COALESCE(raw_text,''))) < 300`. All 253 confirmed `embedded=1`. Qdrant backfill script (`quarantine_stubs.py`) and server.py `must_not` patch (`server_py_quarantine_patch.txt`) written and saved to `C:\Users\Hogan\OneDrive\Arcanthyr\`. Server.py filter intentionally NOT deployed — held for post-re-embed baseline so stub quarantine impact is measured as isolated delta from vocabulary anchor delta. Why: conflating both changes in one baseline measurement would prevent isolating which intervention helped.
+
+- **Step 2 legislation whitelist — confirmed already live on VPS** — grep confirmed `LEG_WHITELIST_CORE`, `LEG_WHITELIST_ADJACENT`, `LEG_PENALTY_ADJACENT=0.85` all present and wired in live server.py. CLAUDE_arch.md roadmap entry was stale. Removed from roadmap.
+
+- **Stare decisis UI — confirmed already live** — Opus inspection of compiled bundle confirmed `caseAuthority()` API, cited-by pill, treatment summary pills, and cited-by/cites-to list sections all deployed. CLAUDE_arch.md roadmap entry was stale. Removed from roadmap.
+
+- **Steps 3 and 4 explicitly gated on embedding analysis** — Step 3 (vocabulary injection) and Step 4 (enrichment prompt fix) both deferred until post-re-embed baseline measured. If vocabulary anchors produce strong improvement, both may be deprioritised indefinitely. Outstanding Priorities updated.
+
+- **Health check report reviewed (run 2026-04-15)** — 13 clusters, 1 contradiction (false positive — see KNOWN ISSUES), 28 gaps triaged: ~8 stub-driven (resolved by quarantine filter deploy), ~15 false gaps (content exists, health check AI couldn't reach it through thin referencing chunks), ~5 genuine authoring candidates: s 94 bail exemption (actioned this session), Parker v Tasmania, Garcie v Lusted, common purpose doctrine, A v Roughan s 11A.
+
+- **s 94 Evidence Act chunk authored and ingested** — New secondary source: "Evidence Act 2001 (Tas) s 94 — Tendency and Coincidence Rules Excluded from Bail Hearings". Category: doctrine. 2,226 chars. Pre-formatted block, bypassed GPT call. In D1 `embedded=0`, poller will embed next cycle. Resolves health check false-positive contradiction and fills bail cluster gap — s 94 was referenced as assumed knowledge in a 102-char stub (now quarantined) with no substantive explanatory chunk.
+
+- **Legislation section search in Library — built and deployed (session 71)** — New feature allowing practitioners to search for cases by legislation section reference, drawn directly from the `case_legislation_refs` D1 table. Pure SQL — no LLM, no VPS, no Qdrant involved. New Worker route: `GET /api/legal/search-by-legislation?q=…&limit=50&offset=0` — no auth required, follows same unauthenticated pattern as `handleLibraryList`. Accepts free-form query string (e.g. "s 138 Evidence Act", "section 16 Criminal Code") and returns matching cases with citation, case name, court, date, holding, subject matter, and all matched legislation refs (GROUP_CONCAT). Court ordering: cca → fullcourt → supreme → magistrates, then case_date DESC. Limit/offset pagination. Returns `treatment_gap: true` on every response to flag that `case_legislation_refs` has no treatment/context column — gap for xref_agent.py to address. New helper: `normaliseSectionQuery(raw)` in worker.js — extracts `sectionNum` and `actFrag` from raw query string, strips "s ", "section", ".", jurisdiction tags, years, "of the". Three SQL code paths: section + act (most precise, six LIKE patterns covering all stored formats), section-only (broader), act-only (broadest). Data quality audit: 5,147 rows, 88.9% have section number in LIKE-matchable form, 7.6% act-only refs, zero null/empty rows. Frontend: `CasesTable` in Library.jsx extended with two-button mode toggle ("Name / Citation" / "Legislation section"). New `LegislationResultsTable` component (columns: Citation, Case, Court, Year, Matched sections, Holding). Clicking result opens existing reading pane normally. Files changed: `Arc v 4/worker.js`, `arcanthyr-ui/src/api.js`, `arcanthyr-ui/src/pages/Library.jsx`.
+
+- **SYSTEM STATE check rule added** — Two tasks sent to Opus this session that were already live (legislation whitelist, stare decisis UI). Root cause: SYSTEM STATE table not checked before proposing work. Rule added: always check SYSTEM STATE before suggesting any item as outstanding work.
 
 ---
 

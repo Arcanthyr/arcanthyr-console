@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 April 2026 (end of session 73). Upload every session alongside CLAUDE.md.*
+*Updated: 19 April 2026 (end of session 74). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -246,7 +246,7 @@ Worker routes exist but are dead — nothing calls them during query handling.
 1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty(chunk, query_text_lower)` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`; legislation chunks penalised via 3-tier whitelist: `LEG_WHITELIST_CORE` Acts exempt (1.0), `LEG_WHITELIST_ADJACENT` Acts penalised at `LEG_PENALTY_ADJACENT=0.85` unless keyword bridge matches query, all other legislation at `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
 2. **Pass 2 — case chunks appended** — `type=case_chunk` filter, threshold 0.35, limit 8. `apply_sm_penalty()` applied to each hit before dedup check. Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
 3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2.
-4. **BM25/FTS5 append** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Multi-signal boost if chunk already in results. Final top_k cap (no re-sort — BM25 stays last).
+4. **BM25/FTS5 interleave** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Novel case_chunks_fts hits → BM25_INTERLEAVE_SCORE=0.50 (competes with borderline semantic 0.45–0.49); boost path uses BM25_SCORE_KEYWORD=0.0139 (additive delta for already-returned chunks). Re-sort by score after FTS append (line 587). Final top_k cap.
 5. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
 
 **Why RRF was reverted (session 42):** RRF requires independent retrieval signals across legs. Leg B (extract_legal_concepts) used the same embedding model on a munged version of the same query — no independent signal. At ~10K vectors, same chunks dominated all legs, causing wrong-domain chunks to accumulate multi-leg RRF score via surface vocabulary overlap (e.g. self-defence "reasonable belief" scoring high on BRD query). Baseline regression: 10/5/0 → ~8/2/4.
@@ -621,14 +621,13 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Queried via Worker POST `/api/pipeline/fts-search`
 - Gated by `BM25_FTS_ENABLED = True` in server.py
 
-**D1 FTS5 (`case_chunks_fts`) — session 68:**
+**D1 FTS5 (`case_chunks_fts`) — session 68 deployed, session 74 interleave mode:**
 - Worker route: `GET /api/pipeline/case-chunks-fts-search` (deployed `d90ab456`)
-- server.py: `fetch_case_chunks_fts(query_text)` function written locally, NOT YET DEPLOYED (blocked on re-embed baseline)
+- server.py: `fetch_case_chunks_fts(query_text)` deployed to VPS session 73 (session 68 gap resolved)
 - Stop-word filtered, OR-joined terms (max 8), 10s timeout
 - Wired into `search_text()` after existing BM25 case-law layer, before domain filter
 - SM penalty applied, deduped against seen_ids + existing_ids, multi-signal boost on overlap
-- Append mode: `BM25_SCORE_KEYWORD ≈ 0.0139` — cannot displace semantic results
-- Interleave evaluation deferred: see `BM25_INTERLEAVE_EVALUATION_PLAN.md`
+- **Interleave mode (session 74):** split-constant design — `BM25_INTERLEAVE_SCORE=0.50` for novel hits (competes with borderline semantic 0.45–0.49), `BM25_SCORE_KEYWORD=0.0139` for boost path (additive delta only). Re-sort at line 587 after FTS append.
 
 ### Workers AI (Cloudflare) — model and usage inventory
 
@@ -917,7 +916,7 @@ Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge i
 ### server.py /search top_k cap
 
 - Hard-caps at 12 at line 296 regardless of client top_k parameter: `top_k = min(int(body.get("top_k", 6)), 12)`
-- BM25 append-mode new-chunk promotion is structurally limited by this; interleave design (Priority #1) addresses by inserting FTS hits above the 0.45 Pass-1 threshold before the top_k trim
+- Post-session-74 interleave deploy this is no longer blocking for the FTS-new-chunk path (novel hits at 0.50 synthetic displace borderline semantic and surface within the 12-slot cap). Cap retained for latency bounding.
 - When running `retrieval_baseline.sh` or any curl test, requesting top_k > 12 silently returns only 12
 
 ### server.py must_not quarantine filter
@@ -931,7 +930,7 @@ Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge i
 - Worker route (`/api/pipeline/case-chunks-fts-search`) is Cloudflare edge, auth'd with X-Nexus-Key
 - server.py `fetch_case_chunks_fts()` calls it via `requests.get` with 10s timeout; stop-word filter + OR-join up to 8 terms
 - Chunks returned with `bm25_source="case_chunks_fts"` tag; dedup against `seen_ids` (chunk_id) and `existing_ids` (citation)
-- Boost path adds `BM25_SCORE_KEYWORD` (~0.0139) to already-returned chunks; new-chunk path dormant until interleave lands
+- **Split-constant scoring (session 74):** boost path uses `BM25_SCORE_KEYWORD` (~0.0139, additive delta for already-returned chunks); novel-hit path uses `BM25_INTERLEAVE_SCORE` (0.50, competes with borderline semantic at Pass-1 threshold 0.45)
 - Separate `bm25_source` value for case-law layer (`"case_legislation_ref"`) — two distinct BM25 pathways, both live
 
 ### qvenv — VPS host Python venv for Qdrant scripts
