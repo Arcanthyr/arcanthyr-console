@@ -183,6 +183,7 @@ CONCEPTS FIELD
 Provide 5–10 concepts supported by the source text.
 Include: doctrinal terminology, synonyms, related legal ideas, plain-language search phrases.
 Prefer mixed legal and natural-language phrasing.
+Terms must be positively phrased — describe what the content IS about, not what it is NOT. Do not include negative-definition terms such as "warrantless", "without warrant", "non-consensual", "not admissible", "uncorroborated" unless the chunk's doctrinal subject is literally that absence as a defined concept (e.g. a chunk whose topic is "the warrantless-search exception" may include it). Default to positive phrasing — e.g. "summary search power" not "warrantless search"; "admissibility threshold" not "inadmissibility".
 
 CHUNK STRUCTURE
 
