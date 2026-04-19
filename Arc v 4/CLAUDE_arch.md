@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 April 2026 (end of session 78). Upload every session alongside CLAUDE.md.*
+*Updated: 20 April 2026 (end of session 79). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -493,6 +493,7 @@ cd "../Arc v 4" && npx wrangler deploy
 | corpus_health_check.py | `Arc v 4/corpus_health_check.py` (repo) · `~/ai-stack/agent-general/src/corpus_health_check.py` (VPS) · cron: `0 2 1 * *` · logs to `~/ai-stack/health_check.log` |
 | ingest_corpus.py | `arcanthyr-console/ingest_corpus.py` — run from there, NOT from `Arc v 4/` |
 | ingest_part2.py | `arcanthyr-console/ingest_part2.py` — standalone part2 ingest script |
+| ingest_authority_chunks.py | `arcanthyr-console/scripts/ingest_authority_chunks.py` — standalone authority-synthesis ingest script; reads from `scripts/authority-chunks-staging/`; run from console root |
 | retrieval_baseline.sh | `arcanthyr-console/retrieval_baseline.sh` (repo) · VPS `~/retrieval_baseline.sh` — results in ~/retrieval_baseline_results.txt |
 | master_corpus_part1.md | `arcanthyr-console/master_corpus_part1.md` — 488 chunks (session 12) |
 | master_corpus_part2.md | `arcanthyr-console/master_corpus_part2.md` — 683 chunks (session 12) |
@@ -746,7 +747,7 @@ Browse, re-read, and promote past queries without re-querying.
 - Secondary source type filter: field = `type`, value = `secondary_source`
 - Legislation type filter: field = `type`, value = `legislation`
 - Case chunk type filter: field = `type`, value = `case_chunk`
-- Authority synthesis type: field = `type`, value = `authority_synthesis` — **DORMANT** (session 78): isolation filters live (Pass 1 + Pass 3 `must_not`), 233 chunks staged, ingest pending Phase 2c. No points with this type exist in Qdrant yet. Routed via `enrichment_poller.py` `SYNTHESIS_TYPES` set — poller emits `type=authority_synthesis` when `source_type='authority_synthesis'` in D1.
+- Authority synthesis type: field = `type`, value = `authority_synthesis` — **LIVE** (session 79): 233 chunks ingested and embedded, Phase 2b isolation firing end-to-end. Normal retrieval (Pass 1, Pass 3) blocked via `must_not` filter; accessible only via Phase 3 Pass 4 leg (not yet built). Routed via `enrichment_poller.py` `SYNTHESIS_TYPES` set — poller emits `type=authority_synthesis` when `source_type='authority_synthesis'` in D1.
 
 ### secondary_sources D1 schema notes
 
@@ -854,7 +855,7 @@ Source title uses chunk heading (not filename stem).
 - **subject_matter filter** — COMPLETE (session 78). All 3 parts deployed: Part 1 (Worker route JOIN), Part 2 (poller metadata dict + re-embed), Part 3 (server.py `MatchAny(any=["criminal","mixed"])` hard filter on Pass 2 case_chunk query). Pass 2 now excludes civil/administrative case_chunks at Qdrant level.
 - **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
 - **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
-- **Citation authority agent (xref_agent.py)** — COMPLETE (tables + cron). Tables populated: 6,959 case_citations, 5,147 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: (a) authority-synthesis retrieval layer — Phase 2c: ingest 233 staged chunks (`scripts/authority-chunks-staging/`) via upload-corpus with `source_type='authority_synthesis'`; Phase 3: conditional Pass 4 on authority-lookup trigger queries. Isolation filters live (session 78, commit a60fa1e).
+- **Citation authority agent (xref_agent.py)** — COMPLETE (tables + cron + Phase 2c ingest). Phase 2c complete session 79: 233 chunks ingested via `scripts/ingest_authority_chunks.py`, all embedded with `type=authority_synthesis`. Outstanding: Phase 3 = conditional Pass 4 leg in `server.py` on citation-regex + keyword triggers. Opus-consult required for trigger heuristic design.
 - **Sentencing Act 1997 (Tas) ingest into legislation corpus** — Corpus gap confirmed session 78 (`SELECT DISTINCT legislation_id FROM legislation_sections` returned no row). Ingest via legislation upload pipeline; priority sections: s 3–5 (sentencing purposes), s 11A (guilty plea discount), s 12 (concurrent/cumulative). Deferred to post-scrape authoring pass.
 - **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
