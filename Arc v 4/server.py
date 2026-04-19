@@ -445,6 +445,13 @@ def search_text(body):
         "affirmed by",
         "considered in",
         "still good law", "still binding",
+        # Passive-voice treatment forms
+        "been followed", "been applied",
+        "been distinguished", "been overruled",
+        "been approved", "been adopted",
+        "been considered", "been cited",
+        "been treated",
+        "often cited",
         # Judicial-treatment intent phrases
         "subsequent treatment", "judicial treatment", "has been treated",
         "treatment of",
@@ -453,10 +460,6 @@ def search_text(body):
         "citation profile",
         "how often cited", "how many times cited",
         "citing cases",
-        # Topical-authority phrases (monitor FIRE rate in shadow before keeping)
-        "leading authority on", "leading case on",
-        "key authority on",
-        "authority on",
     ]
 
     def should_fire_pass4(q: str) -> tuple:

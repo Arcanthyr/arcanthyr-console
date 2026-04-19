@@ -2271,6 +2271,8 @@ ${answерNote}`;
       year: c.year,
       score: c.score,
       summary: c.summary || "",
+      type: c.type,
+      source_type: c.source_type,
     }));
 
   const sources = sectionContext
@@ -2472,7 +2474,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   const seen = new Set();
   const caseSources = orderedChunks
     .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
-    .map(c => ({ citation: c.citation, court: c.court, year: c.year, score: c.score, summary: c.summary || "" }));
+    .map(c => ({ citation: c.citation, court: c.court, year: c.year, score: c.score, summary: c.summary || "", type: c.type, source_type: c.source_type }));
 
   const sources = sectionContext
     ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
