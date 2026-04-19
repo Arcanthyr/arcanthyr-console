@@ -25,7 +25,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | Cloudflare Queue | drained |
 | Scraper | RUNNING (status uncertain — processed_date field unreliable; check scraper.log after 11am AEST) |
 | arcanthyr.com | Live |
-| Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE |
+| Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE · Pass 2 MatchAny criminal/mixed hard filter LIVE (all three parts complete) |
 | Stare decisis UI | LIVE |
 | Save to Nexus | LIVE — approved column, approval gate, pending review in Library, delete action (D1+FTS5+Qdrant cleanup) |
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
@@ -44,11 +44,9 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 3. **Bucket 2 corpus hygiene — 10 s 38 EA chunks lack CONCEPTS headers** — Session 76 D1 audit surfaced that most `Evidence Act 2001 (Tas) s 38 -` prefixed chunks have no `Concepts:` or `[CONCEPTS:]` line in raw_text (chunks: `Steps for Inconsistencies`, `Cross-Examination Procedure`, `Application for Leave to Cross-Examine`, `Further Application Setup`, `Cross-Examination Workflow`, `Result after Cross-Examination`, `Leave Application`, `Setting Up Application`, `Alternative Options`, `S 38(6) Factors`). These chunks get reduced anchor signal from `build_secondary_embedding_text()` — no CONCEPTS for the anchor prepend means they're only weakly lifted. Corpus hygiene issue independent of aliasing. Low priority — defer unless s 38 EA queries show regressions now that query expansion is live. Fix by full raw_text rewrite with a standard CONCEPTS line each; one-time cost ~10 chunks.
 
-4. **subject_matter filter Part 3** — Pass 3 server.py MatchAny filter (`criminal`, `mixed`). Re-embed complete so payload field is current. Unblocked but low expected win — SM_PENALTY (0.65) already doing similar work. Deploy only if a baseline regression surfaces on a domain-specific query.
+4. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'`), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
 
-5. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'`), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
-
-6. **Quick Search tab (arcanthyr.com practitioner UI)** — Build plan finalised in session 73 (conversation-external — not built, see handover notes). Three phases: corpus FTS keyword search (Phase 1), AustLII external via `/fetch-page` (Phase 2 — watch for CGI slowness inherited from auslaw-mcp `search_cases` timeout issue), query_log `search_type` extension (Phase 4). Phase 3 Jade link button is gravy. Phase 5 (full-judgment fetch + reading pane with cached HTML, 30-day TTL `austlii_cache` D1 table) added as separate extension. Track 2 (remote MCP at `auslaw.arcanthyr.com`) explicitly deferred — auslaw-mcp in CC covers 90% of the use case.
+5. **Quick Search tab (arcanthyr.com practitioner UI)** — Build plan finalised in session 73 (conversation-external — not built, see handover notes). Three phases: corpus FTS keyword search (Phase 1), AustLII external via `/fetch-page` (Phase 2 — watch for CGI slowness inherited from auslaw-mcp `search_cases` timeout issue), query_log `search_type` extension (Phase 4). Phase 3 Jade link button is gravy. Phase 5 (full-judgment fetch + reading pane with cached HTML, 30-day TTL `austlii_cache` D1 table) added as separate extension. Track 2 (remote MCP at `auslaw.arcanthyr.com`) explicitly deferred — auslaw-mcp in CC covers 90% of the use case.
 
 ---
 
@@ -249,6 +247,10 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Pre-condition checks passed** — `_qdrant_id` confirmed present at `hit_to_chunk` line 325 (`"_qdrant_id": str(hit.id)`) before Phase 4 apply. Per-future try/except loop required in Phase 2 diff (original list comprehension would have propagated a single leg exception and aborted the entire fan-out) — added before sign-off.
 
 - **EXPANSION_SYSTEM prompt design** — Three-variant structure: one statutory, one practitioner-shorthand, one doctrinal/textbook. Three worked examples in prompt (hostile-witness, search-warrant, bail). Prompt instructs to preserve intent and not introduce doctrines not asked about. Produces diverse enough variants to bridge the practitioner↔statutory vocabulary gap that 7 corpus-side patches across sessions 75-76 could not close.
+
+## CHANGES THIS SESSION (session 78) — 19 April 2026
+
+- **subject_matter filter Part 3 deployed — Pass 2 case_chunk query now hard-filters on subject_matter ∈ {criminal, mixed}** — All three parts of the subject_matter filter feature are now complete: Part 1 (Worker route JOIN), Part 2 (poller metadata dict + re-embed), Part 3 (server.py MatchAny on Pass 2 Qdrant query). Two-line patch to `server.py`: (1) added `MatchAny` to the `qdrant_client.models` import on line 5; (2) appended `FieldCondition(key="subject_matter", match=MatchAny(any=["criminal","mixed"]))` to the Pass 2 `must` list alongside the existing `type=case_chunk` condition on line 513. Deploy verified: syntax clean, container force-recreated, `Nexus ingest server running on port 18789`. Test query "tendency evidence significant probative value test" returned zero civil/administrative case_chunks — [2024] TASSC 55 (Tasmania v GD, criminal) confirmed passing filter. Note: "Part 3" refers to the three-part subject_matter filter feature rollout (Worker/poller/server.py), not Pass 3 of the retrieval pipeline — the filter targets Pass 2, which is the case_chunk retrieval pass.
 
 ---
 
