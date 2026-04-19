@@ -1,11 +1,25 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–73 · 26 March 2026 – 19 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure)*
+*Sessions 21–74 · 26 March 2026 – 19 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); session 74 added end of session 78*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
 
 ---
+
+## CHANGES THIS SESSION (session 74) — 19 April 2026
+
+- **BM25 interleave deployed — 24P/4Pa/3M → 26P/3Pa/2M** — +2P, −1Pa, −1M, zero P→F regressions. Novel FTS hits now land at synthetic score 0.50 (was 0.0139 append mode), competing with borderline semantic (Pass 1 threshold 0.45) while strong semantic (0.65+) remains untouchable by score math. Q8 Pa→P (Police v FRS to #1 over s55 relevance chunk). Q16 M→P (Neill-Fraser appellate material [2021] TASCCA 12 semantic + [2019] TASSC 10 FTS novel — both were in corpus all along). Q14 stays Pa (Hefny v Barnes [2021] TASSC 4 surfaces via FTS but applies leading-questions rule rather than stating it; remains Priority #1 aliasing territory).
+
+- **Split-constant design — BM25_SCORE_KEYWORD / BM25_INTERLEAVE_SCORE separated** — Plan doc (BM25_INTERLEAVE_EVALUATION_PLAN.md) specified a single-constant swap (0.0139 → 0.50 on BM25_SCORE_KEYWORD). CC surfaced at Phase 0 review that this would break the boost path at line 536: semantic 0.47 + 0.50 additive boost = 0.97, floating borderline-semantic-plus-FTS-match chunks above genuine strong Pass 1 results on other queries — direct reintroduction of the RRF-era vocabulary-contamination failure mode. Patched by splitting: BM25_SCORE_KEYWORD stays at 0.0139 (line 31, boost path additive delta, gentle nudge preserved); new BM25_INTERLEAVE_SCORE=0.50 (line 32, novel-hit path only at line 542). Final patch: two lines touched, one added. The plan doc's Change 2 (redundant `chunks.sort()` before domain filter) was skipped — live-code audit showed line 587 already performs a flat score sort as the final operation; adding a second sort three lines earlier was a byte-identical no-op.
+
+- **Q16 corpus-gap diagnosis refuted — retrieval gap, not content gap** — Session 73 KNOWN ISSUES stated "no appellate Neill-Fraser material in corpus". Session 74 interleave deploy surfaced [2021] TASCCA 12 (Pass 1 semantic, 0.5834, CCA DNA secondary-transfer discussion) and [2019] TASSC 10 (FTS novel, 0.5000, SC Chappell DNA). Both confirmed genuine Neill-Fraser appellate proceedings by Tom. Material was in corpus all session 73; semantic alone couldn't bridge the vocabulary gap between "neill fraser dna secondary transfer" and the chunks' phrasing. Lesson logged to CLAUDE_decisions.md: exhaust retrieval angles (FTS, interleave, query variants) before declaring corpus gaps.
+
+- **Deploy hygiene — CLAUDE_init.md stale entries surfaced** — Two commands in CLAUDE_init.md's post-deploy validation sequence returned errors on this session's force-recreate: (a) `docker inspect ai-stack-agent-general-1` — container does not exist under that name (Compose v2 naming differs); (b) `curl localhost:18789/status` — server.py has no /status route, returned `{"error": "not found"}`. Neither error indicates a deploy failure: clean force-recreate confirmed via `docker compose logs --tail=20 agent-general` showing fresh `Nexus ingest server running on port 18789`. CLAUDE_init.md updated with correct discovery patterns.
+
+- **Baseline snapshots preserved** — Session 73 baseline saved as `~/retrieval_baseline_pre_interleave.txt`. Session 74 baseline saved as `~/retrieval_baseline_post_interleave.txt`. Three-point history: pre_reembed → post_reembed → pre_interleave → post_interleave.
+
+- **Opener workflow validated end-to-end** — `set_active_account` + D1 health check via Cloudflare MCP confirmed clean state at session open (real backlog 0, quarantined_chunks 253, must_not count 3) before any code work. Pattern reusable for all future sessions involving server.py edits.
 
 ## CHANGES THIS SESSION (session 73) — 19 April 2026
 

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 April 2026 (end of session 77). Upload every session alongside CLAUDE.md.*
+*Updated: 19 April 2026 (end of session 78). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -244,7 +244,7 @@ Worker routes exist but are dead — nothing calls them during query handling.
 ### Retrieval Pipeline (Sequential Pass — session 42, reverted from RRF)
 
 1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty(chunk, query_text_lower)` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`; legislation chunks penalised via 3-tier whitelist: `LEG_WHITELIST_CORE` Acts exempt (1.0), `LEG_WHITELIST_ADJACENT` Acts penalised at `LEG_PENALTY_ADJACENT=0.85` unless keyword bridge matches query, all other legislation at `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
-2. **Pass 2 — case chunks appended** — `type=case_chunk` filter, threshold 0.35, limit 8. `apply_sm_penalty()` applied to each hit before dedup check. Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
+2. **Pass 2 — case chunks appended** — `must=[type=case_chunk, subject_matter IN (criminal,mixed)]` hard filter (session 78, `MatchAny`), threshold 0.35, limit 8. `apply_sm_penalty()` still applied post-query (in-memory cache penalty for cases whose subject_matter wasn't yet in Qdrant payload at embed time). Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
 3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2.
 4. **BM25/FTS5 interleave** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Novel case_chunks_fts hits → BM25_INTERLEAVE_SCORE=0.50 (competes with borderline semantic 0.45–0.49); boost path uses BM25_SCORE_KEYWORD=0.0139 (additive delta for already-returned chunks). Re-sort by score after FTS append (line 587). Final top_k cap.
 5. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
@@ -746,6 +746,7 @@ Browse, re-read, and promote past queries without re-querying.
 - Secondary source type filter: field = `type`, value = `secondary_source`
 - Legislation type filter: field = `type`, value = `legislation`
 - Case chunk type filter: field = `type`, value = `case_chunk`
+- Authority synthesis type: field = `type`, value = `authority_synthesis` — **DORMANT** (session 78): isolation filters live (Pass 1 + Pass 3 `must_not`), 233 chunks staged, ingest pending Phase 2c. No points with this type exist in Qdrant yet. Routed via `enrichment_poller.py` `SYNTHESIS_TYPES` set — poller emits `type=authority_synthesis` when `source_type='authority_synthesis'` in D1.
 
 ### secondary_sources D1 schema notes
 
@@ -850,10 +851,11 @@ Source title uses chunk heading (not filename stem).
 - **Retrieval regression fixes (session 64 — remaining steps deferred):**
   - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
   - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64. DEFERRED — same gate as Step 3.
-- **subject_matter filter** — Part 1 (Worker route JOIN) confirmed deployed. Part 2 (poller metadata dict) deployed session 60. Part 3 (re-embed backlog ~7,046 chunks) in progress — poller writing correct payloads from session 60 onwards. Deploy server.py `MatchAny(any=["criminal","mixed"])` filter on Pass 3 once backlog clears to 0.
+- **subject_matter filter** — COMPLETE (session 78). All 3 parts deployed: Part 1 (Worker route JOIN), Part 2 (poller metadata dict + re-embed), Part 3 (server.py `MatchAny(any=["criminal","mixed"])` hard filter on Pass 2 case_chunk query). Pass 2 now excludes civil/administrative case_chunks at Qdrant level.
 - **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
 - **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
-- **Citation authority agent (xref_agent.py)** — COMPLETE. Tables populated: 5,340 case_citations, 4,056 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: stare decisis UI layer (see below).
+- **Citation authority agent (xref_agent.py)** — COMPLETE (tables + cron). Tables populated: 6,959 case_citations, 5,147 case_legislation_refs. Nightly cron live at 3am VPS time. Outstanding: (a) authority-synthesis retrieval layer — Phase 2c: ingest 233 staged chunks (`scripts/authority-chunks-staging/`) via upload-corpus with `source_type='authority_synthesis'`; Phase 3: conditional Pass 4 on authority-lookup trigger queries. Isolation filters live (session 78, commit a60fa1e).
+- **Sentencing Act 1997 (Tas) ingest into legislation corpus** — Corpus gap confirmed session 78 (`SELECT DISTINCT legislation_id FROM legislation_sections` returned no row). Ingest via legislation upload pipeline; priority sections: s 3–5 (sentencing purposes), s 11A (guilty plea discount), s 12 (concurrent/cumulative). Deferred to post-scrape authoring pass.
 - **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.

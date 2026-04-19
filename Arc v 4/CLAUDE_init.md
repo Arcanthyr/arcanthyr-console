@@ -317,3 +317,32 @@ Third-party MCP server for AustLII/Jade case search. Runs on VPS, registered in 
 
 - `/tmp/qvenv` — venv on VPS host with `qdrant-client` installed, created session 73 for quarantine_stubs.py (qdrant-client not on system Python, and script hardcodes localhost:6334 so couldn't run inside agent-general container).
 - Activate with `source /tmp/qvenv/bin/activate`. Reusable for any future VPS-host Python work touching Qdrant directly.
+
+### Python subprocess npx on Windows (session 78)
+
+`subprocess.run(['npx', ...])` raises `FileNotFoundError` on Windows because `npx` is a `.cmd` wrapper, not a `.exe`. Always use the string form with `shell=True`:
+
+```python
+cmd = f'npx wrangler d1 execute arcanthyr --remote --json --command "{sql_escaped}"'
+result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(WRANGLER_DIR), shell=True)
+```
+
+Escape SQL double-quotes first: `sql_escaped = sql.replace('"', '\\"')`. Do NOT use list-form + `shell=True` — the list form mis-parses quoted SQL arguments on Windows cmd.
+
+### source_type discriminator and SYNTHESIS_TYPES (session 78)
+
+The `SYNTHESIS_TYPES` set in `enrichment_poller.py` is the routing mechanism for non-standard Qdrant type values. When `secondary_sources.source_type` matches a value in the set, the Qdrant payload `type` field is set to that value instead of `'secondary_source'`.
+
+- Extend by adding to `SYNTHESIS_TYPES`, not by adding code branches
+- Audit via `SELECT source_type, COUNT(*) FROM secondary_sources GROUP BY source_type` — all rows with a SYNTHESIS_TYPES value must have been embedded after the poller restart; rows embedded before will still carry `type='secondary_source'` in Qdrant
+- `server.py` must have matching `must_not=[FieldCondition(key="type", match=MatchValue(value=X))]` on any retrieval pass that should exclude the new type
+
+### SCP git diff inflation (session 78)
+
+SCP of VPS-edited files to Windows converts LF line endings to CRLF. Git then shows every unchanged line as modified (whitespace diff), inflating commit stats dramatically (e.g., a 4-line logic change appeared as 106 insertions / 10 deletions).
+
+Fix options:
+1. Add `.gitattributes` to the repo root: `*.py text eol=lf`
+2. Edit Python files locally and SCP **up** to VPS (not down then edit locally)
+
+The inflation is cosmetic — logic is correct. But it makes code review noisy and can obscure real changes in diff views.
