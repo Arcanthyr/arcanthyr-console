@@ -1,4 +1,4 @@
-import os, json, uuid, base64, io, re, requests, threading, time
+import os, json, uuid, base64, io, re, requests, threading, time, concurrent.futures
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
@@ -65,6 +65,72 @@ LEG_WHITELIST_ADJACENT = {
     'family violence act':                 {'family violence', 'dvo', 'fvo', 'restraining order', 'protection order', 'domestic violence'},
 }
 LEG_PENALTY_ADJACENT = 0.85   # mild penalty for adjacent Acts without keyword bridge
+
+
+EXPANSION_SYSTEM = (
+    "You rewrite Tasmanian criminal law research queries into semantic variants.\n\n"
+    "Given a user query, return exactly 3 alternative phrasings that capture the same legal "
+    "concept using different vocabulary. Each variant should lean into ONE of:\n"
+    " - Statutory language (Act + section references, defined terms)\n"
+    " - Practitioner shorthand (courtroom / filing terms)\n"
+    " - Doctrinal / textbook phrasing (principles, tests, named authorities)\n\n"
+    "Preserve the user's intent. Do not introduce doctrines the user did not ask about. "
+    "Return a JSON object: {\"variants\": [string, string, string]}\n\n"
+    "Examples:\n"
+    "Q: \"hostile witness procedure cross examination\"\n"
+    "A: {\"variants\": [\"unfavourable witness section 38 Evidence Act application\",\n"
+    "    \"cross-examining own witness leave granted prior inconsistent statement\",\n"
+    "    \"witness turning against party section 38 leave\"]}\n\n"
+    "Q: \"search warrant execution requirements Tasmania\"\n"
+    "A: {\"variants\": [\"police powers executing search warrant entry force announcement\",\n"
+    "    \"section 10 Search Warrants Act execution procedure\",\n"
+    "    \"warrant execution knock announce occupier notice\"]}\n\n"
+    "Q: \"bail application first time offender serious assault\"\n"
+    "A: {\"variants\": [\"Bail Act grounds refusal presumption serious crime\",\n"
+    "    \"conditional bail violent offence unconvicted accused\",\n"
+    "    \"grave crime provisions bail considerations\"]}"
+)
+
+
+def generate_query_variants(query_text: str):
+    """Rewrite query into 3 semantic variants for Pass 1 fan-out.
+    Returns list of variant strings; empty list on any failure (degrades to original-only)."""
+    api_key = os.environ.get("OPENAI_API_KEY", "")
+    if not api_key:
+        print("[!] Query expansion skipped: OPENAI_API_KEY not set")
+        return []
+    try:
+        resp = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": "gpt-4o-mini",
+                "response_format": {"type": "json_object"},
+                "messages": [
+                    {"role": "system", "content": EXPANSION_SYSTEM},
+                    {"role": "user", "content": query_text},
+                ],
+            },
+            timeout=3.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        variants = json.loads(data["choices"][0]["message"]["content"]).get("variants", [])
+        if not isinstance(variants, list) or len(variants) != 3:
+            print(f"[!] Query expansion failed: unexpected shape {variants!r}")
+            return []
+        variants = [v for v in variants if isinstance(v, str) and v.strip()]
+        print(f"[+] Query expansion: {len(variants)} variants generated")
+        return variants
+    except requests.exceptions.Timeout:
+        print("[!] Query expansion failed: timeout")
+        return []
+    except Exception as e:
+        print(f"[!] Query expansion failed: {e}")
+        return []
 
 
 _sm_cache        = {}   # citation → subject_matter
@@ -355,18 +421,49 @@ def search_text(body):
                     chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
         return chunk
 
-    # ── Pass 1 — unfiltered semantic ─────────────────────────────────────────
-    p1 = client.query_points(
-        collection_name=COLLECTION,
-        query=query_vector,
-        query_filter=Filter(
-            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
-        ),
-        limit=top_k * 2,
-        score_threshold=score_threshold,
-        with_payload=True,
-    )
-    chunks = [hit_to_chunk(h) for h in p1.points]
+    QUERY_EXPANSION_ENABLED = os.getenv("QUERY_EXPANSION_ENABLED", "true").lower() == "true"
+
+    # ── Pass 1 — unfiltered semantic (query expansion fan-out) ───────────────
+    if QUERY_EXPANSION_ENABLED:
+        variants = generate_query_variants(query_text)
+    else:
+        variants = []
+    all_queries = [query_text] + variants
+
+    def _run_pass1(q_text, q_vector=None):
+        if q_vector is None:
+            q_vector = embed(q_text)
+        p1_result = client.query_points(
+            collection_name=COLLECTION,
+            query=q_vector,
+            query_filter=Filter(
+                must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
+            ),
+            limit=top_k * 2,
+            score_threshold=score_threshold,
+            with_payload=True,
+        )
+        return [hit_to_chunk(h) for h in p1_result.points]
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        futs = [
+            executor.submit(_run_pass1, q, query_vector if q == query_text else None)
+            for q in all_queries
+        ]
+        all_hits_lists = []
+        for f in concurrent.futures.as_completed(futs):
+            try:
+                all_hits_lists.append(f.result())
+            except Exception as e:
+                print(f"[!] Pass 1 fan-out leg failed: {e}")
+
+    merged = {}
+    for hits in all_hits_lists:
+        for hit in hits:
+            key = hit["_qdrant_id"]
+            if key not in merged or hit["score"] > merged[key]["score"]:
+                merged[key] = hit
+    chunks = list(merged.values())
 
     # Filter short legislation schedule entries
     chunks = [c for c in chunks if not (c.get("type") == "legislation" and len(c.get("text", "")) < 200)]
@@ -405,7 +502,8 @@ def search_text(body):
     chunks = chunks[:top_k]
     seen_ids = {c["_qdrant_id"] for c in chunks}
 
-    print(f"[*] Search: {len(chunks)} chunks from Pass 1")
+    top_score_str = f"{chunks[0]['score']:.3f}" if chunks else "n/a"
+    print(f"[+] Pass 1 fan-out: {len(all_queries)} queries, {len(merged)} unique chunks, top score {top_score_str}")
 
     # ── Pass 2 — case chunks ─────────────────────────────────────────────────
     p2 = client.query_points(

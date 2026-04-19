@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 April 2026 (end of session 76). Upload every session alongside CLAUDE.md.*
+*Updated: 19 April 2026 (end of session 77). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -864,7 +864,6 @@ Source title uses chunk heading (not filename stem).
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
-- **Query expansion — PROMOTED to Priority #1 (session 76)** — before hitting Qdrant, rewrite the incoming user query into 3–4 semantic variants via a fast LLM call (Workers AI Qwen3 or GPT-4o-mini), then run each variant through Pass 1 and merge results with dedup on chunk_id (preserve top score per chunk). Improves recall for plain-language queries hitting formal doctrine chunks (e.g. "hostile witness steps" → also queries "unfavourable witness application", "s 38 cross-examination procedure"; "what happens if I don't show up to court" → also queries "failure to appear", "bench warrant", "non-attendance accused"). Session 76 established experimentally that practitioner↔statutory aliasing cannot be closed by corpus-side edits alone (see Component Notes: Vocabulary anchor over-generalisation (updated session 76)) — query expansion is the root-cause fix for this class of problem. Low implementation risk — additive to existing pipeline, no schema changes, no re-embed.
 - **Procedural sequence assembly** — given a query like "how do I handle a hostile witness" or "what do I do at a bail application", an agent retrieves all relevant procedure, script, doctrine, and checklist chunks then sequences them into a step-by-step response rather than returning them as parallel flat results. Requires a dedicated "sequence assembly" prompt layer after retrieval, before Qwen3 synthesis. Highest value for procedural queries where order matters. Build after retrieval quality is stable.
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
 - **Auto-populate citation and case name from uploaded file** — when a file is dropped or selected in the upload UI, scan the first 1,000 characters for AustLII citation pattern (`[YYYY] TASSC/TASMC/TASCCA/TASFC N`) and case name pattern (R v Name, DPP v Name, X v Y). Auto-fill the citation and case name fields; derive and set the court dropdown from the court code. Frontend-only change in `app.js` — no Worker or D1 changes needed. Reduces manual entry errors on upload.
@@ -933,6 +932,20 @@ Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge i
 - Chunks returned with `bm25_source="case_chunks_fts"` tag; dedup against `seen_ids` (chunk_id) and `existing_ids` (citation)
 - **Split-constant scoring (session 74):** boost path uses `BM25_SCORE_KEYWORD` (~0.0139, additive delta for already-returned chunks); novel-hit path uses `BM25_INTERLEAVE_SCORE` (0.50, competes with borderline semantic at Pass-1 threshold 0.45)
 - Separate `bm25_source` value for case-law layer (`"case_legislation_ref"`) — two distinct BM25 pathways, both live
+
+### Query expansion — LIVE (session 77)
+
+`generate_query_variants()` function in `server.py` calls GPT-4o-mini with `response_format={"type":"json_object"}` and a 3.0s hard timeout. Returns `{"variants": [str, str, str]}` — one statutory, one practitioner-shorthand, one doctrinal variant. Returns `[]` on any failure (timeout, parse error, API error).
+
+`QUERY_EXPANSION_ENABLED = os.getenv("QUERY_EXPANSION_ENABLED", "true").lower() == "true"` — per-call env flag. Rollback: add `QUERY_EXPANSION_ENABLED=false` to `~/ai-stack/.env.config` + force-recreate. No code revert needed.
+
+Pass 1 fan-out: original query + up to 3 variants → `ThreadPoolExecutor(max_workers=4)` → concurrent `_run_pass1()` calls → merged by `_qdrant_id` (max score per chunk). Pass 2, Pass 3, BM25 interleave run on original query only.
+
+Telemetry: `[+] Pass 1 fan-out: N queries, N unique chunks, top score N.NNN` in agent-general logs.
+
+Degradation: if variants empty, `all_queries = [query_text]` → one thread → behaviour identical to pre-expansion. Per-future try/except in gather loop — one failed variant leg is logged and dropped, rest proceed.
+
+`_qdrant_id` field is set at `hit_to_chunk()` line 325 as `str(hit.id)` — this is the merge key.
 
 ### qvenv — VPS host Python venv for Qdrant scripts
 
