@@ -58,6 +58,7 @@ OLLAMA_URL        = os.environ.get('OLLAMA_URL',        'http://localhost:11434'
 COLLECTION        = os.environ.get('COLLECTION',        'general-docs-v2')
 EMBED_MODEL       = 'argus-ai/pplx-embed-context-v1-0.6b:fp32'
 OPENAI_ENRICH_MODEL = 'gpt-4o-mini-2024-07-18'
+SYNTHESIS_TYPES = {'authority_synthesis'}   # Qdrant types routed directly; extend for future synthesis classes
 
 NEXUS_HEADERS = {
     'Content-Type': 'application/json',
@@ -481,6 +482,95 @@ def strip_frontmatter(text):
     return text.strip()
 
 
+def build_secondary_embedding_text(raw_text, enriched_text=None):
+    """Construct embedding text with vocabulary anchor from stored metadata.
+
+    Extracts CONCEPTS, ACT, CASE from header lines in raw_text, builds a
+    'Key terms:' anchor sentence, and prepends it before the body prose.
+    The body is enriched_text (if provided) or raw_text after header strip.
+    """
+    lines = raw_text.strip().split('\n')
+    concepts = ''
+    act = ''
+    case_ref = ''
+
+    for line in lines:
+        ls = line.strip()
+        m = re.match(r'^\[?concepts:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
+        if m:
+            concepts = m.group(1).strip().rstrip(']')
+            continue
+        m = re.match(r'^\[?act:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
+        if m:
+            val = m.group(1).strip().rstrip(']')
+            if val.lower() not in ('none', 'n/a', ''):
+                act = val
+            continue
+        m = re.match(r'^\[?case:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
+        if m:
+            val = m.group(1).strip().rstrip(']')
+            if val.lower() not in ('none', 'n/a', ''):
+                case_ref = val
+            continue
+
+    if enriched_text:
+        body = strip_frontmatter(enriched_text)
+    else:
+        body = strip_frontmatter(raw_text)
+
+    anchor_parts = []
+    if act:
+        anchor_parts.append(act)
+    if concepts:
+        anchor_parts.append(concepts)
+    if case_ref:
+        anchor_parts.append(case_ref)
+
+    if anchor_parts:
+        anchor = f"Key terms: {'; '.join(anchor_parts)}."
+        return f"{anchor}\n\n{body}"
+    return body
+
+
+def build_case_chunk_embedding_text(enriched_text, principles_json_str):
+    """Construct embedding text with vocabulary anchor from structured case data.
+
+    Extracts legislation refs and key authorities from principles_json,
+    builds a 'Key terms:' anchor, prepends it before enriched_text.
+    """
+    if not enriched_text:
+        return enriched_text or ''
+
+    try:
+        data = json.loads(principles_json_str or '{}')
+    except (json.JSONDecodeError, TypeError):
+        return enriched_text
+
+    legislation = data.get('legislation', [])
+    authorities_raw = data.get('key_authorities', [])
+    authorities = []
+    for a in authorities_raw[:3]:
+        if isinstance(a, dict):
+            name = a.get('name', '')
+            if name:
+                authorities.append(name)
+        elif isinstance(a, str) and a:
+            authorities.append(a)
+
+    anchor_parts = []
+    if legislation:
+        anchor_parts.append('; '.join(str(l) for l in legislation[:3]))
+    if authorities:
+        anchor_parts.append('; '.join(authorities))
+
+    if anchor_parts:
+        anchor = f"Key terms: {'; '.join(anchor_parts)}."
+        return f"{anchor}\n\n{enriched_text}"
+    return enriched_text
+
+
+
+
 def get_embedding(text: str) -> list[float]:
     """Get pplx-embed embedding from Ollama."""
     if len(text) > 8000:
@@ -709,15 +799,17 @@ def run_embedding_pass(batch: int) -> dict:
 
     for i, chunk in enumerate(chunks, 1):
         chunk_id     = chunk['id']
-        # Prefer enriched_text for embedding; fall back to raw text
-        embed_text   = chunk.get('enriched_text') or chunk.get('raw_text', '')
-        embed_text   = strip_frontmatter(embed_text)
+        embed_text   = build_secondary_embedding_text(
+            chunk.get('raw_text', ''),
+            chunk.get('enriched_text')
+        )
+        log.info(f"[EMBED_ANCHOR] {chunk['id']}: anchor={'Yes' if 'Key terms:' in embed_text else 'No'}, len={len(embed_text)}")
         metadata     = {
             'citation':    chunk.get('id', ''),
             'source_id':   chunk.get('id', ''),
             'chunk_index': chunk.get('chunk_index', 0),
             'text':        embed_text[:5000],
-            'type':        'secondary_source',
+            'type':        (chunk.get('source_type') if chunk.get('source_type') in SYNTHESIS_TYPES else 'secondary_source'),
             'category':    chunk.get('category', 'doctrine'),
             'source_type': chunk.get('source_type', '')
         }
@@ -794,7 +886,11 @@ def run_case_chunk_embedding_pass(batch: int = 10) -> dict:
 
     for i, chunk in enumerate(chunks, 1):
         chunk_id    = chunk['id']
-        embed_text  = chunk['enriched_text']
+        embed_text  = build_case_chunk_embedding_text(
+            chunk['enriched_text'],
+            chunk.get('principles_json', '{}')
+        )
+        log.info(f"[EMBED_ANCHOR] {chunk_id}: anchor={'Yes' if 'Key terms:' in embed_text else 'No'}, len={len(embed_text)}")
         metadata    = {
             'chunk_id':    chunk_id,
             'citation':    chunk.get('citation', ''),

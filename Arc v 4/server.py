@@ -2,7 +2,7 @@ import os, json, uuid, base64, io, re, requests, threading, time, concurrent.fut
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
-from qdrant_client.models import Filter, FieldCondition, MatchValue
+from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
 
 OLLAMA_HOST   = os.environ.get("OLLAMA_HOST", "http://ollama:11434")
 QDRANT_HOST   = os.environ.get("QDRANT_HOST", "http://qdrant-general:6333")
@@ -437,7 +437,7 @@ def search_text(body):
             collection_name=COLLECTION,
             query=q_vector,
             query_filter=Filter(
-                must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
+                must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True)), FieldCondition(key="type", match=MatchValue(value="authority_synthesis"))]
             ),
             limit=top_k * 2,
             score_threshold=score_threshold,
@@ -510,7 +510,7 @@ def search_text(body):
         collection_name=COLLECTION,
         query=query_vector,
         query_filter=Filter(
-            must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))],
+            must=[FieldCondition(key="type", match=MatchValue(value="case_chunk")), FieldCondition(key="subject_matter", match=MatchAny(any=["criminal","mixed"]))],
             must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
         ),
         limit=8,
@@ -530,7 +530,7 @@ def search_text(body):
         query=query_vector,
         query_filter=Filter(
             must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))],
-            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
+            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True)), FieldCondition(key="type", match=MatchValue(value="authority_synthesis"))]
         ),
         limit=8,
         score_threshold=0.25,
