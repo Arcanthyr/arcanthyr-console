@@ -5,8 +5,9 @@ const COURT_TAGS = {
   HCA:    { label: 'HCA', bg: '#2a1a1a', color: '#E84A4A' },
 };
 const TYPE_TAGS = {
-  secondary:   { label: 'CORPUS', bg: '#1a1a1a', color: '#7A8087' },
-  legislation: { label: 'LEG',    bg: '#0d2a2a', color: '#4ad4d4' },
+  secondary:           { label: 'CORPUS',    bg: '#1a1a1a',              color: '#7A8087' },
+  legislation:         { label: 'LEG',       bg: '#0d2a2a',              color: '#4ad4d4' },
+  authority_synthesis: { label: 'AUTHORITY', bg: 'rgba(200,140,50,0.08)', color: '#C88C32' },
 };
 
 function Tag({ label, bg, color }) {
@@ -23,8 +24,8 @@ function Tag({ label, bg, color }) {
 
 export default function ResultCard({ result, isActive, onClick }) {
   const courtTag = COURT_TAGS[result.court];
-  const typeTag  = TYPE_TAGS[result.doc_type];
-  const tag = courtTag || typeTag || { label: result.doc_type || '?', bg: '#1a1a1a', color: '#7A8087' };
+  const typeTag  = TYPE_TAGS[result.type] || TYPE_TAGS[result.doc_type];
+  const tag = courtTag || typeTag || { label: result.type || result.doc_type || '?', bg: '#1a1a1a', color: '#7A8087' };
   const score = result.score ?? result.relevance_score ?? 0;
 
   return (

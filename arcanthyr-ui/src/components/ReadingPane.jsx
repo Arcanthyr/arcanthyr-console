@@ -75,7 +75,61 @@ export default function ReadingPane({ selected, answer, query, queryId, nexusKey
     );
   }
 
+  if (selected.type === 'authority_synthesis') {
+    return <AuthorityPane selected={selected} onClose={onClose} />;
+  }
+
   return <CasePane selected={selected} answer={answer} query={query} queryId={queryId} nexusKey={nexusKey} onNexusKeyChange={onNexusKeyChange} onShare={onShare} onClose={onClose} />;
+}
+
+function AuthorityPane({ selected, onClose }) {
+  return (
+    <div style={{ flex: 1, background: 'var(--bg-shell)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{
+        padding: '14px 24px 0',
+        borderBottom: '1px solid var(--border)',
+        background: 'var(--bg-topbar)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', padding: '1px 6px', borderRadius: '3px', background: 'rgba(200,140,50,0.08)', color: '#C88C32', textTransform: 'uppercase' }}>AUTHORITY</span>
+              <span style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--text-muted)' }}>
+                {selected.citation || selected.id}
+              </span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: '16px', color: 'var(--text-primary)', lineHeight: 1.35 }}>
+              {selected.title || selected.citation}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            title="Close"
+            style={{
+              fontSize: '16px', padding: '3px 10px',
+              border: '1px solid var(--border)',
+              borderRadius: '4px',
+              color: 'var(--text-muted)',
+              background: 'transparent',
+              lineHeight: 1,
+              flexShrink: 0,
+              marginLeft: '16px',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+          >×</button>
+        </div>
+        <div style={{ fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#C88C32', paddingBottom: '10px' }}>
+          Authority Analysis
+        </div>
+      </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '28px 32px' }}>
+        <pre style={{ fontFamily: 'inherit', fontSize: '13px', color: 'var(--text-body)', lineHeight: 1.85, whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0 }}>
+          {selected.text || selected.raw_text || 'No content available.'}
+        </pre>
+      </div>
+    </div>
+  );
 }
 
 function CasePane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange, onShare, onClose }) {

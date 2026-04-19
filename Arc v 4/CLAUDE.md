@@ -1,13 +1,13 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 April 2026 (end of session 79) · Supersedes all prior versions
+Updated: 20 April 2026 (end of session 80) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
 
 ---
 
-## SYSTEM STATE — 19 April 2026 (end of session 78)
+## SYSTEM STATE — 20 April 2026 (end of session 80)
 
 | Component | Status |
 |---|---|
@@ -17,7 +17,8 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | D1 secondary_sources | 1,437 total (233 authority_synthesis added session 79) · embedded=0: 2 (orphaned Nexus saves, not a pipeline fault — authority chunks may be residual during poller catch-up window) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
-| D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all three passes (Pass 1, Pass 2, Pass 3) |
+| D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
+| Pass 4 / Citation authority agent | SHADOW MODE — `AUTHORITY_PASS_ENABLED=false` (default) · gate fires + logs `[Pass 4] gate=FIRE reason=... ENABLED=false (shadow)` but skips Qdrant query · enable after 24–72h telemetry review by adding `AUTHORITY_PASS_ENABLED=true` to `~/ai-stack/.env.config` + force-recreate agent-general · Worker version 648207f6 |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows |
@@ -48,7 +49,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 5. **Quick Search tab (arcanthyr.com practitioner UI)** — Build plan finalised in session 73 (conversation-external — not built, see handover notes). Three phases: corpus FTS keyword search (Phase 1), AustLII external via `/fetch-page` (Phase 2 — watch for CGI slowness inherited from auslaw-mcp `search_cases` timeout issue), query_log `search_type` extension (Phase 4). Phase 3 Jade link button is gravy. Phase 5 (full-judgment fetch + reading pane with cached HTML, 30-day TTL `austlii_cache` D1 table) added as separate extension. Track 2 (remote MCP at `auslaw.arcanthyr.com`) explicitly deferred — auslaw-mcp in CC covers 90% of the use case.
 
-6. **Citation authority agent Phase 3** — Phase 2c complete (session 79): 233 `authority_synthesis` chunks ingested via new `scripts/ingest_authority_chunks.py`, all six verification gates green, Phase 2b isolation firing end-to-end (two independent Qdrant payload spot-checks confirmed `type='authority_synthesis'`). Phase 3 = conditional Pass 4 leg in `server.py` with citation-regex + keyword triggers. Opus-referral per userMemories rule — next session opens with consult brief covering trigger heuristic design, composition logic (standalone Pass 4 merged alongside Pass 3 vs injection into Pass 2 context), and latency budget given query-expansion fan-out already consumes ~3s.
+6. **Citation authority agent — Phase 3 implemented, shadow mode** — Pass 4 leg deployed session 80: `should_fire_pass4()` gate (3 rules: keyword, bare-lookup, multi-citation), `AUTHORITY_PASS_ENABLED=false` default (shadow), 500ms timeout, dedup against `seen_ids`. Worker deployed with `[AUTHORITY ANALYSIS]` label in Sol + V'ger prompts, amber AUTHORITY tag in ResultCard, Library badge, AuthorityPane in ReadingPane. AUTHORITY_KEYWORDS finalised via D1 corpus scan (corpus is case-citation-profile shaped, not topical — keywords focus on treatment vocabulary + bare citation lookup). **Next step:** Tom runs `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` + force-recreate after 24–72h shadow telemetry review. Monitor `[Pass 4]` log lines for false-positive fire rate on topical-authority keywords before flip.
 
 7. **Sentencing Act 1997 (Tas) ingest into legislation corpus** — structural gap surfaced this session during Q9 diagnosis (`SELECT DISTINCT legislation_id FROM legislation_sections` returned no Sentencing Act row). Deferred to post-scrape authoring pass. Ingest via legislation upload pipeline; verify section-level chunking covers s 11A (guilty plea discount), s 12 (concurrent/cumulative), and sentencing purposes (ss 3–5).
 
@@ -241,6 +242,18 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Learning — Cloudflare Worker burst-token-bucket rate limit on bulk ingest** — at `DELAY_SEC=0.5` (120 req/min), Worker rate-limited clusters at request positions ~#49-53 and ~#148-161 (14/233 returned 429; cluster pattern consistent with burst bucket depletion, not sustained-rate limiting). Bumping to `DELAY_SEC=1.0` (60 req/min) cleared all 14 on retry with zero residual. Rule added to CLAUDE_init.md: bulk ingest scripts targeting `/api/legal/upload-corpus` use `DELAY_SEC=1.0` from the start.
 
 - **Baseline numbers discrepancy flagged at session open — userMemories stale on retrieval baseline** — session-open prompt quoted "10P / 11P / 8M / 3 ungraded" (totals 32, not 31; matches session-51 frozen state in userMemories, not the current SYSTEM STATE `≥28P / ≤3Pa / 0M` from session 77). Flagged early; no downstream decisions landed on the stale figure. userMemories updates asynchronously — stale memory bleed is expected but worth catching when it appears in scope-setting.
+
+## CHANGES THIS SESSION (session 80) — 20 April 2026
+
+- **Phase 3 Citation authority agent — Pass 4 gate + retrieval leg deployed in shadow mode** — `should_fire_pass4(query_text) -> (bool, reason)` function in `server.py` with three independent gate rules: (1) keyword match against `AUTHORITY_KEYWORDS` list (treatment vocabulary, citation-profile vocabulary, judicial-treatment intent phrases, and narrow topical-authority phrases); (2) bare-citation lookup — query ≤60 chars AND ≥1 CITATION_REGEX match; (3) relationship intent — ≥2 citations in query. Pass 4 `query_points` block inserted after domain filter, before final sort+cap (lines 737–771 post-edit); uses `Filter(must=[type=authority_synthesis], must_not=[quarantined=True])` with `AUTHORITY_PASS_THRESHOLD=0.50`, `AUTHORITY_PASS_LIMIT=3`, `AUTHORITY_PASS_TIMEOUT_SEC=0.5` (ThreadPoolExecutor with 500ms timeout). Dedup against `seen_ids`. `AUTHORITY_PASS_ENABLED=false` by default — gate fires and logs `[Pass 4] gate=FIRE reason=... ENABLED=false (shadow)` but skips Qdrant query. Worker version 648207f6.
+
+- **AUTHORITY_KEYWORDS finalised via D1 corpus scan** — corpus scan confirmed all 233 chunks are per-case citation profiles (Treatment section + Propositions for which cited + Citing cases), NOT topical aggregation chunks. "Leading authorities on X" style queries have weak chunk support — no ranking chunks exist, only per-case profiles mentioning propositions in passing. Keywords refined to focus on treatment vocabulary (followed by, applied in, distinguished in, etc.), judicial-treatment intent phrases (subsequent treatment, cases citing, etc.), and citation-profile vocabulary (citing cases, how often cited, citation profile). Narrow topical-authority phrases (leading authority on, leading case on, key authority on, authority on) retained but flagged for shadow-mode monitoring — cut before flag flip if false-positive FIRE rate is high on queries where Pass 1/2/3 already returns good doctrinal results. Broader phrases (leading authority, leading case, seminal case, landmark case, most cited, principal authority) dropped — no corpus support, would FIRE but retrieve weakly.
+
+- **worker.js Phase 2 — Sol and V'ger updated for [AUTHORITY ANALYSIS] label** — Sol (`handleLegalQuery`): caseBlocks map now emits a four-way label switch (`[CASE EXCERPT]` / `[LEGISLATION]` / `[AUTHORITY ANALYSIS]` / `[ANNOTATION]`) as net-new label injection (Sol previously had no labels at all); default systemPrompt variant gets instruction sentence: "AUTHORITY ANALYSIS blocks summarise how Tasmanian courts have cited and treated a specific case — use them to describe subsequent treatment, citation frequency, and how the case has been applied or distinguished." V'ger (`handleLegalQueryWorkersAI`): existing binary ternary (`case_chunk → [CASE EXCERPT]`, else `[ANNOTATION]`) extended to three-way (`authority_synthesis → [AUTHORITY ANALYSIS]`); same instruction sentence added to default systemPrompt variant.
+
+- **UI Phase 3 — amber AUTHORITY tag, Library badge, AuthorityPane** — `ResultCard.jsx`: `authority_synthesis` added to `TYPE_TAGS` (label: AUTHORITY, bg: `rgba(200,140,50,0.08)`, color: `#C88C32`); tag resolution extended to check `result.type` before `result.doc_type` (server.py search returns `type`, not `doc_type`). `Library.jsx` CorpusTable: amber AUTHORITY badge added inline with title when `r.court === 'authority_synthesis'` (source_type aliased as court by `handleLibraryList`); `r.court` subtitle suppressed for authority_synthesis rows. `ReadingPane.jsx`: branch added before CasePane dispatch — `if (selected.type === 'authority_synthesis')` renders new `AuthorityPane` component; AuthorityPane shows amber AUTHORITY header, citation/title, close button, and full `selected.text` or `selected.raw_text` in a scrollable pre-wrap block.
+
+- **server.py local mirror synced** — VPS file downloaded to `Arc v 4/server.py` via hex-ssh ssh-download post-edit. `grep -c "must_not"` = 4 (3 Phase 2b isolation gates + 1 new Pass 4 gate), `grep -c "should_fire_pass4"` = 2, `grep -c "AUTHORITY_PASS"` = 9.
 
 ---
 

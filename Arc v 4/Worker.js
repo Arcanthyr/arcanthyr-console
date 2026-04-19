@@ -2175,7 +2175,11 @@ async function handleLegalQuery(body, env) {
     const principles = Array.isArray(c.principles) && c.principles.length > 0
       ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
       : "";
-    return `${caseName}${c.citation}${courtSuffix}\n${c.text}${principles}`;
+    const label = c.type === 'case_chunk' ? '[CASE EXCERPT]'
+                : c.type === 'legislation' ? '[LEGISLATION]'
+                : c.type === 'authority_synthesis' ? '[AUTHORITY ANALYSIS]'
+                : '[ANNOTATION]';
+    return `${label} ${caseName}${c.citation}${courtSuffix}\n${c.text}${principles}`;
   }).join("\n\n---\n\n");
 
   const contextBlocks = sectionContext
@@ -2186,7 +2190,7 @@ async function handleLegalQuery(body, env) {
     ? `You are a Tasmanian criminal law research assistant. The section text has been provided, followed by case excerpts. Quote and explain the section, then discuss how the cases have applied it. Be precise and cite specific cases. Format in plain prose - no markdown headers.`
     : (sectionContext && !hasCases)
       ? `You are a Tasmanian criminal law research assistant. The section text has been provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Format in plain prose - no markdown headers.`
-      : `You are a Tasmanian criminal law research assistant. Answer using the provided excerpts, which may include raw judgment text, synthesised doctrine, or legislation. Be precise and cite specific cases. When excerpts contain raw judgment text, reason from and synthesise what is there — do not refuse to answer simply because the text lacks a clean doctrinal statement. Only say the material is insufficient if the excerpts are genuinely silent on the topic. Format in plain prose - no markdown headers.`;
+      : `You are a Tasmanian criminal law research assistant. Answer using the provided excerpts, which may include raw judgment text, synthesised doctrine, or legislation. Be precise and cite specific cases. When excerpts contain raw judgment text, reason from and synthesise what is there — do not refuse to answer simply because the text lacks a clean doctrinal statement. Only say the material is insufficient if the excerpts are genuinely silent on the topic. AUTHORITY ANALYSIS blocks summarise how Tasmanian courts have cited and treated a specific case — use them to describe subsequent treatment, citation frequency, and how the case has been applied or distinguished. Format in plain prose - no markdown headers.`;
 
   const answерNote = sectionContext
     ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`
@@ -2410,7 +2414,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   const caseBlocks = orderedChunks.map((c) => {
     const caseName = c.case_name ? `${c.case_name} ` : '';
     const courtSuffix = c.court && c.court.toLowerCase() !== 'unknown' ? ` (${c.court})` : '';
-    const label = c.type === 'case_chunk' ? '[CASE EXCERPT]' : '[ANNOTATION]';
+    const label = c.type === 'case_chunk' ? '[CASE EXCERPT]' : c.type === 'authority_synthesis' ? '[AUTHORITY ANALYSIS]' : '[ANNOTATION]';
     return `${label} ${caseName}${c.citation}${courtSuffix}\n${c.text}`;
   }).join("\n\n---\n\n");
 
@@ -2422,7 +2426,7 @@ async function handleLegalQueryWorkersAI(body, env) {
     ? `You are a Tasmanian criminal law assistant. Quote and explain the section, then discuss only how the provided cases have applied it. Be precise. Plain prose only. Never invent citations.`
     : (sectionContext && !hasCases)
       ? `You are a Tasmanian criminal law assistant. Quote and explain the provided section. Do not speculate about case application — state clearly that no cases are yet available. Plain prose only. Never invent citations.`
-      : `You are a Tasmanian criminal law assistant. Answer from the provided case excerpts. When excerpts contain raw judgment text, summarise and reason from the court's reasoning and findings directly — do not refuse if no clean doctrinal statement is present. CASE EXCERPT blocks contain primary source judgment text — draw your answer primarily from these. ANNOTATION blocks provide supplementary practitioner context. Plain prose only. Never invent citations.`;
+      : `You are a Tasmanian criminal law assistant. Answer from the provided case excerpts. When excerpts contain raw judgment text, summarise and reason from the court's reasoning and findings directly — do not refuse if no clean doctrinal statement is present. CASE EXCERPT blocks contain primary source judgment text — draw your answer primarily from these. AUTHORITY ANALYSIS blocks summarise how Tasmanian courts have cited and treated a specific case — use them to describe subsequent treatment and how the case has been applied or distinguished. ANNOTATION blocks provide supplementary practitioner context. Plain prose only. Never invent citations.`;
 
   const answerNote = (sectionContext && hasCases)
     ? `Quote ${sectionContext.label} in your answer, then discuss how the cases have applied or interpreted it.`

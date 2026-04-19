@@ -560,8 +560,13 @@ function CorpusTable({ rows, onDelete, onDeleteNexus }) {
         return (
           <tr key={r.id} style={{ background: isMalformed ? 'rgba(232,74,74,0.05)' : 'transparent' }}>
             <td style={td}>
-              <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.title}</div>
-              {r.court && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.court}</div>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.title}</div>
+                {r.court === 'authority_synthesis' && (
+                  <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', padding: '1px 6px', borderRadius: '3px', background: 'rgba(200,140,50,0.08)', color: '#C88C32', textTransform: 'uppercase', flexShrink: 0 }}>AUTHORITY</span>
+                )}
+              </div>
+              {r.court && r.court !== 'authority_synthesis' && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.court}</div>}
             </td>
             <td style={tdMono}>{r.id}</td>
             <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{r.category}</td>

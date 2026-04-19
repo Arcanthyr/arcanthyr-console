@@ -423,6 +423,59 @@ def search_text(body):
 
     QUERY_EXPANSION_ENABLED = os.getenv("QUERY_EXPANSION_ENABLED", "true").lower() == "true"
 
+    # ── Pass 4 — Citation authority agent constants ───────────────────────────
+    AUTHORITY_PASS_ENABLED     = os.getenv("AUTHORITY_PASS_ENABLED", "false").lower() == "true"
+    AUTHORITY_PASS_THRESHOLD   = 0.50
+    AUTHORITY_PASS_LIMIT       = 3
+    AUTHORITY_PASS_TIMEOUT_SEC = 0.5
+
+    CITATION_REGEX = re.compile(
+        r'\[\d{4}\]\s+(?:HCA|TASSC|TASCCA|TASMC|FCAFC|NSWCCA|VSCA|QCA|WASC|SASC|ACTCA)\s+\d+'
+        r'|\(\d{4}\)\s+\d+\s+(?:CLR|ALR|A Crim R|Tas R|ALJR)\s+\d+',
+        re.IGNORECASE
+    )
+
+    AUTHORITY_KEYWORDS = [
+        # Treatment vocabulary (direct match against chunk Treatment section)
+        "followed by", "applied in", "distinguished in", "distinguished by",
+        "approved in", "approved by",
+        "cited with approval", "cited with",
+        "not followed", "disapproved",
+        "overruled", "overruled by",
+        "affirmed by",
+        "considered in",
+        "still good law", "still binding",
+        # Judicial-treatment intent phrases
+        "subsequent treatment", "judicial treatment", "has been treated",
+        "treatment of",
+        "cases citing", "cases that followed", "cases that distinguished",
+        # Citation-profile vocabulary
+        "citation profile",
+        "how often cited", "how many times cited",
+        "citing cases",
+        # Topical-authority phrases (monitor FIRE rate in shadow before keeping)
+        "leading authority on", "leading case on",
+        "key authority on",
+        "authority on",
+    ]
+
+    def should_fire_pass4(q: str) -> tuple:
+        """Return (fire: bool, reason: str) — three independent gate rules."""
+        q_lower = q.lower().strip()
+        # Rule 1: authority-intent keyword
+        for kw in AUTHORITY_KEYWORDS:
+            if kw in q_lower:
+                return True, f"keyword:{kw}"
+        # Rule 2: bare citation lookup (short query + at least one citation)
+        citations = CITATION_REGEX.findall(q)
+        if len(q) <= 60 and citations:
+            return True, "bare-lookup"
+        # Rule 3: relationship intent (≥2 citations in query)
+        if len(citations) >= 2:
+            return True, "multi-citation"
+        return False, ""
+
+
     # ── Pass 1 — unfiltered semantic (query expansion fan-out) ───────────────
     if QUERY_EXPANSION_ENABLED:
         variants = generate_query_variants(query_text)
@@ -680,6 +733,42 @@ def search_text(body):
         excluded = pre_filter_count - len(chunks)
         if excluded:
             print(f"[*] Domain filter '{subject_matter_filter}': excluded {excluded} case chunks")
+
+    # ── Pass 4 — Citation authority agent (authority_synthesis chunks) ────────
+    _fire4, _reason4 = should_fire_pass4(query_text)
+    if _fire4:
+        if AUTHORITY_PASS_ENABLED:
+            try:
+                def _run_pass4():
+                    return client.query_points(
+                        collection_name=COLLECTION,
+                        query=embed(query_text),
+                        limit=AUTHORITY_PASS_LIMIT,
+                        score_threshold=AUTHORITY_PASS_THRESHOLD,
+                        query_filter=Filter(
+                            must=[FieldCondition(key="type", match=MatchValue(value="authority_synthesis"))],
+                            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))],
+                        ),
+                        with_payload=True,
+                    ).points
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _ex:
+                    _fut = _ex.submit(_run_pass4)
+                    try:
+                        _auth_hits = _fut.result(timeout=AUTHORITY_PASS_TIMEOUT_SEC)
+                    except concurrent.futures.TimeoutError:
+                        _auth_hits = []
+                        print(f"[Pass 4] timeout after {AUTHORITY_PASS_TIMEOUT_SEC}s reason={_reason4}")
+                for _h in _auth_hits:
+                    _ac = hit_to_chunk(_h)
+                    if _ac["_qdrant_id"] not in seen_ids:
+                        chunks.append(_ac)
+                        seen_ids.add(_ac["_qdrant_id"])
+                print(f"[Pass 4] gate=FIRE reason={_reason4} hits={len(_auth_hits)} ENABLED=true")
+            except Exception as _e:
+                print(f"[Pass 4] error: {_e}")
+        else:
+            print(f"[Pass 4] gate=FIRE reason={_reason4} ENABLED=false (shadow)")
+
 
     # ── Final sort + cap ─────────────────────────────────────────────────────
     # Re-sort after BM25 injection (scores may have changed via boost) then cap.
