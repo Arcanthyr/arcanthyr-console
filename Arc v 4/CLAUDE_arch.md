@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 18 April 2026 (end of session 71). Upload every session alongside CLAUDE.md.*
+*Updated: 19 April 2026 (end of session 72). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -92,6 +92,10 @@ Full D1/Workers/KV/R2 access
 `sequentialthinking`
 → Use for: complex multi-step reasoning tasks where structured chain-of-thought helps
 → Installed globally as `mcp-server-sequential-thinking` (v2025.12.18) — config updated from npx to direct binary (session 49). Restart CC after any reinstall.
+
+**MCP — auslaw** (AustLII/Jade case search — installed session 72):
+`search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`, plus 6 additional tools — 10 total
+→ Use for: Tasmanian/AustLII case lookup by citation or topic, Jade.io lookups, citation formatting — complements the local scraper and Arcanthyr retrieval. VPS-hosted docker container at `~/auslaw-mcp`, digest-pinned `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network `auslaw-mcp_auslaw-isolated` (NOT connected to any `ai-stack_*` network). Registered user-scope in `C:\Users\Hogan\.claude.json` as `auslaw`, transport is SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. All outbound traffic validated via tcpdump session 72 — talks only to `posh.austlii.edu.au` (138.25.65.147). `search_cases` times out against AustLII CGI (KNOWN ISSUE); `search_by_citation` is reliable.
 
 **MCP tools vs auto-activating skills — key distinction:**
 - **MCP tools** (hex-ssh, sequential-thinking, playwright, context7, fetch, firecrawl, github, magic, cloudflare) — require **explicit invocation** by CC. They do not trigger automatically under any condition.

@@ -242,3 +242,42 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 - 8 phrases being pre-generated: welcome, searching, processing, complete, error, no_results, uploading, uploaded
 - Files will live in `Arc v 4/public/Voices/` served from Cloudflare CDN
 - OPENAI_API_KEY confirmed in `~/ai-stack/.env.secrets`, injected into agent-general via env_file
+
+---
+
+## auslaw-mcp (session 72)
+
+Third-party MCP server for AustLII/Jade case search. Runs on VPS, registered in Windows Claude Code.
+
+| Item | Detail |
+|---|---|
+| Clone path | `~/auslaw-mcp` on VPS — deliberately OUTSIDE `~/ai-stack/` tree to keep off ai-stack networks |
+| Image digest | `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced` — pinned, do not change without re-audit |
+| Compose service | `auslaw-mcp` in `~/auslaw-mcp/docker-compose.yaml` — `build:` block removed, image pinned by digest |
+| Network | `auslaw-mcp_auslaw-isolated` (bridge `br-09cccc527fb4`) — NOT connected to any `ai-stack_*` network, do not add external network references |
+| `.env` | `LOG_LEVEL=1`, `MCP_TRANSPORT=stdio`, `NODE_ENV=production`, `JADE_SESSION_COOKIE=` (blank) |
+| `.mcp.json` | Deleted from clone root per third-party tool security rule — never restore |
+| MCP registration | User-scope in `C:\Users\Hogan\.claude.json` as name `auslaw` — registered via `claude mcp add-json` with backtick-escaped double-quoted JSON |
+| Transport | SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js` — `claude` CLI lives on Windows, not VPS |
+| Tools exposed | 10 total — `search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`, plus 6 others |
+| Tool reliability | `search_by_citation` instant and reliable · `search_cases` frequently times out against AustLII CGI endpoint (KNOWN ISSUE — AustLII slowness, not IP block) |
+
+### MCP registration — PowerShell gotchas
+
+- `claude mcp add -- ssh ...` does NOT stop flag parsing on the SSH args — use `claude mcp add-json` instead
+- PowerShell single-quoted JSON mangles internal quotes — use backtick-escaped double quotes: `` `"name`": `"auslaw`"... ``
+- Registration is user-scope (`C:\Users\Hogan\.claude.json`) — survives project switches
+
+### tcpdump audit procedure (for any new VPS MCP install)
+
+- Run tcpdump as user with `-Z tom` flag — drops privileges after opening socket, pcap file owned by tom (avoid passwordless sudo)
+- Identify the container's bridge interface first: `docker network inspect <network_name>` → read the bridge name (format `br-<12-hex>`)
+- Capture while exercising the tool: `sudo tcpdump -i br-<hex> -Z tom -w /tmp/audit.pcap`
+- Analyse: extract destination IPs with `tcpdump -r /tmp/audit.pcap -nn | awk '{print $3,$5}' | sort -u`
+- Rule: any destination outside the tool's advertised scope is a red flag — investigate before proceeding
+
+### `/fetch-page` on server.py is NOT an HTTP CONNECT proxy
+
+- `/fetch-page` is a URL-param FastAPI endpoint (`GET /fetch-page?url=...`) — takes a URL and returns rendered content
+- Does NOT speak the HTTP CONNECT proxy protocol — cannot be used as `HTTPS_PROXY` target
+- If a third-party tool needs central outbound gating, either stand up a real proxy (Squid/mitmproxy) or modify the tool to call `/fetch-page` explicitly per-URL

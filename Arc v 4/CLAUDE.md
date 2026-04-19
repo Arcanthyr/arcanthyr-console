@@ -1,27 +1,27 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 18 April 2026 (end of session 71) · Supersedes all prior versions
+Updated: 19 April 2026 (end of session 72) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
 
 ---
 
-## SYSTEM STATE — 18 April 2026 (end of session 70)
+## SYSTEM STATE — 19 April 2026 (end of session 72)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | RE-EMBED IN PROGRESS — vocabulary anchor prepend deployed, ~7,549 case chunks remaining (~70% complete) |
-| D1 cases | 1,820 (scraper running) · 1,820 deep_enriched=1 · 0 stuck |
-| D1 case_chunks | 25,253 total · embedded=0: ~7,549 (re-embed ~70% complete with vocabulary anchors) |
-| D1 secondary_sources | 1,201 total (1,200 corpus + 1 nexus-save) · embedded=0: ~2 (s94 chunk + nexus-save pending poller cycle) |
+| Qdrant general-docs-v2 | RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded |
+| D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
+| D1 case_chunks | 26,051 total · embedded=0: 0 (re-embed COMPLETE) |
+| D1 secondary_sources | 1,201 total · embedded=0: 1 (pending poller cycle) |
 | D1 case_chunks_fts | 25,236 rows — FTS5 index on case chunk enriched_text |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
 | D1 quarantined_chunks | 253 rows · stub quarantine D1 complete · Qdrant script + server.py patch pre-staged at C:\Users\Hogan\OneDrive\Arcanthyr\ · filter deploy held for post-baseline |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows |
-| enrichment_poller | RUNNING — vocabulary anchor functions deployed · DO NOT MODIFY OR RESTART until re-embed completes |
+| enrichment_poller | RUNNING — re-embed complete, all chunks at embedded=1 |
 | Cloudflare Queue | drained |
 | Scraper | RUNNING (status uncertain — processed_date field unreliable; check scraper.log after 11am AEST) |
 | arcanthyr.com | Live |
@@ -31,6 +31,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
 | Baseline (31 queries) | 13P / 9Pa / 9M — session 64 (16 Apr 2026) · RE-RUN REQUIRED after re-embed completes |
 | procedure_notes | 319 success / ~340 not_sentencing |
+| auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) |
 
 ---
 
@@ -42,6 +43,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 4. **BM25 interleave vs append** — evaluate interleaving BM25 results with semantic results instead of appending. Evaluation plan documented in `BM25_INTERLEAVE_EVALUATION_PLAN.md` (Arcanthyr Nexus). Evaluate after vocabulary anchors + FTS5 append are baselined.
 5. **Query expansion** — rewrite user query into 3-4 semantic variants pre-Qdrant via Workers AI Qwen3. Highest long-term ROI. Build when simpler wins are measured. DEFERRED — vocabulary anchors (session 65 re-embed) solve the same recall problem from the embedding side; building both simultaneously prevents isolating which change helped. Steps 3 and 4 (vocabulary injection + enrichment prompt fix) also explicitly deferred until post-re-embed baseline analysis complete — may be deprioritised if vocabulary anchors produce strong improvement.
 6. **subject_matter filter Part 3** — re-embed backlog clears subject_matter into Qdrant payload (Parts 1+2 deployed). Deploy server.py MatchAny filter on Pass 3 once re-embed completes and baseline confirms no regression.
+7. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'` — caps runaway OCR), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide written as `github-mcp-setup.md`, not executed — existing `github` MCP is already wired up so low priority).
 
 ---
 
@@ -69,6 +71,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Health check false positive (tendency evidence contradiction)** — "Tendency Evidence Exclusion in Bail Hearings" vs "Tendency Evidence Requirements and Admissibility" flagged as contradiction by GPT-4o-mini health check. Not a genuine contradiction — s 94 EA correctly exempts bail proceedings from tendency/coincidence rules; the two chunks describe different contexts. Resolved by s94 chunk ingested session 71. Monitor in next health check run.
 - **Q1 retrieval regression (common assault)** — Misuse of Drugs Act s1 scoring above assault chunk. Vocabulary anchor prepend (session 65) may resolve by anchoring both chunks to their correct domains. Re-test after re-embed completes.
 - **Q11 retrieval regression (s138 voir dire)** — returning wrong Evidence Act sections. Vocabulary anchor prepend (session 65) will re-inject CONCEPTS terms (s138, voir dire, improperly obtained) at embedding time without re-enrichment. Re-test after re-embed completes.
+- **auslaw-mcp `search_cases` timeout** — full-text searches via `search_cases` tool timeout against AustLII CGI endpoint · NOT an IP block (VPS not rate-limited) · `search_by_citation` round-trips instantly proving connectivity fine · root cause is AustLII CGI endpoint slowness · workaround: use `search_by_citation` for known citations, retry `search_cases` on short queries only
 
 ---
 
@@ -188,31 +191,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 69) — 18 April 2026
-
-- **Save to Nexus — full feature shipped** — synthesis answer promotion loop with staging queue. D1: `ALTER TABLE secondary_sources ADD COLUMN approved INTEGER DEFAULT 1` — existing 1,199 rows unaffected, only Save to Nexus rows land with approved=0. Worker: `handleFormatAndUpload` passes `approved=0` from body when present; new `handleApproveSecondary` route (POST /api/admin/approve-secondary, X-Nexus-Key) with approve/reject/delete actions; new `handlePendingNexus` route (GET /api/admin/pending-nexus, X-Nexus-Key); `fetch-secondary-for-embedding` SQL updated with `AND approved = 1` gate. Frontend: SaveFlagPanel in Research.jsx (inline confirmation panel with title/category/preview, not modal), Flag button (POST /api/pipeline/feedback). Library.jsx: PendingReviewSection in Secondary Sources tab (approve/reject per row, X-Nexus-Key input). Verified end-to-end: approved=0 blocks poller → approve flips gate → poller embeds → saved answer surfaces in retrieval at 0.51. Worker versions: `96751a35`, `b7fbe37f`. Commit `40eb0f9`. Why: promotes good synthesis answers back into corpus for future retrieval, with human review gate preventing self-reinforcing bad answers.
-
-- **Save to Nexus — delete action for approved rows** — `handleApproveSecondary` extended with `action: "delete"`: deletes from Qdrant (via server.py /delete), FTS5, and D1 regardless of approved status. Library.jsx: delete icon on nexus-save rows + pending review section. Why: once approved and embedded, there was no way to remove a saved answer without manual D1+Qdrant cleanup.
-
-- **Save to Nexus — date stamp on IDs and titles** — Nexus save slug format changed from `nexus-save-{timestamp}` to `nexus-save-{YYYY-MM-DD}-{timestamp}` for date visibility in Library table. Title pre-fill includes date suffix: `${queryText} (${today})`. Worker version `c0312c37`. Why: no date reference in saved answer IDs made it impossible to assess recency in Library or review queue.
-
-- **Query history — full feature shipped** — D1: three columns added to query_log (`answer_text TEXT`, `model TEXT`, `deleted INTEGER DEFAULT 0`). Worker: both `handleLegalQuery` and `handleLegalQueryWorkersAI` extended to store `answer_text` and `model` ("sol"/"vger") in query_log INSERT. New `handleQueryHistory` route (GET /api/research/history, no auth, LIMIT 50, WHERE deleted=0 AND answer_text IS NOT NULL). New `handleQueryHistoryDelete` route (POST /api/research/history-delete, soft delete). Frontend: collapsible side panel on Research.jsx with scrollable list of past queries (query text truncated, date+time, model pill), click-to-view in reading pane without re-querying, Save to Nexus and Delete actions per entry, auto-prepend on new query, fetch on page load. api.js: `fetchQueryHistory()` and `deleteQueryHistory(id)` methods. Worker version `9bde6961`. Commit `104925a`. Why: Tom wanted to browse past queries, re-read answers without re-querying, and promote good answers to corpus.
-
-- **Stuck case [2023] TASSC 6 fixed** — fired requeue-merge via PowerShell after fixing key extraction. Returned `requeued: 1`. Was the only case with deep_enriched=0 (14 chunks all done, merge never fired). Now all 1,820 cases deep_enriched=1. Why: stuck since session 68, blocking clean system state.
-
-- **PowerShell base64 key extraction bug diagnosed** — `$key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1]` produces 43-char key (strips trailing `=` from base64 padding). Fix: `Split("=",2)[1]` limits split to 2 parts, preserving the base64 `=`. Same root cause as the retrieval_baseline.sh bug fixed in sessions 61-63 (`cut -d= -f2` vs `cut -d= -f2-`). Requeue-merge was returning "Unauthorised" until this was fixed. CLAUDE_init.md updated.
-
-- **CLAUDE_init.md cleanup** — removed stale "BROKEN at session 61 close" warning on retrieval_baseline.sh entry (line 180). Collapsed to single accurate line referencing session 64 confirmed-working status.
-
-- **Re-embed progress confirmed** — secondary sources complete (0 remaining). Case chunks ~50% done (~12,600 remaining from 24,700). ETA ~1 hour from mid-session check. Poller running healthy — DO NOT restart or modify until complete.
-
-- **Query phrasing sensitivity documented** — "elements of common assault" vs "what are the elements of common assault" produce different retrieval results. Root cause: embedding model treats filler words ("what", "are", "the") as signal, diluting the query vector and changing cosine distances to doctrine chunks. Not a bug — architectural limitation of single-pass embedding. Query expansion (Outstanding Priority #5) is the long-term fix.
-
-- **Scraper status uncertain** — D1 shows 1,820 cases but `processed_date` is NULL on 1,805/1,820 rows. Determined `processed_date` is unreliable for tracking scraper activity — the queue path doesn't consistently set it. Most recent dated entries are from 29 March. Scraper log file check required after 11am AEST to confirm current activity.
-
-- **Worker versions this session** — `96751a35` (Save to Nexus + Flag), `b7fbe37f` (delete action + date title), `c0312c37` (date in ID slug), `9bde6961` (query history)
-- **Git commits this session** — `40eb0f9`, `104925a`
-
 ## CHANGES THIS SESSION (session 70) — 18 April 2026
 
 - **CLAUDE.md restructured — 1,598 → 413 lines (74% reduction)** — reordered from rules-first to state-first layout: SYSTEM STATE → OUTSTANDING PRIORITIES → KNOWN ISSUES → SESSION RULES → changelog (last 3 sessions) → END-OF-SESSION/POLLER/BASELINE procedures. Operational content now in first 190 lines. Truncation-tolerance note added to SESSION RULES table. CLAUDE_changelog.md conditional loading rule added. Why: 82% of CLAUDE.md was changelog history (sessions 21–69); context dilution was degrading Claude's attention to operational rules. Context engineering wiki article recommends 150–200 line context files; 413 is within the 500-line skill-file ceiling.
@@ -246,6 +224,22 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Legislation section search in Library — built and deployed (session 71)** — New feature allowing practitioners to search for cases by legislation section reference, drawn directly from the `case_legislation_refs` D1 table. Pure SQL — no LLM, no VPS, no Qdrant involved. New Worker route: `GET /api/legal/search-by-legislation?q=…&limit=50&offset=0` — no auth required, follows same unauthenticated pattern as `handleLibraryList`. Accepts free-form query string (e.g. "s 138 Evidence Act", "section 16 Criminal Code") and returns matching cases with citation, case name, court, date, holding, subject matter, and all matched legislation refs (GROUP_CONCAT). Court ordering: cca → fullcourt → supreme → magistrates, then case_date DESC. Limit/offset pagination. Returns `treatment_gap: true` on every response to flag that `case_legislation_refs` has no treatment/context column — gap for xref_agent.py to address. New helper: `normaliseSectionQuery(raw)` in worker.js — extracts `sectionNum` and `actFrag` from raw query string, strips "s ", "section", ".", jurisdiction tags, years, "of the". Three SQL code paths: section + act (most precise, six LIKE patterns covering all stored formats), section-only (broader), act-only (broadest). Data quality audit: 5,147 rows, 88.9% have section number in LIKE-matchable form, 7.6% act-only refs, zero null/empty rows. Frontend: `CasesTable` in Library.jsx extended with two-button mode toggle ("Name / Citation" / "Legislation section"). New `LegislationResultsTable` component (columns: Citation, Case, Court, Year, Matched sections, Holding). Clicking result opens existing reading pane normally. Files changed: `Arc v 4/worker.js`, `arcanthyr-ui/src/api.js`, `arcanthyr-ui/src/pages/Library.jsx`.
 
 - **SYSTEM STATE check rule added** — Two tasks sent to Opus this session that were already live (legislation whitelist, stare decisis UI). Root cause: SYSTEM STATE table not checked before proposing work. Rule added: always check SYSTEM STATE before suggesting any item as outstanding work.
+
+## CHANGES THIS SESSION (session 72) — 19 April 2026
+
+- **auslaw-mcp static audit — verdict YELLOW** — Third-party MCP server `github.com/russellbrenner/auslaw-mcp` audited via nine-step procedure (metadata, outbound URL grep, dynamic-exec grep, env/secret grep, Dockerfile review, dependency CVE scan, `.mcp.json` check, file tree, tree-sitter'd SSRF guard read). Verdict: well-constructed but hardening warranted before first run. Static audit script saved as `audit-auslaw-mcp.sh`. Key findings: (1) SSRF guard in `src/services/url-guard.ts` uses hostname-string matching (`Set.has(parsed.hostname)`) against 5-entry allowlist — no DNS IP resolution, fine for this threat model; (2) Tesseract OCR invoked via `execFile` (arg array) not `exec` — no shell injection surface; (3) `runDailySync` already exposes VPS IP to AustLII, so auslaw-mcp adds zero new IP-exposure risk; (4) `/fetch-page` proxy is a URL-param FastAPI endpoint, NOT an HTTP CONNECT proxy — cannot be used as `HTTPS_PROXY` (initial hardening recommendation corrected mid-session).
+
+- **auslaw-mcp hardened deployment on VPS** — cloned to `~/auslaw-mcp` (deliberately OUTSIDE `~/ai-stack/` tree to keep it off every ai-stack docker network). `.mcp.json` deleted from clone root per existing third-party tool security rule. `.env` created: `LOG_LEVEL=1`, `MCP_TRANSPORT=stdio`, `NODE_ENV=production`, `JADE_SESSION_COOKIE=` (blank). `docker-compose.yaml` modified: `build:` block removed, image pinned by digest `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network added. Resulting network: `auslaw-mcp_auslaw-isolated` on bridge `br-09cccc527fb4` — confirmed NOT connected to any `ai-stack_*` network. Why: running a known-digest image on a name-isolated bridge prevents accidental exposure of Arcanthyr internals (D1/Qdrant/Ollama) and guarantees deterministic behaviour across restarts.
+
+- **MCP registered in Windows Claude Code** — user-scope MCP named `auslaw` in `C:\Users\Hogan\.claude.json`. Transport: SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. After PowerShell quoting issues (single-quote JSON mangling), settled on `claude mcp add-json` with backtick-escaped double-quoted JSON as the reliable registration pattern. Verified: 10 tools exposed, including `search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`.
+
+- **Runtime traffic validated via tcpdump** — `tcpdump` on `br-09cccc527fb4` with `-Z tom` for user-owned pcap (passwordless sudo rejected as worse security posture). Fired 5 test queries; captured 53 packets. Single destination: `138.25.65.147` → `posh.austlii.edu.au` (AustLII infra). Zero non-AustLII/jade.io traffic — no CDN, telemetry, or surprise hosts. `search_cases` timed out twice (diagnosed as AustLII CGI endpoint slowness — see KNOWN ISSUES); `search_by_citation` round-tripped instantly, proving connectivity fine. Final verdict: GO.
+
+- **Mid-session corrections** — `claude: command not found` on VPS (Claude Code CLI lives on Windows, not VPS — MCP is registered on Windows against the SSH-wrapped docker exec). `claude mcp add -- ssh ... -i` failed because `--` did not stop flag parsing → switched to `add-json`. PowerShell single-quote JSON mangling resolved via backtick-escaped double quotes. Initial `HTTPS_PROXY` via `/fetch-page` recommendation was wrong (not a CONNECT proxy). Scope drift flagged mid-session (work extended past "is it safe?" into full hardening); Tom chose to finish.
+
+- **Session artefacts produced** — `audit-auslaw-mcp.sh` (clone-only static audit script), `github-mcp-setup.md` (guide for official `github/github-mcp-server` with read-only PAT + `--read-only` flag), `claude-code-prompts.md` (two self-contained CC prompts for audit + GitHub MCP install), `auslaw-mcp-deployment-prompt.md` (six-phase hardened deployment prompt: prep → ask → clone/modify → validate → first-run+tcpdump → go/no-go). All saved to session outputs.
+
+- **Deferred this session** — (1) rate budget in `/fetch-page` to protect daily scraper allowance, (2) compose resource limits (`mem_limit: 1g`, `cpus: '1.0'`), (3) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]`), (4) GitHub MCP install (guide written, existing `github` MCP already wired). Tracked as Outstanding Priority #7.
 
 ---
 

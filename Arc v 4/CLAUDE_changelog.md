@@ -1,9 +1,36 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–67 · 26 March 2026 – 17 April 2026*
+*Sessions 21–69 · 26 March 2026 – 18 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure)*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 69) — 18 April 2026
+
+- **Save to Nexus — full feature shipped** — synthesis answer promotion loop with staging queue. D1: `ALTER TABLE secondary_sources ADD COLUMN approved INTEGER DEFAULT 1` — existing 1,199 rows unaffected, only Save to Nexus rows land with approved=0. Worker: `handleFormatAndUpload` passes `approved=0` from body when present; new `handleApproveSecondary` route (POST /api/admin/approve-secondary, X-Nexus-Key) with approve/reject/delete actions; new `handlePendingNexus` route (GET /api/admin/pending-nexus, X-Nexus-Key); `fetch-secondary-for-embedding` SQL updated with `AND approved = 1` gate. Frontend: SaveFlagPanel in Research.jsx (inline confirmation panel with title/category/preview, not modal), Flag button (POST /api/pipeline/feedback). Library.jsx: PendingReviewSection in Secondary Sources tab (approve/reject per row, X-Nexus-Key input). Verified end-to-end: approved=0 blocks poller → approve flips gate → poller embeds → saved answer surfaces in retrieval at 0.51. Worker versions: `96751a35`, `b7fbe37f`. Commit `40eb0f9`. Why: promotes good synthesis answers back into corpus for future retrieval, with human review gate preventing self-reinforcing bad answers.
+
+- **Save to Nexus — delete action for approved rows** — `handleApproveSecondary` extended with `action: "delete"`: deletes from Qdrant (via server.py /delete), FTS5, and D1 regardless of approved status. Library.jsx: delete icon on nexus-save rows + pending review section. Why: once approved and embedded, there was no way to remove a saved answer without manual D1+Qdrant cleanup.
+
+- **Save to Nexus — date stamp on IDs and titles** — Nexus save slug format changed from `nexus-save-{timestamp}` to `nexus-save-{YYYY-MM-DD}-{timestamp}` for date visibility in Library table. Title pre-fill includes date suffix: `${queryText} (${today})`. Worker version `c0312c37`. Why: no date reference in saved answer IDs made it impossible to assess recency in Library or review queue.
+
+- **Query history — full feature shipped** — D1: three columns added to query_log (`answer_text TEXT`, `model TEXT`, `deleted INTEGER DEFAULT 0`). Worker: both `handleLegalQuery` and `handleLegalQueryWorkersAI` extended to store `answer_text` and `model` ("sol"/"vger") in query_log INSERT. New `handleQueryHistory` route (GET /api/research/history, no auth, LIMIT 50, WHERE deleted=0 AND answer_text IS NOT NULL). New `handleQueryHistoryDelete` route (POST /api/research/history-delete, soft delete). Frontend: collapsible side panel on Research.jsx with scrollable list of past queries (query text truncated, date+time, model pill), click-to-view in reading pane without re-querying, Save to Nexus and Delete actions per entry, auto-prepend on new query, fetch on page load. api.js: `fetchQueryHistory()` and `deleteQueryHistory(id)` methods. Worker version `9bde6961`. Commit `104925a`. Why: Tom wanted to browse past queries, re-read answers without re-querying, and promote good answers to corpus.
+
+- **Stuck case [2023] TASSC 6 fixed** — fired requeue-merge via PowerShell after fixing key extraction. Returned `requeued: 1`. Was the only case with deep_enriched=0 (14 chunks all done, merge never fired). Now all 1,820 cases deep_enriched=1. Why: stuck since session 68, blocking clean system state.
+
+- **PowerShell base64 key extraction bug diagnosed** — `$key = (Select-String "NEXUS_SECRET_KEY" .env).Line.Split("=")[1]` produces 43-char key (strips trailing `=` from base64 padding). Fix: `Split("=",2)[1]` limits split to 2 parts, preserving the base64 `=`. Same root cause as the retrieval_baseline.sh bug fixed in sessions 61-63 (`cut -d= -f2` vs `cut -d= -f2-`). Requeue-merge was returning "Unauthorised" until this was fixed. CLAUDE_init.md updated.
+
+- **CLAUDE_init.md cleanup** — removed stale "BROKEN at session 61 close" warning on retrieval_baseline.sh entry (line 180). Collapsed to single accurate line referencing session 64 confirmed-working status.
+
+- **Re-embed progress confirmed** — secondary sources complete (0 remaining). Case chunks ~50% done (~12,600 remaining from 24,700). ETA ~1 hour from mid-session check. Poller running healthy — DO NOT restart or modify until complete.
+
+- **Query phrasing sensitivity documented** — "elements of common assault" vs "what are the elements of common assault" produce different retrieval results. Root cause: embedding model treats filler words ("what", "are", "the") as signal, diluting the query vector and changing cosine distances to doctrine chunks. Not a bug — architectural limitation of single-pass embedding. Query expansion (Outstanding Priority #5) is the long-term fix.
+
+- **Scraper status uncertain** — D1 shows 1,820 cases but `processed_date` is NULL on 1,805/1,820 rows. Determined `processed_date` is unreliable for tracking scraper activity — the queue path doesn't consistently set it. Most recent dated entries are from 29 March. Scraper log file check required after 11am AEST to confirm current activity.
+
+- **Worker versions this session** — `96751a35` (Save to Nexus + Flag), `b7fbe37f` (delete action + date title), `c0312c37` (date in ID slug), `9bde6961` (query history)
+- **Git commits this session** — `40eb0f9`, `104925a`
 
 ---
 

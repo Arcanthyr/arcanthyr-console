@@ -3715,3 +3715,33 @@ Decided against adding a "Recent Decisions" summary to the top of CLAUDE_decisio
 - **Health check false positive documented** — Tendency evidence contradiction (session 64 health check) confirmed as false positive. The two chunks describe correct law in different contexts (s 94 EA exempts bail proceedings). Addressed by authoring substantive s 94 chunk rather than modifying either existing chunk.
 
 - **SYSTEM STATE check rule** — After sending Opus on two tasks already marked LIVE in SYSTEM STATE (legislation whitelist, stare decisis UI), rule added: always check SYSTEM STATE table before proposing any item as outstanding work. Prevents wasted Opus context spend on already-completed features.
+
+---
+
+## Session 72 decisions — 19 April 2026
+
+**[2026-04-19]** *auslaw-mcp — clone outside `~/ai-stack/` tree, pin by digest, isolated docker network* — score 10, assistant
+
+> Threat model: third-party MCP server from a GitHub author Tom has no prior trust relationship with. Static audit (nine steps, `audit-auslaw-mcp.sh`) returned YELLOW — well-constructed but not clean enough to drop into the same docker network as Qdrant/Ollama/agent-general. Three isolation decisions:
+>
+> 1. **Clone path outside `~/ai-stack/`** — cloning inside the tree risks accidentally inheriting `ai-stack_default` network membership via compose project auto-detection, or being swept up in a future `docker compose up` from `~/ai-stack/`. Using `~/auslaw-mcp` as a separate compose project guarantees a distinct network namespace.
+> 2. **Pin image by digest, not tag** — `ghcr.io/russellbrenner/auslaw-mcp:latest` would silently pull new code on any `docker compose pull` or forced recreate. Pinning `@sha256:480e8968...` means the container is deterministic — any change requires explicit digest update + re-audit of the new build.
+> 3. **Explicit isolated network (`auslaw-mcp_auslaw-isolated`, bridge `br-09cccc527fb4`)** — even within a separate compose project, the default bridge network is shared across unrelated containers on the same host. Declaring a named isolated network in the compose file makes the isolation visible and diff-able.
+>
+> Combined with the five-entry SSRF allowlist (hostname-string matching — adequate for this threat model since DNS rebinding isn't in scope for a local-stdio MCP) and tcpdump-verified traffic (53 packets, single destination = AustLII infra), the residual risk profile is acceptable. `runDailySync` already exposes the VPS IP to AustLII, so auslaw-mcp introduces zero new IP-exposure surface. Verdict: GO.
+
+**[2026-04-19]** *tcpdump audit — user-run with `-Z tom`, not passwordless sudo* — score 9, assistant
+
+> Initial instinct was to add a passwordless sudoers entry for tcpdump to run it unattended. Rejected: passwordless sudo for any binary that can open raw sockets and write to arbitrary paths is a strictly worse security posture than typing `sudo` once. User-run tcpdump via `-Z tom` (drop to tom after opening the socket, pcap owned by tom) gives the same observability outcome with no lasting privilege escalation. General rule for future audit sessions: prefer per-invocation auth over standing privilege, even for read-only tools.
+
+**[2026-04-19]** *Windows Claude Code MCP registration — `add-json` with backtick-escaped double quotes* — score 8, assistant
+
+> `claude mcp add -- ssh ...` was expected to work (the `--` convention should stop flag parsing) but did not — the CLI kept parsing `-i` after the `--`. PowerShell single-quoted JSON also mangled internal quotes. The reliable pattern is `claude mcp add-json` with backtick-escaped `"` inside the JSON payload. Documented in CLAUDE_init.md for future MCP installs. Lesson: never assume `--` stops flag parsing in a shell wrapper around a Node CLI; test explicitly.
+
+**[2026-04-19]** *`/fetch-page` is NOT an HTTP CONNECT proxy — `HTTPS_PROXY` recommendation retracted* — score 9, assistant
+
+> Initial hardening recommendation was to force auslaw-mcp's AustLII traffic through the existing VPS `/fetch-page` proxy via `HTTPS_PROXY=http://localhost:...`. This would have centralised the outbound point and applied the same rate-limiting and UA spoofing used by the scraper. Wrong: `/fetch-page` is a URL-param FastAPI endpoint (`GET /fetch-page?url=...`), not an HTTP CONNECT proxy. `HTTPS_PROXY` expects a server that speaks the proxy protocol; `/fetch-page` speaks normal HTTP. Retracted mid-session. If central outbound gating is wanted later, it requires either (a) a real proxy (Squid/mitmproxy in front of the network), or (b) modifying auslaw-mcp to call `/fetch-page` explicitly per-URL — both are non-trivial and deferred.
+
+**[2026-04-19]** *Scope drift flagged mid-session; Tom chose to finish* — score 7, assistant
+
+> Initial ask was "is auslaw-mcp safe to install?" Work expanded through audit → hardening plan → deployment → runtime validation. Flagged explicitly mid-session that this was beyond the original question. Tom's call: finish the hardening pass now rather than ship a half-audited install. Pattern to recognise in future audit sessions: the audit itself answers "is it safe enough for your threat model *as-is*?"; hardening is a separate decision that should be called out rather than absorbed silently.
