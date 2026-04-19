@@ -1,13 +1,13 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 April 2026 (end of session 80) · Supersedes all prior versions
+Updated: 21 April 2026 (end of session 81) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
 
 ---
 
-## SYSTEM STATE — 20 April 2026 (end of session 80)
+## SYSTEM STATE — 21 April 2026 (end of session 81)
 
 | Component | Status |
 |---|---|
@@ -18,7 +18,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
-| Pass 4 / Citation authority agent | SHADOW MODE — `AUTHORITY_PASS_ENABLED=false` (default) · gate fires + logs `[Pass 4] gate=FIRE reason=... ENABLED=false (shadow)` but skips Qdrant query · enable after 24–72h telemetry review by adding `AUTHORITY_PASS_ENABLED=true` to `~/ai-stack/.env.config` + force-recreate agent-general · Worker version 648207f6 |
+| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows |
@@ -48,10 +48,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 4. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'`), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
 
 5. **Quick Search tab (arcanthyr.com practitioner UI)** — Build plan finalised in session 73 (conversation-external — not built, see handover notes). Three phases: corpus FTS keyword search (Phase 1), AustLII external via `/fetch-page` (Phase 2 — watch for CGI slowness inherited from auslaw-mcp `search_cases` timeout issue), query_log `search_type` extension (Phase 4). Phase 3 Jade link button is gravy. Phase 5 (full-judgment fetch + reading pane with cached HTML, 30-day TTL `austlii_cache` D1 table) added as separate extension. Track 2 (remote MCP at `auslaw.arcanthyr.com`) explicitly deferred — auslaw-mcp in CC covers 90% of the use case.
-
-6. **Citation authority agent — Phase 4 pending (force-recreate + shadow validation)** — Pass 4 leg deployed session 80 in shadow mode (`AUTHORITY_PASS_ENABLED=false`). Phase 3 UI verified clean (Playwright session 80 — no regression, shadow gate holding). **Next step (Tom):** SSH to VPS → `echo "AUTHORITY_PASS_ENABLED=false" >> ~/ai-stack/.env.config` → `cd ~/ai-stack && docker compose up -d --force-recreate agent-general` → `docker compose exec agent-general printenv AUTHORITY_PASS_ENABLED`. Monitor `docker compose logs --tail=50 agent-general | grep "Pass 4"` across 24–72h. When flag flip is ready (Priority #9 below), bundle the worker.js sources-mapper fix in the same session/deploy.
-
-8. **Research page source-card tags rendering "?" — fix before flag flip** — Pre-existing bug exposed by session 80 Playwright UI verification. Root cause: `handleLegalQuery` and `handleLegalQueryWorkersAI` sources mapper in worker.js strips `type`/`source_type` fields when building the frontend response; `court` also frequently empty string from Qdrant case_chunk payloads. Fix: add `type: c.type, source_type: c.source_type` to both handlers' `sources.map()` — one-line change per handler. Not urgent (tags cosmetic, retrieval/synthesis works). **Becomes urgent when `AUTHORITY_PASS_ENABLED=true`** — authority chunks will render as "?" instead of amber AUTHORITY, defeating Phase 3 UI differentiation. Must fix in the same session as the flag flip.
 
 7. **Sentencing Act 1997 (Tas) ingest into legislation corpus** — structural gap surfaced this session during Q9 diagnosis (`SELECT DISTINCT legislation_id FROM legislation_sections` returned no Sentencing Act row). Deferred to post-scrape authoring pass. Ingest via legislation upload pipeline; verify section-level chunking covers s 11A (guilty plea discount), s 12 (concurrent/cumulative), and sentencing purposes (ss 3–5).
 
@@ -84,8 +80,8 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **Q27 (provocation) confirmed as corpus content gap** — provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Authoring decision, not retrieval defect.
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
-- **Research page source-card tags show "?" — worker.js mapper strips type** — Confirmed session 80 via Playwright React fiber inspection. `handleLegalQuery` and `handleLegalQueryWorkersAI` sources mapper does not include `type` or `source_type` in the objects sent to the frontend; result objects arrive as `{ citation, court, year, score, summary }`. ResultCard TYPE_TAGS lookup fails silently → fallback label '?'. Fix: add `type: c.type, source_type: c.source_type` to both handlers' `sources.map()` in worker.js. Must fix before or with `AUTHORITY_PASS_ENABLED=true` flip — otherwise authority_synthesis chunks render as "?" not amber AUTHORITY.
-- **Qdrant court field frequently empty on case_chunk payloads** — Session 80 Playwright verification found `court: ""` across 4× TASMC chunks on a doctrinal query. Separate from the worker.js mapper issue above (court is empty before it even reaches the mapper). Investigate whether scraper writes court into Qdrant payload at ingest or only into D1 `cases.court`. Low priority — type-based tag fallback (once mapper fix lands) will render correct tag without needing court.
+- **Qdrant court field frequently empty on case_chunk payloads** — `court: ""` confirmed on case_chunk results via Playwright fiber inspection sessions 80–81. Mapper fix (session 81) now passes `type` through, so `authority_synthesis` renders amber AUTHORITY and `case_chunk` renders raw type string as fallback label — court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant. Investigate whether scraper writes court into Qdrant payload at ingest or only D1 `cases.court`.
+- **TYPE_TAGS key mismatch for secondary sources** — `TYPE_TAGS["secondary"]` in ResultCard.jsx but actual type value from server.py is `"secondary_source"`. Secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` as alias key in TYPE_TAGS. Low priority — cosmetic only.
 
 ---
 
@@ -258,6 +254,16 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **UI Phase 3 — amber AUTHORITY tag, Library badge, AuthorityPane** — `ResultCard.jsx`: `authority_synthesis` added to `TYPE_TAGS` (label: AUTHORITY, bg: `rgba(200,140,50,0.08)`, color: `#C88C32`); tag resolution extended to check `result.type` before `result.doc_type` (server.py search returns `type`, not `doc_type`). `Library.jsx` CorpusTable: amber AUTHORITY badge added inline with title when `r.court === 'authority_synthesis'` (source_type aliased as court by `handleLibraryList`); `r.court` subtitle suppressed for authority_synthesis rows. `ReadingPane.jsx`: branch added before CasePane dispatch — `if (selected.type === 'authority_synthesis')` renders new `AuthorityPane` component; AuthorityPane shows amber AUTHORITY header, citation/title, close button, and full `selected.text` or `selected.raw_text` in a scrollable pre-wrap block.
 
 - **server.py local mirror synced** — VPS file downloaded to `Arc v 4/server.py` via hex-ssh ssh-download post-edit. `grep -c "must_not"` = 4 (3 Phase 2b isolation gates + 1 new Pass 4 gate), `grep -c "should_fire_pass4"` = 2, `grep -c "AUTHORITY_PASS"` = 9.
+
+## CHANGES THIS SESSION (session 81) — 21 April 2026
+
+- **Pass 4 enabled — AUTHORITY_PASS_ENABLED=true** — Flag flipped in `~/ai-stack/.env.config` (sed in-place replacing `false` → `true`), agent-general force-recreated. Confirmed live via VPS log: `[Pass 4] gate=FIRE reason=bare-lookup hits=0 ENABLED=true` (no longer shadow). 500ms cold-cache timeouts observed on first queries post-restart — expected, should warm up with traffic.
+
+- **AUTHORITY_KEYWORDS calibrated via 24-query shadow probe battery** — Fired all 24 queries via Playwright to generate shadow-mode log events before flip. Findings: (1) 3 topical-authority phrases produced false positives on doctrinal queries (`"authority on"`, `"leading authority on"`, `"key authority on"`) — removed; (2) 4 passive-voice treatment queries missed (`"has X been followed/distinguished/applied/considered"`) — 10 passive-voice forms added (`been followed`, `been applied`, `been distinguished`, `been overruled`, `been approved`, `been adopted`, `been considered`, `been cited`, `been treated`, `often cited`). Post-calibration fire rate on battery: 14/24 (58%) — correctly composed (citation-shaped queries FIRE, doctrinal queries SKIP). Multi-citation rule (rule 3) confirmed never fires independently — queries with ≥2 citations that are also ≤60 chars are always captured by bare-lookup first.
+
+- **worker.js sources mapper fix — type and source_type now flow to frontend** — Both `handleLegalQuery` and `handleLegalQueryWorkersAI` `caseSources` mapper previously returned `{ citation, court, year, score, summary }` with no `type` field. Added `type: c.type, source_type: c.source_type` to both. Verified via Playwright React fiber: results now carry `type: "case_chunk"` / `type: "secondary_source"`. `authority_synthesis` chunks will render amber AUTHORITY tag correctly when they surface. Worker version 57719d21.
+
+- **Remaining tag issue noted (minor)** — `TYPE_TAGS["secondary"]` key in ResultCard.jsx doesn't match actual value `"secondary_source"` from server.py — secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` alias key to TYPE_TAGS. Logged as new KNOWN ISSUE. Court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant payloads — separate open issue.
 
 ---
 
