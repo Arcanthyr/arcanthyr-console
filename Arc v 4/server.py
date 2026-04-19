@@ -28,7 +28,8 @@ COURT_HIERARCHY = {
 # Synthetic RRF scores for BM25 hits — 1/(60+rank)
 BM25_SCORE_EXACT_SECTION = 1 / (60 + 3)   # ~0.0159 — exact section ref match
 BM25_SCORE_CASE_REF      = 1 / (60 + 8)   # ~0.0147 — case-by-legislation-ref match
-BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match
+BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match (boost path: additive delta for chunks already in results)
+BM25_INTERLEAVE_SCORE    = 0.50           # interleave mode — novel FTS hits compete with borderline semantic (0.45 Pass 1 threshold, 0.65 strong floor)
 
 # Subject-matter filter — applied to case chunks in Pass 1 + Pass 2.
 # Non-criminal case chunks receive a score penalty so they do not displace
@@ -143,9 +144,11 @@ def fetch_case_chunks_fts(query_text):
     if not query_text or not query_text.strip():
         return []
     try:
-        # Build FTS5 query: extract meaningful terms, skip stop words
-        stop = {'the','a','an','in','of','to','for','and','or','is','was','are','on','by','at','it','with','as','from','that','this','not','what','how','do','does','can','if'}
-        terms = [w for w in re.sub(r'[^\w\s]', '', query_text.lower()).split() if w not in stop and len(w) > 2]
+        stop = {'the','a','an','in','of','to','for','and','or','is','was','are',
+                'on','by','at','it','with','as','from','that','this','not','what',
+                'how','do','does','can','if'}
+        terms = [w for w in re.sub(r'[^\w\s]', '', query_text.lower()).split()
+                 if w not in stop and len(w) > 2]
         if not terms:
             return []
         fts_query = ' OR '.join(terms[:8])  # cap to 8 terms for performance
@@ -356,6 +359,9 @@ def search_text(body):
     p1 = client.query_points(
         collection_name=COLLECTION,
         query=query_vector,
+        query_filter=Filter(
+            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
+        ),
         limit=top_k * 2,
         score_threshold=score_threshold,
         with_payload=True,
@@ -406,7 +412,8 @@ def search_text(body):
         collection_name=COLLECTION,
         query=query_vector,
         query_filter=Filter(
-            must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))]
+            must=[FieldCondition(key="type", match=MatchValue(value="case_chunk"))],
+            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
         ),
         limit=8,
         score_threshold=0.35,
@@ -424,7 +431,8 @@ def search_text(body):
         collection_name=COLLECTION,
         query=query_vector,
         query_filter=Filter(
-            must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))]
+            must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))],
+            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
         ),
         limit=8,
         score_threshold=0.25,
@@ -531,7 +539,7 @@ def search_text(body):
             continue
         # Apply SM penalty before adding
         sm_val = sm_cache.get(citation, 'unknown') if sm_cache else 'unknown'
-        raw_score = BM25_SCORE_KEYWORD
+        raw_score = BM25_INTERLEAVE_SCORE
         if sm_val not in SM_ALLOW:
             raw_score = round(raw_score * SM_PENALTY, 4)
         seen_ids.add(chunk_id)
