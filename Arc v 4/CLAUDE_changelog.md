@@ -1,9 +1,32 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–72 · 26 March 2026 – 19 April 2026*
+*Sessions 21–73 · 26 March 2026 – 19 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure)*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 73) — 19 April 2026
+
+- **Three-stage retrieval deploy — 13P/9Pa/9M (session 64) → 24P/4Pa/3M (session 73)** — +11 passes, −5 partials, −6 misses across one session's work. Zero P→F regressions at any intermediate checkpoint. Stages:
+  1. Vocabulary-anchor re-embed completion (pre-session work concluded this session with first baseline rerun): 13P/9Pa/9M → 18P/7Pa/6M.
+  2. Stub quarantine deploy across all three Qdrant passes: 18P/7Pa/6M → 22P/6Pa/3M.
+  3. BM25 case_chunks_fts pass deployed (append+boost mode): 22P/6Pa/3M → 24P/4Pa/3M.
+
+- **Stub quarantine — Qdrant payload update + server.py must_not filter across all three passes** — (a) `quarantine_stubs.py` executed on VPS via host venv at `/tmp/qvenv`; set `quarantined=true` on 253 Qdrant points (all `source_table='secondary_sources'`, `quarantine_reason='stub_short_text'`). Dry-run verified count=253 before real run. (b) server.py Pass 3 patched first with `must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]` inside the existing `Filter(must=[type=secondary_source])` block. (c) Design gap discovered during filter-efficacy smoke test: "Activation for Young Offenders - Public Interest" (a quarantined stub) still appearing at 0.5008 via Pass 1 (which had no type filter, no quarantine filter). Same `must_not` clause extended to Pass 1 (new `query_filter=Filter(must_not=[...])` added — no existing Filter to extend) and Pass 2 (appended to existing `Filter(must=[type=case_chunk])` — defence-in-depth since case_chunks have no `quarantined` field, so it's a no-op for that pass). Final state: 3 `must_not` occurrences in server.py, one per pass. Verified via Q31 + Q16 canaries (both previously showed the stub at #1; both now show legitimate authorities).
+
+- **BM25 case_chunks_fts pass — session 68 code deployed to VPS** — session 68 had written `fetch_case_chunks_fts()` + call site into the local `Arc v 4/server.py` but never SCP'd to VPS (session-closer false-commit pattern). Located at local lines 141–162 (function) + 519 (call site). Extracted as three hunks and applied to live VPS server.py as surgical additions (not whole-file overwrite — would have clobbered the three `must_not` patches landed earlier in the session). Pre-deploy verification: `BM25_SCORE_KEYWORD` (1/(60+12)≈0.0139), `SM_PENALTY` (0.65), `SM_ALLOW` ({'criminal','mixed'}), `seen_ids`, `sm_cache` all confirmed already defined on live VPS in correct scope. `existing_ids` initialization moved out of `if refs:` block per session 68 spec (prevents NameError on queries with no section refs). FTS pass calls Worker `GET /api/pipeline/case-chunks-fts-search` (already live since session 68), stop-word filters query, OR-joins up to 8 terms, 10s timeout. New chunks tagged `bm25_source="case_chunks_fts"`; existing chunks get additive `BM25_SCORE_KEYWORD` boost.
+
+- **top_k=12 server-side cap identified during Phase 4 canary** — CC found server.py line 296: `top_k = min(int(body.get("top_k", 6)), 12)` — `/search` endpoint hard-caps at 12 regardless of requested top_k. FTS new-chunk recall is therefore structurally gated: FTS hits score ~0.009 raw, semantic hits score 0.45+, so new FTS chunks cannot surface into final output when semantic fills top 12. BM25 append value is concentrated in the boost path (confirmed via Q7 lifting 0.6633→0.6772, Q21 lifting 0.6600→0.6739, Q9 lifting 0.6424→0.7016 flipping Pa→P). New-chunk path dormant until interleave lands. Logged as KNOWN ISSUES entry. Interleave evaluation (new Priority #1) specifically addresses.
+
+- **Q12 diagnosis — "hostile witness" vs "unfavourable witness"** — Tom confirmed corpus uses statutory term throughout (Hogan on Crime, EA, cases); "hostile witness" is practitioner vernacular not present in source text. FTS cannot bridge (keyword not in corpus). New category of anchor work identified: practitioner↔statutory vocabulary aliasing, distinct from session 65's domain-language anchoring. Added as new Priority #2. Likely candidates for same treatment from baseline partials: Q10, Q14, Q23, Q24.
+
+- **Quick Search + auslaw-mcp integration architecture review** — Reviewed the two build plans (No-MCP and MCP versions) against the newly-deployed auslaw-mcp. Conclusion: Quick Search corpus FTS + AustLII proxy tab for arcanthyr.com (different user: practitioner at bar table) is orthogonal to auslaw-mcp (developer/researcher in CC sessions). Phase 2 AustLII keyword search will inherit the AustLII CGI slowness documented in the auslaw-mcp `search_cases` timeout KNOWN ISSUE — worth building timeout tolerance into the Phase 2 UX. Phase 5 (full-judgment fetch + reading pane) remains worth building directly against `/fetch-page` rather than routing through an auslaw-mcp HTTP bridge. Track 2 (remote MCP at `auslaw.arcanthyr.com`) deferred indefinitely — auslaw-mcp in CC covers 90% of the use case; the remaining 10% (browser-based claude.ai sessions needing auslaw tools) is too narrow to justify the nginx/SSL/subdomain/auth/maintenance tax. Added as Priority #6 but deliberately ranked below retrieval-side work.
+
+- **Deploy pattern — mid-session patching without whole-file SCP** — The BM25 FTS deploy successfully demonstrated: (1) identify session-written code in local copy, (2) map to live VPS file via line-number recon after intervening patches shifted positions, (3) verify all module-level constants/helpers referenced by new code exist in live VPS, (4) produce unified diff against live VPS (not local), (5) check for Filter-block overlap with earlier patches, (6) apply surgically via hex-ssh. Pattern is reusable for any future "session N code written locally, not deployed" backlog.
+
+- **Session-closer false-commit pattern observed again** — Session 68 closer logged `fetch_case_chunks_fts()` as deployed; VPS file did not contain it. CLAUDE.md already flags this as known session-closer failure mode. No new mitigation — grep verification step in this closer and Tom's `git status` post-commit rule remain the controls.
 
 ---
 

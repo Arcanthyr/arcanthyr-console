@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 19 April 2026 (end of session 74). Upload every session alongside CLAUDE.md.*
+*Updated: 19 April 2026 (end of session 76). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -864,15 +864,13 @@ Source title uses chunk heading (not filename stem).
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
-- **Query expansion** — before hitting Qdrant, rewrite the incoming user query into 3–4 semantic variants via a fast LLM call (Workers AI Qwen3 or GPT-4o-mini), then run each variant through Pass 1 and merge results before RRF. Improves recall for plain-language queries hitting formal doctrine chunks (e.g. "what happens if I don't show up to court" → also queries "failure to appear", "bench warrant", "non-attendance accused"). Low implementation risk — additive to existing pipeline, no schema changes. Build when retrieval baseline plateaus and recall gaps are confirmed as query-phrasing failures rather than corpus gaps.
+- **Query expansion — PROMOTED to Priority #1 (session 76)** — before hitting Qdrant, rewrite the incoming user query into 3–4 semantic variants via a fast LLM call (Workers AI Qwen3 or GPT-4o-mini), then run each variant through Pass 1 and merge results with dedup on chunk_id (preserve top score per chunk). Improves recall for plain-language queries hitting formal doctrine chunks (e.g. "hostile witness steps" → also queries "unfavourable witness application", "s 38 cross-examination procedure"; "what happens if I don't show up to court" → also queries "failure to appear", "bench warrant", "non-attendance accused"). Session 76 established experimentally that practitioner↔statutory aliasing cannot be closed by corpus-side edits alone (see Component Notes: Vocabulary anchor over-generalisation (updated session 76)) — query expansion is the root-cause fix for this class of problem. Low implementation risk — additive to existing pipeline, no schema changes, no re-embed.
 - **Procedural sequence assembly** — given a query like "how do I handle a hostile witness" or "what do I do at a bail application", an agent retrieves all relevant procedure, script, doctrine, and checklist chunks then sequences them into a step-by-step response rather than returning them as parallel flat results. Requires a dedicated "sequence assembly" prompt layer after retrieval, before Qwen3 synthesis. Highest value for procedural queries where order matters. Build after retrieval quality is stable.
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
 - **Auto-populate citation and case name from uploaded file** — when a file is dropped or selected in the upload UI, scan the first 1,000 characters for AustLII citation pattern (`[YYYY] TASSC/TASMC/TASCCA/TASFC N`) and case name pattern (R v Name, DPP v Name, X v Y). Auto-fill the citation and case name fields; derive and set the court dropdown from the court code. Frontend-only change in `app.js` — no Worker or D1 changes needed. Reduces manual entry errors on upload.
 - **RTF support on upload** — add `.rtf` to the upload form's accept list in the Secondary Sources tab. Add an RTF text stripper in `app.js` (strip RTF control words and markup, extract plain text) before passing to the existing upload pipeline. Frontend-only change. Low effort, occasionally useful for older legal documents exported from Word as RTF.
-- **Practitioner↔statutory vocabulary aliasing — Q12 + Q23 only** — Anchor patches for `hoc-b048-m002-cross-examination-section-38` (+7 other s 38 EA chunks) and `secondary-chunk-12-execution-of-the-warrant-announcement-requirements-s19-and-s8-search-wa`. Mechanism TBD — requires Opus consult combined with anchor-precision refinement.
 - **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
 - **Q14 retrieval diagnostic** — s 37 EA legislation chunk exists in corpus but not surfacing in top 3 for "leading questions examination in chief". Check anchor, SM penalty, top-12 position, and whether a doctrinal leading-questions practice chunk should be authored.
-- **Vocabulary anchor generation refinement** — Opus consult on antonym/negation handling in CONCEPTS-derived anchors. Combine with aliasing consult. See Component Notes entry added session 75.
 - **Quick Search practitioner UI tab (arcanthyr.com)** — Phase 1 (corpus FTS), Phase 2 (AustLII proxy via /fetch-page), Phase 3 (Jade link button), Phase 4 (query_log search_type extension), Phase 5 (full-judgment fetch + austlii_cache D1 table with 30-day TTL + HTML-preserving render). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
 
 ### Secondary Sources Upload — Session 39 changes
@@ -943,12 +941,29 @@ Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge i
 - Activate: `source /tmp/qvenv/bin/activate`
 - Reusable for any future VPS-host Python work touching Qdrant directly; `/tmp` may be cleared on reboot — recreate if missing
 
-### Vocabulary anchor over-generalisation — latent retrieval risk (session 75)
+### Vocabulary anchor over-generalisation — partially resolved (updated session 76)
 
 Session 65's `build_secondary_embedding_text()` and `build_case_chunk_embedding_text()` prepend a `Key terms: ...` line derived from CONCEPTS/legislation_refs/key_authorities before embedding. The heuristic treats these as flat bag-of-words. Chunks whose CONCEPTS contain antonym terms (e.g. `warrantless search` in an MDA s 29 chunk) become semantically close to queries about the opposite concept (e.g. `search warrant execution`), because query tokens "search", "warrant", "Tasmania" match the anchor regardless of "warrantless" flipping the meaning.
 
-Confirmed example: Q23 "search warrant execution requirements Tasmania" — MDA s 29 chunk with anchor `Key terms: search powers, warrantless search, Tasmanian law, police authority, drug possession` wins at 0.6067, beating the correct Hogan SWA chunk 12 which literally has "execution of the warrant" in its title.
+**Session 76 experimental finding — the anchor is asymmetric in effect:** subtractive anchor edits (removing antonym terms) are high-leverage; additive anchor edits (injecting alias terms) are low-leverage. The anchor is 5-10 terms against body texts of 500–4,700 chars — when body semantics are already pulling the vector in a direction, a few added anchor tokens don't reshape the vector enough to matter. But when a small set of anchor tokens collides perfectly with query tokens (`warrant` + `search` + `Tasmania`), they can lift a chunk's score past where its body semantics alone would sit.
 
-Fix: deferred to Opus-consulted session combined with aliasing Priority #1. Candidate refinements: (a) separate POSITIVE_TERMS / NEGATIVE_TERMS fields in CONCEPTS, (b) tighter CONCEPTS linting on ingest, (c) anchor restricted to title-derived terms only.
+**Mitigations deployed session 76:**
+- Subtractive patch confirmed effective: `Misuse of Drugs Act s 29 - Search Powers` CONCEPTS rewritten from `search powers, warrantless search, Tasmanian law, police authority, drug possession` to `Misuse of Drugs Act s 29, drug search power, drug possession, reasonable suspicion`. Post-rewrite chunk dropped from Q23 top-3 (was #1 @ 0.6067). MDA s 29 now correctly absent from Q23 retrieval.
+- Positive-phrasing prompt rule added to `enrichment_poller.py` lines 181–186 (Pass 2 CONCEPTS generation): instructs the enricher to phrase all CONCEPTS terms positively, never as negations or antonyms, unless the chunk's subject is literally that absence as a defined concept. Retroactive-inert — only affects future ingests. Commit `fc8c345`.
 
-Monitor any future query that should hit a domain-specific chunk but gets outcompeted by an adjacent-but-wrong chunk with a broad CONCEPTS list — this is the signature.
+**Remaining risk (monitoring, not action):** existing corpus chunks with antonym-polluted CONCEPTS lines are not audited. One-time audit SQL would be `SELECT id, raw_text FROM secondary_sources WHERE raw_text LIKE '%warrantless%' OR raw_text LIKE '%without warrant%' OR raw_text LIKE '%non-consensual%' OR raw_text LIKE '%not admissible%' OR raw_text LIKE '%uncorroborated%'` — each hit needs case-by-case judgement whether the CONCEPTS line needs rewriting. Defer unless a new antonym-pollution symptom surfaces on baseline.
+
+**Monitor signature:** a query that should hit a domain-specific chunk but gets outcompeted by an adjacent-but-wrong chunk with a broad CONCEPTS list containing an antonym token matching a query word. The MDA s 29 / "search warrant execution" collision was the canonical example pre-fix.
+
+### Body-text vocabulary injection — conditional lever (session 76)
+
+Mechanism: prepend a sentence to the chunk body (after any `Concepts:` header line, before existing prose) that uses both the corpus-side statutory term and the practitioner-side alias term in natural-language context. This shifts the embedding vector more than anchor-CONCEPTS edits because body text carries more token weight.
+
+Established experimentally session 76:
+- Probe C "cross-examining an unfavourable witness hostile witness common law" → `Evidence Act 2001 (Tas) s 38 - Tendering Prior Inconsistent Statement` lifted to #1 @ 0.6455 (was absent from top 6).
+- Probe B "knock and announce warrant" → `secondary-chunk-12` lifted #5 @ 0.4997 → #1 @ 0.5251.
+- But benchmark Q12 "hostile witness procedure cross examination" and Q23 "search warrant execution requirements Tasmania" — unchanged despite 6 chunks carrying injected alias prose.
+
+**Rule:** body-text vocabulary injection works when query phrasing overlaps the injected prose. It does not help when user phrasing diverges lexically from the injected sentence, even when the concepts are identical. Asymmetric lever — useful for closing specific high-value query pairs where user phrasing is predictable, not useful for open-ended recall.
+
+Query-side expansion (Priority #1) is the architectural fix for the broader aliasing class — it normalises at the point of query entry, one implementation covers all pairs, no per-chunk maintenance. Do not attempt further corpus-side aliasing injection passes before query expansion is deployed — the ceiling is permanent.
