@@ -76,6 +76,16 @@ After uploading server.py, force-recreate the container on VPS: `docker compose 
 ./retrieval_baseline.sh
 ```
 
+### Baseline file gotcha (session 75)
+
+The generic `~/retrieval_baseline_results.txt` is frequently stale — it's whatever was written by the last manual `bash ~/retrieval_baseline.sh` run, which may predate the deploys you want to measure against. When grep'ing for specific query results, always target the timestamped snapshot:
+- `~/retrieval_baseline_post_interleave.txt` (19 Apr 2026 11:01) — session 74 canonical, 26P/3Pa/2M
+- `~/retrieval_baseline_pre_interleave.txt` (19 Apr 2026 10:51) — pre session 74
+- `~/retrieval_baseline_post_quarantine.txt` (19 Apr 2026 09:56) — session 71 post-quarantine
+- `~/retrieval_baseline_post_reembed.txt` (19 Apr 2026 07:58) — session 65 post-re-embed
+
+Before grep'ing baseline output, run `ls -la ~/retrieval_baseline*.txt` to confirm file age matches the period you want to analyse.
+
 ### Corpus processing (PowerShell, "Arc v 4/" directory)
 ```bash
 python process_blocks.py

@@ -869,7 +869,10 @@ Source title uses chunk heading (not filename stem).
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
 - **Auto-populate citation and case name from uploaded file** — when a file is dropped or selected in the upload UI, scan the first 1,000 characters for AustLII citation pattern (`[YYYY] TASSC/TASMC/TASCCA/TASFC N`) and case name pattern (R v Name, DPP v Name, X v Y). Auto-fill the citation and case name fields; derive and set the court dropdown from the court code. Frontend-only change in `app.js` — no Worker or D1 changes needed. Reduces manual entry errors on upload.
 - **RTF support on upload** — add `.rtf` to the upload form's accept list in the Secondary Sources tab. Add an RTF text stripper in `app.js` (strip RTF control words and markup, extract plain text) before passing to the existing upload pipeline. Frontend-only change. Low effort, occasionally useful for older legal documents exported from Word as RTF.
-- **Practitioner↔statutory vocabulary aliasing pass** — new anchor category, distinct from session 65 domain-language anchoring. Scope: identify vernacular↔statutory pairs (confirmed: "hostile witness"↔"unfavourable witness"; candidates: Q10 corroboration, Q14 leading questions, Q23 search warrant execution, Q24 committal hearing). Add vernacular aliases to vocabulary anchor for affected chunks. Re-embed affected chunks only, not full corpus.
+- **Practitioner↔statutory vocabulary aliasing — Q12 + Q23 only** — Anchor patches for `hoc-b048-m002-cross-examination-section-38` (+7 other s 38 EA chunks) and `secondary-chunk-12-execution-of-the-warrant-announcement-requirements-s19-and-s8-search-wa`. Mechanism TBD — requires Opus consult combined with anchor-precision refinement.
+- **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
+- **Q14 retrieval diagnostic** — s 37 EA legislation chunk exists in corpus but not surfacing in top 3 for "leading questions examination in chief". Check anchor, SM penalty, top-12 position, and whether a doctrinal leading-questions practice chunk should be authored.
+- **Vocabulary anchor generation refinement** — Opus consult on antonym/negation handling in CONCEPTS-derived anchors. Combine with aliasing consult. See Component Notes entry added session 75.
 - **Quick Search practitioner UI tab (arcanthyr.com)** — Phase 1 (corpus FTS), Phase 2 (AustLII proxy via /fetch-page), Phase 3 (Jade link button), Phase 4 (query_log search_type extension), Phase 5 (full-judgment fetch + austlii_cache D1 table with 30-day TTL + HTML-preserving render). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
 
 ### Secondary Sources Upload — Session 39 changes
@@ -939,3 +942,13 @@ Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge i
 - qdrant-client not on system Python, and quarantine script hardcodes `localhost:6334` so couldn't run inside agent-general container
 - Activate: `source /tmp/qvenv/bin/activate`
 - Reusable for any future VPS-host Python work touching Qdrant directly; `/tmp` may be cleared on reboot — recreate if missing
+
+### Vocabulary anchor over-generalisation — latent retrieval risk (session 75)
+
+Session 65's `build_secondary_embedding_text()` and `build_case_chunk_embedding_text()` prepend a `Key terms: ...` line derived from CONCEPTS/legislation_refs/key_authorities before embedding. The heuristic treats these as flat bag-of-words. Chunks whose CONCEPTS contain antonym terms (e.g. `warrantless search` in an MDA s 29 chunk) become semantically close to queries about the opposite concept (e.g. `search warrant execution`), because query tokens "search", "warrant", "Tasmania" match the anchor regardless of "warrantless" flipping the meaning.
+
+Confirmed example: Q23 "search warrant execution requirements Tasmania" — MDA s 29 chunk with anchor `Key terms: search powers, warrantless search, Tasmanian law, police authority, drug possession` wins at 0.6067, beating the correct Hogan SWA chunk 12 which literally has "execution of the warrant" in its title.
+
+Fix: deferred to Opus-consulted session combined with aliasing Priority #1. Candidate refinements: (a) separate POSITIVE_TERMS / NEGATIVE_TERMS fields in CONCEPTS, (b) tighter CONCEPTS linting on ingest, (c) anchor restricted to title-derived terms only.
+
+Monitor any future query that should hit a domain-specific chunk but gets outcompeted by an adjacent-but-wrong chunk with a broad CONCEPTS list — this is the signature.

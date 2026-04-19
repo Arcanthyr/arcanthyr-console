@@ -4319,11 +4319,13 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
           ).bind(JSON.stringify(extracted), enrichedText, citation, chunk_index).run();
 
           // Sync to case_chunks_fts for BM25 keyword search
+          // FTS5 UNINDEXED columns don't trigger REPLACE on rowid collision — DELETE+INSERT is the correct upsert idiom
           if (enrichedText) {
             try {
-              await env.DB.prepare(
-                `INSERT OR REPLACE INTO case_chunks_fts (chunk_id, citation, enriched_text) VALUES (?1, ?2, ?3)`
-              ).bind(chunkId, citation, enrichedText).run();
+              await env.DB.batch([
+                env.DB.prepare(`DELETE FROM case_chunks_fts WHERE chunk_id = ?`).bind(chunkId),
+                env.DB.prepare(`INSERT INTO case_chunks_fts (chunk_id, citation, enriched_text) VALUES (?, ?, ?)`).bind(chunkId, citation, enrichedText),
+              ]);
             } catch (ftsErr) {
               console.error('case_chunks_fts sync failed:', ftsErr);
             }

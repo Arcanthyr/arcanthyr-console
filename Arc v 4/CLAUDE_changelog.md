@@ -1,9 +1,27 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–71 · 26 March 2026 – 18 April 2026*
+*Sessions 21–72 · 26 March 2026 – 19 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure)*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 72) — 19 April 2026
+
+- **auslaw-mcp static audit — verdict YELLOW** — Third-party MCP server `github.com/russellbrenner/auslaw-mcp` audited via nine-step procedure (metadata, outbound URL grep, dynamic-exec grep, env/secret grep, Dockerfile review, dependency CVE scan, `.mcp.json` check, file tree, tree-sitter'd SSRF guard read). Verdict: well-constructed but hardening warranted before first run. Static audit script saved as `audit-auslaw-mcp.sh`. Key findings: (1) SSRF guard in `src/services/url-guard.ts` uses hostname-string matching (`Set.has(parsed.hostname)`) against 5-entry allowlist — no DNS IP resolution, fine for this threat model; (2) Tesseract OCR invoked via `execFile` (arg array) not `exec` — no shell injection surface; (3) `runDailySync` already exposes VPS IP to AustLII, so auslaw-mcp adds zero new IP-exposure risk; (4) `/fetch-page` proxy is a URL-param FastAPI endpoint, NOT an HTTP CONNECT proxy — cannot be used as `HTTPS_PROXY` (initial hardening recommendation corrected mid-session).
+
+- **auslaw-mcp hardened deployment on VPS** — cloned to `~/auslaw-mcp` (deliberately OUTSIDE `~/ai-stack/` tree to keep it off every ai-stack docker network). `.mcp.json` deleted from clone root per existing third-party tool security rule. `.env` created: `LOG_LEVEL=1`, `MCP_TRANSPORT=stdio`, `NODE_ENV=production`, `JADE_SESSION_COOKIE=` (blank). `docker-compose.yaml` modified: `build:` block removed, image pinned by digest `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network added. Resulting network: `auslaw-mcp_auslaw-isolated` on bridge `br-09cccc527fb4` — confirmed NOT connected to any `ai-stack_*` network. Why: running a known-digest image on a name-isolated bridge prevents accidental exposure of Arcanthyr internals (D1/Qdrant/Ollama) and guarantees deterministic behaviour across restarts.
+
+- **MCP registered in Windows Claude Code** — user-scope MCP named `auslaw` in `C:\Users\Hogan\.claude.json`. Transport: SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. After PowerShell quoting issues (single-quote JSON mangling), settled on `claude mcp add-json` with backtick-escaped double-quoted JSON as the reliable registration pattern. Verified: 10 tools exposed, including `search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`.
+
+- **Runtime traffic validated via tcpdump** — `tcpdump` on `br-09cccc527fb4` with `-Z tom` for user-owned pcap (passwordless sudo rejected as worse security posture). Fired 5 test queries; captured 53 packets. Single destination: `138.25.65.147` → `posh.austlii.edu.au` (AustLII infra). Zero non-AustLII/jade.io traffic — no CDN, telemetry, or surprise hosts. `search_cases` timed out twice (diagnosed as AustLII CGI endpoint slowness — see KNOWN ISSUES); `search_by_citation` round-tripped instantly, proving connectivity fine. Final verdict: GO.
+
+- **Mid-session corrections** — `claude: command not found` on VPS (Claude Code CLI lives on Windows, not VPS — MCP is registered on Windows against the SSH-wrapped docker exec). `claude mcp add -- ssh ... -i` failed because `--` did not stop flag parsing → switched to `add-json`. PowerShell single-quote JSON mangling resolved via backtick-escaped double quotes. Initial `HTTPS_PROXY` via `/fetch-page` recommendation was wrong (not a CONNECT proxy). Scope drift flagged mid-session (work extended past "is it safe?" into full hardening); Tom chose to finish.
+
+- **Session artefacts produced** — `audit-auslaw-mcp.sh` (clone-only static audit script), `github-mcp-setup.md` (guide for official `github/github-mcp-server` with read-only PAT + `--read-only` flag), `claude-code-prompts.md` (two self-contained CC prompts for audit + GitHub MCP install), `auslaw-mcp-deployment-prompt.md` (six-phase hardened deployment prompt: prep → ask → clone/modify → validate → first-run+tcpdump → go/no-go). All saved to session outputs.
+
+- **Deferred this session** — (1) rate budget in `/fetch-page` to protect daily scraper allowance, (2) compose resource limits (`mem_limit: 1g`, `cpus: '1.0'`), (3) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]`), (4) GitHub MCP install (guide written, existing `github` MCP already wired). Tracked as Outstanding Priority #7.
 
 ---
 
