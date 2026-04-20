@@ -39,6 +39,15 @@ export const api = {
     const params = new URLSearchParams({ q, limit: String(limit) });
     return req('GET', `/api/legal/austlii-word-search?${params.toString()}`);
   },
+  fetchJudgment: async (url, citation = null) => {
+    const params = new URLSearchParams({ url });
+    if (citation) params.set('citation', citation);
+    const response = await fetch(BASE + `/api/legal/fetch-judgment?${params.toString()}`);
+    const data = await response.json();
+    const r = data.result ?? data;
+    if (!r.ok) throw new Error(r.error || 'Failed to fetch judgment');
+    return r.html;
+  },
   share:         (body)       => req('POST', '/api/legal/share', body),
   requeueChunks: (nexusKey)   => req('POST', '/api/admin/requeue-chunks', {}, { 'X-Nexus-Key': nexusKey }),
 

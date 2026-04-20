@@ -1,9 +1,20 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–82 · 26 March 2026 – 20 April 2026*
+*Sessions 21–83 · 26 March 2026 – 20 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 83) — 20 April 2026
+
+- **Word Search feature for Case Library deployed** — new Worker route `GET /api/legal/word-search` (no X-Nexus-Key, matches `search-by-legislation` auth pattern) queries `case_chunks_fts` with phrase-match-first strategy and silent fallback to AND-of-all-tokens when phrase match returns zero rows. SQL uses `GROUP BY citation` with `MIN(bm25(case_chunks_fts)) AS best_rank` — one row per case, snippet from best-ranked chunk, `match_count` column showing how many chunks inside the case hit. Sanitiser strips FTS5 Booleans (`"`, `*`, `()`, `:`, `NEAR`, `AND`, `OR`, `NOT`) so users never need operator syntax. `api.wordSearch(q, limit, court)` added to `arcanthyr-ui/src/api.js`. `Library.jsx` CasesTable extended with third search mode ("Word search") — state plumbing, form UI, results table, safe `renderSnippet()` helper splitting on `<mark>…</mark>` with `<strong>` React nodes (no `dangerouslySetInnerHTML`). Worker version `1334562d-526d-432c-bdf0-ee6e201059b5`.
+- **Three tracked files found truncated mid-statement in Session 82 commit `107bd96`** — discovered during session 83 deploy. `arcanthyr-ui/src/api.js` cut at `if (!res.ok) throw new` (missing `approveSecondary` fetch close + object-literal `};`). `arcanthyr-ui/src/pages/Library.jsx` cut mid-word at `background` (missing Delete Case button JSX + `labelStyle` const). `Arc v 4/worker.js` cut at `pass1.judge || ` (missing METADATA handler tail — `parties`/`facts`/`issues` bind, `.run()` close, `splitIntoChunks` loop, CHUNK enqueue, `msg.ack()`, queue consumer catch block + `export default` close). All three restored: api.js to 172 lines, Library.jsx to 1079 lines, worker.js to 4557 lines. Worker tail recovered from commit `b80a7a2` (session 81 close, last known-good).
+- **Root cause = SCP LF↔CRLF conversion, previously documented as "cosmetic"** — the diff-inflation symptom noted session 78 (commit `a60fa1e`) is actually the tip of a destructive failure mode. When short-files are SCP'd between Windows and VPS with CRLF translation, byte counts can mismatch in ways that leave the tail of a file dropped on disk. The truncated files look syntactically plausible at a glance — `pass1.judge || ` reads as a partially-typed line, not obvious corruption. KNOWN ISSUE upgraded from "cosmetic only" to "mechanically destructive". Remediation plan set as Priority #1 for session 84.
+- **`node --check` exposed as unreliable pre-deploy gate** — returned exit code 0 with no output on the truncated worker.js despite unclosed template literals, unterminated function call, and missing module-level close. `@babel/parser` with `sourceType: 'module'` caught it immediately. Switched pre-deploy verification to babel parse going forward. `npm run build` (rolldown production pass) also catches it — it is what surfaced the api.js truncation to Tom during this session's deploy attempt.
+- **Session 82 legislation batch-insert fix survived the truncation** — `handleUploadLegislation` at line 1218, `env.DB.batch(stmts)` call at line 1320 both present in the restored worker.js. The SCP truncation hit only the file tail, so mid-file session 82 edits were preserved. Verified via `grep -n` after restoration.
+- **Deploy successful** — UI build produced `dist/assets/index-BSsNgR53.js` (1377 kB, gzip 382 kB), wrangler uploaded 2 modified assets, worker deployed as version `1334562d-526d-432c-bdf0-ee6e201059b5` with producer/consumer bindings intact. Smoke test pending Tom on `arcanthyr.com` Library → Cases → Word search tab.
 
 ---
 

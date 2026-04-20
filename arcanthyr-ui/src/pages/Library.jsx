@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
 import StareDecisisSection from '../components/StareDecisisSection';
@@ -38,6 +38,17 @@ function austliiUrl(citation) {
   const m = citation?.match(/\[(\d{4})\]\s+(TASCCA|TASSC|TASMC)\s+(\d+)/);
   if (!m) return null;
   return `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${m[2]}/${m[1]}/${m[3]}.html`;
+}
+
+function buildJadeUrl(citation) {
+  if (!citation) return null;
+  const m = citation.match(/^\[(\d{4})\]\s+([A-Za-z]+)\s+(\d+)$/);
+  if (!m) return null;
+  const [, year, court, num] = m;
+  const courtMap = { TASSC: 'tas/TASSC', TASCCA: 'tas/TASCCA', TASFC: 'tas/TASFC', TAMAGC: 'tas/TAMagC' };
+  const path = courtMap[court.toUpperCase()];
+  if (!path) return null;
+  return `https://jade.io/au/cases/${path}/${year}/${num}`;
 }
 
 export default function Library() {
@@ -843,47 +854,123 @@ function renderSnippet(snippet) {
   });
 }
 
+function extractJudgmentBody(html) {
+  let clean = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+  clean = clean.replace(/<style[\s\S]*?<\/style>/gi, '');
+  const bodyMatch = clean.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+  const body = bodyMatch ? bodyMatch[1] : clean;
+  return body
+    .replace(/<div[^>]*class="[^"]*(?:navbar|header|footer|sidebar|breadcrumb)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<form[\s\S]*?<\/form>/gi, '')
+    .replace(/<img[^>]*>/gi, '');
+}
+
 function AustLIIResultsTable({ results, localCitations }) {
+  const [loadingMap, setLoadingMap] = useState({});
+  const [htmlMap, setHtmlMap] = useState({});
+
   const badgeStyle = {
     padding: '1px 7px', borderRadius: '10px', fontSize: '10px', fontWeight: 700,
     letterSpacing: '0.05em', textTransform: 'uppercase',
   };
+
+  async function handleRead(r) {
+    if (htmlMap[r.citation] !== undefined) {
+      setHtmlMap(prev => { const next = { ...prev }; delete next[r.citation]; return next; });
+      return;
+    }
+    setLoadingMap(prev => ({ ...prev, [r.citation]: true }));
+    try {
+      const html = await api.fetchJudgment(r.url, r.citation);
+      setHtmlMap(prev => ({ ...prev, [r.citation]: html }));
+    } catch (e) {
+      alert('Failed to fetch judgment: ' + e.message);
+    } finally {
+      setLoadingMap(prev => ({ ...prev, [r.citation]: false }));
+    }
+  }
+
   return (
     <Table
-      cols={['Citation', 'Case', 'Court', 'Source', 'Open']}
+      cols={['Citation', 'Case', 'Court', 'Source', 'Links']}
       rows={results}
       renderRow={r => {
         const inCorpus = localCitations.has(r.citation);
+        const jadeUrl = buildJadeUrl(r.citation);
+        const isLoading = !!loadingMap[r.citation];
+        const html = htmlMap[r.citation];
+        const isExpanded = html !== undefined;
         return (
-          <tr key={r.citation} style={{ background: 'transparent' }}>
-            <td style={tdMono}>{r.citation}</td>
-            <td style={td}>
-              <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
-            </td>
-            <td style={td}>{courtTag(r.court)}</td>
-            <td style={td}>
-              <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                <span style={{ ...badgeStyle, background: 'rgba(255,165,0,0.15)', color: 'var(--amber)' }}>
-                  AustLII
-                </span>
-                {inCorpus && (
-                  <span style={{ ...badgeStyle, background: 'rgba(74,158,255,0.12)', color: 'var(--accent)' }}>
-                    In corpus
+          <Fragment key={r.citation}>
+            <tr style={{ background: 'transparent' }}>
+              <td style={tdMono}>{r.citation}</td>
+              <td style={td}>
+                <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
+              </td>
+              <td style={td}>{courtTag(r.court)}</td>
+              <td style={td}>
+                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                  <span style={{ ...badgeStyle, background: 'rgba(255,165,0,0.15)', color: 'var(--amber)' }}>
+                    AustLII
                   </span>
-                )}
-              </div>
-            </td>
-            <td style={td}>
-              <a
-                href={r.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ fontSize: '12px', color: 'var(--accent)', textDecoration: 'none', whiteSpace: 'nowrap' }}
-              >
-                Open ↗
-              </a>
-            </td>
-          </tr>
+                  {inCorpus && (
+                    <span style={{ ...badgeStyle, background: 'rgba(74,158,255,0.12)', color: 'var(--accent)' }}>
+                      In corpus
+                    </span>
+                  )}
+                </div>
+              </td>
+              <td style={{ ...td, whiteSpace: 'nowrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <button
+                    onClick={() => handleRead(r)}
+                    disabled={isLoading}
+                    style={{
+                      fontSize: '12px', color: isExpanded ? 'var(--text-muted)' : '#4A9EFF',
+                      background: 'transparent', border: 'none',
+                      cursor: isLoading ? 'wait' : 'pointer',
+                      padding: 0, textAlign: 'left', opacity: isLoading ? 0.6 : 1,
+                    }}
+                  >
+                    {isLoading ? 'Loading…' : isExpanded ? 'Close ↑' : 'Read ↓'}
+                  </button>
+                  <a
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: '12px', color: 'var(--accent)', textDecoration: 'none' }}
+                  >
+                    Open on AustLII ↗
+                  </a>
+                  {jadeUrl && (
+                    <a
+                      href={jadeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: '12px', color: 'var(--text-secondary)', textDecoration: 'none' }}
+                    >
+                      View on Jade ↗
+                    </a>
+                  )}
+                </div>
+              </td>
+            </tr>
+            {isExpanded && (
+              <tr style={{ background: 'transparent' }}>
+                <td colSpan={5} style={{ padding: '0 12px 16px', borderBottom: '1px solid var(--border)' }}>
+                  <div
+                    style={{
+                      maxHeight: '600px', overflowY: 'auto', padding: '1rem',
+                      background: 'var(--bg-secondary, var(--surface))', border: '1px solid var(--border)',
+                      fontFamily: 'serif', fontSize: '0.9rem', lineHeight: '1.7',
+                      marginTop: '0.5rem', borderRadius: '4px', color: 'var(--text-body)',
+                    }}
+                    dangerouslySetInnerHTML={{ __html: extractJudgmentBody(html) }}
+                  />
+                </td>
+              </tr>
+            )}
+          </Fragment>
         );
       }}
     />
@@ -898,10 +985,11 @@ function WordSearchResultsTable({ results, rows, onSelect, selectedId }) {
 
   return (
     <Table
-      cols={['Citation', 'Case', 'Court', 'Year', 'Match']}
+      cols={['Citation', 'Case', 'Court', 'Year', 'Match', 'Links']}
       rows={results}
       renderRow={r => {
         const isSelected = r.citation === selectedId || r.citation === (rows.find(x => x.id === selectedId)?.ref);
+        const jadeUrl = buildJadeUrl(r.citation);
         return (
           <tr
             key={r.citation}
@@ -929,6 +1017,19 @@ function WordSearchResultsTable({ results, rows, onSelect, selectedId }) {
                 <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {r.match_count} matching chunks
                 </div>
+              )}
+            </td>
+            <td style={{ ...td, whiteSpace: 'nowrap' }}>
+              {jadeUrl && (
+                <a
+                  href={jadeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{ fontSize: '12px', color: 'var(--text-secondary)', textDecoration: 'none' }}
+                >
+                  View on Jade ↗
+                </a>
               )}
             </td>
           </tr>

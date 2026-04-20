@@ -1,13 +1,13 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 April 2026 (end of session 85) · Supersedes all prior versions
+Updated: 20 April 2026 (end of session 86) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–81) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditionally
 
 ---
 
-## SYSTEM STATE — 20 April 2026 (end of session 85)
+## SYSTEM STATE — 20 April 2026 (end of session 86)
 
 | Component | Status |
 |---|---|
@@ -48,7 +48,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–81) — load conditiona
 
 5. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'`), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
 
-6. **Quick Search tab — Phases 3–5 outstanding** — Phase 1 (local FTS word-search, `GET /api/legal/word-search`) fixed session 85 (two bugs: `bm25()`/JOIN incompatibility + D1 100-var limit). Phase 2 (AustLII external track, `GET /api/legal/austlii-word-search`) delivered session 85 — direct Cloudflare edge fetch (VPS IP blocked by AustLII), async parallel UI, "In corpus" chips. Remaining: Phase 3 Jade link button, Phase 4 query_log `search_type` column, Phase 5 full-judgment fetch + `austlii_cache` table (30-day TTL).
+6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
 
 ---
 
@@ -201,15 +201,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–81) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 83) — 20 April 2026
-
-- **Word Search feature for Case Library deployed** — new Worker route `GET /api/legal/word-search` (no X-Nexus-Key, matches `search-by-legislation` auth pattern) queries `case_chunks_fts` with phrase-match-first strategy and silent fallback to AND-of-all-tokens when phrase match returns zero rows. SQL uses `GROUP BY citation` with `MIN(bm25(case_chunks_fts)) AS best_rank` — one row per case, snippet from best-ranked chunk, `match_count` column showing how many chunks inside the case hit. Sanitiser strips FTS5 Booleans (`"`, `*`, `()`, `:`, `NEAR`, `AND`, `OR`, `NOT`) so users never need operator syntax. `api.wordSearch(q, limit, court)` added to `arcanthyr-ui/src/api.js`. `Library.jsx` CasesTable extended with third search mode ("Word search") — state plumbing, form UI, results table, safe `renderSnippet()` helper splitting on `<mark>…</mark>` with `<strong>` React nodes (no `dangerouslySetInnerHTML`). Worker version `1334562d-526d-432c-bdf0-ee6e201059b5`.
-- **Three tracked files found truncated mid-statement in Session 82 commit `107bd96`** — discovered during session 83 deploy. `arcanthyr-ui/src/api.js` cut at `if (!res.ok) throw new` (missing `approveSecondary` fetch close + object-literal `};`). `arcanthyr-ui/src/pages/Library.jsx` cut mid-word at `background` (missing Delete Case button JSX + `labelStyle` const). `Arc v 4/worker.js` cut at `pass1.judge || ` (missing METADATA handler tail — `parties`/`facts`/`issues` bind, `.run()` close, `splitIntoChunks` loop, CHUNK enqueue, `msg.ack()`, queue consumer catch block + `export default` close). All three restored: api.js to 172 lines, Library.jsx to 1079 lines, worker.js to 4557 lines. Worker tail recovered from commit `b80a7a2` (session 81 close, last known-good).
-- **Root cause = SCP LF↔CRLF conversion, previously documented as "cosmetic"** — the diff-inflation symptom noted session 78 (commit `a60fa1e`) is actually the tip of a destructive failure mode. When short-files are SCP'd between Windows and VPS with CRLF translation, byte counts can mismatch in ways that leave the tail of a file dropped on disk. The truncated files look syntactically plausible at a glance — `pass1.judge || ` reads as a partially-typed line, not obvious corruption. KNOWN ISSUE upgraded from "cosmetic only" to "mechanically destructive". Remediation plan set as Priority #1 for session 84.
-- **`node --check` exposed as unreliable pre-deploy gate** — returned exit code 0 with no output on the truncated worker.js despite unclosed template literals, unterminated function call, and missing module-level close. `@babel/parser` with `sourceType: 'module'` caught it immediately. Switched pre-deploy verification to babel parse going forward. `npm run build` (rolldown production pass) also catches it — it is what surfaced the api.js truncation to Tom during this session's deploy attempt.
-- **Session 82 legislation batch-insert fix survived the truncation** — `handleUploadLegislation` at line 1218, `env.DB.batch(stmts)` call at line 1320 both present in the restored worker.js. The SCP truncation hit only the file tail, so mid-file session 82 edits were preserved. Verified via `grep -n` after restoration.
-- **Deploy successful** — UI build produced `dist/assets/index-BSsNgR53.js` (1377 kB, gzip 382 kB), wrangler uploaded 2 modified assets, worker deployed as version `1334562d-526d-432c-bdf0-ee6e201059b5` with producer/consumer bindings intact. Smoke test pending Tom on `arcanthyr.com` Library → Cases → Word search tab.
-
 ## CHANGES THIS SESSION (session 84) — 20 April 2026
 
 - **SCP/CRLF hardening deployed** — `.gitattributes` added at repo root pinning `*.js`, `*.jsx`, `*.py`, `*.md`, `*.json` to `eol=lf` (commit `02b61be`). Pre-commit hook at `.git/hooks/pre-commit` runs `@babel/parser` on staged JS/JSX files; hook uses `#!/bin/bash` + null-separated `git diff -z` + `while IFS= read -r -d ''` loop — space-safe for `Arc v 4/Worker.js` paths (for f in `$STAGED` split on spaces, initial approach failed immediately).
@@ -227,6 +218,18 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–81) — load conditiona
 - **VPS→AustLII blocked** — Contabo VPS IP blocked by AustLII (curl returns 000); `handleAustLIIWordSearch` switched from `handleFetchPage` VPS proxy to direct `fetch()` from Cloudflare edge with browser-mimicking headers. Edge IPs not blocked.
 - **Async parallel UI track** — Library word-search fires local FTS and AustLII in parallel; local results render at ~200ms; AustLII section trails in with spinner; "In corpus" chip on AustLII results whose citation matches local corpus; "Open on AustLII" link-out per result.
 - **D1 word-search diagnosis** — confirmed `case_chunks.id` is TEXT PRIMARY KEY (not integer rowid alias); `case_chunks_fts` has `citation UNINDEXED` column; correct join pattern is `fts.citation → cases.citation` not `fts.rowid → case_chunks.id`.
+
+---
+
+## CHANGES THIS SESSION (session 86) — 20 April 2026
+
+- **Phase 3: Jade link button** — Added `buildJadeUrl()` to `Library.jsx`; initial URL used `/article/search` path (500 error); fixed to AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM` confirmed via browser test; verified via JS href inspection
+- **Phase 3 URL bug** — `/article/search?query=` returns 500 on Jade; correct format is `https://jade.io/au/cases/tas/TASSC/YEAR/NUM` (AustLII path with different domain); discovered by live browser test during session
+- **Phase 4: `search_type` column** — `ALTER TABLE query_log ADD COLUMN search_type TEXT`; both `handleLegalQuery` paths updated to `'semantic'`; `handleWordSearch` and `handleAustLIIWordSearch` now log with `'word_search'` / `'austlii_word_search'`; verified via D1 GROUP BY query
+- **Phase 5: `austlii_cache` table + judgment fetch** — New D1 table (`url PK, citation, html, fetched_at`); `handleFetchJudgment` Worker route (`GET /api/legal/fetch-judgment`); CF-edge fetch with browser-mimicking headers (VPS IP blocked); 30-day TTL cache-first logic; upsert on stale
+- **Phase 5: inline judgment viewer** — `AustLIIResultsTable` rewritten with per-row `loadingMap`/`htmlMap` state; `extractJudgmentBody()` strips scripts/styles/nav/forms/images; `dangerouslySetInnerHTML` render in 600px serif pane; "Read ↓ / Close ↑ / Loading…" toggle; verified rendering live
+- **Phase 5 unwrap bug** — `fetchJudgment` in `api.js` read `data.ok/data.html` directly; fixed to `data.result ?? data` per standard `/api/legal/` wrapper pattern; error contract changed to throw-on-error
+- **Jade auth behaviour** — Login prompt on first click is browser-session behaviour only; once logged into Jade in Chrome the session persists; no automation needed or appropriate
 
 ---
 

@@ -3895,3 +3895,20 @@ Chosen: combination of (3) + (4) + selective (2). `.gitattributes` normalises fu
 **AustLII VPS proxy bypass** — Contabo VPS IP range is blocked by AustLII at the network level (curl returns 000, no HTTP response). The existing `handleFetchPage` VPS proxy path is therefore unusable for AustLII search. Fix: `handleAustLIIWordSearch` calls `fetch()` directly from the Cloudflare Worker edge with browser-mimicking headers (`User-Agent`, `Referer`, `Accept`, `Accept-Language`). Cloudflare edge IPs are not blocked by AustLII. This applies only to the word-search route — the scraper still routes through the edge proxy for individual case fetches.
 
 **AustLII sinosrch URL format** — AustLII search results use `/cgi-bin/viewdoc/` paths (not bare `/au/cases/tas/`). Correct URL pattern: `/cgi-bin/viewdoc/au/cases/tas/(COURT)/YEAR/NUM.html?context=1;query=...`. Parser regex must match the `viewdoc` prefix. Case name link text contains nested `<b>` tags (query term highlighting) — regex uses `[\s\S]*?` capture with post-processing `replace(/<[^>]+>/g, '')` to strip tags, plus `replace(/&amp;/g, '&')` entity decode and `replace(/\s*\[\d{4}\].*$/, '')` to strip AustLII's appended citation+date suffix.
+
+## Session 86 decisions — 20 April 2026
+
+**Jade URL format — AustLII-style path, not `/article/search`**
+Initial `buildJadeUrl` used `https://jade.io/article/search?query=<encoded_citation>` (assumed, not verified). Live test returned HTTP 500. Correct format confirmed by browser navigation: `https://jade.io/au/cases/tas/COURT/YEAR/NUM` — same path structure as AustLII but with `jade.io` as the domain. BarNet documentation confirms this. Citation parser extracts year/court/num from `[YEAR] COURT NUM` format and builds the path. `TAMagC` preserved in mixed case via the court map value (input uppercased for lookup only).
+
+**Jade login friction — leave alone**
+Jade requires login on first click in a fresh browser session. Decision: do not attempt to automate or embed credentials. Once logged in via normal Chrome usage the session persists for weeks. `search_type` column makes `client_version` effectively redundant for slicing query log data — `client_version` left as `'v68-history'` permanently (dead column).
+
+**Phase 5 fetch path — CF edge, not VPS proxy**
+AustLII blocks the VPS IP (confirmed from prior sessions). `handleFetchJudgment` fetches direct from CF edge using the same browser-mimicking headers as `handleAustLIIWordSearch` — no VPS proxy. `handleFetchPage` was explicitly not reused as it routes through VPS for AustLII URLs.
+
+**Phase 5 viewer — `dangerouslySetInnerHTML` deliberate**
+Using `dangerouslySetInnerHTML` to render fetched AustLII HTML is appropriate here: private authenticated tool, known content source, no user-generated input. Plain-text fallback would lose judgment formatting. Decision recorded to avoid future "safety" refactoring.
+
+**`austlii_cache` 800KB truncation guard**
+HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No judgment in the Tasmanian corpus is expected to approach this limit in practice; guard is defensive only.

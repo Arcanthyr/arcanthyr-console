@@ -2158,10 +2158,68 @@ async function handleAustLIIWordSearch(url, env) {
     if (cases.length === 0) {
       console.log('[austlii-word-search] 0 cases parsed. First tas href:', html.match(/href="[^"]*\/au\/cases\/tas[^"]*"/i)?.[0] || 'none found');
     }
+    try {
+      await env.DB.prepare(
+        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
+      ).bind(
+        crypto.randomUUID(), rawQ, new Date().toISOString(),
+        '[]', 0, '[]', '[]', '[]',
+        cases.length, 'v68-history', null, null, 'austlii_word_search'
+      ).run();
+    } catch (_le) { console.error('query_log insert failed (austlii_word_search):', _le); }
     return { ok: true, query: rawQ, cases, total: cases.length, source: 'austlii' };
   } catch (err) {
     console.error('handleAustLIIWordSearch error:', err.message);
     return { ok: false, error: 'AustLII search failed — try again or check connection.', cases: [], total: 0 };
+  }
+}
+
+async function handleFetchJudgment(url, env) {
+  const rawUrl = url.searchParams.get('url');
+  const citation = url.searchParams.get('citation') || null;
+
+  if (!rawUrl || !rawUrl.includes('austlii.edu.au')) {
+    return { ok: false, error: 'url required and must be an austlii.edu.au URL' };
+  }
+
+  const cached = await env.DB.prepare(
+    `SELECT html, fetched_at FROM austlii_cache WHERE url = ?`
+  ).bind(rawUrl).first();
+
+  if (cached) {
+    const age = Date.now() - new Date(cached.fetched_at).getTime();
+    if (age < 30 * 24 * 60 * 60 * 1000) {
+      return { ok: true, html: cached.html, source: 'cache' };
+    }
+  }
+
+  try {
+    const resp = await fetch(rawUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.austlii.edu.au/',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-AU,en;q=0.9'
+      }
+    });
+
+    if (!resp.ok) {
+      return { ok: false, error: `AustLII returned HTTP ${resp.status}` };
+    }
+
+    let html = await resp.text();
+    if (html.length > 800000) html = html.substring(0, 800000);
+
+    await env.DB.prepare(
+      `INSERT INTO austlii_cache (url, citation, html, fetched_at)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(url) DO UPDATE SET html = excluded.html, fetched_at = excluded.fetched_at`
+    ).bind(rawUrl, citation, html, new Date().toISOString()).run();
+
+    return { ok: true, html, source: 'fetch' };
+  } catch (err) {
+    console.error('handleFetchJudgment error:', err.message);
+    return { ok: false, error: 'Failed to fetch judgment from AustLII.' };
   }
 }
 
@@ -2267,6 +2325,16 @@ async function handleWordSearch(url, env) {
     }
   }
 
+  try {
+    await env.DB.prepare(
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
+    ).bind(
+      crypto.randomUUID(), rawQ, new Date().toISOString(),
+      '[]', 0, '[]', '[]', '[]',
+      results.length, 'v68-history', null, null, 'word_search'
+    ).run();
+  } catch (_le) { console.error('query_log insert failed (word_search):', _le); }
+
   return {
     ok: true,
     query: { raw: rawQ, cleaned, terms },
@@ -2358,8 +2426,8 @@ async function handleLegalQuery(body, env) {
     // Log zero-result queries too
     try {
       await env.DB.prepare(
-        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
-      ).bind(queryId, query.trim(), new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v68-history', 'No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.', 'claude').run();
+        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
+      ).bind(queryId, query.trim(), new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v68-history', 'No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.', 'claude', 'semantic').run();
     } catch (_le) { console.error('query_log insert failed (zero-result):', _le); }
     return {
       answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
@@ -2450,14 +2518,14 @@ ${answерNote}`;
     const _qs = query.trim();
     while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
     await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
     ).bind(
       queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
       JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
       JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      chunks.length, 'v68-history', answer.slice(0, 2000), 'claude'
+      chunks.length, 'v68-history', answer.slice(0, 2000), 'claude', 'semantic'
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -2659,14 +2727,14 @@ async function handleLegalQueryWorkersAI(body, env) {
     const _qs = query.trim();
     while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
     await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12)`
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
     ).bind(
       queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
       JSON.stringify(orderedChunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
       JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      orderedChunks.length, 'v68-history', answer.slice(0, 2000), 'workers-ai'
+      orderedChunks.length, 'v68-history', answer.slice(0, 2000), 'workers-ai', 'semantic'
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -4030,6 +4098,7 @@ export default {
         else if (action === "search-by-legislation" && request.method === "GET") result = await handleSearchByLegislation(url, env);
         else if (action === "word-search" && request.method === "GET") result = await handleWordSearch(url, env);
         else if (action === "austlii-word-search" && request.method === "GET") result = await handleAustLIIWordSearch(url, env);
+        else if (action === "fetch-judgment" && request.method === "GET") result = await handleFetchJudgment(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);

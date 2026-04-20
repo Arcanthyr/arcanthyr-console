@@ -547,6 +547,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
 | `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · 253 rows · Qdrant filter deploy held for post-baseline |
 | `synthesis_feedback` | `id` TEXT (UUID) | Query feedback — `query_id`, `chunk_id`, `feedback_type` (CHECK: helpful/unhelpful/irrelevant/hallucinated), `comment`, `created_at` · empty, ready for route wiring |
+| `austlii_cache` | `url` TEXT (PK) | Full judgment HTML cache · columns: `url` (PK), `citation`, `html`, `fetched_at` · 30-day TTL enforced on read · CF-edge fetch (VPS IP blocked by AustLII) · upsert on stale |
 
 ---
 
@@ -703,6 +704,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/health-reports` | POST | Write monthly health check report (id, summary_text, report_json, cluster_count, contradiction_count, gap_count) · X-Nexus-Key |
 | `/api/admin/health-clusters` | POST | Write cluster assignments batch (run_id, run_date, assignments[]) via D1 batch() · X-Nexus-Key |
 | `/api/legal/word-search` | GET | FTS5 phrase-first word search over `case_chunks_fts` · params: `q` (sanitised, Booleans stripped), `limit` (max 50, default 30), `court` (optional filter) · returns `{ ok, match_mode, results:[{citation, case_name, court, year, match_count, snippet, best_rank}] }` · `GROUP BY citation` with `MIN(bm25)` for best-chunk snippet · silent fallback from phrase match to AND-of-tokens · no auth (rate-limited /api/legal/* pattern) · session 83 |
+| `/api/legal/fetch-judgment` | GET | Fetch full AustLII judgment HTML · params: `url` (required, must be austlii.edu.au), `citation` (optional) · cache-first with 30-day TTL · CF-edge fetch with browser-mimicking headers · upserts to `austlii_cache` · returns `{ ok, html, source }` · session 86 |
 
 ### Query logging (session 65)
 
@@ -878,7 +880,7 @@ Source title uses chunk heading (not filename stem).
 - **RTF support on upload** — add `.rtf` to the upload form's accept list in the Secondary Sources tab. Add an RTF text stripper in `app.js` (strip RTF control words and markup, extract plain text) before passing to the existing upload pipeline. Frontend-only change. Low effort, occasionally useful for older legal documents exported from Word as RTF.
 - **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
 - **Q14 retrieval diagnostic** — s 37 EA legislation chunk exists in corpus but not surfacing in top 3 for "leading questions examination in chief". Check anchor, SM penalty, top-12 position, and whether a doctrinal leading-questions practice chunk should be authored.
-- **Quick Search practitioner UI tab (arcanthyr.com)** — Phase 1 COMPLETE (session 85): `GET /api/legal/word-search` FTS word-search fixed (bm25/JOIN incompatibility + D1 100-var limit). Phase 2 COMPLETE (session 85): `GET /api/legal/austlii-word-search` direct Cloudflare edge fetch with browser-mimicking headers (VPS IP blocked by AustLII); `parseAustLIIResults()` regex parser; async parallel UI with "In corpus" chips. Remaining: Phase 3 (Jade link button), Phase 4 (query_log `search_type` column), Phase 5 (full-judgment fetch + `austlii_cache` D1 table with 30-day TTL + HTML-preserving render). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
+- **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in Library.jsx, AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑"). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
 
 ### Secondary Sources Upload — Session 39 changes
 - Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
