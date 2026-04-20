@@ -165,4 +165,7 @@ export const api = {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (!res.ok) throw new
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    return data;
+  },
+};

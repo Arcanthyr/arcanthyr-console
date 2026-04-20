@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 20 April 2026 (end of session 82). Upload every session alongside CLAUDE.md.*
+*Updated: 20 April 2026 (end of session 83). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -702,6 +702,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/health-reports/:id` | GET | Single health check report including full report_json · X-Nexus-Key |
 | `/api/admin/health-reports` | POST | Write monthly health check report (id, summary_text, report_json, cluster_count, contradiction_count, gap_count) · X-Nexus-Key |
 | `/api/admin/health-clusters` | POST | Write cluster assignments batch (run_id, run_date, assignments[]) via D1 batch() · X-Nexus-Key |
+| `/api/legal/word-search` | GET | FTS5 phrase-first word search over `case_chunks_fts` · params: `q` (sanitised, Booleans stripped), `limit` (max 50, default 30), `court` (optional filter) · returns `{ ok, match_mode, results:[{citation, case_name, court, year, match_count, snippet, best_rank}] }` · `GROUP BY citation` with `MIN(bm25)` for best-chunk snippet · silent fallback from phrase match to AND-of-tokens · no auth (rate-limited /api/legal/* pattern) · session 83 |
 
 ### Query logging (session 65)
 

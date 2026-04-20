@@ -3859,3 +3859,21 @@ Passing `"top_k": 12` in the search request body causes the endpoint to return 0
 **Legislation upload: HTML without history is canonical format:** Confirmed via testing that HTML copy from legislation.tas.gov.au with history disabled, saved as .txt, produces the cleanest section boundary detection. PDF produces pagination artifacts; HTML-with-history bloats vectors with amendment reference noise. This preference is now documented in the UI dropzone helper text.
 
 **Batch insert pattern for legislation:** CPU timeout on large Acts (100+ sections) resolved by replacing sequential D1 loop with `env.DB.batch()` chunked at 99 statements. This is now the standard pattern for any bulk legislation ingest — consistent with `handleWriteCitations` and `handleMarkEmbedded`.
+
+## Session 83 — 20 April 2026
+
+**Decision: FTS5 phrase-match-first with silent AND fallback for user-facing Word Search.**
+
+Options considered: (1) pure phrase match — fails on 80% of multi-word queries where user types conceptually-related words not adjacent in source; (2) pure AND-of-tokens — loses phrase precision, "restraint order" finds chunks mentioning restraint and order in any context; (3) expose Boolean operators to users — UX hostile, legal practitioners will not learn FTS5 syntax; (4) phrase match with silent AND fallback — chosen.
+
+Rationale: single-token queries (`restraint`) collapse to AND-of-one = all-instances, intuitive. Multi-token queries try phrase first (`"restraint order"` in FTS5) — if hits exist, user gets precise sequence matches; if zero hits, silent fallback to AND returns the looser match set with a UI-visible note ("(all words match)"). No Boolean characters enter the user-visible surface. Sanitiser strips `"`, `*`, `()`, `:`, `NEAR`, `AND`, `OR`, `NOT` before query construction so inputs like `R v *` don't accidentally invoke prefix mode.
+
+**Decision: SCP LF↔CRLF handling — priority-1 remediation for session 84.**
+
+Options considered: (1) accept CRLF diff inflation as documented, continue as-is — rejected, session 83 proved it is destructive not cosmetic; (2) switch all VPS round-trips to hex-ssh — preferred for reads and writes, slower for bulk SCP; (3) add `.gitattributes` with `eol=lf` pins — catches new files, doesn't fix existing corrupted tails; (4) pre-commit parse hook — catches truncation before it hits git history.
+
+Chosen: combination of (3) + (4) + selective (2). `.gitattributes` normalises future checkouts, pre-commit hook using `@babel/parser` (already available in `arcanthyr-ui/node_modules/`) blocks commits of truncated `.js`/`.jsx` files, hex-ssh replaces SCP for any file we edit bidirectionally (worker.js, server.py, enrichment_poller.py). Retrospective audit of existing tracked files via `git show HEAD:<path>` syntactic-completeness check added as an explicit priority task.
+
+**Decision: `@babel/parser` replaces `node --check` as pre-deploy gate.**
+
+`node --check worker.js` returned exit 0 silently on a file truncated at `pass1.judge || ` with unclosed template literal, unterminated `.bind(` call, and no `export default`. Failure mode unexplained — possibly parser recovery or a bug in node 20's check mode on large files with mixed line endings. `@babel/parser` with `{ sourceType: 'module', plugins: ['jsx'] }` caught it instantly. New rule: `npm run build` OR explicit babel parse before every `wrangler deploy`. `node --check` remains useful for quick iteration but not as the last gate.

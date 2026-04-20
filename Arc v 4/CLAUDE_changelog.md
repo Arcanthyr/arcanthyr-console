@@ -1,11 +1,23 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–79 · 26 March 2026 – 20 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–79 added end of session 82*
+*Sessions 21–80 · 26 March 2026 – 20 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
 
 ---
+
+## CHANGES THIS SESSION (session 80) — 20 April 2026
+
+- **Phase 3 Citation authority agent — Pass 4 gate + retrieval leg deployed in shadow mode** — `should_fire_pass4(query_text) -> (bool, reason)` function in `server.py` with three independent gate rules: (1) keyword match against `AUTHORITY_KEYWORDS` list (treatment vocabulary, citation-profile vocabulary, judicial-treatment intent phrases, and narrow topical-authority phrases); (2) bare-citation lookup — query ≤60 chars AND ≥1 CITATION_REGEX match; (3) relationship intent — ≥2 citations in query. Pass 4 `query_points` block inserted after domain filter, before final sort+cap (lines 737–771 post-edit); uses `Filter(must=[type=authority_synthesis], must_not=[quarantined=True])` with `AUTHORITY_PASS_THRESHOLD=0.50`, `AUTHORITY_PASS_LIMIT=3`, `AUTHORITY_PASS_TIMEOUT_SEC=0.5` (ThreadPoolExecutor with 500ms timeout). Dedup against `seen_ids`. `AUTHORITY_PASS_ENABLED=false` by default — gate fires and logs `[Pass 4] gate=FIRE reason=... ENABLED=false (shadow)` but skips Qdrant query. Worker version 648207f6.
+
+- **AUTHORITY_KEYWORDS finalised via D1 corpus scan** — corpus scan confirmed all 233 chunks are per-case citation profiles (Treatment section + Propositions for which cited + Citing cases), NOT topical aggregation chunks. "Leading authorities on X" style queries have weak chunk support — no ranking chunks exist, only per-case profiles mentioning propositions in passing. Keywords refined to focus on treatment vocabulary (followed by, applied in, distinguished in, etc.), judicial-treatment intent phrases (subsequent treatment, cases citing, etc.), and citation-profile vocabulary (citing cases, how often cited, citation profile). Narrow topical-authority phrases (leading authority on, leading case on, key authority on, authority on) retained but flagged for shadow-mode monitoring — cut before flag flip if false-positive FIRE rate is high on queries where Pass 1/2/3 already returns good doctrinal results. Broader phrases (leading authority, leading case, seminal case, landmark case, most cited, principal authority) dropped — no corpus support, would FIRE but retrieve weakly.
+
+- **worker.js Phase 2 — Sol and V'ger updated for [AUTHORITY ANALYSIS] label** — Sol (`handleLegalQuery`): caseBlocks map now emits a four-way label switch (`[CASE EXCERPT]` / `[LEGISLATION]` / `[AUTHORITY ANALYSIS]` / `[ANNOTATION]`) as net-new label injection (Sol previously had no labels at all); default systemPrompt variant gets instruction sentence: "AUTHORITY ANALYSIS blocks summarise how Tasmanian courts have cited and treated a specific case — use them to describe subsequent treatment, citation frequency, and how the case has been applied or distinguished." V'ger (`handleLegalQueryWorkersAI`): existing binary ternary (`case_chunk → [CASE EXCERPT]`, else `[ANNOTATION]`) extended to three-way (`authority_synthesis → [AUTHORITY ANALYSIS]`); same instruction sentence added to default systemPrompt variant.
+
+- **UI Phase 3 — amber AUTHORITY tag, Library badge, AuthorityPane** — `ResultCard.jsx`: `authority_synthesis` added to `TYPE_TAGS` (label: AUTHORITY, bg: `rgba(200,140,50,0.08)`, color: `#C88C32`); tag resolution extended to check `result.type` before `result.doc_type` (server.py search returns `type`, not `doc_type`). `Library.jsx` CorpusTable: amber AUTHORITY badge added inline with title when `r.court === 'authority_synthesis'` (source_type aliased as court by `handleLibraryList`); `r.court` subtitle suppressed for authority_synthesis rows. `ReadingPane.jsx`: branch added before CasePane dispatch — `if (selected.type === 'authority_synthesis')` renders new `AuthorityPane` component; AuthorityPane shows amber AUTHORITY header, citation/title, close button, and full `selected.text` or `selected.raw_text` in a scrollable pre-wrap block.
+
+- **server.py local mirror synced** — VPS file downloaded to `Arc v 4/server.py` via hex-ssh ssh-download post-edit. `grep -c "must_not"` = 4 (3 Phase 2b isolation gates + 1 new Pass 4 gate), `grep -c "should_fire_pass4"` = 2, `grep -c "AUTHORITY_PASS"` = 9.
 
 ## CHANGES THIS SESSION (session 79) — 20 April 2026
 
