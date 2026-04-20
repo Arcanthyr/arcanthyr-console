@@ -1,9 +1,21 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–80 · 26 March 2026 – 20 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83*
+*Sessions 21–82 · 26 March 2026 – 20 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 82) — 20 April 2026
+
+- **Scraper confirmed complete** — D1 case count stable at 1,914 (identical to session 81 close); corpus extends [2005] TASSC 1 → [2026] TASSC 9; embed backlog 0; one stuck case ([2023] TASSC 6 Bob Brown Foundation, civil) unchanged and ignorable.
+- **Legislation upload pipeline fixed — 3 bugs** — root cause was FormData/multipart vs JSON mismatch in api.js (Worker calls `request.json()` → Cloudflare returned HTML 400); also fixed field name mismatch (`act_name`/File object → `title`/`doc_text` string) and wrong response field (`sections` → `sections_parsed`). Deployed UI fix version `6dbe379f`.
+- **Worker batch insert fix** — `handleUploadLegislation` replaced sequential per-section D1 loop with chunked `env.DB.batch()` pattern (99 statements/batch) to prevent CPU timeout on large Acts. Deployed version `c2428694`. Pattern matches `handleWriteCitations`.
+- **Sentencing Act 1997 (Tas) ingested** — 147 sections in `legislation_sections`, legislation_id `sentencing-act-1997-tas`; priority sections confirmed present (s 9, s 11A, s 12, s 15, s 17). Poller [LEG] pass to embed pending.
+- **Q9 misdiagnosis corrected** — prior session diagnosis of "Sentencing Act s 11A guilty plea discount" was wrong; Tasmania has no statutory guilty plea discount. s 11A is sexual offences aggravating factors. Q9 fix requires secondary source authoring on Tasmanian common law discount doctrine.
+- **Rule 3 (multi-citation) confirmed live** — probe query "when can an appellate court interfere with a sentence that was manifestly excessive" returned 6 case chunks (0.73–0.75), synthesis aggregated correctly across citations. Rule 3 is not dead code.
+- **Upload UI helper text added** — legislation dropzone now shows "For best results, use HTML source from legislation.tas.gov.au — disable legislative history, copy the page text into a .txt file before uploading. Avoid PDFs."
 
 ---
 

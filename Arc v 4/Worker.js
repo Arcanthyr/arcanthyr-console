@@ -2096,6 +2096,75 @@ function sanitiseFtsInput(raw) {
   return s;
 }
 
+function parseAustLIIResults(html) {
+  const COURT_MAP = { TASSC: 'supreme', TASCCA: 'cca', TASFC: 'fullcourt', TAMagC: 'magistrates' };
+  const cases = [];
+  const seen = new Set();
+  const pattern = /href="\/cgi-bin\/viewdoc\/(au\/cases\/tas\/(TASSC|TASCCA|TASFC|TAMagC)\/(\d{4})\/(\d+)\.html)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi;
+  let m;
+  while ((m = pattern.exec(html)) !== null) {
+    const [, path, courtCode, year, num, rawName] = m;
+    const citation = `[${year}] ${courtCode} ${num}`;
+    if (seen.has(citation)) continue;
+    seen.add(citation);
+    const caseName = rawName
+      .replace(/<[^>]+>/g, '')           // strip HTML tags
+      .replace(/\s+/g, ' ')             // normalise whitespace
+      .replace(/&amp;/g, '&')           // decode HTML entity
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\s*\[\d{4}\].*$/, '')   // strip citation + date suffix
+      .trim();
+    cases.push({
+      citation,
+      case_name: caseName,
+      url: `https://www.austlii.edu.au/cgi-bin/viewdoc/${path}`,
+      court: COURT_MAP[courtCode] || courtCode,
+      source: 'austlii'
+    });
+  }
+  return cases;
+}
+
+async function handleAustLIIWordSearch(url, env) {
+  const rawQ = (url.searchParams.get('q') || '').trim();
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
+  if (!rawQ || rawQ.length < 2) {
+    return { ok: false, error: 'Query too short', cases: [], total: 0 };
+  }
+  const TAS_COURTS = [
+    'au/cases/tas/TASSC',
+    'au/cases/tas/TASCCA',
+    'au/cases/tas/TASFC',
+    'au/cases/tas/TAMagC'
+  ];
+  const baseParams = `query=${encodeURIComponent(rawQ)}&meta=%2Fau&method=auto&results=${limit}&rank=on`;
+  const maskParams = TAS_COURTS.map(c => `mask_path=${encodeURIComponent(c)}`).join('&');
+  const austliiUrl = `https://www.austlii.edu.au/cgi-bin/sinosrch.cgi?${baseParams}&${maskParams}`;
+  try {
+    const resp = await fetch(austliiUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.austlii.edu.au/forms/search1.html',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-AU,en;q=0.9'
+      }
+    });
+    if (!resp.ok) {
+      return { ok: false, error: `AustLII returned HTTP ${resp.status}`, cases: [], total: 0 };
+    }
+    const html = await resp.text();
+    const cases = parseAustLIIResults(html).slice(0, limit);
+    if (cases.length === 0) {
+      console.log('[austlii-word-search] 0 cases parsed. First tas href:', html.match(/href="[^"]*\/au\/cases\/tas[^"]*"/i)?.[0] || 'none found');
+    }
+    return { ok: true, query: rawQ, cases, total: cases.length, source: 'austlii' };
+  } catch (err) {
+    console.error('handleAustLIIWordSearch error:', err.message);
+    return { ok: false, error: 'AustLII search failed — try again or check connection.', cases: [], total: 0 };
+  }
+}
+
 async function handleWordSearch(url, env) {
   const rawQ  = (url.searchParams.get('q') || '').trim();
   const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '30', 10), 1), 100);
@@ -2119,26 +2188,57 @@ async function handleWordSearch(url, env) {
   const andMatch = terms.join(' AND ');
 
   async function runQuery(ftsExpr) {
-    let sql = `
-      SELECT c.citation, c.case_name, c.court, c.case_date, c.subject_matter, c.holding,
-             snippet(case_chunks_fts, 2, '<mark>', '</mark>', '…', 24) AS snippet,
-             MIN(bm25(case_chunks_fts)) AS best_rank,
-             COUNT(*) AS match_count
-      FROM case_chunks_fts
-      JOIN cases c ON c.citation = case_chunks_fts.citation
-      WHERE case_chunks_fts MATCH ?`;
-    const params = [ftsExpr];
-    if (court) {
-      sql += ` AND LOWER(c.court) = ?`;
-      params.push(court);
+    // Step 1: FTS-only query — bm25() only works without JOIN/GROUP BY.
+    // Alias as bm25_score (not rank) to avoid conflict with FTS5 built-in rank column.
+    const ftsRes = await env.DB.prepare(
+      `SELECT citation, bm25(case_chunks_fts) AS bm25_score
+       FROM case_chunks_fts
+       WHERE case_chunks_fts MATCH ?
+       ORDER BY bm25_score LIMIT 200`
+    ).bind(ftsExpr).all();
+    const ftsRows = ftsRes.results || [];
+    if (ftsRows.length === 0) return [];
+
+    // Step 2: Dedupe — keep best (lowest) rank per citation
+    const rankMap = new Map();
+    const countMap = new Map();
+    for (const row of ftsRows) {
+      const prev = rankMap.get(row.citation);
+      if (prev === undefined || row.bm25_score < prev) rankMap.set(row.citation, row.bm25_score);
+      countMap.set(row.citation, (countMap.get(row.citation) || 0) + 1);
     }
-    sql += `
-      GROUP BY c.citation
-      ORDER BY best_rank
-      LIMIT ?`;
-    params.push(limit);
-    const res = await env.DB.prepare(sql).bind(...params).all();
-    return res.results || [];
+
+    // Step 3: Sort by rank, trim to limit before the metadata query.
+    // D1 caps bound variables at 100 — passing all deduplicated citations
+    // (up to 200) would exceed that limit. Slice here so the IN clause
+    // never has more than `limit` placeholders.
+    const sortedCitations = [...rankMap.entries()]
+      .sort((a, b) => a[1] - b[1])
+      .map(([cit]) => cit)
+      .slice(0, limit);
+
+    if (sortedCitations.length === 0) return [];
+
+    // Step 4: Fetch case metadata. Court filter is applied in JS (step 5)
+    // to keep the number of bound variables equal to sortedCitations.length only.
+    const placeholders = sortedCitations.map(() => '?').join(',');
+    const casesSql = `SELECT citation, case_name, court, case_date, subject_matter, holding
+                      FROM cases WHERE citation IN (${placeholders})`;
+    const casesRes = await env.DB.prepare(casesSql).bind(...sortedCitations).all();
+    const caseMap = new Map((casesRes.results || []).map(r => [r.citation, r]));
+
+    // Step 5: Merge rank data back; apply optional court filter in JS.
+    return sortedCitations
+      .filter(cit => {
+        if (!caseMap.has(cit)) return false;
+        if (court && caseMap.get(cit).court?.toLowerCase() !== court) return false;
+        return true;
+      })
+      .map(cit => ({
+        ...caseMap.get(cit),
+        best_rank: rankMap.get(cit),
+        match_count: countMap.get(cit)
+      }));
   }
 
   let results = [];
@@ -3929,6 +4029,7 @@ export default {
         else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);
         else if (action === "search-by-legislation" && request.method === "GET") result = await handleSearchByLegislation(url, env);
         else if (action === "word-search" && request.method === "GET") result = await handleWordSearch(url, env);
+        else if (action === "austlii-word-search" && request.method === "GET") result = await handleAustLIIWordSearch(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);

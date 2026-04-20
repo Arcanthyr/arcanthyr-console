@@ -35,6 +35,10 @@ export const api = {
     if (court) params.set('court', court);
     return req('GET', `/api/legal/word-search?${params.toString()}`);
   },
+  austliiWordSearch: (q, limit = 20) => {
+    const params = new URLSearchParams({ q, limit: String(limit) });
+    return req('GET', `/api/legal/austlii-word-search?${params.toString()}`);
+  },
   share:         (body)       => req('POST', '/api/legal/share', body),
   requeueChunks: (nexusKey)   => req('POST', '/api/admin/requeue-chunks', {}, { 'X-Nexus-Key': nexusKey }),
 
