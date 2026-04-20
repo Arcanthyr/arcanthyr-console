@@ -4525,4 +4525,32 @@ Rules:
             WHERE citation = ?
           `).bind(
             pass1.case_name || null,
-            pass1.judge || 
+            pass1.judge || null,
+            Array.isArray(pass1.parties) ? pass1.parties.join(', ') : (pass1.parties || null),
+            pass1.facts || null,
+            Array.isArray(pass1.issues) ? pass1.issues.join('; ') : (pass1.issues || null),
+            citation
+          ).run();
+
+          // Split full raw_text into chunks and write to case_chunks
+          const chunks = splitIntoChunks(row.raw_text);
+          console.log(`[queue] splitting ${citation} into ${chunks.length} chunks`);
+
+          for (let i = 0; i < chunks.length; i++) {
+            const chunkId = `${citation}__chunk__${i}`;
+            await env.DB.prepare(`
+              INSERT OR IGNORE INTO case_chunks (id, citation, chunk_index, chunk_text, done, embedded)
+              VALUES (?, ?, ?, ?, 0, 0)
+            `).bind(chunkId, citation, i, chunks[i]).run();
+            await env.CASE_QUEUE.send({ type: 'CHUNK', citation, chunk_index: i, total_chunks: chunks.length });
+          }
+          console.log(`[queue] enqueued ${chunks.length} CHUNK messages for ${citation}`);
+          msg.ack();
+        }
+      } catch (e) {
+        console.error(`[queue] failed type=${type} ${citation}: ${e.message}`);
+        msg.retry();
+      }
+    }
+  },
+};
