@@ -359,3 +359,7 @@ The inflation is cosmetic — logic is correct. But it makes code review noisy a
 **Legislation upload format (session 82):** Always use HTML source from legislation.tas.gov.au with legislative history disabled, saved as .txt. PDF uploads risk pagination artifacts corrupting section boundary detection. History-on versions pollute embeddings with amendment reference numbers.
 
 **Q9 / guilty plea discount:** Tasmania has no statutory provision. s 11A Sentencing Act 1997 is sexual offences aggravating factors, not guilty plea discount. The discount is common law only — fix via secondary source authoring.
+
+## Session 84 — Pre-commit hook (20 April 2026)
+
+Pre-commit hook lives at `arcanthyr-console/.git/hooks/pre-commit` (not tracked by git — `.git/` is excluded). If lost (fresh clone, OS reinstall), recreate manually: bash shebang, `git diff --cached -z --name-only --diff-filter=ACM | grep -zE '\.(js|jsx)$'` piped to `while IFS= read -r -d '' f` loop, runs `node -e` babel parse on each file, exits 1 on failure. `NODE_PATH` must point to `arcanthyr-ui/node_modules` (that is where `@babel/parser` is installed). Space-safe by design — required for `Arc v 4/Worker.js`.

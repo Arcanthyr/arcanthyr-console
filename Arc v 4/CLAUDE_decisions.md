@@ -3877,3 +3877,11 @@ Chosen: combination of (3) + (4) + selective (2). `.gitattributes` normalises fu
 **Decision: `@babel/parser` replaces `node --check` as pre-deploy gate.**
 
 `node --check worker.js` returned exit 0 silently on a file truncated at `pass1.judge || ` with unclosed template literal, unterminated `.bind(` call, and no `export default`. Failure mode unexplained — possibly parser recovery or a bug in node 20's check mode on large files with mixed line endings. `@babel/parser` with `{ sourceType: 'module', plugins: ['jsx'] }` caught it instantly. New rule: `npm run build` OR explicit babel parse before every `wrangler deploy`. `node --check` remains useful for quick iteration but not as the last gate.
+
+## Session 84 decisions — 20 April 2026
+
+**Pre-commit hook: bash + null-separated loop required for space-containing paths.** Initial hook spec used `#!/bin/sh` with `for f in $STAGED` loop. Failed immediately on first commit: `Arc v 4/Worker.js` split into three tokens on spaces. Fix: `#!/bin/bash` shebang (process substitution requires bash), `git diff --cached -z --name-only --diff-filter=ACM` with `while IFS= read -r -d '' f` loop. This is the correct pattern for any git hook in this repo — document as the canonical hook template.
+
+**`node --check` retired as pre-deploy gate.** Confirmed false-positive: exit 0 on worker.js truncated at `pass1.judge ||` (no closing paren, no `export default`). `npm run build` (rolldown) is the correct gate — it exercises the full module graph. `@babel/parser` in the pre-commit hook catches parse errors earlier. `node --check` only validates V8 tokenisation, not module structure.
+
+**SKILL.md "truncation" was a session-closer false positive.** The session-closer generated a report of truncation at line 40 of `arcanthyr-session-closer/SKILL.md`. CC cat confirmed 94 lines, intact. This is consistent with the documented session-closer false-commit pattern (session closers have previously generated false "created" entries for files never written). The session-closer's own output is not a reliable source of file state — always verify with CC reads.

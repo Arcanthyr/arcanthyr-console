@@ -1,13 +1,13 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 April 2026 (end of session 83) · Supersedes all prior versions
+Updated: 20 April 2026 (end of session 84) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–81) — load conditionally
 
 ---
 
-## SYSTEM STATE — 20 April 2026 (end of session 82)
+## SYSTEM STATE — 20 April 2026 (end of session 84)
 
 | Component | Status |
 |---|---|
@@ -40,8 +40,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 ## OUTSTANDING PRIORITIES
 
-1. **SCP/CRLF silent truncation — audit + harden (PRIORITY)** — Session 83 discovered three tracked files in Session 82 commit `107bd96` were truncated mid-statement: `arcanthyr-ui/src/api.js` cut at `if (!res.ok) throw new` (missing approveSecondary close + object-literal `};`), `arcanthyr-ui/src/pages/Library.jsx` cut at `background` (missing Delete button JSX + `labelStyle` const), `Arc v 4/worker.js` cut at `pass1.judge || ` (missing METADATA handler tail + queue consumer close + `export default`). Root cause is the same LF↔CRLF conversion flagged previously as "cosmetic only — logic is correct" — this session proves it is mechanically destructive and can silently drop file tails during SCP. `node --check worker.js` returned exit code 0 on the truncated file (false pass); only `@babel/parser` caught it. Remediation tasks: (a) audit every tracked Windows-side file for short-tail corruption — run `git show HEAD:<path>` and verify last non-empty line is syntactically complete; candidates: all `.jsx`, `.js`, `.py`, `.md` under `arcanthyr-ui/` and `Arc v 4/`; (b) add `.gitattributes` at repo root with `*.js text eol=lf`, `*.jsx text eol=lf`, `*.py text eol=lf`, `*.md text eol=lf`, `*.json text eol=lf` to pin LF on checkout; (c) add a pre-commit hook (`.git/hooks/pre-commit`) that runs `node -e "require('@babel/parser').parse(require('fs').readFileSync(process.argv[1],'utf8'),{sourceType:'module',plugins:['jsx']})"` on staged `.js`/`.jsx` files and fails on parse error; (d) stop using `node --check` as a pre-deploy gate — switch to `npm run build` (production rolldown pass) or explicit babel parse; (e) for `server.py` and other VPS-to-Windows SCP edits, prefer hex-ssh `ssh-edit-block` / `ssh-download` over plain SCP since they preserve byte-exact content.
-
 2. **Post-scrape authoring pass** — Q9 (guilty plea discount — common law doctrine, no Tasmanian statutory provision; requires secondary source authoring) and Q26 (unreasonable verdict / M v The Queen) diagnosed this session as authoring gaps but deferred until scrape-complete. Further MISS/Partial triage deferred to post-scrape baseline re-run.
 
 3. **Q14 diagnostic — why is s 37 EA not in top 3?** — Live Q14 ("leading questions examination in chief") returns [2021] TASSC 4 Hefny v Barnes at #1 (0.50), Hofer/TASCCA 11 cross-examination at #2/#3. s 37 EA legislation chunk exists in corpus but not surfacing. Not a vocabulary mismatch ("leading questions" is both statutory and practitioner term). Hypothesis: case-application chunks outscoring legislation chunk on semantic density. Diagnosis task: check s 37 EA chunk's vocabulary anchor, check whether it's being returned at any position in top 12, check whether it's being SM-penalised incorrectly. If chunk is fine but ranking is wrong, may need doctrinal authoring (practice note on leading-questions-in-chief technique) rather than retrieval tuning.
@@ -57,8 +55,8 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 ## KNOWN ISSUES / WATCH LIST
 
 - **Q9 (guilty plea discount) — common law only, no Tasmanian statute** — confirmed session 82: Tasmania has no codified guilty plea discount provision in the Sentencing Act 1997 (unlike NSW s 22 CSPA or Vic s 5(2)(e)). Sentencing Act now ingested (147 sections). Q9 fix requires secondary source authoring on Tasmanian common law discount methodology, not legislation upload.
-- **SCP/CRLF file truncation — MECHANICALLY DESTRUCTIVE** — Previously documented as "cosmetic only", upgraded session 83 after three tracked files (`arcanthyr-ui/src/api.js`, `arcanthyr-ui/src/pages/Library.jsx`, `Arc v 4/worker.js`) were found truncated mid-statement in Session 82 commit `107bd96`. Truncated files can look syntactically plausible on inspection and `node --check` may false-pass. Workarounds (per Priority #1): add `.gitattributes` to pin LF, pre-commit parse hook via `@babel/parser`, prefer hex-ssh over plain SCP for VPS round-trips, use `npm run build` as pre-deploy gate rather than `node --check`.
-- **`node --check` false-pass on truncated files** — Session 83: `node --check worker.js` returned exit 0 with no output on a file truncated mid-expression at `pass1.judge || ` (no closing paren, no `export default`). `@babel/parser` with `sourceType: 'module'` correctly flagged the parse error. Do not trust `node --check` as the sole pre-deploy gate.
+- **SCP/CRLF file truncation — HARDENED (session 84)** — Three tracked files truncated mid-statement in s82 commit `107bd96`; Worker.js git record additionally wrong in s83 commit `1e6fb23` (truncated version committed, correct version only on Cloudflare). Session 84 mitigations deployed: `.gitattributes` pins LF on checkout; pre-commit hook runs `@babel/parser` on staged JS/JSX (bash, null-separated loop — space-safe for `Arc v 4/` paths); `npm run build` is pre-deploy gate; Worker.js git record fixed `853a56d`. VPS files (server.py, enrichment_poller.py) outside git — continue to prefer hex-ssh over plain SCP for round-trips.
+- **`node --check` false-pass — RETIRED** — Session 83: false-passed on truncated worker.js (exit 0, file cut at `pass1.judge ||`). Session 84: `node --check` retired from SESSION RULE; `npm run build` is now the pre-deploy gate; `@babel/parser` pre-commit hook catches JS/JSX parse errors at commit time.
 - **Corpus ... placeholders — 3 of 5 resolved** — part1.md:1282 and part2.md:2415 confirmed as legal elisions (not errors) · part2.md:381 `T...` fixed to `The` · remaining 2 genuine gaps: part2.md:1167 block_023 (`...BUT see below` dangling ref) and part2.md:1957 block_028 (`[Continues with specifics...]` placeholder) — both need source material from rag_blocks/, deferred to Procedure Prompt re-ingest
 - **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
 - **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · monitor as new chunks are ingested — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
@@ -203,16 +201,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 81) — 21 April 2026
-
-- **Pass 4 enabled — AUTHORITY_PASS_ENABLED=true** — Flag flipped in `~/ai-stack/.env.config` (sed in-place replacing `false` → `true`), agent-general force-recreated. Confirmed live via VPS log: `[Pass 4] gate=FIRE reason=bare-lookup hits=0 ENABLED=true` (no longer shadow). 500ms cold-cache timeouts observed on first queries post-restart — expected, should warm up with traffic.
-
-- **AUTHORITY_KEYWORDS calibrated via 24-query shadow probe battery** — Fired all 24 queries via Playwright to generate shadow-mode log events before flip. Findings: (1) 3 topical-authority phrases produced false positives on doctrinal queries (`"authority on"`, `"leading authority on"`, `"key authority on"`) — removed; (2) 4 passive-voice treatment queries missed (`"has X been followed/distinguished/applied/considered"`) — 10 passive-voice forms added (`been followed`, `been applied`, `been distinguished`, `been overruled`, `been approved`, `been adopted`, `been considered`, `been cited`, `been treated`, `often cited`). Post-calibration fire rate on battery: 14/24 (58%) — correctly composed (citation-shaped queries FIRE, doctrinal queries SKIP). Multi-citation rule (rule 3) confirmed never fires independently — queries with ≥2 citations that are also ≤60 chars are always captured by bare-lookup first.
-
-- **worker.js sources mapper fix — type and source_type now flow to frontend** — Both `handleLegalQuery` and `handleLegalQueryWorkersAI` `caseSources` mapper previously returned `{ citation, court, year, score, summary }` with no `type` field. Added `type: c.type, source_type: c.source_type` to both. Verified via Playwright React fiber: results now carry `type: "case_chunk"` / `type: "secondary_source"`. `authority_synthesis` chunks will render amber AUTHORITY tag correctly when they surface. Worker version 57719d21.
-
-- **Remaining tag issue noted (minor)** — `TYPE_TAGS["secondary"]` key in ResultCard.jsx doesn't match actual value `"secondary_source"` from server.py — secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` alias key to TYPE_TAGS. Logged as new KNOWN ISSUE. Court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant payloads — separate open issue.
-
 ## CHANGES THIS SESSION (session 82) — 20 April 2026
 
 - **Scraper confirmed complete** — D1 case count stable at 1,914 (identical to session 81 close); corpus extends [2005] TASSC 1 → [2026] TASSC 9; embed backlog 0; one stuck case ([2023] TASSC 6 Bob Brown Foundation, civil) unchanged and ignorable.
@@ -233,6 +221,14 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **`node --check` exposed as unreliable pre-deploy gate** — returned exit code 0 with no output on the truncated worker.js despite unclosed template literals, unterminated function call, and missing module-level close. `@babel/parser` with `sourceType: 'module'` caught it immediately. Switched pre-deploy verification to babel parse going forward. `npm run build` (rolldown production pass) also catches it — it is what surfaced the api.js truncation to Tom during this session's deploy attempt.
 - **Session 82 legislation batch-insert fix survived the truncation** — `handleUploadLegislation` at line 1218, `env.DB.batch(stmts)` call at line 1320 both present in the restored worker.js. The SCP truncation hit only the file tail, so mid-file session 82 edits were preserved. Verified via `grep -n` after restoration.
 - **Deploy successful** — UI build produced `dist/assets/index-BSsNgR53.js` (1377 kB, gzip 382 kB), wrangler uploaded 2 modified assets, worker deployed as version `1334562d-526d-432c-bdf0-ee6e201059b5` with producer/consumer bindings intact. Smoke test pending Tom on `arcanthyr.com` Library → Cases → Word search tab.
+
+## CHANGES THIS SESSION (session 84) — 20 April 2026
+
+- **SCP/CRLF hardening deployed** — `.gitattributes` added at repo root pinning `*.js`, `*.jsx`, `*.py`, `*.md`, `*.json` to `eol=lf` (commit `02b61be`). Pre-commit hook at `.git/hooks/pre-commit` runs `@babel/parser` on staged JS/JSX files; hook uses `#!/bin/bash` + null-separated `git diff -z` + `while IFS= read -r -d ''` loop — space-safe for `Arc v 4/Worker.js` paths (for f in `$STAGED` split on spaces, initial approach failed immediately).
+- **Worker.js git record fixed** — git HEAD `1e6fb23` (s83 close commit) contained s82 truncated 4527-line file; correct 4556-line s83 restoration was deployed to Cloudflare but not committed. Fixed: commit `853a56d`. `public/index.html` (unstaged from s83) committed in same batch.
+- **`node --check` retired** — SESSION RULE updated: `npm run build` (rolldown pass) is now the pre-deploy gate. `node --check` confirmed false-passing on truncated files — exit 0 with no output on file cut mid-expression.
+- **SKILL.md false alarm** — session-closer reported `arcanthyr-session-closer/SKILL.md` truncated at line 40; CC cat confirmed 94 lines, intact. No repair needed. Consistent with known session-closer false-commit pattern.
+- **File audit clean** — `api.js`, `Library.jsx`, `Upload.jsx`, `public/index.html`, `server.py`, `enrichment_poller.py` all pass tail-completeness check. No further truncation casualties beyond the three fixed in s83.
 
 ---
 
