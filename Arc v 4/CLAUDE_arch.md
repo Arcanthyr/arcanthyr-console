@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 21 April 2026 (end of session 81). Upload every session alongside CLAUDE.md.*
+*Updated: 20 April 2026 (end of session 82). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -824,6 +824,10 @@ Browse, re-read, and promote past queries without re-querying.
 
 ---
 
+### handleUploadLegislation — batch insert fix (session 82)
+
+Three frontend bugs fixed session 82: (1) api.js sent FormData/multipart — Worker expects JSON; fixed to `JSON.stringify` with `Content-Type: application/json`; (2) Upload.jsx passed `act_name` and a File object — Worker expects `title` (string) and `doc_text` (string); fixed to read file with `file.text()` then pass string fields; (3) response field was `r.result?.sections` — correct field is `r.result?.sections_parsed`. Worker-side: replaced sequential per-section INSERT loop with chunked `env.DB.batch()` (99 statements/batch) to prevent CPU timeout on large Acts.
+
 ---
 
 ### Secondary Sources Upload Pipeline
@@ -857,7 +861,6 @@ Source title uses chunk heading (not filename stem).
 - **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
 - **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
 - **Citation authority agent (xref_agent.py)** — Pass 4 LIVE as of session 81. `should_fire_pass4()` gate (keyword + bare-lookup + multi-citation rules), `AUTHORITY_PASS_ENABLED=true` in `.env.config`, 500ms timeout, dedup via `seen_ids`. AUTHORITY_KEYWORDS calibrated via 24-query probe battery: 3 false-positive topical phrases removed, 10 passive-voice forms added. Worker `[AUTHORITY ANALYSIS]` labels + systemPrompt instructions live (version 57719d21). UI: amber AUTHORITY tag in ResultCard, Library badge, AuthorityPane in ReadingPane.
-- **Sentencing Act 1997 (Tas) ingest into legislation corpus** — Corpus gap confirmed session 78 (`SELECT DISTINCT legislation_id FROM legislation_sections` returned no row). Ingest via legislation upload pipeline; priority sections: s 3–5 (sentencing purposes), s 11A (guilty plea discount), s 12 (concurrent/cumulative). Deferred to post-scrape authoring pass.
 - **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.

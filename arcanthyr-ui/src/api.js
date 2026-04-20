@@ -30,6 +30,11 @@ export const api = {
   caseAuthority: (citation)   => req('GET',  `/api/legal/case-authority?citation=${encodeURIComponent(citation)}`),
   searchByLegislation: (q, limit = 50, offset = 0) =>
     req('GET', `/api/legal/search-by-legislation?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`),
+  wordSearch: (q, limit = 30, court = null) => {
+    const params = new URLSearchParams({ q, limit: String(limit) });
+    if (court) params.set('court', court);
+    return req('GET', `/api/legal/word-search?${params.toString()}`);
+  },
   share:         (body)       => req('POST', '/api/legal/share', body),
   requeueChunks: (nexusKey)   => req('POST', '/api/admin/requeue-chunks', {}, { 'X-Nexus-Key': nexusKey }),
 
@@ -87,10 +92,11 @@ export const api = {
     return data;
   },
 
-  uploadLegislation: async (formData) => {
+  uploadLegislation: async (payload) => {
     const res = await fetch(`${BASE}/api/legal/upload-legislation`, {
       method: 'POST',
-      body: formData,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -159,7 +165,4 @@ export const api = {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    return data;
-  },
-};
+    if (!res.ok) throw new

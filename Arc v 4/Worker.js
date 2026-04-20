@@ -1310,13 +1310,14 @@ async function handleUploadLegislation(body, env) {
     new Date().toISOString()
   ).run();
 
-  // Store sections
-  for (const section of sections) {
-    await env.DB.prepare(`
-      INSERT OR IGNORE INTO legislation_sections (id, legislation_id, section_number, heading, text, part)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(section.id, section.legislation_id, section.section_number,
-      section.heading, section.text, section.part).run();
+  // Store sections — batch in chunks of 99 to stay under the D1 100-statement limit
+  const BATCH_SIZE = 99;
+  for (let i = 0; i < sections.length; i += BATCH_SIZE) {
+    const stmts = sections.slice(i, i + BATCH_SIZE).map(section =>
+      env.DB.prepare(`INSERT OR IGNORE INTO legislation_sections (id, legislation_id, section_number, heading, text, part) VALUES (?, ?, ?, ?, ?, ?)`)
+        .bind(section.id, section.legislation_id, section.section_number, section.heading, section.text, section.part)
+    );
+    await env.DB.batch(stmts);
   }
 
   return {
@@ -2075,6 +2076,105 @@ async function handleSearchByLegislation(url, env) {
     // No treatment/context column in case_legislation_refs (applied/considered/interpreted).
     // xref_agent.py should be extended to extract treatment for legislation refs.
     treatment_gap: true,
+  };
+}
+
+/* ── Word search (case_chunks_fts) ─────────────────────────────
+   Free-text keyword search over case_chunks_fts. Single-word → word match;
+   multi-word → phrase match; silent fallback to all-words-must-appear if
+   phrase returns zero. User never types Boolean operators — input is
+   sanitised and the Worker controls MATCH syntax internally.
+   Auth: none (user-facing Library route, same pattern as search-by-legislation).
+*/
+function sanitiseFtsInput(raw) {
+  // Strip FTS5 syntax characters and uppercase Boolean keywords. Users type
+  // natural words; operators are injected by the Worker when needed.
+  let s = (raw || '').toString();
+  s = s.replace(/[\"\*\^\(\)\:]/g, ' ');      // strip special chars
+  s = s.replace(/\bOR\b|\bAND\b|\bNOT\b/g, ' '); // strip uppercase Boolean keywords
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
+}
+
+async function handleWordSearch(url, env) {
+  const rawQ  = (url.searchParams.get('q') || '').trim();
+  const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit') || '30', 10), 1), 100);
+  const court = (url.searchParams.get('court') || '').trim().toLowerCase();
+
+  const cleaned = sanitiseFtsInput(rawQ);
+  if (cleaned.length < 2) {
+    return { ok: false, error: 'Query too short — please enter at least 2 characters.', cases: [], total: 0 };
+  }
+
+  const terms = cleaned.split(/\s+/).filter(Boolean);
+  if (terms.length === 0) {
+    return { ok: false, error: 'Query contained no searchable words.', cases: [], total: 0 };
+  }
+
+  // Primary pattern: phrase match (works for single word too — FTS5 treats
+  // "word" as a one-token phrase).
+  const phraseMatch = `"${terms.join(' ')}"`;
+  // Fallback pattern: all-terms-must-appear (implicit AND via space-joined
+  // tokens is actually implicit OR in FTS5 — we use explicit AND between terms).
+  const andMatch = terms.join(' AND ');
+
+  async function runQuery(ftsExpr) {
+    let sql = `
+      SELECT c.citation, c.case_name, c.court, c.case_date, c.subject_matter, c.holding,
+             snippet(case_chunks_fts, 2, '<mark>', '</mark>', '…', 24) AS snippet,
+             MIN(bm25(case_chunks_fts)) AS best_rank,
+             COUNT(*) AS match_count
+      FROM case_chunks_fts
+      JOIN cases c ON c.citation = case_chunks_fts.citation
+      WHERE case_chunks_fts MATCH ?`;
+    const params = [ftsExpr];
+    if (court) {
+      sql += ` AND LOWER(c.court) = ?`;
+      params.push(court);
+    }
+    sql += `
+      GROUP BY c.citation
+      ORDER BY best_rank
+      LIMIT ?`;
+    params.push(limit);
+    const res = await env.DB.prepare(sql).bind(...params).all();
+    return res.results || [];
+  }
+
+  let results = [];
+  let matchMode = 'phrase';
+  try {
+    results = await runQuery(phraseMatch);
+    if (results.length === 0 && terms.length > 1) {
+      // Silent fallback to all-terms-must-appear
+      const andResults = await runQuery(andMatch);
+      if (andResults.length > 0) {
+        results = andResults;
+        matchMode = 'all_words';
+      }
+    }
+  } catch (err) {
+    // Malformed FTS expression — fall back to a single-term query on the
+    // longest token to avoid returning a hard error for the user.
+    console.error('word-search primary query failed:', err);
+    try {
+      const longest = terms.sort((a, b) => b.length - a.length)[0];
+      results = await runQuery(`"${longest}"`);
+      matchMode = 'fallback_single';
+    } catch (err2) {
+      console.error('word-search fallback also failed:', err2);
+      return { ok: false, error: 'Search failed — please simplify your query.', cases: [], total: 0 };
+    }
+  }
+
+  return {
+    ok: true,
+    query: { raw: rawQ, cleaned, terms },
+    match_mode: matchMode,                   // 'phrase' | 'all_words' | 'fallback_single'
+    cases: results,
+    total: results.length,
+    has_more: results.length === limit,
+    limit,
   };
 }
 
@@ -3828,6 +3928,7 @@ export default {
         }
         else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);
         else if (action === "search-by-legislation" && request.method === "GET") result = await handleSearchByLegislation(url, env);
+        else if (action === "word-search" && request.method === "GET") result = await handleWordSearch(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
@@ -4424,32 +4525,4 @@ Rules:
             WHERE citation = ?
           `).bind(
             pass1.case_name || null,
-            pass1.judge || null,
-            Array.isArray(pass1.parties) ? pass1.parties.join(', ') : (pass1.parties || null),
-            pass1.facts || null,
-            Array.isArray(pass1.issues) ? pass1.issues.join('; ') : (pass1.issues || null),
-            citation
-          ).run();
-
-          // Split full raw_text into chunks and write to case_chunks
-          const chunks = splitIntoChunks(row.raw_text);
-          console.log(`[queue] splitting ${citation} into ${chunks.length} chunks`);
-
-          for (let i = 0; i < chunks.length; i++) {
-            const chunkId = `${citation}__chunk__${i}`;
-            await env.DB.prepare(`
-              INSERT OR IGNORE INTO case_chunks (id, citation, chunk_index, chunk_text, done, embedded)
-              VALUES (?, ?, ?, ?, 0, 0)
-            `).bind(chunkId, citation, i, chunks[i]).run();
-            await env.CASE_QUEUE.send({ type: 'CHUNK', citation, chunk_index: i, total_chunks: chunks.length });
-          }
-          console.log(`[queue] enqueued ${chunks.length} CHUNK messages for ${citation}`);
-          msg.ack();
-        }
-      } catch (e) {
-        console.error(`[queue] failed type=${type} ${citation}: ${e.message}`);
-        msg.retry();
-      }
-    }
-  },
-};
+            pass1.judge || 

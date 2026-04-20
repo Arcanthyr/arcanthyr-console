@@ -1,13 +1,13 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 21 April 2026 (end of session 81) · Supersedes all prior versions
+Updated: 20 April 2026 (end of session 82) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditionally
 
 ---
 
-## SYSTEM STATE — 21 April 2026 (end of session 81)
+## SYSTEM STATE — 20 April 2026 (end of session 82)
 
 | Component | Status |
 |---|---|
@@ -24,7 +24,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | D1 case_legislation_refs | 5,147 rows |
 | enrichment_poller | RUNNING — re-embed complete, all chunks at embedded=1 |
 | Cloudflare Queue | drained |
-| Scraper | RUNNING (status uncertain — processed_date field unreliable; check scraper.log after 11am AEST) |
+| Scraper | COMPLETE — corpus stable at 1,914 cases (back to 2005), count unchanged from session 81 close; scraper.log check confirmed no new cases |
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE · Pass 2 MatchAny criminal/mixed hard filter LIVE (all three parts complete) |
 | Stare decisis UI | LIVE |
@@ -34,12 +34,13 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
+| Sentencing Act 1997 (Tas) | 147 sections ingested · legislation_sections populated · poller [LEG] pass pending embed |
 
 ---
 
 ## OUTSTANDING PRIORITIES
 
-1. **Post-scrape authoring pass** — Q9 (guilty plea discount / Sentencing Act s 11A) and Q26 (unreasonable verdict / M v The Queen) diagnosed this session as authoring gaps but deferred until scrape-complete. Further MISS/Partial triage deferred to post-scrape baseline re-run.
+1. **Post-scrape authoring pass** — Q9 (guilty plea discount — common law doctrine, no Tasmanian statutory provision; requires secondary source authoring) and Q26 (unreasonable verdict / M v The Queen) diagnosed this session as authoring gaps but deferred until scrape-complete. Further MISS/Partial triage deferred to post-scrape baseline re-run.
 
 2. **Q14 diagnostic — why is s 37 EA not in top 3?** — Live Q14 ("leading questions examination in chief") returns [2021] TASSC 4 Hefny v Barnes at #1 (0.50), Hofer/TASCCA 11 cross-examination at #2/#3. s 37 EA legislation chunk exists in corpus but not surfacing. Not a vocabulary mismatch ("leading questions" is both statutory and practitioner term). Hypothesis: case-application chunks outscoring legislation chunk on semantic density. Diagnosis task: check s 37 EA chunk's vocabulary anchor, check whether it's being returned at any position in top 12, check whether it's being SM-penalised incorrectly. If chunk is fine but ranking is wrong, may need doctrinal authoring (practice note on leading-questions-in-chief technique) rather than retrieval tuning.
 
@@ -49,13 +50,11 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 5. **Quick Search tab (arcanthyr.com practitioner UI)** — Build plan finalised in session 73 (conversation-external — not built, see handover notes). Three phases: corpus FTS keyword search (Phase 1), AustLII external via `/fetch-page` (Phase 2 — watch for CGI slowness inherited from auslaw-mcp `search_cases` timeout issue), query_log `search_type` extension (Phase 4). Phase 3 Jade link button is gravy. Phase 5 (full-judgment fetch + reading pane with cached HTML, 30-day TTL `austlii_cache` D1 table) added as separate extension. Track 2 (remote MCP at `auslaw.arcanthyr.com`) explicitly deferred — auslaw-mcp in CC covers 90% of the use case.
 
-7. **Sentencing Act 1997 (Tas) ingest into legislation corpus** — structural gap surfaced this session during Q9 diagnosis (`SELECT DISTINCT legislation_id FROM legislation_sections` returned no Sentencing Act row). Deferred to post-scrape authoring pass. Ingest via legislation upload pipeline; verify section-level chunking covers s 11A (guilty plea discount), s 12 (concurrent/cumulative), and sentencing purposes (ss 3–5).
-
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Sentencing Act 1997 (Tas) absent from legislation_sections** — confirmed via `SELECT DISTINCT legislation_id FROM legislation_sections` audit session 78; table has no row for Sentencing Act. Q9 (guilty plea discount / s 11A) is a corpus gap, not a retrieval defect. Fix: ingest via legislation upload pipeline. Deferred to post-scrape authoring pass.
+- **Q9 (guilty plea discount) — common law only, no Tasmanian statute** — confirmed session 82: Tasmania has no codified guilty plea discount provision in the Sentencing Act 1997 (unlike NSW s 22 CSPA or Vic s 5(2)(e)). Sentencing Act now ingested (147 sections). Q9 fix requires secondary source authoring on Tasmanian common law discount methodology, not legislation upload.
 - **SCP'd file edits produce LF→CRLF git diff inflation** — session 78 Phase 2b commit `a60fa1e` showed 106 insertions / 10 deletions for a 4-line logic change because SCP of VPS-edited files to Windows converts LF line endings to CRLF. Workaround: add `.gitattributes` with `*.py text eol=lf`; or edit Python files locally and SCP up rather than down. Cosmetic issue only — logic is correct.
 - **Corpus ... placeholders — 3 of 5 resolved** — part1.md:1282 and part2.md:2415 confirmed as legal elisions (not errors) · part2.md:381 `T...` fixed to `The` · remaining 2 genuine gaps: part2.md:1167 block_023 (`...BUT see below` dangling ref) and part2.md:1957 block_028 (`[Continues with specifics...]` placeholder) — both need source material from rag_blocks/, deferred to Procedure Prompt re-ingest
 - **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
@@ -201,48 +200,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 77) — 19 April 2026
-
-- **Query expansion deployed — 26P/3Pa/2M → ≥28P/≤3Pa/0M** — Q12 MISS→PASS (s38 EA - Result after Cross-Examination #1 @ 0.6759) and Q23 MISS→PASS (secondary-chunk-12 warrant execution announcement #3 @ 0.6697). Zero P→M regressions across all 31 queries. Major collateral improvements: Q1, Q2, Q10, Q11, Q16, Q22, Q25, Q31 all showing substantially better top-3 content. Exact final count pending Tom's manual review of Q7/Q14/Q15. New snapshot: `~/retrieval_baseline_post_query_expansion.txt`.
-
-- **Implementation — GPT-4o-mini fan-out with `ThreadPoolExecutor`** — Three changes to `server.py`: (1) `import concurrent.futures` added to line-1 import; (2) `EXPANSION_SYSTEM` prompt string constant + `generate_query_variants()` function inserted after module-level constants (GPT-4o-mini, `response_format={"type":"json_object"}`, hard 3.0s timeout, returns `[]` on any failure); (3) Pass 1 replaced with fan-out: `QUERY_EXPANSION_ENABLED` env flag, `_run_pass1()` inner function, `ThreadPoolExecutor(max_workers=4)` concurrent execution, per-future try/except gather loop, `_qdrant_id`-keyed merge dict (max score per chunk), telemetry print `[+] Pass 1 fan-out: N queries, N unique chunks, top score N`. Pass 2, Pass 3, and BM25 interleave unchanged — run on original query only. `query_vector` passed directly to the original-query leg to avoid re-embedding.
-
-- **Degradation path confirmed** — When `generate_query_variants()` times out (3s hard limit), `all_queries = [query_text]` and `ThreadPoolExecutor` runs one thread — behaviour is byte-identical to pre-expansion. Observed in baseline run: ~6/31 queries fell back to original-only due to OpenAI API latency exceeding 3s; all produced valid results.
-
-- **Stale baseline file trap** — First baseline run captured to terminal (not a file) then `cp ~/retrieval_baseline_results.txt ~/retrieval_baseline_post_query_expansion.txt` was executed, which copied the stale Apr-16 file. The diff returned empty (matching session 74 canonical exactly), creating a false impression of no change. File age via `stat` exposed the trap. Fix: re-run with `bash ~/retrieval_baseline.sh > ~/retrieval_baseline_post_query_expansion.txt`. KNOWN ISSUE `Stale baseline file gotcha` remains accurate.
-
-- **Pre-condition checks passed** — `_qdrant_id` confirmed present at `hit_to_chunk` line 325 (`"_qdrant_id": str(hit.id)`) before Phase 4 apply. Per-future try/except loop required in Phase 2 diff (original list comprehension would have propagated a single leg exception and aborted the entire fan-out) — added before sign-off.
-
-- **EXPANSION_SYSTEM prompt design** — Three-variant structure: one statutory, one practitioner-shorthand, one doctrinal/textbook. Three worked examples in prompt (hostile-witness, search-warrant, bail). Prompt instructs to preserve intent and not introduce doctrines not asked about. Produces diverse enough variants to bridge the practitioner↔statutory vocabulary gap that 7 corpus-side patches across sessions 75-76 could not close.
-
-## CHANGES THIS SESSION (session 78) — 19 April 2026
-
-- **subject_matter filter Part 3 deployed — Pass 2 case_chunk query now hard-filters on subject_matter ∈ {criminal, mixed}** — All three parts of the subject_matter filter feature are now complete: Part 1 (Worker route JOIN), Part 2 (poller metadata dict + re-embed), Part 3 (server.py MatchAny on Pass 2 Qdrant query). Two-line patch to `server.py`: (1) added `MatchAny` to the `qdrant_client.models` import on line 5; (2) appended `FieldCondition(key="subject_matter", match=MatchAny(any=["criminal","mixed"]))` to the Pass 2 `must` list alongside the existing `type=case_chunk` condition on line 513. Deploy verified: syntax clean, container force-recreated, `Nexus ingest server running on port 18789`. Test query "tendency evidence significant probative value test" returned zero civil/administrative case_chunks — [2024] TASSC 55 (Tasmania v GD, criminal) confirmed passing filter.
-
-- **Citation authority agent Phase 1 — 233 authority-synthesis chunks generated and staged** — `scripts/build_authority_chunks.py` created: queries D1 `case_citations` (n≥5), pulls full citation graph and `authorities_extracted` via paginated query, extracts proposition strings per authority name, buckets treatments (followed/applied/approved/adopted, considered/discussed, distinguished/not followed), writes one `.md` file per authority to `scripts/authority-chunks-staging/`. Key constants: `SOURCE_TYPE='authority_synthesis'`, `MIN_CITATIONS=5`, `MAX_PROPS=15`, `MAX_CITING=25`. Script includes Phase 1 assertions (SOURCE_TYPE check, citation_id prefix check) and slug-collision suffix. Result: 233 chunks generated, zero assertion errors. Staged files are D1-and-Qdrant-clean until Phase 2c ingest.
-
-- **Phase 2b — isolation filters deployed before any ingest (commit `a60fa1e`)** — Three changes so normal retrieval is blind to authority_synthesis type before any chunk is ingested: (1) `enrichment_poller.py` — `SYNTHESIS_TYPES = {'authority_synthesis'}` constant added at module level; secondary_sources embed metadata dict now routes `'type': (chunk.get('source_type') if chunk.get('source_type') in SYNTHESIS_TYPES else 'secondary_source')`. (2) `server.py` Pass 1 `must_not` — added `FieldCondition(key="type", match=MatchValue(value="authority_synthesis"))` alongside quarantine filter. (3) `server.py` Pass 3 `must_not` — same addition as safety belt (Pass 3 already strict via `must=[type=secondary_source]` but defence-in-depth). Both services force-recreated and smoke-tested. Grep confirms 3 `must_not` lines in server.py post-deploy. Phase 2c (ingest via upload-corpus) parked to next session.
-
-- **Windows subprocess npx fix** — `build_authority_chunks.py` initial list-form `subprocess.run(['npx', ...])` raised `FileNotFoundError` on Windows because npx is a `.cmd` wrapper, not a `.exe`. Fixed by using string-form command with `shell=True` and escaping SQL double-quotes with `sql.replace('"', '\\"')`. List-form + `shell=True` was rejected because it mis-parses quoted SQL arguments on Windows cmd.
-
-- **LF→CRLF git diff inflation** — commit `a60fa1e` (4-line logic change to enrichment_poller.py + server.py) showed 106 insertions / 10 deletions because SCP of VPS-edited files to Windows converts LF endings to CRLF, producing whitespace-only diffs on every unchanged line. Logic correct; cosmetic only. Added to KNOWN ISSUES with `.gitattributes` workaround.
-
-- **D1 Sentencing Act gap confirmed** — `SELECT DISTINCT legislation_id FROM legislation_sections` returned no Sentencing Act 1997 (Tas) row. Q9 (guilty plea discount / s 11A) diagnosed as authoring gap, not retrieval defect. Deferred to post-scrape authoring pass alongside Q26. Added to KNOWN ISSUES and OUTSTANDING PRIORITIES.
-
-## CHANGES THIS SESSION (session 79) — 20 April 2026
-
-- **Phase 2c complete — 233 authority_synthesis chunks ingested clean across all six verification gates** — D1 collision check clean (0 pre-existing `authority-%` IDs); 233/233 rows written with `source_type='authority_synthesis'`, `enriched=1`, populated `raw_text`; Qdrant payload `type='authority_synthesis'` confirmed on two independent spot-checks at opposite ends of the alphabet (`authority-ab-v-the-queen`, `authority-attorney-general-v-b`), both showing correct `build_secondary_embedding_text()` vocabulary anchor prepend (`Key terms: ...`); poller auto-embedding without manual flag flip (climbed 7 → 50 → 95 → 233 over the session tail). Phase 2b isolation gate confirmed firing end-to-end — chunks blocked from Pass 1 / Pass 3 normal retrieval by the `must_not={type=authority_synthesis}` filter, reachable only via the yet-to-be-built Phase 3 Pass 4 leg.
-
-- **New script `scripts/ingest_authority_chunks.py` — 61-line dedicated ingest path for authority-synthesis chunks** — reads each staged `.md` file as a single atomic chunk, regex-extracts `[CITATION:]` / `[TITLE:]` / `[CATEGORY:]` from metadata block, hardcodes `doc_type='authority_synthesis'` (since `build_authority_chunks.py` omits `[TYPE:]`), POSTs to `/api/legal/upload-corpus` with the Mozilla User-Agent spoof, supports `--limit N` flag for dry-run testing. Decision rationale (see CLAUDE_decisions.md): dedicated script chosen over (a) fixing `build_authority_chunks.py` to emit ingest-ready format + extending `ingest_corpus.py` for a third block type, because the staged files were structurally valid, regen would burn tokens, authority chunks are a genuinely distinct content type warranting their own ingest path, and blast radius stays minimal.
-
-- **Material structural mismatch caught at recon — Phase 1 output did not match `ingest_corpus.py` format** — three independent issues: `[TYPE:]` field absent across all 233 files (would have left `source_type=null` and defeated the Phase 2b `SYNTHESIS_TYPES` gate); no `<!-- block_NNN -->` separator; metadata-before-heading order inverted. Caught by a single CC recon step (file heads + grep coverage counts) before any ingest fired. Logged as an optional cleanup item for `build_authority_chunks.py` — not blocking.
-
-- **Learning — `handleUploadCorpus` now writes `enriched=1` on insert** — contradicting the `enriched=0` pattern documented in early-April conversation history. Worker was updated silently at some point. Means the originally-planned "post-insert D1 UPDATE to flip enriched" step was redundant; poller picked rows up immediately. Rule added to CLAUDE_decisions.md: don't over-trust conversation history for Worker/D1 state that mutates silently — when one MCP D1 query can settle the question, run it first.
-
-- **Learning — Cloudflare Worker burst-token-bucket rate limit on bulk ingest** — at `DELAY_SEC=0.5` (120 req/min), Worker rate-limited clusters at request positions ~#49-53 and ~#148-161 (14/233 returned 429; cluster pattern consistent with burst bucket depletion, not sustained-rate limiting). Bumping to `DELAY_SEC=1.0` (60 req/min) cleared all 14 on retry with zero residual. Rule added to CLAUDE_init.md: bulk ingest scripts targeting `/api/legal/upload-corpus` use `DELAY_SEC=1.0` from the start.
-
-- **Baseline numbers discrepancy flagged at session open — userMemories stale on retrieval baseline** — session-open prompt quoted "10P / 11P / 8M / 3 ungraded" (totals 32, not 31; matches session-51 frozen state in userMemories, not the current SYSTEM STATE `≥28P / ≤3Pa / 0M` from session 77). Flagged early; no downstream decisions landed on the stale figure. userMemories updates asynchronously — stale memory bleed is expected but worth catching when it appears in scope-setting.
-
 ## CHANGES THIS SESSION (session 80) — 20 April 2026
 
 - **Phase 3 Citation authority agent — Pass 4 gate + retrieval leg deployed in shadow mode** — `should_fire_pass4(query_text) -> (bool, reason)` function in `server.py` with three independent gate rules: (1) keyword match against `AUTHORITY_KEYWORDS` list (treatment vocabulary, citation-profile vocabulary, judicial-treatment intent phrases, and narrow topical-authority phrases); (2) bare-citation lookup — query ≤60 chars AND ≥1 CITATION_REGEX match; (3) relationship intent — ≥2 citations in query. Pass 4 `query_points` block inserted after domain filter, before final sort+cap (lines 737–771 post-edit); uses `Filter(must=[type=authority_synthesis], must_not=[quarantined=True])` with `AUTHORITY_PASS_THRESHOLD=0.50`, `AUTHORITY_PASS_LIMIT=3`, `AUTHORITY_PASS_TIMEOUT_SEC=0.5` (ThreadPoolExecutor with 500ms timeout). Dedup against `seen_ids`. `AUTHORITY_PASS_ENABLED=false` by default — gate fires and logs `[Pass 4] gate=FIRE reason=... ENABLED=false (shadow)` but skips Qdrant query. Worker version 648207f6.
@@ -264,6 +221,16 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–65) — load conditiona
 - **worker.js sources mapper fix — type and source_type now flow to frontend** — Both `handleLegalQuery` and `handleLegalQueryWorkersAI` `caseSources` mapper previously returned `{ citation, court, year, score, summary }` with no `type` field. Added `type: c.type, source_type: c.source_type` to both. Verified via Playwright React fiber: results now carry `type: "case_chunk"` / `type: "secondary_source"`. `authority_synthesis` chunks will render amber AUTHORITY tag correctly when they surface. Worker version 57719d21.
 
 - **Remaining tag issue noted (minor)** — `TYPE_TAGS["secondary"]` key in ResultCard.jsx doesn't match actual value `"secondary_source"` from server.py — secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` alias key to TYPE_TAGS. Logged as new KNOWN ISSUE. Court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant payloads — separate open issue.
+
+## CHANGES THIS SESSION (session 82) — 20 April 2026
+
+- **Scraper confirmed complete** — D1 case count stable at 1,914 (identical to session 81 close); corpus extends [2005] TASSC 1 → [2026] TASSC 9; embed backlog 0; one stuck case ([2023] TASSC 6 Bob Brown Foundation, civil) unchanged and ignorable.
+- **Legislation upload pipeline fixed — 3 bugs** — root cause was FormData/multipart vs JSON mismatch in api.js (Worker calls `request.json()` → Cloudflare returned HTML 400); also fixed field name mismatch (`act_name`/File object → `title`/`doc_text` string) and wrong response field (`sections` → `sections_parsed`). Deployed UI fix version `6dbe379f`.
+- **Worker batch insert fix** — `handleUploadLegislation` replaced sequential per-section D1 loop with chunked `env.DB.batch()` pattern (99 statements/batch) to prevent CPU timeout on large Acts. Deployed version `c2428694`. Pattern matches `handleWriteCitations`.
+- **Sentencing Act 1997 (Tas) ingested** — 147 sections in `legislation_sections`, legislation_id `sentencing-act-1997-tas`; priority sections confirmed present (s 9, s 11A, s 12, s 15, s 17). Poller [LEG] pass to embed pending.
+- **Q9 misdiagnosis corrected** — prior session diagnosis of "Sentencing Act s 11A guilty plea discount" was wrong; Tasmania has no statutory guilty plea discount. s 11A is sexual offences aggravating factors. Q9 fix requires secondary source authoring on Tasmanian common law discount doctrine.
+- **Rule 3 (multi-citation) confirmed live** — probe query "when can an appellate court interfere with a sentence that was manifestly excessive" returned 6 case chunks (0.73–0.75), synthesis aggregated correctly across citations. Rule 3 is not dead code.
+- **Upload UI helper text added** — legislation dropzone now shows "For best results, use HTML source from legislation.tas.gov.au — disable legislative history, copy the page text into a .txt file before uploading. Avoid PDFs."
 
 ---
 

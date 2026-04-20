@@ -355,3 +355,7 @@ The inflation is cosmetic — logic is correct. But it makes code review noisy a
 - POSTs to `/api/legal/upload-corpus` with Mozilla User-Agent spoof, hardcodes `doc_type='authority_synthesis'`, regex-extracts CITATION/TITLE/CATEGORY from metadata block
 - `DELAY_SEC=1.0` — established session 79. Cloudflare Worker rate-limits bulk ingest at 0.5s (120/min) in burst clusters around position ~50 and ~150. 1.0s (60/min) is clean. Do not reduce below 1.0s for bulk ingest without a >500-chunk benchmark run.
 - The script prints a footer line suggesting an `UPDATE secondary_sources SET enriched=1 ...` query — this is dead instruction for the upload-corpus path (Worker now sets enriched=1 on INSERT). Ignore the footer.
+
+**Legislation upload format (session 82):** Always use HTML source from legislation.tas.gov.au with legislative history disabled, saved as .txt. PDF uploads risk pagination artifacts corrupting section boundary detection. History-on versions pollute embeddings with amendment reference numbers.
+
+**Q9 / guilty plea discount:** Tasmania has no statutory provision. s 11A Sentencing Act 1997 is sexual offences aggravating factors, not guilty plea discount. The discount is common law only — fix via secondary source authoring.

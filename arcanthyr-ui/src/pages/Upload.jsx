@@ -459,14 +459,15 @@ function LegislationTab() {
     if (!actName || !file) return;
     setUploading(true);
     setResult('');
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('act_name', actName);
-    fd.append('jurisdiction', jurisdiction);
-    if (sourceUrl) fd.append('source_url', sourceUrl);
     try {
-      const r = await api.uploadLegislation(fd);
-      setResult(`✓ ${r.result?.sections || 'Uploaded'} sections ingested`);
+      const doc_text = await file.text();
+      const r = await api.uploadLegislation({
+        doc_text,
+        title: actName,
+        jurisdiction,
+        ...(sourceUrl ? { source_url: sourceUrl } : {}),
+      });
+      setResult(`✓ ${r.result?.sections_parsed || 'Uploaded'} sections ingested`);
       setActName(''); setSourceUrl(''); setFile(null);
     } catch (e) {
       setResult(`Error: ${e.message}`);
@@ -500,6 +501,9 @@ function LegislationTab() {
         }}
       >
         {file ? file.name : dragging ? 'Drop file here' : 'Drag & drop PDF or TXT here, or click to browse'}
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: 1.5 }}>
+        For best results, use HTML source from legislation.tas.gov.au — disable legislative history, copy the page text into a .txt file before uploading. Avoid PDFs.
       </div>
       <input ref={fileRef} type="file" accept=".pdf,.txt" onChange={e => setFile(e.target.files[0])} style={{ display: 'none' }} />
       <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>

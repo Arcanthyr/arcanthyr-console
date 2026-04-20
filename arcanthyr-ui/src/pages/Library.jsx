@@ -218,12 +218,19 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
   const [yearFilter, setYearFilter] = useState([]);
 
   // Legislation section search state
-  const [searchMode, setSearchMode] = useState('name');     // 'name' | 'legislation'
+  const [searchMode, setSearchMode] = useState('name');     // 'name' | 'legislation' | 'word'
   const [legQuery, setLegQuery] = useState('');
   const [legResults, setLegResults] = useState(null);       // null = not searched yet
   const [legLoading, setLegLoading] = useState(false);
   const [legOffset, setLegOffset] = useState(0);
   const [legHasMore, setLegHasMore] = useState(false);
+
+  // Word search state
+  const [wordQuery, setWordQuery] = useState('');
+  const [wordResults, setWordResults] = useState(null);     // null = not searched yet
+  const [wordLoading, setWordLoading] = useState(false);
+  const [wordMatchMode, setWordMatchMode] = useState(null); // 'phrase' | 'all_words' | 'fallback_single'
+  const [wordHasMore, setWordHasMore] = useState(false);
 
   const courts = [...new Set(rows.map(r => r.court).filter(Boolean))].sort();
   const years  = [...new Set(rows.map(r => r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0]).filter(Boolean))].sort().reverse();
@@ -256,6 +263,10 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     setLegQuery('');
     setLegOffset(0);
     setLegHasMore(false);
+    setWordResults(null);
+    setWordQuery('');
+    setWordMatchMode(null);
+    setWordHasMore(false);
   }
 
   async function runLegSearch(q, offset = 0) {
@@ -275,6 +286,25 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     }
   }
 
+  async function runWordSearch(q) {
+    if (!q.trim()) return;
+    setWordLoading(true);
+    try {
+      const r = await api.wordSearch(q, 30);
+      const payload = r.result ?? r;
+      setWordResults(payload.cases || []);
+      setWordMatchMode(payload.match_mode || null);
+      setWordHasMore(payload.has_more || false);
+    } catch (e) {
+      console.error('Word search failed:', e);
+      setWordResults([]);
+      setWordMatchMode(null);
+      setWordHasMore(false);
+    } finally {
+      setWordLoading(false);
+    }
+  }
+
   return (
     <>
       {/* Search mode toggle */}
@@ -284,6 +314,9 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
         </button>
         <button onClick={() => handleModeSwitch('legislation')} style={modeBtnStyle(searchMode === 'legislation')}>
           Legislation section
+        </button>
+        <button onClick={() => handleModeSwitch('word')} style={modeBtnStyle(searchMode === 'word')}>
+          Word search
         </button>
       </div>
 
@@ -362,7 +395,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
             }}
           />
         </>
-      ) : (
+      ) : searchMode === 'legislation' ? (
         /* ── Legislation section search ── */
         <div>
           <form
@@ -416,6 +449,64 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
                   {legLoading ? 'Loading…' : 'Load more'}
                 </button>
               )}
+            </>
+          )}
+        </div>
+      ) : (
+        /* ── Word search ── */
+        <div>
+          <form
+            onSubmit={e => { e.preventDefault(); runWordSearch(wordQuery); }}
+            style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}
+          >
+            <input
+              value={wordQuery}
+              onChange={e => setWordQuery(e.target.value)}
+              placeholder="e.g. restraint order, unlawful search, significant probative value"
+              style={{ flex: 1, padding: '8px 12px', fontSize: '13px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', boxSizing: 'border-box' }}
+            />
+            <button
+              type="submit"
+              disabled={wordLoading || !wordQuery.trim()}
+              style={{ padding: '8px 18px', fontSize: '13px', background: 'rgba(74,158,255,0.15)', border: '1px solid #4A9EFF', borderRadius: '4px', color: '#4A9EFF', cursor: 'pointer', whiteSpace: 'nowrap', opacity: (wordLoading || !wordQuery.trim()) ? 0.5 : 1 }}
+            >
+              {wordLoading ? 'Searching…' : 'Search'}
+            </button>
+          </form>
+
+          {wordResults === null && !wordLoading && (
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
+              Free-text keyword search across the case corpus. Type a word or short phrase — multi-word queries are matched as a phrase first, then relaxed if nothing is found.
+            </div>
+          )}
+
+          {wordResults !== null && !wordLoading && wordResults.length === 0 && (
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
+              No cases found containing that text.
+            </div>
+          )}
+
+          {wordResults !== null && wordResults.length > 0 && (
+            <>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
+                {wordResults.length} case{wordResults.length !== 1 ? 's' : ''}{wordHasMore ? '+' : ''}
+                {wordMatchMode === 'all_words' && (
+                  <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                    · no exact-phrase matches; showing cases mentioning all words
+                  </span>
+                )}
+                {wordMatchMode === 'fallback_single' && (
+                  <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                    · partial match on longest term
+                  </span>
+                )}
+              </div>
+              <WordSearchResultsTable
+                results={wordResults}
+                rows={rows}
+                onSelect={onSelect}
+                selectedId={selectedId}
+              />
             </>
           )}
         </div>
@@ -675,6 +766,67 @@ function LegislationResultsTable({ results, rows, onSelect, selectedId }) {
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                 {r.holding || '—'}
               </div>
+            </td>
+          </tr>
+        );
+      }}
+    />
+  );
+}
+
+/* Renders an FTS snippet containing <mark>…</mark> tags as React spans.
+   No dangerouslySetInnerHTML — we split the string and wrap matches in <strong>.
+   Any other HTML-like characters are treated as literal text. */
+function renderSnippet(snippet) {
+  if (!snippet) return null;
+  const parts = snippet.split(/(<mark>.*?<\/mark>)/g);
+  return parts.map((part, i) => {
+    const m = part.match(/^<mark>(.*?)<\/mark>$/);
+    if (m) return <strong key={i} style={{ background: 'rgba(255,208,120,0.35)', color: 'var(--text-primary)', padding: '0 2px', borderRadius: '2px', fontWeight: 600 }}>{m[1]}</strong>;
+    return <span key={i}>{part}</span>;
+  });
+}
+
+function WordSearchResultsTable({ results, rows, onSelect, selectedId }) {
+  function selectRow(r) {
+    const full = rows.find(x => (x.ref || x.citation) === r.citation);
+    onSelect(full || { ...r, ref: r.citation, title: r.case_name, date: r.case_date });
+  }
+
+  return (
+    <Table
+      cols={['Citation', 'Case', 'Court', 'Year', 'Match']}
+      rows={results}
+      renderRow={r => {
+        const isSelected = r.citation === selectedId || r.citation === (rows.find(x => x.id === selectedId)?.ref);
+        return (
+          <tr
+            key={r.citation}
+            onClick={() => selectRow(r)}
+            style={{
+              cursor: 'pointer',
+              background: isSelected ? 'var(--surface-hover)' : 'transparent',
+              borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
+            }}
+          >
+            <td style={tdMono}>{r.citation}</td>
+            <td style={td}>
+              <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
+              {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
+            </td>
+            <td style={td}>{courtTag(r.court)}</td>
+            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+              {r.case_date?.slice(0, 4) || '—'}
+            </td>
+            <td style={{ ...td, maxWidth: '420px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--text-body)', lineHeight: 1.5 }}>
+                {renderSnippet(r.snippet)}
+              </div>
+              {r.match_count > 1 && (
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {r.match_count} matching chunks
+                </div>
+              )}
             </td>
           </tr>
         );
