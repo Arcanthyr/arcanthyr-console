@@ -569,6 +569,13 @@ def build_case_chunk_embedding_text(enriched_text, principles_json_str):
     return enriched_text
 
 
+def build_legislation_embedding_text(act_title, section_number, heading, text):
+    """Construct embedding text with vocabulary anchor for legislation sections.
+
+    Anchor is embed-only — not written to Qdrant payload or D1.
+    """
+    anchor = f"Key terms: {act_title}; s {section_number} {heading}."
+    return f"{anchor}\n\n{text}"
 
 
 def get_embedding(text: str) -> list[float]:
@@ -963,22 +970,28 @@ def run_legislation_embedding_pass(batch: int = 5) -> dict:
         log.info(f'[LEG] Embedding {len(act_sections)} sections for: {leg_title}')
         ok = True
         for s in act_sections:
-            embed_text = f"{leg_title} — s {s.get('section_number', '')} {s.get('heading', '')}\n{s['text']}".strip()
-            if not embed_text.strip():
+            section_id  = s['section_id']
+            section_num = s.get('section_number', '')
+            heading     = s.get('heading', '')
+            raw_text    = s['text']
+            if not raw_text.strip():
                 continue
+            anchor     = f"Key terms: {leg_title}; s {section_num} {heading}."
+            embed_text = build_legislation_embedding_text(leg_title, section_num, heading, raw_text)
+            log.info(f"[EMBED_ANCHOR] {section_id} | anchor: {anchor} | total_len: {len(embed_text)}")
             metadata = {
                 'leg_id':         leg_id,
                 'leg_title':      leg_title,
-                'section_id':     s['section_id'],
-                'section_number': s['section_number'],
-                'heading':        s['heading'],
-                'text':           embed_text[:3000],
+                'section_id':     section_id,
+                'section_number': section_num,
+                'heading':        heading,
+                'text':           raw_text[:3000],
                 'type':           'legislation'
             }
             try:
                 vector = get_embedding(embed_text)
-                upsert_qdrant(s['section_id'], vector, metadata)
-                log.info(f"[EMBED_LEG] leg_title={leg_title[:60]} section={s.get('section_number', '')}")
+                upsert_qdrant(section_id, vector, metadata)
+                log.info(f"[EMBED_LEG] leg_title={leg_title[:60]} section={section_num}")
                 total_embedded += 1
             except Exception as e:
                 log.error(f'[LEG] ERROR on section {s["section_number"]}: {e}')

@@ -363,3 +363,9 @@ The inflation is cosmetic — logic is correct. But it makes code review noisy a
 ## Session 84 — Pre-commit hook (20 April 2026)
 
 Pre-commit hook lives at `arcanthyr-console/.git/hooks/pre-commit` (not tracked by git — `.git/` is excluded). If lost (fresh clone, OS reinstall), recreate manually: bash shebang, `git diff --cached -z --name-only --diff-filter=ACM | grep -zE '\.(js|jsx)$'` piped to `while IFS= read -r -d '' f` loop, runs `node -e` babel parse on each file, exits 1 on failure. `NODE_PATH` must point to `arcanthyr-ui/node_modules` (that is where `@babel/parser` is installed). Space-safe by design — required for `Arc v 4/Worker.js`.
+
+### Embed backlog queries (session 90)
+
+| Gate | Correct query |
+|---|---|
+| legislation embed backlog | `legislation.embedded` (Act-level flag) is the correct gate — `SELECT title, embedded FROM legislation`. `legislation_sections.embedding_model IS NULL` count is unreliable: Stage 1+2 sections were embedded before that column was being written; the 1,731 NULL count seen session 90 is noise. Poller [LEG] pass reads `legislation.embedded=0` at Act level, not the section-level column. |

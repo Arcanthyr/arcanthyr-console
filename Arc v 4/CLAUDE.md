@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 21 April 2026 (end of session 89) · Supersedes all prior versions
+Updated: 21 April 2026 (end of session 90) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–87) — load conditionally
 
 ---
 
@@ -14,7 +14,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditiona
 | Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79 |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
-| D1 secondary_sources | 1,445 total (233 authority_synthesis added session 79; 8 new corpus chunks added session 89) · embedded=0: 20 (10 s38 EA chunks re-queued session 88; 8 new session 89 chunks pending embed; 2 orphaned Nexus saves) |
+| D1 secondary_sources | 1,448 total (Q9 guilty plea discount chunk, Q26 unreasonable verdict chunk, Q14 s37 EA doctrine chunk added session 90) · embedded=0: 23 (20 carried forward + 3 new session 90 chunks pending embed) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
@@ -22,7 +22,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditiona
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
-| enrichment_poller | RUNNING — 20 secondary source chunks pending embed (10 s38 EA re-queued session 88; 8 new corpus chunks session 89; 2 orphaned Nexus saves) |
+| enrichment_poller | RUNNING — 23 secondary source chunks pending embed · legislation Stage 3 embed in progress (459 sections: Sentencing Act 147 + Youth Justice Act 216 + Justices Rules 96) |
 | Cloudflare Queue | drained |
 | Scraper | COMPLETE — corpus stable at 1,914 cases (back to 2005), count unchanged from session 81 close; scraper.log check confirmed no new cases |
 | arcanthyr.com | Live |
@@ -34,15 +34,13 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditiona
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · two-step search pattern documented |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
-| Sentencing Act 1997 (Tas) | 147 sections ingested · legislation_sections populated · poller [LEG] pass pending embed · source_url populated · legislation table source_url now populated for Sentencing Act + 5 backfilled Acts |
+| Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) embed in progress · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
 
 ---
 
 ## OUTSTANDING PRIORITIES
 
-2. **Post-scrape authoring pass** — Q9 (guilty plea discount — common law doctrine, no Tasmanian statutory provision; requires secondary source authoring) and Q26 (unreasonable verdict / M v The Queen) diagnosed this session as authoring gaps but deferred until scrape-complete. Further MISS/Partial triage deferred to post-scrape baseline re-run.
-
-3. **Q14 diagnostic — why is s 37 EA not in top 3?** — Live Q14 ("leading questions examination in chief") returns [2021] TASSC 4 Hefny v Barnes at #1 (0.50), Hofer/TASCCA 11 cross-examination at #2/#3. s 37 EA legislation chunk exists in corpus but not surfacing. Not a vocabulary mismatch ("leading questions" is both statutory and practitioner term). Hypothesis: case-application chunks outscoring legislation chunk on semantic density. Diagnosis task: check s 37 EA chunk's vocabulary anchor, check whether it's being returned at any position in top 12, check whether it's being SM-penalised incorrectly. If chunk is fine but ranking is wrong, may need doctrinal authoring (practice note on leading-questions-in-chief technique) rather than retrieval tuning.
+3. **Q14 — verify post-embed** — doctrine chunk (manual-b4135-chunk) rewritten with full prose (3,794 chars) and queued for re-embed session 90. Legislation anchor on s 37 EA pulled correct topic to #1 (displacing wrong-topic tendency chunk). Verify once poller embeds updated chunk: s 37 EA and doctrine chunk should both surface in top 3 for "leading questions examination in chief".
 
 6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
 
@@ -60,6 +58,8 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditiona
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
 - **subject_matter audit — COMPLETE session 89** — Full misclassification audit run: all subject_matter != 'criminal' cases with criminal party name patterns (R v, Tasmania v, Police v). 11 rows returned, 0 genuine misclassifications found — Pilling entries correctly administrative (workers comp); R v [Tribunal] entries correctly administrative (judicial review); three bare R v [surname] entries (Trustrum, Holman, Haley) confirmed civil contempt proceedings. Rattigan classification corrected to criminal session 89. Audit clean — safe to proceed with Option A Qdrant re-embed when ready.
+- **legislation.embedded is canonical embed gate** — `legislation_sections.embedding_model` is unreliable for Stage 1+2 sections (embedded before that column was being written by the poller). Do not use section-level column as backlog indicator. Correct query: `SELECT title, embedded FROM legislation` — Act-level flag is authoritative. The 1,731 `embedding_model IS NULL` count seen session 90 is noise, not backlog.
+- **Synthesis feedback loop — parked** — build plan exists at `SYNTHESIS_FEEDBACK_LOOP_BUILD_PLAN.md`, `approved` column on `secondary_sources` exists (session 68), `POST /api/pipeline/feedback` route live (session 68). Steps 2–9 unbuilt. Decision session 90: park until corpus growth stabilises. Rationale: corpus still growing, six-file build non-trivial for current value, saved answers would be superseded by better source material. Revisit when scraper is no longer adding large batches regularly.
 - **update-secondary-raw silent success — FIXED session 89** — Handler was returning { ok: true, updated: 0 } when the UPDATE matched zero rows instead of a proper 404. Fixed to return HTTP 404 { ok: false, error: "not found" } on meta.changes === 0. Route works correctly when id is sourced from the fetch-secondary-raw API response. The original KNOWN ISSUES diagnosis (spaces in IDs causing routing failure) was incorrect — the 404s during session 88 were from hand-typed ID mismatches during manual testing.
 - **FTS5 backfill complete** — 1,171 rows · session 13
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
@@ -199,17 +199,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 87) — 21 April 2026
-
-- **Legislative Amendment History feature** — new Worker routes `GET /api/legal/amendments?act=act-YYYY-NNN` (fetches CCL projectdata API, 30-day D1 cache in `tbl_amendment_cache`) and `GET /api/legal/resolve-act?name=...` (Act name → actId, writes `source_url` back to `legislation` table on first resolution)
-- **AmendmentPanel.jsx** — collapsible panel showing full amendment timeline for any Tasmanian Act; Principal Act pinned with blue badge; per-amendment action button; lazy-loads on first expand; commit `f97a53e`
-- **Feature relocated to Legislation tab** — removed from case reading pane (legislation_extracted restored to plain list); wired into LegislationTable as inline detail panel on row click; `actIdFromSourceUrl()` parses act-YYYY-NNN from source_url; `handleLibraryList` updated to include source_url in legislation SELECT; commit `7634fa2`
-- **"Locate Hansard ↗" button** — replaced broken direct slug links with `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"` after confirming parliament.tas.gov.au migrated to slug-based URLs incompatible with numeric construction; button relabelled from "Second reading ↗"; commit `c0e277f`
-- **source_url backfill** — 5 priority Acts updated in `legislation` table: Evidence Act 2001 (`act-2001-076`), Criminal Code Act 1924 (`act-1924-069`), Justices Act 1959 (`act-1959-077`), Misuse of Drugs Act 2001 (`act-2001-094`), Police Offences Act 1935 (`act-1935-044`)
-- **Self-healing resolution** — `resolve-act` route writes `source_url` back to D1 on first use; new Acts added to corpus require no manual backfill; resolve-act is primary path, source_url is cache acceleration
-
----
-
 ## CHANGES THIS SESSION (session 88) — 21 April 2026
 
 - **s38 EA CONCEPTS hygiene complete** — 10 `Evidence Act 2001 (Tas) s 38 -` secondary source chunks prepended with `[CONCEPTS:]`, `[TOPIC:]`, `[JURISDICTION:]` headers via direct D1 updates (bypassed broken `update-secondary-raw` Worker route); all 10 reset to `embedded=0` for poller re-embed; Bucket 2 item struck from OUTSTANDING PRIORITIES
@@ -230,6 +219,18 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditiona
 - **update-secondary-raw diagnosis closed** — root cause of session 88 404s confirmed as hand-typed ID mismatches during manual testing, not a routing or encoding bug; silent-success bug (returning `{ ok: true, updated: 0 }` on no-match) fixed to proper HTTP 404; KNOWN ISSUES entry corrected
 - **Subject_matter audit complete** — full audit of all non-criminal cases with criminal party name patterns run via auslaw-mcp; 11 rows checked; 0 genuine misclassifications; Tasmania v Rattigan [2021] TASSC 28 corrected administrative → criminal, 8 case chunks reset embedded=0 for re-embed; audit documented as clean
 - **Corpus additions — 8 new secondary source chunks** — block_023 (MDA s 29 prescribed belief, MDA evidentiary/possession/schedules, Youth Justice Act responsibility/diversion, Youth Justice Act joint charges/procedure) and block_028 (FV victim opinion/forgiveness, FV s 29A serial perpetrator declaration, FV aggravating children presence, FVO consent orders/jurisdiction) formatted and uploaded via console paste path
+
+---
+
+## CHANGES THIS SESSION (session 90) — 21 April 2026
+
+- **Legislation vocabulary anchor — full deployment** — New `build_legislation_embedding_text()` function in poller [LEG] pass prepends `Key terms: {act_title}; s {section_number} {heading}.` before every legislation section embed. Opus-designed, minimal format, whitelist-agnostic. Permanent — all future legislation uploads anchor automatically.
+- **Stage 1 (Evidence Act, 245 sections) re-embedded** — Q14 topic fixed (wrong-topic tendency chunk displaced); Q6, Q11, Q12, Q13 score improvements confirmed. Zero P→M regressions across 31-query baseline.
+- **Stage 2 (Criminal Code 468, MDA 253, Justices Act 163, Police Offences 143 — 1,027 sections) re-embedded** — Q6 structural improvement confirmed (all 3 positions correctly cite s 46 Criminal Code). Q21 improvement attributed to query expansion variance (Sentencing Act not yet re-embedded at Stage 2). Zero regressions.
+- **Stage 3 (Sentencing Act 147, Youth Justice Act 216, Justices Rules 96 — 459 sections) embed initiated** — first embed for all three Acts; no regression risk. Poller running.
+- **Q14 doctrine chunk authored** — `manual-b4135-chunk` rewritten from stub (concept list only) to full doctrine chunk: s 37 rule, five statutory exceptions, objection procedure, cross-examination distinction, s 38 relationship. 3,794 chars. Queued for re-embed.
+- **Q9 and Q26 corpus chunks authored and uploaded** — Q9: guilty plea discount (Tasmanian common law, utilitarian value + remorse, timing — no TASCCA quantum authority confirmed). Q26: unreasonable verdict / M v The Queen (Pell, SKA, Libke, circumstantial evidence — no TASCCA local authority confirmed). Both close outstanding priority #2.
+- **Synthesis feedback loop parked** — decision: do not build until corpus growth stabilises. Plan retained in repo. Rationale in decisions.md.
 
 ---
 

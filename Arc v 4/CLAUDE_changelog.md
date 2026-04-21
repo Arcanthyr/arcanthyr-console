@@ -1,9 +1,20 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–86 · 26 March 2026 – 20 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89*
+*Sessions 21–87 · 26 March 2026 – 21 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 87) — 21 April 2026
+
+- **Legislative Amendment History feature** — new Worker routes `GET /api/legal/amendments?act=act-YYYY-NNN` (fetches CCL projectdata API, 30-day D1 cache in `tbl_amendment_cache`) and `GET /api/legal/resolve-act?name=...` (Act name → actId, writes `source_url` back to `legislation` table on first resolution)
+- **AmendmentPanel.jsx** — collapsible panel showing full amendment timeline for any Tasmanian Act; Principal Act pinned with blue badge; per-amendment action button; lazy-loads on first expand; commit `f97a53e`
+- **Feature relocated to Legislation tab** — removed from case reading pane (legislation_extracted restored to plain list); wired into LegislationTable as inline detail panel on row click; `actIdFromSourceUrl()` parses act-YYYY-NNN from source_url; `handleLibraryList` updated to include source_url in legislation SELECT; commit `7634fa2`
+- **"Locate Hansard ↗" button** — replaced broken direct slug links with `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"` after confirming parliament.tas.gov.au migrated to slug-based URLs incompatible with numeric construction; button relabelled from "Second reading ↗"; commit `c0e277f`
+- **source_url backfill** — 5 priority Acts updated in `legislation` table: Evidence Act 2001 (`act-2001-076`), Criminal Code Act 1924 (`act-1924-069`), Justices Act 1959 (`act-1959-077`), Misuse of Drugs Act 2001 (`act-2001-094`), Police Offences Act 1935 (`act-1935-044`)
+- **Self-healing resolution** — `resolve-act` route writes `source_url` back to D1 on first use; new Acts added to corpus require no manual backfill; resolve-act is primary path, source_url is cache acceleration
 
 ---
 

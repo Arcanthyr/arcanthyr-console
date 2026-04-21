@@ -859,6 +859,7 @@ Source title uses chunk heading (not filename stem).
 
 *Canonical location for all roadmap items. CLAUDE.md carries only OUTSTANDING PRIORITIES (current sprint). This section is reconciled at session close — completed items removed, new items added.*
 
+- **Stage 3 legislation embed — verify complete** — Sentencing Act (147), Youth Justice Act (216), Justices Rules (96) embed initiated session 90. Confirm `SELECT title, embedded FROM legislation` shows all three at embedded=1 before next session. No baseline re-run needed (zero prior Qdrant presence).
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
 - **Retrieval regression fixes (session 64 — remaining steps deferred):**
   - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
@@ -923,7 +924,6 @@ Live TTS (query responses read aloud) routes: Browser → Worker `/api/tts` → 
 
 Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge interface `br-09b8cf509a2d` for port 18083. Rule persisted in `/etc/iptables/rules.v4`.
 
-- **TTS**: MOSS-TTS replaced session 60 with OpenAI TTS API (`tts-1`, onyx/nova voices). Static MP3 replacement planned next session — `/tts` route and Worker proxy will be removed entirely once static files deployed.
 
 ### server.py /search top_k cap
 

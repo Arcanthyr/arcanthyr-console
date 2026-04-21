@@ -3948,3 +3948,17 @@ HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No j
 **update-secondary-raw diagnosis** — The route reads `id` from JSON body and uses a parameterized query; spaces in IDs are handled correctly. Session 88 404s were hand-typed ID mismatches. The silent `{ ok: true, updated: 0 }` on no-match was a separate bug (now fixed). The route works correctly when IDs are sourced from the fetch-secondary-raw API response, as enrich_concepts.py does.
 
 **Corpus block formatting approach** — Raw practitioner notes formatted into corpus chunks manually (Claude.ai) rather than via the GPT format-and-upload path, to ensure doctrinal accuracy and correct vocabulary anchors in CONCEPTS fields. Suitable for small batches of known-good source material. GPT path remains correct for bulk or third-party source uploads.
+
+## Session 90 decisions — 21 April 2026
+
+> **Legislation vocabulary anchor — Opus-designed format (session 90)**
+> Uniform minimal format: `Key terms: {act_title}; s {section_number} {heading}.\n\n{raw_text}`. Prepend only, embed-only (not written back to D1 or Qdrant payload). Whitelist-agnostic — SM penalty and anchor are orthogonal. No part/division field included (unpopulated in D1 for all current Acts). No variation by section length — branching adds complexity with no benefit; short-section filter in Pass 1 already handles sub-200-char sections. Session 76 rule binds: anchor stabilises, does not inject. Every token in anchor already in section's domain.
+
+> **Stage 1 → Stage 2 → Stage 3 reset sequence (session 90)**
+> Evidence Act re-embedded first (Stage 1, 245 sections) to validate anchor format against known target query (Q14) before applying to remaining corpus. Stage 1 baseline confirmed zero regressions → Stage 2 (1,027 sections) reset and re-embedded → Stage 2 baseline confirmed zero structural regressions (Q21 improvement attributed to query expansion variance, not Stage 2 anchors — Sentencing Act deferred to Stage 3). Stage 3 (459 sections, first embed) initiated. Correct reset gate: `legislation.embedded` Act-level flag, not `legislation_sections.embedding_model` (unreliable — Stage 1+2 sections embedded before that column was written).
+
+> **Synthesis feedback loop — parked (session 90)**
+> Decision: do not build. Rationale: corpus still growing at volume; saved answers built from incomplete source material would be superseded by better retrieval as scraper continues; six-file build (worker.js, enrichment_poller.py, server.py, Research.jsx, Library.jsx, api.js) non-trivial for value that is additive not multiplicative at current corpus size; dedupe suppression means saved answers would stop surfacing anyway as underlying chunks improve. The `approved` column (session 68) and `POST /api/pipeline/feedback` route (session 68) are retained as partial infrastructure. Revisit when scraper stops adding large batches regularly and retrieval quality is stable.
+
+> **Q9 and Q26 authoring approach (session 90)**
+> Chunks authored without confirmed TASCCA authority on quantum (Q9) or local application (Q26). Honest gaps noted in chunk text rather than citing unverified interstate benchmarks or fabricating local authority. Pattern: author the doctrine accurately, flag the gap explicitly in the chunk body, supplement later if TASCCA authority surfaces via scraper or manual review using update-secondary-raw.
