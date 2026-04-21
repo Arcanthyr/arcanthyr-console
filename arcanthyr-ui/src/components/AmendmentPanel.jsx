@@ -120,7 +120,7 @@ function AmendmentRow({ a, isFirst }) {
     actionBtn = (
       <a href={a.billPageUrl} target="_blank" rel="noopener noreferrer"
         style={{ fontSize: '11px', color: 'var(--accent)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-        Second reading ↗
+        Locate Hansard ↗
       </a>
     );
   } else if (a.hasBillPage && a.hasSecondReading === 'maybe') {
@@ -128,7 +128,7 @@ function AmendmentRow({ a, isFirst }) {
       <a href={a.billPageUrl} target="_blank" rel="noopener noreferrer"
         title="Second reading PDF may not be available for pre-2005 bills"
         style={{ fontSize: '11px', color: 'var(--accent)', textDecoration: 'none', whiteSpace: 'nowrap', borderBottom: '1px dashed var(--accent)' }}>
-        Second reading ↗
+        Locate Hansard ↗
       </a>
     );
   } else {

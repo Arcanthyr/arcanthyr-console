@@ -2297,10 +2297,8 @@ async function handleAmendments(url, env) {
 
       const yearInt = parseInt(sourceYear);
       const numInt  = parseInt(sourceActNo);
-      // Direct bill slug URLs (Bills2002/N_of_2002.html) frequently 404 for older bills.
-      // Link to the year's index instead; a proper fix requires fetching and parsing the index.
       const billPageUrl = yearInt >= 2002
-        ? `https://www.parliament.tas.gov.au/bills/bills-introduced-into-parliament-${sourceYear}`
+        ? `https://www.google.com/search?q=site:parliament.tas.gov.au+"${numInt}+of+${sourceYear}"`
         : null;
 
       amendments.push({
