@@ -1,13 +1,13 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 20 April 2026 (end of session 86) · Supersedes all prior versions
+Updated: 21 April 2026 (end of session 87) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditionally
 
 ---
 
-## SYSTEM STATE — 20 April 2026 (end of session 86)
+## SYSTEM STATE — 21 April 2026 (end of session 87)
 
 | Component | Status |
 |---|---|
@@ -21,7 +21,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditiona
 | Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
-| D1 case_legislation_refs | 5,147 rows |
+| D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — re-embed complete, all chunks at embedded=1 |
 | Cloudflare Queue | drained |
 | Scraper | COMPLETE — corpus stable at 1,914 cases (back to 2005), count unchanged from session 81 close; scraper.log check confirmed no new cases |
@@ -34,7 +34,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditiona
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
-| Sentencing Act 1997 (Tas) | 147 sections ingested · legislation_sections populated · poller [LEG] pass pending embed |
+| Sentencing Act 1997 (Tas) | 147 sections ingested · legislation_sections populated · poller [LEG] pass pending embed · source_url populated · legislation table source_url now populated for Sentencing Act + 5 backfilled Acts |
 
 ---
 
@@ -82,6 +82,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditiona
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
 - **Qdrant court field frequently empty on case_chunk payloads** — `court: ""` confirmed on case_chunk results via Playwright fiber inspection sessions 80–81. Mapper fix (session 81) now passes `type` through, so `authority_synthesis` renders amber AUTHORITY and `case_chunk` renders raw type string as fallback label — court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant. Investigate whether scraper writes court into Qdrant payload at ingest or only D1 `cases.court`.
 - **TYPE_TAGS key mismatch for secondary sources** — `TYPE_TAGS["secondary"]` in ResultCard.jsx but actual type value from server.py is `"secondary_source"`. Secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` as alias key in TYPE_TAGS. Low priority — cosmetic only.
+- **Parliament.tas.gov.au bill page URLs — slug format unresolvable from Act number** — `billPageUrl` in `handleAmendments` cannot construct a direct bill page URL because parliament.tas.gov.au uses title-derived slugs (e.g. `/bills/bills2025/justice-miscellaneous-reporting-procedures-bill-2025-10-of-2025`) not numeric paths. Current workaround: "Locate Hansard ↗" button links to `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"`. Proper fix requires fetching the year index page and matching by bill number — deferred.
 
 ---
 
@@ -201,16 +202,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 84) — 20 April 2026
-
-- **SCP/CRLF hardening deployed** — `.gitattributes` added at repo root pinning `*.js`, `*.jsx`, `*.py`, `*.md`, `*.json` to `eol=lf` (commit `02b61be`). Pre-commit hook at `.git/hooks/pre-commit` runs `@babel/parser` on staged JS/JSX files; hook uses `#!/bin/bash` + null-separated `git diff -z` + `while IFS= read -r -d ''` loop — space-safe for `Arc v 4/Worker.js` paths (for f in `$STAGED` split on spaces, initial approach failed immediately).
-- **Worker.js git record fixed** — git HEAD `1e6fb23` (s83 close commit) contained s82 truncated 4527-line file; correct 4556-line s83 restoration was deployed to Cloudflare but not committed. Fixed: commit `853a56d`. `public/index.html` (unstaged from s83) committed in same batch.
-- **`node --check` retired** — SESSION RULE updated: `npm run build` (rolldown pass) is now the pre-deploy gate. `node --check` confirmed false-passing on truncated files — exit 0 with no output on file cut mid-expression.
-- **SKILL.md false alarm** — session-closer reported `arcanthyr-session-closer/SKILL.md` truncated at line 40; CC cat confirmed 94 lines, intact. No repair needed. Consistent with known session-closer false-commit pattern.
-- **File audit clean** — `api.js`, `Library.jsx`, `Upload.jsx`, `public/index.html`, `server.py`, `enrichment_poller.py` all pass tail-completeness check. No further truncation casualties beyond the three fixed in s83.
-
----
-
 ## CHANGES THIS SESSION (session 85) — 20 April 2026
 
 - **Word-search bug fixed (Phase 1)** — `GET /api/legal/word-search` was silently returning 0 results since launch; two bugs: `bm25()`/`snippet()` throw `SQLITE_ERROR` in JOIN/GROUP BY context → two-query architecture (FTS-only then cases IN); D1 100 bound-variable limit hit when passing all 200 deduped citations → slice to `limit` before IN clause, court filter moved to JS. Deployed `1f230fa4`.
@@ -230,6 +221,17 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–83) — load conditiona
 - **Phase 5: inline judgment viewer** — `AustLIIResultsTable` rewritten with per-row `loadingMap`/`htmlMap` state; `extractJudgmentBody()` strips scripts/styles/nav/forms/images; `dangerouslySetInnerHTML` render in 600px serif pane; "Read ↓ / Close ↑ / Loading…" toggle; verified rendering live
 - **Phase 5 unwrap bug** — `fetchJudgment` in `api.js` read `data.ok/data.html` directly; fixed to `data.result ?? data` per standard `/api/legal/` wrapper pattern; error contract changed to throw-on-error
 - **Jade auth behaviour** — Login prompt on first click is browser-session behaviour only; once logged into Jade in Chrome the session persists; no automation needed or appropriate
+
+---
+
+## CHANGES THIS SESSION (session 87) — 21 April 2026
+
+- **Legislative Amendment History feature** — new Worker routes `GET /api/legal/amendments?act=act-YYYY-NNN` (fetches CCL projectdata API, 30-day D1 cache in `tbl_amendment_cache`) and `GET /api/legal/resolve-act?name=...` (Act name → actId, writes `source_url` back to `legislation` table on first resolution)
+- **AmendmentPanel.jsx** — collapsible panel showing full amendment timeline for any Tasmanian Act; Principal Act pinned with blue badge; per-amendment action button; lazy-loads on first expand; commit `f97a53e`
+- **Feature relocated to Legislation tab** — removed from case reading pane (legislation_extracted restored to plain list); wired into LegislationTable as inline detail panel on row click; `actIdFromSourceUrl()` parses act-YYYY-NNN from source_url; `handleLibraryList` updated to include source_url in legislation SELECT; commit `7634fa2`
+- **"Locate Hansard ↗" button** — replaced broken direct slug links with `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"` after confirming parliament.tas.gov.au migrated to slug-based URLs incompatible with numeric construction; button relabelled from "Second reading ↗"; commit `c0e277f`
+- **source_url backfill** — 5 priority Acts updated in `legislation` table: Evidence Act 2001 (`act-2001-076`), Criminal Code Act 1924 (`act-1924-069`), Justices Act 1959 (`act-1959-077`), Misuse of Drugs Act 2001 (`act-2001-094`), Police Offences Act 1935 (`act-1935-044`)
+- **Self-healing resolution** — `resolve-act` route writes `source_url` back to D1 on first use; new Acts added to corpus require no manual backfill; resolve-act is primary path, source_url is cache acceleration
 
 ---
 

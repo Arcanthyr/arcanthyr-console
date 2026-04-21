@@ -3912,3 +3912,15 @@ Using `dangerouslySetInnerHTML` to render fetched AustLII HTML is appropriate he
 
 **`austlii_cache` 800KB truncation guard**
 HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No judgment in the Tasmanian corpus is expected to approach this limit in practice; guard is defensive only.
+
+## Session 87 decisions — 21 April 2026
+
+**AmendmentPanel moved from case pane to Legislation tab** — Originally wired into the case reading pane iterating over legislation_extracted. Tom confirmed he only wants Acts/sections displayed in the case pane; the amendment history belongs on the Legislation tab where it's associated with the Act itself. UI-only move; routes and D1 unchanged.
+
+**resolve-act as primary path, source_url as cache** — Rather than requiring manual source_url population for every new Act, the resolve-act Worker route resolves live on first use and writes source_url back to D1 as a side-effect. This means new legislation added to the corpus self-registers on first use without any pipeline changes. The 5-Act backfill is an optimisation (avoids live lookup latency) not a correctness requirement.
+
+**Bill page URL strategy: Google site-search fallback** — parliament.tas.gov.au migrated to slug-based bill page URLs derived from bill titles, which cannot be reconstructed from Act number + year alone (the only data available from the projectdata API). Rather than linking to 404s or the generic bills index, the "Locate Hansard ↗" button constructs a targeted Google search (`site:parliament.tas.gov.au "N of YYYY"`) that reliably surfaces the correct bill page as the first result. Proper fix (year index scrape + bill number matching) deferred — current solution is functionally adequate.
+
+**case_legislation_refs noisy by design** — Confirmed the column stores free-text citation strings extracted by the enrichment pipeline, not structured identifiers. Format is inconsistent (leading section refs, non-Tas Acts, bare section numbers). Not a bug — the resolve-act normalization handles this at query time.
+
+**Option 3 Hansard search widget — deferred, design captured** — A proper in-panel search experience would add two buttons per amendment row: "Find bill page ↗" (Google site:search as currently implemented) and "Search Hansard ↗" linking to the Funnelback-powered `search.parliament.tas.gov.au` with the bill name pre-filled. Proposed URL format: `https://search.parliament.tas.gov.au/s/search.html?query={billName}&collection=parliament-hansard` — exact Funnelback parameters need one manual confirmation test (open the search, submit a query, copy resulting URL). No backend required — pure frontend URL construction from data already in the amendments response (`name`, `actNo`, `year`). Deferred pending Hansard URL format confirmation.

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 20 April 2026 (end of session 83). Upload every session alongside CLAUDE.md.*
+*Updated: 21 April 2026 (end of session 87). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -548,6 +548,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · 253 rows · Qdrant filter deploy held for post-baseline |
 | `synthesis_feedback` | `id` TEXT (UUID) | Query feedback — `query_id`, `chunk_id`, `feedback_type` (CHECK: helpful/unhelpful/irrelevant/hallucinated), `comment`, `created_at` · empty, ready for route wiring |
 | `austlii_cache` | `url` TEXT (PK) | Full judgment HTML cache · columns: `url` (PK), `citation`, `html`, `fetched_at` · 30-day TTL enforced on read · CF-edge fetch (VPS IP blocked by AustLII) · upsert on stale |
+| `tbl_amendment_cache` | `act_id` TEXT (PK) | Cache for legislation.tas.gov.au CCL projectdata API responses · columns: `act_id` (e.g. `act-2001-076`), `payload` (JSON), `fetched_at` · 30-day TTL · keyed on act-YYYY-NNN identifier · populated by `GET /api/legal/amendments` route |
 
 ---
 
@@ -705,6 +706,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/health-clusters` | POST | Write cluster assignments batch (run_id, run_date, assignments[]) via D1 batch() · X-Nexus-Key |
 | `/api/legal/word-search` | GET | FTS5 phrase-first word search over `case_chunks_fts` · params: `q` (sanitised, Booleans stripped), `limit` (max 50, default 30), `court` (optional filter) · returns `{ ok, match_mode, results:[{citation, case_name, court, year, match_count, snippet, best_rank}] }` · `GROUP BY citation` with `MIN(bm25)` for best-chunk snippet · silent fallback from phrase match to AND-of-tokens · no auth (rate-limited /api/legal/* pattern) · session 83 |
 | `/api/legal/fetch-judgment` | GET | Fetch full AustLII judgment HTML · params: `url` (required, must be austlii.edu.au), `citation` (optional) · cache-first with 30-day TTL · CF-edge fetch with browser-mimicking headers · upserts to `austlii_cache` · returns `{ ok, html, source }` · session 86 |
+| `/api/legal/amendments` | GET | Fetch amendment timeline for a Tasmanian Act · param: `act=act-YYYY-NNN` · cache-first via `tbl_amendment_cache` (30-day TTL) · fetches CCL projectdata API on miss · returns full amendment history JSON · session 87 |
+| `/api/legal/resolve-act` | GET | Resolve Act name to CCL actId · param: `name=<Act title>` · writes `source_url` back to `legislation` table as side-effect on first resolution · used by AmendmentPanel.jsx as primary path when source_url not yet populated · session 87 |
 
 ### Query logging (session 65)
 
@@ -881,6 +884,7 @@ Source title uses chunk heading (not filename stem).
 - **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
 - **Q14 retrieval diagnostic** — s 37 EA legislation chunk exists in corpus but not surfacing in top 3 for "leading questions examination in chief". Check anchor, SM penalty, top-12 position, and whether a doctrinal leading-questions practice chunk should be authored.
 - **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in Library.jsx, AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑"). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
+- **Hansard search widget (Amendment Panel)** — Add "Search Hansard ↗" button per amendment row linking to search.parliament.tas.gov.au with bill name pre-filled. Pure frontend, no backend changes. Blocked on confirming Funnelback URL parameter format via manual test. Design: open search.parliament.tas.gov.au, submit a bill name query, copy the resulting URL and extract the parameter structure.
 
 ### Secondary Sources Upload — Session 39 changes
 - Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
