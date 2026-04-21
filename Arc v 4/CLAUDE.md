@@ -14,7 +14,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 | Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79 |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
-| D1 secondary_sources | 1,437 total (233 authority_synthesis added session 79) · embedded=0: 2 (orphaned Nexus saves, not a pipeline fault — authority chunks may be residual during poller catch-up window) |
+| D1 secondary_sources | 1,437 total (233 authority_synthesis added session 79) · embedded=0: 12 (10 s38 EA chunks re-queued for re-embed session 88 after CONCEPTS prepend; 2 orphaned Nexus saves) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
@@ -22,7 +22,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
-| enrichment_poller | RUNNING — re-embed complete, all chunks at embedded=1 |
+| enrichment_poller | RUNNING — 10 s38 EA chunks pending re-embed (CONCEPTS prepend session 88); otherwise all at embedded=1 |
 | Cloudflare Queue | drained |
 | Scraper | COMPLETE — corpus stable at 1,914 cases (back to 2005), count unchanged from session 81 close; scraper.log check confirmed no new cases |
 | arcanthyr.com | Live |
@@ -44,9 +44,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 
 3. **Q14 diagnostic — why is s 37 EA not in top 3?** — Live Q14 ("leading questions examination in chief") returns [2021] TASSC 4 Hefny v Barnes at #1 (0.50), Hofer/TASCCA 11 cross-examination at #2/#3. s 37 EA legislation chunk exists in corpus but not surfacing. Not a vocabulary mismatch ("leading questions" is both statutory and practitioner term). Hypothesis: case-application chunks outscoring legislation chunk on semantic density. Diagnosis task: check s 37 EA chunk's vocabulary anchor, check whether it's being returned at any position in top 12, check whether it's being SM-penalised incorrectly. If chunk is fine but ranking is wrong, may need doctrinal authoring (practice note on leading-questions-in-chief technique) rather than retrieval tuning.
 
-4. **Bucket 2 corpus hygiene — 10 s 38 EA chunks lack CONCEPTS headers** — Session 76 D1 audit surfaced that most `Evidence Act 2001 (Tas) s 38 -` prefixed chunks have no `Concepts:` or `[CONCEPTS:]` line in raw_text (chunks: `Steps for Inconsistencies`, `Cross-Examination Procedure`, `Application for Leave to Cross-Examine`, `Further Application Setup`, `Cross-Examination Workflow`, `Result after Cross-Examination`, `Leave Application`, `Setting Up Application`, `Alternative Options`, `S 38(6) Factors`). These chunks get reduced anchor signal from `build_secondary_embedding_text()` — no CONCEPTS for the anchor prepend means they're only weakly lifted. Corpus hygiene issue independent of aliasing. Low priority — defer unless s 38 EA queries show regressions now that query expansion is live. Fix by full raw_text rewrite with a standard CONCEPTS line each; one-time cost ~10 chunks.
-
-5. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) resource limits on compose service (`mem_limit: 1g`, `cpus: '1.0'`), (c) filesystem hardening (`read_only: true` + `tmpfs: [/tmp]` once write paths confirmed), (d) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
+4. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
 
 6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
 
@@ -144,7 +142,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 | run_scraper.bat location | `C:\Users\Hogan\run_scraper.bat` — must be LOCAL (not OneDrive) to avoid Task Scheduler Launch Failure error |
 | Scraper wake tasks | Dedicated SYSTEM-level wake tasks created (session 46): `WakeForScraper` fires 10:55 AM daily, `WakeForScraperEvening` fires 4:55 PM daily · both have WakeToRun=True · wakes PC 5 min before scraper runs at 11:00 AM and 5:00 PM AEST · created as SYSTEM/HIGHEST so wake works from sleep without user login |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
-| TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is NOT IP-blocked by AustLII (confirmed curl 200 session 35) |
+| TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is TCP-blocked by AustLII at network level — Contabo IP range silently dropped (confirmed session 85, re-confirmed session 88) |
 | runDailySync proxy | AustLII fetches routed through VPS `/fetch-page` endpoint (server.py) to avoid Cloudflare edge IP patterns · jade.io URLs fetch directly · `env` threaded through `handleFetchPage` and `fetchCaseContent` · deployed session 35 |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
@@ -193,6 +191,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
 | Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
 | Truncation tolerance | CLAUDE.md is structured with operational content (state, priorities, rules) in the first ~300 lines. History and procedures at the tail tolerate truncation — they exist as in-session reference, not session-start-critical context |
+| auslaw-mcp search pattern | search_cases is dead from VPS (AustLII TCP block) · for topic-based discovery in CC/Cowork sessions: (1) POST https://arcanthyr.com/api/legal/word-search with X-Nexus-Key header to get citations; (2) feed citations to auslaw-mcp search_by_citation for full text |
 | CLAUDE_changelog.md | Load when investigating a past session's changes, debugging a regression to a specific date, or when referencing work from sessions older than the 3-session retention window |
 
 **Tooling:**
