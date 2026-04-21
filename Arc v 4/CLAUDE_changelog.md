@@ -1,9 +1,19 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–83 · 26 March 2026 – 20 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85*
+*Sessions 21–85 · 26 March 2026 – 20 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 85) — 20 April 2026
+
+- **Word-search bug fixed (Phase 1)** — `GET /api/legal/word-search` was silently returning 0 results since launch; two bugs: `bm25()`/`snippet()` throw `SQLITE_ERROR` in JOIN/GROUP BY context → two-query architecture (FTS-only then cases IN); D1 100 bound-variable limit hit when passing all 200 deduped citations → slice to `limit` before IN clause, court filter moved to JS. Deployed `1f230fa4`.
+- **AustLII external search (Phase 2)** — new `GET /api/legal/austlii-word-search` Worker route; `parseAustLIIResults()` regex parser targeting `/cgi-bin/viewdoc/au/cases/tas/(COURT)/YEAR/NUM.html`; case name cleanup strips tags, decodes HTML entities, trims AustLII citation+date suffix. Deployed across `57ae6838` → `420de222`.
+- **VPS→AustLII blocked** — Contabo VPS IP blocked by AustLII (curl returns 000); `handleAustLIIWordSearch` switched from `handleFetchPage` VPS proxy to direct `fetch()` from Cloudflare edge with browser-mimicking headers. Edge IPs not blocked.
+- **Async parallel UI track** — Library word-search fires local FTS and AustLII in parallel; local results render at ~200ms; AustLII section trails in with spinner; "In corpus" chip on AustLII results whose citation matches local corpus; "Open on AustLII" link-out per result.
+- **D1 word-search diagnosis** — confirmed `case_chunks.id` is TEXT PRIMARY KEY (not integer rowid alias); `case_chunks_fts` has `citation UNINDEXED` column; correct join pattern is `fts.citation → cases.citation` not `fts.rowid → case_chunks.id`.
 
 ---
 

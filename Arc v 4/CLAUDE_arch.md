@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 21 April 2026 (end of session 87). Upload every session alongside CLAUDE.md.*
+*Updated: 21 April 2026 (end of session 88). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -863,10 +863,8 @@ Source title uses chunk heading (not filename stem).
 - **Retrieval regression fixes (session 64 — remaining steps deferred):**
   - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
   - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64. DEFERRED — same gate as Step 3.
-- **subject_matter filter** — COMPLETE (session 78). All 3 parts deployed: Part 1 (Worker route JOIN), Part 2 (poller metadata dict + re-embed), Part 3 (server.py `MatchAny(any=["criminal","mixed"])` hard filter on Pass 2 case_chunk query). Pass 2 now excludes civil/administrative case_chunks at Qdrant level.
 - **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
 - **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
-- **Citation authority agent (xref_agent.py)** — Pass 4 LIVE as of session 81. `should_fire_pass4()` gate (keyword + bare-lookup + multi-citation rules), `AUTHORITY_PASS_ENABLED=true` in `.env.config`, 500ms timeout, dedup via `seen_ids`. AUTHORITY_KEYWORDS calibrated via 24-query probe battery: 3 false-positive topical phrases removed, 10 passive-voice forms added. Worker `[AUTHORITY ANALYSIS]` labels + systemPrompt instructions live (version 57719d21). UI: amber AUTHORITY tag in ResultCard, Library badge, AuthorityPane in ReadingPane.
 - **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.

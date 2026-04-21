@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 21 April 2026 (end of session 87) · Supersedes all prior versions
+Updated: 21 April 2026 (end of session 88) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–85) — load conditionally
 
 ---
 
@@ -32,7 +32,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
 | Baseline (31 queries) | ≥28P / ≤3Pa / 0M — query expansion deployed session 77 (19 Apr 2026) · Q12 MISS→PASS (s38 EA chunk #1 @ 0.6759) · Q23 MISS→PASS (secondary-chunk-12 #3 @ 0.6697) · zero P→M regressions · exact count pending Tom's manual review of Q7/Q14/Q15 · new snapshot `~/retrieval_baseline_post_query_expansion.txt` · session 74 canonical `~/retrieval_baseline_post_interleave.txt` retained as prior reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
 | procedure_notes | 319 success / ~340 not_sentencing |
-| auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) |
+| auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · two-step search pattern documented |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
 | Sentencing Act 1997 (Tas) | 147 sections ingested · legislation_sections populated · poller [LEG] pass pending embed · source_url populated · legislation table source_url now populated for Sentencing Act + 5 backfilled Acts |
 
@@ -43,8 +43,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 2. **Post-scrape authoring pass** — Q9 (guilty plea discount — common law doctrine, no Tasmanian statutory provision; requires secondary source authoring) and Q26 (unreasonable verdict / M v The Queen) diagnosed this session as authoring gaps but deferred until scrape-complete. Further MISS/Partial triage deferred to post-scrape baseline re-run.
 
 3. **Q14 diagnostic — why is s 37 EA not in top 3?** — Live Q14 ("leading questions examination in chief") returns [2021] TASSC 4 Hefny v Barnes at #1 (0.50), Hofer/TASCCA 11 cross-examination at #2/#3. s 37 EA legislation chunk exists in corpus but not surfacing. Not a vocabulary mismatch ("leading questions" is both statutory and practitioner term). Hypothesis: case-application chunks outscoring legislation chunk on semantic density. Diagnosis task: check s 37 EA chunk's vocabulary anchor, check whether it's being returned at any position in top 12, check whether it's being SM-penalised incorrectly. If chunk is fine but ranking is wrong, may need doctrinal authoring (practice note on leading-questions-in-chief technique) rather than retrieval tuning.
-
-4. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance.
 
 6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
 
@@ -201,16 +199,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 85) — 20 April 2026
-
-- **Word-search bug fixed (Phase 1)** — `GET /api/legal/word-search` was silently returning 0 results since launch; two bugs: `bm25()`/`snippet()` throw `SQLITE_ERROR` in JOIN/GROUP BY context → two-query architecture (FTS-only then cases IN); D1 100 bound-variable limit hit when passing all 200 deduped citations → slice to `limit` before IN clause, court filter moved to JS. Deployed `1f230fa4`.
-- **AustLII external search (Phase 2)** — new `GET /api/legal/austlii-word-search` Worker route; `parseAustLIIResults()` regex parser targeting `/cgi-bin/viewdoc/au/cases/tas/(COURT)/YEAR/NUM.html`; case name cleanup strips tags, decodes HTML entities, trims AustLII citation+date suffix. Deployed across `57ae6838` → `420de222`.
-- **VPS→AustLII blocked** — Contabo VPS IP blocked by AustLII (curl returns 000); `handleAustLIIWordSearch` switched from `handleFetchPage` VPS proxy to direct `fetch()` from Cloudflare edge with browser-mimicking headers. Edge IPs not blocked.
-- **Async parallel UI track** — Library word-search fires local FTS and AustLII in parallel; local results render at ~200ms; AustLII section trails in with spinner; "In corpus" chip on AustLII results whose citation matches local corpus; "Open on AustLII" link-out per result.
-- **D1 word-search diagnosis** — confirmed `case_chunks.id` is TEXT PRIMARY KEY (not integer rowid alias); `case_chunks_fts` has `citation UNINDEXED` column; correct join pattern is `fts.citation → cases.citation` not `fts.rowid → case_chunks.id`.
-
----
-
 ## CHANGES THIS SESSION (session 86) — 20 April 2026
 
 - **Phase 3: Jade link button** — Added `buildJadeUrl()` to `Library.jsx`; initial URL used `/article/search` path (500 error); fixed to AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM` confirmed via browser test; verified via JS href inspection
@@ -231,6 +219,18 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 - **"Locate Hansard ↗" button** — replaced broken direct slug links with `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"` after confirming parliament.tas.gov.au migrated to slug-based URLs incompatible with numeric construction; button relabelled from "Second reading ↗"; commit `c0e277f`
 - **source_url backfill** — 5 priority Acts updated in `legislation` table: Evidence Act 2001 (`act-2001-076`), Criminal Code Act 1924 (`act-1924-069`), Justices Act 1959 (`act-1959-077`), Misuse of Drugs Act 2001 (`act-2001-094`), Police Offences Act 1935 (`act-1935-044`)
 - **Self-healing resolution** — `resolve-act` route writes `source_url` back to D1 on first use; new Acts added to corpus require no manual backfill; resolve-act is primary path, source_url is cache acceleration
+
+---
+
+## CHANGES THIS SESSION (session 88) — 21 April 2026
+
+- **s38 EA CONCEPTS hygiene complete** — 10 `Evidence Act 2001 (Tas) s 38 -` secondary source chunks prepended with `[CONCEPTS:]`, `[TOPIC:]`, `[JURISDICTION:]` headers via direct D1 updates (bypassed broken `update-secondary-raw` Worker route); all 10 reset to `embedded=0` for poller re-embed; Bucket 2 item struck from OUTSTANDING PRIORITIES
+- **auslaw-mcp docker hardening complete** — `mem_limit: 1g`, `cpus: '1.0'`, `read_only: true`, `tmpfs: [/tmp]` applied to `~/auslaw-mcp/docker-compose.yaml`; write-path check confirmed only `/tmp` used (OCR via `tmp.fileSync()` in `fetcher.ts`); container force-recreated cleanly
+- **auslaw-mcp GitHub MCP (item d) resolved** — existing user-scope `github` MCP in `~/.claude.json` already satisfies requirement; no new config needed; verified via `mcp__github__get_file_contents` on `russellbrenner/auslaw-mcp`
+- **auslaw-mcp hardening entry removed** — all four sub-items resolved: (a) confirmed moot — VPS TCP-blocked by AustLII at network level, `/fetch-page` cannot reach AustLII regardless; (b)(c)(d) done this session
+- **VPS/AustLII TCP block confirmed and documented** — curl confirmed SYN to `austlii.edu.au:443` silently dropped from Contabo VPS (exit 28, timeout, HTTP 000); session 35 "not blocked" finding retired; canonical answer now documented; `search_cases` KNOWN ISSUES entry root cause corrected
+- **Two-step auslaw-mcp search pattern documented** — `search_cases` dead from VPS; canonical CC/Cowork pattern: `POST /api/legal/word-search` for citation discovery → `search_by_citation` for full text fetch; added to SESSION RULES
+- **Stale horizon items reconciled** — citation authority agent (now Pass 4, live), AustLII MCP integration (superseded by Quick Search tab + auslaw-mcp), subject_matter filter (all three parts complete) confirmed done; memory updated
 
 ---
 
