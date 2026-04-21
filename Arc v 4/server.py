@@ -107,7 +107,7 @@ def generate_query_variants(query_text: str):
                 "Content-Type": "application/json",
             },
             json={
-                "model": "gpt-4o-mini",
+                "model": "gpt-4.1-mini-2025-04-14",
                 "response_format": {"type": "json_object"},
                 "messages": [
                     {"role": "system", "content": EXPANSION_SYSTEM},
@@ -1241,7 +1241,7 @@ def call_gpt_mini(block_text, prompt_mode="master"):
     system_prompt = MASTER_PROMPT if prompt_mode == "master" else PROCEDURE_PROMPT
 
     payload = json.dumps({
-        "model": "gpt-4o-mini",
+        "model": "gpt-4.1-mini-2025-04-14",
         "max_completion_tokens": 8000,
         "messages": [
             {"role": "system", "content": system_prompt},

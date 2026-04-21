@@ -1591,7 +1591,7 @@ async function handleFormatAndUpload(body, env) {
         'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini-2024-07-18',
+        model: 'gpt-4.1-mini-2025-04-14',
         max_completion_tokens: 16000,
         messages: [
           { role: 'system', content: finalPrompt },
@@ -2689,7 +2689,7 @@ ${answерNote}`;
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 2000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
@@ -3213,7 +3213,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
           "Authorization": `Bearer ${env.OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          model: "gpt-4o-mini-2024-07-18",
+          model: "gpt-4.1-mini-2025-04-14",
           max_completion_tokens: 2000,
           messages: [
             { role: "system", content: synthSystem },
@@ -3290,7 +3290,7 @@ Output ONLY a valid JSON object with two keys: "principles" and "holdings". No m
             "Authorization": `Bearer ${env.OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: "gpt-4o-mini-2024-07-18",
+            model: "gpt-4.1-mini-2025-04-14",
             max_completion_tokens: 4000,
             messages: [
               { role: "system", content: SENTENCING_SYNTHESIS_PROMPT },
@@ -3561,7 +3561,7 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
         ? sentUser.substring(0, 120000) + '\n\n[TRUNCATED — remaining sections omitted]'
         : sentUser;
 
-      // OpenAI call — same params as performMerge sentencing pass (gpt-4o-mini, 4000 tokens, 45s)
+      // OpenAI call — same params as performMerge sentencing pass (gpt-4.1-mini, 4000 tokens, 45s)
       const sentCtrl = new AbortController();
       const sentTimeout = setTimeout(() => sentCtrl.abort(), 45000);
       let sentResponse;
@@ -3573,7 +3573,7 @@ async function runSentencingBackfill(env, limit = 15, citations = null) {
             "Authorization": `Bearer ${env.OPENAI_API_KEY}`
           },
           body: JSON.stringify({
-            model: "gpt-4o-mini-2024-07-18",
+            model: "gpt-4.1-mini-2025-04-14",
             max_completion_tokens: 4000,
             messages: [
               { role: "system", content: SENTENCING_SYNTHESIS_PROMPT },
@@ -4746,7 +4746,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
               "Authorization": `Bearer ${env.OPENAI_API_KEY}`
             },
             body: JSON.stringify({
-              model: "gpt-4o-mini-2024-07-18",
+              model: "gpt-4.1-mini-2025-04-14",
               max_completion_tokens: 1600,
               messages: [
                 { role: "system", content: systemPrompt },
