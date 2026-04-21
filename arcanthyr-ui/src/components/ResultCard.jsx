@@ -6,6 +6,7 @@ const COURT_TAGS = {
 };
 const TYPE_TAGS = {
   secondary:           { label: 'CORPUS',    bg: '#1a1a1a',              color: '#7A8087' },
+  secondary_source:    { label: 'CORPUS',    bg: '#1a1a1a',              color: '#7A8087' },
   legislation:         { label: 'LEG',       bg: '#0d2a2a',              color: '#4ad4d4' },
   authority_synthesis: { label: 'AUTHORITY', bg: 'rgba(200,140,50,0.08)', color: '#C88C32' },
 };

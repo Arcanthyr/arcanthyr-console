@@ -3167,7 +3167,7 @@ async function performMerge(citation, caseRow, env) {
     try {
       const synthSystem = `You are a legal research assistant producing a case summary for a research database. You will receive enriched summaries of each reasoning section of an Australian court judgment, plus the case's facts and issues.
 
-Produce 4-8 case-level legal principles that tell a researcher why THIS case matters and what it decided.
+Produce 3-5 case-level legal principles that tell a researcher why THIS case matters and what it decided.
 
 Each principle must be a concrete statement of what THIS court decided on THIS set of facts — not a generic rule of law that could appear on any case. Include the court's reasoning where it adds value.
 
@@ -3178,6 +3178,12 @@ BAD (generic, could be any case):
 GOOD (case-specific, tells you why THIS case matters):
 - "A 12-month suspended sentence was appropriate for a first-offender domestic assault involving a single punch causing bruising, where the offender had completed a behavioural change program and the victim did not support a custodial sentence"
 - "The appellant's failure to disclose gambling debts totalling $180,000 was fatal to her Testators Family Maintenance claim because adequate provision cannot be assessed without full financial disclosure"
+
+DEDUPLICATION RULES — strictly enforce before writing output:
+- Each principle must be substantively distinct. Do not restate the same point in different words.
+- If two candidate principles overlap or make the same legal point, merge them into one.
+- Before writing, identify candidate principles and group any that are near-synonymous. Output only the merged, non-redundant set.
+- 3 tight, distinct principles are better than 5 that contain redundancy.
 
 Output ONLY a valid JSON object with two keys: "principles" and "holdings". No markdown fences. No commentary. The first character must be {
 
@@ -4027,6 +4033,7 @@ async function handleUpdateSecondaryRaw(request, env, corsHeaders) {
     const { id, raw_text } = await request.json();
     if (!id || !raw_text) return new Response(JSON.stringify({ ok: false, error: 'id and raw_text required' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     const result = await env.DB.prepare(`UPDATE secondary_sources SET raw_text = ?, embedded = 0 WHERE id = ?`).bind(raw_text, id).run();
+    if (result.meta.changes === 0) return new Response(JSON.stringify({ ok: false, error: 'not found', id }), { status: 404, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     return new Response(JSON.stringify({ ok: true, updated: result.meta.changes }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
   } catch (err) {
     return new Response(JSON.stringify({ ok: false, error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
