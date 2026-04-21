@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 21 April 2026 (end of session 88) · Supersedes all prior versions
+Updated: 21 April 2026 (end of session 89) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–85) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–86) — load conditionally
 
 ---
 
@@ -14,7 +14,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–85) — load conditiona
 | Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79 |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
-| D1 secondary_sources | 1,437 total (233 authority_synthesis added session 79) · embedded=0: 12 (10 s38 EA chunks re-queued for re-embed session 88 after CONCEPTS prepend; 2 orphaned Nexus saves) |
+| D1 secondary_sources | 1,445 total (233 authority_synthesis added session 79; 8 new corpus chunks added session 89) · embedded=0: 20 (10 s38 EA chunks re-queued session 88; 8 new session 89 chunks pending embed; 2 orphaned Nexus saves) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
@@ -22,7 +22,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–85) — load conditiona
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
-| enrichment_poller | RUNNING — 10 s38 EA chunks pending re-embed (CONCEPTS prepend session 88); otherwise all at embedded=1 |
+| enrichment_poller | RUNNING — 20 secondary source chunks pending embed (10 s38 EA re-queued session 88; 8 new corpus chunks session 89; 2 orphaned Nexus saves) |
 | Cloudflare Queue | drained |
 | Scraper | COMPLETE — corpus stable at 1,914 cases (back to 2005), count unchanged from session 81 close; scraper.log check confirmed no new cases |
 | arcanthyr.com | Live |
@@ -199,18 +199,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–85) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 86) — 20 April 2026
-
-- **Phase 3: Jade link button** — Added `buildJadeUrl()` to `Library.jsx`; initial URL used `/article/search` path (500 error); fixed to AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM` confirmed via browser test; verified via JS href inspection
-- **Phase 3 URL bug** — `/article/search?query=` returns 500 on Jade; correct format is `https://jade.io/au/cases/tas/TASSC/YEAR/NUM` (AustLII path with different domain); discovered by live browser test during session
-- **Phase 4: `search_type` column** — `ALTER TABLE query_log ADD COLUMN search_type TEXT`; both `handleLegalQuery` paths updated to `'semantic'`; `handleWordSearch` and `handleAustLIIWordSearch` now log with `'word_search'` / `'austlii_word_search'`; verified via D1 GROUP BY query
-- **Phase 5: `austlii_cache` table + judgment fetch** — New D1 table (`url PK, citation, html, fetched_at`); `handleFetchJudgment` Worker route (`GET /api/legal/fetch-judgment`); CF-edge fetch with browser-mimicking headers (VPS IP blocked); 30-day TTL cache-first logic; upsert on stale
-- **Phase 5: inline judgment viewer** — `AustLIIResultsTable` rewritten with per-row `loadingMap`/`htmlMap` state; `extractJudgmentBody()` strips scripts/styles/nav/forms/images; `dangerouslySetInnerHTML` render in 600px serif pane; "Read ↓ / Close ↑ / Loading…" toggle; verified rendering live
-- **Phase 5 unwrap bug** — `fetchJudgment` in `api.js` read `data.ok/data.html` directly; fixed to `data.result ?? data` per standard `/api/legal/` wrapper pattern; error contract changed to throw-on-error
-- **Jade auth behaviour** — Login prompt on first click is browser-session behaviour only; once logged into Jade in Chrome the session persists; no automation needed or appropriate
-
----
-
 ## CHANGES THIS SESSION (session 87) — 21 April 2026
 
 - **Legislative Amendment History feature** — new Worker routes `GET /api/legal/amendments?act=act-YYYY-NNN` (fetches CCL projectdata API, 30-day D1 cache in `tbl_amendment_cache`) and `GET /api/legal/resolve-act?name=...` (Act name → actId, writes `source_url` back to `legislation` table on first resolution)
@@ -231,6 +219,17 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–85) — load conditiona
 - **VPS/AustLII TCP block confirmed and documented** — curl confirmed SYN to `austlii.edu.au:443` silently dropped from Contabo VPS (exit 28, timeout, HTTP 000); session 35 "not blocked" finding retired; canonical answer now documented; `search_cases` KNOWN ISSUES entry root cause corrected
 - **Two-step auslaw-mcp search pattern documented** — `search_cases` dead from VPS; canonical CC/Cowork pattern: `POST /api/legal/word-search` for citation discovery → `search_by_citation` for full text fetch; added to SESSION RULES
 - **Stale horizon items reconciled** — citation authority agent (now Pass 4, live), AustLII MCP integration (superseded by Quick Search tab + auslaw-mcp), subject_matter filter (all three parts complete) confirmed done; memory updated
+
+---
+
+## CHANGES THIS SESSION (session 89) — 21 April 2026
+
+- **Model upgrades** — gpt-4o-mini-2024-07-18 → gpt-4.1-mini-2025-04-14 across all worker.js call sites (handleFormatAndUpload, performMerge main synthesis, performMerge sentencing synthesis, runSentencingBackfill, CHUNK handler) and server.py (generate_query_variants, call_gpt_mini); claude-sonnet-4-20250514 → claude-sonnet-4-6 for Sol path in handleLegalQuery; both deployed, smoke tested, committed 786f9a6
+- **TYPE_TAGS cosmetic fix** — added `"secondary_source": "CORPUS"` alias to ResultCard.jsx TYPE_TAGS; secondary source result cards now display "CORPUS" label correctly instead of raw type string
+- **Synthesis dedup tightened** — performMerge() synthesis prompt range reduced from 4–8 to 3–5 principles; explicit pre-output grouping and deduplication instructions added; forward-only (existing corpus unaffected)
+- **update-secondary-raw diagnosis closed** — root cause of session 88 404s confirmed as hand-typed ID mismatches during manual testing, not a routing or encoding bug; silent-success bug (returning `{ ok: true, updated: 0 }` on no-match) fixed to proper HTTP 404; KNOWN ISSUES entry corrected
+- **Subject_matter audit complete** — full audit of all non-criminal cases with criminal party name patterns run via auslaw-mcp; 11 rows checked; 0 genuine misclassifications; Tasmania v Rattigan [2021] TASSC 28 corrected administrative → criminal, 8 case chunks reset embedded=0 for re-embed; audit documented as clean
+- **Corpus additions — 8 new secondary source chunks** — block_023 (MDA s 29 prescribed belief, MDA evidentiary/possession/schedules, Youth Justice Act responsibility/diversion, Youth Justice Act joint charges/procedure) and block_028 (FV victim opinion/forgiveness, FV s 29A serial perpetrator declaration, FV aggravating children presence, FVO consent orders/jurisdiction) formatted and uploaded via console paste path
 
 ---
 

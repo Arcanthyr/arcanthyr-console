@@ -3934,3 +3934,17 @@ HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No j
 **auslaw-mcp two-step search pattern — canonical workflow:** `search_cases` cannot work from VPS due to AustLII TCP block. Canonical pattern for CC/Cowork sessions needing topic-based case discovery: (1) `POST https://arcanthyr.com/api/legal/word-search` with `X-Nexus-Key` to get citations via CF edge; (2) feed citations to auslaw-mcp `search_by_citation` for full text. Documented in SESSION RULES. No code changes required — purely a workflow documentation fix.
 
 **s38 CONCEPTS prepend via D1 concatenation:** The `update-secondary-raw` Worker route returns 404 for IDs containing spaces (known bug, undiagnosed root cause). Fix: D1 `UPDATE ... SET raw_text = '[CONCEPTS:] ...' || char(10) || ... || raw_text WHERE id = '...'` concatenation avoids needing full raw_text content and bypasses the broken route entirely. This is the correct pattern for any future secondary source raw_text prepend where the ID contains spaces.
+
+## Session 89 decisions — 21 April 2026
+
+**gpt-4.1-mini-2025-04-14 adopted as standard mini model** — Replaces gpt-4o-mini-2024-07-18 across all worker.js and server.py call sites. Cost increase (~2.5–3× over gpt-4o-mini) accepted given improved instruction following and structured output reliability. Pinned version string used throughout — alias strings avoided as they can silently redirect after deprecation events.
+
+**claude-sonnet-4-6 adopted for Sol path** — Drop-in replacement for claude-sonnet-4-20250514 at identical pricing ($3/$15 per MTok). No prompt changes required.
+
+**Synthesis dedup tightened to 3–5 principles** — Existing corpus not retroactively re-merged; principles_extracted is display-only (Library pane) and has no retrieval impact. Bulk requeue-merge across 1,900+ cases not justified for a cosmetic quality improvement. Tighter dedup accrues on new ingests and future targeted re-merges only.
+
+**Subject_matter audit methodology confirmed** — Audit query `SELECT citation, case_name, subject_matter FROM cases WHERE subject_matter != 'criminal' AND (case_name LIKE 'R v%' OR case_name LIKE 'Tasmania v%' OR case_name LIKE 'Police v%')` is the canonical audit tool. DPP-initiated contempt proceedings (`R v [surname]`) are correctly classified as civil — they are not criminal prosecutions for substantive offences and should not retrieve on criminal law queries. Audit result: clean as of session 89.
+
+**update-secondary-raw diagnosis** — The route reads `id` from JSON body and uses a parameterized query; spaces in IDs are handled correctly. Session 88 404s were hand-typed ID mismatches. The silent `{ ok: true, updated: 0 }` on no-match was a separate bug (now fixed). The route works correctly when IDs are sourced from the fetch-secondary-raw API response, as enrich_concepts.py does.
+
+**Corpus block formatting approach** — Raw practitioner notes formatted into corpus chunks manually (Claude.ai) rather than via the GPT format-and-upload path, to ensure doctrinal accuracy and correct vocabulary anchors in CONCEPTS fields. Suitable for small batches of known-good source material. GPT path remains correct for bulk or third-party source uploads.

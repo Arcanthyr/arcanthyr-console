@@ -647,7 +647,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 | Handler | Model | max_tokens |
 |---|---|---|
-| `handleLegalQuery()` | Claude API (claude-sonnet-4-20250514) | 2,000 |
+| `handleLegalQuery()` | Claude API (claude-sonnet-4-6) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
 ### Sentencing Second Pass (session 31, updated session 47)
@@ -673,7 +673,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Admin route: `POST /api/admin/backfill-sentencing` — X-Nexus-Key auth, accepts `{"limit": N}` clamped to [1,30]
 - Function: `runSentencingBackfill(env, limit)` in worker.js (alongside performMerge)
 - Targets: `subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1`
-- Mirrors performMerge() sentencing block exactly: same chunk fetch, same allHoldings construction, same sentUser structure (120K cap), same OpenAI parameters (gpt-4o-mini-2024-07-18, max_completion_tokens 4000, 45s AbortController), same isSentencingCase() guard
+- Mirrors performMerge() sentencing block exactly: same chunk fetch, same allHoldings construction, same sentUser structure (120K cap), same OpenAI parameters (gpt-4.1-mini-2025-04-14, max_completion_tokens 4000, 45s AbortController), same isSentencingCase() guard
 - Writes only `procedure_notes` and appends to `principles_extracted` via read-modify-write. Does NOT touch deep_enriched, does NOT re-run main synthesis, does NOT use the queue
 - NULL procedure_notes is the implicit retry flag — failed cases stay in result set
 - Returns: `{ ok, processed, skippedNotSentencing, failed, candidatesInBatch, remaining, errors }`
@@ -820,7 +820,7 @@ Browse, re-read, and promote past queries without re-querying.
 
 ## PROCESS_BLOCKS.PY PIPELINE NOTES
 
-- `gpt-4o-mini-2024-07-18` — use this model string. Do NOT use gpt-5.x — near-empty output
+- `gpt-4.1-mini-2025-04-14` — use this model string. Do NOT use gpt-5.x — near-empty output
 - `max_completion_tokens` not `max_tokens`; no `temperature`; normalise `\r\n`
 - `PART1_END = 28` in process_blocks.py
 - 56 blocks total · completed 20 Mar 2026 (session 10 overnight run)

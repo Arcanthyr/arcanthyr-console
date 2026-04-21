@@ -1,9 +1,21 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–85 · 26 March 2026 – 20 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88*
+*Sessions 21–86 · 26 March 2026 – 20 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 86) — 20 April 2026
+
+- **Phase 3: Jade link button** — Added `buildJadeUrl()` to `Library.jsx`; initial URL used `/article/search` path (500 error); fixed to AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM` confirmed via browser test; verified via JS href inspection
+- **Phase 3 URL bug** — `/article/search?query=` returns 500 on Jade; correct format is `https://jade.io/au/cases/tas/TASSC/YEAR/NUM` (AustLII path with different domain); discovered by live browser test during session
+- **Phase 4: `search_type` column** — `ALTER TABLE query_log ADD COLUMN search_type TEXT`; both `handleLegalQuery` paths updated to `'semantic'`; `handleWordSearch` and `handleAustLIIWordSearch` now log with `'word_search'` / `'austlii_word_search'`; verified via D1 GROUP BY query
+- **Phase 5: `austlii_cache` table + judgment fetch** — New D1 table (`url PK, citation, html, fetched_at`); `handleFetchJudgment` Worker route (`GET /api/legal/fetch-judgment`); CF-edge fetch with browser-mimicking headers (VPS IP blocked); 30-day TTL cache-first logic; upsert on stale
+- **Phase 5: inline judgment viewer** — `AustLIIResultsTable` rewritten with per-row `loadingMap`/`htmlMap` state; `extractJudgmentBody()` strips scripts/styles/nav/forms/images; `dangerouslySetInnerHTML` render in 600px serif pane; "Read ↓ / Close ↑ / Loading…" toggle; verified rendering live
+- **Phase 5 unwrap bug** — `fetchJudgment` in `api.js` read `data.ok/data.html` directly; fixed to `data.result ?? data` per standard `/api/legal/` wrapper pattern; error contract changed to throw-on-error
+- **Jade auth behaviour** — Login prompt on first click is browser-session behaviour only; once logged into Jade in Chrome the session persists; no automation needed or appropriate
 
 ---
 
