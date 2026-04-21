@@ -44,7 +44,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–84) — load conditiona
 
 3. **Q14 diagnostic — why is s 37 EA not in top 3?** — Live Q14 ("leading questions examination in chief") returns [2021] TASSC 4 Hefny v Barnes at #1 (0.50), Hofer/TASCCA 11 cross-examination at #2/#3. s 37 EA legislation chunk exists in corpus but not surfacing. Not a vocabulary mismatch ("leading questions" is both statutory and practitioner term). Hypothesis: case-application chunks outscoring legislation chunk on semantic density. Diagnosis task: check s 37 EA chunk's vocabulary anchor, check whether it's being returned at any position in top 12, check whether it's being SM-penalised incorrectly. If chunk is fine but ranking is wrong, may need doctrinal authoring (practice note on leading-questions-in-chief technique) rather than retrieval tuning.
 
-4. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance, (b) GitHub MCP install (guide already written as `github-mcp-setup.md`, existing `github` MCP already wired — low priority).
+4. **auslaw-mcp hardening followups** — (a) rate budget in `/fetch-page` proxy to prevent MCP queries starving daily scraper's AustLII allowance.
 
 6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
 
