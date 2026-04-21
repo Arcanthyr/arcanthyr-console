@@ -1662,7 +1662,7 @@ async function handleLibraryList(env) {
       SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
              processed_date, summary_quality_score, 'case' AS doc_type,
              LENGTH(raw_text) AS raw_size, enriched, deep_enriched, subject_matter,
-             facts, holding, holdings_extracted, principles_extracted,
+             facts, holding, holdings_extracted, principles_extracted, legislation_extracted,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation) AS chunk_count,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation AND embedded = 1) AS chunks_embedded
       FROM cases ORDER BY processed_date DESC
@@ -2220,6 +2220,199 @@ async function handleFetchJudgment(url, env) {
   } catch (err) {
     console.error('handleFetchJudgment error:', err.message);
     return { ok: false, error: 'Failed to fetch judgment from AustLII.' };
+  }
+}
+
+async function handleAmendments(url, env) {
+  const act = (url.searchParams.get('act') || '').trim().toLowerCase();
+
+  if (!/^(act|sr)-\d{4}-\d{3}$/.test(act)) {
+    return { ok: false, error: 'Invalid act parameter. Expected format: act-YYYY-NNN or sr-YYYY-NNN' };
+  }
+
+  // Cache check (30 days)
+  const cached = await env.DB.prepare(
+    `SELECT act_title, amendments_json, cached_at FROM tbl_amendment_cache WHERE act_id = ?`
+  ).bind(act).first();
+
+  if (cached) {
+    const age = Math.floor(Date.now() / 1000) - cached.cached_at;
+    if (age < 2592000) {
+      return { ok: true, actId: act, actTitle: cached.act_title, amendments: JSON.parse(cached.amendments_json), source: 'cache' };
+    }
+  }
+
+  // Build IntStr expression value: act-1997-059 → ZA59/ZY1997
+  const [type, year, num] = act.split('-');
+  const prefix = type === 'act' ? 'ZA' : 'ZS';
+  const expressionValue = `${prefix}${parseInt(num)}/ZY${year}`;
+  const expression = `"Commencement.IntStr"=?"${expressionValue}"? AND "Commencement.Commence Date" < "99990101000000" AND "Commencement.Source Title" = ?`;
+  const apiUrl = `https://www.legislation.tas.gov.au/projectdata?ds=EnAct-AmendmentTableDataSource&expression=${encodeURIComponent(expression)}&iDisplayStart=0&iDisplayLength=200`;
+
+  try {
+    const resp = await fetch(apiUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.legislation.tas.gov.au/',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-AU,en;q=0.9',
+      }
+    });
+
+    if (!resp.ok) return { ok: false, error: `Legislation API returned ${resp.status}` };
+
+    const data = await resp.json();
+
+    if (!data.data || !data.data.length) {
+      return { ok: true, actId: act, actTitle: null, amendments: [] };
+    }
+
+    function uniVal(field) {
+      if (!field) return null;
+      if (typeof field === 'string') return field;
+      if (field.__value__ !== undefined) return field.__value__;
+      return null;
+    }
+
+    const actTitle = uniVal(data.data[0]['Commencement.Target Title']);
+
+    const seen = new Set();
+    const amendments = [];
+
+    for (const row of data.data) {
+      const commenceType = uniVal(row['Commencement.Commence Type']);
+      if (commenceType === 'OTHER') continue;
+
+      const sourceActNo = uniVal(row['Commencement.Source Act No']);
+      const sourceYear  = uniVal(row['Commencement.Source Year']);
+      const dedupKey = `${sourceActNo}/${sourceYear}`;
+      if (seen.has(dedupKey)) continue;
+      seen.add(dedupKey);
+
+      const sourceTitle = uniVal(row['Commencement.Source Title']);
+      const targetTitle = uniVal(row['Commencement.Target Title']);
+      const rawDate     = row['Commencement.Commence Date'];
+      const dateStr     = rawDate ? (typeof rawDate === 'string' ? rawDate.slice(0, 10) : null) : null;
+      const isOriginal  = sourceTitle === targetTitle;
+
+      const yearInt = parseInt(sourceYear);
+      const numInt  = parseInt(sourceActNo);
+      const billPageUrl = yearInt >= 2002
+        ? `https://www.parliament.tas.gov.au/Bills/Bills${sourceYear}/${numInt}_of_${sourceYear}.html`
+        : null;
+
+      amendments.push({
+        name: sourceTitle,
+        actNo: sourceActNo,
+        year: sourceYear,
+        commenceDate: dateStr,
+        isOriginal,
+        billPageUrl,
+        hansardSearchUrl: 'https://search.parliament.tas.gov.au/adv/hahansard',
+        hasBillPage: yearInt >= 2002,
+        hasSecondReading: yearInt >= 2005 ? true : yearInt >= 2002 ? 'maybe' : false,
+      });
+    }
+
+    // Principal Act pinned first, then chronological
+    amendments.sort((a, b) => {
+      if (a.isOriginal && !b.isOriginal) return -1;
+      if (!a.isOriginal && b.isOriginal) return 1;
+      if (a.commenceDate && b.commenceDate) return a.commenceDate.localeCompare(b.commenceDate);
+      return 0;
+    });
+
+    await env.DB.prepare(
+      `INSERT OR REPLACE INTO tbl_amendment_cache (act_id, act_title, amendments_json, cached_at) VALUES (?, ?, ?, ?)`
+    ).bind(act, actTitle, JSON.stringify(amendments), Math.floor(Date.now() / 1000)).run();
+
+    return { ok: true, actId: act, actTitle, amendments, source: 'fetch' };
+  } catch (err) {
+    console.error('handleAmendments error:', err.message);
+    return { ok: false, error: 'Failed to fetch amendment data.' };
+  }
+}
+
+async function handleResolveAct(url, env) {
+  const rawName = (url.searchParams.get('name') || '').trim();
+  if (!rawName) return { ok: false, error: 'name parameter required' };
+
+  // Normalise: strip section prefix, (Tas)/(TAS) suffix
+  const normalized = rawName
+    .replace(/^s\s+[\d\w.()\-]+\s+/i, '')
+    .replace(/\s*\(Tas\)/gi, '')
+    .replace(/\s*\(TAS\)/g, '')
+    .trim();
+
+  if (!normalized) return { ok: false, error: 'Could not normalise act name' };
+
+  // Check D1 legislation table for cached source_url
+  try {
+    const row = await env.DB.prepare(
+      `SELECT id, title, source_url FROM legislation WHERE LOWER(title) LIKE LOWER('%' || ? || '%') LIMIT 1`
+    ).bind(normalized).first();
+
+    if (row && row.source_url) {
+      const m = /\/((?:act|sr)-\d{4}-\d{3})$/.exec(row.source_url);
+      if (m) return { ok: true, actId: m[1], actTitle: row.title, source: 'cache' };
+    }
+  } catch (_) { /* column may not exist in older schema — fall through */ }
+
+  // Resolve via amendment datasource: query by Target Title to get IntStr
+  const expression = `"Commencement.Target Title"="${normalized}"`;
+  const apiUrl = `https://www.legislation.tas.gov.au/projectdata?ds=EnAct-AmendmentTableDataSource&expression=${encodeURIComponent(expression)}&iDisplayStart=0&iDisplayLength=1`;
+
+  try {
+    const resp = await fetch(apiUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.legislation.tas.gov.au/',
+        'Accept': 'application/json, text/plain, */*',
+      }
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const data = await resp.json();
+
+    if (!data.data || !data.data.length) {
+      return { ok: true, actId: null, actTitle: normalized, source: 'not_found' };
+    }
+
+    const row = data.data[0];
+    const actTitle = row['Commencement.Target Title']?.__value__ || normalized;
+
+    // IntStr can be a single UniString or an array of UniStrings
+    const intStrField = row['Commencement.IntStr'];
+    let intStrValue = null;
+    if (Array.isArray(intStrField)) {
+      intStrValue = intStrField[0]?.__value__ || null;
+    } else if (intStrField?.__value__) {
+      intStrValue = intStrField.__value__;
+    }
+
+    if (!intStrValue) return { ok: true, actId: null, actTitle, source: 'not_found' };
+
+    // ZA76/ZY2001/... → act-2001-076
+    const m = intStrValue.match(/^Z([AS])(\d+)\/ZY(\d{4})/);
+    if (!m) return { ok: true, actId: null, actTitle, source: 'not_found' };
+
+    const actType = m[1] === 'A' ? 'act' : 'sr';
+    const actNum  = String(parseInt(m[2])).padStart(3, '0');
+    const actYear = m[3];
+    const actId   = `${actType}-${actYear}-${actNum}`;
+
+    // Write back source_url to legislation table if row exists
+    try {
+      await env.DB.prepare(
+        `UPDATE legislation SET source_url = ? WHERE LOWER(title) LIKE LOWER('%' || ? || '%') AND source_url IS NULL`
+      ).bind(`https://www.legislation.tas.gov.au/view/whole/html/inforce/current/${actId}`, normalized).run();
+    } catch (_) { /* non-fatal */ }
+
+    return { ok: true, actId, actTitle, source: 'resolved' };
+  } catch (err) {
+    console.error('handleResolveAct error:', err.message);
+    return { ok: false, error: 'Failed to resolve act.' };
   }
 }
 
@@ -4099,6 +4292,8 @@ export default {
         else if (action === "word-search" && request.method === "GET") result = await handleWordSearch(url, env);
         else if (action === "austlii-word-search" && request.method === "GET") result = await handleAustLIIWordSearch(url, env);
         else if (action === "fetch-judgment" && request.method === "GET") result = await handleFetchJudgment(url, env);
+        else if (action === "amendments" && request.method === "GET") result = await handleAmendments(url, env);
+        else if (action === "resolve-act" && request.method === "GET") result = await handleResolveAct(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);

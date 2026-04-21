@@ -2,6 +2,7 @@ import { useState, useEffect, Fragment } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
 import StareDecisisSection from '../components/StareDecisisSection';
+import AmendmentPanel from '../components/AmendmentPanel';
 
 const BASE = 'https://arcanthyr.com';
 
@@ -212,6 +213,34 @@ export default function Library() {
       )}
     </div>
   );
+}
+
+function parseActNames(legislationExtracted) {
+  if (!legislationExtracted) return [];
+  let refs = [];
+  try {
+    refs = typeof legislationExtracted === 'string'
+      ? JSON.parse(legislationExtracted)
+      : legislationExtracted;
+    if (!Array.isArray(refs)) refs = [];
+  } catch { return []; }
+  const seen = new Set();
+  const result = [];
+  for (const ref of refs) {
+    if (typeof ref !== 'string') continue;
+    // Strip leading "s N " section prefix and trailing section refs
+    let name = ref
+      .replace(/^s\s+[\d\w.()\-]+\s+/i, '')
+      .replace(/\s+s\s+[\d\w.()\-]+\s*$/i, '')
+      .replace(/\s*\(Tas\)/gi, '')
+      .trim();
+    // Only include if it ends with a 4-digit year and looks like an Act title
+    if (name && /\d{4}$/.test(name) && !seen.has(name)) {
+      seen.add(name);
+      result.push(name);
+    }
+  }
+  return result;
 }
 
 /* ── Cases table ───────────────────────────────────────────── */
@@ -1122,6 +1151,18 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
             }
           })()}
         </div>
+        {(() => {
+          const actNames = parseActNames(c.legislation_extracted);
+          if (!actNames.length) return null;
+          return (
+            <div style={{ marginTop: '24px' }}>
+              <div style={{ fontSize: 11, letterSpacing: '0.08em', color: '#3D4247', textTransform: 'uppercase', marginBottom: '8px' }}>Legislation</div>
+              {actNames.map(name => (
+                <AmendmentPanel key={name} actName={name} />
+              ))}
+            </div>
+          );
+        })()}
         <StareDecisisSection
           citation={c.ref}
           onSelectCase={(citation) => {

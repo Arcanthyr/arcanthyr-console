@@ -39,6 +39,12 @@ export const api = {
     const params = new URLSearchParams({ q, limit: String(limit) });
     return req('GET', `/api/legal/austlii-word-search?${params.toString()}`);
   },
+  amendments: (actId) =>
+    req('GET', `/api/legal/amendments?act=${encodeURIComponent(actId)}`),
+
+  resolveAct: (name) =>
+    req('GET', `/api/legal/resolve-act?name=${encodeURIComponent(name)}`),
+
   fetchJudgment: async (url, citation = null) => {
     const params = new URLSearchParams({ url });
     if (citation) params.set('citation', citation);
