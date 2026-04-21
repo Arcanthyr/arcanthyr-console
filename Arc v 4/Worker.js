@@ -1670,7 +1670,7 @@ async function handleLibraryList(env) {
     env.DB.prepare(`
       SELECT id, id AS ref, title, jurisdiction AS court, current_as_at AS date,
              processed_date, NULL AS summary_quality_score, 'legislation' AS doc_type,
-             LENGTH(raw_text) AS raw_size, embedded
+             LENGTH(raw_text) AS raw_size, embedded, source_url
       FROM legislation ORDER BY processed_date DESC
     `).all(),
     env.DB.prepare(`
@@ -2297,8 +2297,10 @@ async function handleAmendments(url, env) {
 
       const yearInt = parseInt(sourceYear);
       const numInt  = parseInt(sourceActNo);
+      // Direct bill slug URLs (Bills2002/N_of_2002.html) frequently 404 for older bills.
+      // Link to the year's index instead; a proper fix requires fetching and parsing the index.
       const billPageUrl = yearInt >= 2002
-        ? `https://www.parliament.tas.gov.au/Bills/Bills${sourceYear}/${numInt}_of_${sourceYear}.html`
+        ? `https://www.parliament.tas.gov.au/bills/bills-introduced-into-parliament-${sourceYear}`
         : null;
 
       amendments.push({

@@ -779,40 +779,72 @@ function CorpusTable({ rows, onDelete, onDeleteNexus }) {
 }
 
 /* ── Legislation table ─────────────────────────────────────── */
+function actIdFromSourceUrl(sourceUrl) {
+  if (!sourceUrl) return null;
+  const m = /\/((?:act|sr)-\d{4}-\d{3})$/.exec(sourceUrl);
+  return m ? m[1] : null;
+}
+
 function LegislationTable({ rows, onDelete }) {
+  const [selectedLeg, setSelectedLeg] = useState(null);
+
+  function toggleLeg(r) {
+    setSelectedLeg(prev => prev?.id === r.id ? null : r);
+  }
+
   return (
-    <Table
-      cols={['Act', 'Jurisdiction', 'Status', 'Date Updated', 'Actions']}
-      rows={rows}
-      renderRow={r => (
-        <tr key={r.id}>
-          <td style={td}>
-            <a
-              href="https://www.legislation.tas.gov.au"
-              target="_blank"
-              rel="noopener"
-              style={{ color: 'var(--accent)', textDecoration: 'none' }}
-              onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-              onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-            >
-              {r.title} ↗
-            </a>
-          </td>
-          <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>{r.court}</td>
-          <td style={td}>
-            {r.embedded
-              ? <span style={{ color: 'var(--green)', fontSize: '11px' }}>● Embedded</span>
-              : <span style={{ color: 'var(--amber)', fontSize: '11px' }}>● Pending</span>}
-          </td>
-          <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
-            {r.date || '—'}
-          </td>
-          <td style={td}>
-            <button onClick={() => onDelete('legislation', r.id)} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
-          </td>
-        </tr>
+    <div>
+      <Table
+        cols={['Act', 'Jurisdiction', 'Status', 'Date Updated', 'Actions']}
+        rows={rows}
+        renderRow={r => (
+          <tr
+            key={r.id}
+            onClick={() => toggleLeg(r)}
+            style={{
+              cursor: 'pointer',
+              background: selectedLeg?.id === r.id ? 'var(--surface-hover)' : 'transparent',
+              borderLeft: selectedLeg?.id === r.id ? '2px solid var(--accent)' : '2px solid transparent',
+            }}
+          >
+            <td style={td}>
+              <a
+                href="https://www.legislation.tas.gov.au"
+                target="_blank"
+                rel="noopener"
+                style={{ color: 'var(--accent)', textDecoration: 'none' }}
+                onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                onClick={e => e.stopPropagation()}
+              >
+                {r.title} ↗
+              </a>
+            </td>
+            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>{r.court}</td>
+            <td style={td}>
+              {r.embedded
+                ? <span style={{ color: 'var(--green)', fontSize: '11px' }}>● Embedded</span>
+                : <span style={{ color: 'var(--amber)', fontSize: '11px' }}>● Pending</span>}
+            </td>
+            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
+              {r.date || '—'}
+            </td>
+            <td style={td}>
+              <button
+                onClick={e => { e.stopPropagation(); onDelete('legislation', r.id); }}
+                style={{ fontSize: '11px', color: 'var(--red)' }}
+              >Delete</button>
+            </td>
+          </tr>
+        )}
+      />
+      {selectedLeg && (
+        <div style={{ marginTop: '16px', padding: '16px 20px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--surface)' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>{selectedLeg.title}</div>
+          <AmendmentPanel actId={actIdFromSourceUrl(selectedLeg.source_url)} actName={selectedLeg.title} />
+        </div>
       )}
-    />
+    </div>
   );
 }
 
@@ -1152,14 +1184,23 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
           })()}
         </div>
         {(() => {
-          const actNames = parseActNames(c.legislation_extracted);
-          if (!actNames.length) return null;
+          let refs = [];
+          try {
+            refs = typeof c.legislation_extracted === 'string'
+              ? JSON.parse(c.legislation_extracted) : (c.legislation_extracted || []);
+            if (!Array.isArray(refs)) refs = [];
+          } catch { refs = []; }
+          if (!refs.length) return null;
           return (
             <div style={{ marginTop: '24px' }}>
               <div style={{ fontSize: 11, letterSpacing: '0.08em', color: '#3D4247', textTransform: 'uppercase', marginBottom: '8px' }}>Legislation</div>
-              {actNames.map(name => (
-                <AmendmentPanel key={name} actName={name} />
-              ))}
+              <ul style={{ paddingLeft: '16px', margin: 0 }}>
+                {refs.map((ref, i) => (
+                  <li key={i} style={{ fontSize: '13px', color: 'var(--pane-text)', lineHeight: 1.6, marginBottom: '2px' }}>
+                    {typeof ref === 'string' ? ref : JSON.stringify(ref)}
+                  </li>
+                ))}
+              </ul>
             </div>
           );
         })()}
