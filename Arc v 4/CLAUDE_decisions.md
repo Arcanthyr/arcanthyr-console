@@ -3984,3 +3984,15 @@ HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No j
 **Query suggestion feature — threshold-only variant preferred** — LLM-generated specific query strings risk hallucinated section numbers in a legal context. Threshold-only trigger (static warning string when top score < threshold) has no hallucination risk, zero latency cost, and is actionable for practitioner users. Parked alongside synthesis feedback loop — implement when corpus growth stabilises.
 
 **Per-case scraper resume — deferred, freshness fix prioritised** — scoping confirmed per-case resume is low value while corpus is fully scraped. Active year freshness (frozen done entries) is the live risk. Fix: delete active year entries from progress.json + TASMC_2026 scope addition. Structural resume work deferred indefinitely.
+
+## Session 93 decisions — 22 April 2026
+
+- **Option A on "Police v FRS"** — Practitioner shorthand, not corpus bug. Criminal summary matters are routinely styled "Police v X" in Tasmanian practice even where AustLII formal parties name informants. No corpus cleanup required; `cases.case_name`, case_chunks.enriched_text, and two authored secondary_sources chunks retain the shorthand by design.
+
+- **Skip performMerge party name clause** — performMerge operates on a single case's own material (`caseRow.case_name`, facts, issues, chunks). No cross-case citation generation, no pathway to fabricate party names for cases other than the one being synthesised. Adding the constraint here would increase instruction density without addressing any real failure mode. Party name constraint scoped to query-time synthesis only (Sol + V'ger).
+
+- **Defer V'ger [LEGISLATION] label fix to separate session** — Audit identified V'ger context serialisation omits the `[LEGISLATION]` label that Sol applies, affecting section-query responses via V'ger. Genuine functional gap but unrelated to the party-name patch. Bundling would complicate regression attribution on the party-name change. Separate session keeps the two deploys cleanly isolated.
+
+- **Synthesis prompt density rewrite skipped** — Audit confirmed all three prompts (performMerge, Sol, V'ger) are well-calibrated to their target models. Sonnet 4.6 handles Sol's fuller CRITICAL CITATION RULES + ANSWER STRUCTURE block comfortably. Qwen3's compact numbered RULES list suits its weaker instruction-following. performMerge's BAD/GOOD examples earn their token cost. No simplification or consolidation needed.
+
+- **Promoted retrieval recall defects to outstanding priorities not known issues** — Q2 and Q5 misses are concrete, measurable recall failures on specific chunks that exist and are embedded. Not a stable characteristic to document and work around — they're defects requiring diagnosis. VPS Qdrant probe is the next-session entry point (check scores on known-good chunks against query vector).

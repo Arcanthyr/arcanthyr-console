@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 22 April 2026 (end of session 92) · Supersedes all prior versions
+Updated: 22 April 2026 (end of session 93) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–89) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–90) — load conditionally
 
 ---
 
@@ -40,7 +40,11 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–89) — load conditiona
 
 ## OUTSTANDING PRIORITIES
 
-6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
+1. **Retrieval recall defect — direct-match misses** — Q2 ("sentencing guilty plea discount") fails to surface Dunning [2018] TASCCA 21 chunk 10 and Dunne [2021] TASCCA 5 chunk 3 despite both containing explicit "20% discount" content (deep_enriched=1, chunks embedded=1). Q5 ("right to silence direction jury") persistently fails to surface Lambert and Stokes [2007] TASSC 76 chunk 18 on two consecutive runs despite verbatim right-to-silence content. Not patch-caused — retrieval runs before synthesis. Requires VPS-side Qdrant probe: direct scroll against query vectors, score inspection on known-good chunks, identify whether root cause is query expansion fan-out dilution, BM25 interleave crowding, or score threshold floor.
+
+2. **Q9 secondary source chunk — authoring debt** — Session 90 authoring note claimed "no confirmed TASCCA quantum authority" for guilty plea discount. D1 audit session 93 confirms Dunning [2018] TASCCA 21 and Dunne [2021] TASCCA 5 are both direct 20% quantum TASCCA authorities. Rewrite Q9 chunk to cite them as controlling Tasmanian quantum authorities.
+
+3. **V'ger [LEGISLATION] label fix (edit E from s93 plan)** — V'ger context serialisation omits the [LEGISLATION] label (worker.js ~L2880 does not check for legislation type); affects section-query responses via V'ger toggle. Sol correctly tags legislation chunks; V'ger drift is functional. Scoped as separate-session task to isolate regression attribution.
 
 ---
 
@@ -71,7 +75,9 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–89) — load conditiona
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
 - **Q14 semantic ceiling — known** — `manual-b4135-chunk` (s 37 EA leading questions doctrine) scores ~0.46 against "leading questions technique" query; case_chunks floor ~0.63–0.69. Vocabulary patch + anchor fix delivered (examination technique added to CONCEPTS, anchor=Yes confirmed). Gap is structural: "technique" query too broad, matched by examination/witness case_chunks. Chunk correctly authored and embedded. A practitioner querying "s 37 Evidence Act leading questions" retrieves it in top 3. Q14 passes on case chunks (Police v Endlay). Secondary source surfacing is a known ceiling, not a pipeline defect.
 - **Pass 4 authority_synthesis — same structural vulnerability as Pass 3** — authority_synthesis chunks face the same score-floor crowding as secondary sources. Quota approach generalises: add a second quota block when this becomes a visible problem. Flagged by Opus session 92 — watch item only.
-- **Synthesis prompt — party name hallucination risk** — LLM invents party names when chunk contains citation but not full parties (e.g. generated "Police v FRS" for [2020] TASMC 9, actual parties Woodhouse and Vout v FRS). Mitigation: add constraint to synthesis prompt: cite only party names explicitly present in source material; fall back to citation-only if absent. Investigate synthesis prompt review next session before implementing.
+- **Party name constraint — DEPLOYED session 93** — Prophylactic bullet added to Sol citationRules block (worker.js ~L2663) and as item 3 in V'ger RULES block (worker.js ~L2905). Instructs LLM to cite by citation alone when source shows only citation without parties. Skipped on performMerge — operates on single case's own material, no pathway to fabricate. The "Police v FRS" for [2020] TASMC 9 flagged session 92 was NOT hallucination — it's stored practitioner shorthand (Option A confirmed): `cases.case_name` = "Police v FRS", `case_chunks.enriched_text` chunk 0 uses it, two authored secondary_sources chunks ("Police v FRS - Tendency Evidence Admissibility", "Police v FRS - Example Tendency Notice") use it by design. V'ger was retrieving faithfully. Summary criminal matters are routinely styled "Police v X" in Tasmanian practitioner reference even where formal AustLII parties name informants. No corpus cleanup needed.
+- **cases.embedded column unreliable as case-level gate** — Lambert and Stokes [2007] TASSC 76 shows `cases.embedded = 0` while all 49 chunks have `case_chunks.embedded = 1`. Same pattern family as the legislation_sections.embedding_model issue (session 90 finding). Canonical case-level embed signal is aggregation over case_chunks.embedded, not the case-row column. Do not use `cases.embedded` as a backlog gate or retrieval diagnostic.
+- **Retrieval stochastic variance across runs — confirmed session 93** — S92 vs S93 spot-checks showed different case sets retrieved on 4 of 5 identical queries (Q2, Q3, Q4, Q5 all returned substantially different TASCCA/TASSC cases). Combination of ANN jitter + query expansion fan-out + BM25 interleave stochasticity. Some variance is expected architecture behaviour, but Q2 and Q5 show persistent miss patterns separate from jitter — promoted to OUTSTANDING PRIORITY for root-cause diagnostic.
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
 - **Qdrant court field — FIXED session 91** — root cause: `c.court` absent from Worker SELECT in `fetch-case-chunks-for-embedding` and missing from poller metadata dict. Fixed in both files. Verified via Qdrant payload spot-check on [2019] TASCCA 1 chunks — `court: "cca"` confirmed present. Worker deployed `140a981e`, commit `f7ca5fc`.
 - **Parliament.tas.gov.au bill page URLs — slug format unresolvable from Act number** — `billPageUrl` in `handleAmendments` cannot construct a direct bill page URL because parliament.tas.gov.au uses title-derived slugs (e.g. `/bills/bills2025/justice-miscellaneous-reporting-procedures-bill-2025-10-of-2025`) not numeric paths. Current workaround: "Locate Hansard ↗" button links to `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"`. Proper fix requires fetching the year index page and matching by bill number — deferred.
@@ -197,18 +203,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–89) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 90) — 21 April 2026
-
-- **Legislation vocabulary anchor — full deployment** — New `build_legislation_embedding_text()` function in poller [LEG] pass prepends `Key terms: {act_title}; s {section_number} {heading}.` before every legislation section embed. Opus-designed, minimal format, whitelist-agnostic. Permanent — all future legislation uploads anchor automatically.
-- **Stage 1 (Evidence Act, 245 sections) re-embedded** — Q14 topic fixed (wrong-topic tendency chunk displaced); Q6, Q11, Q12, Q13 score improvements confirmed. Zero P→M regressions across 31-query baseline.
-- **Stage 2 (Criminal Code 468, MDA 253, Justices Act 163, Police Offences 143 — 1,027 sections) re-embedded** — Q6 structural improvement confirmed (all 3 positions correctly cite s 46 Criminal Code). Q21 improvement attributed to query expansion variance (Sentencing Act not yet re-embedded at Stage 2). Zero regressions.
-- **Stage 3 (Sentencing Act 147, Youth Justice Act 216, Justices Rules 96 — 459 sections) embed initiated** — first embed for all three Acts; no regression risk. Poller running.
-- **Q14 doctrine chunk authored** — `manual-b4135-chunk` rewritten from stub (concept list only) to full doctrine chunk: s 37 rule, five statutory exceptions, objection procedure, cross-examination distinction, s 38 relationship. 3,794 chars. Queued for re-embed.
-- **Q9 and Q26 corpus chunks authored and uploaded** — Q9: guilty plea discount (Tasmanian common law, utilitarian value + remorse, timing — no TASCCA quantum authority confirmed). Q26: unreasonable verdict / M v The Queen (Pell, SKA, Libke, circumstantial evidence — no TASCCA local authority confirmed). Both close outstanding priority #2.
-- **Synthesis feedback loop parked** — decision: do not build until corpus growth stabilises. Plan retained in repo. Rationale in decisions.md.
-
----
-
 ## CHANGES THIS SESSION (session 91) — 22 April 2026
 
 - **Q14 re-embed unblocked** — `manual-b4135-chunk` diagnosed as stale vector (embedded=1 in D1 but enriched_text rewritten post-embed in session 90); reset to embedded=0; poller will re-embed with current 3,794-char doctrine prose on next cycle. Live baseline confirmed miss (both target chunks absent from top 5); Q14 remains open pending poller confirm.
@@ -231,6 +225,19 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–89) — load conditiona
 - **Scraper scope + freshness fix** — TASMC_2026 added to `COURT_YEARS` (`range(2026, 2004, -1)`); active year entries (TASSC/TASCCA/TASFC/TASMC 2026) deleted from `scraper_progress.json` so next run re-scrapes for new cases. INSERT OR IGNORE prevents duplicates (commit c4ca8ac).
 - **Stage 3 legislation embed confirmed complete** — all 8 Acts `embedded=1` in D1. SA 147 + YJA 216 + JR 96 sections fully embedded with vocabulary anchors.
 - **Synthesis dedup spot-check** — 5 queries run (tendency, guilty plea, first offender, unreasonable verdict, right to silence). Dedup rules holding; Q3 shows repetitive hedging on sparse retrieval but no principle-repetition failures. One hallucination identified: party name invention ("Police v FRS") when chunk lacks full party data. Synthesis prompt review noted for next session.
+
+---
+
+## CHANGES THIS SESSION (session 93) — 22 April 2026
+
+- **Synthesis prompt party name constraint deployed** — Sol citationRules block (worker.js L2663) gains new bullet: "Party names must match those in the source material. If a source contains a citation (e.g. [2020] TASMC 9) without party names, cite by citation alone — do not complete or infer party names from training knowledge." V'ger RULES block (worker.js L2905) gains matching numbered item 3 with existing items 3–5 renumbered to 4–6. Prophylactic against citation-without-parties fabrication. Worker `1debff12-f0b7-43fe-afa8-62bedf22d599`, commit `0138309`.
+- **Cyrillic typo fix in handleLegalQuery** — `answерNote` (Cyrillic `е` U+0435 at fourth character) renamed to Latin `answerNote` throughout handleLegalQuery. Zero post-edit occurrences of the Cyrillic form in worker.js. No runtime effect but removes a latent code smell.
+- **Synthesis prompt audit complete — three prompts reviewed verbatim** — performMerge (gpt-4.1-mini, merge-time, worker.js L3124–L3244), handleLegalQuery (claude-sonnet-4-6, query-time, L2585–L2744, three system-prompt variants A/B/C), handleLegalQueryWorkersAI (@cf/qwen/qwen3-30b-a3b-fp8, query-time, L2823–L2945, three variants). No instruction-density rewrites required — all three well-calibrated to their models. performMerge skipped on party-name edit (no pathway to fabricate; operates on case's own material). V'ger `[LEGISLATION]` label gap identified but deferred to separate session.
+- **"Police v FRS" diagnosis corrected** — Session 92 flagged as hallucination; D1 audit confirmed it's stored practitioner shorthand. `cases.case_name` = "Police v FRS" for [2020] TASMC 9 (formal parties "Rebecca Woodhouse and Simon Gerard Vout v FRS" in `parties` column), propagated into case_chunks and two authored secondary_sources. Option A confirmed — summary matters styled "Police v X" is standard Tasmanian practitioner reference. V'ger was retrieving faithfully, not fabricating. Constraint deployment reframed from bugfix to prophylactic.
+- **Q2 retrieval recall defect identified** — "sentencing guilty plea discount" spot-check returned only Cleaver [2018] TASCCA 11 in S93, missing Dunning [2018] TASCCA 21 chunk 10 (explicit 20% discount, Markarian citation) and Dunne [2021] TASCCA 5 chunk 3 (explicit 20% reduction). Both cases deep_enriched=1, all chunks embedded=1. S92 retrieved both cleanly. Promoted to outstanding priority.
+- **Q5 retrieval recall defect identified — persistent** — "right to silence direction jury" spot-check persistently missed Lambert and Stokes [2007] TASSC 76 across two consecutive runs in S93. Chunk 18 contains verbatim right-to-silence jury direction content; case has 49 chunks all embedded=1. S92 retrieved cleanly. Not ANN jitter — persistent miss. Promoted to outstanding priority.
+- **Q9 authoring debt exposed** — Session 90 authoring note on guilty plea discount chunk claimed "no confirmed TASCCA quantum authority"; session 93 D1 audit establishes Dunning [2018] TASCCA 21 and Dunne [2021] TASCCA 5 are both direct 20% quantum TASCCA authorities and were in D1 at time of authoring. Q9 chunk needs rewrite to cite them. Promoted to outstanding priority.
+- **Spot-checks confirmed no regression from patch** — 5 session-92 queries rerun via UI V'ger toggle: no principle repetition regression, no citation fabrication, no party names absent from source. Patch-attributable effects all clean; retrieval variance and Q2/Q5 recall issues all predate the patch.
 
 ---
 

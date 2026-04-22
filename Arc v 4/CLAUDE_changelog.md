@@ -1,9 +1,21 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–89 · 26 March 2026 – 21 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91; session 89 added end of session 92*
+*Sessions 21–90 · 26 March 2026 – 21 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91; session 89 added end of session 92; session 90 added end of session 93*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 90) — 21 April 2026
+
+- **Legislation vocabulary anchor — full deployment** — New `build_legislation_embedding_text()` function in poller [LEG] pass prepends `Key terms: {act_title}; s {section_number} {heading}.` before every legislation section embed. Opus-designed, minimal format, whitelist-agnostic. Permanent — all future legislation uploads anchor automatically.
+- **Stage 1 (Evidence Act, 245 sections) re-embedded** — Q14 topic fixed (wrong-topic tendency chunk displaced); Q6, Q11, Q12, Q13 score improvements confirmed. Zero P→M regressions across 31-query baseline.
+- **Stage 2 (Criminal Code 468, MDA 253, Justices Act 163, Police Offences 143 — 1,027 sections) re-embedded** — Q6 structural improvement confirmed (all 3 positions correctly cite s 46 Criminal Code). Q21 improvement attributed to query expansion variance (Sentencing Act not yet re-embedded at Stage 2). Zero regressions.
+- **Stage 3 (Sentencing Act 147, Youth Justice Act 216, Justices Rules 96 — 459 sections) embed initiated** — first embed for all three Acts; no regression risk. Poller running.
+- **Q14 doctrine chunk authored** — `manual-b4135-chunk` rewritten from stub (concept list only) to full doctrine chunk: s 37 rule, five statutory exceptions, objection procedure, cross-examination distinction, s 38 relationship. 3,794 chars. Queued for re-embed.
+- **Q9 and Q26 corpus chunks authored and uploaded** — Q9: guilty plea discount (Tasmanian common law, utilitarian value + remorse, timing — no TASCCA quantum authority confirmed). Q26: unreasonable verdict / M v The Queen (Pell, SKA, Libke, circumstantial evidence — no TASCCA local authority confirmed). Both close outstanding priority #2.
+- **Synthesis feedback loop parked** — decision: do not build until corpus growth stabilises. Plan retained in repo. Rationale in decisions.md.
 
 ---
 
