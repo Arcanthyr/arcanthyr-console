@@ -1,9 +1,20 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–88 · 26 March 2026 – 21 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91*
+*Sessions 21–89 · 26 March 2026 – 21 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91; session 89 added end of session 92*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 89) — 21 April 2026
+
+- **Model upgrades** — gpt-4o-mini-2024-07-18 → gpt-4.1-mini-2025-04-14 across all worker.js call sites (handleFormatAndUpload, performMerge main synthesis, performMerge sentencing synthesis, runSentencingBackfill, CHUNK handler) and server.py (generate_query_variants, call_gpt_mini); claude-sonnet-4-20250514 → claude-sonnet-4-6 for Sol path in handleLegalQuery; both deployed, smoke tested, committed 786f9a6
+- **TYPE_TAGS cosmetic fix** — added `"secondary_source": "CORPUS"` alias to ResultCard.jsx TYPE_TAGS; secondary source result cards now display "CORPUS" label correctly instead of raw type string
+- **Synthesis dedup tightened** — performMerge() synthesis prompt range reduced from 4–8 to 3–5 principles; explicit pre-output grouping and deduplication instructions added; forward-only (existing corpus unaffected)
+- **update-secondary-raw diagnosis closed** — root cause of session 88 404s confirmed as hand-typed ID mismatches during manual testing, not a routing or encoding bug; silent-success bug (returning `{ ok: true, updated: 0 }` on no-match) fixed to proper HTTP 404; KNOWN ISSUES entry corrected
+- **Subject_matter audit complete** — full audit of all non-criminal cases with criminal party name patterns run via auslaw-mcp; 11 rows checked; 0 genuine misclassifications; Tasmania v Rattigan [2021] TASSC 28 corrected administrative → criminal, 8 case chunks reset embedded=0 for re-embed; audit documented as clean
+- **Corpus additions — 8 new secondary source chunks** — block_023 (MDA s 29 prescribed belief, MDA evidentiary/possession/schedules, Youth Justice Act responsibility/diversion, Youth Justice Act joint charges/procedure) and block_028 (FV victim opinion/forgiveness, FV s 29A serial perpetrator declaration, FV aggravating children presence, FVO consent orders/jurisdiction) formatted and uploaded via console paste path
 
 ---
 

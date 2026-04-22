@@ -496,22 +496,42 @@ def build_secondary_embedding_text(raw_text, enriched_text=None):
 
     for line in lines:
         ls = line.strip()
-        m = re.match(r'^\[?concepts:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
-        if m:
-            concepts = m.group(1).strip().rstrip(']')
-            continue
-        m = re.match(r'^\[?act:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
-        if m:
-            val = m.group(1).strip().rstrip(']')
-            if val.lower() not in ('none', 'n/a', ''):
-                act = val
-            continue
-        m = re.match(r'^\[?case:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
-        if m:
-            val = m.group(1).strip().rstrip(']')
-            if val.lower() not in ('none', 'n/a', ''):
-                case_ref = val
-            continue
+        # Primary: re.search handles inline format [FIELD: value] anywhere on line
+        # (e.g. [DOMAIN: X] [CONCEPTS: ...] [ACT: Y] all on one line).
+        # Fallback: re.match handles standalone lines (bare or single-bracketed).
+        # No continue — a single line may yield all three fields (inline format).
+        if not concepts:
+            m = re.search(r'\[concepts:\s*([^\]]+)\]', ls, re.IGNORECASE)
+            if m:
+                concepts = m.group(1).strip()
+            else:
+                m = re.match(r'^\[?concepts:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
+                if m:
+                    concepts = m.group(1).strip().rstrip(']')
+        if not act:
+            m = re.search(r'\[act:\s*([^\]]+)\]', ls, re.IGNORECASE)
+            if m:
+                val = m.group(1).strip()
+                if val.lower() not in ('none', 'n/a', ''):
+                    act = val
+            else:
+                m = re.match(r'^\[?act:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
+                if m:
+                    val = m.group(1).strip().rstrip(']')
+                    if val.lower() not in ('none', 'n/a', ''):
+                        act = val
+        if not case_ref:
+            m = re.search(r'\[case:\s*([^\]]+)\]', ls, re.IGNORECASE)
+            if m:
+                val = m.group(1).strip()
+                if val.lower() not in ('none', 'n/a', ''):
+                    case_ref = val
+            else:
+                m = re.match(r'^\[?case:\s*(.+?)\]?\s*$', ls, re.IGNORECASE)
+                if m:
+                    val = m.group(1).strip().rstrip(']')
+                    if val.lower() not in ('none', 'n/a', ''):
+                        case_ref = val
 
     if enriched_text:
         body = strip_frontmatter(enriched_text)

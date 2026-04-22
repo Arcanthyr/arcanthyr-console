@@ -773,10 +773,32 @@ def search_text(body):
             print(f"[Pass 4] gate=FIRE reason={_reason4} ENABLED=false (shadow)")
 
 
-    # ── Final sort + cap ─────────────────────────────────────────────────────
-    # Re-sort after BM25 injection (scores may have changed via boost) then cap.
+    # ── Final sort + cap (quota-aware) ───────────────────────────────────────
+    # Re-sort after BM25 injection then apply quota: if no secondary_source
+    # survived the score-based cap, promote the highest-scoring one (if it
+    # clears SWAP_MIN_SCORE) into the last slot.
+    SECONDARY_QUOTA = 1
+    SWAP_MIN_SCORE  = 0.40
+
     chunks.sort(key=lambda c: -c["score"])
-    chunks = chunks[:top_k]
+
+    if top_k >= 3:
+        eligible = [c for c in chunks
+                    if c.get("type") == "secondary_source"
+                    and c["score"] >= SWAP_MIN_SCORE]
+        if eligible and not any(c.get("type") == "secondary_source"
+                                for c in chunks[:top_k]):
+            winner = eligible[0]   # highest-scoring (list already sorted)
+            others = [c for c in chunks
+                      if c.get("type") != "secondary_source"][:top_k - SECONDARY_QUOTA]
+            chunks = others + [winner]
+            chunks.sort(key=lambda c: -c["score"])
+            print(f"[+] Secondary quota applied: {winner.get('citation', '?')} @ "
+                  f"{winner['score']:.4f} displaced lowest case_chunk")
+        else:
+            chunks = chunks[:top_k]
+    else:
+        chunks = chunks[:top_k]
 
     print(f"[+] Returning {len(chunks)} chunks after BM25 merge and final cap")
     return chunks

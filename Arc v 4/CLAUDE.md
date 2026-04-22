@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 22 April 2026 (end of session 91) · Supersedes all prior versions
+Updated: 22 April 2026 (end of session 92) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–89) — load conditionally
 
 ---
 
@@ -14,7 +14,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditiona
 | Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79 |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
-| D1 secondary_sources | 1,448 total (Q9 guilty plea discount chunk, Q26 unreasonable verdict chunk, Q14 s37 EA doctrine chunk added session 90) · embedded=0: 23 (20 carried forward + 3 new session 90 chunks pending embed) |
+| D1 secondary_sources | 1,448 total (Q9 guilty plea discount chunk, Q26 unreasonable verdict chunk, Q14 s37 EA doctrine chunk added session 90) · embedded=0: 3 (nexus-save entries only — all corpus chunks embedded) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
@@ -22,9 +22,9 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditiona
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
-| enrichment_poller | RUNNING — 23 secondary source chunks pending embed · legislation Stage 3 embed in progress (459 sections: Sentencing Act 147 + Youth Justice Act 216 + Justices Rules 96) |
+| enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
 | Cloudflare Queue | drained |
-| Scraper | COMPLETE — corpus stable at 1,914 cases (back to 2005), count unchanged from session 81 close; scraper.log check confirmed no new cases |
+| Scraper | RUNNING — active year entries reset (TASSC/TASCCA/TASFC/TASMC 2026 deleted from progress.json, next run re-scrapes) · TASMC 2026 added to COURT_YEARS scope · INSERT OR IGNORE prevents duplicates |
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE · Pass 2 MatchAny criminal/mixed hard filter LIVE (all three parts complete) |
 | Stare decisis UI | LIVE |
@@ -34,7 +34,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditiona
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · two-step search pattern documented |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
-| Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) embed in progress · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
+| Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) complete · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
 
 ---
 
@@ -69,6 +69,9 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditiona
 - **/search top_k=12 server-side cap** — server.py line 296 hard-caps at 12 regardless of requested top_k. Cap retained for latency bounding. With query expansion live (4 fan-out queries), the merged Pass 1 pool is larger but still capped at top_k*2 per leg — monitor for cases where the cap is discarding strong results. Confirmed session 76: passing `"top_k": 12` in the request payload breaks the endpoint (returns 0 chunks) — the field is not accepted; omit it, default 6 is what the baseline script uses.
 - **Q27 (provocation) confirmed as corpus content gap** — provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Authoring decision, not retrieval defect.
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
+- **Q14 semantic ceiling — known** — `manual-b4135-chunk` (s 37 EA leading questions doctrine) scores ~0.46 against "leading questions technique" query; case_chunks floor ~0.63–0.69. Vocabulary patch + anchor fix delivered (examination technique added to CONCEPTS, anchor=Yes confirmed). Gap is structural: "technique" query too broad, matched by examination/witness case_chunks. Chunk correctly authored and embedded. A practitioner querying "s 37 Evidence Act leading questions" retrieves it in top 3. Q14 passes on case chunks (Police v Endlay). Secondary source surfacing is a known ceiling, not a pipeline defect.
+- **Pass 4 authority_synthesis — same structural vulnerability as Pass 3** — authority_synthesis chunks face the same score-floor crowding as secondary sources. Quota approach generalises: add a second quota block when this becomes a visible problem. Flagged by Opus session 92 — watch item only.
+- **Synthesis prompt — party name hallucination risk** — LLM invents party names when chunk contains citation but not full parties (e.g. generated "Police v FRS" for [2020] TASMC 9, actual parties Woodhouse and Vout v FRS). Mitigation: add constraint to synthesis prompt: cite only party names explicitly present in source material; fall back to citation-only if absent. Investigate synthesis prompt review next session before implementing.
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
 - **Qdrant court field — FIXED session 91** — root cause: `c.court` absent from Worker SELECT in `fetch-case-chunks-for-embedding` and missing from poller metadata dict. Fixed in both files. Verified via Qdrant payload spot-check on [2019] TASCCA 1 chunks — `court: "cca"` confirmed present. Worker deployed `140a981e`, commit `f7ca5fc`.
 - **Parliament.tas.gov.au bill page URLs — slug format unresolvable from Act number** — `billPageUrl` in `handleAmendments` cannot construct a direct bill page URL because parliament.tas.gov.au uses title-derived slugs (e.g. `/bills/bills2025/justice-miscellaneous-reporting-procedures-bill-2025-10-of-2025`) not numeric paths. Current workaround: "Locate Hansard ↗" button links to `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"`. Proper fix requires fetching the year index page and matching by bill number — deferred.
@@ -194,17 +197,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 89) — 21 April 2026
-
-- **Model upgrades** — gpt-4o-mini-2024-07-18 → gpt-4.1-mini-2025-04-14 across all worker.js call sites (handleFormatAndUpload, performMerge main synthesis, performMerge sentencing synthesis, runSentencingBackfill, CHUNK handler) and server.py (generate_query_variants, call_gpt_mini); claude-sonnet-4-20250514 → claude-sonnet-4-6 for Sol path in handleLegalQuery; both deployed, smoke tested, committed 786f9a6
-- **TYPE_TAGS cosmetic fix** — added `"secondary_source": "CORPUS"` alias to ResultCard.jsx TYPE_TAGS; secondary source result cards now display "CORPUS" label correctly instead of raw type string
-- **Synthesis dedup tightened** — performMerge() synthesis prompt range reduced from 4–8 to 3–5 principles; explicit pre-output grouping and deduplication instructions added; forward-only (existing corpus unaffected)
-- **update-secondary-raw diagnosis closed** — root cause of session 88 404s confirmed as hand-typed ID mismatches during manual testing, not a routing or encoding bug; silent-success bug (returning `{ ok: true, updated: 0 }` on no-match) fixed to proper HTTP 404; KNOWN ISSUES entry corrected
-- **Subject_matter audit complete** — full audit of all non-criminal cases with criminal party name patterns run via auslaw-mcp; 11 rows checked; 0 genuine misclassifications; Tasmania v Rattigan [2021] TASSC 28 corrected administrative → criminal, 8 case chunks reset embedded=0 for re-embed; audit documented as clean
-- **Corpus additions — 8 new secondary source chunks** — block_023 (MDA s 29 prescribed belief, MDA evidentiary/possession/schedules, Youth Justice Act responsibility/diversion, Youth Justice Act joint charges/procedure) and block_028 (FV victim opinion/forgiveness, FV s 29A serial perpetrator declaration, FV aggravating children presence, FVO consent orders/jurisdiction) formatted and uploaded via console paste path
-
----
-
 ## CHANGES THIS SESSION (session 90) — 21 April 2026
 
 - **Legislation vocabulary anchor — full deployment** — New `build_legislation_embedding_text()` function in poller [LEG] pass prepends `Key terms: {act_title}; s {section_number} {heading}.` before every legislation section embed. Opus-designed, minimal format, whitelist-agnostic. Permanent — all future legislation uploads anchor automatically.
@@ -226,6 +218,19 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditiona
 - **Stale KNOWN ISSUES cleared** — subject_matter Option A entry (feature live since session 89), corpus placeholders entry (block_023/028 content filled session 89 via 8 secondary source chunks — confirmed via history), striprtf entry all deleted.
 - **Q9/Q26 closed** — secondary source chunks authored and uploaded this session; both removed from outstanding priorities.
 - **Parallel CC workflow adopted** — two CC instances run concurrently this session (Stream A: court field fix + striprtf; Stream B: synthesis dedup). Pattern documented in KNOWN ISSUES for reuse.
+
+---
+
+## CHANGES THIS SESSION (session 92) — 22 April 2026
+
+- **Quota-aware final cap** — server.py `performSearch()` final sort+cap replaced with quota-aware block: `SECONDARY_QUOTA=1`, `SWAP_MIN_SCORE=0.40`, gates on `top_k>=3`. Guarantees ≥1 secondary source in top_k when one scores ≥0.40 and case_chunks would otherwise crowd it out. Log line fires on displacement. Working in production — secondary sources visible in multiple API calls.
+- **Anchor regex fix** — `enrichment_poller.py` `build_secondary_embedding_text()` regex changed from `re.match` to `re.search` with fallback to handle inline multi-field header lines (`[# identifier]` format on line 1). `anchor=Yes` confirmed for `manual-b4135-chunk` at 09:50:51. Only one chunk used this header format.
+- **Vocab patch: manual-b4135-chunk** — `examination technique` added to CONCEPTS line; opening sentence added to `## The Rule` section. Score lifted 0.4549→0.4705; chunk now #1→#2 among secondary sources on direct Qdrant query. Anchor fix brought score to 0.4572 (slight dilution from 409-char anchor prefix). Q14 remains structural miss — semantic ceiling confirmed.
+- **TYPE_TAGS stale entry cleaned** — `secondary_source: { label: 'CORPUS' }` confirmed live since session 89. Stale KNOWN ISSUES entry removed (commit c136731).
+- **Stale baseline SESSION RULE added** — SESSION RULES table now includes baseline output file rule: always use timestamped snapshots, `~/retrieval_baseline_results.txt` is Apr 16 stale (commit c136731).
+- **Scraper scope + freshness fix** — TASMC_2026 added to `COURT_YEARS` (`range(2026, 2004, -1)`); active year entries (TASSC/TASCCA/TASFC/TASMC 2026) deleted from `scraper_progress.json` so next run re-scrapes for new cases. INSERT OR IGNORE prevents duplicates (commit c4ca8ac).
+- **Stage 3 legislation embed confirmed complete** — all 8 Acts `embedded=1` in D1. SA 147 + YJA 216 + JR 96 sections fully embedded with vocabulary anchors.
+- **Synthesis dedup spot-check** — 5 queries run (tendency, guilty plea, first offender, unreasonable verdict, right to silence). Dedup rules holding; Q3 shows repetitive hedging on sparse retrieval but no principle-repetition failures. One hallucination identified: party name invention ("Police v FRS") when chunk lacks full party data. Synthesis prompt review noted for next session.
 
 ---
 
