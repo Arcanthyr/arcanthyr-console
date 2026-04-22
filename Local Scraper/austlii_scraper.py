@@ -27,7 +27,7 @@ COURT_YEARS = {
     'TASSC':  list(range(2026, 2004, -1)),  # 2026 down to 2005
     'TASCCA': list(range(2026, 2009, -1)),  # 2026 down to 2010
     'TASFC':  list(range(2026, 2009, -1)),  # 2026 down to 2010
-    'TASMC':  list(range(2025, 2004, -1)),  # 2025 down to 2005
+    'TASMC':  list(range(2026, 2004, -1)),  # 2026 down to 2005
 }
 UPLOAD_URL = 'https://arcanthyr.com/api/legal/upload-case'
 
