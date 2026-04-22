@@ -3180,10 +3180,10 @@ GOOD (case-specific, tells you why THIS case matters):
 - "The appellant's failure to disclose gambling debts totalling $180,000 was fatal to her Testators Family Maintenance claim because adequate provision cannot be assessed without full financial disclosure"
 
 DEDUPLICATION RULES — strictly enforce before writing output:
-- Each principle must be substantively distinct. Do not restate the same point in different words.
-- If two candidate principles overlap or make the same legal point, merge them into one.
-- Before writing, identify candidate principles and group any that are near-synonymous. Output only the merged, non-redundant set.
-- 3 tight, distinct principles are better than 5 that contain redundancy.
+- Before writing, mentally group all input principles by legal concept. Treat two principles as duplicates only if they state the same legal rule, applying to the same legal test, under the same provision or doctrine. Shared vocabulary alone is not sufficient — tendency and coincidence evidence both require "significant probative value" but are distinct doctrines and must not be merged.
+- When merging duplicates, prefer the formulation that carries the most specific detail. Statutory references, named authorities, and Tasmanian-specific qualifications take precedence over general statements of the same rule.
+- Output one principle per distinct legal concept only. 3 tight, distinct principles are better than 5 that contain redundancy.
+- If genuine distinct legal rules number fewer than 3, output fewer rather than padding.
 
 Output ONLY a valid JSON object with two keys: "principles" and "holdings". No markdown fences. No commentary. The first character must be {
 
@@ -4340,7 +4340,7 @@ export default {
     if (url.pathname === '/api/pipeline/fetch-case-chunks-for-embedding' && request.method === 'GET') {
       const batch = parseInt(url.searchParams.get('batch') || '10');
       const { results } = await env.DB.prepare(
-        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, cc.principles_json, c.case_name, c.subject_matter
+        `SELECT cc.id, cc.citation, cc.chunk_index, cc.chunk_text, cc.enriched_text, cc.principles_json, c.case_name, c.subject_matter, c.court
  FROM case_chunks cc
  LEFT JOIN cases c ON c.citation = cc.citation
  WHERE cc.done = 1 AND cc.embedded = 0 AND cc.enriched_text IS NOT NULL LIMIT ?`
