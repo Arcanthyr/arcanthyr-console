@@ -2653,7 +2653,7 @@ async function handleLegalQuery(body, env) {
       ? `You are a Tasmanian criminal law research assistant. The section text has been provided. Quote it and explain what it means. Do not speculate about how courts have applied it - no cases are in the database yet for this section. Format in plain prose - no markdown headers.`
       : `You are a Tasmanian criminal law research assistant. Answer using the provided excerpts, which may include raw judgment text, synthesised doctrine, or legislation. Be precise and cite specific cases. When excerpts contain raw judgment text, reason from and synthesise what is there — do not refuse to answer simply because the text lacks a clean doctrinal statement. Only say the material is insufficient if the excerpts are genuinely silent on the topic. AUTHORITY ANALYSIS blocks summarise how Tasmanian courts have cited and treated a specific case — use them to describe subsequent treatment, citation frequency, and how the case has been applied or distinguished. Format in plain prose - no markdown headers.`;
 
-  const answерNote = sectionContext
+  const answerNote = sectionContext
     ? `The full text of ${sectionContext.label} is provided first. Quote it in your answer, then discuss any cases that have applied or interpreted it.`
     : `Cite the case citation (e.g. [2024] TASSC 42) when you rely on a specific case.`;
 
@@ -2661,6 +2661,7 @@ async function handleLegalQuery(body, env) {
 - You may only cite cases, legislation, and authorities that appear explicitly in the source material provided above.
 - Do NOT generate, recall, or infer case citations from your training knowledge.
 - If a case name or citation does not appear in the retrieved sources, do not mention it.
+- Party names must match those in the source material. If a source contains a citation (e.g. [2020] TASMC 9) without party names, cite by citation alone — do not complete or infer party names from training knowledge.
 - If the retrieved sources do not contain sufficient case authority on a point, say so explicitly — do not fabricate citations to fill the gap.
 - Legislation references must match exactly what appears in the source material — do not correct, complete, or substitute legislation names from your training knowledge.
 - It is better to say "the retrieved sources do not contain specific case authority on this point" than to cite a case that may not exist or may not stand for the proposition stated.
@@ -2678,7 +2679,7 @@ ${contextBlocks}
 
 ${citationRules}
 
-${answерNote}`;
+${answerNote}`;
 
   // ── Step 3: Call Claude API ──────────────────────────────────
   const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -2901,7 +2902,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   const response = await env.AI.run(WORKERS_AI_MODEL, {
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. If a source contains raw judgment text, extract and summarise the court's reasoning and findings directly from that text. Only note a gap if no relevant material is present at all.\n4. Do not pad answers with general principles unless directly supported by the retrieved sources.\n5. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
+      { role: "user", content: `Question: ${query.trim()}\n\nRelevant material:\n\n${contextBlocks}\n\nRULES — follow strictly:\n1. Only cite cases and legislation that appear explicitly in the source material above.\n2. Do not recall, infer, or generate citations from training knowledge.\n3. Party names must match the source material. If a source shows only a citation without party names, cite by citation alone — do not complete party names.\n4. If a source contains raw judgment text, extract and summarise the court's reasoning and findings directly from that text. Only note a gap if no relevant material is present at all.\n5. Do not pad answers with general principles unless directly supported by the retrieved sources.\n6. It is better to admit a gap than to fill it with uncertain information.\n\n${answerNote}` },
     ],
     max_tokens: 2000,
     budget_tokens: 0,
