@@ -1,9 +1,21 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–87 · 26 March 2026 – 21 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90*
+*Sessions 21–88 · 26 March 2026 – 21 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 88) — 21 April 2026
+
+- **s38 EA CONCEPTS hygiene complete** — 10 `Evidence Act 2001 (Tas) s 38 -` secondary source chunks prepended with `[CONCEPTS:]`, `[TOPIC:]`, `[JURISDICTION:]` headers via direct D1 updates (bypassed broken `update-secondary-raw` Worker route); all 10 reset to `embedded=0` for poller re-embed; Bucket 2 item struck from OUTSTANDING PRIORITIES
+- **auslaw-mcp docker hardening complete** — `mem_limit: 1g`, `cpus: '1.0'`, `read_only: true`, `tmpfs: [/tmp]` applied to `~/auslaw-mcp/docker-compose.yaml`; write-path check confirmed only `/tmp` used (OCR via `tmp.fileSync()` in `fetcher.ts`); container force-recreated cleanly
+- **auslaw-mcp GitHub MCP (item d) resolved** — existing user-scope `github` MCP in `~/.claude.json` already satisfies requirement; no new config needed; verified via `mcp__github__get_file_contents` on `russellbrenner/auslaw-mcp`
+- **auslaw-mcp hardening entry removed** — all four sub-items resolved: (a) confirmed moot — VPS TCP-blocked by AustLII at network level, `/fetch-page` cannot reach AustLII regardless; (b)(c)(d) done this session
+- **VPS/AustLII TCP block confirmed and documented** — curl confirmed SYN to `austlii.edu.au:443` silently dropped from Contabo VPS (exit 28, timeout, HTTP 000); session 35 "not blocked" finding retired; canonical answer now documented; `search_cases` KNOWN ISSUES entry root cause corrected
+- **Two-step auslaw-mcp search pattern documented** — `search_cases` dead from VPS; canonical CC/Cowork pattern: `POST /api/legal/word-search` for citation discovery → `search_by_citation` for full text fetch; added to SESSION RULES
+- **Stale horizon items reconciled** — citation authority agent (now Pass 4, live), AustLII MCP integration (superseded by Quick Search tab + auslaw-mcp), subject_matter filter (all three parts complete) confirmed done; memory updated
 
 ---
 

@@ -3962,3 +3962,9 @@ HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No j
 
 > **Q9 and Q26 authoring approach (session 90)**
 > Chunks authored without confirmed TASCCA authority on quantum (Q9) or local application (Q26). Honest gaps noted in chunk text rather than citing unverified interstate benchmarks or fabricating local authority. Pattern: author the doctrine accurately, flag the gap explicitly in the chunk body, supplement later if TASCCA authority surfaces via scraper or manual review using update-secondary-raw.
+
+## Session 91 decisions — 22 April 2026
+
+**Synthesis dedup approach — legal distinctness test over surface similarity** — The session 89 "near-synonymous" grouping cue was insufficient because it keyed on phrasing overlap, not conceptual identity. Two principles can share zero surface words but express the same legal concept (e.g. "broad sentencing discretion" and "sentencing is not a mathematical exercise"). The replacement uses an explicit legal distinctness test: two principles are duplicates only if they state the same rule, applying to the same legal test, under the same provision or doctrine. Tendency and coincidence evidence — both using "significant probative value" language — are the canonical example of shared vocabulary across distinct doctrines embedded in the prompt. Nuance preservation rule added: when merging, prefer the formulation carrying the most specific detail (statutory reference, named authority, Tasmanian qualification). Old dedup bullets replaced entirely rather than layered to avoid instruction conflicts.
+
+**Parallel CC workflow** — First session using two CC instances on independent sub-tasks concurrently (Stream A: Qdrant court field + striprtf; Stream B: synthesis dedup). Tom and Claude.ai coordinate and oversee; CC instances implement in parallel. Pattern confirmed viable with no quality loss. To be applied wherever tasks have no shared state dependency.

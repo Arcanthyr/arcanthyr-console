@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 21 April 2026 (end of session 90) · Supersedes all prior versions
+Updated: 22 April 2026 (end of session 91) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–87) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–88) — load conditionally
 
 ---
 
@@ -40,24 +40,19 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–87) — load conditiona
 
 ## OUTSTANDING PRIORITIES
 
-3. **Q14 — verify post-embed** — doctrine chunk (manual-b4135-chunk) rewritten with full prose (3,794 chars) and queued for re-embed session 90. Legislation anchor on s 37 EA pulled correct topic to #1 (displacing wrong-topic tendency chunk). Verify once poller embeds updated chunk: s 37 EA and doctrine chunk should both surface in top 3 for "leading questions examination in chief".
-
 6. **Quick Search tab — COMPLETE** — All five phases delivered. Phase 3 (Jade link button, `buildJadeUrl` using AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`), Phase 4 (`query_log` `search_type` column, word-search queries now logged), Phase 5 (full-judgment fetch + `austlii_cache` D1 table, 30-day TTL, inline viewer with `dangerouslySetInnerHTML`, CF-edge fetch direct). All verified via browser automation session 86.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Q9 (guilty plea discount) — common law only, no Tasmanian statute** — confirmed session 82: Tasmania has no codified guilty plea discount provision in the Sentencing Act 1997 (unlike NSW s 22 CSPA or Vic s 5(2)(e)). Sentencing Act now ingested (147 sections). Q9 fix requires secondary source authoring on Tasmanian common law discount methodology, not legislation upload.
 - **SCP/CRLF file truncation — HARDENED (session 84)** — Three tracked files truncated mid-statement in s82 commit `107bd96`; Worker.js git record additionally wrong in s83 commit `1e6fb23` (truncated version committed, correct version only on Cloudflare). Session 84 mitigations deployed: `.gitattributes` pins LF on checkout; pre-commit hook runs `@babel/parser` on staged JS/JSX (bash, null-separated loop — space-safe for `Arc v 4/` paths); `npm run build` is pre-deploy gate; Worker.js git record fixed `853a56d`. VPS files (server.py, enrichment_poller.py) outside git — continue to prefer hex-ssh over plain SCP for round-trips.
 - **`node --check` false-pass — RETIRED** — Session 83: false-passed on truncated worker.js (exit 0, file cut at `pass1.judge ||`). Session 84: `node --check` retired from SESSION RULE; `npm run build` is now the pre-deploy gate; `@babel/parser` pre-commit hook catches JS/JSX parse errors at commit time.
-- **Corpus ... placeholders — 3 of 5 resolved** — part1.md:1282 and part2.md:2415 confirmed as legal elisions (not errors) · part2.md:381 `T...` fixed to `The` · remaining 2 genuine gaps: part2.md:1167 block_023 (`...BUT see below` dangling ref) and part2.md:1957 block_028 (`[Continues with specifics...]` placeholder) — both need source material from rag_blocks/, deferred to Procedure Prompt re-ingest
-- **Synthesis deduplication loose** — "4-8 principles" instruction not tight enough · spot-check produced 4 principles from 2 ideas (redundant restatements) · not a blocker for retrieval (embeddings match correctly) · note for Pass 2 prompt quality review on roadmap
+- **Synthesis deduplication — tightened session 91** — DEDUPLICATION RULES block in `performMerge()` replaced. Four old bullets (including weak "near-synonymous" grouping cue) replaced with four new ones: (1) pre-generation concept grouping with explicit legal distinctness test (same rule + same provision/doctrine required to merge — tendency/coincidence example embedded); (2) nuance preservation rule (prefer formulation with statutory reference and named authority); (3) one principle per distinct concept; (4) output fewer than 3 if genuine distinct rules number fewer than 3. Forward-only — existing D1 rows unaffected.
 - **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · monitor as new chunks are ingested — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
-- **subject_matter audit — COMPLETE session 89** — Full misclassification audit run: all subject_matter != 'criminal' cases with criminal party name patterns (R v, Tasmania v, Police v). 11 rows returned, 0 genuine misclassifications found — Pilling entries correctly administrative (workers comp); R v [Tribunal] entries correctly administrative (judicial review); three bare R v [surname] entries (Trustrum, Holman, Haley) confirmed civil contempt proceedings. Rattigan classification corrected to criminal session 89. Audit clean — safe to proceed with Option A Qdrant re-embed when ready.
 - **legislation.embedded is canonical embed gate** — `legislation_sections.embedding_model` is unreliable for Stage 1+2 sections (embedded before that column was being written by the poller). Do not use section-level column as backlog indicator. Correct query: `SELECT title, embedded FROM legislation` — Act-level flag is authoritative. The 1,731 `embedding_model IS NULL` count seen session 90 is noise, not backlog.
 - **Synthesis feedback loop — parked** — build plan exists at `SYNTHESIS_FEEDBACK_LOOP_BUILD_PLAN.md`, `approved` column on `secondary_sources` exists (session 68), `POST /api/pipeline/feedback` route live (session 68). Steps 2–9 unbuilt. Decision session 90: park until corpus growth stabilises. Rationale: corpus still growing, six-file build non-trivial for current value, saved answers would be superseded by better source material. Revisit when scraper is no longer adding large batches regularly.
 - **update-secondary-raw silent success — FIXED session 89** — Handler was returning { ok: true, updated: 0 } when the UPDATE matched zero rows instead of a proper 404. Fixed to return HTTP 404 { ok: false, error: "not found" } on meta.changes === 0. Route works correctly when id is sourced from the fetch-secondary-raw API response. The original KNOWN ISSUES diagnosis (spaces in IDs causing routing failure) was incorrect — the 404s during session 88 were from hand-typed ID mismatches during manual testing.
@@ -65,20 +60,20 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–87) — load conditiona
 - **CHUNK prompt reasoning field** — added and reverted session 10 · do not re-add
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
-- **striprtf** — not installed in agent-general container · RTF uploads will error · python-docx is installed (added Dockerfile.agent session 27) so DOCX uploads work
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables
-- **Scraper no per-case resume** — progress file only stores court_year: "done"
-- **Pass 2 (Qwen3) principles irrelevant** — CHUNK merge overwrites principles_extracted with chunk-level data · Pass 2 output never visible · PRINCIPLES_SPEC update session 22 has no practical effect until merge behaviour changes
+- **Scraper no per-case resume — known limitation** — progress file stores only `court_year: "done"`; mid-year failure restarts full year scrape. Harmless due to `INSERT OR IGNORE`. Per-case checkpointing not worth engineering effort at current stage.
+- **Pass 2 principles irrelevant / merge overwrite — acknowledged, no fix** — Qwen3 Pass 2 extracts case-level `principles_extracted` but CHUNK handler (GPT-4.1-mini) overwrites this field with chunk-level data; merge uses chunk-level output only; Pass 2 principles never surface to user. Not causing visible defect — merge works correctly off chunk data. No fix planned.
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
 - **Health check false positive (tendency evidence contradiction)** — "Tendency Evidence Exclusion in Bail Hearings" vs "Tendency Evidence Requirements and Admissibility" flagged as contradiction by GPT-4o-mini health check. Not a genuine contradiction — s 94 EA correctly exempts bail proceedings from tendency/coincidence rules; the two chunks describe different contexts. Resolved by s94 chunk ingested session 71. Monitor in next health check run.
 - **/search top_k=12 server-side cap** — server.py line 296 hard-caps at 12 regardless of requested top_k. Cap retained for latency bounding. With query expansion live (4 fan-out queries), the merged Pass 1 pool is larger but still capped at top_k*2 per leg — monitor for cases where the cap is discarding strong results. Confirmed session 76: passing `"top_k": 12` in the request payload breaks the endpoint (returns 0 chunks) — the field is not accepted; omit it, default 6 is what the baseline script uses.
 - **Q27 (provocation) confirmed as corpus content gap** — provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Authoring decision, not retrieval defect.
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
-- **Qdrant court field frequently empty on case_chunk payloads** — `court: ""` confirmed on case_chunk results via Playwright fiber inspection sessions 80–81. Mapper fix (session 81) now passes `type` through, so `authority_synthesis` renders amber AUTHORITY and `case_chunk` renders raw type string as fallback label — court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant. Investigate whether scraper writes court into Qdrant payload at ingest or only D1 `cases.court`.
+- **Qdrant court field — FIXED session 91** — root cause: `c.court` absent from Worker SELECT in `fetch-case-chunks-for-embedding` and missing from poller metadata dict. Fixed in both files. Verified via Qdrant payload spot-check on [2019] TASCCA 1 chunks — `court: "cca"` confirmed present. Worker deployed `140a981e`, commit `f7ca5fc`.
 - **TYPE_TAGS key mismatch for secondary sources** — `TYPE_TAGS["secondary"]` in ResultCard.jsx but actual type value from server.py is `"secondary_source"`. Secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` as alias key in TYPE_TAGS. Low priority — cosmetic only.
 - **Parliament.tas.gov.au bill page URLs — slug format unresolvable from Act number** — `billPageUrl` in `handleAmendments` cannot construct a direct bill page URL because parliament.tas.gov.au uses title-derived slugs (e.g. `/bills/bills2025/justice-miscellaneous-reporting-procedures-bill-2025-10-of-2025`) not numeric paths. Current workaround: "Locate Hansard ↗" button links to `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"`. Proper fix requires fetching the year index page and matching by bill number — deferred.
+- **Parallel CC workflow — preferred pattern** — for tasks with independent sub-tasks and no shared state risk, direct multiple CC instances concurrently. Tom and Claude.ai oversee and coordinate, CC instances implement in parallel. Flag suitable tasks for parallelisation at session planning stage.
 
 ---
 
@@ -199,18 +194,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–87) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 88) — 21 April 2026
-
-- **s38 EA CONCEPTS hygiene complete** — 10 `Evidence Act 2001 (Tas) s 38 -` secondary source chunks prepended with `[CONCEPTS:]`, `[TOPIC:]`, `[JURISDICTION:]` headers via direct D1 updates (bypassed broken `update-secondary-raw` Worker route); all 10 reset to `embedded=0` for poller re-embed; Bucket 2 item struck from OUTSTANDING PRIORITIES
-- **auslaw-mcp docker hardening complete** — `mem_limit: 1g`, `cpus: '1.0'`, `read_only: true`, `tmpfs: [/tmp]` applied to `~/auslaw-mcp/docker-compose.yaml`; write-path check confirmed only `/tmp` used (OCR via `tmp.fileSync()` in `fetcher.ts`); container force-recreated cleanly
-- **auslaw-mcp GitHub MCP (item d) resolved** — existing user-scope `github` MCP in `~/.claude.json` already satisfies requirement; no new config needed; verified via `mcp__github__get_file_contents` on `russellbrenner/auslaw-mcp`
-- **auslaw-mcp hardening entry removed** — all four sub-items resolved: (a) confirmed moot — VPS TCP-blocked by AustLII at network level, `/fetch-page` cannot reach AustLII regardless; (b)(c)(d) done this session
-- **VPS/AustLII TCP block confirmed and documented** — curl confirmed SYN to `austlii.edu.au:443` silently dropped from Contabo VPS (exit 28, timeout, HTTP 000); session 35 "not blocked" finding retired; canonical answer now documented; `search_cases` KNOWN ISSUES entry root cause corrected
-- **Two-step auslaw-mcp search pattern documented** — `search_cases` dead from VPS; canonical CC/Cowork pattern: `POST /api/legal/word-search` for citation discovery → `search_by_citation` for full text fetch; added to SESSION RULES
-- **Stale horizon items reconciled** — citation authority agent (now Pass 4, live), AustLII MCP integration (superseded by Quick Search tab + auslaw-mcp), subject_matter filter (all three parts complete) confirmed done; memory updated
-
----
-
 ## CHANGES THIS SESSION (session 89) — 21 April 2026
 
 - **Model upgrades** — gpt-4o-mini-2024-07-18 → gpt-4.1-mini-2025-04-14 across all worker.js call sites (handleFormatAndUpload, performMerge main synthesis, performMerge sentencing synthesis, runSentencingBackfill, CHUNK handler) and server.py (generate_query_variants, call_gpt_mini); claude-sonnet-4-20250514 → claude-sonnet-4-6 for Sol path in handleLegalQuery; both deployed, smoke tested, committed 786f9a6
@@ -231,6 +214,18 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–87) — load conditiona
 - **Q14 doctrine chunk authored** — `manual-b4135-chunk` rewritten from stub (concept list only) to full doctrine chunk: s 37 rule, five statutory exceptions, objection procedure, cross-examination distinction, s 38 relationship. 3,794 chars. Queued for re-embed.
 - **Q9 and Q26 corpus chunks authored and uploaded** — Q9: guilty plea discount (Tasmanian common law, utilitarian value + remorse, timing — no TASCCA quantum authority confirmed). Q26: unreasonable verdict / M v The Queen (Pell, SKA, Libke, circumstantial evidence — no TASCCA local authority confirmed). Both close outstanding priority #2.
 - **Synthesis feedback loop parked** — decision: do not build until corpus growth stabilises. Plan retained in repo. Rationale in decisions.md.
+
+---
+
+## CHANGES THIS SESSION (session 91) — 22 April 2026
+
+- **Q14 re-embed unblocked** — `manual-b4135-chunk` diagnosed as stale vector (embedded=1 in D1 but enriched_text rewritten post-embed in session 90); reset to embedded=0; poller will re-embed with current 3,794-char doctrine prose on next cycle. Live baseline confirmed miss (both target chunks absent from top 5); Q14 remains open pending poller confirm.
+- **Qdrant court field fix** — `c.court` added to Worker `fetch-case-chunks-for-embedding` SELECT and to poller metadata dict; 5 chunks from [2019] TASCCA 1 reset and re-embedded; Qdrant payload spot-check confirms `court: "cca"` present; Worker deployed `140a981e`, commit `f7ca5fc`.
+- **striprtf installed** — added to `Dockerfile.agent` pip install line; agent-general container rebuilt and force-recreated; import test confirmed ok; KNOWN ISSUES entry cleared.
+- **Synthesis dedup tightened** — DEDUPLICATION RULES block in `performMerge()` replaced with four-bullet version: legal distinctness test (same rule + same provision/doctrine), nuance preservation (prefer statutory ref + named authority), one principle per concept, output fewer if warranted. Replaces weak "near-synonymous" cue from session 89. Forward-only.
+- **Stale KNOWN ISSUES cleared** — subject_matter Option A entry (feature live since session 89), corpus placeholders entry (block_023/028 content filled session 89 via 8 secondary source chunks — confirmed via history), striprtf entry all deleted.
+- **Q9/Q26 closed** — secondary source chunks authored and uploaded this session; both removed from outstanding priorities.
+- **Parallel CC workflow adopted** — two CC instances run concurrently this session (Stream A: court field fix + striprtf; Stream B: synthesis dedup). Pattern documented in KNOWN ISSUES for reuse.
 
 ---
 
