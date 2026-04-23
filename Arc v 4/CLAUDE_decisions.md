@@ -3996,3 +3996,17 @@ HTML truncated at 800KB before D1 upsert to stay within D1 row size limits. No j
 - **Synthesis prompt density rewrite skipped** — Audit confirmed all three prompts (performMerge, Sol, V'ger) are well-calibrated to their target models. Sonnet 4.6 handles Sol's fuller CRITICAL CITATION RULES + ANSWER STRUCTURE block comfortably. Qwen3's compact numbered RULES list suits its weaker instruction-following. performMerge's BAD/GOOD examples earn their token cost. No simplification or consolidation needed.
 
 - **Promoted retrieval recall defects to outstanding priorities not known issues** — Q2 and Q5 misses are concrete, measurable recall failures on specific chunks that exist and are embedded. Not a stable characteristic to document and work around — they're defects requiring diagnosis. VPS Qdrant probe is the next-session entry point (check scores on known-good chunks against query vector).
+
+## Session 94 decisions — 23 April 2026
+
+**Court payload backfill executed rather than deferred.**
+The court band re-rank was silently inert across 26,157 points since the session 91 anchor re-embed. Deferring leaves payload in an inconsistent state (new ingests write court, old don't) and accumulates retrieval-correctness liability on any query where a TASMC chunk scores within 0.05 of a CCA/Supreme chunk. Executed with baseline-gated revert path; Q9 TASCCA re-rank confirmed live post-patch, zero regressions. The alternative of re-embed-to-fix was rejected as unnecessary — `set_payload` with citation+type filter is idempotent, minutes not hours, zero vector drift.
+
+**Q9 chunk rewrite shipped despite spot-fix character.**
+Acknowledged as a spot fix (one chunk, one query pair) rather than systemic work. Rationale for shipping anyway: closes outstanding priority raised session 93, corrects authoring note factually wrong about TASCCA quantum authority existing, and discharges authoring debt before it compounds. Pass 3 + quota-aware cap retrieval path was already live; chunk sits at 0.4268 (above SWAP_MIN_SCORE=0.40) and loses quota slot to a higher-scoring competitor. Accepting the ceiling rather than further vocabulary optimisation — ceiling is known secondary-source structural behaviour, not a Q9 defect.
+
+**Variant-draw stabilisation deferred to dedicated session.**
+Identified in session 94 diagnostic as the single biggest remaining lever on retrieval quality. Scoped as its own session because: (a) requires A/B baseline comparison design between multiple remediation options (temp=0+seed vs leg-weighted merge vs deterministic expansion); (b) corpus-wide effects warrant Opus consultation per the architectural-decisions pattern; (c) tonight's session was already structurally loaded with diagnostic + payload backfill + chunk authoring. Variant stabilisation likely flips multiple baseline queries in a single change when it lands.
+
+**0.4268 score on vocabulary-perfect chunk treated as watch item, not actioned.**
+manual-b3603-chunk contains the exact practitioner query terms in both CONCEPTS anchor and body prose, and still scores 0.4268. Hypothesis: `strip_frontmatter` does not strip `[KEY:]` bracket-tag headers, leaving header metadata in the embed input and diluting the body signal by ~20-25%. If confirmed, this is a corpus-wide embedding quality issue affecting all 1,448 secondary source chunks authored in bracket-tag format. Deferred to single-grep verification next session rather than actioned tonight — the verification cost is negligible and tonight's session was already long.

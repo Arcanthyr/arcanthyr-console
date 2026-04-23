@@ -1,17 +1,17 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 22 April 2026 (end of session 93) · Supersedes all prior versions
+Updated: 23 April 2026 (end of session 94) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–90) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–91) — load conditionally
 
 ---
 
-## SYSTEM STATE — 21 April 2026 (end of session 87)
+## SYSTEM STATE — 23 April 2026 (end of session 94)
 
 | Component | Status |
 |---|---|
-| Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79 |
+| Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79; court payload backfilled session 94 across all 26,157 case_chunk points (1,914 citations) |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
 | D1 secondary_sources | 1,448 total (Q9 guilty plea discount chunk, Q26 unreasonable verdict chunk, Q14 s37 EA doctrine chunk added session 90) · embedded=0: 3 (nexus-save entries only — all corpus chunks embedded) |
@@ -30,19 +30,20 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–90) — load conditiona
 | Stare decisis UI | LIVE |
 | Save to Nexus | LIVE — approved column, approval gate, pending review in Library, delete action (D1+FTS5+Qdrant cleanup) |
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
-| Baseline (31 queries) | ≥28P / ≤3Pa / 0M — query expansion deployed session 77 (19 Apr 2026) · Q12 MISS→PASS (s38 EA chunk #1 @ 0.6759) · Q23 MISS→PASS (secondary-chunk-12 #3 @ 0.6697) · zero P→M regressions · exact count pending Tom's manual review of Q7/Q14/Q15 · new snapshot `~/retrieval_baseline_post_query_expansion.txt` · session 74 canonical `~/retrieval_baseline_post_interleave.txt` retained as prior reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
+| Baseline (31 queries) | ≥28P / ≤3Pa / 0M — query expansion deployed session 77 (19 Apr 2026) · post-court-backfill snapshot captured session 94 at `~/retrieval_baseline_post_court_backfill.txt`; Q9 TASCCA re-rank visibly live (TASCCA 19 promoted from #3 to #1 within 0.05 cosine band); zero P→M regressions; other deltas attributed to variant-draw jitter · session 74 canonical `~/retrieval_baseline_post_interleave.txt` retained as prior reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · two-step search pattern documented |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
 | Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) complete · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
+| Court hierarchy band | LIVE CORPUS-WIDE — session 94 payload backfill via `patch_court_payload.py` (located at `/home/tom/ai-stack/agent-general/src/` on VPS) · 1,914 citations / 26,157 case_chunk points patched · 0 null remaining · Q9 TASCCA re-rank confirmed live · revert path: `patch_court_payload.py --revert` |
 
 ---
 
 ## OUTSTANDING PRIORITIES
 
-1. **Retrieval recall defect — direct-match misses** — Q2 ("sentencing guilty plea discount") fails to surface Dunning [2018] TASCCA 21 chunk 10 and Dunne [2021] TASCCA 5 chunk 3 despite both containing explicit "20% discount" content (deep_enriched=1, chunks embedded=1). Q5 ("right to silence direction jury") persistently fails to surface Lambert and Stokes [2007] TASSC 76 chunk 18 on two consecutive runs despite verbatim right-to-silence content. Not patch-caused — retrieval runs before synthesis. Requires VPS-side Qdrant probe: direct scroll against query vectors, score inspection on known-good chunks, identify whether root cause is query expansion fan-out dilution, BM25 interleave crowding, or score threshold floor.
+1. **LLM variant-draw stabilisation (architectural)** — Session 94 diagnostic confirmed GPT-4o-mini variant generator has no seeding; default temperature ~1.0 produces non-deterministic variants across calls. Production evidence: same query 80min apart returns top scores ranging 0.6562 to 0.733; Q5 Lambert 18 surfaces only on 1 of 3 variant draws. This is the single biggest remaining lever on retrieval quality and is corpus-wide, not query-specific. Options: (a) temperature=0 + fixed seed (cheapest); (b) leg-weighted merge (original 1.0, variants 0.7×); (c) deterministic synonym/stem expansion replacing LLM. Needs baseline comparison design and Opus consultation per architectural-decisions pattern.
 
-2. **Q9 secondary source chunk — authoring debt** — Session 90 authoring note claimed "no confirmed TASCCA quantum authority" for guilty plea discount. D1 audit session 93 confirms Dunning [2018] TASCCA 21 and Dunne [2021] TASCCA 5 are both direct 20% quantum TASCCA authorities. Rewrite Q9 chunk to cite them as controlling Tasmanian quantum authorities.
+2. **strip_frontmatter bracket-tag watch item** — manual-b3603-chunk session 94 scored 0.4268 on vocabulary-perfect content (Dunning/Dunne/Markarian/20%/quantum all in CONCEPTS and body). Hypothesis: `build_secondary_embedding_text()` / `strip_frontmatter` in enrichment_poller.py may not strip `[KEY:]` bracket-tag header blocks, diluting embed signal by ~20-25% across 1,448 secondary source chunks. Cheap verification: grep the function next session. If confirmed, corpus-wide secondary source embedding quality fix.
 
 3. **V'ger [LEGISLATION] label fix (edit E from s93 plan)** — V'ger context serialisation omits the [LEGISLATION] label (worker.js ~L2880 does not check for legislation type); affects section-query responses via V'ger toggle. Sol correctly tags legislation chunks; V'ger drift is functional. Scoped as separate-session task to isolate regression attribution.
 
@@ -77,7 +78,8 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–90) — load conditiona
 - **Pass 4 authority_synthesis — same structural vulnerability as Pass 3** — authority_synthesis chunks face the same score-floor crowding as secondary sources. Quota approach generalises: add a second quota block when this becomes a visible problem. Flagged by Opus session 92 — watch item only.
 - **Party name constraint — DEPLOYED session 93** — Prophylactic bullet added to Sol citationRules block (worker.js ~L2663) and as item 3 in V'ger RULES block (worker.js ~L2905). Instructs LLM to cite by citation alone when source shows only citation without parties. Skipped on performMerge — operates on single case's own material, no pathway to fabricate. The "Police v FRS" for [2020] TASMC 9 flagged session 92 was NOT hallucination — it's stored practitioner shorthand (Option A confirmed): `cases.case_name` = "Police v FRS", `case_chunks.enriched_text` chunk 0 uses it, two authored secondary_sources chunks ("Police v FRS - Tendency Evidence Admissibility", "Police v FRS - Example Tendency Notice") use it by design. V'ger was retrieving faithfully. Summary criminal matters are routinely styled "Police v X" in Tasmanian practitioner reference even where formal AustLII parties name informants. No corpus cleanup needed.
 - **cases.embedded column unreliable as case-level gate** — Lambert and Stokes [2007] TASSC 76 shows `cases.embedded = 0` while all 49 chunks have `case_chunks.embedded = 1`. Same pattern family as the legislation_sections.embedding_model issue (session 90 finding). Canonical case-level embed signal is aggregation over case_chunks.embedded, not the case-row column. Do not use `cases.embedded` as a backlog gate or retrieval diagnostic.
-- **Retrieval stochastic variance across runs — confirmed session 93** — S92 vs S93 spot-checks showed different case sets retrieved on 4 of 5 identical queries (Q2, Q3, Q4, Q5 all returned substantially different TASCCA/TASSC cases). Combination of ANN jitter + query expansion fan-out + BM25 interleave stochasticity. Some variance is expected architecture behaviour, but Q2 and Q5 show persistent miss patterns separate from jitter — promoted to OUTSTANDING PRIORITY for root-cause diagnostic.
+- **Retrieval stochastic variance across runs — diagnosis corrected session 94** — S92 vs S93 variance previously attributed to ANN jitter; session 94 VPS diagnostic confirmed root cause is GPT-4o-mini variant generator non-determinism (default temperature ~1.0, no seeding). Same query → different variant set across calls → max-score merge over 4 legs produces score swings up to 0.08. Q5 Lambert 18 surfaces at rank 9 only when the "not testify" paraphrase variant is generated (1-in-3 runs); Q2 Dunning 10 best-of-legs is rank 15 (outside limit=12 cap). Promoted to Outstanding Priority 1: LLM variant-draw stabilisation.
+- **Court hierarchy band — live corpus-wide session 94** — Prior to patch, payload.court was None on 26,152 of 26,157 case_chunk points (anchor re-embed predated session 91 poller fix). Band re-rank was silently inert corpus-wide. Patched via `patch_court_payload.py` sourcing truth from cases.court in D1. Q9 TASCCA re-rank confirmed live post-patch. No baseline regressions. Revert available via `patch_court_payload.py --revert`. Also: 9 TASMC 2016 cases corrected in D1 where scraper had stored court='supreme' (script-derived from citation string was authoritative).
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
 - **Qdrant court field — FIXED session 91** — root cause: `c.court` absent from Worker SELECT in `fetch-case-chunks-for-embedding` and missing from poller metadata dict. Fixed in both files. Verified via Qdrant payload spot-check on [2019] TASCCA 1 chunks — `court: "cca"` confirmed present. Worker deployed `140a981e`, commit `f7ca5fc`.
 - **Parliament.tas.gov.au bill page URLs — slug format unresolvable from Act number** — `billPageUrl` in `handleAmendments` cannot construct a direct bill page URL because parliament.tas.gov.au uses title-derived slugs (e.g. `/bills/bills2025/justice-miscellaneous-reporting-procedures-bill-2025-10-of-2025`) not numeric paths. Current workaround: "Locate Hansard ↗" button links to `google.com/search?q=site:parliament.tas.gov.au+"N+of+YYYY"`. Proper fix requires fetching the year index page and matching by bill number — deferred.
@@ -203,18 +205,6 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–90) — load conditiona
 
 ---
 
-## CHANGES THIS SESSION (session 91) — 22 April 2026
-
-- **Q14 re-embed unblocked** — `manual-b4135-chunk` diagnosed as stale vector (embedded=1 in D1 but enriched_text rewritten post-embed in session 90); reset to embedded=0; poller will re-embed with current 3,794-char doctrine prose on next cycle. Live baseline confirmed miss (both target chunks absent from top 5); Q14 remains open pending poller confirm.
-- **Qdrant court field fix** — `c.court` added to Worker `fetch-case-chunks-for-embedding` SELECT and to poller metadata dict; 5 chunks from [2019] TASCCA 1 reset and re-embedded; Qdrant payload spot-check confirms `court: "cca"` present; Worker deployed `140a981e`, commit `f7ca5fc`.
-- **striprtf installed** — added to `Dockerfile.agent` pip install line; agent-general container rebuilt and force-recreated; import test confirmed ok; KNOWN ISSUES entry cleared.
-- **Synthesis dedup tightened** — DEDUPLICATION RULES block in `performMerge()` replaced with four-bullet version: legal distinctness test (same rule + same provision/doctrine), nuance preservation (prefer statutory ref + named authority), one principle per concept, output fewer if warranted. Replaces weak "near-synonymous" cue from session 89. Forward-only.
-- **Stale KNOWN ISSUES cleared** — subject_matter Option A entry (feature live since session 89), corpus placeholders entry (block_023/028 content filled session 89 via 8 secondary source chunks — confirmed via history), striprtf entry all deleted.
-- **Q9/Q26 closed** — secondary source chunks authored and uploaded this session; both removed from outstanding priorities.
-- **Parallel CC workflow adopted** — two CC instances run concurrently this session (Stream A: court field fix + striprtf; Stream B: synthesis dedup). Pattern documented in KNOWN ISSUES for reuse.
-
----
-
 ## CHANGES THIS SESSION (session 92) — 22 April 2026
 
 - **Quota-aware final cap** — server.py `performSearch()` final sort+cap replaced with quota-aware block: `SECONDARY_QUOTA=1`, `SWAP_MIN_SCORE=0.40`, gates on `top_k>=3`. Guarantees ≥1 secondary source in top_k when one scores ≥0.40 and case_chunks would otherwise crowd it out. Log line fires on displacement. Working in production — secondary sources visible in multiple API calls.
@@ -238,6 +228,17 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–90) — load conditiona
 - **Q5 retrieval recall defect identified — persistent** — "right to silence direction jury" spot-check persistently missed Lambert and Stokes [2007] TASSC 76 across two consecutive runs in S93. Chunk 18 contains verbatim right-to-silence jury direction content; case has 49 chunks all embedded=1. S92 retrieved cleanly. Not ANN jitter — persistent miss. Promoted to outstanding priority.
 - **Q9 authoring debt exposed** — Session 90 authoring note on guilty plea discount chunk claimed "no confirmed TASCCA quantum authority"; session 93 D1 audit establishes Dunning [2018] TASCCA 21 and Dunne [2021] TASCCA 5 are both direct 20% quantum TASCCA authorities and were in D1 at time of authoring. Q9 chunk needs rewrite to cite them. Promoted to outstanding priority.
 - **Spot-checks confirmed no regression from patch** — 5 session-92 queries rerun via UI V'ger toggle: no principle repetition regression, no citation fabrication, no party names absent from source. Patch-attributable effects all clean; retrieval variance and Q2/Q5 recall issues all predate the patch.
+
+---
+
+## CHANGES THIS SESSION (session 94) — 23 April 2026
+
+- **Court payload backfill complete — corpus-wide** — 1,914 citations / 26,157 case_chunk points patched via new `patch_court_payload.py` (dry-run, --revert, --citation-filter flags). Source of truth: cases.court in D1. Idempotent `set_payload` with citation+type filter, zero re-embed. Post-patch audit: 0 null remaining. Pre/post baseline captured; Q9 TASCCA re-rank confirmed live (TASCCA 19 promoted from #3 to #1 within 0.05 cosine band). Zero regressions. Revert path: `patch_court_payload.py --revert`.
+- **VPS retrieval recall diagnostic complete** — `diagnose_retrieval.py` probed Q5 Lambert 18 and Q2 Dunning 10 / Dunne 3. Findings: original practitioner query misses top-200 on all three targets; retrieval depends on LLM variant draws that succeed 1-in-3 runs. Lambert 18 best rank 9 (variant 2 only), Dunning 10 best rank 15 (outside limit=12 cap), Dunne 3 best rank 12 (borderline). Variant generator (GPT-4o-mini, default temp, no seed) is the structural amplifier of S92/S93 variance previously misattributed to ANN jitter.
+- **Q9 chunk rewritten — manual-b3603-chunk** — Full raw_text replacement (dual-header → single-header format) citing Dunning v Tasmania [2018] TASCCA 21 and DPP v Dunne [2021] TASCCA 5 as controlling 20% TASCCA quantum authorities, with Markarian v The Queen [2005] HCA 25 as HCA underpinning. CONCEPTS expanded with 20%/20 percent/20 per cent triple + authority names. Embedded, retrievable at 0.4268 via Pass 3; quota-bound ceiling acknowledged (loses quota slot to "Correcting Sentence - Overview" at 0.5908).
+- **strip_frontmatter bracket-tag watch item surfaced** — manual-b3603-chunk scoring 0.4268 on vocabulary-perfect content suggests `build_secondary_embedding_text()` may not strip `[KEY:]` bracket-tag headers, diluting embed signal by ~20-25% across 1,448 secondary source chunks. Cheap verification next session: grep the function.
+- **D1 cases.court corrected for 9 TASMC 2016 cases** — `[2016] TASMC 1` through `[2016] TASMC 9` had `court='supreme'` stored by scraper; citation-string derivation was authoritative; updated to `court='magistrates'` via D1. Qdrant payload already correct from patch (used script-derived value).
+- **S92/S93 variance re-classified** — previously "ANN jitter"; now confirmed variant-draw jitter. KNOWN ISSUES entry updated.
 
 ---
 

@@ -1,9 +1,21 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–90 · 26 March 2026 – 21 April 2026*
-*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91; session 89 added end of session 92; session 90 added end of session 93*
+*Sessions 21–91 · 26 March 2026 – 22 April 2026*
+*Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91; session 89 added end of session 92; session 90 added end of session 93; session 91 added end of session 94*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 91) — 22 April 2026
+
+- **Q14 re-embed unblocked** — `manual-b4135-chunk` diagnosed as stale vector (embedded=1 in D1 but enriched_text rewritten post-embed in session 90); reset to embedded=0; poller will re-embed with current 3,794-char doctrine prose on next cycle. Live baseline confirmed miss (both target chunks absent from top 5); Q14 remains open pending poller confirm.
+- **Qdrant court field fix** — `c.court` added to Worker `fetch-case-chunks-for-embedding` SELECT and to poller metadata dict; 5 chunks from [2019] TASCCA 1 reset and re-embedded; Qdrant payload spot-check confirms `court: "cca"` present; Worker deployed `140a981e`, commit `f7ca5fc`.
+- **striprtf installed** — added to `Dockerfile.agent` pip install line; agent-general container rebuilt and force-recreated; import test confirmed ok; KNOWN ISSUES entry cleared.
+- **Synthesis dedup tightened** — DEDUPLICATION RULES block in `performMerge()` replaced with four-bullet version: legal distinctness test (same rule + same provision/doctrine), nuance preservation (prefer statutory ref + named authority), one principle per concept, output fewer if warranted. Replaces weak "near-synonymous" cue from session 89. Forward-only.
+- **Stale KNOWN ISSUES cleared** — subject_matter Option A entry (feature live since session 89), corpus placeholders entry (block_023/028 content filled session 89 via 8 secondary source chunks — confirmed via history), striprtf entry all deleted.
+- **Q9/Q26 closed** — secondary source chunks authored and uploaded this session; both removed from outstanding priorities.
+- **Parallel CC workflow adopted** — two CC instances run concurrently this session (Stream A: court field fix + striprtf; Stream B: synthesis dedup). Pattern documented in KNOWN ISSUES for reuse.
 
 ---
 
