@@ -26,7 +26,7 @@ REPLACEMENTS = [
 
 def run_d1(sql):
     cmd = f'npx wrangler d1 execute arcanthyr --remote --json --command "{sql.replace(chr(34), chr(92)+chr(34))}"'
-    result = subprocess.run(cmd, capture_output=True, text=True, cwd=WRANGLER_DIR, shell=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=WRANGLER_DIR, shell=True)
     if result.returncode != 0:
         raise RuntimeError(result.stderr[:500])
     data = json.loads(result.stdout)

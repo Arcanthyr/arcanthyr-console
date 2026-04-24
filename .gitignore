@@ -42,6 +42,9 @@ split_legal_doc.py
 reingest_duplicates.py
 worker_pipeline_v2_diff_addendum.js
 
+# Generated SQL artifacts
+cleanup.sql
+
 # Wrangler runtime cache
 .wrangler/
 
