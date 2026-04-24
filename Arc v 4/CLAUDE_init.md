@@ -396,3 +396,14 @@ When a proposed optimisation arises, treat "don't do this — current state is a
 - If the component is marked FROZEN in CLAUDE.md, check D1 query_log for rows with sufficient=0 before proposing any change. Absent any, the correct answer is "no change — frozen."
 
 Default for a frozen component with no logged real-use failure is no work. Propose "no work" visibly, not implicitly.
+
+---
+
+### Component quirks / operational rules (session 99)
+
+| Rule | Detail |
+|---|---|
+| Queue handler early-exit | `continue` inside `try{}` inside `for (const msg of batch.messages)` is safe — jumps to next iteration, catch block does not fire. Use for guard clauses (DLQ check, type filter) rather than wrapping 200+ lines in else blocks |
+| New route auth pattern | Before specifying auth on a new route, check whether the calling component already has the credential. AmendmentPanel has no nexusKey — routes called from it must go in the `/api/legal/` rate-limited block (no X-Nexus-Key). Match the nearest equivalent existing route's auth pattern. |
+| api.js /api/legal/ response shape | `req()` for routes in the `/api/legal/` block returns `{ result: <payload> }` — consuming code must unwrap: `const { result } = await api.someRoute(...)` |
+| DLQ pending check | Canonical pending chunk query is now `done=0 AND dlq=0` — `done=0` alone includes dead-letter chunks. Update any admin query or requeue script accordingly. |

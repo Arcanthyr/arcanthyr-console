@@ -1,6 +1,22 @@
-# CLAUDE Changelog — Sessions 21–95
+# CLAUDE Changelog — Sessions 21–96
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
+
+---
+
+## CHANGES THIS SESSION (session 96) — 24 April 2026
+
+- **Retrieval layer FROZEN — Option 5 outcome** — Tom synthesised three-evaluator outside-view review (initiated s95) into Option 5 (stop) with Option 2 (legal-vocab dictionary) pre-committed as the specific response if vocabulary/abbreviation-class failures cluster in real use. Re-opening gated on named real-use trigger (D1 `query_log.sufficient=0`), not internal signals. Four-week observation minimum. New `## RETRIEVAL LAYER — FROZEN (24 April 2026)` block inserted at top of CLAUDE.md above SYSTEM STATE. Rationale: 31-query binary-graded eval has ≈±15pp resolution at 95% CI; ~15 sessions of tuning ran below that floor, producing hallucinated feedback. Full reasoning in CLAUDE_decisions.md.
+
+- **Measurement & change discipline wired into MDs** — three observable-condition directives added to CLAUDE.md as new `## MEASUREMENT & CHANGE DISCIPLINE` section above OUTSTANDING PRIORITIES: resolution-before-optimisation check, trigger-based re-opening of frozen components, successive-fix pattern alarm (3 consecutive no-movement sessions → STOP). Decisions-log entry format added to CLAUDE_decisions.md head requiring hypothesis / effect size / measurement / empirical-vs-prior-plausibility on every retrieval/pipeline change. CLAUDE_init.md: new "Evaluating proposed optimisation work" section instructs AI collaborators to treat "no change" as first-class option.
+
+- **Thumbs-down feedback button — SHIPPED** — D1 `query_log` extended with `sufficient INTEGER`, `missing_note TEXT`, `flagged_by TEXT` (all default NULL). Worker route `POST /api/legal/mark-insufficient` (no auth, optional `flagged_by` defaults to `'admin'` server-side — must migrate to auth-context read when multi-user auth lands). UI: `↓ Insufficient` button in `ReadingPane.jsx` SaveFlagPanel, inline textarea for optional "what was missing" note, matches existing Flag button pattern. Curl-verified between Worker and UI deploy. Worker version `29687fe9`.
+
+- **Outstanding Priorities reset** — Priority 1 (three-model retrieval review) RESOLVED. Priorities 2 (variant stabilisation) and 3 (strip_frontmatter bracket-tag fix) CANCELLED per freeze — both were internal-signal-triggered, which the new measurement discipline explicitly disallows. Priority 4 (V'ger [LEGISLATION] label fix) retained as new Priority 1 (functional labelling bug, not retrieval). Corpus authoring for Q9/Q14/Q26 baseline misses remains available as highest-leverage non-retrieval thread.
+
+- **MCP D1 `PRAGMA table_info` truncation — documented** — Cloudflare Developer Platform MCP `d1_database_query` silently truncates PRAGMA output on wide tables (returned cid 0–17 on `query_log`, masked pre-existing `sufficient` at cid 18; column origin unrecovered from Claude.ai conversation history, zero non-null values corpus-wide so inert). Workaround: `SELECT <col> FROM <table> LIMIT 0` for schema-existence checks on wide tables; reserve PRAGMA for narrow tables. Added to KNOWN ISSUES.
+
+- **Three commits landed; push deferred** — `861579c` (docs + schema + worker + UI), `1e85e72` (Windows case-mismatch fix on Worker.js git record — Cloudflare deployment was already correct), `97af7cd` (KNOWN ISSUES: MCP PRAGMA truncation). All staged for push together.
 
 ---
 

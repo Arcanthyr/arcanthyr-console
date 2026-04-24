@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 24 April 2026 (end of session 96). Upload every session alongside CLAUDE.md.*
+*Updated: 24 April 2026 (end of session 99). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -355,7 +355,7 @@ WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
 **LIVE implementation:**
 - Queue name: `arcanthyr-case-processing`
 - **METADATA message:** Pass 1 (first 8k chars) → one Workers AI call → writes `case_name`, `judge`, `parties`, `facts`, `issues`, `enriched=1` to D1 → splits full `raw_text` into 3k-char chunks → writes to `case_chunks` table → enqueues one CHUNK message per chunk → `ack()`
-- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call with v3 prompt → writes `principles_json` + `enriched_text`, sets `done=1` → checks `COUNT(*) WHERE done=0` → if 0, calls `performMerge()` → `ack()`
+- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call with v3 prompt → writes `principles_json` + `enriched_text`, sets `done=1` → checks `COUNT(*) WHERE done=0 AND dlq=0` (dlq=0 excludes dead-letter chunks — added session 99) → if 0, calls `performMerge()` → `ack()`
 - **MERGE message (session 22):** synthesis-only re-merge — reads all `principles_json` from `case_chunks`, runs `performMerge()` with synthesis GPT-4o-mini call, writes case-level principles → `ack()`
 - **Frontend:** polls `/api/legal/case-status` — `enriched=1` set after Pass 1, `deep_enriched=1` set after merge
 
@@ -491,7 +491,7 @@ cd "../Arc v 4" && npx wrangler deploy
 | master_corpus_part1.md | `arcanthyr-console/master_corpus_part1.md` — 488 chunks (session 12) |
 | master_corpus_part2.md | `arcanthyr-console/master_corpus_part2.md` — 683 chunks (session 12) |
 | sentencing_first_offenders.md | `arcanthyr-console/sentencing_first_offenders.md` — 1 procedure chunk, ingested session 4 |
-| worker.js | `Arc v 4/worker.js` |
+| Worker.js | `Arc v 4/Worker.js` |
 | CLAUDE.md | `Arc v 4/CLAUDE.md` |
 | CLAUDE_arch.md | `Arc v 4/CLAUDE_arch.md` |
 | arcanthyr-ui | `arcanthyr-console/arcanthyr-ui/` — React/Vite frontend · `npm run dev` from this dir |
@@ -707,6 +707,8 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/legal/amendments` | GET | Fetch amendment timeline for a Tasmanian Act · param: `act=act-YYYY-NNN` · cache-first via `tbl_amendment_cache` (30-day TTL) · fetches CCL projectdata API on miss · returns full amendment history JSON · session 87 |
 | `/api/legal/resolve-act` | GET | Resolve Act name to CCL actId · param: `name=<Act title>` · writes `source_url` back to `legislation` table as side-effect on first resolution · used by AmendmentPanel.jsx as primary path when source_url not yet populated · session 87 |
 | `/api/legal/mark-insufficient` | POST | handleMarkInsufficient (inline handler in legal dispatch block, no auth, writes query_log.sufficient=0 with optional missing_note + flagged_by) |
+| `/api/legal/parliament-bill-url` | GET | resolves parliament.tas.gov.au bill page slug by year+billNumber; fetches year index, two-pass regex match; returns { result: { url } } or { result: { url: null } }; no auth (rate-limited block) |
+| `/api/admin/dlq-chunks` | GET | returns case_chunks where dlq=1; X-Nexus-Key; fields: id, citation, chunk_index, retry_count, preview |
 
 ### Query logging (session 65)
 
@@ -774,11 +776,16 @@ Browse, re-read, and promote past queries without re-querying.
 ### case_chunks D1 schema
 
 - `id TEXT PRIMARY KEY` — format: `{citation}__chunk__{N}`
-- Full column list: `id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded`
+- Full column list: `id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded, retry_count, dlq`
 - `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller · no chunk_text fallback — chunks with null enriched_text are excluded at SQL level
 - `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
 - `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
 - **Header chunk null enriched_text (intentionally unembedded)** — `chunk_index=0` rows with `done=1, enriched_text IS NULL` sit permanently at `embedded=0`. CHUNK v3 classifies these as `header` type and intentionally writes no enriched prose. `fetch-case-chunks-for-embedding` excludes them via `AND cc.enriched_text IS NOT NULL` — they never enter the poller cycle. The poller Python skip guard is a harmless safety net. Accurate backlog count: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`.
+- `retry_count INTEGER` (default 0 — incremented per CHUNK enrichment attempt) · `dlq INTEGER` (default 0 — set to 1 when retry_count reaches 3; excluded from pending checks)
+
+### CHUNK queue consumer control-flow shape
+
+- `for (const msg of batch.messages) { try { if type==='CHUNK' { ...processing...; msg.ack() } else if type==='MERGE' { ... } } catch { msg.retry() } }`. `continue` inside `try{}` inside the `for` is safe and is the cleanest early-exit pattern for guard clauses (e.g. DLQ check). Knowing this shape is necessary before reasoning about any queue handler control-flow change.
 
 ### ingest_corpus.py
 
@@ -872,14 +879,11 @@ Source title uses chunk heading (not filename stem).
 - **Cloudflare Browser Rendering /crawl** — Available on Workers Free and Paid plans (account `def9cef091857f82b7e096def3faaa25` already has access, no upgrade needed). Submit a starting URL → receive async job ID → poll for results as HTML, Markdown, or structured JSON. Key features: crawl depth + page limits + wildcard URL filters; automatic page discovery from sitemaps and links; incremental crawling via `modifiedSince`/`maxAge` (skip unchanged pages on repeat runs); `render: false` static mode for non-JS sites. Respects robots.txt. Self-identifies as a bot — NOT suitable for AustLII (would be blocked; existing local scraper + Cloudflare edge proxy remains the correct AustLII path). Arcanthyr use cases: (1) Tasmanian Supreme Court sentencing remarks pages — crawl periodically, pipe Markdown output into `process_blocks.py` → upload via console → embed pass on VPS; (2) Law Reform Commission reports, Bar Association publications, and other secondary legal sources — replaces manual downloading. Implementation sketch: Worker cron trigger → POST to `/crawl` with target URL + scope controls → poll job ID → on completion fetch Markdown → split via `process_blocks.py` logic → upload-corpus → embed. Build after primary corpus (Hogan on Crime) is validated and scraper is running at volume.
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
-- **Dead letter queue** — for chunks that fail max_retries. Low priority
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **Procedural sequence assembly** — given a query like "how do I handle a hostile witness" or "what do I do at a bail application", an agent retrieves all relevant procedure, script, doctrine, and checklist chunks then sequences them into a step-by-step response rather than returning them as parallel flat results. Requires a dedicated "sequence assembly" prompt layer after retrieval, before Qwen3 synthesis. Highest value for procedural queries where order matters. Build after retrieval quality is stable.
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
 - **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
-- **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in Library.jsx, AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑"). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
-- **Hansard search widget (Amendment Panel)** — Add "Search Hansard ↗" button per amendment row linking to search.parliament.tas.gov.au with bill name pre-filled. Pure frontend, no backend changes. Blocked on confirming Funnelback URL parameter format via manual test. Design: open search.parliament.tas.gov.au, submit a bill name query, copy the resulting URL and extract the parameter structure.
-
+- **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in Library.jsx, AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑").
 ### Secondary Sources Upload — Session 39 changes
 - Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
 - source_type passed from modal → Worker handleFormatAndUpload → D1 secondary_sources.source_type

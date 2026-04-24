@@ -4081,3 +4081,13 @@ manual-b3603-chunk contains the exact practitioner query terms in both CONCEPTS 
 - **`.gitattributes` already comprehensive.** Session brief assumed absent; file existed with five rules covering `.js`, `.jsx`, `.py`, `.md`, `.json` all `eol=lf` plus `text=auto`. No action needed.
 
 > The Cloudflare Developer Platform MCP `d1_database_query` tool silently truncated PRAGMA output at cid 17 on the 18-column `query_log` table, which masked a pre-existing `sufficient` column at cid 18. Concrete risk: schema-existence checks that rely on PRAGMA will silently miss late-cid columns and propose redundant ALTERs (which may or may not error depending on the specific collision). New standard: use `SELECT <col> FROM <table> LIMIT 0` for single-column existence checks on any table wider than ~15 columns; reserve PRAGMA for narrow tables or where the output can be visually confirmed to include the expected cid range.
+
+## Session 99 decisions — 24 April 2026
+
+**Parliament bill slug resolver — approach chosen:** Worker-side fetch of parliament.tas.gov.au year index (`/bills/bills{YEAR}`), two-pass regex (href-pattern `-{N}-of-{YEAR}` first, link-text fallback for edge cases). No KV caching — parliament site is fast enough, not a hot path. Route placed in `/api/legal/` rate-limited block (no X-Nexus-Key) to match `amendments` and `fetch-judgment` auth pattern and because AmendmentPanel has no credential mechanism.
+
+**DLQ design — threshold and pending check:** retry_count incremented per CHUNK Queue delivery attempt; dlq=1 set at threshold 3 (matches Cloudflare Queue default max_retries, avoids double-retry). Pending check updated from `done=0` to `done=0 AND dlq=0` corpus-wide — cases with one dead chunk now complete their merge from remaining chunks rather than blocking indefinitely.
+
+**Auslaw MCP Track 2 — removed from roadmap:** VPS is TCP-blocked by AustLII at network level (SYN drop confirmed). A remote MCP at auslaw.arcanthyr.com would hit the same block for all search functionality. Only `search_by_citation` survives from VPS context, which CC already handles via hex-ssh. No net benefit over current setup.
+
+**CHUNK max_tokens — confirmed non-issue:** D1 measurement: 2 of 26,034 enriched chunks reach ≥2,900 chars; longest is 2,984 chars ≈ 750 tokens, well under the 1,500 output token ceiling. Those 2 chunks are near the poller's 3,000 char embedding truncation limit, not the LLM output limit. No action required; item removed from roadmap.
