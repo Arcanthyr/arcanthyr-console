@@ -1,4 +1,4 @@
-\# CLAUDE\_decisions.md
+# CLAUDE_decisions.md
 
 
 
@@ -6,50 +6,50 @@ Architectural decisions, rationale, dead ends, and lessons learned
 
 extracted from Claude.ai conversation export (Feb–Mar 2026).
 
-Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*.
+Supplement to CLAUDE.md and CLAUDE_arch.md — focuses on *why*, not *what*.
 
 
 
-\---
+---
 
 
 
-\## Entry format for retrieval / pipeline changes (added 24 April 2026)
+## Entry format for retrieval / pipeline changes (added 24 April 2026)
 
 Every decisions-log entry recording a retrieval or pipeline change must state:
 
-\*\*Hypothesis\*\* — what change is expected.
-\*\*Expected effect size\*\* — how large, in the metric's units.
-\*\*Measurement\*\* — what reading will tell.
-\*\*Empirical vs prior-plausibility\*\* — if the expected effect size is below the measurement's resolution, the change is being made on prior-plausibility grounds, not empirical ones. This is permitted but must be named. "Made because it seemed right" and "made because the evidence said so" are different entries.
+**Hypothesis** — what change is expected.
+**Expected effect size** — how large, in the metric's units.
+**Measurement** — what reading will tell.
+**Empirical vs prior-plausibility** — if the expected effect size is below the measurement's resolution, the change is being made on prior-plausibility grounds, not empirical ones. This is permitted but must be named. "Made because it seemed right" and "made because the evidence said so" are different entries.
 
 This format exists because retrieval work on the 31-query binary-graded eval between sessions 80–95 produced a feedback loop running below the instrument's resolution floor. Tagging prior-plausibility changes as such prevents the loop re-forming.
 
-\---
+---
 
 
 
-\## Enrichment Pipeline (Poller / Chunking / LLM Models)
+## Enrichment Pipeline (Poller / Chunking / LLM Models)
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 10, assistant
+**[2026-03-18]** *What to do next* — score 10, assistant
 
 
 
-> The problem is clear. Qwen3-30b returns a reasoning preamble before the actual response — this is documented in CLAUDE\_arch.md under "Workers AI — Qwen3 extraction issue (17 Mar 2026)". The fix was applied to `callWorkersAI` (regex extraction `raw.match(/\\{\[\\s\\S]\*\\}/)`), but `handleLegalQueryWorkersAI` reads `response?.response` directly without that fix — so it's getting the raw Qwen3 output which doesn't match that field path, returning null → "No response from model."
+> The problem is clear. Qwen3-30b returns a reasoning preamble before the actual response — this is documented in CLAUDE_arch.md under "Workers AI — Qwen3 extraction issue (17 Mar 2026)". The fix was applied to `callWorkersAI` (regex extraction `raw.match(/\\{[\\s\\S]*\\}/)`), but `handleLegalQueryWorkersAI` reads `response?.response` directly without that fix — so it's getting the raw Qwen3 output which doesn't match that field path, returning null → "No response from model."
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 10, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 10, assistant
 
 
 
-> \*\*This is a known gap, never fixed.\*\* The session 7 fix stripped AustLII \*navigation\* boilerplate (nav bars, footer, breadcrumbs). The structured judgment header (`COURT :`, `CITATION :`, `PARTIES :`, `JUDGE :`, `HEARD :`, `DELIVERED :`) is part of the judgment itself and was intentionally kept because Pass 1 uses it for metadata extraction. The problem is it then becomes chunk 0 and gets fed to the CHUNK prompt which hallucinates a principle from it.
+> **This is a known gap, never fixed.** The session 7 fix stripped AustLII *navigation* boilerplate (nav bars, footer, breadcrumbs). The structured judgment header (`COURT :`, `CITATION :`, `PARTIES :`, `JUDGE :`, `HEARD :`, `DELIVERED :`) is part of the judgment itself and was intentionally kept because Pass 1 uses it for metadata extraction. The problem is it then becomes chunk 0 and gets fed to the CHUNK prompt which hallucinates a principle from it.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 6, assistant
+**[2026-03-10]** *Claude.md context and suggestions* — score 6, assistant
 
 
 
@@ -57,7 +57,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 6, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 6, human
 
 
 
@@ -65,23 +65,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 6, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 6, human
 
 
 
-> ines 56–115 verbatim. Key observations for Claude.ai: Chunk boundary confirmed — always the same pattern: \* Line 57: heading (plain text, no `\\\[`) \* Lines 58–60: 3 blank lines \* Line 61: `\\\[DOMAIN:` — first marker of the new block Chunk 2 (lines 57–97) has `\\\[DOMAIN:` at line 61 — so the lookahead `paragraphs\[i+1].startswith('\\\\\[DOMAIN:')` should catch heading at line 57. The 725 figure likely comes from short prose sentences like line 85 (`The primary statute establishes...`) or line 93 (`If a conflict arises...`) — these are single-line, under 200 chars, no `\\\[`, and happen to be followed by another short sentence. They pass `is\_heading` even though they're not headings. Root cause: `is\_he…
+> ines 56–115 verbatim. Key observations for Claude.ai: Chunk boundary confirmed — always the same pattern: * Line 57: heading (plain text, no `\\[`) * Lines 58–60: 3 blank lines * Line 61: `\\[DOMAIN:` — first marker of the new block Chunk 2 (lines 57–97) has `\\[DOMAIN:` at line 61 — so the lookahead `paragraphs[i+1].startswith('\\\\[DOMAIN:')` should catch heading at line 57. The 725 figure likely comes from short prose sentences like line 85 (`The primary statute establishes...`) or line 93 (`If a conflict arises...`) — these are single-line, under 200 chars, no `\\[`, and happen to be followed by another short sentence. They pass `is_heading` even though they're not headings. Root cause: `is_he…
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 6, assistant
+**[2026-03-10]** *Claude.md context and suggestions* — score 6, assistant
 
 
 
-> The key insight from the workflow doc: \*\*every chunk heading is at Level 2 (`##`) or Level 3 (`###`)\*\* per the formatting rules. But they got stripped during assembly.
+> The key insight from the workflow doc: **every chunk heading is at Level 2 (`##`) or Level 3 (`###`)** per the formatting rules. But they got stripped during assembly.
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 6, assistant
+**[2026-03-11]** *11 MAR 26* — score 6, assistant
 
 
 
@@ -89,7 +89,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 6, human
+**[2026-03-16]** *Performance review* — score 6, human
 
 
 
@@ -97,31 +97,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Building case summary with multi-pass extraction\* — score 6, assistant
+**[2026-03-17]** *Building case summary with multi-pass extraction* — score 6, assistant
 
 
 
-> This means \*\*Option B (pre-merge before `\_buildSummary`) won't work as designed\*\* — the Procedure Prompt result isn't a JSON object with `principles`/`legislation` keys. It's raw corpus chunk text.
+> This means **Option B (pre-merge before `_buildSummary`) won't work as designed** — the Procedure Prompt result isn't a JSON object with `principles`/`legislation` keys. It's raw corpus chunk text.
 
 
 
-\*\*\[2026-03-17]\*\* \*Building case summary with multi-pass extraction\* — score 6, assistant
+**[2026-03-17]** *Building case summary with multi-pass extraction* — score 6, assistant
 
 
 
-> - \*\*fetch-case-url timeout\*\* — times out on large judgments (>\~100 paragraphs). Root cause: synchronous Worker request can't survive 30s+ AustLII fetch + Qwen3 extraction. Fix: async job pattern (see Immediate Next Actions #1). Small judgments work fine. - \*\*Scanned PDF upload timeout\*\* — large scanned PDFs (>\~100 paragraphs) timeout on console upload. Born-digital PDFs and short scanned judgments work fine. Use scraper or fetch-by-URL for large cases once async pattern is built. - \*\*Procedure Prompt second pass\*\* — not yet implemented in summarizeCase(). Scraper PAUSED until done. Note: `procedurePassPrompt` in Worker.js is now judgment-tuned (voir dire, admissibility rulings etc) — NOT the…
+> - **fetch-case-url timeout** — times out on large judgments (>\~100 paragraphs). Root cause: synchronous Worker request can't survive 30s+ AustLII fetch + Qwen3 extraction. Fix: async job pattern (see Immediate Next Actions #1). Small judgments work fine. - **Scanned PDF upload timeout** — large scanned PDFs (>\~100 paragraphs) timeout on console upload. Born-digital PDFs and short scanned judgments work fine. Use scraper or fetch-by-URL for large cases once async pattern is built. - **Procedure Prompt second pass** — not yet implemented in summarizeCase(). Scraper PAUSED until done. Note: `procedurePassPrompt` in Worker.js is now judgment-tuned (voir dire, admissibility rulings etc) — NOT the…
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 6, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 6, assistant
 
 
 
-> \*\*KNOWN ISSUES update:\*\* - Citation truncation bug: root cause was nested bracket regex in ingest\_corpus.py — fixed - \~85 chunks were missing from corpus due to this bug — will be resolved after re-ingest
+> **KNOWN ISSUES update:** - Citation truncation bug: root cause was nested bracket regex in ingest_corpus.py — fixed - \~85 chunks were missing from corpus due to this bug — will be resolved after re-ingest
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 6, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 6, assistant
 
 
 
@@ -129,7 +129,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 6, assistant
+**[2026-03-19]** *Project state and priorities review* — score 6, assistant
 
 
 
@@ -137,7 +137,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 6, assistant
+**[2026-03-19]** *Project state and priorities review* — score 6, assistant
 
 
 
@@ -145,15 +145,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 6, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 6, assistant
 
 
 
-> \*\*Immediate impact:\*\* - Scraper cases won't get enriched today (Queue METADATA/CHUNK calls all use Workers AI) - UI queries via Workers AI (Qwen3 fallback) won't work today - Claude API primary path in UI still works fine — that doesn't use neurons
+> **Immediate impact:** - Scraper cases won't get enriched today (Queue METADATA/CHUNK calls all use Workers AI) - UI queries via Workers AI (Qwen3 fallback) won't work today - Claude API primary path in UI still works fine — that doesn't use neurons
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 6, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 6, assistant
 
 
 
@@ -161,15 +161,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Legal RAG system prompt redesign for case law enrichmen\* — score 6, assistant
+**[2026-03-22]** *Legal RAG system prompt redesign for case law enrichmen* — score 6, assistant
 
 
 
-> \*\*Problem 3 (invented principles from headers):\*\* Same root cause — the prompt treats every chunk as containing extractable doctrine. A chunk that's just `COURT: Supreme Court of Tasmania / CITATION: \[2024] TASSC 47 / PARTIES: ...` gets the same extraction demand.
+> **Problem 3 (invented principles from headers):** Same root cause — the prompt treats every chunk as containing extractable doctrine. A chunk that's just `COURT: Supreme Court of Tasmania / CITATION: [2024] TASSC 47 / PARTIES: ...` gets the same extraction demand.
 
 
 
-\*\*\[2026-03-02]\*\* \*Case name extraction and console processing\* — score 5, assistant
+**[2026-03-02]** *Case name extraction and console processing* — score 5, assistant
 
 
 
@@ -177,15 +177,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 5, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 5, human
 
 
 
-> ok this is from cc: "Total chunks detected: 725 — still too many. The `\\\[DOMAIN:` lookahead is working (citation correct, SyntaxWarning is cosmetic — docstring only, no functional impact), but some chunks are still splitting mid-block. The issue is likely that not every block starts with `\\\[DOMAIN:` — some blocks open with a different first marker (e.g. `\\\[TYPE:`, `\\\[ACT:`). Pass back to Claude.ai: the lookahead `paragraphs\[i + 1].startswith('\\\\\[DOMAIN:')` is too strict — blocks without `\\\[DOMAIN:` as the first marker after the heading will not be caught, causing mid-block splits. Need to broaden to any `\\\[` marker, or specifically check for any `\\\[UPPERCASE:` pattern." Would you like to see…
+> ok this is from cc: "Total chunks detected: 725 — still too many. The `\\[DOMAIN:` lookahead is working (citation correct, SyntaxWarning is cosmetic — docstring only, no functional impact), but some chunks are still splitting mid-block. The issue is likely that not every block starts with `\\[DOMAIN:` — some blocks open with a different first marker (e.g. `\\[TYPE:`, `\\[ACT:`). Pass back to Claude.ai: the lookahead `paragraphs[i + 1].startswith('\\\\[DOMAIN:')` is too strict — blocks without `\\[DOMAIN:` as the first marker after the heading will not be caught, causing mid-block splits. Need to broaden to any `\\[` marker, or specifically check for any `\\[UPPERCASE:` pattern." Would you like to see…
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -193,31 +193,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 5, assistant
+**[2026-03-11]** *11 MAR 26* — score 5, assistant
 
 
 
-> If `raw\_text` has content, the fix is to re-run enrichment on these rows (reset `enriched=0`, let the poller enrich them via Claude API, then re-embed). If `raw\_text` is also null, the content was never ingested and needs to be re-uploaded from the source file.
+> If `raw_text` has content, the fix is to re-run enrichment on these rows (reset `enriched=0`, let the poller enrich them via Claude API, then re-embed). If `raw_text` is also null, the content was never ingested and needs to be re-uploaded from the source file.
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 5, assistant
+**[2026-03-11]** *11 MAR 26* — score 5, assistant
 
 
 
-> The corpus chunk issue is the more important one. The fix is to also search `secondary\_sources` by ID when a section reference appears in the query. Add to `handleFetchSectionsByReference` in Worker.js — after fetching from `legislation\_sections`, also query:
+> The corpus chunk issue is the more important one. The fix is to also search `secondary_sources` by ID when a section reference appears in the query. Add to `handleFetchSectionsByReference` in Worker.js — after fetching from `legislation_sections`, also query:
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 5, assistant
+**[2026-03-11]** *11 MAR 26* — score 5, assistant
 
 
 
-> The Worker is returning all the right chunks including the corpus s 38 procedure chunk. The problem is in server.py's deduplication — the `existing\_ids` check is filtering it out.
+> The Worker is returning all the right chunks including the corpus s 38 procedure chunk. The problem is in server.py's deduplication — the `existing_ids` check is filtering it out.
 
 
 
-\*\*\[2026-03-11]\*\* \*Claude.md context and suggestions\* — score 5, assistant
+**[2026-03-11]** *Claude.md context and suggestions* — score 5, assistant
 
 
 
@@ -225,7 +225,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 5, assistant
+**[2026-03-15]** *15/3/26* — score 5, assistant
 
 
 
@@ -233,39 +233,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-15]\*\* \*Automating Hogan crime block reformatting workflow\* — score 5, assistant
+**[2026-03-15]** *Automating Hogan crime block reformatting workflow* — score 5, assistant
 
 
 
-> \*\*Minor issues to be aware of across the full run:\*\* - The first master chunk flags `\[REVIEW]` because the source block apparently starts with unspecified Act references — that's correct behaviour, not a problem - Chunk 3 ("Definitions — inclusive") is very thin, just a heading note — that's a source content issue not a formatting issue - Chunk 4 has some raw markdown artefacts (`{.mark}`, `\*\*\*bold\*\*\*`) carried through from the source — again correct behaviour for the procedure prompt preserving source formatting verbatim
+> **Minor issues to be aware of across the full run:** - The first master chunk flags `[REVIEW]` because the source block apparently starts with unspecified Act references — that's correct behaviour, not a problem - Chunk 3 ("Definitions — inclusive") is very thin, just a heading note — that's a source content issue not a formatting issue - Chunk 4 has some raw markdown artefacts (`{.mark}`, `***bold***`) carried through from the source — again correct behaviour for the procedure prompt preserving source formatting verbatim
 
 
 
-\*\*\[2026-03-15]\*\* \*Automating Hogan crime block reformatting workflow\* — score 5, assistant
+**[2026-03-15]** *Automating Hogan crime block reformatting workflow* — score 5, assistant
 
 
 
-> The issue is the chunk splitting logic. It splits on `\\n{3,}` (3 or more blank lines) but the new corpus uses `\\n\\n` (2 blank lines) between chunks, with HTML comments (`<!-- block\_001 master -->`) as separators rather than triple blank lines.
+> The issue is the chunk splitting logic. It splits on `\\n{3,}` (3 or more blank lines) but the new corpus uses `\\n\\n` (2 blank lines) between chunks, with HTML comments (`<!-- block_001 master -->`) as separators rather than triple blank lines.
 
 
 
-\*\*\[2026-03-16]\*\* \*Validation retrieval tests\* — score 5, assistant
+**[2026-03-16]** *Validation retrieval tests* — score 5, assistant
 
 
 
-> \*\*On the enrichment work:\*\* Not wasted, but not where you think it is. The enrichment that produced `master\_corpus.md` is still intact — that file has all 1,138 chunks with their enriched content already written into it. The problem is the pipeline never wrote that enriched content back into the `enriched\_text` column in D1 after re-ingest. The re-ingest loaded `raw\_text` only, and the embed pass ran before the poller could populate `enriched\_text`.
+> **On the enrichment work:** Not wasted, but not where you think it is. The enrichment that produced `master_corpus.md` is still intact — that file has all 1,138 chunks with their enriched content already written into it. The problem is the pipeline never wrote that enriched content back into the `enriched_text` column in D1 after re-ingest. The re-ingest loaded `raw_text` only, and the embed pass ran before the poller could populate `enriched_text`.
 
 
 
-\*\*\[2026-03-16]\*\* \*Validation retrieval tests\* — score 5, assistant
+**[2026-03-16]** *Validation retrieval tests* — score 5, assistant
 
 
 
-> The issue is matching chunks from the markdown to D1 rows. The D1 `id` field doesn't use `block\_001` — it uses the title-derived slugs we saw. So the script needs to match on \*\*title\*\*.
+> The issue is matching chunks from the markdown to D1 rows. The D1 `id` field doesn't use `block_001` — it uses the title-derived slugs we saw. So the script needs to match on **title**.
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 5, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 5, assistant
 
 
 
@@ -273,23 +273,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 5, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 5, assistant
 
 
 
-> The important thing is the direct curl works perfectly. The issue is in `post\_chunk\_to\_worker()` in server.py — it's sending the `X-Nexus-Key` header which Cloudflare may be treating as suspicious, or the citation format from the test chunk triggered something.
+> The important thing is the direct curl works perfectly. The issue is in `post_chunk_to_worker()` in server.py — it's sending the `X-Nexus-Key` header which Cloudflare may be treating as suspicious, or the citation format from the test chunk triggered something.
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 5, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 5, assistant
 
 
 
-> Found it — this is a known Cloudflare WAF issue. From the March search history, the fix was to base64 encode the payload so CF doesn't scan the content. It was already applied to `handleUploadCase` — same fix needed for `post\_chunk\_to\_worker()` in server.py and the Worker's `handleUploadCorpus`.
+> Found it — this is a known Cloudflare WAF issue. From the March search history, the fix was to base64 encode the payload so CF doesn't scan the content. It was already applied to `handleUploadCase` — same fix needed for `post_chunk_to_worker()` in server.py and the Worker's `handleUploadCorpus`.
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 5, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 5, assistant
 
 
 
@@ -297,7 +297,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 5, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 5, assistant
 
 
 
@@ -305,15 +305,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-16]** *Performance review* — score 5, assistant
 
 
 
-> On 11 March the poller was run directly on the VPS host — `python3 \~/ai-stack/agent-general/src/enrichment\_poller.py` — so `localhost` was right. Last night you ran it with `nohup` the same way, and it completed 50 chunks fine for the same reason. Tonight we switched to `docker compose exec` to get the env vars (specifically `NEXUS\_SECRET\_KEY`) — but that puts us inside the container where `localhost` breaks.
+> On 11 March the poller was run directly on the VPS host — `python3 \~/ai-stack/agent-general/src/enrichment_poller.py` — so `localhost` was right. Last night you ran it with `nohup` the same way, and it completed 50 chunks fine for the same reason. Tonight we switched to `docker compose exec` to get the env vars (specifically `NEXUS_SECRET_KEY`) — but that puts us inside the container where `localhost` breaks.
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-16]** *Performance review* — score 5, assistant
 
 
 
@@ -321,31 +321,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 5, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 5, assistant
 
 
 
-> The content is definitely in master\_corpus — rich tendency material across both parts. So the pipeline dropped it. The issue is the backfill\_enriched\_text.py misaligned those chunks — the D1 rows exist but their enriched\_text got wrong content or the chunk IDs didn't match.
+> The content is definitely in master_corpus — rich tendency material across both parts. So the pipeline dropped it. The issue is the backfill_enriched_text.py misaligned those chunks — the D1 rows exist but their enriched_text got wrong content or the chunk IDs didn't match.
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 5, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 5, assistant
 
 
 
-> The fix is straightforward — replace `\&` with `and` in CITATION fields only across both master\_corpus files, then re-ingest just those 85 chunks.
+> The fix is straightforward — replace `\&` with `and` in CITATION fields only across both master_corpus files, then re-ingest just those 85 chunks.
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 5, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 5, assistant
 
 
 
-> \*\*2. Fix the backfill alignment\*\* — the backfill\_enriched\_text.py must use the exact same ID-generation logic as ingest\_corpus.py. The dedup suffix `\[2]`, `\[3]` assignment is order-dependent. If backfill re-parses the file and hits chunks in a different order, it writes enriched\_text to wrong rows. The fix is: ingest writes a manifest JSON file mapping `{computed\_id: raw\_text\_hash}`, backfill reads the manifest instead of re-deriving IDs.
+> **2. Fix the backfill alignment** — the backfill_enriched_text.py must use the exact same ID-generation logic as ingest_corpus.py. The dedup suffix `[2]`, `[3]` assignment is order-dependent. If backfill re-parses the file and hits chunks in a different order, it writes enriched_text to wrong rows. The fix is: ingest writes a manifest JSON file mapping `{computed_id: raw_text_hash}`, backfill reads the manifest instead of re-deriving IDs.
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-17]** *Performance review* — score 5, assistant
 
 
 
@@ -353,7 +353,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Successful data chunk processing\* — score 5, assistant
+**[2026-03-17]** *Successful data chunk processing* — score 5, assistant
 
 
 
@@ -361,15 +361,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
-> The root issue: chunk\_\_0 is AustLII boilerplate HTML, and the DNA content is buried in later chunks. The query "DNA secondary transfer Neill-Fraser" is a specific factual query against dense transcript text — pplx-embed isn't finding semantic similarity between the query and raw judgment text at any meaningful score.
+> The root issue: chunk__0 is AustLII boilerplate HTML, and the DNA content is buried in later chunks. The query "DNA secondary transfer Neill-Fraser" is a specific factual query against dense transcript text — pplx-embed isn't finding semantic similarity between the query and raw judgment text at any meaningful score.
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-18]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -377,39 +377,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, human
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, human
 
 
 
-> Recommendation: Option 2 — Chunked case pipeline with queue fan-out It's the only option that satisfies all constraints simultaneously. Here's the architecture: Core insight The current problem is N sequential Workers AI calls inside one queue consumer execution. The fix is to make each Workers AI call its own queue consumer execution. Cloudflare Queues already supports this — one message per chunk. Proposed architecture Stage 1 — Upload handler (existing, minimal change) \* Store `raw\_text` in D1 `cases` as now \* Drop one `{ type: "METADATA", citation }` message on the queue \* Return immediately Stage 2 — Queue consumer: METADATA message \* Read `raw\_text` from D1 \* Run Pass 1 only (first 8k…
+> Recommendation: Option 2 — Chunked case pipeline with queue fan-out It's the only option that satisfies all constraints simultaneously. Here's the architecture: Core insight The current problem is N sequential Workers AI calls inside one queue consumer execution. The fix is to make each Workers AI call its own queue consumer execution. Cloudflare Queues already supports this — one message per chunk. Proposed architecture Stage 1 — Upload handler (existing, minimal change) * Store `raw_text` in D1 `cases` as now * Drop one `{ type: "METADATA", citation }` message on the queue * Return immediately Stage 2 — Queue consumer: METADATA message * Read `raw_text` from D1 * Run Pass 1 only (first 8k…
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, human
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, human
 
 
 
-> suggestion 3" Recommendation: Option 2 — Chunked case pipeline with queue fan-out It's the only option that satisfies all constraints simultaneously. Here's the architecture: Core insight The current problem is N sequential Workers AI calls inside one queue consumer execution. The fix is to make each Workers AI call its own queue consumer execution. Cloudflare Queues already supports this — one message per chunk. Proposed architecture Stage 1 — Upload handler (existing, minimal change) \* Store `raw\_text` in D1 `cases` as now \* Drop one `{ type: "METADATA", citation }` message on the queue \* Return immediately Stage 2 — Queue consumer: METADATA message \* Read `raw\_text` from D1 \* Run Pass 1 o…
+> suggestion 3" Recommendation: Option 2 — Chunked case pipeline with queue fan-out It's the only option that satisfies all constraints simultaneously. Here's the architecture: Core insight The current problem is N sequential Workers AI calls inside one queue consumer execution. The fix is to make each Workers AI call its own queue consumer execution. Cloudflare Queues already supports this — one message per chunk. Proposed architecture Stage 1 — Upload handler (existing, minimal change) * Store `raw_text` in D1 `cases` as now * Drop one `{ type: "METADATA", citation }` message on the queue * Return immediately Stage 2 — Queue consumer: METADATA message * Read `raw_text` from D1 * Run Pass 1 o…
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
-> The only thing to watch is the \*\*Workers AI neuron budget\*\* — 118 chunks × \~400 neurons per call = \~47,000 neurons for the Neil case alone. That's well over the 10,000/day free tier. Check the CF dashboard after this run to see actual usage. If you're hitting limits the fix is to spread scraper uploads over multiple days — but for manual console uploads of individual cases it should be fine.
+> The only thing to watch is the **Workers AI neuron budget** — 118 chunks × \~400 neurons per call = \~47,000 neurons for the Neil case alone. That's well over the 10,000/day free tier. Check the CF dashboard after this run to see actual usage. If you're hitting limits the fix is to spread scraper uploads over multiple days — but for manual console uploads of individual cases it should be fine.
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
-> > Read `Arc v 4/Worker.js`. Find the METADATA queue handler branch. Make two changes: > > \*\*Change 1 — Increase Pass 1 max tokens from 800 to 1500\*\* in the `callWorkersAI` call for Pass 1. > > \*\*Change 2 — After the `callWorkersAI` call for Pass 1, add a fallback to extract from `reasoning\_content` if `content` is null.\*\* Find where `pass1Raw` is set and add handling for the raw Workers AI response. The issue is that `callWorkersAI` returns the content string directly — check how `callWorkersAI` extracts the response. If it reads `choices\[0].message.content`, add a fallback: if content is null, try `choices\[0].message.reasoning\_content`. > > Show me the current `callWorkersAI` function first…
+> > Read `Arc v 4/Worker.js`. Find the METADATA queue handler branch. Make two changes: > > **Change 1 — Increase Pass 1 max tokens from 800 to 1500** in the `callWorkersAI` call for Pass 1. > > **Change 2 — After the `callWorkersAI` call for Pass 1, add a fallback to extract from `reasoning_content` if `content` is null.** Find where `pass1Raw` is set and add handling for the raw Workers AI response. The issue is that `callWorkersAI` returns the content string directly — check how `callWorkersAI` extracts the response. If it reads `choices[0].message.content`, add a fallback: if content is null, try `choices[0].message.reasoning_content`. > > Show me the current `callWorkersAI` function first…
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
@@ -417,39 +417,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, human
+**[2026-03-18]** *What to do next* — score 5, human
 
 
 
-> Three differences worth noting: 1. Same model — both paths use `@cf/qwen/qwen3-30b-a3b-fp8`. The CLAUDE.md roadmap item "Qwen3 UI toggle" suggests this was intentionally switched to Qwen3 from Llama at some point. 2. `max\_tokens` differs — RAG query gets 800 (answer synthesis, short output fine). Extraction calls get 2,000–4,000 (structured JSON output needs room). 3. Response shape differs — `handleLegalQueryWorkersAI` reads `response?.response` (line 1681). `callWorkersAI` tries three fallback paths: `choices\[0].message.content`, `choices\[0].text`, then `response?.response`. The two callers handle model output shape slightly differently, which could be fragile if the model's response forma…
+> Three differences worth noting: 1. Same model — both paths use `@cf/qwen/qwen3-30b-a3b-fp8`. The CLAUDE.md roadmap item "Qwen3 UI toggle" suggests this was intentionally switched to Qwen3 from Llama at some point. 2. `max_tokens` differs — RAG query gets 800 (answer synthesis, short output fine). Extraction calls get 2,000–4,000 (structured JSON output needs room). 3. Response shape differs — `handleLegalQueryWorkersAI` reads `response?.response` (line 1681). `callWorkersAI` tries three fallback paths: `choices[0].message.content`, `choices[0].text`, then `response?.response`. The two callers handle model output shape slightly differently, which could be fragile if the model's response forma…
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
-> \*\*CC's critical correction stands alone and is the most important:\*\* - `env.AI.run` is a Worker binding — VPS can't call it directly - The fix is Cloudflare REST API: `POST api.cloudflare.com/.../ai/run/@cf/qwen/qwen3-30b-a3b-fp8` - Same model, no Worker timeout, no VPS GPU cost - This was the fundamental gap in the original spec
+> **CC's critical correction stands alone and is the most important:** - `env.AI.run` is a Worker binding — VPS can't call it directly - The fix is Cloudflare REST API: `POST api.cloudflare.com/.../ai/run/@cf/qwen/qwen3-30b-a3b-fp8` - Same model, no Worker timeout, no VPS GPU cost - This was the fundamental gap in the original spec
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
-> \*\*The problem is exactly what session history identified:\*\* the case chunk second-pass is gated on citation/party name detection. A general query like "Neill-Fraser DNA secondary transfer" doesn't trigger it even though "Neill-Fraser" is a party name.
+> **The problem is exactly what session history identified:** the case chunk second-pass is gated on citation/party name detection. A general query like "Neill-Fraser DNA secondary transfer" doesn't trigger it even though "Neill-Fraser" is a party name.
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
-> \*\*Bottom line:\*\* Workers AI is the better path for chunk enrichment on quality and reliability grounds — the neuron cap is the only real problem. The fix is either the retry delay (band-aid) or shifting the scraper to run at noon after the 11am neuron reset (simple, no code change).
+> **Bottom line:** Workers AI is the better path for chunk enrichment on quality and reliability grounds — the neuron cap is the only real problem. The fix is either the retry delay (band-aid) or shifting the scraper to run at noon after the 11am neuron reset (simple, no code change).
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -457,15 +457,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
-> 1. \*\*Yes it's a real problem\*\* — chunk 0 containing AustLII navigation HTML is a known data quality issue 2. \*\*Yes it's been discussed\*\* — the boilerplate stripper was built specifically to address this in early March, but it operates on the plain text \*after\* BeautifulSoup extraction. The issue is that the AustLII search interface HTML is being included in the `body` tag before the judgment content, so BeautifulSoup's `get\_text()` picks it up 3. \*\*The existing stripper has a pattern for AustLII lines\*\* — but it's line-by-line and the navigation block spans many lines with HTML entities (`\&#9660;`, `\&hellip;` etc) that survive as decoded text
+> 1. **Yes it's a real problem** — chunk 0 containing AustLII navigation HTML is a known data quality issue 2. **Yes it's been discussed** — the boilerplate stripper was built specifically to address this in early March, but it operates on the plain text *after* BeautifulSoup extraction. The issue is that the AustLII search interface HTML is being included in the `body` tag before the judgment content, so BeautifulSoup's `get_text()` picks it up 3. **The existing stripper has a pattern for AustLII lines** — but it's line-by-line and the navigation block spans many lines with HTML entities (`\&#9660;`, `\&hellip;` etc) that survive as decoded text
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -473,15 +473,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-19]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
-> No, but your original goal and RAG are genuinely in tension. What you want — an AI that reasons over your entire research database — is closer to what's called a \*\*long context\*\* approach, where you stuff everything into one giant prompt. The problem is your corpus is \~2,032 chunks × \~500 words = roughly 1 million words. That's too large for any context window today.
+> No, but your original goal and RAG are genuinely in tension. What you want — an AI that reasons over your entire research database — is closer to what's called a **long context** approach, where you stuff everything into one giant prompt. The problem is your corpus is \~2,032 chunks × \~500 words = roughly 1 million words. That's too large for any context window today.
 
 
 
-\*\*\[2026-03-19]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-19]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -489,15 +489,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 5, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 5, assistant
 
 
 
-> Good. Now the issue is clear. Block 001 failed because `process\_blocks.py` had `MAX\_TOKENS=32000` but the model (`gpt-4o-mini-2024-07-18`) only supports 16,384 completion tokens. The CLAUDE.md note confirms this was a known stale error from a prior failed run — but looking at the output, block\_001 failed in \*this\* run too.
+> Good. Now the issue is clear. Block 001 failed because `process_blocks.py` had `MAX_TOKENS=32000` but the model (`gpt-4o-mini-2024-07-18`) only supports 16,384 completion tokens. The CLAUDE.md note confirms this was a known stale error from a prior failed run — but looking at the output, block_001 failed in *this* run too.
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 5, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 5, assistant
 
 
 
@@ -505,31 +505,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 5, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 5, assistant
 
 
 
-> \*\*Q2 (BRD standard)\*\* — yes, likely fixed by ingestion. The new corpus has 490 chunks vs the old 1,579 thin ones. If a BRD doctrine chunk exists in the reprocessed material it'll land with substantive prose this time and retrieve correctly.
+> **Q2 (BRD standard)** — yes, likely fixed by ingestion. The new corpus has 490 chunks vs the old 1,579 thin ones. If a BRD doctrine chunk exists in the reprocessed material it'll land with substantive prose this time and retrieve correctly.
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
-> The fix is a worker.js change to the CHUNK queue consumer — preserve `chunk\_text` prose alongside the extracted JSON rather than discarding it. It's on the roadmap but deferred.
+> The fix is a worker.js change to the CHUNK queue consumer — preserve `chunk_text` prose alongside the extracted JSON rather than discarding it. It's on the roadmap but deferred.
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
-> \*\*The fix is simple\*\* — one prompt change in worker.js CHUNK handler: instruct the model to return both the extracted JSON fields AND preserve the key reasoning passages verbatim.
+> **The fix is simple** — one prompt change in worker.js CHUNK handler: instruct the model to return both the extracted JSON fields AND preserve the key reasoning passages verbatim.
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
@@ -537,15 +537,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
-> So this is genuinely new work. The fix is straightforward though — want CC to do it now while process\_blocks.py runs? It's a worker.js prompt change only, no schema changes needed. The `chunk\_text` is already stored in D1 — we just need the CHUNK prompt to also preserve key reasoning passages in the JSON output so `principles\_json` has prose, not just thin bullet points.
+> So this is genuinely new work. The fix is straightforward though — want CC to do it now while process_blocks.py runs? It's a worker.js prompt change only, no schema changes needed. The `chunk_text` is already stored in D1 — we just need the CHUNK prompt to also preserve key reasoning passages in the JSON output so `principles_json` has prose, not just thin bullet points.
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
@@ -553,31 +553,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
-> The chunk text is fine — no HTML entities, normal prose. The issue is likely the new `reasoning` field in the CHUNK prompt is pushing the response over the 1,500 token `max\_tokens` limit, causing truncated JSON that fails to parse.
+> The chunk text is fine — no HTML entities, normal prose. The issue is likely the new `reasoning` field in the CHUNK prompt is pushing the response over the 1,500 token `max_tokens` limit, causing truncated JSON that fails to parse.
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
-> The fix is simple: \*\*accept empty extractions as valid\*\* and mark the chunk done. The guard check should only retry on actual errors (null response, parse failure), not on legitimately empty content.
+> The fix is simple: **accept empty extractions as valid** and mark the chunk done. The guard check should only retry on actual errors (null response, parse failure), not on legitimately empty content.
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 5, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 5, assistant
 
 
 
-> - \*\*process\_blocks.py fixes\*\* — MAX\_TOKENS 32000→16000, REPAIR\_PROMPT double-brace placeholders fixed, BLOCK\_NUMBER injection into system prompt via .replace() - \*\*Corpus pilot run\*\* — block 1 passed CQT: prose preserved, metadata correct, repair pass triggered and accepted, procedure chunks verbatim - \*\*Corpus files deleted\*\* — master\_corpus\_part1.md + master\_corpus\_part2.md cleared for clean overnight run - \*\*process\_blocks.py launched\*\* — full 56-block overnight run started \~4:30pm AEST · expected completion \~10pm AEST - \*\*Cloudflare Workers Paid\*\* — upgraded to $5/month plan · neuron cap removed - \*\*CHUNK enrichment switched to GPT-4o-mini\*\* — Workers AI Qwen3 blocked graphic family viol…
+> - **process_blocks.py fixes** — MAX_TOKENS 32000→16000, REPAIR_PROMPT double-brace placeholders fixed, BLOCK_NUMBER injection into system prompt via .replace() - **Corpus pilot run** — block 1 passed CQT: prose preserved, metadata correct, repair pass triggered and accepted, procedure chunks verbatim - **Corpus files deleted** — master_corpus_part1.md + master_corpus_part2.md cleared for clean overnight run - **process_blocks.py launched** — full 56-block overnight run started \~4:30pm AEST · expected completion \~10pm AEST - **Cloudflare Workers Paid** — upgraded to $5/month plan · neuron cap removed - **CHUNK enrichment switched to GPT-4o-mini** — Workers AI Qwen3 blocked graphic family viol…
 
 
 
-\*\*\[2026-03-20]\*\* \*Reviewing recent conversation highlights\* — score 5, assistant
+**[2026-03-20]** *Reviewing recent conversation highlights* — score 5, assistant
 
 
 
@@ -585,7 +585,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -593,31 +593,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
-> \*\*This is worth checking before you invest time rewriting Pass 1.\*\* If Pass 1 is hitting content moderation blocks, the prompt fix is irrelevant — the fix is moving Pass 1 to GPT-4o-mini as well.
+> **This is worth checking before you invest time rewriting Pass 1.** If Pass 1 is hitting content moderation blocks, the prompt fix is irrelevant — the fix is moving Pass 1 to GPT-4o-mini as well.
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
-> \*\*Reason 2 — The problem was known but mis-prioritised.\*\* It's been in the roadmap as "CHUNK message prompt fix" since session 9. Session 9 correctly diagnosed it — "extracts principles/holdings JSON but discards judicial reasoning prose." It was explicitly deferred because "the scraper hadn't added significant volume yet." At 29 cases it seemed low-stakes. At 309 cases it's overdue.
+> **Reason 2 — The problem was known but mis-prioritised.** It's been in the roadmap as "CHUNK message prompt fix" since session 9. Session 9 correctly diagnosed it — "extracts principles/holdings JSON but discards judicial reasoning prose." It was explicitly deferred because "the scraper hadn't added significant volume yet." At 29 cases it seemed low-stakes. At 309 cases it's overdue.
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
-> \*\*The fix is simple:\*\* the CHUNK prompt (or the Worker before calling GPT) should detect chunk 0 containing only header metadata and skip it, or the split logic should skip the first N characters of structured header before chunking. This is a one-line gate, not a scraper change.
+> **The fix is simple:** the CHUNK prompt (or the Worker before calling GPT) should detect chunk 0 containing only header metadata and skip it, or the split logic should skip the first N characters of structured header before chunking. This is a one-line gate, not a scraper change.
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
@@ -625,23 +625,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, human
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, human
 
 
 
-> # Change Lines (original) 1 Header date session 13 → 14 Line 2 2 CHUNK message description — v3 fields added Line 158 3 case\_chunks column list — enriched\_text added + descriptor Lines 401–404 → 401–406 4 cases column list — subject\_matter added + descriptor Lines 396–397 → 396–399 5 KNOWN ISSUES — replaced 2 bullets with 2 new bullets Lines 266–267 6 CHUNK handler section — 2 lines expanded to 25 lines Lines 270–271 7a FUTURE ROADMAP — 1 item → 2 items Line 454 7b FUTURE ROADMAP — Re-embed pass updated Line 468 No commands run. Ready for git commit.
+> # Change Lines (original) 1 Header date session 13 → 14 Line 2 2 CHUNK message description — v3 fields added Line 158 3 case_chunks column list — enriched_text added + descriptor Lines 401–404 → 401–406 4 cases column list — subject_matter added + descriptor Lines 396–397 → 396–399 5 KNOWN ISSUES — replaced 2 bullets with 2 new bullets Lines 266–267 6 CHUNK handler section — 2 lines expanded to 25 lines Lines 270–271 7a FUTURE ROADMAP — 1 item → 2 items Line 454 7b FUTURE ROADMAP — Re-embed pass updated Line 468 No commands run. Ready for git commit.
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-05]** *5 Mar 26* — score 4, assistant
 
 
 
-> The constraint is Llama's context window via Workers AI. Llama 3.1 8B has a 128k token context window, and Workers AI supports up to around 6000 tokens input. At roughly 4 characters per token, 8000 characters is about 2000 tokens — so actually the current limit is being conservative even within the Workers AI constraint. You could safely push to \*\*20,000–24,000 characters\*\* (\~5000–6000 tokens) without hitting the ceiling.
+> The constraint is Llama's context window via Workers AI. Llama 3.1 8B has a 128k token context window, and Workers AI supports up to around 6000 tokens input. At roughly 4 characters per token, 8000 characters is about 2000 tokens — so actually the current limit is being conservative even within the Workers AI constraint. You could safely push to **20,000–24,000 characters** (\~5000–6000 tokens) without hitting the ceiling.
 
 
 
-\*\*\[2026-03-06]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-06]** *5 Mar 26* — score 4, assistant
 
 
 
@@ -649,15 +649,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 4, assistant
+**[2026-03-07]** *7 MAR 26* — score 4, assistant
 
 
 
-> \*The 30 second CPU timeout on Cloudflare Workers.\* Your Worker already has this constraint. Workers AI calls count against it. For a query with 6 chunks of context the inference should complete well within 30 seconds on GPU, but if Cloudflare's infrastructure is under load it could occasionally time out. Claude has the same constraint — this isn't new, just worth keeping in mind.
+> *The 30 second CPU timeout on Cloudflare Workers.* Your Worker already has this constraint. Workers AI calls count against it. For a query with 6 chunks of context the inference should complete well within 30 seconds on GPU, but if Cloudflare's infrastructure is under load it could occasionally time out. Claude has the same constraint — this isn't new, just worth keeping in mind.
 
 
 
-\*\*\[2026-03-09]\*\* \*Secondary sources prompt development\* — score 4, assistant
+**[2026-03-09]** *Secondary sources prompt development* — score 4, assistant
 
 
 
@@ -665,31 +665,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Secondary sources prompt development\* — score 4, assistant
+**[2026-03-09]** *Secondary sources prompt development* — score 4, assistant
 
 
 
-> Omit `\[SECTION:]` if the chunk covers a concept rather than a specific section. Omit `\[ACT:]` if the chunk is not Act-specific.
+> Omit `[SECTION:]` if the chunk covers a concept rather than a specific section. Omit `[ACT:]` if the chunk is not Act-specific.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 4, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 4, human
 
 
 
-> followed by a blank line and `\[DOMAIN: ...]` markers. The splitter regex will never match — the entire corpus ingests as one massive chunk. The corpus needs either: 1. `##` headings added to `master\_corpus.md` before each block, or 2. The splitter regex changed to split on the actual block boundary pattern (e.g. double blank line + `\[DOMAIN:` or `\[TYPE:` marker, or the pattern of a plain heading line followed by `\\n\\n\\\[`) Claude.ai needs to decide the fix — do not run the script yet.
+> followed by a blank line and `[DOMAIN: ...]` markers. The splitter regex will never match — the entire corpus ingests as one massive chunk. The corpus needs either: 1. `##` headings added to `master_corpus.md` before each block, or 2. The splitter regex changed to split on the actual block boundary pattern (e.g. double blank line + `[DOMAIN:` or `[TYPE:` marker, or the pattern of a plain heading line followed by `\\n\\n\\[`) Claude.ai needs to decide the fix — do not run the script yet.
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 4, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 4, assistant
 
 
 
-> The manual process had \*you\* reviewing each block's FINAL STATUS before appending. The automated pipeline needs that quality check built in — if Claude returns a chunk marked `NEEDS REVISION` or missing required metadata fields, the pipeline should flag it rather than silently ingest it.
+> The manual process had *you* reviewing each block's FINAL STATUS before appending. The automated pipeline needs that quality check built in — if Claude returns a chunk marked `NEEDS REVISION` or missing required metadata fields, the pipeline should flag it rather than silently ingest it.
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 4, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 4, assistant
 
 
 
@@ -697,7 +697,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 4, assistant
+**[2026-03-11]** *11 MAR 26* — score 4, assistant
 
 
 
@@ -705,31 +705,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-14]\*\* \*12/3/26\* — score 4, assistant
+**[2026-03-14]** *12/3/26* — score 4, assistant
 
 
 
-> \*\*Secondary sources corpus — IMPORTANT:\*\* - 711 rows, all `enriched=1` (set manually — raw\_text is the content, no Claude API enrichment needed) - `enriched\_text` is NULL across all rows — this is correct, poller falls back to `raw\_text` - Do NOT run `--mode enrich` on these rows
+> **Secondary sources corpus — IMPORTANT:** - 711 rows, all `enriched=1` (set manually — raw_text is the content, no Claude API enrichment needed) - `enriched_text` is NULL across all rows — this is correct, poller falls back to `raw_text` - Do NOT run `--mode enrich` on these rows
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
-> \*\*The only genuine risks worth noting:\*\* - Llama 3.1 8B extraction quality is imperfect — principles especially will be lightweight. Acceptable for now, improvable later from `raw\_text` - Workers AI has CPU time limits per invocation — if a case is very long the Llama call could time out. Mitigated by truncating input to a sensible limit (e.g. 6,000 chars) which is already in the Worker - Local terminal dependency for scraping — means you need your Windows machine running during scrape sessions. Accepted tradeoff given VPS IP is blocked
+> **The only genuine risks worth noting:** - Llama 3.1 8B extraction quality is imperfect — principles especially will be lightweight. Acceptable for now, improvable later from `raw_text` - Workers AI has CPU time limits per invocation — if a case is very long the Llama call could time out. Mitigated by truncating input to a sensible limit (e.g. 6,000 chars) which is already in the Worker - Local terminal dependency for scraping — means you need your Windows machine running during scrape sessions. Accepted tradeoff given VPS IP is blocked
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> \*\*Secondary sources corpus — IMPORTANT:\*\* - 711 rows, all enriched=1 (set manually — raw\_text is the content, no Claude API enrichment needed) - enriched\_text is NULL across all rows — this is correct, poller falls back to raw\_text - Do NOT run `--mode enrich` on these rows
+> **Secondary sources corpus — IMPORTANT:** - 711 rows, all enriched=1 (set manually — raw_text is the content, no Claude API enrichment needed) - enriched_text is NULL across all rows — this is correct, poller falls back to raw_text - Do NOT run `--mode enrich` on these rows
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 4, human
+**[2026-03-16]** *Debugging script without interrupting execution* — score 4, human
 
 
 
@@ -737,7 +737,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 4, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 4, assistant
 
 
 
@@ -745,15 +745,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 4, assistant
+**[2026-03-16]** *Performance review* — score 4, assistant
 
 
 
-> Confirmed — it's \*\*Workers AI (Llama 3.1 8B)\*\*, not Claude API, doing the case extraction. The architecture is:
+> Confirmed — it's **Workers AI (Llama 3.1 8B)**, not Claude API, doing the case extraction. The architecture is:
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 4, assistant
+**[2026-03-16]** *Performance review* — score 4, assistant
 
 
 
@@ -761,79 +761,79 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Building case summary with multi-pass extraction\* — score 4, human
+**[2026-03-17]** *Building case summary with multi-pass extraction* — score 4, human
 
 
 
-> Here's the full picture before any changes: Current structure `processCaseUpload(env, caseText, citation, caseName, court)` — Worker.js:185 1. Checks D1 for duplicate citation 2. Builds `caseData` object (`url: ""` hardcoded) 3. Calls `summarizeCase(env, caseData)` — two-pass Qwen3 extraction 4. Calls `saveCaseToDb(env, finalCaseData, summary)` 5. Runs procedure pass: `callWorkersAI(env, procedurePassPrompt, caseText.slice(0, 80000))`, writes `procedure\_notes` 6. Fire-and-forgets a Nexus ingest POST 7. Returns `{ id, citation, case\_name, summary }` `handleUploadCase(body, env)` — Worker.js:856 Thin wrapper. Parses `{ case\_text, citation, case\_name, court, court\_hint, encoding }` from body, m…
+> Here's the full picture before any changes: Current structure `processCaseUpload(env, caseText, citation, caseName, court)` — Worker.js:185 1. Checks D1 for duplicate citation 2. Builds `caseData` object (`url: ""` hardcoded) 3. Calls `summarizeCase(env, caseData)` — two-pass Qwen3 extraction 4. Calls `saveCaseToDb(env, finalCaseData, summary)` 5. Runs procedure pass: `callWorkersAI(env, procedurePassPrompt, caseText.slice(0, 80000))`, writes `procedure_notes` 6. Fire-and-forgets a Nexus ingest POST 7. Returns `{ id, citation, case_name, summary }` `handleUploadCase(body, env)` — Worker.js:856 Thin wrapper. Parses `{ case_text, citation, case_name, court, court_hint, encoding }` from body, m…
 
 
 
-\*\*\[2026-03-17]\*\* \*Embed pass completion and Parsons ingestion tracking\* — score 4, assistant
+**[2026-03-17]** *Embed pass completion and Parsons ingestion tracking* — score 4, assistant
 
 
 
-> \*\*On the Procedure Prompt pass\*\* — you're completely right and I should have caught this earlier. The whole `process\_blocks.py` architecture was built specifically to run GPT-4o-mini over the 56 blocks with both Master and Procedure prompts, producing two independent corpus streams that then get ingested separately. That pipeline exists, was designed, was built, and has not been run for the Procedure Prompt stream. It's sitting there waiting.
+> **On the Procedure Prompt pass** — you're completely right and I should have caught this earlier. The whole `process_blocks.py` architecture was built specifically to run GPT-4o-mini over the 56 blocks with both Master and Procedure prompts, producing two independent corpus streams that then get ingested separately. That pipeline exists, was designed, was built, and has not been run for the Procedure Prompt stream. It's sitting there waiting.
 
 
 
-\*\*\[2026-03-17]\*\* \*Successful data chunk processing\* — score 4, assistant
+**[2026-03-17]** *Successful data chunk processing* — score 4, assistant
 
 
 
-> > Open `C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\CLAUDE\_arch.md` and add the following to the Component Notes section. Do not change anything else. Show me the addition before saving. > > ```markdown > ### Workers AI — Qwen3 extraction issue (17 Mar 2026) > > `@cf/qwen/qwen3-30b-a3b-fp8` was deployed as replacement for `@cf/meta/llama-3.1-8b-instruct` in `callWorkersAI()`. Model confirmed working in CF playground but returns reasoning preamble before JSON output. Fix deployed: regex extraction `raw.match(/\\{\[\\s\\S]\*\\}/)` in `callWorkersAI` return value strips preamble and returns JSON only. If extraction still fails after this fix, revert model to `@cf/meta/llama-3.1-8b-in…
+> > Open `C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\CLAUDE_arch.md` and add the following to the Component Notes section. Do not change anything else. Show me the addition before saving. > > ```markdown > ### Workers AI — Qwen3 extraction issue (17 Mar 2026) > > `@cf/qwen/qwen3-30b-a3b-fp8` was deployed as replacement for `@cf/meta/llama-3.1-8b-instruct` in `callWorkersAI()`. Model confirmed working in CF playground but returns reasoning preamble before JSON output. Fix deployed: regex extraction `raw.match(/\\{[\\s\\S]*\\}/)` in `callWorkersAI` return value strips preamble and returns JSON only. If extraction still fails after this fix, revert model to `@cf/meta/llama-3.1-8b-in…
 
 
 
-\*\*\[2026-03-17]\*\* \*Successful data chunk processing\* — score 4, assistant
+**[2026-03-17]** *Successful data chunk processing* — score 4, assistant
 
 
 
-> 1. \*\*Fix Qwen3 extraction — Pass 1 response: 0 chars\*\* — regex fix deployed but unconfirmed. Fresh session: restart wrangler tail, delete TASMC case, re-upload, check tail for actual error. If still failing revert to `@cf/meta/llama-3.1-8b-instruct` — windowing architecture is model-agnostic.
+> 1. **Fix Qwen3 extraction — Pass 1 response: 0 chars** — regex fix deployed but unconfirmed. Fresh session: restart wrangler tail, delete TASMC case, re-upload, check tail for actual error. If still failing revert to `@cf/meta/llama-3.1-8b-instruct` — windowing architecture is model-agnostic.
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 4, human
+**[2026-03-18]** *Reviewing Claude documentation files* — score 4, human
 
 
 
-> tom@vmi3098054:\~$ sed -n '759,800p' \~/ai-stack/agent-general/src/enrichment\_poller.py ok\_ids = \[] errors = 0 for i, chunk in enumerate(chunks, 1): chunk\_id = chunk\['id'] embed\_text = chunk.get('chunk\_text', '') metadata = { 'chunk\_id': chunk\_id, 'citation': chunk.get('citation', ''), 'chunk\_index': chunk.get('chunk\_index', 0), 'case\_name': chunk.get('case\_name') or '', 'text': embed\_text\[:1000], 'type': 'case\_chunk', 'source': 'AustLII', } log.info(f'\[CASE-EMBED] {i}/{len(chunks)} chunk\_id={chunk\_id}') try:…
+> tom@vmi3098054:\~$ sed -n '759,800p' \~/ai-stack/agent-general/src/enrichment_poller.py ok_ids = [] errors = 0 for i, chunk in enumerate(chunks, 1): chunk_id = chunk['id'] embed_text = chunk.get('chunk_text', '') metadata = { 'chunk_id': chunk_id, 'citation': chunk.get('citation', ''), 'chunk_index': chunk.get('chunk_index', 0), 'case_name': chunk.get('case_name') or '', 'text': embed_text[:1000], 'type': 'case_chunk', 'source': 'AustLII', } log.info(f'[CASE-EMBED] {i}/{len(chunks)} chunk_id={chunk_id}') try:…
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 4, human
+**[2026-03-18]** *Project state and priorities review* — score 4, human
 
 
 
-> PS C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4> Select-String -Path "worker.js" -Pattern "max\_tokens" -Context 5,0 worker.js:55: worker.js:56:Output only the Markdown chunks or NO PROCEDURE CONTENT. No preamble, no commentary.`; worker.js:57: worker.js:58:async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) { worker.js:59: const result = await env.AI.run(WORKERS\_AI\_MODEL, { > worker.js:60: max\_tokens: maxTokens, worker.js:1528: "x-api-key": env.ANTHROPIC\_API\_KEY, worker.js:1529: "anthropic-version": "2023-06-01", worker.js:1530: }, worker.js:1531: body: JSON.stringify({ worker.js:1532: model: "claude-sonne…
+> PS C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4> Select-String -Path "worker.js" -Pattern "max_tokens" -Context 5,0 worker.js:55: worker.js:56:Output only the Markdown chunks or NO PROCEDURE CONTENT. No preamble, no commentary.`; worker.js:57: worker.js:58:async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) { worker.js:59: const result = await env.AI.run(WORKERS_AI_MODEL, { > worker.js:60: max_tokens: maxTokens, worker.js:1528: "x-api-key": env.ANTHROPIC_API_KEY, worker.js:1529: "anthropic-version": "2023-06-01", worker.js:1530: }, worker.js:1531: body: JSON.stringify({ worker.js:1532: model: "claude-sonne…
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 4, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 4, assistant
 
 
 
-> \*\*Better alternative:\*\* instead of calling a Worker route, run the extraction directly in Python on the VPS using the Claude API — same as how secondary sources are enriched. No Worker timeout, no neuron limit, full control. This is actually cleaner architecturally and consistent with the existing poller pattern.
+> **Better alternative:** instead of calling a Worker route, run the extraction directly in Python on the VPS using the Claude API — same as how secondary sources are enriched. No Worker timeout, no neuron limit, full control. This is actually cleaner architecturally and consistent with the existing poller pattern.
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 4, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 4, assistant
 
 
 
-> \*\*Scraper cases (bulk)\*\* — Workers AI (Qwen3-30b) — free, automated, no API cost. This is the established architecture decision and must stay that way at volume.
+> **Scraper cases (bulk)** — Workers AI (Qwen3-30b) — free, automated, no API cost. This is the established architecture decision and must stay that way at volume.
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 4, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 4, assistant
 
 
 
-> - \*\*Workers AI via Worker route\*\* — free, but 30s timeout risk on large judgments - \*\*Claude API via poller\*\* — no timeout, but cost at scraper volume - \*\*Workers AI via poller direct call\*\* — no Worker timeout, free, but Workers AI isn't directly accessible from VPS (confirmed architecture decision — requires CF REST API token)
+> - **Workers AI via Worker route** — free, but 30s timeout risk on large judgments - **Claude API via poller** — no timeout, but cost at scraper volume - **Workers AI via poller direct call** — no Worker timeout, free, but Workers AI isn't directly accessible from VPS (confirmed architecture decision — requires CF REST API token)
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
@@ -841,15 +841,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
-> These aren't contradictory — the decision was about \*\*where the model runs\*\*, not about \*\*when\*\*. Workers AI can still do the enrichment, just triggered by the poller rather than inline in the Worker request.
+> These aren't contradictory — the decision was about **where the model runs**, not about **when**. Workers AI can still do the enrichment, just triggered by the poller rather than inline in the Worker request.
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, human
+**[2026-03-18]** *What to do next* — score 4, human
 
 
 
@@ -857,15 +857,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
-> \*\*All three agree:\*\* - Architecture is correct — decouple is the right call - VPS poller pattern is sound - Simple `enriched=0/1` boolean is insufficient — need proper status states and retry counts - Idempotency on write routes is essential - Atomic job claiming needed to prevent double-processing
+> **All three agree:** - Architecture is correct — decouple is the right call - VPS poller pattern is sound - Simple `enriched=0/1` boolean is insufficient — need proper status states and retry counts - Idempotency on write routes is essential - Atomic job claiming needed to prevent double-processing
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
@@ -873,7 +873,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
@@ -881,7 +881,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
@@ -889,15 +889,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 4, assistant
+**[2026-03-19]** *Project state and priorities review* — score 4, assistant
 
 
 
-> Also add to FUTURE ROADMAP: ``` - \*\*Scraper noon schedule\*\* — Task Scheduler set to 12pm daily · neurons reset 11am Hobart · do not move earlier without checking neuron reset time - \*\*Neuron cap monitoring\*\* — at 100 cases/day with large judgments (100+ chunks each) cap may be hit · if recurring, consider moving to Workers Paid ($5/month) or GPT-4o mini (\~$0.05/day) for chunk enrichment - \*\*Cloudflare git integration\*\* — disconnected session 8 · deploy manually via wrangler only ```
+> Also add to FUTURE ROADMAP: ``` - **Scraper noon schedule** — Task Scheduler set to 12pm daily · neurons reset 11am Hobart · do not move earlier without checking neuron reset time - **Neuron cap monitoring** — at 100 cases/day with large judgments (100+ chunks each) cap may be hit · if recurring, consider moving to Workers Paid ($5/month) or GPT-4o mini (\~$0.05/day) for chunk enrichment - **Cloudflare git integration** — disconnected session 8 · deploy manually via wrangler only ```
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 4, assistant
+**[2026-03-19]** *Project state and priorities review* — score 4, assistant
 
 
 
@@ -905,79 +905,79 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Side projects while waiting for scraper\* — score 4, assistant
+**[2026-03-19]** *Side projects while waiting for scraper* — score 4, assistant
 
 
 
-> That's not what the Master Prompt was supposed to produce. That looks like a \*\*case authority chunk\*\* — the prompt detected "TASSC 38, Barnes v Omant, Lusted v Jenkins" as case citations and produced a case authority chunk pointer rather than a doctrine chunk with the substantive content.
+> That's not what the Master Prompt was supposed to produce. That looks like a **case authority chunk** — the prompt detected "TASSC 38, Barnes v Omant, Lusted v Jenkins" as case citations and produced a case authority chunk pointer rather than a doctrine chunk with the substantive content.
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 4, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 4, assistant
 
 
 
-> From CLAUDE.md: \*"upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations."\* This means if the new chunks produce the same citation IDs as the old ones, they'll overwrite silently. If they produce different IDs, you'll have duplicates. The citation ID format needs to be locked before reprocessing starts.
+> From CLAUDE.md: *"upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations."* This means if the new chunks produce the same citation IDs as the old ones, they'll overwrite silently. If they produce different IDs, you'll have duplicates. The citation ID format needs to be locked before reprocessing starts.
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 4, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 4, assistant
 
 
 
-> From CLAUDE\_arch.md: \*"Use `gpt-4o-mini-2024-07-18`. Do NOT use gpt-5.2/5.4 — near-empty output in testing."\* The consultants' prompts don't specify this but it's critical. Also `max\_completion\_tokens` not `max\_tokens`, no `temperature` parameter.
+> From CLAUDE_arch.md: *"Use `gpt-4o-mini-2024-07-18`. Do NOT use gpt-5.2/5.4 — near-empty output in testing."* The consultants' prompts don't specify this but it's critical. Also `max_completion_tokens` not `max_tokens`, no `temperature` parameter.
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 4, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 4, assistant
 
 
 
-> \*\*Consultant 1 (Document 8) — partially useful.\*\* The Master prompt has gaps — the format example is incomplete (shows `INPUT TEXT BLOCK` placeholder instead of actual format). However their Repair Pass prompt for the CHUNK message (case law Pass 2) is valuable and confirms that finding. File it for the case law pipeline fix workstream.
+> **Consultant 1 (Document 8) — partially useful.** The Master prompt has gaps — the format example is incomplete (shows `INPUT TEXT BLOCK` placeholder instead of actual format). However their Repair Pass prompt for the CHUNK message (case law Pass 2) is valuable and confirms that finding. File it for the case law pipeline fix workstream.
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 4, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 4, assistant
 
 
 
-> \*\*Important constraint from history (early sessions):\*\* The Pass 1 8k truncation problem was identified in the original sliding window discussion and the reason the chunked Queue architecture was built was precisely to solve full-judgment coverage. Pass 1 is intentionally only metadata extraction (first 8k) — the CHUNK pass is supposed to cover principles across the full text. So Pass 1 doesn't need to extract holdings from the whole judgment — \*\*it needs to be better at extracting procedural context and case framing from what it does see\*\*, so that each CHUNK call has accurate context to work with.
+> **Important constraint from history (early sessions):** The Pass 1 8k truncation problem was identified in the original sliding window discussion and the reason the chunked Queue architecture was built was precisely to solve full-judgment coverage. Pass 1 is intentionally only metadata extraction (first 8k) — the CHUNK pass is supposed to cover principles across the full text. So Pass 1 doesn't need to extract holdings from the whole judgment — **it needs to be better at extracting procedural context and case framing from what it does see**, so that each CHUNK call has accurate context to work with.
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 4, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 4, assistant
 
 
 
-> 1. \*\*Simplify `legislation` back to string array\*\* — `\["s 46 Criminal Code (Tas)"]` not objects — for D1 compatibility 2. \*\*Keep max\_tokens at 1,600\*\* not 3,000 3. \*\*Add `excerpt\_role\_hint` to user message\*\* so calling code can pre-classify obvious header chunks 4. \*\*Add `Chunk: N of M` to user message\*\* — not neighbouring summaries (too complex for now) 5. \*\*Do not use two-pass approach\*\* — single pass only
+> 1. **Simplify `legislation` back to string array** — `["s 46 Criminal Code (Tas)"]` not objects — for D1 compatibility 2. **Keep max_tokens at 1,600** not 3,000 3. **Add `excerpt_role_hint` to user message** so calling code can pre-classify obvious header chunks 4. **Add `Chunk: N of M` to user message** — not neighbouring summaries (too complex for now) 5. **Do not use two-pass approach** — single pass only
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 4, assistant
+**[2026-03-22]** *Checking ingest status* — score 4, assistant
 
 
 
-> Done. Poller will pick them up on the next cycle. Watch for the large input warning and successful embed — \*\*SSH/VPS, `\~/ai-stack`:\*\*
+> Done. Poller will pick them up on the next cycle. Watch for the large input warning and successful embed — **SSH/VPS, `\~/ai-stack`:**
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 4, assistant
+**[2026-03-22]** *Checking ingest status* — score 4, assistant
 
 
 
-> The simplest approach is a Python script that pages through `secondary\_sources` via wrangler and inserts into `secondary\_sources\_fts` via the Worker's `upload-corpus` route — but that route re-ingests full chunks which we don't want.
+> The simplest approach is a Python script that pages through `secondary_sources` via wrangler and inserts into `secondary_sources_fts` via the Worker's `upload-corpus` route — but that route re-ingests full chunks which we don't want.
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 4, assistant
+**[2026-03-22]** *Checking ingest status* — score 4, assistant
 
 
 
-> > \*\*Secondary sources corpus — IMPORTANT:\*\* all enriched=1 (set manually — raw\_text IS the content, no Claude API enrichment needed). Do NOT run `--mode enrich` on these rows.
+> > **Secondary sources corpus — IMPORTANT:** all enriched=1 (set manually — raw_text IS the content, no Claude API enrichment needed). Do NOT run `--mode enrich` on these rows.
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 4, assistant
+**[2026-03-22]** *Checking ingest status* — score 4, assistant
 
 
 
@@ -985,19 +985,19 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\## Vector Search \& Embeddings
+## Vector Search \& Embeddings
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 10, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 10, assistant
 
 
 
-> - Location: `arcanthyr-console\\backfill\_case\_chunk\_names.py` (local) · `/home/tom/backfill\_case\_chunk\_names.py` (VPS) - Run from VPS only — fetches cases via Worker API (`https://arcanthyr.com/api/legal/library?type=cases`), updates Qdrant at `localhost:6334` - Field mapping: `result.cases\[].ref` → citation · `result.cases\[].title` → case\_name - Re-run after any bulk case ingestion to backfill case\_name into existing Qdrant payloads - Do NOT run from Windows — Qdrant port 6334 is localhost-only on VPS - Root cause of session 5 incident: original script used external IP (blocked) + npx subprocess (not on VPS) ```
+> - Location: `arcanthyr-console\\backfill_case_chunk_names.py` (local) · `/home/tom/backfill_case_chunk_names.py` (VPS) - Run from VPS only — fetches cases via Worker API (`https://arcanthyr.com/api/legal/library?type=cases`), updates Qdrant at `localhost:6334` - Field mapping: `result.cases[].ref` → citation · `result.cases[].title` → case_name - Re-run after any bulk case ingestion to backfill case_name into existing Qdrant payloads - Do NOT run from Windows — Qdrant port 6334 is localhost-only on VPS - Root cause of session 5 incident: original script used external IP (blocked) + npx subprocess (not on VPS) ```
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 6, assistant
+**[2026-03-04]** *4 MAR 26* — score 6, assistant
 
 
 
@@ -1005,7 +1005,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 6, assistant
+**[2026-03-04]** *4 MAR 26* — score 6, assistant
 
 
 
@@ -1013,7 +1013,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Processing compiled notes into Arcanthyr database with \* — score 6, human
+**[2026-03-09]** *Processing compiled notes into Arcanthyr database with * — score 6, human
 
 
 
@@ -1021,31 +1021,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 6, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 6, human
 
 
 
-> FAIL — timeout. The script's 30s timeout expired waiting for the Worker response. This means `handleUploadCorpus` is awaiting the nexus `/ingest` response synchronously, and embedding a large chunk takes >30s. Root cause: `handleUploadCorpus` in Worker.js awaits the nexus response — same issue that was fixed for `handleUploadCase` with fire-and-forget. That fix wasn't applied to `handleUploadCorpus`. Two options to fix: 1. Increase `timeout=30` in `ingest\_corpus.py` to e.g. `timeout=90` — but won't help if the Worker itself hits the 30s Cloudflare limit 2. Make `handleUploadCorpus` fire-and-forget in Worker.js (same pattern as `handleUploadCase`) — requires Worker.js edit + deploy Option 2 i…
+> FAIL — timeout. The script's 30s timeout expired waiting for the Worker response. This means `handleUploadCorpus` is awaiting the nexus `/ingest` response synchronously, and embedding a large chunk takes >30s. Root cause: `handleUploadCorpus` in Worker.js awaits the nexus response — same issue that was fixed for `handleUploadCase` with fire-and-forget. That fix wasn't applied to `handleUploadCorpus`. Two options to fix: 1. Increase `timeout=30` in `ingest_corpus.py` to e.g. `timeout=90` — but won't help if the Worker itself hits the 30s Cloudflare limit 2. Make `handleUploadCorpus` fire-and-forget in Worker.js (same pattern as `handleUploadCase`) — requires Worker.js edit + deploy Option 2 i…
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 6, assistant
+**[2026-03-11]** *11 MAR 26* — score 6, assistant
 
 
 
-> Then on VPS, reset all 662 rows and re-embed. But first — we need to also check what field name the Worker's `fetch-for-embedding` route returns for the text content. If it returns `text` not `raw\_text`, the fix won't work. CC:
+> Then on VPS, reset all 662 rows and re-embed. But first — we need to also check what field name the Worker's `fetch-for-embedding` route returns for the text content. If it returns `text` not `raw_text`, the fix won't work. CC:
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 6, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 6, assistant
 
 
 
-> - Root cause of missing corpus chunks identified: nested bracket citation truncation bug in ingest\_corpus.py metadata regex — citations containing `\[year]` were truncated, causing ID collisions and silent DROP via INSERT OR IGNORE. \~85 chunks affected including all tendency evidence doctrine. - ingest\_corpus.py: regex fix applied — `(.\*?)` → `((?:\[^\\\[\\]]|\\\[\[^\\\[\\]]\*\\])\*)` in extract\_metadata - Worker.js: INSERT OR IGNORE → UPSERT with ON CONFLICT DO UPDATE. embedded=0 always reset on conflict. Deployed version 17a7b2c4. - generate\_manifest.py: new script — parses both corpus files, outputs corpus\_manifest.json with id/heading/category/body\_length/raw\_text\_hash per chunk. Ground truth for inge…
+> - Root cause of missing corpus chunks identified: nested bracket citation truncation bug in ingest_corpus.py metadata regex — citations containing `[year]` were truncated, causing ID collisions and silent DROP via INSERT OR IGNORE. \~85 chunks affected including all tendency evidence doctrine. - ingest_corpus.py: regex fix applied — `(.*?)` → `((?:[^\\[\]]|\\[[^\\[\]]*\])*)` in extract_metadata - Worker.js: INSERT OR IGNORE → UPSERT with ON CONFLICT DO UPDATE. embedded=0 always reset on conflict. Deployed version 17a7b2c4. - generate_manifest.py: new script — parses both corpus files, outputs corpus_manifest.json with id/heading/category/body_length/raw_text_hash per chunk. Ground truth for inge…
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 6, assistant
+**[2026-03-17]** *Performance review* — score 6, assistant
 
 
 
@@ -1053,7 +1053,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 6, assistant
+**[2026-03-18]** *Project state and priorities review* — score 6, assistant
 
 
 
@@ -1061,39 +1061,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 6, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 6, assistant
 
 
 
-> - case\_name added to case chunk Qdrant payload — worker.js LEFT JOIN cases on fetch-case-chunks-for-embedding query + enrichment\_poller.py metadata dict - 177 case chunks reset to embedded=0 and re-embedded — previous embed pass stored empty payloads (root cause: original embed pass ran before case\_name field existed) - backfill\_case\_chunk\_names.py rewritten — runs on VPS, fetches D1 data via Worker API, hits Qdrant at localhost:6334. Original script failed: used external IP (port blocked) and npx subprocess (not on VPS) - Two-stage case chunk retrieval added to server.py — second Qdrant pass filtered to type=case\_chunk, threshold 0.15, top 4, merged before return - Prompt fix — Claude Case…
+> - case_name added to case chunk Qdrant payload — worker.js LEFT JOIN cases on fetch-case-chunks-for-embedding query + enrichment_poller.py metadata dict - 177 case chunks reset to embedded=0 and re-embedded — previous embed pass stored empty payloads (root cause: original embed pass ran before case_name field existed) - backfill_case_chunk_names.py rewritten — runs on VPS, fetches D1 data via Worker API, hits Qdrant at localhost:6334. Original script failed: used external IP (port blocked) and npx subprocess (not on VPS) - Two-stage case chunk retrieval added to server.py — second Qdrant pass filtered to type=case_chunk, threshold 0.15, top 4, merged before return - Prompt fix — Claude Case…
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 6, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 6, assistant
 
 
 
-> - case\_name added to case chunk Qdrant payload — worker.js LEFT JOIN cases on fetch-case-chunks-for-embedding + enrichment\_poller.py metadata dict updated - 177 case chunks reset to embedded=0 and re-embedded with full payload — previous embed pass had stored empty payloads (root cause: original embed ran before case\_name field existed; backfill via PUT wiped remaining fields) - backfill\_case\_chunk\_names.py rewritten — runs on VPS, fetches D1 data via Worker API, hits Qdrant at localhost:6334 · original script failed: used external IP (port 6334 blocked) and npx subprocess (not on VPS) - Two-stage case chunk retrieval added to server.py — second Qdrant pass filtered to type=case\_chunk, thres…
+> - case_name added to case chunk Qdrant payload — worker.js LEFT JOIN cases on fetch-case-chunks-for-embedding + enrichment_poller.py metadata dict updated - 177 case chunks reset to embedded=0 and re-embedded with full payload — previous embed pass had stored empty payloads (root cause: original embed ran before case_name field existed; backfill via PUT wiped remaining fields) - backfill_case_chunk_names.py rewritten — runs on VPS, fetches D1 data via Worker API, hits Qdrant at localhost:6334 · original script failed: used external IP (port 6334 blocked) and npx subprocess (not on VPS) - Two-stage case chunk retrieval added to server.py — second Qdrant pass filtered to type=case_chunk, thres…
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 6, assistant
+**[2026-03-19]** *Project state and priorities review* — score 6, assistant
 
 
 
-> History confirms this is a known recurring issue — the Neill-Fraser retrieval failure has happened before and the root cause identified in session 5 was that `case\_name` was missing from the Qdrant payload. That was fixed in session 5 (backfill + re-embed with full payload). But the query "what were the grounds of appeal in Neill-Fraser" doesn't contain a citation pattern or "v " — it just contains the name "Neill-Fraser".
+> History confirms this is a known recurring issue — the Neill-Fraser retrieval failure has happened before and the root cause identified in session 5 was that `case_name` was missing from the Qdrant payload. That was fixed in session 5 (backfill + re-embed with full payload). But the query "what were the grounds of appeal in Neill-Fraser" doesn't contain a citation pattern or "v " — it just contains the name "Neill-Fraser".
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 6, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 6, assistant
 
 
 
-> > Read `Arc v 4/CLAUDE\_arch.md` fully before making any changes. > > Make the following updates: > > \*\*1. Update date header\*\* to `20 March 2026 (end of session 9)` > > \*\*2. Update RETRIEVAL ARCHITECTURE section\*\* — add to the end: > ``` > \*\*Session 9 changes:\*\* > - Case chunk threshold: 0.15 → 0.35 (reduces noise from irrelevant case chunks) > - HCA added to COURT\_HIERARCHY: tier 4 (above CCA/FullCourt tier 3) > - Dead Nexus route removed: handleLegalQueryQwen + legal-query-qwen router entry deleted from worker.js > ``` > > \*\*3. Add new CORPUS PIPELINE section\*\* after the retrieval architecture section: > ``` > ## CORPUS PIPELINE — SECONDARY SOURCES (v2, session 9) > > \*\*Corpus damage confi…
+> > Read `Arc v 4/CLAUDE_arch.md` fully before making any changes. > > Make the following updates: > > **1. Update date header** to `20 March 2026 (end of session 9)` > > **2. Update RETRIEVAL ARCHITECTURE section** — add to the end: > ``` > **Session 9 changes:** > - Case chunk threshold: 0.15 → 0.35 (reduces noise from irrelevant case chunks) > - HCA added to COURT_HIERARCHY: tier 4 (above CCA/FullCourt tier 3) > - Dead Nexus route removed: handleLegalQueryQwen + legal-query-qwen router entry deleted from worker.js > ``` > > **3. Add new CORPUS PIPELINE section** after the retrieval architecture section: > ``` > ## CORPUS PIPELINE — SECONDARY SOURCES (v2, session 9) > > **Corpus damage confi…
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -1101,7 +1101,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -1109,7 +1109,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -1117,7 +1117,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -1125,7 +1125,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -1133,23 +1133,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
-> The legislation text in D1 `legislation\_sections` is actually clean — the section parser in `handleUploadLegislation` normalises whitespace with `.replace(/\\s+/g, ' ').trim()`. So the D1 copy is fine. The problem is the Qdrant copy, which was ingested from the raw `doc\_text` before that normalisation.
+> The legislation text in D1 `legislation_sections` is actually clean — the section parser in `handleUploadLegislation` normalises whitespace with `.replace(/\\s+/g, ' ').trim()`. So the D1 copy is fine. The problem is the Qdrant copy, which was ingested from the raw `doc_text` before that normalisation.
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
-> The fix is straightforward — in `handleUploadLegislation`, change the Qdrant ingest call to use the cleaned, joined section texts rather than the raw `doc\_text`. That way Qdrant gets the same normalised text that D1 has.
+> The fix is straightforward — in `handleUploadLegislation`, change the Qdrant ingest call to use the cleaned, joined section texts rather than the raw `doc_text`. That way Qdrant gets the same normalised text that D1 has.
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -1157,7 +1157,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*8 MAR 26\* — score 5, assistant
+**[2026-03-08]** *8 MAR 26* — score 5, assistant
 
 
 
@@ -1165,23 +1165,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Processing compiled notes into Arcanthyr database with \* — score 5, assistant
+**[2026-03-09]** *Processing compiled notes into Arcanthyr database with * — score 5, assistant
 
 
 
-> The fix is also clear: \*\*make the nexus ingest call fire-and-forget.\*\* The Worker doesn't need to wait for nexus to finish chunking and embedding before returning a response to the scraper. Save to D1, kick off nexus ingest in the background, return immediately. The scraper gets a clean HTTP 200, no timeout.
+> The fix is also clear: **make the nexus ingest call fire-and-forget.** The Worker doesn't need to wait for nexus to finish chunking and embedding before returning a response to the scraper. Save to D1, kick off nexus ingest in the background, return immediately. The scraper gets a clean HTTP 200, no timeout.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 5, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 5, human
 
 
 
-> Returned empty — 0 results above 0.5 threshold. The chunk ingested but the query embedding didn't match it above threshold. This is worth flagging to Claude.ai: Likely cause: pplx-embed-context-v1 uses a different vector space / dimensionality than nomic-embed-text. The collection `general-docs-v2` was auto-created on first ingest with the pplx vector dimensions, and the query embedding is also pplx — so it should be consistent. The issue is more likely the score threshold is too high for this model's similarity scale, or the model is producing cosine scores in a different range than nomic. Suggest retry with `score\_threshold: 0.0` to see the raw score the chunk actually gets: Bash IN
+> Returned empty — 0 results above 0.5 threshold. The chunk ingested but the query embedding didn't match it above threshold. This is worth flagging to Claude.ai: Likely cause: pplx-embed-context-v1 uses a different vector space / dimensionality than nomic-embed-text. The collection `general-docs-v2` was auto-created on first ingest with the pplx vector dimensions, and the query embedding is also pplx — so it should be consistent. The issue is more likely the score threshold is too high for this model's similarity scale, or the model is producing cosine scores in a different range than nomic. Suggest retry with `score_threshold: 0.0` to see the raw score the chunk actually gets: Bash IN
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 5, human
+**[2026-03-11]** *RAG workflow plan issues* — score 5, human
 
 
 
@@ -1189,7 +1189,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -1197,7 +1197,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -1205,23 +1205,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, human
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, human
 
 
 
-> Both functions already use `urlObj = new URL(request.url)` — the fix is already there. The 500 on `handleFetchForEmbedding` must be something else. The most likely cause: `source\_id` and `chunk\_index` columns don't exist in `secondary\_sources` — those aren't in the original schema and weren't added by `migrate\_schema\_v2.sql`. Want me to verify by tailing the Worker log and hitting the endpoint directly to capture the actual error message?
+> Both functions already use `urlObj = new URL(request.url)` — the fix is already there. The 500 on `handleFetchForEmbedding` must be something else. The most likely cause: `source_id` and `chunk_index` columns don't exist in `secondary_sources` — those aren't in the original schema and weren't added by `migrate_schema_v2.sql`. Want me to verify by tailing the Worker log and hitting the endpoint directly to capture the actual error message?
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, human
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, human
 
 
 
-> The fix is to drop those two columns from the SELECT and just return id, text, enriched\_text:.." "Deployed (`e578d7d8`). Fixed `source\_id`/`chunk\_index` out of both queries — replaced with `id, title, raw\_text` (unenriched) and `id, title, raw\_text, enriched\_text` (for-embedding), ordered by `id`. Want me to verify with a quick curl then commit?"
+> The fix is to drop those two columns from the SELECT and just return id, text, enriched_text:.." "Deployed (`e578d7d8`). Fixed `source_id`/`chunk_index` out of both queries — replaced with `id, title, raw_text` (unenriched) and `id, title, raw_text, enriched_text` (for-embedding), ordered by `id`. Want me to verify with a quick curl then commit?"
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -1229,7 +1229,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -1237,7 +1237,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -1245,7 +1245,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -1253,7 +1253,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 5, assistant
+**[2026-03-11]** *11 MAR 26* — score 5, assistant
 
 
 
@@ -1261,31 +1261,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 5, assistant
+**[2026-03-11]** *11 MAR 26* — score 5, assistant
 
 
 
-> The fix is straightforward — reset these rows to `embedded=0` and update the poller to fall back to `raw\_text` when `enriched\_text` is null.
+> The fix is straightforward — reset these rows to `embedded=0` and update the poller to fall back to `raw_text` when `enriched_text` is null.
 
 
 
-\*\*\[2026-03-12]\*\* \*12/3/26\* — score 5, assistant
+**[2026-03-12]** *12/3/26* — score 5, assistant
 
 
 
-> The issue is what gets \*returned\* to the LLM, not what the LLM does with it. Qdrant returns the top 6 chunks by vector similarity. If the s 38 procedure is spread across 8 raw paragraphs in the original Hogan text, you'd need all 8 to get a coherent answer, but you'll only get the 6 most similar vectors — and "most similar" doesn't mean "most complete." You'd get fragments, and even Claude can't reconstruct what it wasn't given.
+> The issue is what gets *returned* to the LLM, not what the LLM does with it. Qdrant returns the top 6 chunks by vector similarity. If the s 38 procedure is spread across 8 raw paragraphs in the original Hogan text, you'd need all 8 to get a coherent answer, but you'll only get the 6 most similar vectors — and "most similar" doesn't mean "most complete." You'd get fragments, and even Claude can't reconstruct what it wasn't given.
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 5, human
+**[2026-03-15]** *15/3/26* — score 5, human
 
 
 
-> The problem: `case\_name` is sent by the Worker at line 174, but `ingest\_text()` never reads it — it's not in the `metadata` dict (lines 94-104) and not explicitly added to the payload. `case\_name` is silently dropped before the Qdrant upsert. The fix is a one-liner in server.py: add `"case\_name": body.get("case\_name")` to the `metadata` dict.
+> The problem: `case_name` is sent by the Worker at line 174, but `ingest_text()` never reads it — it's not in the `metadata` dict (lines 94-104) and not explicitly added to the payload. `case_name` is silently dropped before the Qdrant upsert. The fix is a one-liner in server.py: add `"case_name": body.get("case_name")` to the `metadata` dict.
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 5, assistant
+**[2026-03-16]** *Debugging script without interrupting execution* — score 5, assistant
 
 
 
@@ -1293,7 +1293,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 5, assistant
+**[2026-03-16]** *Debugging script without interrupting execution* — score 5, assistant
 
 
 
@@ -1301,7 +1301,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 5, assistant
+**[2026-03-16]** *Debugging script without interrupting execution* — score 5, assistant
 
 
 
@@ -1309,7 +1309,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-16]** *Performance review* — score 5, assistant
 
 
 
@@ -1317,15 +1317,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Open claw in the stack\* — score 5, assistant
+**[2026-03-17]** *Open claw in the stack* — score 5, assistant
 
 
 
-> \*\*Option 2 — Local machine with GPU\*\* A secondhand RTX 3090 is around $500-700 AUD currently. Install Ollama locally, run inference there, point your VPS stack at your home machine. The issue is always-on reliability and home internet upload speed.
+> **Option 2 — Local machine with GPU** A secondhand RTX 3090 is around $500-700 AUD currently. Install Ollama locally, run inference there, point your VPS stack at your home machine. The issue is always-on reliability and home internet upload speed.
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-17]** *Performance review* — score 5, assistant
 
 
 
@@ -1333,7 +1333,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-17]** *Performance review* — score 5, assistant
 
 
 
@@ -1341,15 +1341,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-17]** *Performance review* — score 5, assistant
 
 
 
-> The issue is `top\_k` controls both the Qdrant query limit AND the return limit. We need to separate them — query Qdrant with `top\_k`, but after the concept search merger allow up to a higher return limit.
+> The issue is `top_k` controls both the Qdrant query limit AND the return limit. We need to separate them — query Qdrant with `top_k`, but after the concept search merger allow up to a higher return limit.
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-18]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1357,7 +1357,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-18]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1365,7 +1365,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
@@ -1373,7 +1373,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
@@ -1381,55 +1381,55 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
-> 1. \*\*Qdrant\*\* — use `localhost:6334` ✓ (fixed by running on VPS) 2. \*\*D1 fetch\*\* — can't use `npx wrangler` on VPS — need to either hardcode the citation→case\_name data, or fetch it via the Worker REST API instead of wrangler
+> 1. **Qdrant** — use `localhost:6334` ✓ (fixed by running on VPS) 2. **D1 fetch** — can't use `npx wrangler` on VPS — need to either hardcode the citation→case_name data, or fetch it via the Worker REST API instead of wrangler
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
-> The fix is a full re-embed pass for all 153 case chunks, which will upsert the correct payload via the now-corrected `enrichment\_poller.py`. Since the poller uses deterministic UUIDs, re-embedding will hit the same point IDs and overwrite the payload correctly.
+> The fix is a full re-embed pass for all 153 case chunks, which will upsert the correct payload via the now-corrected `enrichment_poller.py`. Since the poller uses deterministic UUIDs, re-embedding will hit the same point IDs and overwrite the payload correctly.
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
-> If that returns case chunks, the fix is the two-stage retrieval already in the roadmap — separate lower-threshold Qdrant pass filtered to `type=case\_chunk`. If it still returns nothing, the chunks aren't being embedded with meaningful vectors.
+> If that returns case chunks, the fix is the two-stage retrieval already in the roadmap — separate lower-threshold Qdrant pass filtered to `type=case_chunk`. If it still returns nothing, the chunks aren't being embedded with meaningful vectors.
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
-> This is the two-stage retrieval problem from the roadmap. The fix is a separate Qdrant pass filtered to `type=case\_chunk` with a much lower threshold, bypassing the main semantic gate.
+> This is the two-stage retrieval problem from the roadmap. The fix is a separate Qdrant pass filtered to `type=case_chunk` with a much lower threshold, bypassing the main semantic gate.
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
-> The fix is a cleanup script that strips the Word artifact patterns from `raw\_text` in D1, then resets `embedded=0` on those rows so the poller re-embeds them with clean text.
+> The fix is a cleanup script that strips the Word artifact patterns from `raw_text` in D1, then resets `embedded=0` on those rows so the poller re-embeds them with clean text.
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
-> \*\*Context:\*\* Arcanthyr is a Tasmanian criminal law research platform. Stack: Cloudflare Worker + D1 + Qdrant + VPS Docker (server.py + enrichment\_poller.py). Cases are ingested via console upload or fetch-by-URL. Currently, when a case is uploaded the Worker handles everything inline: fetch HTML → strip text → call Workers AI (Qwen3-30b) for enrichment (summarizeCase — up to 6 sequential inference calls on large judgments) → save to D1 → return. This times out on large judgments because the Worker has a 30s wall-clock limit.
+> **Context:** Arcanthyr is a Tasmanian criminal law research platform. Stack: Cloudflare Worker + D1 + Qdrant + VPS Docker (server.py + enrichment_poller.py). Cases are ingested via console upload or fetch-by-URL. Currently, when a case is uploaded the Worker handles everything inline: fetch HTML → strip text → call Workers AI (Qwen3-30b) for enrichment (summarizeCase — up to 6 sequential inference calls on large judgments) → save to D1 → return. This times out on large judgments because the Worker has a 30s wall-clock limit.
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1437,7 +1437,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1445,7 +1445,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1453,7 +1453,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-19]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -1461,7 +1461,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 5, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 5, assistant
 
 
 
@@ -1469,23 +1469,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 5, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 5, assistant
 
 
 
-> \*\*The fix design:\*\* The chunk\_text is already stored in D1 `case\_chunks.chunk\_text` and already in the Qdrant payload (confirmed session 10). So the embedding already uses the raw prose. The problem is specifically what the LLM \*sees\* when a case chunk is retrieved — it gets the extracted JSON principles, not the reasoning prose.
+> **The fix design:** The chunk_text is already stored in D1 `case_chunks.chunk_text` and already in the Qdrant payload (confirmed session 10). So the embedding already uses the raw prose. The problem is specifically what the LLM *sees* when a case chunk is retrieved — it gets the extracted JSON principles, not the reasoning prose.
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 5, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 5, assistant
 
 
 
-> The fix is simple: when the enrichment poller assembles the Qdrant payload for a case chunk, use `chunk\_text` as the primary payload text, with `principles\_json` as supplementary metadata. Not the other way around.
+> The fix is simple: when the enrichment poller assembles the Qdrant payload for a case chunk, use `chunk_text` as the primary payload text, with `principles_json` as supplementary metadata. Not the other way around.
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -1493,15 +1493,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
-> From session 5 history — case chunks are embedded from `chunk\_text` with `case\_name` in the payload. So the vector captures the raw judgment text semantically. That part is fine. The problem is what the LLM gets as context.
+> From session 5 history — case chunks are embedded from `chunk_text` with `case_name` in the payload. So the vector captures the raw judgment text semantically. That part is fine. The problem is what the LLM gets as context.
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -1509,15 +1509,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
-> \*\*Fixed by this change:\*\* - Thin/generic principles in Qdrant payloads — replaced by `enriched\_text` prose synthesis - LLM at query time seeing boilerplate-heavy raw prose truncated at 3k chars — replaced by dense legal reasoning
+> **Fixed by this change:** - Thin/generic principles in Qdrant payloads — replaced by `enriched_text` prose synthesis - LLM at query time seeing boilerplate-heavy raw prose truncated at 3k chars — replaced by dense legal reasoning
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
@@ -1525,23 +1525,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 5, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 5, assistant
 
 
 
-> - \*\*CHUNK prompt v3 deployed\*\* — replaced single-line IF/THEN extraction prompt with 6-type classification engine (reasoning/evidence/submissions/procedural/header/mixed) · enriched\_text field added as primary output (200-350 word prose synthesis for reasoning chunks, honest description for others) · reasoning\_quotes field extracts verbatim judicial passages · subject\_matter classification added · principles now stated in judge's own doctrinal terms not IF/THEN abstraction · why: old prompt produced same generic principle across 4-5 chunks of same case, hallucinated principles from transcript/header chunks, and output never reached LLM at query time since only raw chunk\_text was embedded -…
+> - **CHUNK prompt v3 deployed** — replaced single-line IF/THEN extraction prompt with 6-type classification engine (reasoning/evidence/submissions/procedural/header/mixed) · enriched_text field added as primary output (200-350 word prose synthesis for reasoning chunks, honest description for others) · reasoning_quotes field extracts verbatim judicial passages · subject_matter classification added · principles now stated in judge's own doctrinal terms not IF/THEN abstraction · why: old prompt produced same generic principle across 4-5 chunks of same case, hallucinated principles from transcript/header chunks, and output never reached LLM at query time since only raw chunk_text was embedded -…
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 5, assistant
+**[2026-03-22]** *Checking ingest status* — score 5, assistant
 
 
 
-> If Ollama is responsive, the issue is the chunk content itself — likely oversized text hitting the embedding model's token limit. We'd fix it by truncating the payload before sending to Ollama in `enrichment\_poller.py`.
+> If Ollama is responsive, the issue is the chunk content itself — likely oversized text hitting the embedding model's token limit. We'd fix it by truncating the payload before sending to Ollama in `enrichment_poller.py`.
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 5, assistant
+**[2026-03-22]** *Checking ingest status* — score 5, assistant
 
 
 
@@ -1549,23 +1549,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 5, assistant
+**[2026-03-22]** *Checking ingest status* — score 5, assistant
 
 
 
-> These two chunks have unusually large `raw\_text` values (15k and 26k chars) compared to the typical corpus chunk (\~3,000–5,000 chars). The session 9 payload truncation fix (`\[:5000]`) was applied to the \*\*Qdrant payload preview\*\* (what gets stored as metadata) but the actual text passed to `get\_embedding()` was never truncated — it always sent the full `raw\_text` to Ollama. For 1,169 chunks this didn't matter because they were short enough to embed within the 30s timeout. These two were long enough to blow it.
+> These two chunks have unusually large `raw_text` values (15k and 26k chars) compared to the typical corpus chunk (\~3,000–5,000 chars). The session 9 payload truncation fix (`[:5000]`) was applied to the **Qdrant payload preview** (what gets stored as metadata) but the actual text passed to `get_embedding()` was never truncated — it always sent the full `raw_text` to Ollama. For 1,169 chunks this didn't matter because they were short enough to embed within the 30s timeout. These two were long enough to blow it.
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-05]** *5 Mar 26* — score 4, assistant
 
 
 
-> For context documents, the right architecture is not extraction at all. It's \*\*chunked vector storage\*\*. You upload the document, it gets split into chunks of \~500-800 tokens each, each chunk gets embedded by nomic-embed-text and stored in Qdrant with metadata tags (source title, page range, topic tags). When you later ask Qwen3 a question, the relevant chunks are retrieved by semantic similarity and injected as context. The 900-page document never needs to be read in full — only the relevant pieces surface when needed.
+> For context documents, the right architecture is not extraction at all. It's **chunked vector storage**. You upload the document, it gets split into chunks of \~500-800 tokens each, each chunk gets embedded by nomic-embed-text and stored in Qdrant with metadata tags (source title, page range, topic tags). When you later ask Qwen3 a question, the relevant chunks are retrieved by semantic similarity and injected as context. The 900-page document never needs to be read in full — only the relevant pieces surface when needed.
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-05]** *5 Mar 26* — score 4, assistant
 
 
 
@@ -1573,7 +1573,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-05]** *5 Mar 26* — score 4, assistant
 
 
 
@@ -1581,7 +1581,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, human
+**[2026-03-05]** *5 Mar 26* — score 4, human
 
 
 
@@ -1589,15 +1589,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 4, assistant
+**[2026-03-07]** *7 MAR 26* — score 4, assistant
 
 
 
-> 1. \*\*`/query` endpoint in server.py\*\* — accepts `query\_text` + `model` toggle, runs the search, then calls Qwen3 via Ollama instead of forwarding to the Worker for Claude 2. \*\*`handleLegalQueryQwen` in Worker.js\*\* — mirrors `handleLegalQuery` exactly but calls nexus `/query` instead of Anthropic API 3. \*\*Route registration\*\* — add `legal-query-qwen` to the legal router in the main fetch handler 4. \*\*Toggle in search.html\*\* — we'll do that after the backend is working (need to see search.html first, but backend first)
+> 1. **`/query` endpoint in server.py** — accepts `query_text` + `model` toggle, runs the search, then calls Qwen3 via Ollama instead of forwarding to the Worker for Claude 2. **`handleLegalQueryQwen` in Worker.js** — mirrors `handleLegalQuery` exactly but calls nexus `/query` instead of Anthropic API 3. **Route registration** — add `legal-query-qwen` to the legal router in the main fetch handler 4. **Toggle in search.html** — we'll do that after the backend is working (need to see search.html first, but backend first)
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 4, assistant
+**[2026-03-07]** *7 MAR 26* — score 4, assistant
 
 
 
@@ -1605,15 +1605,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 4, assistant
+**[2026-03-07]** *7 MAR 26* — score 4, assistant
 
 
 
-> A smarter routing layer would detect "s.XX \[Act name]" patterns and route to `section-lookup` directly, bypassing Qdrant entirely. That's a meaningful improvement worth adding — the answer would always be authoritative text straight from D1 rather than a semantically-retrieved chunk.
+> A smarter routing layer would detect "s.XX [Act name]" patterns and route to `section-lookup` directly, bypassing Qdrant entirely. That's a meaningful improvement worth adding — the answer would always be authoritative text straight from D1 rather than a semantically-retrieved chunk.
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 4, assistant
+**[2026-03-07]** *7 MAR 26* — score 4, assistant
 
 
 
@@ -1621,15 +1621,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*8 MAR 26\* — score 4, assistant
+**[2026-03-08]** *8 MAR 26* — score 4, assistant
 
 
 
-> Text quality looks good — readable, coherent sections, no garbling. But I notice `total\_chunks` is showing 7 and 8 on these results, which means the 98 vectors are spread across multiple smaller sub-documents rather than one contiguous 98-chunk document. That's the batching working as expected — each batch of 20 sections got chunked separately by the nexus.
+> Text quality looks good — readable, coherent sections, no garbling. But I notice `total_chunks` is showing 7 and 8 on these results, which means the 98 vectors are spread across multiple smaller sub-documents rather than one contiguous 98-chunk document. That's the batching working as expected — each batch of 20 sections got chunked separately by the nexus.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 4, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 4, human
 
 
 
@@ -1637,15 +1637,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 4, assistant
+**[2026-03-10]** *Claude.md context and suggestions* — score 4, assistant
 
 
 
-> The honest answer is: \*\*we can't properly calibrate on one test chunk\*\*. The right approach is to re-ingest the 5 Acts first (real data, known content), run a set of test queries against them, see what scores good and bad matches produce, then set the threshold accordingly.
+> The honest answer is: **we can't properly calibrate on one test chunk**. The right approach is to re-ingest the 5 Acts first (real data, known content), run a set of test queries against them, see what scores good and bad matches produce, then set the threshold accordingly.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 4, assistant
+**[2026-03-10]** *Claude.md context and suggestions* — score 4, assistant
 
 
 
@@ -1653,7 +1653,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 4, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 4, assistant
 
 
 
@@ -1661,55 +1661,55 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 4, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 4, assistant
 
 
 
-> The SSH tunnel fix bypasses step 3 entirely — `ingest\_corpus.py` calls nexus directly on localhost rather than going Worker → Cloudflare Tunnel → nexus. D1 already has the data so you don't need to touch the Worker at all. You're just completing step 4 for the 657 rows that are already sitting in D1 waiting to be embedded.
+> The SSH tunnel fix bypasses step 3 entirely — `ingest_corpus.py` calls nexus directly on localhost rather than going Worker → Cloudflare Tunnel → nexus. D1 already has the data so you don't need to touch the Worker at all. You're just completing step 4 for the 657 rows that are already sitting in D1 waiting to be embedded.
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 4, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 4, assistant
 
 
 
-> \*\*Option C — Modify the Worker to do batch embedding\*\* Instead of fire-and-forgetting per chunk, collect all chunks and make one nexus call with the full batch. One tunnel request, nexus handles the loop internally.
+> **Option C — Modify the Worker to do batch embedding** Instead of fire-and-forgetting per chunk, collect all chunks and make one nexus call with the full batch. One tunnel request, nexus handles the loop internally.
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 4, human
+**[2026-03-11]** *Project state review and pipeline fixes* — score 4, human
 
 
 
-> tom@vmi3098054:\~/ai-stack/agent-general/src$ tail -20 embed.log 2026-03-11 04:13:43,724 \[WARNING] \[EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:13:43,724 \[INFO] \[EMBED] 32/50 chunk\_id=Criminal Code Act 1924 (Tas) s 310(4) 2026-03-11 04:13:43,851 \[WARNING] \[EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:13:43,851 \[INFO] \[EMBED] 33/50 chunk\_id=Criminal Code Act 1924 (Tas) s 311 2026-03-11 04:13:43,987 \[WARNING] \[EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:13:43,987 \[INFO] \[EMBED] 34/50 chunk\_id=Criminal Code Act 1924 (Tas) s 342 2026-03-11 0…
+> tom@vmi3098054:\~/ai-stack/agent-general/src$ tail -20 embed.log 2026-03-11 04:13:43,724 [WARNING] [EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:13:43,724 [INFO] [EMBED] 32/50 chunk_id=Criminal Code Act 1924 (Tas) s 310(4) 2026-03-11 04:13:43,851 [WARNING] [EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:13:43,851 [INFO] [EMBED] 33/50 chunk_id=Criminal Code Act 1924 (Tas) s 311 2026-03-11 04:13:43,987 [WARNING] [EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:13:43,987 [INFO] [EMBED] 34/50 chunk_id=Criminal Code Act 1924 (Tas) s 342 2026-03-11 0…
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 4, human
+**[2026-03-11]** *Project state review and pipeline fixes* — score 4, human
 
 
 
-> tom@vmi3098054:\~/ai-stack/agent-general/src$ sleep 5 \&\& tail -20 embed.log 2026-03-11 04:16:48,633 \[WARNING] \[EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:16:48,633 \[INFO] \[EMBED] 22/50 chunk\_id=Criminal Code Act 1924 (Tas) s 250-4 2026-03-11 04:16:49,271 \[WARNING] \[EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:16:49,271 \[INFO] \[EMBED] 23/50 chunk\_id=Criminal Code Act 1924 (Tas) s 252A 2026-03-11 04:16:49,911 \[WARNING] \[EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:16:49,911 \[INFO] \[EMBED] 24/50 chunk\_id=Criminal Code Act 1924 (Tas) s 267 2…
+> tom@vmi3098054:\~/ai-stack/agent-general/src$ sleep 5 \&\& tail -20 embed.log 2026-03-11 04:16:48,633 [WARNING] [EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:16:48,633 [INFO] [EMBED] 22/50 chunk_id=Criminal Code Act 1924 (Tas) s 250-4 2026-03-11 04:16:49,271 [WARNING] [EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:16:49,271 [INFO] [EMBED] 23/50 chunk_id=Criminal Code Act 1924 (Tas) s 252A 2026-03-11 04:16:49,911 [WARNING] [EMBED] ⚠ Upsert returned ok but point not found in Qdrant — will retry next pass 2026-03-11 04:16:49,911 [INFO] [EMBED] 24/50 chunk_id=Criminal Code Act 1924 (Tas) s 267 2…
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 4, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 4, assistant
 
 
 
-> Key things captured that weren't in the old version: - Pipeline v2 data flow and all poller commands - Qdrant upsert async behaviour and `?wait=true` gotcha - All 7 pipeline Worker routes documented - D1 schema current state - Correct priorities including legislation re-upload as Priority 2 - ingest\_corpus.py revert flagged prominently - SCP command for updating poller on VPS
+> Key things captured that weren't in the old version: - Pipeline v2 data flow and all poller commands - Qdrant upsert async behaviour and `?wait=true` gotcha - All 7 pipeline Worker routes documented - D1 schema current state - Correct priorities including legislation re-upload as Priority 2 - ingest_corpus.py revert flagged prominently - SCP command for updating poller on VPS
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 4, human
+**[2026-03-11]** *11 MAR 26* — score 4, human
 
 
 
-> tom@vmi3098054:\~$ while true; do python3 \~/ai-stack/agent-general/src/enrichment\_poller.py --mode embed --batch 100 sleep 2 done 2026-03-11 08:36:47,970 \[INFO] \[EMBED] Fetching up to 100 chunks ready for embedding... 2026-03-11 08:36:48,424 \[INFO] \[EMBED] Got 50 chunks to embed. 2026-03-11 08:36:48,425 \[INFO] \[EMBED] 1/50 chunk\_id=Criminal Rules 2006 (Tas) r 41A 2026-03-11 08:36:52,067 \[WARNING] \[EMBED] ⚠ Point not found after 3 verify attempts — leaving embedded=0 for retry 2026-03-11 08:36:52,067 \[INFO] \[EMBED] 2/50 chunk\_id=Domestic Violence Orders (National Recognition) Act 2016 2026-03-11 08:36:55,710 \[WARNING] \[EMBED] ⚠ Point not found after 3 verify attempts — leaving embedded…
+> tom@vmi3098054:\~$ while true; do python3 \~/ai-stack/agent-general/src/enrichment_poller.py --mode embed --batch 100 sleep 2 done 2026-03-11 08:36:47,970 [INFO] [EMBED] Fetching up to 100 chunks ready for embedding... 2026-03-11 08:36:48,424 [INFO] [EMBED] Got 50 chunks to embed. 2026-03-11 08:36:48,425 [INFO] [EMBED] 1/50 chunk_id=Criminal Rules 2006 (Tas) r 41A 2026-03-11 08:36:52,067 [WARNING] [EMBED] ⚠ Point not found after 3 verify attempts — leaving embedded=0 for retry 2026-03-11 08:36:52,067 [INFO] [EMBED] 2/50 chunk_id=Domestic Violence Orders (National Recognition) Act 2016 2026-03-11 08:36:55,710 [WARNING] [EMBED] ⚠ Point not found after 3 verify attempts — leaving embedded…
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 4, assistant
+**[2026-03-11]** *11 MAR 26* — score 4, assistant
 
 
 
@@ -1717,39 +1717,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-14]\*\* \*12/3/26\* — score 4, assistant
+**[2026-03-14]** *12/3/26* — score 4, assistant
 
 
 
-> \*\*secondary\_sources (711 chunks):\*\* - Pre-enriched via ChatGPT Master Prompt before upload — raw\_text IS the content - enriched\_text NULL across all rows — correct, do NOT run `--mode enrich` - All 244 original CITATION IDs were unique after collision fix (was 196 unique, 48 dropped) - 711 rows after re-ingest (splitter produces more granular chunks than citation count suggests) - `category` column populated: all current rows = `doctrine` - Embed pass in progress as of 14 Mar 2026 — expected final Qdrant count: \~1984
+> **secondary_sources (711 chunks):** - Pre-enriched via ChatGPT Master Prompt before upload — raw_text IS the content - enriched_text NULL across all rows — correct, do NOT run `--mode enrich` - All 244 original CITATION IDs were unique after collision fix (was 196 unique, 48 dropped) - 711 rows after re-ingest (splitter produces more granular chunks than citation count suggests) - `category` column populated: all current rows = `doctrine` - Embed pass in progress as of 14 Mar 2026 — expected final Qdrant count: \~1984
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
-> \*\*Already in CLAUDE.md ✅\*\* - Enrichment model by content type table — correct, matches the architecture described - LLM metadata extraction before scraper resumes (Priority 4) - Schema versioning (embedding\_model / embedding\_version) — Priority 3 - Legislation enrichment — in future roadmap, deferred until cross-reference agent design is clearer - Auto-populate legislation metadata on upload — in future roadmap - Cross-reference agent — in future roadmap
+> **Already in CLAUDE.md ✅** - Enrichment model by content type table — correct, matches the architecture described - LLM metadata extraction before scraper resumes (Priority 4) - Schema versioning (embedding_model / embedding_version) — Priority 3 - Legislation enrichment — in future roadmap, deferred until cross-reference agent design is clearer - Auto-populate legislation metadata on upload — in future roadmap - Cross-reference agent — in future roadmap
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> - The pipeline consistently uses idempotent operations rather than flags (`embedded=0/1` is the only state tracking, Qdrant uses PUT upsert, legislation uses `INSERT OR IGNORE`) - Adding a `xref\_processed` flag would require a schema migration and adds complexity with no real benefit - The hashed ID approach is the same pattern already used across the stack
+> - The pipeline consistently uses idempotent operations rather than flags (`embedded=0/1` is the only state tracking, Qdrant uses PUT upsert, legislation uses `INSERT OR IGNORE`) - Adding a `xref_processed` flag would require a schema migration and adds complexity with no real benefit - The hashed ID approach is the same pattern already used across the stack
 
 
 
-\*\*\[2026-03-15]\*\* \*Automating Hogan crime block reformatting workflow\* — score 4, assistant
+**[2026-03-15]** *Automating Hogan crime block reformatting workflow* — score 4, assistant
 
 
 
-> > Do the following steps in order and report the result of each: > 1. SSH to `tom@31.220.86.192` and run `docker exec agent-general env | grep NEXUS\_SECRET\_KEY` — capture the exact key value from the live container > 2. Get the Qdrant point count before deletion: SSH and run `curl -s http://localhost:6334/collections/general-docs-v2` — extract `points\_count` from the response > 3. Restart agent-general: SSH and run `cd \~/ai-stack \&\& docker compose restart agent-general`, then wait 5 seconds > 4. Confirm health: SSH and run `curl -s http://localhost:18789/health` > 5. Run the delete using the key captured in step 1: SSH and run `curl -s -X POST http://localhost:18789/delete-by-type -H "Conten…
+> > Do the following steps in order and report the result of each: > 1. SSH to `tom@31.220.86.192` and run `docker exec agent-general env | grep NEXUS_SECRET_KEY` — capture the exact key value from the live container > 2. Get the Qdrant point count before deletion: SSH and run `curl -s http://localhost:6334/collections/general-docs-v2` — extract `points_count` from the response > 3. Restart agent-general: SSH and run `cd \~/ai-stack \&\& docker compose restart agent-general`, then wait 5 seconds > 4. Confirm health: SSH and run `curl -s http://localhost:18789/health` > 5. Run the delete using the key captured in step 1: SSH and run `curl -s -X POST http://localhost:18789/delete-by-type -H "Conten…
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 4, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 4, assistant
 
 
 
@@ -1757,7 +1757,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 4, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 4, assistant
 
 
 
@@ -1765,7 +1765,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 4, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 4, assistant
 
 
 
@@ -1773,7 +1773,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 4, assistant
+**[2026-03-16]** *Performance review* — score 4, assistant
 
 
 
@@ -1781,7 +1781,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Open claw in the stack\* — score 4, assistant
+**[2026-03-17]** *Open claw in the stack* — score 4, assistant
 
 
 
@@ -1789,67 +1789,67 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 4, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 4, assistant
 
 
 
-> - Location: `arcanthyr-console\\backfill\_case\_chunk\_names.py` (local) + `/home/tom/backfill\_case\_chunk\_names.py` (VPS) - Run from VPS only — fetches cases via Worker API (https://arcanthyr.com/api/legal/library?type=cases), updates Qdrant at localhost:6334 - Field mapping: `result.cases\[].ref` → citation, `result.cases\[].title` → case\_name - Re-run after any bulk case ingestion to backfill case\_name into existing Qdrant payloads - Do NOT run from Windows — Qdrant port 6334 is localhost-only on VPS ```
+> - Location: `arcanthyr-console\\backfill_case_chunk_names.py` (local) + `/home/tom/backfill_case_chunk_names.py` (VPS) - Run from VPS only — fetches cases via Worker API (https://arcanthyr.com/api/legal/library?type=cases), updates Qdrant at localhost:6334 - Field mapping: `result.cases[].ref` → citation, `result.cases[].title` → case_name - Re-run after any bulk case ingestion to backfill case_name into existing Qdrant payloads - Do NOT run from Windows — Qdrant port 6334 is localhost-only on VPS ```
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 4, human
+**[2026-03-19]** *Project state and priorities review* — score 4, human
 
 
 
-> tom@vmi3098054:\~$ # SSH/VPS# SSH/VPS grep -n "case-chunks-for-embedding\\|case\_chunks\\|CASE-EMBED" \~/ai-stack/agent-general/src/enrichment\_poller.py | head -30 741: Fetch up to `batch` case\_chunks where done=1 and embedded=0, 744: log.info(f'\[CASE-EMBED] Fetching up to {batch} case chunks ready for embedding...') 746: f'{WORKER\_URL}/api/pipeline/fetch-case-chunks-for-embedding', 755: log.info('\[CASE-EMBED] No case chunks ready for embedding.') 758: log.info(f'\[CASE-EMBED] Got {len(chunks)} chunks to embed.') 775: log.info(f'\[CASE-EMBED] {i}/{len(chunks)} chunk\_id={chunk\_id}') 790: log.info(f'\[CASE-EMBED] ✓ Embedded and verified') 793:…
+> tom@vmi3098054:\~$ # SSH/VPS# SSH/VPS grep -n "case-chunks-for-embedding\\|case_chunks\\|CASE-EMBED" \~/ai-stack/agent-general/src/enrichment_poller.py | head -30 741: Fetch up to `batch` case_chunks where done=1 and embedded=0, 744: log.info(f'[CASE-EMBED] Fetching up to {batch} case chunks ready for embedding...') 746: f'{WORKER_URL}/api/pipeline/fetch-case-chunks-for-embedding', 755: log.info('[CASE-EMBED] No case chunks ready for embedding.') 758: log.info(f'[CASE-EMBED] Got {len(chunks)} chunks to embed.') 775: log.info(f'[CASE-EMBED] {i}/{len(chunks)} chunk_id={chunk_id}') 790: log.info(f'[CASE-EMBED] ✓ Embedded and verified') 793:…
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 4, assistant
+**[2026-03-20]** *Fix pilot issues first* — score 4, assistant
 
 
 
-> - \*\*Embedding backlog\*\* — 1,669 case chunks unembedded as of session 10 end · poller running overnight · check first thing next session - \*\*process\_blocks.py overnight run\*\* — check failed blocks summary · stale 32000 error in summary is from prior failed run, not current - \*\*CHUNK prompt reasoning field\*\* — added and reverted session 10 · chunk\_text already in Qdrant payload, reasoning field not needed · do not re-add - \*\*master\_corpus\_part2.md committed to git\*\* — partial pilot output accidentally committed · harmless, will be overwritten by overnight run - \*\*Qwen3 /query endpoint timeout\*\* — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Cla…
+> - **Embedding backlog** — 1,669 case chunks unembedded as of session 10 end · poller running overnight · check first thing next session - **process_blocks.py overnight run** — check failed blocks summary · stale 32000 error in summary is from prior failed run, not current - **CHUNK prompt reasoning field** — added and reverted session 10 · chunk_text already in Qdrant payload, reasoning field not needed · do not re-add - **master_corpus_part2.md committed to git** — partial pilot output accidentally committed · harmless, will be overwritten by overnight run - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Cla…
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 4, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 4, assistant
 
 
 
-> \*\*My recommendation: Option A.\*\* It requires one schema addition (`enriched\_text TEXT` on `case\_chunks`), a prompt rewrite in worker.js CHUNK handler, and a one-off re-embed of existing 2,607 chunks. The poller already handles `case\_chunk` embed pass — we'd just need to point it at `enriched\_text` instead of `chunk\_text` for the vector payload.
+> **My recommendation: Option A.** It requires one schema addition (`enriched_text TEXT` on `case_chunks`), a prompt rewrite in worker.js CHUNK handler, and a one-off re-embed of existing 2,607 chunks. The poller already handles `case_chunk` embed pass — we'd just need to point it at `enriched_text` instead of `chunk_text` for the vector payload.
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 4, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 4, assistant
 
 
 
-> \*\*3. `enriched\_text` is the primary output for embedding.\*\* All three agree on this. Critically, v2 adds the recommendation to embed a combined string rather than `enriched\_text` alone — case citation + subject matter + chunk type + issues + enriched\_text + authorities + legislation. This is worth taking seriously given how pplx-embed-context-v1 works (it's a context-aware model — richer input = better vectors).
+> **3. `enriched_text` is the primary output for embedding.** All three agree on this. Critically, v2 adds the recommendation to embed a combined string rather than `enriched_text` alone — case citation + subject matter + chunk type + issues + enriched_text + authorities + legislation. This is worth taking seriously given how pplx-embed-context-v1 works (it's a context-aware model — richer input = better vectors).
 
 
 
-\*\*\[2026-03-23]\*\* \*What's next?\* — score 4, assistant
+**[2026-03-23]** *What's next?* — score 4, assistant
 
 
 
-> A `CLAUDE\_decisions.md` — a dedicated log of architectural decisions and why they were made. Things like "why Qdrant over Weaviate", "why GPT-4o-mini over Workers AI for enrichment", "why D1 over Postgres". Your change logs capture some of this but a dedicated ADR (Architecture Decision Record) file would make it scannable.
+> A `CLAUDE_decisions.md` — a dedicated log of architectural decisions and why they were made. Things like "why Qdrant over Weaviate", "why GPT-4o-mini over Workers AI for enrichment", "why D1 over Postgres". Your change logs capture some of this but a dedicated ADR (Architecture Decision Record) file would make it scannable.
 
 
 
-\## Retrieval Architecture
+## Retrieval Architecture
 
 
 
-\*\*\[2026-03-17]\*\* \*Embed pass completion and Parsons ingestion tracking\* — score 6, assistant
+**[2026-03-17]** *Embed pass completion and Parsons ingestion tracking* — score 6, assistant
 
 
 
-> We've done a lot today that needs capturing: - Confirmed procedure pass completed 15 March - Identified procedure chunks never ingested - Fixed `ingest\_corpus.py` (PROCEDURE\_ONLY flag, citation suffix, section-aware splitting) - Confirmed destructive upsert behaviour of `upload-corpus` - Auth and field name gotchas for server.py added - Retrieval baseline results (6 pass, 3 partial, 6 fail) with root cause analysis
+> We've done a lot today that needs capturing: - Confirmed procedure pass completed 15 March - Identified procedure chunks never ingested - Fixed `ingest_corpus.py` (PROCEDURE_ONLY flag, citation suffix, section-aware splitting) - Confirmed destructive upsert behaviour of `upload-corpus` - Auth and field name gotchas for server.py added - Retrieval baseline results (6 pass, 3 partial, 6 fail) with root cause analysis
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 6, assistant
+**[2026-03-19]** *Project state and priorities review* — score 6, assistant
 
 
 
@@ -1857,7 +1857,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Side projects while waiting for scraper\* — score 6, assistant
+**[2026-03-19]** *Side projects while waiting for scraper* — score 6, assistant
 
 
 
@@ -1865,15 +1865,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 5, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 5, assistant
 
 
 
-> \*\*Metadata enrichment\*\* — this is the hard one and you're right that it needs Claude-level intelligence. The reason is that it's not just formatting — it's \*understanding\* the legal content well enough to correctly classify type, extract concepts, isolate rules, identify case authorities, and write a concept anchor sentence. A smaller model will produce inconsistent, lower quality metadata which then degrades retrieval quality for everything downstream. The quality of this step determines the quality of every search result forever. Cutting corners here is a false economy.
+> **Metadata enrichment** — this is the hard one and you're right that it needs Claude-level intelligence. The reason is that it's not just formatting — it's *understanding* the legal content well enough to correctly classify type, extract concepts, isolate rules, identify case authorities, and write a concept anchor sentence. A smaller model will produce inconsistent, lower quality metadata which then degrades retrieval quality for everything downstream. The quality of this step determines the quality of every search result forever. Cutting corners here is a false economy.
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
@@ -1881,7 +1881,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
@@ -1889,7 +1889,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1897,7 +1897,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -1905,75 +1905,75 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
-> Clear picture. The problem is exactly what Consultant 1 identified — the prompt extracts structured JSON metadata but the `chunk\_text` itself is never stored in enriched form. The LLM reads the raw judgment text, outputs principles/holdings as JSON, and the raw text is discarded. No reasoning prose survives into the retrieval layer.
+> Clear picture. The problem is exactly what Consultant 1 identified — the prompt extracts structured JSON metadata but the `chunk_text` itself is never stored in enriched form. The LLM reads the raw judgment text, outputs principles/holdings as JSON, and the raw text is discarded. No reasoning prose survives into the retrieval layer.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 4, assistant
+**[2026-03-10]** *Claude.md context and suggestions* — score 4, assistant
 
 
 
-> \*\*My recommendation:\*\* migrate now, before Hogan on Crime goes in. Run the 0.6B variant first (fits comfortably in your VPS RAM alongside everything else), validate retrieval quality, then decide if the 4B is worth the memory trade-off. Want to map out the migration steps?
+> **My recommendation:** migrate now, before Hogan on Crime goes in. Run the 0.6B variant first (fits comfortably in your VPS RAM alongside everything else), validate retrieval quality, then decide if the 4B is worth the memory trade-off. Want to map out the migration steps?
 
 
 
-\*\*\[2026-03-14]\*\* \*12/3/26\* — score 4, assistant
+**[2026-03-14]** *12/3/26* — score 4, assistant
 
 
 
-> - \*\*Hogan on Crime procedural re-processing\*\* — re-run blocks 027, 020, 008, 024, 021, 007 through Procedure Prompt, upload procedure chunks via console. Full book re-processing only if retrieval testing reveals material gap. - \*\*Automated ingestion pipeline\*\* — drag-and-drop in console → Claude API enrichment/splitting → embed. For smaller documents. Larger docs (Hogan on Crime scale) stay on manual ChatGPT pipeline. - \*\*Legislation enrichment via Claude API\*\* — plain English summaries, cross-references, key concepts. After cross-reference agent design is clear. - \*\*Cross-reference agent\*\* — nightly cron, citation graph in D1. - \*\*Auto-populate legislation metadata on upload\*\* — Claude API…
+> - **Hogan on Crime procedural re-processing** — re-run blocks 027, 020, 008, 024, 021, 007 through Procedure Prompt, upload procedure chunks via console. Full book re-processing only if retrieval testing reveals material gap. - **Automated ingestion pipeline** — drag-and-drop in console → Claude API enrichment/splitting → embed. For smaller documents. Larger docs (Hogan on Crime scale) stay on manual ChatGPT pipeline. - **Legislation enrichment via Claude API** — plain English summaries, cross-references, key concepts. After cross-reference agent design is clear. - **Cross-reference agent** — nightly cron, citation graph in D1. - **Auto-populate legislation metadata on upload** — Claude API…
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
-> \*\*Deferred items:\*\* - The agent itself is cron/VPS work — build after retrieval quality is validated - Legislation enrichment prompt — write after this design is confirmed
+> **Deferred items:** - The agent itself is cron/VPS work — build after retrieval quality is validated - Legislation enrichment prompt — write after this design is confirmed
 
 
 
-\*\*\[2026-03-15]\*\* \*Automating Hogan crime block reformatting workflow\* — score 4, assistant
+**[2026-03-15]** *Automating Hogan crime block reformatting workflow* — score 4, assistant
 
 
 
-> \*\*The retrieval testing approach is simpler for now though\*\* — run your known practitioner queries, see what comes back, identify gaps. That's functionally equivalent to validation for your purposes and tells you what actually matters: whether the system returns useful results.
+> **The retrieval testing approach is simpler for now though** — run your known practitioner queries, see what comes back, identify gaps. That's functionally equivalent to validation for your purposes and tells you what actually matters: whether the system returns useful results.
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 4, assistant
+**[2026-03-18]** *Project state and priorities review* — score 4, assistant
 
 
 
-> \*\*CLAUDE\_arch.md:\*\* - Poller invocation section rewritten — tmux send-keys pattern explicitly flagged as DO NOT USE, manual attach process documented - Scraper config updated — gate cleared, progress file details, timeout note - ingest\_corpus.py notes — block separator format, Python-only file creation warning, example snippet added - master\_corpus total updated to 2,032 - Retrieval baseline table updated — all 15 passing - Session 4 UI changes section added - sentencing\_first\_offenders.md and debug\_parse.py added to file locations - TASSC 2024 scraper timeouts added to known issues - tmux send-keys anti-pattern added to known issues
+> **CLAUDE_arch.md:** - Poller invocation section rewritten — tmux send-keys pattern explicitly flagged as DO NOT USE, manual attach process documented - Scraper config updated — gate cleared, progress file details, timeout note - ingest_corpus.py notes — block separator format, Python-only file creation warning, example snippet added - master_corpus total updated to 2,032 - Retrieval baseline table updated — all 15 passing - Session 4 UI changes section added - sentencing_first_offenders.md and debug_parse.py added to file locations - TASSC 2024 scraper timeouts added to known issues - tmux send-keys anti-pattern added to known issues
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
-> \*\*CLAUDE\_arch.md:\*\* - New ASYNC JOB PATTERN section with full design decision, rejected alternatives, and build spec - Workers AI section updated — Qwen3 confirmed as current model, procedurePassPrompt validated - Qwen3 response shape fix documented - cases D1 schema notes added - Word artifact cleanup section added - scripts/ directory inventory added - Scraper config updated — Qwen3-30b replacing Llama reference - Retrieval baseline table updated with 18 Mar 2026 status - Known issues updated throughout
+> **CLAUDE_arch.md:** - New ASYNC JOB PATTERN section with full design decision, rejected alternatives, and build spec - Workers AI section updated — Qwen3 confirmed as current model, procedurePassPrompt validated - Qwen3 response shape fix documented - cases D1 schema notes added - Word artifact cleanup section added - scripts/ directory inventory added - Scraper config updated — Qwen3-30b replacing Llama reference - Retrieval baseline table updated with 18 Mar 2026 status - Known issues updated throughout
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 4, assistant
+**[2026-03-19]** *Project state and priorities review* — score 4, assistant
 
 
 
-> 1. \*\*Accept it as a legacy data quality issue\*\* — Neill-Fraser was ingested before the boilerplate stripper existed 2. \*\*Add Neill-Fraser reingest to the roadmap\*\* — delete and re-upload via the console to get clean chunks 3. \*\*Move on\*\* — the retrieval architecture is working correctly for clean data (confirmed by the 15/15 baseline)
+> 1. **Accept it as a legacy data quality issue** — Neill-Fraser was ingested before the boilerplate stripper existed 2. **Add Neill-Fraser reingest to the roadmap** — delete and re-upload via the console to get clean chunks 3. **Move on** — the retrieval architecture is working correctly for clean data (confirmed by the 15/15 baseline)
 
 
 
-\## FTS5 / BM25 / RRF
+## FTS5 / BM25 / RRF
 
 
 
-\*\*\[2026-03-22]\*\* \*Reviewing recent conversation highlights\* — score 11, assistant
+**[2026-03-22]** *Reviewing recent conversation highlights* — score 11, assistant
 
 
 
@@ -1981,39 +1981,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 11, assistant
+**[2026-03-22]** *Checking ingest status* — score 11, assistant
 
 
 
-> 1. \*\*Embed pass confirmed complete\*\* — 1,171/1,171 secondary source chunks embedded 2. \*\*Two stuck chunks fixed\*\* — `hoc-b042` and `hoc-b045` (15k/26k chars) were timing out at 30s · root cause: GPT-4o-mini enrichment expanded `raw\_text` beyond timeout threshold · fix: raise `get\_embedding()` timeout 30s→120s + large input warning log >8000 chars · re-embedded at full text after Qdrant point deletion + `embedded=0` reset 3. \*\*FTS5 backfill complete\*\* — `secondary\_sources\_fts` wiped and repopulated · 1,171 rows · all three retrieval passes now operational 4. \*\*Retrieval baseline rerun\*\* — estimated 14 pass / 3 partial / 0 fail · improvement over 12/4/1 5. \*\*BRD doctrine chunk ingested\*\* — `ho…
+> 1. **Embed pass confirmed complete** — 1,171/1,171 secondary source chunks embedded 2. **Two stuck chunks fixed** — `hoc-b042` and `hoc-b045` (15k/26k chars) were timing out at 30s · root cause: GPT-4o-mini enrichment expanded `raw_text` beyond timeout threshold · fix: raise `get_embedding()` timeout 30s→120s + large input warning log >8000 chars · re-embedded at full text after Qdrant point deletion + `embedded=0` reset 3. **FTS5 backfill complete** — `secondary_sources_fts` wiped and repopulated · 1,171 rows · all three retrieval passes now operational 4. **Retrieval baseline rerun** — estimated 14 pass / 3 partial / 0 fail · improvement over 12/4/1 5. **BRD doctrine chunk ingested** — `ho…
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 10, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 10, assistant
 
 
 
-> \*\*Revised diagnosis:\*\* the issue is narrower than originally thought. It's not that case chunks are being displaced — it's that BM25 section reference matching is too broad, pulling in every "s38" hit regardless of relevance. The fix is tightening the section reference extraction to require word boundaries or more specific patterns.
+> **Revised diagnosis:** the issue is narrower than originally thought. It's not that case chunks are being displaced — it's that BM25 section reference matching is too broad, pulling in every "s38" hit regardless of relevance. The fix is tightening the section reference extraction to require word boundaries or more specific patterns.
 
 
 
-\*\*\[2026-03-17]\*\* \*Successful data chunk processing\* — score 9, assistant
+**[2026-03-17]** *Successful data chunk processing* — score 9, assistant
 
 
 
-> - \*\*`execute\_backfill.py`\*\* — never written. First mentioned as a new item this session. No prior implementation found. - \*\*Category normalisation SQL\*\* — discussed and flagged multiple times but the actual UPDATE statements were never drafted. Just kept being deferred. - \*\*Char-based windowing fix\*\* — the problem is well documented (`fullText\[8000:28000]` in `summarizeCase()`), and the design was discussed (overlapping scored windows, Qwen3 upgrade), but no actual fix was written. Deferred pending scraper unpause.
+> - **`execute_backfill.py`** — never written. First mentioned as a new item this session. No prior implementation found. - **Category normalisation SQL** — discussed and flagged multiple times but the actual UPDATE statements were never drafted. Just kept being deferred. - **Char-based windowing fix** — the problem is well documented (`fullText[8000:28000]` in `summarizeCase()`), and the design was discussed (overlapping scored windows, Qwen3 upgrade), but no actual fix was written. Deferred pending scraper unpause.
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 6, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 6, assistant
 
 
 
-> \*\*But here's the key finding — the answer is still good.\*\* The LLM is correctly synthesising from the right chunks despite the noisy source list. So the RRF displacement is a sources display problem more than an answer quality problem.
+> **But here's the key finding — the answer is still good.** The LLM is correctly synthesising from the right chunks despite the noisy source list. So the RRF displacement is a sources display problem more than an answer quality problem.
 
 
 
-\*\*\[2026-03-22]\*\* \*Reviewing recent conversation highlights\* — score 6, assistant
+**[2026-03-22]** *Reviewing recent conversation highlights* — score 6, assistant
 
 
 
@@ -2021,23 +2021,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-17]** *Performance review* — score 5, assistant
 
 
 
-> \*\*Tendency/propensity (Q7, Q8, Q13)\*\* — the doctrine chunks ARE in the corpus. This is a semantic scoring problem, not a corpus gap. The fix is BM25 improvement — these queries don't contain section references so BM25 doesn't trigger. Adding keyword-based pre-retrieval on legal concepts (not just section numbers) would surface these chunks.
+> **Tendency/propensity (Q7, Q8, Q13)** — the doctrine chunks ARE in the corpus. This is a semantic scoring problem, not a corpus gap. The fix is BM25 improvement — these queries don't contain section references so BM25 doesn't trigger. Adding keyword-based pre-retrieval on legal concepts (not just section numbers) would surface these chunks.
 
 
 
-\*\*\[2026-03-20]\*\* \*Reviewing recent conversation highlights\* — score 5, assistant
+**[2026-03-20]** *Reviewing recent conversation highlights* — score 5, assistant
 
 
 
-> The fix is to check whether the FTS5 table and its trigger still exist and are healthy. \*\*PowerShell, `Arc v 4\\`:\*\*
+> The fix is to check whether the FTS5 table and its trigger still exist and are healthy. **PowerShell, `Arc v 4\\`:**
 
 
 
-\*\*\[2026-03-22]\*\* \*Reviewing recent conversation highlights\* — score 5, assistant
+**[2026-03-22]** *Reviewing recent conversation highlights* — score 5, assistant
 
 
 
@@ -2045,47 +2045,47 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-12]\*\* \*11 MAR 26\* — score 4, assistant
+**[2026-03-12]** *11 MAR 26* — score 4, assistant
 
 
 
-> Key things captured: corpus raw\_text re-embedding, BM25 live, enrichment model clarification (Workers AI for scraper, not poller), chunk ID collision warning, procedure chunk type roadmap, correct priorities order, SCP commands for server.py.
+> Key things captured: corpus raw_text re-embedding, BM25 live, enrichment model clarification (Workers AI for scraper, not poller), chunk ID collision warning, procedure chunk type roadmap, correct priorities order, SCP commands for server.py.
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> The architecture was also confirmed in that session: - `case\_citations` and `case\_legislation\_refs` tables as per the CLAUDE.md spec - Nightly cron, feeds BM25 and the stare decisis layer - Legislation enrichment prompt deferred until this design is confirmed (which we're now doing)
+> The architecture was also confirmed in that session: - `case_citations` and `case_legislation_refs` tables as per the CLAUDE.md spec - Nightly cron, feeds BM25 and the stare decisis layer - Legislation enrichment prompt deferred until this design is confirmed (which we're now doing)
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> Note: with only 8 cases currently the practical impact is minimal — but the architecture is live and will compound as the scraper runs. The `bm25\_source: "case\_legislation\_ref"` marker also lets you distinguish in logs which BM25 path fired.
+> Note: with only 8 cases currently the practical impact is minimal — but the architecture is live and will compound as the scraper runs. The `bm25_source: "case_legislation_ref"` marker also lets you distinguish in logs which BM25 path fired.
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> - \*\*authorities\_extracted vs key\_authorities\*\* — D1 column is `authorities\_extracted`. `key\_authorities` is the Llama prompt field name only — does NOT exist as a D1 column. Do not use `key\_authorities` in any Worker or agent query. - \*\*case\_name missing from Qdrant for existing 8 cases\*\* — fix applied to server.py 15 Mar 2026 but only affects future ingests. Existing vectors show citation-only in LLM context. Backfill requires reingest-case route — deferred until scraper has run at volume. - \*\*Unknown chunk in sources panel\*\* — one semantic result with score 0.678 displaying as `unknown Unknown`. Pre-existing corpus chunk with incomplete metadata. Not related to xref or BM25 changes. - \*\*Ll…
+> - **authorities_extracted vs key_authorities** — D1 column is `authorities_extracted`. `key_authorities` is the Llama prompt field name only — does NOT exist as a D1 column. Do not use `key_authorities` in any Worker or agent query. - **case_name missing from Qdrant for existing 8 cases** — fix applied to server.py 15 Mar 2026 but only affects future ingests. Existing vectors show citation-only in LLM context. Backfill requires reingest-case route — deferred until scraper has run at volume. - **Unknown chunk in sources panel** — one semantic result with score 0.678 displaying as `unknown Unknown`. Pre-existing corpus chunk with incomplete metadata. Not related to xref or BM25 changes. - **Ll…
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 4, assistant
+**[2026-03-16]** *Performance review* — score 4, assistant
 
 
 
-> Replace the fixed character slice with a heading-boundary split — the same logic already implemented in `split\_legal\_doc.py`. That script identifies structural headings in judgments (REASONS, JUDGMENT, FINDINGS, ORDERS etc.) and splits on those boundaries. Applied to the scraper, instead of `fullText\[8000:28000]` the Worker would:
+> Replace the fixed character slice with a heading-boundary split — the same logic already implemented in `split_legal_doc.py`. That script identifies structural headings in judgments (REASONS, JUDGMENT, FINDINGS, ORDERS etc.) and splits on those boundaries. Applied to the scraper, instead of `fullText[8000:28000]` the Worker would:
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 4, human
+**[2026-03-18]** *Project state and priorities review* — score 4, human
 
 
 
@@ -2093,35 +2093,35 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
-> \*\*Quick wins\*\* - Write the Q5 Vallance BM25 fix — the chunk exists, it's just not surfacing. We can review the BM25 concept keywords in server.py and add `recklessness` / `Vallance` / `fault element` to the concept map - Draft the RAG workflow doc update (CLAUDE.md flags this) — two-run ingest sequence, PROCEDURE\_ONLY flag, destructive upsert warning, updated chunk counts
+> **Quick wins** - Write the Q5 Vallance BM25 fix — the chunk exists, it's just not surfacing. We can review the BM25 concept keywords in server.py and add `recklessness` / `Vallance` / `fault element` to the concept map - Draft the RAG workflow doc update (CLAUDE.md flags this) — two-run ingest sequence, PROCEDURE_ONLY flag, destructive upsert warning, updated chunk counts
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, human
+**[2026-03-18]** *What to do next* — score 4, human
 
 
 
-> A few things that don't need the embed pass to finish: Quick wins \* Write the Q5 Vallance BM25 fix — the chunk exists, it's just not surfacing. We can review the BM25 concept keywords in server.py and add `recklessness` / `Vallance` / `fault element` to the concept map \* Draft the RAG workflow doc update (CLAUDE.md flags this) — two-run ingest sequence, PROCEDURE\_ONLY flag, destructive upsert warning, updated chunk counts Planning \* Design the async job pattern on paper — Worker receives upload, posts to VPS, gets job ID back, frontend polls `/api/legal/job-status/:id`. Talk through the architecture before building it \* Procedure Prompt second pass in `summarizeCase()` — spec out what needs…
+> A few things that don't need the embed pass to finish: Quick wins * Write the Q5 Vallance BM25 fix — the chunk exists, it's just not surfacing. We can review the BM25 concept keywords in server.py and add `recklessness` / `Vallance` / `fault element` to the concept map * Draft the RAG workflow doc update (CLAUDE.md flags this) — two-run ingest sequence, PROCEDURE_ONLY flag, destructive upsert warning, updated chunk counts Planning * Design the async job pattern on paper — Worker receives upload, posts to VPS, gets job ID back, frontend polls `/api/legal/job-status/:id`. Talk through the architecture before building it * Procedure Prompt second pass in `summarizeCase()` — spec out what needs…
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 4, assistant
+**[2026-03-22]** *Checking ingest status* — score 4, assistant
 
 
 
-> History confirms the wipe-then-reinsert approach is correct and has been done before safely (session 12 wiped FTS5 before re-ingest). The `DELETE FROM secondary\_sources\_fts` is a standard operation — used at line 1312 in worker.js for the delete route handler, and executed directly via wrangler in session 12.
+> History confirms the wipe-then-reinsert approach is correct and has been done before safely (session 12 wiped FTS5 before re-ingest). The `DELETE FROM secondary_sources_fts` is a standard operation — used at line 1312 in worker.js for the delete route handler, and executed directly via wrangler in session 12.
 
 
 
-\## Cloudflare Worker \& D1
+## Cloudflare Worker \& D1
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 9, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 9, assistant
 
 
 
@@ -2129,7 +2129,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 6, assistant
+**[2026-03-04]** *4 MAR 26* — score 6, assistant
 
 
 
@@ -2137,7 +2137,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 6, assistant
+**[2026-03-07]** *7 MAR 26* — score 6, assistant
 
 
 
@@ -2145,23 +2145,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 6, human
+**[2026-03-16]** *Performance review* — score 6, human
 
 
 
-> Here is the complete inventory. Note one discrepancy from what's in CLAUDE\_arch.md: `callWorkersAI` helper (line 31) — model: `@cf/meta/llama-3.1-8b-instruct` All calls through this helper use the same model. There is no `llama-3.2-3b-instruct` anywhere in the file — CLAUDE\_arch.md had that wrong. #FunctionLineModelWhat it does1`summarizeCase()`289`llama-3.1-8b-instruct` (via helper)Single-pass: extracts facts, issues, holding, principles, legislation, offences as JSON from short cases2`summarizeCase()`304`llama-3.1-8b-instruct` (via helper)Two-pass pass 1: extracts facts, issues, case\_name from opening section of long cases3`summarizeCase()`311`llama-3.1-8b-instruct` (via helper)Two-pass pa…
+> Here is the complete inventory. Note one discrepancy from what's in CLAUDE_arch.md: `callWorkersAI` helper (line 31) — model: `@cf/meta/llama-3.1-8b-instruct` All calls through this helper use the same model. There is no `llama-3.2-3b-instruct` anywhere in the file — CLAUDE_arch.md had that wrong. #FunctionLineModelWhat it does1`summarizeCase()`289`llama-3.1-8b-instruct` (via helper)Single-pass: extracts facts, issues, holding, principles, legislation, offences as JSON from short cases2`summarizeCase()`304`llama-3.1-8b-instruct` (via helper)Two-pass pass 1: extracts facts, issues, case_name from opening section of long cases3`summarizeCase()`311`llama-3.1-8b-instruct` (via helper)Two-pass pa…
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 6, human
+**[2026-03-18]** *Sync issue troubleshooting* — score 6, human
 
 
 
-> Key finding: `callWorkersAI` already extracts `content` from `choices\[0].message.content` at line 71, with fallbacks to `choices\[0].text` and `result.response`. It does not check `reasoning\_content`. The fix for `reasoning\_content` belongs inside `callWorkersAI` itself — if `content` is null/empty, fall through to `reasoning\_content` before the other fallbacks. That way all callers benefit, not just the METADATA pass. Change 2 should be made in `callWorkersAI`, not in the METADATA branch. Confirm you want me to apply it there, then I'll make both changes together. Now finding the METADATA pass1 call for Change 1 to confirm current token value: Grep "callWorkersAI.\*pass1System.\*800" (in c:\\Us…
+> Key finding: `callWorkersAI` already extracts `content` from `choices[0].message.content` at line 71, with fallbacks to `choices[0].text` and `result.response`. It does not check `reasoning_content`. The fix for `reasoning_content` belongs inside `callWorkersAI` itself — if `content` is null/empty, fall through to `reasoning_content` before the other fallbacks. That way all callers benefit, not just the METADATA pass. Change 2 should be made in `callWorkersAI`, not in the METADATA branch. Confirm you want me to apply it there, then I'll make both changes together. Now finding the METADATA pass1 call for Change 1 to confirm current token value: Grep "callWorkersAI.*pass1System.*800" (in c:\\Us…
 
 
 
-\*\*\[2026-03-02]\*\* \*Case name extraction and console processing\* — score 5, assistant
+**[2026-03-02]** *Case name extraction and console processing* — score 5, assistant
 
 
 
@@ -2169,7 +2169,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 5, assistant
+**[2026-03-04]** *4 MAR 26* — score 5, assistant
 
 
 
@@ -2177,7 +2177,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 5, assistant
+**[2026-03-04]** *4 MAR 26* — score 5, assistant
 
 
 
@@ -2185,7 +2185,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
@@ -2193,7 +2193,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
@@ -2201,7 +2201,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*Secondary sources prompt development\* — score 5, assistant
+**[2026-03-08]** *Secondary sources prompt development* — score 5, assistant
 
 
 
@@ -2209,7 +2209,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Project state review and pipeline fixes\* — score 5, assistant
+**[2026-03-11]** *Project state review and pipeline fixes* — score 5, assistant
 
 
 
@@ -2217,7 +2217,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 5, assistant
+**[2026-03-14]** *14/3/26* — score 5, assistant
 
 
 
@@ -2225,7 +2225,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*UI changes and ingest page updates\* — score 5, assistant
+**[2026-03-16]** *UI changes and ingest page updates* — score 5, assistant
 
 
 
@@ -2233,7 +2233,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Successful data chunk processing\* — score 5, assistant
+**[2026-03-17]** *Successful data chunk processing* — score 5, assistant
 
 
 
@@ -2241,31 +2241,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-18]** *Project state and priorities review* — score 5, assistant
 
 
 
-> The fix is in the Worker — after PDF text extraction, it should run a quick regex over the extracted text to find the citation before rendering the form. The pattern needs to handle citations without a trailing number like `\[2016] TASMC`.
+> The fix is in the Worker — after PDF text extraction, it should run a quick regex over the extracted text to find the citation before rendering the form. The pattern needs to handle citations without a trailing number like `[2016] TASMC`.
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, human
+**[2026-03-18]** *Project state and priorities review* — score 5, human
 
 
 
-> The `court` field for secondary sources is aliased from `source\_type` in the Worker query. In `renderLibRow`, `courtAbbrev(row.court)` is shown for all types. For secondary, that should be replaced with `row.category`. Let me check the exact current state: Read legal.html (lines 448-482) The `court` field on line 475 is shown for all types. For secondary, `row.court` = `source\_type` (e.g. "pdf", "docx"). The fix is to show `row.category.toUpperCase()` instead for secondary rows, and suppress the `court` span entirely for them since category is already in the status pills. Edit legal.html Modified Bash Deploy updated legal.html IN
+> The `court` field for secondary sources is aliased from `source_type` in the Worker query. In `renderLibRow`, `courtAbbrev(row.court)` is shown for all types. For secondary, that should be replaced with `row.category`. Let me check the exact current state: Read legal.html (lines 448-482) The `court` field on line 475 is shown for all types. For secondary, `row.court` = `source_type` (e.g. "pdf", "docx"). The fix is to show `row.category.toUpperCase()` instead for secondary rows, and suppress the `court` span entirely for them since category is already in the status pills. Edit legal.html Modified Bash Deploy updated legal.html IN
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-18]** *Project state and priorities review* — score 5, assistant
 
 
 
-> The D1 data is actually rich — 18 principles extracted, deep\_enriched=1, s 402A references throughout. The problem is `holdings\_extracted` is `\[]` (empty array), and the library display is pulling from that field for the synopsis rather than `principles\_extracted`.
+> The D1 data is actually rich — 18 principles extracted, deep_enriched=1, s 402A references throughout. The problem is `holdings_extracted` is `[]` (empty array), and the library display is pulling from that field for the synopsis rather than `principles_extracted`.
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
@@ -2273,15 +2273,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
-> Actually — `Canceled` in CF Queues means the consumer exceeded the \*\*wall-clock time limit\*\*, not CPU. Free tier queue consumers get 15 minutes but the invocation is being canceled because the Worker is exceeding its own execution limit mid-processing.
+> Actually — `Canceled` in CF Queues means the consumer exceeded the **wall-clock time limit**, not CPU. Free tier queue consumers get 15 minutes but the invocation is being canceled because the Worker is exceeding its own execution limit mid-processing.
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
@@ -2289,7 +2289,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
@@ -2297,7 +2297,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
@@ -2305,7 +2305,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 5, assistant
+**[2026-03-19]** *Project state and priorities review* — score 5, assistant
 
 
 
@@ -2313,7 +2313,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -2321,15 +2321,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-05]** *5 Mar 26* — score 4, assistant
 
 
 
-> \*\*On extraction quality evaluation:\*\* The approach is sound. The most useful version would be to pull 5-10 representative cases from D1 (a mix of courts and complexity), run them through your current Llama prompt, then compare against what a proper legal extraction should look like. Rather than me just doing my own extraction in a vacuum, it would be more targeted to look at the \*actual Llama output\* from your D1 records and identify where it's failing — thin facts, garbled case names, generic principles, missed legislation references, etc. That gives you a real defect list to fix rather than a theoretical comparison.
+> **On extraction quality evaluation:** The approach is sound. The most useful version would be to pull 5-10 representative cases from D1 (a mix of courts and complexity), run them through your current Llama prompt, then compare against what a proper legal extraction should look like. Rather than me just doing my own extraction in a vacuum, it would be more targeted to look at the *actual Llama output* from your D1 records and identify where it's failing — thin facts, garbled case names, generic principles, missed legislation references, etc. That gives you a real defect list to fix rather than a theoretical comparison.
 
 
 
-\*\*\[2026-03-06]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-06]** *5 Mar 26* — score 4, assistant
 
 
 
@@ -2337,7 +2337,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Processing compiled notes into Arcanthyr database with \* — score 4, assistant
+**[2026-03-09]** *Processing compiled notes into Arcanthyr database with * — score 4, assistant
 
 
 
@@ -2345,15 +2345,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
-> \*\*AFTER ALL CHANGES:\*\* - Run `git add -A`, `git commit`, `git push origin master` as separate commands - Do NOT run `npx wrangler deploy` — Tom will handle that after reviewing
+> **AFTER ALL CHANGES:** - Run `git add -A`, `git commit`, `git push origin master` as separate commands - Do NOT run `npx wrangler deploy` — Tom will handle that after reviewing
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
@@ -2361,23 +2361,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
-> \*\*After changes:\*\* - `git add -A` - `git commit -m "Phase 5: add citation discipline and answer grounding rules to query prompt"` - `git push origin master` - Do NOT run `npx wrangler deploy` — Tom will review and deploy
+> **After changes:** - `git add -A` - `git commit -m "Phase 5: add citation discipline and answer grounding rules to query prompt"` - `git push origin master` - Do NOT run `npx wrangler deploy` — Tom will review and deploy
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> \*\*CRITICAL naming:\*\* D1 column is `authorities\_extracted`. `key\_authorities` is the Llama prompt field name only — it does NOT exist as a D1 column. Do not use `key\_authorities` in any D1 query.
+> **CRITICAL naming:** D1 column is `authorities_extracted`. `key_authorities` is the Llama prompt field name only — it does NOT exist as a D1 column. Do not use `key_authorities` in any D1 query.
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 4, assistant
+**[2026-03-16]** *Performance review* — score 4, assistant
 
 
 
@@ -2385,39 +2385,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 4, human
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 4, human
 
 
 
-> PS C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4> npx wrangler deploy ⛅️ wrangler 4.66.0 (update available 4.74.0) ───────────────────────────────────────────── ▲ \[WARNING] Use "worker.js" instead of "Worker.js" to avoid issues with case-sensitive file systems \[different-path-case] 🌀 Building list of assets... ✨ Read 9 files from the assets directory C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\public 🌀 Starting asset upload... No updated asset files to upload. Proceeding with deployment... Total Upload: 87.72 KiB / gzip: 19.31 KiB Your Worker has access to the following bindings: Binding Resource env.DB (arcanthyr) D1 Database env.AI…
+> PS C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4> npx wrangler deploy ⛅️ wrangler 4.66.0 (update available 4.74.0) ───────────────────────────────────────────── ▲ [WARNING] Use "worker.js" instead of "Worker.js" to avoid issues with case-sensitive file systems [different-path-case] 🌀 Building list of assets... ✨ Read 9 files from the assets directory C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\public 🌀 Starting asset upload... No updated asset files to upload. Proceeding with deployment... Total Upload: 87.72 KiB / gzip: 19.31 KiB Your Worker has access to the following bindings: Binding Resource env.DB (arcanthyr) D1 Database env.AI…
 
 
 
-\*\*\[2026-03-17]\*\* \*Section 95 tendency and coincidence evidence test\* — score 4, assistant
+**[2026-03-17]** *Section 95 tendency and coincidence evidence test* — score 4, assistant
 
 
 
-> While we wait — let's think about the backfill execution problem. The new backfill\_enriched\_text.py outputs a SQL file with 1,138 UPDATE statements. The old approach was to execute that SQL file via wrangler, but D1 has a limit on how many statements it can execute in one call.
+> While we wait — let's think about the backfill execution problem. The new backfill_enriched_text.py outputs a SQL file with 1,138 UPDATE statements. The old approach was to execute that SQL file via wrangler, but D1 has a limit on how many statements it can execute in one call.
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 4, human
+**[2026-03-18]** *Reviewing Claude documentation files* — score 4, human
 
 
 
-> PS C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4> npx wrangler deploy ⛅️ wrangler 4.75.0 ─────────────────── ▲ \[WARNING] Use "Worker.js" instead of "worker.js" to avoid issues with case-sensitive file systems \[different-path-case] 🌀 Building list of assets... ✨ Read 9 files from the assets directory C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\public 🌀 Starting asset upload... No updated asset files to upload. Proceeding with deployment... Total Upload: 102.30 KiB / gzip: 23.00 KiB Your Worker has access to the following bindings: Binding Resource env.CASE\_QUEUE (arcanthyr-case-processing) Queue env.DB (arcanthyr)…
+> PS C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4> npx wrangler deploy ⛅️ wrangler 4.75.0 ─────────────────── ▲ [WARNING] Use "Worker.js" instead of "worker.js" to avoid issues with case-sensitive file systems [different-path-case] 🌀 Building list of assets... ✨ Read 9 files from the assets directory C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\public 🌀 Starting asset upload... No updated asset files to upload. Proceeding with deployment... Total Upload: 102.30 KiB / gzip: 23.00 KiB Your Worker has access to the following bindings: Binding Resource env.CASE_QUEUE (arcanthyr-case-processing) Queue env.DB (arcanthyr)…
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 4, human
+**[2026-03-18]** *Project state and priorities review* — score 4, human
 
 
 
-> ⛅️ wrangler 4.66.0 (update available 4.75.0) ───────────────────────────────────────────── ▲ \[WARNING] Use "worker.js" instead of "Worker.js" to avoid issues with case-sensitive file systems \[different-path-case] 🌀 Building list of assets... ✨ Read 9 files from the assets directory C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\public 🌀 Starting asset upload... No updated asset files to upload. Proceeding with deployment... Total Upload: 98.00 KiB / gzip: 21.76 KiB Your Worker has access to the following bindings: Binding Resource env.CASE\_QUEUE (arcanthyr-case-processing) Queue env.DB (arcanthyr) D1 Datab…
+> ⛅️ wrangler 4.66.0 (update available 4.75.0) ───────────────────────────────────────────── ▲ [WARNING] Use "worker.js" instead of "Worker.js" to avoid issues with case-sensitive file systems [different-path-case] 🌀 Building list of assets... ✨ Read 9 files from the assets directory C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\Arc v 4\\public 🌀 Starting asset upload... No updated asset files to upload. Proceeding with deployment... Total Upload: 98.00 KiB / gzip: 21.76 KiB Your Worker has access to the following bindings: Binding Resource env.CASE_QUEUE (arcanthyr-case-processing) Queue env.DB (arcanthyr) D1 Datab…
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 4, assistant
+**[2026-03-18]** *What to do next* — score 4, assistant
 
 
 
@@ -2425,7 +2425,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Fix pilot issues first\* — score 4, human
+**[2026-03-20]** *Fix pilot issues first* — score 4, human
 
 
 
@@ -2433,7 +2433,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-23]\*\* \*What's next?\* — score 4, assistant
+**[2026-03-23]** *What's next?* — score 4, assistant
 
 
 
@@ -2441,19 +2441,19 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\## Corpus \& Case Ingestion
+## Corpus \& Case Ingestion
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 13, assistant
+**[2026-03-05]** *5 Mar 26* — score 13, assistant
 
 
 
-> The fix is to \*\*do the parsing in the scraper/client side before upload\*\* rather than in the Worker. You send pre-parsed sections as JSON in the upload payload instead of asking the Worker to parse the raw text under CPU pressure.
+> The fix is to **do the parsing in the scraper/client side before upload** rather than in the Worker. You send pre-parsed sections as JSON in the upload payload instead of asking the Worker to parse the raw text under CPU pressure.
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 6, assistant
+**[2026-03-04]** *4 MAR 26* — score 6, assistant
 
 
 
@@ -2461,7 +2461,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Secondary sources prompt development\* — score 6, assistant
+**[2026-03-09]** *Secondary sources prompt development* — score 6, assistant
 
 
 
@@ -2469,39 +2469,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 6, assistant
+**[2026-03-18]** *What to do next* — score 6, assistant
 
 
 
-> The key insight from CC's review: \*\*Worker v9 already removed the fire-and-forget nexus call\*\*. The pattern is already there — the fetch-case-url handler just needs to stop calling `processCaseUpload()` inline and instead do what the scraper does: write to D1 and return.
+> The key insight from CC's review: **Worker v9 already removed the fire-and-forget nexus call**. The pattern is already there — the fetch-case-url handler just needs to stop calling `processCaseUpload()` inline and instead do what the scraper does: write to D1 and return.
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 6, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 6, assistant
 
 
 
-> Good report. The key finding is that IDs are generated at ingest time from `\[CITATION:]` values or heading slugs — so ID stability depends entirely on whether the headings/citations in the reprocessed corpus match the old ones.
+> Good report. The key finding is that IDs are generated at ingest time from `[CITATION:]` values or heading slugs — so ID stability depends entirely on whether the headings/citations in the reprocessed corpus match the old ones.
 
 
 
-\*\*\[2026-03-22]\*\* \*Reviewing recent conversation highlights\* — score 6, assistant
+**[2026-03-22]** *Reviewing recent conversation highlights* — score 6, assistant
 
 
 
-> \*\*The catch for you:\*\* it's currently Mac-only — Windows is not supported. Your Arcanthyr setup runs on Windows, so Dispatch won't work for controlling the ingest/embed process remotely.
+> **The catch for you:** it's currently Mac-only — Windows is not supported. Your Arcanthyr setup runs on Windows, so Dispatch won't work for controlling the ingest/embed process remotely.
 
 
 
-\*\*\[2026-03-02]\*\* \*Case name extraction and console processing\* — score 5, assistant
+**[2026-03-02]** *Case name extraction and console processing* — score 5, assistant
 
 
 
-> \*\*Issue 1 — Old bad records still in DB\*\* Records like `id: "TASSC-2024-9"`, `citation: "TASSC 2024 9"`, `court: "unknown"` — these are from the very first scraper run before our citation fix. They survived the D1 wipe somehow, or were re-ingested before the fix was deployed.
+> **Issue 1 — Old bad records still in DB** Records like `id: "TASSC-2024-9"`, `citation: "TASSC 2024 9"`, `court: "unknown"` — these are from the very first scraper run before our citation fix. They survived the D1 wipe somehow, or were re-ingested before the fix was deployed.
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 5, assistant
+**[2026-03-04]** *4 MAR 26* — score 5, assistant
 
 
 
@@ -2509,7 +2509,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 5, assistant
+**[2026-03-04]** *4 MAR 26* — score 5, assistant
 
 
 
@@ -2517,7 +2517,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-04]\*\* \*4 MAR 26\* — score 5, assistant
+**[2026-03-04]** *4 MAR 26* — score 5, assistant
 
 
 
@@ -2525,7 +2525,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
@@ -2533,7 +2533,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
@@ -2541,15 +2541,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
-> Check what's actually failing — add some error detail. But first, let's just test if the issue is the `raw\_text` field by checking the legislation table schema: ``` This block is not supported on your current device yet. ```
+> Check what's actually failing — add some error detail. But first, let's just test if the issue is the `raw_text` field by checking the legislation table schema: ``` This block is not supported on your current device yet. ```
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -2557,7 +2557,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -2565,7 +2565,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*Understanding project state and priorities\* — score 5, assistant
+**[2026-03-08]** *Understanding project state and priorities* — score 5, assistant
 
 
 
@@ -2573,15 +2573,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Processing compiled notes into Arcanthyr database with \* — score 5, assistant
+**[2026-03-09]** *Processing compiled notes into Arcanthyr database with * — score 5, assistant
 
 
 
-> The fix is straightforward: when you build the `master\_corpus.md` parser in `handleUploadSecondarySource`, the translation happens there. The parser reads `\[TYPE: sentencing principle]` and writes it into the `category` field. Reads `\[ACT: Criminal Code Act 1924 (Tas)]` and writes it into `legislation`. And so on.
+> The fix is straightforward: when you build the `master_corpus.md` parser in `handleUploadSecondarySource`, the translation happens there. The parser reads `[TYPE: sentencing principle]` and writes it into the `category` field. Reads `[ACT: Criminal Code Act 1924 (Tas)]` and writes it into `legislation`. And so on.
 
 
 
-\*\*\[2026-03-10]\*\* \*Claude.md context and suggestions\* — score 5, human
+**[2026-03-10]** *Claude.md context and suggestions* — score 5, human
 
 
 
@@ -2589,15 +2589,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-15]\*\* \*Automating Hogan crime block reformatting workflow\* — score 5, assistant
+**[2026-03-15]** *Automating Hogan crime block reformatting workflow* — score 5, assistant
 
 
 
-> This is a different problem — the new `blocks\_3k/block\_001.txt` only contains the index/admin content from the original block (legislation lists, Sgt Askew note) because the splitter put that content in block 1 and the substantive legal doctrine starts in block 2 onwards.
+> This is a different problem — the new `blocks_3k/block_001.txt` only contains the index/admin content from the original block (legislation lists, Sgt Askew note) because the splitter put that content in block 1 and the substantive legal doctrine starts in block 2 onwards.
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-16]** *Performance review* — score 5, assistant
 
 
 
@@ -2605,7 +2605,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-16]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-16]** *Performance review* — score 5, assistant
 
 
 
@@ -2613,7 +2613,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Building case summary with multi-pass extraction\* — score 5, assistant
+**[2026-03-17]** *Building case summary with multi-pass extraction* — score 5, assistant
 
 
 
@@ -2621,7 +2621,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Successful data chunk processing\* — score 5, human
+**[2026-03-17]** *Successful data chunk processing* — score 5, human
 
 
 
@@ -2629,7 +2629,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 5, human
+**[2026-03-18]** *Project state and priorities review* — score 5, human
 
 
 
@@ -2637,7 +2637,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Sync issue troubleshooting\* — score 5, assistant
+**[2026-03-18]** *Sync issue troubleshooting* — score 5, assistant
 
 
 
@@ -2645,7 +2645,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 5, assistant
+**[2026-03-18]** *What to do next* — score 5, assistant
 
 
 
@@ -2653,7 +2653,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-19]\*\* \*Side projects while waiting for scraper\* — score 5, assistant
+**[2026-03-19]** *Side projects while waiting for scraper* — score 5, assistant
 
 
 
@@ -2661,23 +2661,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-01]\*\* \*Case name extraction and console processing\* — score 4, assistant
+**[2026-03-01]** *Case name extraction and console processing* — score 4, assistant
 
 
 
-> If those come back as citations (`\[2020] TASSC 12`) rather than names, the older cases are bad and a re-ingest is worth doing. If they look fine, you may not need to bother.
+> If those come back as citations (`[2020] TASSC 12`) rather than names, the older cases are bad and a re-ingest is worth doing. If they look fine, you may not need to bother.
 
 
 
-\*\*\[2026-03-02]\*\* \*Case name extraction and console processing\* — score 4, assistant
+**[2026-03-02]** *Case name extraction and console processing* — score 4, assistant
 
 
 
-> \*\*How it would work:\*\* ``` VPS scraper → Cloudflare Worker (fetch proxy) → AustLII ``` Instead of the VPS hitting AustLII directly, it asks your Worker to fetch the page, the Worker fetches it from Cloudflare's edge (thousands of rotating IPs globally), returns the HTML to the VPS, VPS processes and uploads as normal.
+> **How it would work:** ``` VPS scraper → Cloudflare Worker (fetch proxy) → AustLII ``` Instead of the VPS hitting AustLII directly, it asks your Worker to fetch the page, the Worker fetches it from Cloudflare's edge (thousands of rotating IPs globally), returns the HTML to the VPS, VPS processes and uploads as normal.
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-05]** *5 Mar 26* — score 4, assistant
 
 
 
@@ -2685,7 +2685,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 4, assistant
+**[2026-03-07]** *7 MAR 26* — score 4, assistant
 
 
 
@@ -2693,15 +2693,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*Understanding project state and priorities\* — score 4, assistant
+**[2026-03-08]** *Understanding project state and priorities* — score 4, assistant
 
 
 
-> \*\*Option A — Increase batch size to nexus\*\* Instead of 20 sections per ingest call, send 50-100. Fewer round trips, same result. Risky if nexus has payload limits though.
+> **Option A — Increase batch size to nexus** Instead of 20 sections per ingest call, send 50-100. Fewer round trips, same result. Risky if nexus has payload limits though.
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 4, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 4, assistant
 
 
 
@@ -2709,23 +2709,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*Claude.md context and suggestions\* — score 4, assistant
+**[2026-03-11]** *Claude.md context and suggestions* — score 4, assistant
 
 
 
-> We need a different approach for corpus ingest — rather than fire-and-forget from the Worker, we should call nexus directly from `ingest\_corpus.py` on your local machine. Want to tackle that now?
+> We need a different approach for corpus ingest — rather than fire-and-forget from the Worker, we should call nexus directly from `ingest_corpus.py` on your local machine. Want to tackle that now?
 
 
 
-\*\*\[2026-03-12]\*\* \*12/3/26\* — score 4, assistant
+**[2026-03-12]** *12/3/26* — score 4, assistant
 
 
 
-> \*\*Key constraints I'll keep front of mind:\*\* - PowerShell: no `\&\&`, no `grep`, wrangler d1 from `Arc v 4/` with `--remote` - Corpus: do NOT run `--mode enrich` on the 662 secondary source rows — raw\_text is the content - Deploy checklist: verify `public/` only before every wrangler deploy
+> **Key constraints I'll keep front of mind:** - PowerShell: no `\&\&`, no `grep`, wrangler d1 from `Arc v 4/` with `--remote` - Corpus: do NOT run `--mode enrich` on the 662 secondary source rows — raw_text is the content - Deploy checklist: verify `public/` only before every wrangler deploy
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
@@ -2733,47 +2733,47 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-14]\*\* \*14/3/26\* — score 4, assistant
+**[2026-03-14]** *14/3/26* — score 4, assistant
 
 
 
-> \*\*My honest assessment:\*\* Don't touch the upload-case flow before resuming the scraper. The current design is sound. The priority before resuming is:
+> **My honest assessment:** Don't touch the upload-case flow before resuming the scraper. The current design is sound. The priority before resuming is:
 
 
 
-\*\*\[2026-03-15]\*\* \*Debugging script without interrupting execution\* — score 4, assistant
+**[2026-03-15]** *Debugging script without interrupting execution* — score 4, assistant
 
 
 
-> > 1. Open `ingest\_corpus.py` > 2. Find the `INPUT\_FILE` variable and change it to the full absolute path of `master\_corpus\_part2.md` — which is in `Arc v 4/` > 3. Save the file > 4. Do not run anything — Tom will run the dry-run and ingest from PowerShell
+> > 1. Open `ingest_corpus.py` > 2. Find the `INPUT_FILE` variable and change it to the full absolute path of `master_corpus_part2.md` — which is in `Arc v 4/` > 3. Save the file > 4. Do not run anything — Tom will run the dry-run and ingest from PowerShell
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 4, assistant
+**[2026-03-16]** *Debugging script without interrupting execution* — score 4, assistant
 
 
 
-> \*\*ingest\_corpus.py updates:\*\* - Deduplication pass added (lines 100-111) — first occurrence unchanged, subsequent get `\[2]`, `\[3]` suffixes - Pre-flight duplicate warning printed before ingest
+> **ingest_corpus.py updates:** - Deduplication pass added (lines 100-111) — first occurrence unchanged, subsequent get `[2]`, `[3]` suffixes - Pre-flight duplicate warning printed before ingest
 
 
 
-\*\*\[2026-03-18]\*\* \*Project state and priorities review\* — score 4, assistant
+**[2026-03-18]** *Project state and priorities review* — score 4, assistant
 
 
 
-> \*\*How it would work:\*\* Instead of your local machine fetching AustLII pages, a Cloudflare Worker cron job uses the \[Browser Rendering API](https://developers.cloudflare.com/browser-rendering/) to fetch pages directly from Cloudflare's edge — completely automated, no local machine needed.
+> **How it would work:** Instead of your local machine fetching AustLII pages, a Cloudflare Worker cron job uses the [Browser Rendering API](https://developers.cloudflare.com/browser-rendering/) to fetch pages directly from Cloudflare's edge — completely automated, no local machine needed.
 
 
 
-\*\*\[2026-03-19]\*\* \*Project state and priorities review\* — score 4, assistant
+**[2026-03-19]** *Project state and priorities review* — score 4, assistant
 
 
 
-> The original design was \*\*100 cases per session\*\*, set on 4 March when the rate limiting and AustLII concerns were first addressed. The 10-20 second delay + business hours gate + 100 case limit was the considered safe configuration.
+> The original design was **100 cases per session**, set on 4 March when the rate limiting and AustLII concerns were first addressed. The 10-20 second delay + business hours gate + 100 case limit was the considered safe configuration.
 
 
 
-\*\*\[2026-03-20]\*\* \*Token limit exceeded in API request\* — score 4, assistant
+**[2026-03-20]** *Token limit exceeded in API request* — score 4, assistant
 
 
 
@@ -2781,19 +2781,19 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-20]\*\* \*Side projects while waiting for scraper\* — score 4, assistant
+**[2026-03-20]** *Side projects while waiting for scraper* — score 4, assistant
 
 
 
-> > Read `C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\process\_blocks.py` fully and confirm you've read it before making any changes. > > Make the following changes: > > \*\*1. Add a REPAIR\_PROMPT constant\*\* after the existing MASTER\_PROMPT and PROCEDURE\_PROMPT constants. The repair prompt text is: > > ```python > REPAIR\_PROMPT = textwrap.dedent("""\\ > You are a compliance and repair formatter for a legal secondary-source corpus. > > You will receive: > - SOURCE\_BLOCK\_TEXT: the original source block > - DRAFT\_OUTPUT: the prior Master pass output > > Your task is ONLY to fix structural compliance problems while preserving substantive prose. > You MUST NOT summarise, sanitise, or replace re…
+> > Read `C:\\Users\\Hogan\\OneDrive\\Arcanthyr\\arcanthyr-console\\process_blocks.py` fully and confirm you've read it before making any changes. > > Make the following changes: > > **1. Add a REPAIR_PROMPT constant** after the existing MASTER_PROMPT and PROCEDURE_PROMPT constants. The repair prompt text is: > > ```python > REPAIR_PROMPT = textwrap.dedent("""\\ > You are a compliance and repair formatter for a legal secondary-source corpus. > > You will receive: > - SOURCE_BLOCK_TEXT: the original source block > - DRAFT_OUTPUT: the prior Master pass output > > Your task is ONLY to fix structural compliance problems while preserving substantive prose. > You MUST NOT summarise, sanitise, or replace re…
 
 
 
-\## VPS / server.py
+## VPS / server.py
 
 
 
-\*\*\[2026-03-18]\*\* \*What to do next\* — score 10, assistant
+**[2026-03-18]** *What to do next* — score 10, assistant
 
 
 
@@ -2801,7 +2801,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 6, assistant
+**[2026-03-05]** *5 Mar 26* — score 6, assistant
 
 
 
@@ -2809,7 +2809,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 6, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 6, assistant
 
 
 
@@ -2817,39 +2817,39 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-17]\*\* \*Building case summary with multi-pass extraction\* — score 6, assistant
+**[2026-03-17]** *Building case summary with multi-pass extraction* — score 6, assistant
 
 
 
-> \*\*Option 3 — Fix the PDF timeout\*\* — move PDF processing off the Worker into an async VPS job. Worker receives the upload, hands it off to server.py, returns immediately with a job ID, frontend polls for completion. Properly fixes the root cause but significant build work.
+> **Option 3 — Fix the PDF timeout** — move PDF processing off the Worker into an async VPS job. Worker receives the upload, hands it off to server.py, returns immediately with a job ID, frontend polls for completion. Properly fixes the root cause but significant build work.
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
-> The fix is simple: \*\*the browser should send the raw PDF bytes to the Worker, and the Worker extracts text server-side using pdfminer on the VPS via the nexus endpoint — or more practically, we skip PDF.js entirely for legislation and use a different approach.\*\*
+> The fix is simple: **the browser should send the raw PDF bytes to the Worker, and the Worker extracts text server-side using pdfminer on the VPS via the nexus endpoint — or more practically, we skip PDF.js entirely for legislation and use a different approach.**
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
-> Same error — so the body is definitely reaching the server empty. The issue is in `read\_body()` — it's reading `Content-Length` but curl with `--data-binary` may be setting it differently. Let me check the actual server.py that got written to the VPS:
+> Same error — so the body is definitely reaching the server empty. The issue is in `read_body()` — it's reading `Content-Length` but curl with `--data-binary` may be setting it differently. Let me check the actual server.py that got written to the VPS:
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
-> File looks correct. The problem is the container is still running the \*\*old\*\* code — it was built into the Docker image, not reading the file live. Check how it's mounted:
+> File looks correct. The problem is the container is still running the **old** code — it was built into the Docker image, not reading the file live. Check how it's mounted:
 
 
 
-\*\*\[2026-03-07]\*\* \*8 MAR 26\* — score 5, assistant
+**[2026-03-07]** *8 MAR 26* — score 5, assistant
 
 
 
@@ -2857,15 +2857,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
-> That works fine in the container directly. So the issue is the server is running the \*\*old\*\* server.py that doesn't have `extract\_pages` — the one that only has `extract\_text`. When it tries `from pdfminer.high\_level import extract\_text as pdfminer\_extract` it succeeds, but the old code path is what's running.
+> That works fine in the container directly. So the issue is the server is running the **old** server.py that doesn't have `extract_pages` — the one that only has `extract_text`. When it tries `from pdfminer.high_level import extract_text as pdfminer_extract` it succeeds, but the old code path is what's running.
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -2873,7 +2873,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
@@ -2881,15 +2881,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 5, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 5, assistant
 
 
 
-> \*\*The fix is already written in your CLAUDE.md\*\* — SSH tunnel Option A, redirect the embed call to `localhost:18789`, bypass Cloudflare entirely for the bulk embed run. D1 write stays via Worker as normal. That's the right call.
+> **The fix is already written in your CLAUDE.md** — SSH tunnel Option A, redirect the embed call to `localhost:18789`, bypass Cloudflare entirely for the bulk embed run. D1 write stays via Worker as normal. That's the right call.
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 5, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 5, assistant
 
 
 
@@ -2897,7 +2897,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 5, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 5, assistant
 
 
 
@@ -2905,15 +2905,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-15]\*\* \*Automating Hogan crime block reformatting workflow\* — score 5, human
+**[2026-03-15]** *Automating Hogan crime block reformatting workflow* — score 5, human
 
 
 
-> Response from running the curl on the VPS itself: `{"error": "unauthorized"}` That means even when the X-Nexus-Key header is populated directly on the VPS from: `$(docker exec agent-general env | grep NEXUS\_SECRET\_KEY | cut -d= -f2)` the /delete-by-type route still returns 401 unauthorized. So the issue is not PowerShell quoting or SSH escaping.
+> Response from running the curl on the VPS itself: `{"error": "unauthorized"}` That means even when the X-Nexus-Key header is populated directly on the VPS from: `$(docker exec agent-general env | grep NEXUS_SECRET_KEY | cut -d= -f2)` the /delete-by-type route still returns 401 unauthorized. So the issue is not PowerShell quoting or SSH escaping.
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 5, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 5, assistant
 
 
 
@@ -2921,15 +2921,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-06]\*\* \*5 Mar 26\* — score 4, assistant
+**[2026-03-06]** *5 Mar 26* — score 4, assistant
 
 
 
-> So the architecture is clean: - \*\*Cloudflare secret store\*\* — `ANTHROPIC\_API\_KEY` (and `NEXUS\_SECRET\_KEY`) - \*\*VPS .env\*\* — `NEXUS\_SECRET\_KEY` only (for the Docker container) - \*\*Local `.env`\*\* — Wrangler config for local dev only, gitignored - \*\*Git/GitHub\*\* — no secrets ever
+> So the architecture is clean: - **Cloudflare secret store** — `ANTHROPIC_API_KEY` (and `NEXUS_SECRET_KEY`) - **VPS .env** — `NEXUS_SECRET_KEY` only (for the Docker container) - **Local `.env`** — Wrangler config for local dev only, gitignored - **Git/GitHub** — no secrets ever
 
 
 
-\*\*\[2026-03-11]\*\* \*RAG workflow plan issues\* — score 4, assistant
+**[2026-03-11]** *RAG workflow plan issues* — score 4, assistant
 
 
 
@@ -2937,19 +2937,19 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-15]\*\* \*15/3/26\* — score 4, assistant
+**[2026-03-15]** *15/3/26* — score 4, assistant
 
 
 
-> > CC — implement the three new Worker routes (`fetch-cases-for-xref`, `write-citations`, `write-legislation-refs`) using the same inline auth pattern as the existing pipeline routes — inline `X-Nexus-Key` check against `env.NEXUS\_SECRET\_KEY`, and pass `corsHeaders` as used elsewhere in the file. Do not use `checkNexusKey` or `unauthorizedResponse` — those don't exist. Wire all three into the route dispatcher. Then deploy.
+> > CC — implement the three new Worker routes (`fetch-cases-for-xref`, `write-citations`, `write-legislation-refs`) using the same inline auth pattern as the existing pipeline routes — inline `X-Nexus-Key` check against `env.NEXUS_SECRET_KEY`, and pass `corsHeaders` as used elsewhere in the file. Do not use `checkNexusKey` or `unauthorizedResponse` — those don't exist. Wire all three into the route dispatcher. Then deploy.
 
 
 
-\## General Architecture \& Process
+## General Architecture \& Process
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, human
+**[2026-03-05]** *5 Mar 26* — score 5, human
 
 
 
@@ -2957,23 +2957,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-05]\*\* \*5 Mar 26\* — score 5, assistant
+**[2026-03-05]** *5 Mar 26* — score 5, assistant
 
 
 
-> \*\*The fix is prompt-level.\*\* The current prompt is almost certainly asking for principles without giving Llama a strong enough definition of what a legal principle is. We need to add something like:
+> **The fix is prompt-level.** The current prompt is almost certainly asking for principles without giving Llama a strong enough definition of what a legal principle is. We need to add something like:
 
 
 
-\*\*\[2026-03-07]\*\* \*7 MAR 26\* — score 5, assistant
+**[2026-03-07]** *7 MAR 26* — score 5, assistant
 
 
 
-> \*\*bodyStartMatch logic\*\* Looks for `\\n\\d+\[A-Z]?\\.?\\s+\[A-Z]\[^\\n]{3,}\\n\\(` — section line followed immediately by `(` on next line. This works for the Evidence Act because subsections start with `(1)`. May fail for Acts where the first section has no subsections (body starts with plain prose). Worth monitoring on next legislation upload.
+> **bodyStartMatch logic** Looks for `\\n\\d+[A-Z]?\\.?\\s+[A-Z][^\\n]{3,}\\n\\(` — section line followed immediately by `(` on next line. This works for the Evidence Act because subsections start with `(1)`. May fail for Acts where the first section has no subsections (body starts with plain prose). Worth monitoring on next legislation upload.
 
 
 
-\*\*\[2026-03-08]\*\* \*Understanding project state and priorities\* — score 5, human
+**[2026-03-08]** *Understanding project state and priorities* — score 5, human
 
 
 
@@ -2981,7 +2981,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Secondary sources prompt development\* — score 5, assistant
+**[2026-03-09]** *Secondary sources prompt development* — score 5, assistant
 
 
 
@@ -2989,23 +2989,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-11]\*\* \*11 MAR 26\* — score 5, assistant
+**[2026-03-11]** *11 MAR 26* — score 5, assistant
 
 
 
-> Stop the loop with Ctrl+C. The fix is to either increase the verify retry delay or skip verification entirely for secondary\_sources (verification matters more for legislation where we mark the whole Act done).
+> Stop the loop with Ctrl+C. The fix is to either increase the verify retry delay or skip verification entirely for secondary_sources (verification matters more for legislation where we mark the whole Act done).
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 5, human
+**[2026-03-16]** *Debugging script without interrupting execution* — score 5, human
 
 
 
-> Deployed. Here's a full summary of every change made: \[styles.css](Arc v 4/public/styles.css) \* `--bg`: `#0e0e0e` → `#000000` (pure black) \* `--surface`: `#1a1a1a` → `#141414` \* `--surface-raise`: `#242424` → `#1e1e1e` \* `--border`: `#2e2e2e` → `#505050` (lighter grey for contrast against black) \* `--border-heavy`: `#444444` → `#666666` (lighter grey for contrast against black) \* `--text`: `#f0ece4` (warm parchment) → `#ffffff` \* `--text-mid`: `#b8b0a4` (warm grey) → `rgba(255,255,255,0.7)` \* `--text-dim`: `#706860` (brown) → `rgba(255,255,255,0.5)` \* `--ink`: `#f0ece4` → `#ffffff` \* `--ink-dim`: `#242424` → `#1e1e1e` \* `--amber`: `#c8972a` (gold) → `#ffffff` \* `--amber-dim`: `#2a2210` (ambe…
+> Deployed. Here's a full summary of every change made: [styles.css](Arc v 4/public/styles.css) * `--bg`: `#0e0e0e` → `#000000` (pure black) * `--surface`: `#1a1a1a` → `#141414` * `--surface-raise`: `#242424` → `#1e1e1e` * `--border`: `#2e2e2e` → `#505050` (lighter grey for contrast against black) * `--border-heavy`: `#444444` → `#666666` (lighter grey for contrast against black) * `--text`: `#f0ece4` (warm parchment) → `#ffffff` * `--text-mid`: `#b8b0a4` (warm grey) → `rgba(255,255,255,0.7)` * `--text-dim`: `#706860` (brown) → `rgba(255,255,255,0.5)` * `--ink`: `#f0ece4` → `#ffffff` * `--ink-dim`: `#242424` → `#1e1e1e` * `--amber`: `#c8972a` (gold) → `#ffffff` * `--amber-dim`: `#2a2210` (ambe…
 
 
 
-\*\*\[2026-03-17]\*\* \*Performance review\* — score 5, assistant
+**[2026-03-17]** *Performance review* — score 5, assistant
 
 
 
@@ -3013,7 +3013,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*8 MAR 26\* — score 4, assistant
+**[2026-03-08]** *8 MAR 26* — score 4, assistant
 
 
 
@@ -3021,7 +3021,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-08]\*\* \*8 MAR 26\* — score 4, assistant
+**[2026-03-08]** *8 MAR 26* — score 4, assistant
 
 
 
@@ -3029,23 +3029,23 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-09]\*\* \*Secondary sources prompt development\* — score 4, assistant
+**[2026-03-09]** *Secondary sources prompt development* — score 4, assistant
 
 
 
-> 2. \*\*Yes, better way\*\* — the Network tab approach is cleaner. Open browser devtools (F12), go to the Network tab, upload just Part 1 of the Criminal Code PDF through the legislation upload form, and capture the response from `/api/legal/upload-legislation`. That response will contain the extracted text and tell us exactly what the OCR produced and where parsing failed.
+> 2. **Yes, better way** — the Network tab approach is cleaner. Open browser devtools (F12), go to the Network tab, upload just Part 1 of the Criminal Code PDF through the legislation upload form, and capture the response from `/api/legal/upload-legislation`. That response will contain the extracted text and tell us exactly what the OCR produced and where parsing failed.
 
 
 
-\*\*\[2026-03-16]\*\* \*Debugging script without interrupting execution\* — score 4, human
+**[2026-03-16]** *Debugging script without interrupting execution* — score 4, human
 
 
 
-> 28 duplicate CITATION values found across both files: Case citations: \* `B v Visser \[2000` \* `Bonde v Morrison \[2015` \* `Brown v Jones \[2021` \* `Brown v Tasmania \[2019` \* `Cannell v G; G v Cannell \[2018` \* `Howe v S \[2013` \* `Irons v Moore \[2019` \* `Jeffrey v Black \[1977` \* `Kerr v Brown \[2013` \* `Lindley v Rutter \[1981` \* `Palmer v Tasmania \[2024` \* `Pickett v Tasmania \[2022` \* `Police v FRS \[2020` \* `Police v Quinn \[2019` \* `R v Falconer \[1990` \* `Shaw v Tasmania \[2022` \* `Smith v Marshall \[2024` \* `State of Tasmania v Allie and Maple \[2025` \* `Sundram v Bearman \[2020` \* `Tasmania v Scott \[2025` \* `Wheaton v Wilson \[2017` Legislation citations: \* `Evidence Act 2001 (Tas) s 97` \* `Evidence…
+> 28 duplicate CITATION values found across both files: Case citations: * `B v Visser [2000` * `Bonde v Morrison [2015` * `Brown v Jones [2021` * `Brown v Tasmania [2019` * `Cannell v G; G v Cannell [2018` * `Howe v S [2013` * `Irons v Moore [2019` * `Jeffrey v Black [1977` * `Kerr v Brown [2013` * `Lindley v Rutter [1981` * `Palmer v Tasmania [2024` * `Pickett v Tasmania [2022` * `Police v FRS [2020` * `Police v Quinn [2019` * `R v Falconer [1990` * `Shaw v Tasmania [2022` * `Smith v Marshall [2024` * `State of Tasmania v Allie and Maple [2025` * `Sundram v Bearman [2020` * `Tasmania v Scott [2025` * `Wheaton v Wilson [2017` Legislation citations: * `Evidence Act 2001 (Tas) s 97` * `Evidence…
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 4, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 4, assistant
 
 
 
@@ -3053,7 +3053,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-18]\*\* \*Reviewing Claude documentation files\* — score 4, assistant
+**[2026-03-18]** *Reviewing Claude documentation files* — score 4, assistant
 
 
 
@@ -3061,31 +3061,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-22]\*\* \*Data pipeline cleanup and message prompt optimization\* — score 4, assistant
+**[2026-03-22]** *Data pipeline cleanup and message prompt optimization* — score 4, assistant
 
 
 
-> IF "reasoning": enriched\_text — Write 200-320 words in flowing legal prose: - Open with the legal issue or question this passage addresses - State the court's reasoning in the judge's own terms — not paraphrased generically - If the court applied or distinguished an authority, name it and state the specific principle it stands for - Quote 1-2 verbatim sentences (in quotation marks) where the court states the ratio or key principle - Close with the practical legal consequence or what this means for future cases - Do NOT use IF/THEN format in enriched\_text — write as a legal analyst would brief a colleague
+> IF "reasoning": enriched_text — Write 200-320 words in flowing legal prose: - Open with the legal issue or question this passage addresses - State the court's reasoning in the judge's own terms — not paraphrased generically - If the court applied or distinguished an authority, name it and state the specific principle it stands for - Quote 1-2 verbatim sentences (in quotation marks) where the court states the ratio or key principle - Close with the practical legal consequence or what this means for future cases - Do NOT use IF/THEN format in enriched_text — write as a legal analyst would brief a colleague
 
 
 
-\*\*\[2026-03-22]\*\* \*Checking ingest status\* — score 4, human
+**[2026-03-22]** *Checking ingest status* — score 4, human
 
 
 
-> I’m checking the Tasmanian statute, the cited High Court authorities, and whether the “Walters direction” is accurately described or overstated. One problem already: the statutory cite looks wrong. In Tasmania, the general criminal standard of proof is stated in the Evidence Act 2001 (Tas) s 141, not the Criminal Code Act 1924 s 13. Thought for 54s Not fully correct. The main problems are: \* The statutory citation is wrong. In Tasmania, the general criminal standard of proof is stated in Evidence Act 2001 (Tas) s 141(1), not Criminal Code Act 1924 (Tas) s 13. Section 141 says the prosecution case in a criminal proceeding must be proved beyond reasonable doubt. \* I could not verify that “the…
+> I’m checking the Tasmanian statute, the cited High Court authorities, and whether the “Walters direction” is accurately described or overstated. One problem already: the statutory cite looks wrong. In Tasmania, the general criminal standard of proof is stated in the Evidence Act 2001 (Tas) s 141, not the Criminal Code Act 1924 s 13. Thought for 54s Not fully correct. The main problems are: * The statutory citation is wrong. In Tasmania, the general criminal standard of proof is stated in Evidence Act 2001 (Tas) s 141(1), not Criminal Code Act 1924 (Tas) s 13. Section 141 says the prosecution case in a criminal proceeding must be proved beyond reasonable doubt. * I could not verify that “the…
 
 
 
-\---
+---
 
 
 
-\## Session 15 Decisions — 23 March 2026
+## Session 15 Decisions — 23 March 2026
 
 
 
-\*\*\[2026-03-23]\*\* \*UI rebuild — separate repo, Cloudflare Pages\* — session 15
+**[2026-03-23]** *UI rebuild — separate repo, Cloudflare Pages* — session 15
 
 
 
@@ -3093,7 +3093,7 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-23]\*\* \*UI design system locked before build starts\* — session 15
+**[2026-03-23]** *UI design system locked before build starts* — session 15
 
 
 
@@ -3101,15 +3101,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-23]\*\* \*CLAUDE\_decisions.md as persistent session artefact\* — session 15
+**[2026-03-23]** *CLAUDE_decisions.md as persistent session artefact* — session 15
 
 
 
-> Created `CLAUDE\_decisions.md` (377 passages, 1,535 lines, 8 sections) extracted from 30 past Claude.ai conversations via `extract\_decisions.py`. Decided CC maintains it going forward — user appends decisions by telling CC what was decided and why. File lives in `Arc v 4/` and is uploaded each session alongside CLAUDE.md and CLAUDE\_arch.md. Re-extract quarterly from fresh conversation exports.
+> Created `CLAUDE_decisions.md` (377 passages, 1,535 lines, 8 sections) extracted from 30 past Claude.ai conversations via `extract_decisions.py`. Decided CC maintains it going forward — user appends decisions by telling CC what was decided and why. File lives in `Arc v 4/` and is uploaded each session alongside CLAUDE.md and CLAUDE_arch.md. Re-extract quarterly from fresh conversation exports.
 
 
 
-\*\*\[2026-03-23]\*\* \*CORS headers must precede UI build\* — session 15
+**[2026-03-23]** *CORS headers must precede UI build* — session 15
 
 
 
@@ -3117,31 +3117,31 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\---
+---
 
 
 
-\## Session 19 Decisions — 24 March 2026
+## Session 19 Decisions — 24 March 2026
 
 
 
-\*\*\[2026-03-24]\*\* \*Deploy React frontend via Worker static assets, not Cloudflare Pages\* — session 19
+**[2026-03-24]** *Deploy React frontend via Worker static assets, not Cloudflare Pages* — session 19
 
 
 
-> Decided to serve arcanthyr-ui from the existing arcanthyr-api Worker via `\[assets]` binding rather than setting up a separate Cloudflare Pages project. Rationale: Pages deploy required separate project configuration, custom domain routing, and CORS was already solved for arcanthyr.com. Serving from the Worker keeps the entire app (API + frontend) under one deployment unit — `npx wrangler deploy` pushes both. arcanthyr-ui.pages.dev is now redundant and can be deleted.
+> Decided to serve arcanthyr-ui from the existing arcanthyr-api Worker via `[assets]` binding rather than setting up a separate Cloudflare Pages project. Rationale: Pages deploy required separate project configuration, custom domain routing, and CORS was already solved for arcanthyr.com. Serving from the Worker keeps the entire app (API + frontend) under one deployment unit — `npx wrangler deploy` pushes both. arcanthyr-ui.pages.dev is now redundant and can be deleted.
 
 
 
-\*\*\[2026-03-24]\*\* \*Do not add \_redirects to arcanthyr-ui/public/\* — session 19
+**[2026-03-24]** *Do not add _redirects to arcanthyr-ui/public/* — session 19
 
 
 
-> Adding a `\_redirects` file to `public/` caused Workers Assets to enter an infinite redirect loop (error 10021). SPA routing is handled by `not\_found\_handling = "single-page-application"` in wrangler.toml — this is sufficient and the only correct approach. Never add \_redirects back.
+> Adding a `_redirects` file to `public/` caused Workers Assets to enter an infinite redirect loop (error 10021). SPA routing is handled by `not_found_handling = "single-page-application"` in wrangler.toml — this is sufficient and the only correct approach. Never add _redirects back.
 
 
 
-\*\*\[2026-03-24]\*\* \*Model toggle names: Sol and V'ger\* — session 19
+**[2026-03-24]** *Model toggle names: Sol and V'ger* — session 19
 
 
 
@@ -3149,15 +3149,15 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\*\*\[2026-03-24]\*\* \*Stop poller before embed pass when enriched\_text is absent\* — session 19
+**[2026-03-24]** *Stop poller before embed pass when enriched_text is absent* — session 19
 
 
 
-> Discovered 85 chunks were embedded from chunk\_text (raw text) because the poller ran before re-enrichment completed. Stopping the poller after 85 to prevent further wasted embed passes was the correct call — chunk\_text vectors are lower quality than enriched\_text vectors and will need to be replaced anyway. Rule: always verify enriched\_text IS NOT NULL on target chunks before starting poller CASE-EMBED pass.
+> Discovered 85 chunks were embedded from chunk_text (raw text) because the poller ran before re-enrichment completed. Stopping the poller after 85 to prevent further wasted embed passes was the correct call — chunk_text vectors are lower quality than enriched_text vectors and will need to be replaced anyway. Rule: always verify enriched_text IS NOT NULL on target chunks before starting poller CASE-EMBED pass.
 
 
 
-\*\*\[2026-03-24]\*\* \*Globe moved to Compose page, not Landing\* — session 19
+**[2026-03-24]** *Globe moved to Compose page, not Landing* — session 19
 
 
 
@@ -3165,11 +3165,11 @@ This format exists because retrieval work on the 31-query binary-graded eval bet
 
 
 
-\---
+---
 
 
 
-\*377 passages from 135 conversations + session 15 additions.\*
+*377 passages from 135 conversations + session 15 additions.*
 
 ---
 
@@ -3909,7 +3909,7 @@ Chosen: combination of (3) + (4) + selective (2). `.gitattributes` normalises fu
 
 **AustLII VPS proxy bypass** — Contabo VPS IP range is blocked by AustLII at the network level (curl returns 000, no HTTP response). The existing `handleFetchPage` VPS proxy path is therefore unusable for AustLII search. Fix: `handleAustLIIWordSearch` calls `fetch()` directly from the Cloudflare Worker edge with browser-mimicking headers (`User-Agent`, `Referer`, `Accept`, `Accept-Language`). Cloudflare edge IPs are not blocked by AustLII. This applies only to the word-search route — the scraper still routes through the edge proxy for individual case fetches.
 
-**AustLII sinosrch URL format** — AustLII search results use `/cgi-bin/viewdoc/` paths (not bare `/au/cases/tas/`). Correct URL pattern: `/cgi-bin/viewdoc/au/cases/tas/(COURT)/YEAR/NUM.html?context=1;query=...`. Parser regex must match the `viewdoc` prefix. Case name link text contains nested `<b>` tags (query term highlighting) — regex uses `[\s\S]*?` capture with post-processing `replace(/<[^>]+>/g, '')` to strip tags, plus `replace(/&amp;/g, '&')` entity decode and `replace(/\s*\[\d{4}\].*$/, '')` to strip AustLII's appended citation+date suffix.
+**AustLII sinosrch URL format** — AustLII search results use `/cgi-bin/viewdoc/` paths (not bare `/au/cases/tas/`). Correct URL pattern: `/cgi-bin/viewdoc/au/cases/tas/(COURT)/YEAR/NUM.html?context=1;query=...`. Parser regex must match the `viewdoc` prefix. Case name link text contains nested `<b>` tags (query term highlighting) — regex uses `[\s\S]*?` capture with post-processing `replace(/<[^>]+>/g, '')` to strip tags, plus `replace(/&amp;/g, '&')` entity decode and `replace(/\s*[\d{4}].*$/, '')` to strip AustLII's appended citation+date suffix.
 
 ## Session 86 decisions — 20 April 2026
 

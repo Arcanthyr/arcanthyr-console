@@ -102,8 +102,6 @@ Full D1/Workers/KV/R2 access
 - **Superpowers skills** (systematic-debugging, verification-before-completion, test-driven-development) — **auto-activate** on matching conditions (bug/failure reported; about to claim work complete; implementing a feature/bugfix). No invocation needed.
 - **code-simplifier** — built-in Claude Code plugin (tengu_amber_lattice plugin system), already enabled in `~/.claude.json`. Not a separate MCP server. The `/simplify` skill covers the same purpose explicitly.
 
-**MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
-
 **Skills — ~/.claude/skills/ (installed session 40)**
 
 *Pre-existing (session 38):*
@@ -222,16 +220,11 @@ VPS enrichment_poller.py (permanent Docker service, --loop):
 | Legislation | None — raw statutory text embedded directly | |
 | Future secondary source uploads (small volume) | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY in VPS .env) | switched from Claude API session 13 — Claude API key unavailable |
 
-**Secondary sources corpus (session 12):** 1,171 rows · all enriched=1 · embedded=0 (poller embedding overnight). `enriched_text` is NULL — correct, poller falls back to `raw_text`. Do NOT run `--mode enrich` on these rows.
+**Secondary sources corpus — session 12 state (historical):** 1,171 rows · all enriched=1 · embedded=0 (poller embedding overnight). `enriched_text` is NULL — correct, poller falls back to `raw_text`. Do NOT run `--mode enrich` on these rows.
 
 ---
 
-## RETRIEVAL ARCHITECTURE (v5 — SESSION 8, confirmed against live code)
-
-CRITICAL: Session 3 RRF/BM25/FTS5 work was documented as complete but was
-never deployed. Neither worker.js nor server.py contain RRF, in-memory BM25,
-or FTS5 blend logic. The /api/pipeline/bm25-corpus and /api/pipeline/fts-search
-Worker routes exist but are dead — nothing calls them during query handling.
+## RETRIEVAL ARCHITECTURE (sequential four-pass + BM25 interleave — frozen session 96)
 
 **Actual pipeline — Worker.js handleLegalQuery:**
 - Calls server.py /search
@@ -305,7 +298,7 @@ Skip/error messages are logged per-pass and visible immediately.
 
 ## CORPUS PIPELINE — SECONDARY SOURCES (v3, session 12)
 
-**Session 13 corpus state:**
+**Session 13 corpus state (historical):**
 - Part 1: 488 chunks · Part 2: 683 chunks · BRD manual chunk: 1 · Total: 1,172 chunks
 - All enriched=1 · all embedded=1 · FTS5 backfilled (1,171 rows — BRD chunk also in FTS5)
 - Next sequential block number for `ingest_corpus.py` bulk runs: hoc-b057 (hoc-b056 is highest corpus block)
@@ -400,7 +393,7 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 | GET | `/health` | inline | Returns `{"status":"ok"}` — no auth |
 | POST | `/ingest` | `ingest_text()` | Embed + upsert chunk to Qdrant |
 | POST | `/search` | `search_text()` | Five-pass retrieval |
-| POST | `/query` | `query_qwen()` | search + Qwen3 inference |
+| POST | `/query` | `query_qwen()` | DEAD CODE — nothing calls it; retained in file. All retrieval goes through `/search`. See session 58 diagnosis. |
 | POST | `/extract-pdf` | `extract_pdf_text()` | pdfminer only |
 | POST | `/extract-pdf-ocr` | `extract_pdf_text_ocr()` | pdfminer + OCR fallback |
 | POST | `/delete` | `delete_citation()` | Delete Qdrant vectors by `citation` field |
@@ -416,7 +409,6 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 | `COLLECTION` | `general-docs-v2` | Qdrant collection name |
 | `_bm25_corpus` | dict | In-memory BM25 corpus cache |
 | `BM25_TTL` | 600 | BM25 corpus rebuild TTL in seconds |
-| `BM25_FTS_ENABLED` | True | Kill switch for D1 FTS5 retrieval pass |
 
 ---
 
@@ -539,7 +531,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `case_chunks` | `id` TEXT (`{citation}__chunk__{N}`) | `citation`, `chunk_index`, `chunk_text`, `enriched_text`, `principles_json`, `done`, `embedded` |
 | `secondary_sources` | `id` TEXT | `title`, `raw_text`, `enriched_text`, `category`, `source_type`, `enriched`, `embedded` |
 | `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
-| `legislation_sections` | `id` TEXT | `leg_id`, `section_number`, `heading`, `text`, `embedded` |
+| `legislation_sections` | `id` TEXT | `legislation_id`, `section_number`, `heading`, `text` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
 | `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char), `flagged_by` TEXT (200 char) · feedback system live session 96 (POST /api/legal/mark-insufficient route wired to Research page thumbs-down button) |
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
@@ -894,36 +886,9 @@ Source title uses chunk heading (not filename stem).
 - handleFetchForEmbedding SELECT now returns source_type
 - Qdrant secondary source upsert payload now includes source_type field
 
-### MOSS-TTS-Nano service
-- Path: ~/ai-stack/MOSS-TTS-Nano
-- Port: 18083 (localhost only, never public)
-- Systemd: moss-tts.service (enabled, auto-start)
-- Runtime: Python 3.12 venv at ~/ai-stack/MOSS-TTS-Nano/venv
-- Model: 0.1B params, CPU-only, ~990MB RAM
-- Voice assets: assets/audio/en_8.wav (male default), assets/audio/en_6.wav (female)
-- Ambient clips: assets/ambient_male/ (en_8), assets/ambient/ (en_6)
-- API: POST /api/generate — multipart form, returns { audio_base64: "..." }
+### TTS — current state (sessions 60–62)
 
-### TTS request chain
-browser → POST /api/tts (Worker) → POST /tts (server.py:18789) → POST /api/generate (MOSS-TTS:18083) → WAV bytes back
-
-### Frontend TTS
-- src/utils/tts.js — singleton service, Web Audio API, voice pref in localStorage
-- Read button on: research answer display, case summary cards, AI Summary tab in case panel
-- Ambient triggers: welcome (first interaction/session), searching (query submit), complete/no_results/error (query result)
-- Voice toggle: Male/Female pills in Nav (no mute button)
-- MOSS-TTS must bind on `0.0.0.0` (not `127.0.0.1`) for agent-general container to reach it via Docker bridge gateway `172.19.0.1:18083`
-- systemd service file: `/etc/systemd/system/moss-tts.service` — `--host 0.0.0.0 --port 18083`
-- docker-compose.yml agent-general volumes: MOSS-TTS audio assets mounted at `/home/tom/ai-stack/MOSS-TTS-Nano/assets/audio`
-- server.py `/query` endpoint is dead code — nothing calls it; all retrieval goes through `/search`
-
-### TTS Architecture (session 59)
-
-Ambient clips (8 preset phrases × 2 voices) are served as static Cloudflare CDN assets from `/Voices/ambient/` and `/Voices/ambient_male/`. These are pre-recorded WAV files — no server involved.
-
-Live TTS (query responses read aloud) routes: Browser → Worker `/api/tts` → `nexus.arcanthyr.com/tts` → `server.py:18789/tts` → MOSS-TTS at `172.19.0.1:18083`. MOSS-TTS synthesis takes ~2m13s on CPU — to be replaced with OpenAI TTS API next session.
-
-Docker→host networking for MOSS-TTS: requires iptables ACCEPT rule on bridge interface `br-09b8cf509a2d` for port 18083. Rule persisted in `/etc/iptables/rules.v4`.
+MOSS-TTS-Nano fully removed from VPS (session 60). server.py `/tts` route and Worker `/api/tts` route retained as dormant-but-intact proxies to OpenAI TTS (`tts-1`, onyx/nova), should UI voice ever be re-enabled. UI voice toggle, speaker buttons, and ambient audio triggers stripped from arcanthyr-ui (sessions 61–62). `src/utils/tts.js` and `ReadButton.jsx` retained unmounted for future reactivation. Static MP3 preset approach (8 phrases × 2 voices) was designed session 62 then abandoned per userMemories. No active TTS work planned.
 
 
 ### server.py /search top_k cap

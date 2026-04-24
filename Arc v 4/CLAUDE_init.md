@@ -153,17 +153,18 @@ Upload (PDF/text)
 
 ---
 
-### Retrieval Pipeline (Triple-Pass Hybrid)
+### Retrieval Pipeline (sequential four-pass + BM25 interleave — frozen session 96)
 
-Triggered by `POST /api/legal/legal-query` → delegates to `server.py`:
+Triggered by `POST /api/legal/legal-query` → delegates to `server.py /search`:
 
-1. **Semantic pass** — Qdrant cosine similarity, threshold 0.45, collection `general-docs-v2`
-2. **BM25/FTS5 pass** — `secondary_sources_fts` FTS5 table for section/keyword hits
-3. **Case chunk pass** — second Qdrant query scoped to case chunks, threshold 0.35, up to 4 chunks
-4. **RRF merge** — Reciprocal Rank Fusion across all three passes
-5. **LLM synthesis** — Retrieved context sent to Qwen3 (Workers AI) for final answer
+1. **Pass 1** — Qdrant unfiltered cosine, threshold 0.45, SM penalty + leg whitelist, court hierarchy re-rank within 0.05 band
+2. **Pass 2** — case_chunks filtered to criminal/mixed, threshold 0.35, appended (cannot displace Pass 1)
+3. **Pass 3** — secondary_sources, threshold 0.25, appended
+4. **Pass 4** — authority_synthesis, gated by `should_fire_pass4`, threshold 0.50
+5. **BM25 interleave** — section refs + case-by-ref + novel case_chunks_fts hits
+6. **LLM synthesis** — Sol (Claude API) or V'ger (Workers AI Qwen3)
 
-Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/FullCourt (3) > Supreme (2) > Magistrates (1).
+Retrieval layer is frozen as of session 96. See CLAUDE.md `## RETRIEVAL LAYER — FROZEN` for re-opening conditions. Full architecture in CLAUDE_arch.md.
 
 ---
 
@@ -188,9 +189,9 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 - **Search endpoint**: expects field `query_text` (not `query`).
 - **Route/column verification**: Never construct commands with route paths or D1 column names inferred from context — ask CC to grep/read source first. Confirmed failure mode: /api/pipeline/requeue-merge (wrong), criminal column (does not exist).
 - **handleRequeueMerge citation scope**: citation parameter in requeue-merge body does NOT scope the requeue — target="remerge" always requeues full eligible corpus. Verify before firing.
-- **retrieval_baseline.sh**: 31 queries (Q1–Q31). KEY reads from `~/ai-stack/.env.secrets` with `cut -d= -f2-` (preserve trailing `=` in base64 key). Pre-RRF baseline at `~/retrieval_baseline_pre_rrf.txt` — do not overwrite. Always `unset KEY` before running if KEY was manually set in current shell. Confirmed working session 64 · current score 10/13/8 · full results at ~/retrieval_baseline_results_apr16.txt
-- **Stub detector (designed session 64, not yet built):** multi-signal gate — LENGTH(raw_text) < 300 chars AND (sentence count < 3 OR title-body token overlap > 0.6 OR truncation markers present) — any-of triggers quarantine · do not use length alone (false positives on dense short propositions) · quarantine target: quarantined_chunks D1 table + Qdrant filter flag, never hard delete
-- **Legislation whitelist (designed session 64, not yet built):** Core Criminal Acts exempt from SM_PENALTY — Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act · Adjacent Acts (Misuse of Drugs, Police Offences, Road Safety, Firearms, Family Violence) penalised 0.65–0.75 · keyword bridge per query for adjacent Act exemption
+- **retrieval_baseline.sh**: 31 queries (Q1–Q31). KEY reads from `~/ai-stack/.env.secrets` with `cut -d= -f2-` (preserve trailing `=` in base64 key). Pre-RRF baseline at `~/retrieval_baseline_pre_rrf.txt` — do not overwrite. Always `unset KEY` before running if KEY was manually set in current shell. Confirmed working session 64 · current score 28P/3Pa/0M on 31-query benchmark (frozen session 96) · always use timestamped snapshots under ~/retrieval_baseline_*.txt — the generic results.txt is stale
+- **Stub detector (designed session 64, LIVE):** 253 rows in quarantined_chunks D1 table · Qdrant filter flag active on all four retrieval passes (deployed sessions 71–73) · multi-signal gate — LENGTH(raw_text) < 300 chars AND (sentence count < 3 OR title-body token overlap > 0.6 OR truncation markers present) — any-of triggers quarantine · do not use length alone (false positives on dense short propositions)
+- **Legislation whitelist (designed session 64, LIVE):** LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge active on Pass 1 · Core Criminal Acts exempt from SM_PENALTY — Evidence Act, Criminal Code, Sentencing Act, Bail Act, Justices Act, CJ(MI)A, Criminal Law (Detention and Interrogation) Act · Adjacent Acts (Misuse of Drugs, Police Offences, Road Safety, Firearms, Family Violence) penalised 0.65–0.75 · keyword bridge per query for adjacent Act exemption
 - **xref_agent cron**: VPS crontab (tom user) — `0 3 * * *` daily — logs to `~/ai-stack/xref_agent.log` — runs `--mode both` across criminal/mixed cases only · check logs: `tail -50 ~/ai-stack/xref_agent.log`
 - **sentencing_status column**: Added session 57 — use `WHERE sentencing_status='failed'` for precise sentencing retry targeting · 'not_sentencing' replaces old NOT_SENTENCING sentinel strings in procedure_notes
 
@@ -208,7 +209,7 @@ Court hierarchy re-ranks when semantic scores are within 0.05: HCA (4) > CCA/Ful
 
 ### Enrichment Poller
 
-Runs as permanent Docker service (`restart: unless-stopped`) — no tmux needed. Embeds from `enriched_text` when present, falls back to `chunk_text`. After any secondary_sources ingest, manually set `enriched=1` via wrangler d1 — new rows land with `enriched=0` and the poller won't process them until updated.
+Runs as permanent Docker service (`restart: unless-stopped`) — no tmux needed. Embeds from `enriched_text` when present, falls back to `chunk_text`.
 
 ### docker compose restart vs force-recreate — KEY RULE
 `docker compose restart` stops and restarts the same container instance — the environment baked in at container creation time stays frozen. After any key rotation or env_file change (`NEXUS_SECRET_KEY` or other secrets), always use:
@@ -246,13 +247,9 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 | Sentencing backfill route | `POST /api/admin/backfill-sentencing` (X-Nexus-Key) — direct-write sentencing pass, limit 1–30 per call. Accepts optional `body.citations` array for targeted runs (session 55). SENTENCING_SYNTHESIS_PROMPT revised and validated session 55 — classification 6/6, fabrication 0. Safe to fire. |
 | scraper_progress.json | 8 stale entries cleared session 54. Safe to re-scrape already-ingested citations — INSERT OR IGNORE skips silently. |
 
-### TTS — session 60
-- MOSS-TTS fully replaced with OpenAI TTS API in server.py session 60
-- Route calls `https://api.openai.com/v1/audio/speech`, model `tts-1`, onyx (male) / nova (female)
-- Static MP3 replacement in progress next session — /tts route will be removed from server.py and Worker
-- 8 phrases being pre-generated: welcome, searching, processing, complete, error, no_results, uploading, uploaded
-- Files will live in `Arc v 4/public/Voices/` served from Cloudflare CDN
-- OPENAI_API_KEY confirmed in `~/ai-stack/.env.secrets`, injected into agent-general via env_file
+### TTS — current state (sessions 60–62)
+
+MOSS-TTS fully removed from VPS. server.py `/tts` and Worker `/api/tts` retained as dormant-but-intact OpenAI TTS (`tts-1`) proxies. UI voice controls stripped (sessions 61–62). Static MP3 preset approach abandoned. No active TTS work planned. See CLAUDE_arch.md `### TTS — current state` for details.
 
 ---
 
