@@ -1,6 +1,17 @@
-# CLAUDE Changelog — Sessions 21–93
+# CLAUDE Changelog — Sessions 21–94
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
+
+---
+
+## CHANGES THIS SESSION (session 94) — 23 April 2026
+
+- **Court payload backfill complete — corpus-wide** — 1,914 citations / 26,157 case_chunk points patched via new `patch_court_payload.py` (dry-run, --revert, --citation-filter flags). Source of truth: cases.court in D1. Idempotent `set_payload` with citation+type filter, zero re-embed. Post-patch audit: 0 null remaining. Pre/post baseline captured; Q9 TASCCA re-rank confirmed live (TASCCA 19 promoted from #3 to #1 within 0.05 cosine band). Zero regressions. Revert path: `patch_court_payload.py --revert`.
+- **VPS retrieval recall diagnostic complete** — `diagnose_retrieval.py` probed Q5 Lambert 18 and Q2 Dunning 10 / Dunne 3. Findings: original practitioner query misses top-200 on all three targets; retrieval depends on LLM variant draws that succeed 1-in-3 runs. Lambert 18 best rank 9 (variant 2 only), Dunning 10 best rank 15 (outside limit=12 cap), Dunne 3 best rank 12 (borderline). Variant generator (GPT-4o-mini, default temp, no seed) is the structural amplifier of S92/S93 variance previously misattributed to ANN jitter.
+- **Q9 chunk rewritten — manual-b3603-chunk** — Full raw_text replacement (dual-header → single-header format) citing Dunning v Tasmania [2018] TASCCA 21 and DPP v Dunne [2021] TASCCA 5 as controlling 20% TASCCA quantum authorities, with Markarian v The Queen [2005] HCA 25 as HCA underpinning. CONCEPTS expanded with 20%/20 percent/20 per cent triple + authority names. Embedded, retrievable at 0.4268 via Pass 3; quota-bound ceiling acknowledged (loses quota slot to "Correcting Sentence - Overview" at 0.5908).
+- **strip_frontmatter bracket-tag watch item surfaced** — manual-b3603-chunk scoring 0.4268 on vocabulary-perfect content suggests `build_secondary_embedding_text()` may not strip `[KEY:]` bracket-tag headers, diluting embed signal by ~20-25% across 1,448 secondary source chunks. Cheap verification next session: grep the function.
+- **D1 cases.court corrected for 9 TASMC 2016 cases** — `[2016] TASMC 1` through `[2016] TASMC 9` had `court='supreme'` stored by scraper; citation-string derivation was authoritative; updated to `court='magistrates'` via D1. Qdrant payload already correct from patch (used script-derived value).
+- **S92/S93 variance re-classified** — previously "ANN jitter"; now confirmed variant-draw jitter. KNOWN ISSUES entry updated.
 
 ---
 

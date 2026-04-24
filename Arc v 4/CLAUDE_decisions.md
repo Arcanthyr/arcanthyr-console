@@ -4060,4 +4060,8 @@ manual-b3603-chunk contains the exact practitioner query terms in both CONCEPTS 
 
 **[2026-04-24]** *MCP D1 PRAGMA truncation — diagnostic workflow change*
 
+## Session 97 decisions — 24 April 2026
+
+- **V'ger `${principles}` omission scoped out** — the V'ger context serialisation block also omits the `${principles}` append that Sol includes. Discovered during session 97 fix. Deliberately left out of scope to keep session 97 a single-line targeted change with isolated regression attribution. Documented in KNOWN ISSUES; treat as a separate future session task.
+
 > The Cloudflare Developer Platform MCP `d1_database_query` tool silently truncated PRAGMA output at cid 17 on the 18-column `query_log` table, which masked a pre-existing `sufficient` column at cid 18. Concrete risk: schema-existence checks that rely on PRAGMA will silently miss late-cid columns and propose redundant ALTERs (which may or may not error depending on the specific collision). New standard: use `SELECT <col> FROM <table> LIMIT 0` for single-column existence checks on any table wider than ~15 columns; reserve PRAGMA for narrow tables or where the output can be visually confirmed to include the expected cid range.

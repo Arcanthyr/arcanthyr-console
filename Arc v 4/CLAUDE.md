@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 24 April 2026 (end of session 96) · Supersedes all prior versions
+Updated: 24 April 2026 (end of session 97) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–93) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–94) — load conditionally
 
 ---
 
@@ -64,12 +64,12 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ## OUTSTANDING PRIORITIES
 
-1. **V'ger [LEGISLATION] label fix (edit E from s93 plan)** — V'ger context serialisation omits the [LEGISLATION] label (worker.js ~L2880 does not check for legislation type); affects section-query responses via V'ger toggle. Sol correctly tags legislation chunks; V'ger drift is functional. Scoped as separate-session task to isolate regression attribution.
-
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
+- **V'ger context serialisation missing `${principles}` append** — Sol appends a "Key principles:" line to case and legislation chunks in context; V'ger block (~L2881) omits it. Legislation chunks retrieved via V'ger lack the principles line even after the session 97 label fix. Pre-existing asymmetry, scoped out of session 97. Future session item.
+- **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
 - **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · monitor as new chunks are ingested — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
@@ -218,17 +218,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## CHANGES THIS SESSION (session 94) — 23 April 2026
-
-- **Court payload backfill complete — corpus-wide** — 1,914 citations / 26,157 case_chunk points patched via new `patch_court_payload.py` (dry-run, --revert, --citation-filter flags). Source of truth: cases.court in D1. Idempotent `set_payload` with citation+type filter, zero re-embed. Post-patch audit: 0 null remaining. Pre/post baseline captured; Q9 TASCCA re-rank confirmed live (TASCCA 19 promoted from #3 to #1 within 0.05 cosine band). Zero regressions. Revert path: `patch_court_payload.py --revert`.
-- **VPS retrieval recall diagnostic complete** — `diagnose_retrieval.py` probed Q5 Lambert 18 and Q2 Dunning 10 / Dunne 3. Findings: original practitioner query misses top-200 on all three targets; retrieval depends on LLM variant draws that succeed 1-in-3 runs. Lambert 18 best rank 9 (variant 2 only), Dunning 10 best rank 15 (outside limit=12 cap), Dunne 3 best rank 12 (borderline). Variant generator (GPT-4o-mini, default temp, no seed) is the structural amplifier of S92/S93 variance previously misattributed to ANN jitter.
-- **Q9 chunk rewritten — manual-b3603-chunk** — Full raw_text replacement (dual-header → single-header format) citing Dunning v Tasmania [2018] TASCCA 21 and DPP v Dunne [2021] TASCCA 5 as controlling 20% TASCCA quantum authorities, with Markarian v The Queen [2005] HCA 25 as HCA underpinning. CONCEPTS expanded with 20%/20 percent/20 per cent triple + authority names. Embedded, retrievable at 0.4268 via Pass 3; quota-bound ceiling acknowledged (loses quota slot to "Correcting Sentence - Overview" at 0.5908).
-- **strip_frontmatter bracket-tag watch item surfaced** — manual-b3603-chunk scoring 0.4268 on vocabulary-perfect content suggests `build_secondary_embedding_text()` may not strip `[KEY:]` bracket-tag headers, diluting embed signal by ~20-25% across 1,448 secondary source chunks. Cheap verification next session: grep the function.
-- **D1 cases.court corrected for 9 TASMC 2016 cases** — `[2016] TASMC 1` through `[2016] TASMC 9` had `court='supreme'` stored by scraper; citation-string derivation was authoritative; updated to `court='magistrates'` via D1. Qdrant payload already correct from patch (used script-derived value).
-- **S92/S93 variance re-classified** — previously "ANN jitter"; now confirmed variant-draw jitter. KNOWN ISSUES entry updated.
-
----
-
 ## CHANGES THIS SESSION (session 95) — 24 April 2026
 
 - **Variant stabilisation paused mid-deployment — strategic review initiated** — Session opened on handover to implement LLM variant-draw stabilisation. CC Brief 2 drafted with full deploy plan (temp=0, seed=42, 6 variants 2-per-type, Step 0 pre-fix capture, Step 4 determinism gate, Step 5 P/Pa/M grading). Step 0 ran and captured pre-fix variance envelope. Before Step 1 gate, Tom raised over-optimisation concern: baseline stable at 28P/3Pa/0M across ~15 sessions of retrieval tuning, no concrete user-experienced failures, pattern of each fix surfacing next issue. Claude acknowledged having bundled determinism (methodology) with over-generation (quality) and sold the bundle on its weakest component. Work paused pending strategic decision on whether to continue retrieval tuning at all.
@@ -254,6 +243,15 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **MCP D1 `PRAGMA table_info` truncation — documented** — Cloudflare Developer Platform MCP `d1_database_query` silently truncates PRAGMA output on wide tables (returned cid 0–17 on `query_log`, masked pre-existing `sufficient` at cid 18; column origin unrecovered from Claude.ai conversation history, zero non-null values corpus-wide so inert). Workaround: `SELECT <col> FROM <table> LIMIT 0` for schema-existence checks on wide tables; reserve PRAGMA for narrow tables. Added to KNOWN ISSUES.
 
 - **Three commits landed; push deferred** — `861579c` (docs + schema + worker + UI), `1e85e72` (Windows case-mismatch fix on Worker.js git record — Cloudflare deployment was already correct), `97af7cd` (KNOWN ISSUES: MCP PRAGMA truncation). All staged for push together.
+
+---
+
+## CHANGES THIS SESSION (session 97) — 24 April 2026
+
+- **V'ger [LEGISLATION] label — fixed** — added missing `c.type === 'legislation' ? '[LEGISLATION]'` branch to V'ger context serialisation ternary (~L2881 worker.js); legislation chunks no longer fall through to `[ANNOTATION]`; four-branch pattern now matches Sol exactly
+- **Deployed** — worker version d79a2e23
+- **V'ger `${principles}` omission — documented** — discovered during fix: Sol appends key principles line, V'ger block does not; added to KNOWN ISSUES for future session
+- **`node --check` brief hygiene** — planning assistant re-introduced retired command in CC brief; failure mode documented in KNOWN ISSUES
 
 ---
 
