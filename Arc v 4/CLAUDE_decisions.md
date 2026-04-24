@@ -4064,4 +4064,20 @@ manual-b3603-chunk contains the exact practitioner query terms in both CONCEPTS 
 
 - **V'ger `${principles}` omission scoped out** — the V'ger context serialisation block also omits the `${principles}` append that Sol includes. Discovered during session 97 fix. Deliberately left out of scope to keep session 97 a single-line targeted change with isolated regression attribution. Documented in KNOWN ISSUES; treat as a separate future session task.
 
+## Session 98 decisions — 24 April 2026
+
+- **`handleRequeueMerge` citation scoping — confirmed already fixed, never in MDs.** Live code inspection revealed `body.citations` array path and `body.citation` single-citation path both present inside `target="remerge"` branch. The item in userMemories was stale. Removed from deferred list with no action required.
+
+- **Stage 3 legislation embed roadmap item removed.** SYSTEM STATE confirms all 8 Acts at `embedded=1`. Roadmap entry "verify complete" was stale; removed.
+
+- **Q14 retrieval diagnostic roadmap item removed.** Confirmed semantic ceiling per sessions 91–96 and present in KNOWN ISSUES as such. Roadmap entry framed it as an open diagnostic, which was stale. Removed. KNOWN ISSUES entry retained as the canonical record.
+
+- **V'ger `${principles}` fix shipped.** Scoped out of session 97 on isolation grounds (keep that deploy to a single-line change). Delivered session 98 as its own targeted change. KNOWN ISSUES entry deleted.
+
+- **Word artifact cleanup: 411/1,444 rows.** `gen_cleanup_sql.py` written as reusable tool rather than another one-off script. Key implementation note: `subprocess.run` on Windows requires `encoding='utf-8', errors='replace'` when capturing wrangler stdout — Windows default cp1252 silently fails on non-ASCII D1 content, surfacing as `TypeError: JSON object must be str, not NoneType` rather than a UnicodeDecodeError.
+
+- **RTF + auto-populate shipped.** Both were partially pre-implemented in `Upload.jsx` from prior sessions — RTF accept/handleDrop branches and citation/court extraction existed. Only `stripRtf` body and `caseName` were missing. Roadmap entries referenced `app.js` as target file, which does not exist; actual file is `arcanthyr-ui/src/pages/Upload.jsx`. Both roadmap entries removed on completion.
+
+- **`.gitattributes` already comprehensive.** Session brief assumed absent; file existed with five rules covering `.js`, `.jsx`, `.py`, `.md`, `.json` all `eol=lf` plus `text=auto`. No action needed.
+
 > The Cloudflare Developer Platform MCP `d1_database_query` tool silently truncated PRAGMA output at cid 17 on the 18-column `query_log` table, which masked a pre-existing `sufficient` column at cid 18. Concrete risk: schema-existence checks that rely on PRAGMA will silently miss late-cid columns and propose redundant ALTERs (which may or may not error depending on the specific collision). New standard: use `SELECT <col> FROM <table> LIMIT 0` for single-column existence checks on any table wider than ~15 columns; reserve PRAGMA for narrow tables or where the output can be visually confirmed to include the expected cid range.

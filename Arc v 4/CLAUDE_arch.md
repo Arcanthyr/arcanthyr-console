@@ -642,6 +642,12 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `handleLegalQuery()` | Claude API (claude-sonnet-4-6) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
+### Sol vs V'ger context block discriminator
+
+- Sol synthesis path: `handleLegalQuery` — context built from `chunks.map(...)` (L~2633)
+- V'ger synthesis path: `handleLegalQueryWorkersAI` — context built from `orderedChunks.map(...)` (L~2878)
+- To locate either block in worker.js, grep for `chunks.map` (Sol) or `orderedChunks.map` (V'ger) — label strings like `[CASE EXCERPT]` and `[ANNOTATION]` appear in both blocks and are not reliable discriminators.
+
 ### Sentencing Second Pass (session 31, updated session 47)
 
 - Constant: `SENTENCING_SYNTHESIS_PROMPT` — module level in worker.js
@@ -852,7 +858,6 @@ Source title uses chunk heading (not filename stem).
 
 *Canonical location for all roadmap items. CLAUDE.md carries only OUTSTANDING PRIORITIES (current sprint). This section is reconciled at session close — completed items removed, new items added.*
 
-- **Stage 3 legislation embed — verify complete** — Sentencing Act (147), Youth Justice Act (216), Justices Rules (96) embed initiated session 90. Confirm `SELECT title, embedded FROM legislation` shows all three at embedded=1 before next session. No baseline re-run needed (zero prior Qdrant presence).
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
 - **Retrieval regression fixes (session 64 — remaining steps deferred):**
   - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
@@ -871,10 +876,7 @@ Source title uses chunk heading (not filename stem).
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **Procedural sequence assembly** — given a query like "how do I handle a hostile witness" or "what do I do at a bail application", an agent retrieves all relevant procedure, script, doctrine, and checklist chunks then sequences them into a step-by-step response rather than returning them as parallel flat results. Requires a dedicated "sequence assembly" prompt layer after retrieval, before Qwen3 synthesis. Highest value for procedural queries where order matters. Build after retrieval quality is stable.
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
-- **Auto-populate citation and case name from uploaded file** — when a file is dropped or selected in the upload UI, scan the first 1,000 characters for AustLII citation pattern (`[YYYY] TASSC/TASMC/TASCCA/TASFC N`) and case name pattern (R v Name, DPP v Name, X v Y). Auto-fill the citation and case name fields; derive and set the court dropdown from the court code. Frontend-only change in `app.js` — no Worker or D1 changes needed. Reduces manual entry errors on upload.
-- **RTF support on upload** — add `.rtf` to the upload form's accept list in the Secondary Sources tab. Add an RTF text stripper in `app.js` (strip RTF control words and markup, extract plain text) before passing to the existing upload pipeline. Frontend-only change. Low effort, occasionally useful for older legal documents exported from Word as RTF.
 - **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
-- **Q14 retrieval diagnostic** — s 37 EA legislation chunk exists in corpus but not surfacing in top 3 for "leading questions examination in chief". Check anchor, SM penalty, top-12 position, and whether a doctrinal leading-questions practice chunk should be authored.
 - **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in Library.jsx, AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑"). Track 2 (remote MCP at auslaw.arcanthyr.com) deferred — auslaw-mcp in CC covers 90% of use case.
 - **Hansard search widget (Amendment Panel)** — Add "Search Hansard ↗" button per amendment row linking to search.parliament.tas.gov.au with bill name pre-filled. Pure frontend, no backend changes. Blocked on confirming Funnelback URL parameter format via manual test. Design: open search.parliament.tas.gov.au, submit a bill name query, copy the resulting URL and extract the parameter structure.
 

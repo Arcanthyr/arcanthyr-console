@@ -326,6 +326,10 @@ result = subprocess.run(cmd, capture_output=True, text=True, cwd=str(WRANGLER_DI
 
 Escape SQL double-quotes first: `sql_escaped = sql.replace('"', '\\"')`. Do NOT use list-form + `shell=True` — the list form mis-parses quoted SQL arguments on Windows cmd.
 
+### subprocess.run wrangler stdout encoding — Windows (session 98)
+
+Always pass `encoding='utf-8', errors='replace'` to any `subprocess.run` that captures wrangler or npx stdout on Windows. Non-ASCII D1 content (Word artifacts, curly quotes, em dashes) is the norm once Word-derived corpus chunks are present. Without it, `result.stdout` is `None` and the error surfaces as `TypeError: JSON object must be str, not NoneType` — not a UnicodeDecodeError, which makes the root cause non-obvious.
+
 ### source_type discriminator and SYNTHESIS_TYPES (session 78)
 
 The `SYNTHESIS_TYPES` set in `enrichment_poller.py` is the routing mechanism for non-standard Qdrant type values. When `secondary_sources.source_type` matches a value in the set, the Qdrant payload `type` field is set to that value instead of `'secondary_source'`.

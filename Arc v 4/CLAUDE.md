@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 24 April 2026 (end of session 97) · Supersedes all prior versions
+Updated: 24 April 2026 (end of session 98) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–94) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–95) — load conditionally
 
 ---
 
@@ -19,17 +19,17 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## SYSTEM STATE — 24 April 2026 (end of session 96)
+## SYSTEM STATE — 24 April 2026 (end of session 98)
 
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79; court payload backfilled session 94 across all 26,157 case_chunk points (1,914 citations) |
 | D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
-| D1 secondary_sources | 1,444 total (Q9 guilty plea discount chunk, Q26 unreasonable verdict chunk, Q14 s37 EA doctrine chunk added session 90) · embedded=0: 3 (nexus-save entries only — all corpus chunks embedded) |
+| D1 secondary_sources | 1,444 total · embedded=0: ~3 (nexus-save entries only — 411 Word-artifact rows cleaned session 98, embedded=0 reset for re-embed, poller clearing backlog) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT, flagged_by TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) |
-| Insufficient feedback button | LIVE — ↓ Insufficient button in Research page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note + optional flagged_by; server defaults flagged_by='admin') · Worker version 29687fe9 · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
+| Insufficient feedback button | LIVE — ↓ Insufficient button in Research page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note + optional flagged_by; server defaults flagged_by='admin') · Worker version 724c5da9 · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
 | Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
@@ -68,9 +68,8 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **V'ger context serialisation missing `${principles}` append** — Sol appends a "Key principles:" line to case and legislation chunks in context; V'ger block (~L2881) omits it. Legislation chunks retrieved via V'ger lack the principles line even after the session 97 label fix. Pre-existing asymmetry, scoped out of session 97. Future session item.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
-- **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · monitor as new chunks are ingested — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
+- **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · trigger: real-use failure showing unexpected domain contamination on a BRD-adjacent query (query_log.sufficient=0) — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
@@ -83,7 +82,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Scraper no per-case resume — known limitation** — progress file stores only `court_year: "done"`; mid-year failure restarts full year scrape. Harmless due to `INSERT OR IGNORE`. Per-case checkpointing not worth engineering effort at current stage.
 - **Pass 2 principles irrelevant / merge overwrite — acknowledged, no fix** — Qwen3 Pass 2 extracts case-level `principles_extracted` but CHUNK handler (GPT-4.1-mini) overwrites this field with chunk-level data; merge uses chunk-level output only; Pass 2 principles never surface to user. Not causing visible defect — merge works correctly off chunk data. No fix planned.
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
-- **/search top_k=12 server-side cap** — server.py line 296 hard-caps at 12 regardless of requested top_k. Cap retained for latency bounding. With query expansion live (4 fan-out queries), the merged Pass 1 pool is larger but still capped at top_k*2 per leg — monitor for cases where the cap is discarding strong results. Confirmed session 76: passing `"top_k": 12` in the request payload breaks the endpoint (returns 0 chunks) — the field is not accepted; omit it, default 6 is what the baseline script uses.
+- **/search top_k=12 server-side cap** — server.py line 296 hard-caps at 12 regardless of requested top_k. Cap retained for latency bounding. Confirmed session 76: passing `"top_k": 12` in the request payload breaks the endpoint (returns 0 chunks) — the field is not accepted; omit it, default 6 is what the baseline script uses.
 - **Q27 (provocation) confirmed as corpus content gap** — provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Authoring decision, not retrieval defect.
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
 - **Q14 semantic ceiling — known** — `manual-b4135-chunk` (s 37 EA leading questions doctrine) scores ~0.46 against "leading questions technique" query; case_chunks floor ~0.63–0.69. Vocabulary patch + anchor fix delivered (examination technique added to CONCEPTS, anchor=Yes confirmed). Gap is structural: "technique" query too broad, matched by examination/witness case_chunks. Chunk correctly authored and embedded. A practitioner querying "s 37 Evidence Act leading questions" retrieves it in top 3. Q14 passes on case chunks (Police v Endlay). Secondary source surfacing is a known ceiling, not a pipeline defect.
@@ -134,6 +133,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | server.py search field | Search endpoint expects `query_text` (not `query`) · "query_text is required" = wrong field name · endpoint: `POST localhost:18789/search` |
 | retrieval_baseline.sh | KEY auto-reads from `~/ai-stack/.env.secrets` using `cut -d= -f2-` (preserve trailing `=`) · results in ~/retrieval_baseline_results.txt · pre-RRF baseline at ~/retrieval_baseline_pre_rrf.txt — do not overwrite · 31 queries (Q1–Q31) · run after any retrieval architecture change before further work |
 | ingest_corpus.py | Lives at `arcanthyr-console\ingest_corpus.py` (NOT inside `Arc v 4/`) · INPUT_FILE hardcoded — change manually · PROCEDURE_ONLY=False for full corpus ingest · Block separator format MUST be `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` followed by `### Heading` then `[DOMAIN:]` on next line · Use Python (not PowerShell Out-File) to create corpus files — PowerShell BOM/encoding corrupts block separators · upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations |
+| Upload.jsx edits | Always read the full component before making changes — prior sessions may have partially implemented roadmap items (RTF branches, citation extraction, accept attrs). Partial pre-implementations are not documented in roadmap entries. |
 | ingest_part2.py | Lives at `arcanthyr-console\ingest_part2.py` — standalone copy of ingest_corpus.py with INPUT_FILE hardcoded to master_corpus_part2.md and PROCEDURE_ONLY=False |
 | FTS5 wipe before re-ingest | Before any corpus re-ingest run: `DELETE FROM secondary_sources_fts` via wrangler d1 — INSERT OR REPLACE fix deployed session 12 (version 2d3716de) so this should no longer be needed, but if 500 errors appear on upload-corpus, wipe FTS5 first |
 | Bash scripts on VPS | Large pastes truncate in SSH terminal — create files locally and SCP to VPS instead |
@@ -188,7 +188,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Third-party tool security audit | Before installing any MCP server, plugin, or skills repo: audit every non-markdown file via Fetch MCP for raw content · Check for undisclosed outbound connections, platform onboarding, or credential harvesting · Delete any .mcp.json found in cloned skill repos before use |
 | arcanthyr-ui git repo | `arcanthyr-ui` is part of the monorepo — tracked under `arcanthyr-console/arcanthyr-ui/` · no separate GitHub repo · git root is `arcanthyr-console/`, not `arcanthyr-ui/` · migrated session 35 (was briefly a separate repo, absorbed into monorepo same session) |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
-| arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ |
+| arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ · Do NOT `git add public/assets/` — build assets under public/assets/ are gitignored; only public/index.html and source files need staging |
 | Model toggle names | Sol = Claude API (claude-sonnet) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
 | JWT secret | worker.js uses `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY` · no separate JWT_SECRET set in Wrangler — NEXUS_SECRET_KEY is signing key |
 | worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
@@ -218,18 +218,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## CHANGES THIS SESSION (session 95) — 24 April 2026
-
-- **Variant stabilisation paused mid-deployment — strategic review initiated** — Session opened on handover to implement LLM variant-draw stabilisation. CC Brief 2 drafted with full deploy plan (temp=0, seed=42, 6 variants 2-per-type, Step 0 pre-fix capture, Step 4 determinism gate, Step 5 P/Pa/M grading). Step 0 ran and captured pre-fix variance envelope. Before Step 1 gate, Tom raised over-optimisation concern: baseline stable at 28P/3Pa/0M across ~15 sessions of retrieval tuning, no concrete user-experienced failures, pattern of each fix surfacing next issue. Claude acknowledged having bundled determinism (methodology) with over-generation (quality) and sold the bundle on its weakest component. Work paused pending strategic decision on whether to continue retrieval tuning at all.
-- **strip_frontmatter bracket-tag hypothesis CONFIRMED + scope reframed** — CC Brief 1 diagnostic confirmed `strip_frontmatter()` has two narrow substitutions (YAML `---` fence; `[concepts:]`/`Concepts:` as literal first line). Bracket tags after `### Heading` pass through to embedder verbatim. D1 MCP telemetry reframed scope: 1,055 of 1,444 chunks (73%) already handled correctly by existing Case 2; 270 chunks (19%) are the bug cohort; 1 YAML-fence chunk is effectively dead code. `[KEY:]` tag does not exist in corpus. Fix reduced from "corpus-wide lever" to "targeted 270-chunk cleanup." Deferred pending Priority 1 strategic review outcome. Corrected regex prepared: `^\[[A-Z_]+:[^\n]*\]\s*$` with `re.MULTILINE` (handles nested brackets in CASE citations).
-- **Pre-fix variance envelope captured** — 2 additional baseline runs at current state (`~/retrieval_baseline_pre_variant_stab_run1.txt` and `run2.txt` on VPS), combined with session 94 post-court-backfill snapshot, total 3 samples of current-state variance. 31/31 queries show top-1 citation drift between runs. Despite the citation churn, P/Pa/M grade is stable at 28P/3Pa/0M across all 3 samples. System is robust at user-facing grade level while noisy at internal ordering level. Raises meta-question for Priority 1: is the 31/31 drift actually a problem worth fixing?
-- **Three-model outside-view methodology designed** — Seeking-advice prompt drafted evaluating 5 options (variant stabilisation / legal-vocab dictionary / cross-encoder reranker / embedding upgrade / stop retrieval tuning). Sent to Opus (self), GPT-5, third model. Evaluator prompt drafted for fresh Claude instance next session with explicit bias mitigations: anonymised reports (labels randomised), NO project MDs provided to evaluator, Tom writes own preliminary synthesis before uploading, optional cross-validation via non-Claude evaluator. Key instruction to evaluator: weight option 5 (stop) as legitimately as technical options, and flag any report that evades the over-optimisation question.
-- **Opus/Claude.ai bias on self-evaluation surfaced** — Explicit acknowledgement that a fresh Claude instance evaluating 3 reports (one Claude-authored) carries measurable self-preference risk from shared reasoning patterns and structural parsing. Mitigation stack adopted: anonymisation + no-project-context + own-synthesis-first + (optional) cross-model evaluator run. Project MDs deliberately WITHHELD from evaluator to avoid re-injecting the same framing that may be driving the over-optimisation pattern.
-- **Baseline measurement methodology gap acknowledged** — Single-run baseline snapshots inadequate given 31/31 top-1 drift between runs. Session 94's post-court-backfill snapshot is one draw from a wider distribution, not a fixed reference point. Future retrieval A/B work requires minimum 3 runs per state + grading variance across runs, not just mean. Deferred full protocol design to strategic review outcome.
-- **No code changes deployed this session** — Variant stabilisation NOT deployed despite CC Brief 2 being complete. strip_frontmatter fix NOT deployed despite hypothesis confirmed. D1/Qdrant/server.py/worker.js unchanged. VPS files unchanged except 2 new baseline snapshot files in `~/`. System state effectively identical to end of session 94 apart from diagnostic data captured.
-
----
-
 ## CHANGES THIS SESSION (session 96) — 24 April 2026
 
 - **Retrieval layer FROZEN — Option 5 outcome** — Tom synthesised three-evaluator outside-view review (initiated s95) into Option 5 (stop) with Option 2 (legal-vocab dictionary) pre-committed as the specific response if vocabulary/abbreviation-class failures cluster in real use. Re-opening gated on named real-use trigger (D1 `query_log.sufficient=0`), not internal signals. Four-week observation minimum. New `## RETRIEVAL LAYER — FROZEN (24 April 2026)` block inserted at top of CLAUDE.md above SYSTEM STATE. Rationale: 31-query binary-graded eval has ≈±15pp resolution at 95% CI; ~15 sessions of tuning ran below that floor, producing hallucinated feedback. Full reasoning in CLAUDE_decisions.md.
@@ -252,6 +240,17 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Deployed** — worker version d79a2e23
 - **V'ger `${principles}` omission — documented** — discovered during fix: Sol appends key principles line, V'ger block does not; added to KNOWN ISSUES for future session
 - **`node --check` brief hygiene** — planning assistant re-introduced retired command in CC brief; failure mode documented in KNOWN ISSUES
+
+---
+
+## CHANGES THIS SESSION (session 98) — 24 April 2026
+
+- **V'ger `${principles}` parity with Sol — deployed** — `handleLegalQueryWorkersAI` `orderedChunks.map` now builds and appends `Key principles:` line to context chunks, matching Sol's `chunks.map` pattern exactly. Worker `724c5da9`, commit `66ffa55`.
+- **Word artifact cleanup — 411 rows cleaned** — New `gen_cleanup_sql.py` script scans `secondary_sources.raw_text` for Word formatting artifacts (curly quotes, em/en dashes, ellipsis, NBSP, soft hyphen, BOM) and generates UPDATE SQL. 411 of 1,444 rows cleaned; `embedded=0` reset for poller re-embed. Script committed with UTF-8 subprocess fix; `cleanup.sql` gitignored. Commits `2f07d2d`, `7434ecd`.
+- **RTF upload support** — `arcanthyr-ui/src/Upload.jsx` updated with spec'd `stripRtf` implementation; `.rtf` added to file input accept list. Commit `9f6351e`.
+- **Auto-populate citation/case name on upload** — `CasesTab.onDrop` now extracts citation and case name from first 1,000 chars of dropped file; staged items redesigned to two-row layout (filename/OCR/× on row 1; editable case name/citation/court fields on row 2). UI deployed `57929a49`. Commit `9f6351e`.
+- **Deferred list audit** — Full reconciliation pass across all deferred/frozen/roadmap items. `handleRequeueMerge` citation scoping confirmed already fixed in live code — removed from list. Stage 3 legislation embed and Q14 retrieval diagnostic confirmed stale; removed from FUTURE ROADMAP. `/search top_k=12` watch framing removed (documented constraint, not a monitored issue). CONCEPTS contamination watch reframed to passive real-use trigger.
+- **`gen_cleanup_sql.py` gap closed** — Script was referenced in MDs as runnable but had never been committed. Now committed and verified working.
 
 ---
 
