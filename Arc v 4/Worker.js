@@ -2333,6 +2333,36 @@ async function handleAmendments(url, env) {
   }
 }
 
+async function handleParliamentBillUrl(url) {
+  const year       = (url.searchParams.get('year')       || '').trim();
+  const billNumber = (url.searchParams.get('billNumber') || '').trim();
+
+  if (!/^\d{4}$/.test(year) || !/^\d+$/.test(billNumber)) return { url: null };
+
+  const num = parseInt(billNumber, 10);
+  try {
+    const indexRes = await fetch(`https://www.parliament.tas.gov.au/bills/bills${year}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Arcanthyr/1.0)' },
+    });
+    if (!indexRes.ok) return { url: null };
+    const html = await indexRes.text();
+
+    const hrefRegex = new RegExp(`href="(/bills/bills${year}/[^"]*-${num}-of-${year}[^"]*)"`, 'i');
+    const m = html.match(hrefRegex);
+    if (m) return { url: `https://www.parliament.tas.gov.au${m[1]}` };
+
+    const textRegex = new RegExp(
+      `href="(/bills/bills${year}/[^"]+)"[^>]*>[\\s\\S]{0,200}?\\((?:Bill\\s*)?${num}\\s+of\\s+${year}\\)`, 'i'
+    );
+    const m2 = html.match(textRegex);
+    if (m2) return { url: `https://www.parliament.tas.gov.au${m2[1]}` };
+
+    return { url: null };
+  } catch {
+    return { url: null };
+  }
+}
+
 async function handleResolveAct(url, env) {
   const rawName = (url.searchParams.get('name') || '').trim();
   if (!rawName) return { ok: false, error: 'name parameter required' };
@@ -4307,6 +4337,7 @@ export default {
         else if (action === "austlii-word-search" && request.method === "GET") result = await handleAustLIIWordSearch(url, env);
         else if (action === "fetch-judgment" && request.method === "GET") result = await handleFetchJudgment(url, env);
         else if (action === "amendments" && request.method === "GET") result = await handleAmendments(url, env);
+        else if (action === "parliament-bill-url" && request.method === "GET") result = await handleParliamentBillUrl(url);
         else if (action === "resolve-act" && request.method === "GET") result = await handleResolveAct(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
         else if (action === "mark-insufficient" && request.method === "POST") {
