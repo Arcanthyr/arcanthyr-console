@@ -4037,3 +4037,27 @@ manual-b3603-chunk contains the exact practitioner query terms in both CONCEPTS 
 - **Baseline measurement methodology gap formalised.** Single-run baseline snapshots inadequate for A/B comparison given 31/31 top-1 citation drift between runs. Future retrieval A/B work requires minimum 3 runs per state, with variance captured alongside mean. Session 94's post-court-backfill snapshot is a single draw from a wider distribution and should not be treated as a fixed reference. Implemented retroactively this session via 2 additional pre-fix runs on VPS.
 
 - **Grade-level robustness becomes a first-class observation.** 31/31 top-1 drift across 3 runs produced a stable 28P/3Pa/0M grade in all 3 samples. System is robust at the user-facing grade level while noisy at internal retrieval ordering. Raises the meta-question — surfaced in the seeking-advice prompt — of whether the internal variance matters at all to real outcomes, or whether it's cosmetic churn that baseline grading correctly absorbs.
+
+## Session 96 decisions — 24 April 2026
+
+**[2026-04-24]** *Retrieval layer frozen — Option 5 selected over Options 1–4, Option 2 pre-committed as class-specific response*
+
+> The instrument (31-query binary-graded eval) has ≈±15pp resolution at 95% CI and cannot detect improvements below ~10pp of genuine movement. All four technical options (1: instrumentation, 2: vocab dictionary, 3: cross-encoder rerank, 4: embedding upgrade) require a resolving instrument to be worth running; only Option 5 (stop) doesn't require it. Option 2 pre-committed as approved response if real-use failures cluster on vocabulary/abbreviation-class — avoids re-litigation when the trigger fires. Rationale from Report B: the feedback loop driving ~15 sessions of tuning was running below the instrument's resolution floor — work felt like engineering but the instrument couldn't resolve the decisions being made.
+>
+> **Empirical vs prior-plausibility:** change made on prior-plausibility + statistical reasoning about instrument resolution — NOT empirical (by construction, since the instrument cannot produce empirical evidence of "stop is better"). Acceptable because the alternative (continue) also has no empirical support, and the cost of stopping is reversible on real-use trigger.
+
+**[2026-04-24]** *`flagged_by` column added now rather than post-hoc*
+
+> Built with multi-user auth in mind though there are no non-admin users yet. Server defaults `flagged_by='admin'` when no identity provided. Rationale: retrofitting user attribution after accumulating unattributed data produces unrecoverable nulls in the historical record. Better to eat the small complexity cost now. CRITICAL future note: when real user auth is wired up, `flagged_by` must be read from authenticated session state server-side, NOT from request body — currently the server accepts any body-supplied value, which is safe only while no non-admin users exist.
+
+**[2026-04-24]** *No auth on `POST /api/legal/mark-insufficient`*
+
+> Route sets one boolean + optional 500-char note on one D1 row. No corpus touch, no LLM call, no cost. Rate-limited at Cloudflare Worker level. Worst case: polluted feedback signal. Gating behind X-Nexus-Key would defeat the route's purpose (non-admin feedback capture). Different risk profile from `/api/legal/update-secondary-raw`, `/api/admin/requeue-*`, flag-synthesis — those touch corpus content or trigger LLM work and correctly require key auth.
+
+**[2026-04-24]** *No separate `query_log.md` vault file*
+
+> Original spec called for a markdown file logging real-use queries. Replaced with D1 `query_log` feedback columns + UI button. Markdown approach was a manual discipline tax — would have decayed within two weeks of practitioner use. Button approach: one click when answer is insufficient, zero work otherwise. Denominator (all queries) already captured automatically; the UI button captures only the failures. Trade-off: under-reports relative to a forced-entry log, but that's the right trade for a sole-operator tool. The button is really for future non-admin users whose failure-clicks will be better signal than Tom's anyway (practitioner-blind-spot).
+
+**[2026-04-24]** *MCP D1 PRAGMA truncation — diagnostic workflow change*
+
+> The Cloudflare Developer Platform MCP `d1_database_query` tool silently truncated PRAGMA output at cid 17 on the 18-column `query_log` table, which masked a pre-existing `sufficient` column at cid 18. Concrete risk: schema-existence checks that rely on PRAGMA will silently miss late-cid columns and propose redundant ALTERs (which may or may not error depending on the specific collision). New standard: use `SELECT <col> FROM <table> LIMIT 0` for single-column existence checks on any table wider than ~15 columns; reserve PRAGMA for narrow tables or where the output can be visually confirmed to include the expected cid range.

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 24 April 2026 (end of session 95). Upload every session alongside CLAUDE.md.*
+*Updated: 24 April 2026 (end of session 96). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -541,7 +541,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
 | `legislation_sections` | `id` TEXT | `leg_id`, `section_number`, `heading`, `text`, `embedded` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
-| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version` |
+| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char), `flagged_by` TEXT (200 char) · feedback system live session 96 (POST /api/legal/mark-insufficient route wired to Research page thumbs-down button) |
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
@@ -708,6 +708,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/legal/fetch-judgment` | GET | Fetch full AustLII judgment HTML · params: `url` (required, must be austlii.edu.au), `citation` (optional) · cache-first with 30-day TTL · CF-edge fetch with browser-mimicking headers · upserts to `austlii_cache` · returns `{ ok, html, source }` · session 86 |
 | `/api/legal/amendments` | GET | Fetch amendment timeline for a Tasmanian Act · param: `act=act-YYYY-NNN` · cache-first via `tbl_amendment_cache` (30-day TTL) · fetches CCL projectdata API on miss · returns full amendment history JSON · session 87 |
 | `/api/legal/resolve-act` | GET | Resolve Act name to CCL actId · param: `name=<Act title>` · writes `source_url` back to `legislation` table as side-effect on first resolution · used by AmendmentPanel.jsx as primary path when source_url not yet populated · session 87 |
+| `/api/legal/mark-insufficient` | POST | handleMarkInsufficient (inline handler in legal dispatch block, no auth, writes query_log.sufficient=0 with optional missing_note + flagged_by) |
 
 ### Query logging (session 65)
 

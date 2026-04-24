@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 24 April 2026 (end of session 95) · Supersedes all prior versions
+Updated: 24 April 2026 (end of session 96) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–92) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–93) — load conditionally
 
 ---
 
@@ -19,7 +19,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## SYSTEM STATE — 24 April 2026 (end of session 95)
+## SYSTEM STATE — 24 April 2026 (end of session 96)
 
 | Component | Status |
 |---|---|
@@ -28,7 +28,8 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) |
 | D1 secondary_sources | 1,448 total (Q9 guilty plea discount chunk, Q26 unreasonable verdict chunk, Q14 s37 EA doctrine chunk added session 90) · embedded=0: 3 (nexus-save entries only — all corpus chunks embedded) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
-| D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added |
+| D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT, flagged_by TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) |
+| Insufficient feedback button | LIVE — ↓ Insufficient button in Research page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note + optional flagged_by; server defaults flagged_by='admin') · Worker version 29687fe9 · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
 | Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
 | D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
@@ -63,13 +64,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ## OUTSTANDING PRIORITIES
 
-1. **Retrieval tuning strategic review — three-model outside view in progress** — Session 95 shifted focus mid-session from implementing variant stabilisation to a meta-question: is continued retrieval tuning justified given (a) stable 28P/3Pa/0M baseline across ~15 sessions of tuning work, (b) no concrete user-experienced failures, (c) "each fix surfaces the next issue" pattern, (d) 31/31 top-1 drift between runs but grade-level stability? Three-model triangulation initiated (Opus self, GPT-5, third model) via a seeking-advice prompt evaluating 5 options: variant stabilisation / legal-vocab dictionary / cross-encoder reranker / embedding upgrade / stop retrieval tuning entirely. Evaluator pass next session: fresh Claude instance with anonymised reports, NO project MDs provided to evaluator, Tom writes own synthesis before uploading. Decision blocks Priorities 2 and 3 below.
-
-2. **LLM variant-draw stabilisation (architectural) — DEFERRED pending Priority 1 outcome** — Session 94 diagnostic confirmed GPT-4.1-mini variant generator has no seeding; default temperature ~1.0 produces non-deterministic variants across calls. Session 95 captured pre-fix variance envelope (2 additional baseline runs on VPS): 31/31 queries show top-1 citation drift across runs, but P/Pa/M grade stable across all samples — confirmed system is robust at grade level while noisy internally. Recommended implementation if Priority 1 says proceed: temperature=0 + seed=42 + 6 variants (2 per type: statutory / practitioner-shorthand / doctrinal) + prompt refinement pushing practitioner paraphrases toward colloquial phrasings. CC Brief drafted but NOT deployed. Step 4 determinism gate via 3-curl diff before baseline grading. Escalation path if seed fails to hold: D1 query_variant cache keyed on sha256(normalised_query).
-
-3. **strip_frontmatter bracket-tag fix — CONFIRMED session 95, DEFERRED pending Priority 1 outcome** — CC diagnostic of `enrichment_poller.py` confirmed `strip_frontmatter()` has two narrow substitutions (YAML `---` fence; `[concepts:]` or `Concepts:` as literal first line). Bracket-tag lines after a `### Heading` pass through to embedder verbatim. D1 telemetry via MCP: 1,055 of 1,444 chunks (73%) are already handled correctly by Case 2 (concepts-as-first-line); 270 chunks (19%) have bracket tags after a heading and are affected; 1 YAML-fence chunk (dead code). Scope reduced from corpus-wide to targeted 270-chunk cleanup. Fix path: regex `^\[[A-Z_]+:[^\n]*\]\s*$` with `re.MULTILINE` (handles nested brackets in `[CASE: X [2018] TASCCA Y]` correctly) + D1 SQL reset of 270 rows + poller re-embed + Qdrant spot-check + manual-b3603-chunk score spot-check (prediction: 0.4268 → ~0.55+). Authority synthesis chunk format needs separate check before deploy — confirm whether they route through `build_secondary_embedding_text` or a separate embedding builder.
-
-4. **V'ger [LEGISLATION] label fix (edit E from s93 plan)** — V'ger context serialisation omits the [LEGISLATION] label (worker.js ~L2880 does not check for legislation type); affects section-query responses via V'ger toggle. Sol correctly tags legislation chunks; V'ger drift is functional. Scoped as separate-session task to isolate regression attribution.
+1. **V'ger [LEGISLATION] label fix (edit E from s93 plan)** — V'ger context serialisation omits the [LEGISLATION] label (worker.js ~L2880 does not check for legislation type); affects section-query responses via V'ger toggle. Sol correctly tags legislation chunks; V'ger drift is functional. Scoped as separate-session task to isolate regression attribution.
 
 ---
 
@@ -231,19 +226,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## CHANGES THIS SESSION (session 93) — 22 April 2026
-
-- **Synthesis prompt party name constraint deployed** — Sol citationRules block (worker.js L2663) gains new bullet: "Party names must match those in the source material. If a source contains a citation (e.g. [2020] TASMC 9) without party names, cite by citation alone — do not complete or infer party names from training knowledge." V'ger RULES block (worker.js L2905) gains matching numbered item 3 with existing items 3–5 renumbered to 4–6. Prophylactic against citation-without-parties fabrication. Worker `1debff12-f0b7-43fe-afa8-62bedf22d599`, commit `0138309`.
-- **Cyrillic typo fix in handleLegalQuery** — `answерNote` (Cyrillic `е` U+0435 at fourth character) renamed to Latin `answerNote` throughout handleLegalQuery. Zero post-edit occurrences of the Cyrillic form in worker.js. No runtime effect but removes a latent code smell.
-- **Synthesis prompt audit complete — three prompts reviewed verbatim** — performMerge (gpt-4.1-mini, merge-time, worker.js L3124–L3244), handleLegalQuery (claude-sonnet-4-6, query-time, L2585–L2744, three system-prompt variants A/B/C), handleLegalQueryWorkersAI (@cf/qwen/qwen3-30b-a3b-fp8, query-time, L2823–L2945, three variants). No instruction-density rewrites required — all three well-calibrated to their models. performMerge skipped on party-name edit (no pathway to fabricate; operates on case's own material). V'ger `[LEGISLATION]` label gap identified but deferred to separate session.
-- **"Police v FRS" diagnosis corrected** — Session 92 flagged as hallucination; D1 audit confirmed it's stored practitioner shorthand. `cases.case_name` = "Police v FRS" for [2020] TASMC 9 (formal parties "Rebecca Woodhouse and Simon Gerard Vout v FRS" in `parties` column), propagated into case_chunks and two authored secondary_sources. Option A confirmed — summary matters styled "Police v X" is standard Tasmanian practitioner reference. V'ger was retrieving faithfully, not fabricating. Constraint deployment reframed from bugfix to prophylactic.
-- **Q2 retrieval recall defect identified** — "sentencing guilty plea discount" spot-check returned only Cleaver [2018] TASCCA 11 in S93, missing Dunning [2018] TASCCA 21 chunk 10 (explicit 20% discount, Markarian citation) and Dunne [2021] TASCCA 5 chunk 3 (explicit 20% reduction). Both cases deep_enriched=1, all chunks embedded=1. S92 retrieved both cleanly. Promoted to outstanding priority.
-- **Q5 retrieval recall defect identified — persistent** — "right to silence direction jury" spot-check persistently missed Lambert and Stokes [2007] TASSC 76 across two consecutive runs in S93. Chunk 18 contains verbatim right-to-silence jury direction content; case has 49 chunks all embedded=1. S92 retrieved cleanly. Not ANN jitter — persistent miss. Promoted to outstanding priority.
-- **Q9 authoring debt exposed** — Session 90 authoring note on guilty plea discount chunk claimed "no confirmed TASCCA quantum authority"; session 93 D1 audit establishes Dunning [2018] TASCCA 21 and Dunne [2021] TASCCA 5 are both direct 20% quantum TASCCA authorities and were in D1 at time of authoring. Q9 chunk needs rewrite to cite them. Promoted to outstanding priority.
-- **Spot-checks confirmed no regression from patch** — 5 session-92 queries rerun via UI V'ger toggle: no principle repetition regression, no citation fabrication, no party names absent from source. Patch-attributable effects all clean; retrieval variance and Q2/Q5 recall issues all predate the patch.
-
----
-
 ## CHANGES THIS SESSION (session 94) — 23 April 2026
 
 - **Court payload backfill complete — corpus-wide** — 1,914 citations / 26,157 case_chunk points patched via new `patch_court_payload.py` (dry-run, --revert, --citation-filter flags). Source of truth: cases.court in D1. Idempotent `set_payload` with citation+type filter, zero re-embed. Post-patch audit: 0 null remaining. Pre/post baseline captured; Q9 TASCCA re-rank confirmed live (TASCCA 19 promoted from #3 to #1 within 0.05 cosine band). Zero regressions. Revert path: `patch_court_payload.py --revert`.
@@ -264,6 +246,22 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Opus/Claude.ai bias on self-evaluation surfaced** — Explicit acknowledgement that a fresh Claude instance evaluating 3 reports (one Claude-authored) carries measurable self-preference risk from shared reasoning patterns and structural parsing. Mitigation stack adopted: anonymisation + no-project-context + own-synthesis-first + (optional) cross-model evaluator run. Project MDs deliberately WITHHELD from evaluator to avoid re-injecting the same framing that may be driving the over-optimisation pattern.
 - **Baseline measurement methodology gap acknowledged** — Single-run baseline snapshots inadequate given 31/31 top-1 drift between runs. Session 94's post-court-backfill snapshot is one draw from a wider distribution, not a fixed reference point. Future retrieval A/B work requires minimum 3 runs per state + grading variance across runs, not just mean. Deferred full protocol design to strategic review outcome.
 - **No code changes deployed this session** — Variant stabilisation NOT deployed despite CC Brief 2 being complete. strip_frontmatter fix NOT deployed despite hypothesis confirmed. D1/Qdrant/server.py/worker.js unchanged. VPS files unchanged except 2 new baseline snapshot files in `~/`. System state effectively identical to end of session 94 apart from diagnostic data captured.
+
+---
+
+## CHANGES THIS SESSION (session 96) — 24 April 2026
+
+- **Retrieval layer FROZEN — Option 5 outcome** — Tom synthesised three-evaluator outside-view review (initiated s95) into Option 5 (stop) with Option 2 (legal-vocab dictionary) pre-committed as the specific response if vocabulary/abbreviation-class failures cluster in real use. Re-opening gated on named real-use trigger (D1 `query_log.sufficient=0`), not internal signals. Four-week observation minimum. New `## RETRIEVAL LAYER — FROZEN (24 April 2026)` block inserted at top of CLAUDE.md above SYSTEM STATE. Rationale: 31-query binary-graded eval has ≈±15pp resolution at 95% CI; ~15 sessions of tuning ran below that floor, producing hallucinated feedback. Full reasoning in CLAUDE_decisions.md.
+
+- **Measurement & change discipline wired into MDs** — three observable-condition directives added to CLAUDE.md as new `## MEASUREMENT & CHANGE DISCIPLINE` section above OUTSTANDING PRIORITIES: resolution-before-optimisation check, trigger-based re-opening of frozen components, successive-fix pattern alarm (3 consecutive no-movement sessions → STOP). Decisions-log entry format added to CLAUDE_decisions.md head requiring hypothesis / effect size / measurement / empirical-vs-prior-plausibility on every retrieval/pipeline change. CLAUDE_init.md: new "Evaluating proposed optimisation work" section instructs AI collaborators to treat "no change" as first-class option.
+
+- **Thumbs-down feedback button — SHIPPED** — D1 `query_log` extended with `sufficient INTEGER`, `missing_note TEXT`, `flagged_by TEXT` (all default NULL). Worker route `POST /api/legal/mark-insufficient` (no auth, optional `flagged_by` defaults to `'admin'` server-side — must migrate to auth-context read when multi-user auth lands). UI: `↓ Insufficient` button in `ReadingPane.jsx` SaveFlagPanel, inline textarea for optional "what was missing" note, matches existing Flag button pattern. Curl-verified between Worker and UI deploy. Worker version `29687fe9`.
+
+- **Outstanding Priorities reset** — Priority 1 (three-model retrieval review) RESOLVED. Priorities 2 (variant stabilisation) and 3 (strip_frontmatter bracket-tag fix) CANCELLED per freeze — both were internal-signal-triggered, which the new measurement discipline explicitly disallows. Priority 4 (V'ger [LEGISLATION] label fix) retained as new Priority 1 (functional labelling bug, not retrieval). Corpus authoring for Q9/Q14/Q26 baseline misses remains available as highest-leverage non-retrieval thread.
+
+- **MCP D1 `PRAGMA table_info` truncation — documented** — Cloudflare Developer Platform MCP `d1_database_query` silently truncates PRAGMA output on wide tables (returned cid 0–17 on `query_log`, masked pre-existing `sufficient` at cid 18; column origin unrecovered from Claude.ai conversation history, zero non-null values corpus-wide so inert). Workaround: `SELECT <col> FROM <table> LIMIT 0` for schema-existence checks on wide tables; reserve PRAGMA for narrow tables. Added to KNOWN ISSUES.
+
+- **Three commits landed; push deferred** — `861579c` (docs + schema + worker + UI), `1e85e72` (Windows case-mismatch fix on Worker.js git record — Cloudflare deployment was already correct), `97af7cd` (KNOWN ISSUES: MCP PRAGMA truncation). All staged for push together.
 
 ---
 
