@@ -112,24 +112,42 @@ export default function AmendmentPanel({ actName, actId: initialActId }) {
 }
 
 function AmendmentRow({ a, isFirst }) {
+  const [resolving, setResolving] = useState(false);
   const rowBg = a.isOriginal ? 'rgba(74,158,255,0.05)' : 'transparent';
   const td = { padding: '7px 12px', verticalAlign: 'top', borderBottom: '1px solid var(--border)' };
+
+  async function openBillPage() {
+    setResolving(true);
+    try {
+      const r = await api.parliamentBillUrl(a.year, parseInt(a.actNo, 10));
+      const resolved = r?.result?.url ?? r?.url ?? null;
+      window.open(resolved || a.billPageUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      window.open(a.billPageUrl, '_blank', 'noopener,noreferrer');
+    }
+    setResolving(false);
+  }
+
+  const billBtnBase = {
+    fontSize: '11px', background: 'none', border: 'none', padding: 0,
+    cursor: resolving ? 'wait' : 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit',
+  };
 
   let actionBtn = null;
   if (a.hasBillPage && a.hasSecondReading === true) {
     actionBtn = (
-      <a href={a.billPageUrl} target="_blank" rel="noopener noreferrer"
-        style={{ fontSize: '11px', color: 'var(--accent)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-        Locate Hansard ↗
-      </a>
+      <button disabled={resolving} onClick={openBillPage}
+        style={{ ...billBtnBase, color: resolving ? 'var(--text-muted)' : 'var(--accent)', textDecoration: 'none' }}>
+        {resolving ? 'Resolving...' : 'Locate Hansard ↗'}
+      </button>
     );
   } else if (a.hasBillPage && a.hasSecondReading === 'maybe') {
     actionBtn = (
-      <a href={a.billPageUrl} target="_blank" rel="noopener noreferrer"
+      <button disabled={resolving} onClick={openBillPage}
         title="Second reading PDF may not be available for pre-2005 bills"
-        style={{ fontSize: '11px', color: 'var(--accent)', textDecoration: 'none', whiteSpace: 'nowrap', borderBottom: '1px dashed var(--accent)' }}>
-        Locate Hansard ↗
-      </a>
+        style={{ ...billBtnBase, color: resolving ? 'var(--text-muted)' : 'var(--accent)', textDecoration: 'none', borderBottom: resolving ? 'none' : '1px dashed var(--accent)' }}>
+        {resolving ? 'Resolving...' : 'Locate Hansard ↗'}
+      </button>
     );
   } else {
     actionBtn = (

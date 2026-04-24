@@ -42,6 +42,9 @@ export const api = {
   amendments: (actId) =>
     req('GET', `/api/legal/amendments?act=${encodeURIComponent(actId)}`),
 
+  parliamentBillUrl: (year, billNumber) =>
+    req('GET', `/api/legal/parliament-bill-url?year=${year}&billNumber=${billNumber}`),
+
   resolveAct: (name) =>
     req('GET', `/api/legal/resolve-act?name=${encodeURIComponent(name)}`),
 
