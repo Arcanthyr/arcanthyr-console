@@ -7,6 +7,18 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–92) — load conditiona
 
 ---
 
+## RETRIEVAL LAYER — FROZEN (24 April 2026)
+Retrieval pipeline frozen at baseline 28P / 3Pa / 0M on the 31-query eval; 28,876 Qdrant points; four-pass architecture (Pass 1 unfiltered cosine → Pass 2 case chunks → Pass 3 secondary sources → Pass 4 citation authority); BM25 interleave live; vocabulary anchor prepend deployed across all Acts; subject-matter filter + query expansion + quarantine filter live on all passes. Known partials (Q9 guilty plea, Q14 s 37 EA, Q26 unreasonable verdict) attributed to content coverage and semantic ceiling, not retrieval defect.
+Re-opening requires a named trigger from real-use feedback (D1 query_log rows where sufficient=0), not from internal signals. Internal signals — score distributions, rank drift, baseline variance across runs, citation churn, variant instability — are explicitly not triggers. They are the over-optimisation signature. Triggers:
+
+1–3 logged failures that cluster on a nameable class → targeted fix matching the class (vocabulary asymmetry → legal-vocab dictionary / Option 2; ranking → oracle top-20 study; gap → corpus authoring).
+1–3 non-clustered failures → noise, no action.
+4+ logged failures → extend benchmark to match real query distribution before any retrieval tuning.
+
+Real-use failure captured via thumbs-down button on Research page answer view (wired session 95-post, sets query_log.sufficient=0 with optional missing_note). Flagger identity stored in query_log.flagged_by — defaults to 'admin' when no user identity is supplied. When multi-user auth is added, the worker handler must be updated to read flagged_by from authenticated session state rather than from request body. Review cadence: four-week minimum before any conclusion from the data.
+
+---
+
 ## SYSTEM STATE — 24 April 2026 (end of session 95)
 
 | Component | Status |
@@ -36,6 +48,16 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–92) — load conditiona
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
 | Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) complete · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
 | Court hierarchy band | LIVE CORPUS-WIDE — session 94 payload backfill via `patch_court_payload.py` (located at `/home/tom/ai-stack/agent-general/src/` on VPS) · 1,914 citations / 26,157 case_chunk points patched · 0 null remaining · Q9 TASCCA re-rank confirmed live · revert path: `patch_court_payload.py --revert` |
+
+---
+
+## MEASUREMENT & CHANGE DISCIPLINE
+
+**Resolution-before-optimisation check.** Before starting any session whose stated purpose is to improve a metric, state at the top: (a) current value, (b) what change would count as success, (c) whether the instrument can resolve a change of that size. If (c) is "no" or "unknown," the session is an instrumentation session, not an optimisation session — scope accordingly. Heuristic: binary-graded benchmarks under ~100 items have ≈±15pp resolution at 95% confidence; they cannot distinguish changes smaller than ~10pp of genuine movement. Treat small-n evals as direction indicators, never as fine-grained feedback.
+
+**Trigger-based re-opening of frozen components.** A component marked FROZEN in CLAUDE.md is re-opened only on a named real-use trigger from D1 query_log where sufficient=0 — a query that failed, dated, in working use. Internal-signal triggers are explicitly disallowed: "the baseline moved," "scores drifted," "variance widened," "a rank swapped," "I noticed churn." Those are the over-optimisation pattern.
+
+**Successive-fix pattern alarm.** If three consecutive sessions on the same subsystem each (a) identify a new issue, (b) ship a fix, and (c) leave the top-line metric unchanged, STOP before session four. Before touching the subsystem again, answer in writing: why is the metric static, what failure would a real user experience, and what output-level evidence supports continuing. This rule fires on observable conditions (three sessions, same subsystem, no movement) and is intended to interrupt "each fix surfaces the next issue" drift.
 
 ---
 

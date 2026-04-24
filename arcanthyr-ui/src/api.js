@@ -157,6 +157,22 @@ export const api = {
   getQueryHistory:    ()     => req('GET',  '/api/query/history'),
   deleteQueryHistory: (id)   => req('POST', '/api/query/history/delete', { id }),
 
+  markInsufficient: async (queryId, missingNote, flaggedBy) => {
+    const res = await fetch(`${BASE}/api/legal/mark-insufficient`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query_id: queryId,
+        missing_note: missingNote || null,
+        flagged_by: flaggedBy || null,
+      }),
+    });
+    const data = await res.json();
+    const r = data.result ?? data;
+    if (!res.ok) throw new Error(r.error || `HTTP ${res.status}`);
+    return r;
+  },
+
   flagSynthesis: async (body, nexusKey) => {
     const res = await fetch(`${BASE}/api/pipeline/feedback`, {
       method: 'POST',

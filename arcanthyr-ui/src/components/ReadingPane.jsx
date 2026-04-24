@@ -244,6 +244,10 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
   const [flagged, setFlagged] = useState(false);
   const [flagging, setFlagging] = useState(false);
   const [showKeyInput, setShowKeyInput] = useState(false);
+  const [thumbsOpen, setThumbsOpen] = useState(false);
+  const [thumbsNote, setThumbsNote] = useState('');
+  const [thumbsFlagged, setThumbsFlagged] = useState(false);
+  const [thumbsFlagging, setThumbsFlagging] = useState(false);
 
   function openSave() {
     const today = new Date().toISOString().slice(0, 10);
@@ -292,6 +296,20 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
     }
   }
 
+  async function doThumbsDown() {
+    if (!queryId) return;
+    setThumbsFlagging(true);
+    try {
+      await api.markInsufficient(queryId, thumbsNote.trim() || null, null);
+      setThumbsFlagged(true);
+      setThumbsOpen(false);
+    } catch (e) {
+      console.error('markInsufficient failed:', e);
+    } finally {
+      setThumbsFlagging(false);
+    }
+  }
+
   return (
     <div style={{ marginTop: '24px', borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -335,7 +353,65 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
         ) : (
           <span style={{ fontSize: '11px', color: 'var(--red)', letterSpacing: '0.04em' }}>⚑ Flagged</span>
         )}
+
+        {/* Insufficient — sets query_log.sufficient=0 */}
+        {!thumbsFlagged ? (
+          <button
+            onClick={() => { setThumbsOpen(o => !o); setThumbsNote(''); }}
+            disabled={thumbsFlagging || thumbsOpen}
+            style={{
+              fontSize: '11px', padding: '5px 10px', background: 'transparent',
+              border: 'none', color: 'var(--text-muted)', cursor: (thumbsFlagging || thumbsOpen) ? 'default' : 'pointer',
+              letterSpacing: '0.04em', transition: 'color 0.2s',
+            }}
+            onMouseEnter={e => { if (!thumbsOpen) e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+          >
+            {thumbsFlagging ? '…' : '↓ Insufficient'}
+          </button>
+        ) : (
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>↓ Logged</span>
+        )}
       </div>
+
+      {thumbsOpen && !thumbsFlagged && (
+        <div style={{
+          marginTop: '12px', padding: '12px 14px', background: 'var(--surface)',
+          border: '1px solid var(--border)', borderRadius: '6px',
+        }}>
+          <textarea
+            value={thumbsNote}
+            onChange={e => setThumbsNote(e.target.value.slice(0, 500))}
+            placeholder="What was missing? (optional)"
+            rows={2}
+            style={{
+              width: '100%', padding: '6px 10px', fontSize: '12px',
+              background: 'var(--surface-hover)', border: '1px solid var(--border)',
+              borderRadius: '4px', color: 'var(--text-primary)', resize: 'vertical',
+              boxSizing: 'border-box', fontFamily: 'inherit',
+            }}
+          />
+          <div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
+            <button
+              onClick={doThumbsDown}
+              disabled={thumbsFlagging}
+              style={{
+                padding: '5px 14px', fontSize: '12px', fontWeight: 600,
+                background: 'var(--accent)', color: '#fff', borderRadius: '4px',
+                cursor: thumbsFlagging ? 'not-allowed' : 'pointer', opacity: thumbsFlagging ? 0.6 : 1,
+              }}
+            >
+              {thumbsFlagging ? 'Logging…' : 'Log'}
+            </button>
+            <button
+              onClick={() => { setThumbsOpen(false); setThumbsNote(''); }}
+              style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Inline key input for Flag (only when key not yet set) */}
       {showKeyInput && !flagged && (

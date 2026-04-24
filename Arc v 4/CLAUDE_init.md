@@ -369,3 +369,29 @@ Pre-commit hook lives at `arcanthyr-console/.git/hooks/pre-commit` (not tracked 
 | Gate | Correct query |
 |---|---|
 | legislation embed backlog | `legislation.embedded` (Act-level flag) is the correct gate — `SELECT title, embedded FROM legislation`. `legislation_sections.embedding_model IS NULL` count is unreliable: Stage 1+2 sections were embedded before that column was being written; the 1,731 NULL count seen session 90 is noise. Poller [LEG] pass reads `legislation.embedded=0` at Act level, not the section-level column. |
+
+---
+
+## Session-long observation accumulation
+
+During any working session, maintain a short internal running list of observations that would be useful in the MDs but aren't yet — specifically:
+
+- Component or route behaviour that differed from its existing documentation.
+- Commands, flags, or patterns that were tried and failed, with the specific failure mode.
+- Heuristics or rules applied this session that aren't in the MDs but probably should be.
+- MD content that was expected but missing, causing extra reading or guessing.
+
+Do not report these mid-session unless directly relevant to the current task. Hold them until the session-closer skill explicitly prompts for addenda, at which point report the accumulated list under the four categories specified by that prompt. One line per entry, concrete and specific — a file/line/route reference, a named command, a specific gotcha. Drop anything vague, speculative, or already covered in the session's main summary. If nothing in a category is worth reporting, say "none" rather than inventing entries.
+
+This exists because the planning-side closer only captures what was visible to Tom and the planning assistant. Anything CC figured out alone — a diagnostic shortcut, an unexpected file dependency, a quiet workaround — evaporates at session end unless CC surfaces it here.
+
+---
+
+## Evaluating proposed optimisation work
+When a proposed optimisation arises, treat "don't do this — current state is adequate" as a first-class option alongside technical alternatives, not a last resort. Before generating technical options:
+
+- State the current metric value and whether the measurement can resolve the proposed improvement.
+- If the measurement cannot resolve it, say so before proposing the change.
+- If the component is marked FROZEN in CLAUDE.md, check D1 query_log for rows with sufficient=0 before proposing any change. Absent any, the correct answer is "no change — frozen."
+
+Default for a frozen component with no logged real-use failure is no work. Propose "no work" visibly, not implicitly.

@@ -14,6 +14,21 @@ Supplement to CLAUDE.md and CLAUDE\_arch.md — focuses on \*why\*, not \*what\*
 
 
 
+\## Entry format for retrieval / pipeline changes (added 24 April 2026)
+
+Every decisions-log entry recording a retrieval or pipeline change must state:
+
+\*\*Hypothesis\*\* — what change is expected.
+\*\*Expected effect size\*\* — how large, in the metric's units.
+\*\*Measurement\*\* — what reading will tell.
+\*\*Empirical vs prior-plausibility\*\* — if the expected effect size is below the measurement's resolution, the change is being made on prior-plausibility grounds, not empirical ones. This is permitted but must be named. "Made because it seemed right" and "made because the evidence said so" are different entries.
+
+This format exists because retrieval work on the 31-query binary-graded eval between sessions 80–95 produced a feedback loop running below the instrument's resolution floor. Tagging prior-plausibility changes as such prevents the loop re-forming.
+
+\---
+
+
+
 \## Enrichment Pipeline (Poller / Chunking / LLM Models)
 
 
