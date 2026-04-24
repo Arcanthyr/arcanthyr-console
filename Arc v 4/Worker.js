@@ -2878,11 +2878,14 @@ async function handleLegalQueryWorkersAI(body, env) {
   const caseBlocks = orderedChunks.map((c) => {
     const caseName = c.case_name ? `${c.case_name} ` : '';
     const courtSuffix = c.court && c.court.toLowerCase() !== 'unknown' ? ` (${c.court})` : '';
+    const principles = Array.isArray(c.principles) && c.principles.length > 0
+      ? `\nKey principles: ${c.principles.slice(0, 3).join("; ")}`
+      : "";
     const label = c.type === 'case_chunk' ? '[CASE EXCERPT]'
                 : c.type === 'legislation' ? '[LEGISLATION]'
                 : c.type === 'authority_synthesis' ? '[AUTHORITY ANALYSIS]'
                 : '[ANNOTATION]';
-    return `${label} ${caseName}${c.citation}${courtSuffix}\n${c.text}`;
+    return `${label} ${caseName}${c.citation}${courtSuffix}\n${c.text}${principles}`;
   }).join("\n\n---\n\n");
 
   const contextBlocks = sectionContext
