@@ -59,9 +59,11 @@ function CasesTab() {
           ? `[${citationMatch[1]}] ${citationMatch[2].toUpperCase()} ${citationMatch[3]}`
           : '';
         const court = citationMatch ? (courtMap[citationMatch[2].toUpperCase()] || 'TASCCA') : 'TASCCA';
-        resolve({ file: f, citation, court, ocr: false });
+        const nameMatch = citationMatch ? text.match(/^(.+?)\s*\[/m) : null;
+        const caseName = nameMatch ? nameMatch[1].trim() : '';
+        resolve({ file: f, citation, court, caseName, ocr: false });
       };
-      reader.onerror = () => resolve({ file: f, citation: '', court: 'TASCCA', ocr: false });
+      reader.onerror = () => resolve({ file: f, citation: '', court: 'TASCCA', caseName: '', ocr: false });
       reader.readAsText(f.slice(0, 4096));
     })));
     setStaged(s => [...s, ...newFiles]);
@@ -145,27 +147,37 @@ function CasesTab() {
         <div style={{ marginTop: '16px' }}>
           {staged.map((item, i) => (
             <div key={i} style={{
-              display: 'flex', gap: '10px', alignItems: 'center',
+              display: 'flex', flexDirection: 'column', gap: '6px',
               padding: '10px 0', borderBottom: '1px solid var(--border)',
             }}>
-              <div style={{ flex: 1, fontSize: '13px', color: 'var(--text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {item.file.name}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ flex: 1, fontSize: '13px', color: 'var(--text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {item.file.name}
+                </div>
+                {item.ocr && <span style={{ fontSize: '10px', padding: '2px 6px', background: 'rgba(232,168,56,0.15)', color: 'var(--amber)', borderRadius: '3px' }}>OCR</span>}
+                <button onClick={() => setStaged(s => s.filter((_, j) => j !== i))} style={{ color: 'var(--text-muted)', fontSize: '16px' }}>×</button>
               </div>
-              <input
-                value={item.citation}
-                onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, citation: e.target.value } : x))}
-                placeholder="Citation e.g. [2024] TASCCA 12"
-                style={{ ...smallInput, width: '220px' }}
-              />
-              <select
-                value={item.court}
-                onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, court: e.target.value } : x))}
-                style={{ ...smallInput, width: '100px' }}
-              >
-                {COURTS.map(c => <option key={c}>{c}</option>)}
-              </select>
-              {item.ocr && <span style={{ fontSize: '10px', padding: '2px 6px', background: 'rgba(232,168,56,0.15)', color: 'var(--amber)', borderRadius: '3px' }}>OCR</span>}
-              <button onClick={() => setStaged(s => s.filter((_, j) => j !== i))} style={{ color: 'var(--text-muted)', fontSize: '16px' }}>×</button>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <input
+                  value={item.caseName}
+                  onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, caseName: e.target.value } : x))}
+                  placeholder="Case name"
+                  style={{ ...smallInput, flex: 1, minWidth: '160px' }}
+                />
+                <input
+                  value={item.citation}
+                  onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, citation: e.target.value } : x))}
+                  placeholder="Citation e.g. [2024] TASCCA 12"
+                  style={{ ...smallInput, width: '200px' }}
+                />
+                <select
+                  value={item.court}
+                  onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, court: e.target.value } : x))}
+                  style={{ ...smallInput, width: '100px' }}
+                >
+                  {COURTS.map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
             </div>
           ))}
           <button onClick={uploadAll} disabled={uploading} style={primaryBtn}>
@@ -185,15 +197,13 @@ function CasesTab() {
 }
 
 /* ── RTF stripper ──────────────────────────────────────────── */
-function stripRtf(rtf) {
-  let text = rtf.replace(/\{\\fonttbl[^}]*\}/g, '');
-  text = text.replace(/\{\\colortbl[^}]*\}/g, '');
-  text = text.replace(/\\[a-z]+[-]?\d*[ ]?/gi, '');
-  text = text.replace(/\{|\}/g, '');
-  text = text.replace(/\\\n/g, '\n');
-  text = text.replace(/\\\*/g, '');
-  text = text.replace(/[\\][^a-z]/gi, '');
-  return text.replace(/\n{3,}/g, '\n\n').trim();
+function stripRtf(raw) {
+  return raw
+    .replace(/\{\\[^{}]*\}/g, '')
+    .replace(/\\[a-z]+\d*\s?/gi, '')
+    .replace(/[^\x20-\x7E\n\r]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /* ── Corpus tab ────────────────────────────────────────────── */
