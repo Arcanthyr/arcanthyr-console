@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 21 April 2026 (end of session 88). Upload every session alongside CLAUDE.md.*
+*Updated: 24 April 2026 (end of session 95). Upload every session alongside CLAUDE.md.*
 
 ---
 

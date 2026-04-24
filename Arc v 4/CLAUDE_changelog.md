@@ -1,9 +1,22 @@
 # CLAUDE_changelog.md — Arcanthyr Session Changelog Archive
 
-*Sessions 21–91 · 26 March 2026 – 22 April 2026*
+*Sessions 21–92 · 26 March 2026 – 22 April 2026*
 *Archived from CLAUDE.md on 18 April 2026 (session 70 restructure); sessions 74, 77–80 added end of session 83; session 82 added end of session 85; session 85 added end of session 88; session 86 added end of session 89; session 87 added end of session 90; session 88 added end of session 91; session 89 added end of session 92; session 90 added end of session 93; session 91 added end of session 94*
 
 Load condition: Load when investigating a past session's changes, debugging a regression to a specific date, or when the current session references work from sessions older than the 3-session retention window in CLAUDE.md.
+
+---
+
+## CHANGES THIS SESSION (session 92) — 22 April 2026
+
+- **Quota-aware final cap** — server.py `performSearch()` final sort+cap replaced with quota-aware block: `SECONDARY_QUOTA=1`, `SWAP_MIN_SCORE=0.40`, gates on `top_k>=3`. Guarantees ≥1 secondary source in top_k when one scores ≥0.40 and case_chunks would otherwise crowd it out. Log line fires on displacement. Working in production — secondary sources visible in multiple API calls.
+- **Anchor regex fix** — `enrichment_poller.py` `build_secondary_embedding_text()` regex changed from `re.match` to `re.search` with fallback to handle inline multi-field header lines (`[# identifier]` format on line 1). `anchor=Yes` confirmed for `manual-b4135-chunk` at 09:50:51. Only one chunk used this header format.
+- **Vocab patch: manual-b4135-chunk** — `examination technique` added to CONCEPTS line; opening sentence added to `## The Rule` section. Score lifted 0.4549→0.4705; chunk now #1→#2 among secondary sources on direct Qdrant query. Anchor fix brought score to 0.4572 (slight dilution from 409-char anchor prefix). Q14 remains structural miss — semantic ceiling confirmed.
+- **TYPE_TAGS stale entry cleaned** — `secondary_source: { label: 'CORPUS' }` confirmed live since session 89. Stale KNOWN ISSUES entry removed (commit c136731).
+- **Stale baseline SESSION RULE added** — SESSION RULES table now includes baseline output file rule: always use timestamped snapshots, `~/retrieval_baseline_results.txt` is Apr 16 stale (commit c136731).
+- **Scraper scope + freshness fix** — TASMC_2026 added to `COURT_YEARS` (`range(2026, 2004, -1)`); active year entries (TASSC/TASCCA/TASFC/TASMC 2026) deleted from `scraper_progress.json` so next run re-scrapes for new cases. INSERT OR IGNORE prevents duplicates (commit c4ca8ac).
+- **Stage 3 legislation embed confirmed complete** — all 8 Acts `embedded=1` in D1. SA 147 + YJA 216 + JR 96 sections fully embedded with vocabulary anchors.
+- **Synthesis dedup spot-check** — 5 queries run (tendency, guilty plea, first offender, unreasonable verdict, right to silence). Dedup rules holding; Q3 shows repetitive hedging on sparse retrieval but no principle-repetition failures. One hallucination identified: party name invention ("Police v FRS") when chunk lacks full party data. Synthesis prompt review noted for next session.
 
 ---
 
