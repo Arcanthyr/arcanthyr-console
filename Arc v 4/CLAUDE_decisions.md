@@ -4090,4 +4090,21 @@ manual-b3603-chunk contains the exact practitioner query terms in both CONCEPTS 
 
 **Auslaw MCP Track 2 — removed from roadmap:** VPS is TCP-blocked by AustLII at network level (SYN drop confirmed). A remote MCP at auslaw.arcanthyr.com would hit the same block for all search functionality. Only `search_by_citation` survives from VPS context, which CC already handles via hex-ssh. No net benefit over current setup.
 
+## Session 100 decisions — 24 April 2026
+
+**LLM variant-draw stabilisation — formally closed**
+Root cause confirmed session 94: GPT-4.1-mini default temperature ~1.0, no seeding, produces different variant sets per call, score swings up to 0.08. Session 95 finding: grade-level P/Pa/M stable across 3 baseline runs despite 31/31 top-1 citation drift. Session 100 decision: benign noise, no action. Relevant chunks are in the retrieved pool on every run; which ranks #1 varies but user-facing answer quality is stable. Seeding or determinism constraints would trade coverage for stability at unknown cost and below measurement resolution anyway.
+
+**Misclassification audit — complete, no misclassifications found**
+Ran the documented audit SQL (`SELECT citation, case_name, subject_matter FROM cases WHERE subject_matter != 'criminal' AND (case_name LIKE 'R v%' OR case_name LIKE 'Tasmania v%' OR case_name LIKE 'Police v%')`). Returned 11 cases; all verified legitimately non-criminal — "R v [tribunal/body]" is judicial review nomenclature in Australian law, not a prosecution. Pilling cases already confirmed workers comp. Rattigan already corrected to criminal. Option A re-embed audit prerequisite cleared. Option A itself remains deferred: cache penalty working, retrieval frozen, re-embed of 26K points not justified.
+
+**Antonym-polluted CONCEPTS audit — retired**
+Ran audit SQL (`raw_text LIKE '%warrantless%' OR '%without warrant%' OR '%non-consensual%' OR '%not admissible%' OR '%uncorroborated%'`). 35 matches; all chunks whose subject IS the absence of a warrant or consent — the CONCEPTS rule explicitly permits antonym terms when the chunk's literal subject is that absence. No corpus action needed. Watch trigger (real-use sufficient=0 showing contamination) is sufficient; no proactive audit cadence required.
+
+**Tags column — removed from roadmap**
+No taxonomy defined, no feature depends on it, category field handles taxonomy adequately. Population would require GPT enrichment pass, Qdrant payload update, and UI work for unknown retrieval benefit. Not worth building at current corpus size and query patterns.
+
+**runDailySync fix plan — CF edge fetch confirmed viable, deferred**
+History recovered: runDailySync is an intentional design (not dead code) for forward-looking new-case capture once scraper completes historical pass. Two problems: (a) fetchRecentAustLIICases uses VPS proxy path which is dead (VPS IP TCP-blocked by AustLII); (b) saveCaseToDb predates queue pipeline — bypasses CHUNK/MERGE enrichment entirely. Fix: (a) direct CF-edge fetch with browser headers (identical pattern to handleAustLIIWordSearch — CF edge IPs not blocked by AustLII, proven by word-search and fetch-judgment routes working in production); (b) replace saveCaseToDb with CASE_PROCESSING_QUEUE.send({ type: 'METADATA' }); (c) remove Resend email block. Deferred: scraper already covers current-year cases as part of normal sweep; runDailySync adds nothing until scraper stops sweeping 2026. No technical conflict running both concurrently (INSERT OR IGNORE handles collisions). CC brief issued session 100, execution deferred to next session.
+
 **CHUNK max_tokens — confirmed non-issue:** D1 measurement: 2 of 26,034 enriched chunks reach ≥2,900 chars; longest is 2,984 chars ≈ 750 tokens, well under the 1,500 output token ceiling. Those 2 chunks are near the poller's 3,000 char embedding truncation limit, not the LLM output limit. No action required; item removed from roadmap.

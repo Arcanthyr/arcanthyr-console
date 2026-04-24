@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 24 April 2026 (end of session 99) · Supersedes all prior versions
+Updated: 24 April 2026 (end of session 100) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–96) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–97) — load conditionally
 
 ---
 
@@ -24,7 +24,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Component | Status |
 |---|---|
 | Qdrant general-docs-v2 | 28,876 points · RE-EMBED COMPLETE — vocabulary anchor prepend deployed, all case chunks embedded; 233 authority_synthesis chunks added session 79; court payload backfilled session 94 across all 26,157 case_chunk points (1,914 citations) |
-| D1 cases | 1,914 (scraper running) · 1,913 deep_enriched=1 · 1 stuck |
+| D1 cases | 1,914 (scraper running) · 1,914 deep_enriched=1 |
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) · retry_count + dlq columns added (DLQ threshold: 3 failures); pending check is now done=0 AND dlq=0 |
 | D1 secondary_sources | 1,444 total · embedded=0: ~3 (nexus-save entries only — 411 Word-artifact rows cleaned session 98, embedded=0 reset for re-embed, poller clearing backlog) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
@@ -92,7 +92,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Pass 4 authority_synthesis — same structural vulnerability as Pass 3** — authority_synthesis chunks face the same score-floor crowding as secondary sources. Quota approach generalises: add a second quota block when this becomes a visible problem. Flagged by Opus session 92 — watch item only.
 - **Party name constraint — DEPLOYED session 93** — Prophylactic bullet added to Sol citationRules block (worker.js ~L2663) and as item 3 in V'ger RULES block (worker.js ~L2905). Instructs LLM to cite by citation alone when source shows only citation without parties. Skipped on performMerge — operates on single case's own material, no pathway to fabricate. The "Police v FRS" for [2020] TASMC 9 flagged session 92 was NOT hallucination — it's stored practitioner shorthand (Option A confirmed): `cases.case_name` = "Police v FRS", `case_chunks.enriched_text` chunk 0 uses it, two authored secondary_sources chunks ("Police v FRS - Tendency Evidence Admissibility", "Police v FRS - Example Tendency Notice") use it by design. V'ger was retrieving faithfully. Summary criminal matters are routinely styled "Police v X" in Tasmanian practitioner reference even where formal AustLII parties name informants. No corpus cleanup needed.
 - **cases.embedded column unreliable as case-level gate** — Lambert and Stokes [2007] TASSC 76 shows `cases.embedded = 0` while all 49 chunks have `case_chunks.embedded = 1`. Same pattern family as the legislation_sections.embedding_model issue (session 90 finding). Canonical case-level embed signal is aggregation over case_chunks.embedded, not the case-row column. Do not use `cases.embedded` as a backlog gate or retrieval diagnostic.
-- **Retrieval stochastic variance across runs — diagnosis corrected session 94** — S92 vs S93 variance previously attributed to ANN jitter; session 94 VPS diagnostic confirmed root cause is GPT-4.1-mini variant generator non-determinism (default temperature ~1.0, no seeding). Same query → different variant set across calls → max-score merge over 4 legs produces score swings up to 0.08. Q5 Lambert 18 surfaces at rank 9 only when the "not testify" paraphrase variant is generated (1-in-3 runs); Q2 Dunning 10 best-of-legs is rank 15 (outside limit=12 cap). Promoted to Outstanding Priority 1: LLM variant-draw stabilisation.
+- **Retrieval stochastic variance across runs — diagnosis corrected session 94** — S92 vs S93 variance previously attributed to ANN jitter; session 94 VPS diagnostic confirmed root cause is GPT-4.1-mini variant generator non-determinism (default temperature ~1.0, no seeding). Same query → different variant set across calls → max-score merge over 4 legs produces score swings up to 0.08. Q5 Lambert 18 surfaces at rank 9 only when the "not testify" paraphrase variant is generated (1-in-3 runs); Q2 Dunning 10 best-of-legs is rank 15 (outside limit=12 cap). Session 100: formally closed — grade-level P/Pa/M stable across all variant draws (session 95 finding); internal citation churn is benign noise; no action.
 - **Grade-level robustness despite internal retrieval noise — session 95 finding** — Pre-variant-stab variance capture across 3 baseline runs at current state showed 31/31 queries with top-1 citation drift between runs, but P/Pa/M grade stable across all samples at 28P/3Pa/0M. System answers stably at the user-facing grade level even while internal retrieval ordering is noisy. Relevant chunks are typically in the retrieved pool across all variant draws; which one ranks #1 varies. Argues for treating the baseline metric as the true quality signal rather than the internal score distributions — and surfaces the question of whether the 31/31 drift matters at all to real outcomes. Feeds into Priority 1 strategic review.
 - **Court hierarchy band — live corpus-wide session 94** — Prior to patch, payload.court was None on 26,152 of 26,157 case_chunk points (anchor re-embed predated session 91 poller fix). Band re-rank was silently inert corpus-wide. Patched via `patch_court_payload.py` sourcing truth from cases.court in D1. Q9 TASCCA re-rank confirmed live post-patch. No baseline regressions. Revert available via `patch_court_payload.py --revert`. Also: 9 TASMC 2016 cases corrected in D1 where scraper had stored court='supreme' (script-derived from citation string was authoritative).
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
@@ -161,7 +161,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Scraper wake tasks | Dedicated SYSTEM-level wake tasks created (session 46): `WakeForScraper` fires 10:55 AM daily, `WakeForScraperEvening` fires 4:55 PM daily · both have WakeToRun=True · wakes PC 5 min before scraper runs at 11:00 AM and 5:00 PM AEST · created as SYSTEM/HIGHEST so wake works from sleep without user login |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
 | TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is TCP-blocked by AustLII at network level — Contabo IP range silently dropped (confirmed session 85, re-confirmed session 88) |
-| runDailySync proxy | AustLII fetches routed through VPS `/fetch-page` endpoint (server.py) to avoid Cloudflare edge IP patterns · jade.io URLs fetch directly · `env` threaded through `handleFetchPage` and `fetchCaseContent` · deployed session 35 |
+| runDailySync | Forward-looking new-case capture (up to 50/day) — deferred until scraper completes historical pass · fix required: (a) update `fetchRecentAustLIICases` to direct CF-edge fetch with browser headers — VPS proxy dead (VPS IP blocked); (b) replace `saveCaseToDb` with `CASE_PROCESSING_QUEUE.send({ type: 'METADATA' })` — function predates queue pipeline; (c) remove Resend email block · CF edge IPs not blocked by AustLII (proven by word-search and fetch-judgment routes) · CC brief issued session 100 |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
@@ -221,15 +221,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## CHANGES THIS SESSION (session 97) — 24 April 2026
-
-- **V'ger [LEGISLATION] label — fixed** — added missing `c.type === 'legislation' ? '[LEGISLATION]'` branch to V'ger context serialisation ternary (~L2881 worker.js); legislation chunks no longer fall through to `[ANNOTATION]`; four-branch pattern now matches Sol exactly
-- **Deployed** — worker version d79a2e23
-- **V'ger `${principles}` omission — documented** — discovered during fix: Sol appends key principles line, V'ger block does not; added to KNOWN ISSUES for future session
-- **`node --check` brief hygiene** — planning assistant re-introduced retired command in CC brief; failure mode documented in KNOWN ISSUES
-
----
-
 ## CHANGES THIS SESSION (session 98) — 24 April 2026
 
 - **V'ger `${principles}` parity with Sol — deployed** — `handleLegalQueryWorkersAI` `orderedChunks.map` now builds and appends `Key principles:` line to context chunks, matching Sol's `chunks.map` pattern exactly. Worker `724c5da9`, commit `66ffa55`.
@@ -250,6 +241,18 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Worker.js capital W — documented** — git tracks the Worker file as `Worker.js` (capital W). Windows case-insensitive FS causes `git add "Arc v 4/worker.js"` to silently stage nothing. Added to KNOWN ISSUES and SESSION RULES. All MD references corrected.
 - **`/api/legal/` auth model documented** — routes in this block are rate-limited only, no X-Nexus-Key. AmendmentPanel and similar user-facing components have no credential mechanism; new outbound-proxy routes must match the auth pattern of the nearest equivalent existing route.
 - **`api.js` result-wrapping documented** — `/api/legal/` block returns `json({ result })`, so all responses are shaped `{ result: { ... } }` and must be unwrapped in consuming code.
+
+---
+
+## CHANGES THIS SESSION (session 100) — 24 April 2026
+
+- **Stuck case [2023] TASSC 6 resolved** — `requeue-merge` (default, no target) fired merge for Bob Brown Foundation Inc v Barnett (No 2); all 14 chunks were done=1; deep_enriched now 1; sentencing_status=null correct (administrative case, isSentencingCase() gates on subject_matter='criminal'); D1 cases now 1,914/1,914 deep_enriched=1
+- **LLM variant-draw stabilisation — formally closed** — root cause (GPT-4.1-mini non-determinism, score swings ≤0.08) confirmed benign; grade-level P/Pa/M stable across 3 runs (session 95); internal citation churn is noise, not a quality defect; no action; KNOWN ISSUES entry updated
+- **Misclassification audit — complete** — ran documented audit SQL; all 11 "R v / Tasmania v / Police v" non-criminal cases are legitimately non-criminal (judicial review nomenclature, workers comp); Tasmania v Rattigan already confirmed criminal; zero genuine misclassifications; Option A re-embed audit prerequisite cleared
+- **Antonym-polluted CONCEPTS audit — retired** — 35 matches all chunks whose subject is the absence of a warrant or consent (correct per CONCEPTS rule: antonym terms permitted when the chunk's subject is literally that absence); no contamination evidence in query_log; audit item removed from to-do
+- **Tags column — removed from roadmap** — no taxonomy exists, no feature depends on it, category field handles taxonomy adequately; not worth building at current stage
+- **runDailySync — fix plan documented** — history recovered: CF edge IPs not blocked by AustLII (proven by word-search/fetch-judgment); VPS proxy path dead; fix is direct CF-edge fetch in fetchRecentAustLIICases + METADATA queue send replacing saveCaseToDb + Resend email removal; CC brief issued; deferred until scraper completes historical pass
+- **DLQ, word artifact, contamination — all confirmed clean** — dlq=1 total: 0; secondary_sources with Word artifact chars embedded=1: 0; query_log.sufficient=0: 0
 
 ---
 

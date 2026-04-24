@@ -1,6 +1,15 @@
-# CLAUDE Changelog — Sessions 21–96
+# CLAUDE Changelog — Sessions 21–97
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
+
+---
+
+## CHANGES THIS SESSION (session 97) — 24 April 2026
+
+- **V'ger [LEGISLATION] label — fixed** — added missing `c.type === 'legislation' ? '[LEGISLATION]'` branch to V'ger context serialisation ternary (~L2881 worker.js); legislation chunks no longer fall through to `[ANNOTATION]`; four-branch pattern now matches Sol exactly
+- **Deployed** — worker version d79a2e23
+- **V'ger `${principles}` omission — documented** — discovered during fix: Sol appends key principles line, V'ger block does not; added to KNOWN ISSUES for future session
+- **`node --check` brief hygiene** — planning assistant re-introduced retired command in CC brief; failure mode documented in KNOWN ISSUES
 
 ---
 

@@ -187,7 +187,16 @@ async function fetchRecentAustLIICases(env, limit = 50) {
     while (consecutiveMisses < 5 && allNewCases.length < limit) {
       const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${currentYear}/${num}.html`;
       try {
-        const { html, status } = await handleFetchPage({ url }, env);
+        const resp = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer': 'https://www.austlii.edu.au/forms/search1.html',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-AU,en;q=0.9'
+          }
+        });
+        const status = resp.status;
+        const html = await resp.text();
 
         if (status === 404 || status === 410) { consecutiveMisses++; num++; continue; }
         if (status !== 200) { num++; continue; }
@@ -745,7 +754,11 @@ async function runDailySync(env) {
       const fullCaseData = { ...caseData, ...content };
       const summary = await summarizeCase(env, fullCaseData);
       const finalCaseData = { ...fullCaseData, case_name: summary.case_name || caseData.citation };
-      await saveCaseToDb(env, finalCaseData, summary);
+      await env.CASE_QUEUE.send({
+        type: 'METADATA',
+        url: caseData.url,
+        citation: caseData.citation
+      });
       casesProcessed++;
       console.log(`✓ ${caseData.citation} — "${finalCaseData.case_name}"`);
       await new Promise(r => setTimeout(r, 2000));
@@ -756,15 +769,6 @@ async function runDailySync(env) {
   }
 
   console.log(`Daily sync complete. Processed: ${casesProcessed}, Failed: ${casesFailed}`);
-
-  if ((casesProcessed > 0 || casesFailed > 0) && env.RESEND_API_KEY) {
-    try {
-      let emailBody = `<p>Daily sync: ${newCases.length} new cases found</p>`;
-      emailBody += `<p><strong>Saved: ${casesProcessed}</strong></p>`;
-      if (casesFailed > 0) emailBody += `<p><strong>Failed: ${casesFailed}</strong></p><ul>${errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
-      await sendEmail(env, env.RESEND_FROM_EMAIL, `Arcanthyr: ${casesProcessed} new cases`, emailBody);
-    } catch (err) { console.error("Failed to send sync email:", err); }
-  }
 
   return { success: true, cases_processed: casesProcessed, cases_failed: casesFailed, errors };
 }

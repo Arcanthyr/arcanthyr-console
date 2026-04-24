@@ -261,7 +261,7 @@ Do not retry RRF until all four conditions are met:
 
 **Problem:** Pass 1 is unfiltered — non-criminal case chunks (coronial, civil, administrative) can outscore criminal doctrine chunks on queries where witness/examination vocabulary appears in both domains. Corpus is 320 criminal / 393 non-criminal and scraper will worsen this ratio.
 
-**Confirmed misclassifications (audit required before any filter):**
+**Misclassification audit — complete (session 100). No genuine misclassifications found. Historical corrected cases:**
 - Tasmania v Rattigan [2021] TASSC 28 — tagged administrative, is criminal
 - Tasmania v Pilling [2020] TASSC 13 — tagged administrative, is criminal
 - Tasmania v Pilling (No 2) [2020] TASSC 46 — tagged administrative, is criminal
@@ -280,13 +280,13 @@ AND (case_name LIKE 'R v%' OR case_name LIKE 'Tasmania v%' OR case_name LIKE 'Po
 - `apply_sm_penalty(chunk)` — if `type=case_chunk` and citation's SM not in SM_ALLOW, multiply score by 0.65
 - Applied in Pass 1 (after scoring, before court hierarchy re-rank) AND in Pass 2 append loop
 - **Critical**: re-sort by penalised scores BEFORE computing `top_score` for court hierarchy band
-- Misclassification audit: Pilling cases correctly administrative (workers comp); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69); Tasmania v Rattigan status unverified
+- Misclassification audit: Pilling cases correctly administrative (workers comp); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69); Tasmania v Rattigan confirmed criminal (subject_matter='criminal' verified D1 session 100)
 
 **Option A — Qdrant payload re-embed (deferred):**
 - Would enable native Qdrant filter on `subject_matter` field in Pass 1 query
 - Requires: JOIN cases in `fetch-case-chunks-for-embedding` route, add `subject_matter` to poller metadata dict, reset all case chunks embedded=0, full re-embed
 - Lower priority now that cache penalty is delivering results (Q4, Q10, Q14 fixed)
-- Prerequisite: complete misclassification audit before re-embed
+- Prerequisite satisfied: misclassification audit complete (session 100) — all non-criminal "R v / Tasmania v / Police v" cases verified legitimately non-criminal (judicial review nomenclature); zero genuine misclassifications found
 
 **Real systemic fix:** get `subject_matter` into Qdrant payload (requires re-embed) so Pass 1 can filter at Qdrant level without cache. Option A's re-embed is a prerequisite for this.
 
@@ -468,11 +468,6 @@ cd "../Arc v 4" && npx wrangler deploy
 - `Upload.jsx` — 3 tabs: Cases (file drop + AustLII URL input) / Secondary Sources (drag+drop .md/.txt) / Legislation (drag+drop .pdf/.txt)
 - `Library.jsx` — 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33) · year filter chips + court filter chips combinable · Legislation tab: Date Updated column (reads `current_as_at` via `r.date`), external link to legislation.tas.gov.au · Secondary Sources: Title column leftmost · `handleLibraryList` SELECT includes `principles_extracted` (session 33)
 - Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`
-
-**Production deploy (pending):**
-- Cloudflare Pages project not yet created
-- Will need `VITE_API_BASE` env var pointing to `https://arcanthyr.com`
-- Build command: `npm run build` · output dir: `dist`
 
 ---
 
