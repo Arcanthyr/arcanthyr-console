@@ -4303,6 +4303,22 @@ export default {
         else if (action === "amendments" && request.method === "GET") result = await handleAmendments(url, env);
         else if (action === "resolve-act" && request.method === "GET") result = await handleResolveAct(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
+        else if (action === "mark-insufficient" && request.method === "POST") {
+          if (!body?.query_id) return json({ result: { ok: false, error: 'query_id required' } }, 400);
+          if (body.missing_note !== undefined && body.missing_note !== null && typeof body.missing_note !== 'string') {
+            return json({ result: { ok: false, error: 'missing_note must be a string' } }, 400);
+          }
+          if (body.flagged_by !== undefined && body.flagged_by !== null && typeof body.flagged_by !== 'string') {
+            return json({ result: { ok: false, error: 'flagged_by must be a string' } }, 400);
+          }
+          const note = (body.missing_note && typeof body.missing_note === 'string') ? body.missing_note.slice(0, 500) : null;
+          const flaggedBy = (body.flagged_by && typeof body.flagged_by === 'string') ? body.flagged_by.slice(0, 200) : 'admin';
+          const dbResult = await env.DB.prepare(
+            `UPDATE query_log SET sufficient = 0, missing_note = ?, flagged_by = ? WHERE id = ?`
+          ).bind(note, flaggedBy, body.query_id).run();
+          if (dbResult.meta.changes === 0) return json({ result: { ok: false, error: 'not found' } }, 404);
+          result = { ok: true, updated: dbResult.meta.changes };
+        }
         else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body, env);
