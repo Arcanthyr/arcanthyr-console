@@ -771,14 +771,14 @@ async function runDailySync(env) {
 
 async function runBatchedChunkCleanup(env) {
   const countRow = await env.DB.prepare(
-    `SELECT COUNT(*) as cnt FROM case_chunks WHERE done = 0`
+    `SELECT COUNT(*) as cnt FROM case_chunks WHERE done = 0 AND dlq = 0`
   ).first();
   if (!countRow || countRow.cnt === 0) {
     console.log('[cron] no bad chunks remaining');
     return;
   }
   const { results } = await env.DB.prepare(
-    `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 LIMIT 250`
+    `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 AND dlq = 0 LIMIT 250`
   ).all();
   for (const row of results) {
     await env.CASE_QUEUE.send({ type: 'CHUNK', citation: row.citation, chunk_index: row.chunk_index });
@@ -3420,6 +3420,20 @@ async function handleRequeueMetadata(request, env, corsHeaders) {
   }
 }
 
+async function handleDlqChunks(request, env, corsHeaders) {
+  const key = request.headers.get('X-Nexus-Key');
+  if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  try {
+    const countRow = await env.DB.prepare(`SELECT COUNT(*) as cnt FROM case_chunks WHERE dlq = 1`).first();
+    const { results } = await env.DB.prepare(
+      `SELECT id, citation, chunk_index, retry_count, SUBSTR(chunk_text, 1, 200) as preview FROM case_chunks WHERE dlq = 1 ORDER BY citation, chunk_index`
+    ).all();
+    return new Response(JSON.stringify({ ok: true, count: countRow?.cnt || 0, chunks: results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+  }
+}
+
 async function handleRequeueChunks(request, env, corsHeaders) {
   const key = request.headers.get('X-Nexus-Key');
   if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ ok: false, error: 'Unauthorised' }), { status: 401, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
@@ -3427,8 +3441,8 @@ async function handleRequeueChunks(request, env, corsHeaders) {
     const body = await request.json().catch(() => ({}));
     const limit = body.limit ? parseInt(body.limit) : null;
     const query = limit
-      ? `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 LIMIT ?`
-      : `SELECT citation, chunk_index FROM case_chunks WHERE done = 0`;
+      ? `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 AND dlq = 0 LIMIT ?`
+      : `SELECT citation, chunk_index FROM case_chunks WHERE done = 0 AND dlq = 0`;
     const { results } = limit
       ? await env.DB.prepare(query).bind(limit).all()
       : await env.DB.prepare(query).all();
@@ -3478,7 +3492,7 @@ async function handleRequeueMerge(request, env, corsHeaders) {
       ).bind(limit).all();
       for (const row of candidates) {
         const pending = await env.DB.prepare(
-          `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0`
+          `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0 AND dlq = 0`
         ).bind(row.citation).first();
         if (pending.cnt === 0) {
           await env.CASE_QUEUE.send({ type: 'MERGE', citation: row.citation });
@@ -4412,6 +4426,7 @@ export default {
     if (url.pathname === '/api/admin/requeue-metadata' && request.method === 'POST') return handleRequeueMetadata(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-chunks' && request.method === 'POST') return handleRequeueChunks(request, env, corsHeaders);
     if (url.pathname === '/api/admin/requeue-merge' && request.method === 'POST') return handleRequeueMerge(request, env, corsHeaders);
+    if (url.pathname === '/api/admin/dlq-chunks' && request.method === 'GET') return handleDlqChunks(request, env, corsHeaders);
     if (url.pathname === '/api/admin/backfill-sentencing' && request.method === 'POST') return handleSentencingBackfill(request, env, corsHeaders);
     if (url.pathname === '/api/admin/pending-nexus' && request.method === 'GET') return handlePendingNexus(request, env, corsHeaders);
     if (url.pathname === '/api/admin/approve-secondary' && request.method === 'POST') return handleApproveSecondary(request, env, corsHeaders);
@@ -4684,9 +4699,18 @@ export default {
         if (type === 'CHUNK') {
           // Process one chunk — one Workers AI call
           const row = await env.DB.prepare(
-            `SELECT chunk_text FROM case_chunks WHERE citation = ? AND chunk_index = ?`
+            `SELECT chunk_text, retry_count FROM case_chunks WHERE citation = ? AND chunk_index = ?`
           ).bind(citation, chunk_index).first();
           if (!row) throw new Error(`No chunk found for ${citation} index ${chunk_index}`);
+
+          const MAX_CHUNK_RETRIES = 3;
+          if ((row.retry_count || 0) >= MAX_CHUNK_RETRIES) {
+            console.warn(`[queue] DLQ: ${citation}__chunk__${chunk_index} at retry ${row.retry_count}, marking dead`);
+            await env.DB.prepare(`UPDATE case_chunks SET dlq = 1 WHERE citation = ? AND chunk_index = ?`).bind(citation, chunk_index).run();
+            msg.ack();
+            continue;
+          }
+          await env.DB.prepare(`UPDATE case_chunks SET retry_count = retry_count + 1 WHERE citation = ? AND chunk_index = ?`).bind(citation, chunk_index).run();
 
           const caseRow = await env.DB.prepare(
             `SELECT case_name, court, facts, issues, judge, case_date, subject_matter, holding FROM cases WHERE citation = ?`
@@ -4866,7 +4890,7 @@ confidence — high if clearly reasoning with explicit principles; medium if rea
 
           // Check if all chunks done — if so, attempt atomic merge claim
           const pending = await env.DB.prepare(
-            `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0`
+            `SELECT COUNT(*) as cnt FROM case_chunks WHERE citation = ? AND done = 0 AND dlq = 0`
           ).bind(citation).first();
 
           if (pending.cnt === 0) {
