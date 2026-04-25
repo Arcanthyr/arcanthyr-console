@@ -18,10 +18,6 @@ binding = "AI"
 [browser]
 binding = "BROWSER"
 
-[[kv_namespaces]]
-binding = "EMAIL_DIGEST"
-id = "9ea5773d11ac40ce9904ca21c602e9f4"
-
 [[queues.producers]]
 binding = "CASE_QUEUE"
 queue = "arcanthyr-case-processing"

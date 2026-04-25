@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
 import StareDecisisSection from '../components/StareDecisisSection';
@@ -272,12 +272,6 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
   const [wordMatchMode, setWordMatchMode] = useState(null); // 'phrase' | 'all_words' | 'fallback_single'
   const [wordHasMore, setWordHasMore] = useState(false);
 
-  // AustLII external word search state
-  const [austliiResults, setAustliiResults] = useState([]);
-  const [austliiLoading, setAustliiLoading] = useState(false);
-  const [austliiError, setAustliiError] = useState(null);
-  const [austliiSearched, setAustliiSearched] = useState(false); // true once a search has fired
-
   const courts = [...new Set(rows.map(r => r.court).filter(Boolean))].sort();
   const years  = [...new Set(rows.map(r => r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0]).filter(Boolean))].sort().reverse();
 
@@ -313,10 +307,6 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     setWordQuery('');
     setWordMatchMode(null);
     setWordHasMore(false);
-    setAustliiResults([]);
-    setAustliiLoading(false);
-    setAustliiError(null);
-    setAustliiSearched(false);
   }
 
   async function runLegSearch(q, offset = 0) {
@@ -339,10 +329,6 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
   async function runWordSearch(q) {
     if (!q.trim()) return;
     setWordLoading(true);
-    setAustliiResults([]);
-    setAustliiLoading(true);
-    setAustliiError(null);
-    setAustliiSearched(true);
     try {
       const r = await api.wordSearch(q, 30);
       const payload = r.result ?? r;
@@ -357,15 +343,6 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     } finally {
       setWordLoading(false);
     }
-    // Fire AustLII search async — don't block local results
-    api.austliiWordSearch(q, 20)
-      .then(r => {
-        const payload = r.result ?? r;
-        setAustliiResults(payload.cases ?? []);
-        setAustliiError(payload.ok === false ? (payload.error || 'AustLII search failed') : null);
-      })
-      .catch(() => setAustliiError('AustLII search failed'))
-      .finally(() => setAustliiLoading(false));
   }
 
   return (
@@ -573,38 +550,6 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
             </>
           )}
 
-          {/* AustLII external results — only shown after a search has been fired */}
-          {austliiSearched && (
-            <div style={{ marginTop: '28px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)' }}>
-                  AustLII — External Results
-                </span>
-                <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>↗</span>
-              </div>
-              {austliiLoading && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '4px' }}>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Searching AustLII…</span>
-                </div>
-              )}
-              {!austliiLoading && austliiError && (
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', paddingTop: '4px' }}>
-                  {austliiError}
-                </div>
-              )}
-              {!austliiLoading && !austliiError && austliiResults.length === 0 && (
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', paddingTop: '4px' }}>
-                  No results found on AustLII.
-                </div>
-              )}
-              {!austliiLoading && !austliiError && austliiResults.length > 0 && (
-                <AustLIIResultsTable
-                  results={austliiResults}
-                  localCitations={new Set((wordResults || []).map(r => r.citation))}
-                />
-              )}
-            </div>
-          )}
         </div>
       )}
     </>
@@ -913,129 +858,6 @@ function renderSnippet(snippet) {
     if (m) return <strong key={i} style={{ background: 'rgba(255,208,120,0.35)', color: 'var(--text-primary)', padding: '0 2px', borderRadius: '2px', fontWeight: 600 }}>{m[1]}</strong>;
     return <span key={i}>{part}</span>;
   });
-}
-
-function extractJudgmentBody(html) {
-  let clean = html.replace(/<script[\s\S]*?<\/script>/gi, '');
-  clean = clean.replace(/<style[\s\S]*?<\/style>/gi, '');
-  const bodyMatch = clean.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-  const body = bodyMatch ? bodyMatch[1] : clean;
-  return body
-    .replace(/<div[^>]*class="[^"]*(?:navbar|header|footer|sidebar|breadcrumb)[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
-    .replace(/<form[\s\S]*?<\/form>/gi, '')
-    .replace(/<img[^>]*>/gi, '');
-}
-
-function AustLIIResultsTable({ results, localCitations }) {
-  const [loadingMap, setLoadingMap] = useState({});
-  const [htmlMap, setHtmlMap] = useState({});
-
-  const badgeStyle = {
-    padding: '1px 7px', borderRadius: '10px', fontSize: '10px', fontWeight: 700,
-    letterSpacing: '0.05em', textTransform: 'uppercase',
-  };
-
-  async function handleRead(r) {
-    if (htmlMap[r.citation] !== undefined) {
-      setHtmlMap(prev => { const next = { ...prev }; delete next[r.citation]; return next; });
-      return;
-    }
-    setLoadingMap(prev => ({ ...prev, [r.citation]: true }));
-    try {
-      const html = await api.fetchJudgment(r.url, r.citation);
-      setHtmlMap(prev => ({ ...prev, [r.citation]: html }));
-    } catch (e) {
-      alert('Failed to fetch judgment: ' + e.message);
-    } finally {
-      setLoadingMap(prev => ({ ...prev, [r.citation]: false }));
-    }
-  }
-
-  return (
-    <Table
-      cols={['Citation', 'Case', 'Court', 'Source', 'Links']}
-      rows={results}
-      renderRow={r => {
-        const inCorpus = localCitations.has(r.citation);
-        const jadeUrl = buildJadeUrl(r.citation);
-        const isLoading = !!loadingMap[r.citation];
-        const html = htmlMap[r.citation];
-        const isExpanded = html !== undefined;
-        return (
-          <Fragment key={r.citation}>
-            <tr style={{ background: 'transparent' }}>
-              <td style={tdMono}>{r.citation}</td>
-              <td style={td}>
-                <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
-              </td>
-              <td style={td}>{courtTag(r.court)}</td>
-              <td style={td}>
-                <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                  <span style={{ ...badgeStyle, background: 'rgba(255,165,0,0.15)', color: 'var(--amber)' }}>
-                    AustLII
-                  </span>
-                  {inCorpus && (
-                    <span style={{ ...badgeStyle, background: 'rgba(74,158,255,0.12)', color: 'var(--accent)' }}>
-                      In corpus
-                    </span>
-                  )}
-                </div>
-              </td>
-              <td style={{ ...td, whiteSpace: 'nowrap' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                  <button
-                    onClick={() => handleRead(r)}
-                    disabled={isLoading}
-                    style={{
-                      fontSize: '12px', color: isExpanded ? 'var(--text-muted)' : '#4A9EFF',
-                      background: 'transparent', border: 'none',
-                      cursor: isLoading ? 'wait' : 'pointer',
-                      padding: 0, textAlign: 'left', opacity: isLoading ? 0.6 : 1,
-                    }}
-                  >
-                    {isLoading ? 'Loading…' : isExpanded ? 'Close ↑' : 'Read ↓'}
-                  </button>
-                  <a
-                    href={r.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ fontSize: '12px', color: 'var(--accent)', textDecoration: 'none' }}
-                  >
-                    Open on AustLII ↗
-                  </a>
-                  {jadeUrl && (
-                    <a
-                      href={jadeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ fontSize: '12px', color: 'var(--text-secondary)', textDecoration: 'none' }}
-                    >
-                      View on Jade ↗
-                    </a>
-                  )}
-                </div>
-              </td>
-            </tr>
-            {isExpanded && (
-              <tr style={{ background: 'transparent' }}>
-                <td colSpan={5} style={{ padding: '0 12px 16px', borderBottom: '1px solid var(--border)' }}>
-                  <div
-                    style={{
-                      maxHeight: '600px', overflowY: 'auto', padding: '1rem',
-                      background: 'var(--bg-secondary, var(--surface))', border: '1px solid var(--border)',
-                      fontFamily: 'serif', fontSize: '0.9rem', lineHeight: '1.7',
-                      marginTop: '0.5rem', borderRadius: '4px', color: 'var(--text-body)',
-                    }}
-                    dangerouslySetInnerHTML={{ __html: extractJudgmentBody(html) }}
-                  />
-                </td>
-              </tr>
-            )}
-          </Fragment>
-        );
-      }}
-    />
-  );
 }
 
 function WordSearchResultsTable({ results, rows, onSelect, selectedId }) {

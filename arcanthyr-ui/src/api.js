@@ -35,10 +35,6 @@ export const api = {
     if (court) params.set('court', court);
     return req('GET', `/api/legal/word-search?${params.toString()}`);
   },
-  austliiWordSearch: (q, limit = 20) => {
-    const params = new URLSearchParams({ q, limit: String(limit) });
-    return req('GET', `/api/legal/austlii-word-search?${params.toString()}`);
-  },
   amendments: (actId) =>
     req('GET', `/api/legal/amendments?act=${encodeURIComponent(actId)}`),
 
@@ -174,17 +170,6 @@ export const api = {
     const r = data.result ?? data;
     if (!res.ok) throw new Error(r.error || `HTTP ${res.status}`);
     return r;
-  },
-
-  flagSynthesis: async (body, nexusKey) => {
-    const res = await fetch(`${BASE}/api/pipeline/feedback`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': nexusKey },
-      body: JSON.stringify(body),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    return data;
   },
 
   fetchPendingNexus: async (nexusKey) => {

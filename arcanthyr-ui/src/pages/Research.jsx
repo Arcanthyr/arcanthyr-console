@@ -23,13 +23,7 @@ export default function Research() {
   const [subjectFilter, setSubjectFilter] = useState('all');
   const [selected, setSelected] = useState(null);
   const [queryId, setQueryId] = useState(null);
-  const [nexusKey, setNexusKey] = useState(() => localStorage.getItem('arcanthyr_nexus_key') || '');
   const [history, setHistory] = useState([]);
-
-  function handleNexusKeyChange(k) {
-    setNexusKey(k);
-    localStorage.setItem('arcanthyr_nexus_key', k);
-  }
 
   // Fetch query history on mount
   useEffect(() => {
@@ -200,22 +194,6 @@ export default function Research() {
                 {m === 'claude' ? 'Sol' : "V'ger"}
               </button>
             ))}
-            <a
-              href="https://arcanthyr.com/digest"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                marginLeft: 'auto',
-                padding: '3px 10px', borderRadius: '12px', fontSize: '11px',
-                background: 'var(--surface)',
-                color: 'var(--text-secondary)',
-                border: '1px solid var(--border)',
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Daily Digest ↗
-            </a>
           </div>
 
           {/* Domain filter chips */}
@@ -322,8 +300,6 @@ export default function Research() {
           answer={answer}
           query={query}
           queryId={queryId}
-          nexusKey={nexusKey}
-          onNexusKeyChange={handleNexusKeyChange}
           onShare={() => setShowShare(true)}
           onClose={() => setSelected(null)}
         />

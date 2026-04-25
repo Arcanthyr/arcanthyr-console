@@ -4,7 +4,7 @@ import PrincipleCard from './PrincipleCard';
 
 const SAVE_CATEGORIES = ['annotation', 'doctrine', 'practice note', 'checklist'];
 
-export default function ReadingPane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange, onShare, onClose }) {
+export default function ReadingPane({ selected, answer, query, queryId, onShare, onClose }) {
   // Empty state — no selection, no answer
   if (!selected && !answer) {
     return (
@@ -66,8 +66,6 @@ export default function ReadingPane({ selected, answer, query, queryId, nexusKey
               query={query}
               answer={answer}
               queryId={queryId}
-              nexusKey={nexusKey}
-              onNexusKeyChange={onNexusKeyChange}
             />
           )}
         </div>
@@ -79,7 +77,7 @@ export default function ReadingPane({ selected, answer, query, queryId, nexusKey
     return <AuthorityPane selected={selected} onClose={onClose} />;
   }
 
-  return <CasePane selected={selected} answer={answer} query={query} queryId={queryId} nexusKey={nexusKey} onNexusKeyChange={onNexusKeyChange} onShare={onShare} onClose={onClose} />;
+  return <CasePane selected={selected} answer={answer} query={query} queryId={queryId} onShare={onShare} onClose={onClose} />;
 }
 
 function AuthorityPane({ selected, onClose }) {
@@ -132,7 +130,7 @@ function AuthorityPane({ selected, onClose }) {
   );
 }
 
-function CasePane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange, onShare, onClose }) {
+function CasePane({ selected, answer, query, queryId, onShare, onClose }) {
   const [tab, setTab] = useState(0);
   const TABS = ['Principles', 'Chunks', 'AI Summary'];
 
@@ -222,8 +220,6 @@ function CasePane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange
                   query={query}
                   answer={answer}
                   queryId={queryId}
-                  nexusKey={nexusKey}
-                  onNexusKeyChange={onNexusKeyChange}
                 />
               </>
             )
@@ -234,16 +230,13 @@ function CasePane({ selected, answer, query, queryId, nexusKey, onNexusKeyChange
   );
 }
 
-function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
+function SaveFlagPanel({ query, answer, queryId }) {
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveTitle, setSaveTitle] = useState('');
   const [saveCategory, setSaveCategory] = useState('annotation');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState('');
-  const [flagged, setFlagged] = useState(false);
-  const [flagging, setFlagging] = useState(false);
-  const [showKeyInput, setShowKeyInput] = useState(false);
   const [thumbsOpen, setThumbsOpen] = useState(false);
   const [thumbsNote, setThumbsNote] = useState('');
   const [thumbsFlagged, setThumbsFlagged] = useState(false);
@@ -275,24 +268,6 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
       setSaveError(e.message);
     } finally {
       setSaving(false);
-    }
-  }
-
-  async function doFlag(key) {
-    const k = key !== undefined ? key : nexusKey;
-    if (!k) { setShowKeyInput(true); return; }
-    setFlagging(true);
-    try {
-      await api.flagSynthesis(
-        { query_id: queryId, chunk_id: null, feedback_type: 'unhelpful', comment: '' },
-        k
-      );
-      setFlagged(true);
-      setShowKeyInput(false);
-    } catch {
-      // silently fail — non-critical quality signal
-    } finally {
-      setFlagging(false);
     }
   }
 
@@ -333,25 +308,6 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
           </button>
         ) : (
           <span style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.04em' }}>✓ Saved to Nexus</span>
-        )}
-
-        {/* Flag */}
-        {!flagged ? (
-          <button
-            onClick={() => doFlag()}
-            disabled={flagging}
-            style={{
-              fontSize: '11px', padding: '5px 10px', background: 'transparent',
-              border: 'none', color: 'var(--text-muted)', cursor: flagging ? 'default' : 'pointer',
-              letterSpacing: '0.04em', transition: 'color 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'var(--red)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
-          >
-            {flagging ? '…' : '⚑ Flag'}
-          </button>
-        ) : (
-          <span style={{ fontSize: '11px', color: 'var(--red)', letterSpacing: '0.04em' }}>⚑ Flagged</span>
         )}
 
         {/* Insufficient — sets query_log.sufficient=0 */}
@@ -413,34 +369,7 @@ function SaveFlagPanel({ query, answer, queryId, nexusKey, onNexusKeyChange }) {
         </div>
       )}
 
-      {/* Inline key input for Flag (only when key not yet set) */}
-      {showKeyInput && !flagged && (
-        <div style={{ marginTop: '8px', display: 'flex', gap: '6px', alignItems: 'center' }}>
-          <input
-            type="password"
-            value={nexusKey}
-            onChange={e => onNexusKeyChange(e.target.value)}
-            placeholder="Admin key"
-            style={{
-              padding: '4px 8px', fontSize: '11px', width: '180px',
-              background: 'var(--surface)', border: '1px solid var(--border)',
-              borderRadius: '4px', color: 'var(--text-primary)',
-            }}
-          />
-          <button
-            onClick={() => doFlag(nexusKey)}
-            style={{ fontSize: '11px', padding: '4px 10px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer' }}
-          >
-            Submit
-          </button>
-          <button
-            onClick={() => setShowKeyInput(false)}
-            style={{ fontSize: '11px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-          >
-            Cancel
-          </button>
-        </div>
-      )}
+
 
       {/* Save panel */}
       {saveOpen && (

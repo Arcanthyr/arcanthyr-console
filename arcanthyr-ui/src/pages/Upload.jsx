@@ -127,7 +127,7 @@ function CasesTab() {
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type="url"
-            placeholder="https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/..."
+            placeholder="Source URL (optional)"
             value={url}
             onChange={e => setUrl(e.target.value)}
             style={{ ...smallInput, flex: 1 }}

@@ -76,32 +76,6 @@ function getTokenFromRequest(request) {
    ============================================================= */
 const WORKERS_AI_MODEL = '@cf/qwen/qwen3-30b-a3b-fp8';
 
-const procedurePassPrompt = `You are reviewing a Tasmanian court judgment for in-court procedural content relevant to criminal law practitioners.
-
-Extract any of the following if present:
-- Voir dire proceedings (how conducted, what evidence taken, ruling made)
-- Evidence admissibility rulings (the sequence of objection, argument, and determination)
-- Hostile witness applications under s 38 Evidence Act 2001 (Tas)
-- Tendency or coincidence evidence rulings (how the application was made and determined)
-- Contested facts hearings at sentencing
-- Any other in-court procedural sequence described in enough detail to be useful to a practitioner
-
-For each item found, output a Markdown chunk with:
-- A heading describing the procedure (e.g. ## Voir Dire — Admissibility of Record of Interview)
-- The sequence of steps as they occurred, in plain language
-- The outcome/ruling
-- Any practical notes a practitioner would find useful (e.g. what arguments succeeded, what the judge required)
-
-Metadata below each heading:
-[CATEGORY: procedure]
-[TYPE: voir dire / admissibility ruling / hostile witness / tendency evidence / contested facts / procedural sequence]
-[TOPIC: one-line description]
-[CONCEPTS: 5-8 plain-language search terms a practitioner would use]
-
-If the judgment contains no such content, output exactly: NO PROCEDURE CONTENT
-
-Output only the Markdown chunks or NO PROCEDURE CONTENT. No preamble, no commentary.`;
-
 async function callWorkersAI(env, systemPrompt, userContent, maxTokens = 4000) {
   const result = await env.AI.run(WORKERS_AI_MODEL, {
     max_tokens: maxTokens,
@@ -167,98 +141,7 @@ async function handleShare(body, env) {
   return { ok: true };
 }
 
-/* =============================================================
-   AUSTLII SCRAPER FUNCTIONS
-   ============================================================= */
-const AUSTLII_COURTS = {
-  magistrates: "TAMagC",
-  supreme: "TASSC",
-  cca: "TASCCA",
-  fullcourt: "TASFC",
-};
 
-async function fetchRecentAustLIICases(env, limit = 50) {
-  const currentYear = new Date().getFullYear();
-  const allNewCases = [];
-  const TAS_COURT_PATHS = [
-    'au/cases/tas/TASSC',
-    'au/cases/tas/TASCCA',
-    'au/cases/tas/TASFC',
-    'au/cases/tas/TAMagC',
-  ];
-  const maskParams = TAS_COURT_PATHS.map(p => `mask_path=${encodeURIComponent(p)}`).join('&');
-  const sinosrchUrl = `https://www.austlii.edu.au/cgi-bin/sinosrch.cgi?query=${encodeURIComponent(`[${currentYear}]`)}&meta=%2Fau&method=auto&results=${limit}&rank=on&${maskParams}`;
-
-  try {
-    const resp = await fetch(sinosrchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.austlii.edu.au/forms/search1.html',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-AU,en;q=0.9'
-      }
-    });
-    if (!resp.ok) {
-      console.error(`fetchRecentAustLIICases: sinosrch returned ${resp.status}`);
-      return [];
-    }
-    const html = await resp.text();
-    const parsed = parseAustLIIResults(html);
-    for (const c of parsed) {
-      if (allNewCases.length >= limit) break;
-      const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(c.citation).first();
-      if (!exists) {
-        allNewCases.push({ citation: c.citation, url: c.url, court: c.court });
-      }
-    }
-  } catch (err) {
-    console.error('fetchRecentAustLIICases error:', err.message);
-  }
-
-  return allNewCases;
-}
-
-async function fetchCaseContent(url, preloadedHtml = null, env = null) {
-  // NOTE: case_name is NOT extracted here. Llama extracts it in summarizeCase().
-  // This function only strips HTML and returns the plain text for AI processing.
-  try {
-    let html;
-    if (preloadedHtml) {
-      html = preloadedHtml;
-    } else if (url && url.includes('/cgi-bin/viewdoc/') && env?.BROWSER) {
-      // viewdoc URLs: AustLII returns 403 on raw CF-edge fetches; use a real browser
-      let browser;
-      try {
-        browser = await puppeteer.launch(env.BROWSER);
-        const page = await browser.newPage();
-        const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        if (!resp || resp.status() !== 200) return null;
-        html = await page.content();
-      } finally {
-        if (browser) await browser.close();
-      }
-    } else {
-      // ── Route through VPS proxy to avoid Cloudflare edge IP blocks ────────
-      const { html: fetchedHtml, status } = await handleFetchPage({ url }, env);
-      if (status !== 200) return null;
-      html = fetchedHtml;
-    }
-
-    const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-    const content = contentMatch ? contentMatch[1] : html;
-
-    const textContent = content
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .substring(0, 500000);
-
-    return { full_text: textContent };
-  } catch (error) {
-    console.error(`Error fetching case content from ${url}:`, error);
-    return null;
-  }
-}
 
 /* =============================================================
    CASE PROCESSING
@@ -280,74 +163,6 @@ function isLikelyHeader(chunkIndex, chunkText) {
   return upperLabels >= 3 || hasMarkers;
 }
 
-async function processCaseUpload(env, caseText, citation, caseName, court) {
-  if (!caseText || !citation) throw new Error("Missing required fields: caseText and citation");
-
-  const exists = await env.DB.prepare("SELECT id, enriched FROM cases WHERE citation = ?").bind(citation).first();
-  if (exists && exists.enriched === 1) throw new Error(`Case ${citation} already exists and is fully processed`);
-
-  const truncatedText = caseText.length > 500000 ? caseText.substring(0, 500000) : caseText;
-
-  const caseData = {
-    citation,
-    case_name: caseName || citation, // hint only — Llama will override
-    court: court || "unknown",
-    year: citation.match(/\[(\d{4})\]/)?.[1] || new Date().getFullYear().toString(),
-    full_text: truncatedText,
-    url: "",
-  };
-
-  const summary = await summarizeCase(env, caseData);
-
-  // Llama-extracted name wins; fall back to form hint; then citation
-  const finalCaseName = summary.case_name || caseData.case_name;
-  const finalCaseData = { ...caseData, case_name: finalCaseName };
-
-  // ── Write D1 immediately — before procedure pass or nexus ─────────
-  const id = await saveCaseToDb(env, finalCaseData, summary);
-  await env.DB.prepare(`UPDATE cases SET enriched = 1 WHERE citation = ?`).bind(citation).run();
-
-  // ── Procedure pass ────────────────────────────────────────────────
-  try {
-    const procResponse = await callWorkersAI(env, procedurePassPrompt, caseText.slice(0, 80000));
-    const procText = (procResponse || "").trim();
-    if (procText && procText !== "NO PROCEDURE CONTENT") {
-      await env.DB.prepare(
-        `UPDATE cases SET procedure_notes = ? WHERE citation = ?`
-      ).bind(procText, citation).run();
-    }
-  } catch (e) {
-    console.error("[procedure pass] failed:", e.message);
-  }
-
-  // ── Nexus ingest (fire-and-forget) ───────────────────────────────
-  try {
-    fetch("https://nexus.arcanthyr.com/ingest", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
-      body: JSON.stringify({
-        citation: finalCaseData.citation,
-        case_name: finalCaseData.case_name,
-        source: "AustLII",
-        text: finalCaseData.full_text,
-        summary: summary.facts + " " + summary.holding,
-        category: "criminal",
-        jurisdiction: "Tasmania",
-        court: finalCaseData.court,
-        year: finalCaseData.year,
-        outcome: summary.holding,
-        principles: summary.principles.map(p => p.principle || p),
-        legislation: summary.principles.flatMap(p => p.statute_refs || []),
-        offences: [],
-      })
-    });
-    console.log(`Nexus ingest ok for ${finalCaseData.citation}`);
-  } catch (e) {
-    console.error("Nexus ingest failed:", e.message);
-  }
-
-  return { id, citation, case_name: finalCaseName, summary };
-}
 
 async function summarizeCase(env, caseData) {
   // ─── ARCHITECTURE NOTE ────────────────────────────────────────────────────
@@ -605,187 +420,6 @@ function _buildSummary(primary, secondary, citation) {
   };
 }
 
-/* =============================================================
-   DATABASE FUNCTIONS
-   ============================================================= */
-async function saveCaseToDb(env, caseData, summary) {
-  const id = caseData.citation.replace(/\s+/g, '-');
-
-  await env.DB.prepare(`
-    INSERT OR REPLACE INTO cases
-    (id, citation, court, case_date, case_name, judge, parties, url, raw_text, facts, issues, holding,
-     holdings_extracted, principles_extracted, legislation_extracted, authorities_extracted,
-     processed_date, summary_quality_score, enriched)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(
-    id,
-    caseData.citation,
-    caseData.court ?? null,
-    `${(caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1]}-01-01`,
-    summary.case_name ?? null,
-    summary.judge ?? null,
-    summary.parties ?? null,
-    caseData.url || "",
-    caseData.full_text || "",
-    summary.facts ?? null,
-    summary.issues ?? null,
-    summary.holding ?? null,
-    JSON.stringify(summary.holdings || []),
-    JSON.stringify(summary.principles || []),
-    JSON.stringify(summary.legislation || []),
-    JSON.stringify(summary.key_authorities || []),
-    new Date().toISOString(),
-    summary.summary_quality_score ?? 0,
-    1
-  ).run();
-
-  for (const principle of summary.principles) {
-    await savePrinciple(env, principle, caseData.citation);
-  }
-
-  return id;
-}
-
-async function savePrinciple(env, principle, citation) {
-  const principleText = principle.principle || principle;
-  const keywords = principle.keywords || [];
-  const statuteRefs = principle.statute_refs || [];
-
-  const existing = await env.DB.prepare("SELECT id FROM legal_principles WHERE principle_text = ?")
-    .bind(principleText).first();
-
-  if (existing) {
-    const current = await env.DB.prepare("SELECT case_citations FROM legal_principles WHERE id = ?")
-      .bind(existing.id).first();
-    const citations = JSON.parse(current.case_citations || "[]");
-    if (!citations.includes(citation)) {
-      citations.push(citation);
-      await env.DB.prepare("UPDATE legal_principles SET case_citations = ?, most_recent_citation = ? WHERE id = ?")
-        .bind(JSON.stringify(citations), citation, existing.id).run();
-    }
-  } else {
-    const id = `prin-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    await env.DB.prepare(`
-      INSERT INTO legal_principles 
-      (id, principle_text, keywords, statute_refs, case_citations, most_recent_citation, date_added)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(id, principleText, JSON.stringify(keywords), JSON.stringify(statuteRefs),
-      JSON.stringify([citation]), citation, new Date().toISOString()).run();
-  }
-}
-
-async function getSyncProgress(env) {
-  const stats = await env.DB.prepare(`
-    SELECT COUNT(*) as total_cases, MIN(case_date) as earliest_case,
-           MAX(case_date) as latest_case, MAX(processed_date) as last_sync
-    FROM cases
-  `).first();
-  const principleCount = await env.DB.prepare("SELECT COUNT(*) as count FROM legal_principles").first();
-
-  return {
-    total_cases: stats?.total_cases || 0,
-    total_principles: principleCount?.count || 0,
-    earliest_case: stats?.earliest_case || "None",
-    latest_case: stats?.latest_case || "None",
-    last_sync: stats?.last_sync || "Never",
-  };
-}
-
-/* =============================================================
-   SCHEDULED SYNC
-   ============================================================= */
-async function runYearBackfill(env, year) {
-  // NOTE: This Worker-side backfill hits Cloudflare CPU time limits on large
-  // years. Use the Python scraper (austlii_scraper.py) for bulk backfill.
-  // This endpoint is kept for small/targeted use only.
-  console.log(`Starting backfill for year ${year}...`);
-  let casesProcessed = 0;
-  let casesFailed = 0;
-  const errors = [];
-
-  for (const [court, courtAbbrev] of Object.entries(AUSTLII_COURTS)) {
-    const cases = [];
-    let num = 1;
-    let consecutiveMisses = 0;
-
-    while (consecutiveMisses < 5) {
-      const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${year}/${num}.html`;
-      try {
-        const { html, status } = await handleFetchPage({ url }, env);
-        if (status === 404 || status === 410) { consecutiveMisses++; }
-        else if (status === 200) {
-          consecutiveMisses = 0;
-          cases.push({ citation: `[${year}] ${courtAbbrev} ${num}`, year: String(year), court, url, html });
-        }
-      } catch (e) { console.error(`Fetch error:`, e); }
-      num++;
-      await new Promise(r => setTimeout(r, 1000));
-    }
-
-    for (const caseData of cases) {
-      const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(caseData.citation).first();
-      if (exists) continue;
-      try {
-        const content = caseData.html ? await fetchCaseContent(null, caseData.html, env) : await fetchCaseContent(caseData.url, null, env);
-        if (!content?.full_text || content.full_text.length < 100) { casesFailed++; continue; }
-        const fullCaseData = { ...caseData, ...content };
-        const summary = await summarizeCase(env, fullCaseData);
-        const finalCaseData = { ...fullCaseData, case_name: summary.case_name || caseData.citation };
-        await saveCaseToDb(env, finalCaseData, summary);
-        casesProcessed++;
-        await new Promise(r => setTimeout(r, 2000));
-      } catch (err) {
-        casesFailed++;
-        errors.push(`${caseData.citation}: ${err.message}`);
-      }
-    }
-  }
-
-  return { year, casesProcessed, casesFailed, errors };
-}
-
-async function runDailySync(env) {
-  console.log("Starting daily AustLII check...");
-  let casesProcessed = 0, casesFailed = 0;
-  const dailyLimit = 50;
-  const errors = [];
-
-  const newCases = await fetchRecentAustLIICases(env, dailyLimit);
-  console.log(`Found ${newCases.length} new cases to process`);
-
-  for (const caseData of newCases) {
-    if (casesProcessed >= dailyLimit) break;
-    try {
-      const content = await fetchCaseContent(caseData.url, caseData.html || null, env);
-      if (!content?.full_text || content.full_text.length < 100) {
-        errors.push(`${caseData.citation}: Insufficient text`);
-        casesFailed++;
-        continue;
-      }
-      const caseId = caseData.citation.replace(/\s+/g, "-");
-      const caseYear = (caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1];
-      await env.DB.prepare(
-        `INSERT OR IGNORE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`
-      ).bind(caseId, caseData.citation, caseData.court, `${caseYear}-01-01`, content.full_text).run();
-      await env.CASE_QUEUE.send({
-        type: 'METADATA',
-        url: caseData.url,
-        citation: caseData.citation
-      });
-      casesProcessed++;
-      console.log(`✓ queued ${caseData.citation}`);
-      await new Promise(r => setTimeout(r, 2000));
-    } catch (error) {
-      errors.push(`${caseData.citation}: ${error.message}`);
-      casesFailed++;
-    }
-  }
-
-  console.log(`Daily sync complete. Processed: ${casesProcessed}, Failed: ${casesFailed}`);
-
-  return { success: true, cases_processed: casesProcessed, cases_failed: casesFailed, errors };
-}
-
 async function runBatchedChunkCleanup(env) {
   const countRow = await env.DB.prepare(
     `SELECT COUNT(*) as cnt FROM case_chunks WHERE done = 0 AND dlq = 0`
@@ -804,252 +438,8 @@ async function runBatchedChunkCleanup(env) {
   console.log(`[cron] batched cleanup: enqueued ${results.length} chunks, ${remaining} remaining`);
 }
 
-/* =============================================================
-   ORIGINAL AI ACTION HANDLERS
-   ============================================================= */
-async function handleDraft(body, env) {
-  const { text, tag } = body;
-  if (!text || !tag) throw new Error("Missing text or tag");
-  const system = `You are a precise clarity engine inside a productivity console called Arcanthyr.
-Rewrite the user's raw input as a clean, structured entry.
-Rules:
-- Keep the user's intent exactly — do NOT decide or advise
-- Remove filler, noise, and vagueness
-- Output 2-3 sentences max
-- First sentence: core statement. Second: scope or constraint. Third (optional): success condition.
-- No bullet lists. No markdown. Plain prose only.
-- Entry type: ${tag}
-- Output ONLY the rewritten entry. No preamble, no sign-off.`;
-  return callWorkersAI(env, system, text, 300);
-}
-
-async function handleNextActions(body, env) {
-  const { text, tag, next, clarify } = body;
-  if (!text || !tag) throw new Error("Missing text or tag");
-  const system = `You are a strategic action engine inside Arcanthyr, a personal clarity console.
-Propose exactly 3 concrete next actions. Each must be:
-- Physically doable (not vague like "think about it")
-- Under 15 words each
-- Ordered by urgency/leverage (highest first)
-- Grounded in the entry's actual content
-Respond EXACTLY like this with no other text:
-1. [action]
-2. [action]
-3. [action]`;
-  return callWorkersAI(env, system, `Entry type: ${tag}\nRaw text: ${text}\nGuidance: ${next || ""}\nClarify: ${clarify || ""}`, 300);
-}
-
-async function handleWeeklyReview(body, env) {
-  const { entries } = body;
-  if (!entries || !entries.length) return "No entries to review.";
-  const system = `You are a pattern recognition engine inside Arcanthyr.
-Analyse the entries and produce a concise weekly review.
-Respond with EXACTLY these three sections and no other text:
-
-RECURRING THEMES
-[2-3 sentences on topics or concerns that appear repeatedly]
-
-STUCK LOOPS
-[2-3 sentences on anything recurring without resolution]
-
-DECISIONS PENDING
-[1-2 sentences on unresolved decisions in the data]
-
-If a section has nothing to report, write: None identified.`;
-  return callWorkersAI(env, system, `Entries:\n${entries.map(e => `[${(e.tag || "note").toUpperCase()}] ${e.text}`).join("\n")}`, 700);
-}
 
 
-async function handleClarifyAgent(body, env) {
-  const { text, tag, history = [], userReply = null } = body;
-  if (!text || !tag) throw new Error("Missing text or tag");
-
-  const historyContext = history.length > 0
-    ? `\nConversation so far:\n${history.map(h => `${h.role === "agent" ? "Agent" : "User"}: ${h.content}`).join("\n")}`
-    : "";
-  const userExchanges = history.filter(h => h.role === "user").length;
-
-  if (userExchanges >= 2 && userReply) {
-    const crystallised = await callWorkersAI(env,
-      `You are a clarity synthesis engine inside Arcanthyr. Produce a final crystallised entry (2-3 sentences, plain prose). Output ONLY the crystallised entry.`,
-      `Original entry (${tag}): ${text}${historyContext}\nUser final reply: ${userReply}`, 300);
-    return { done: true, draft: crystallised, question: null };
-  }
-
-  const question = await callWorkersAI(env,
-    `You are a conversational clarity agent inside Arcanthyr. Ask ONE precise question (under 20 words) specific to THEIR content. No preamble. Output ONLY the question.`,
-    `Entry type: ${tag}\nEntry: ${text}${historyContext}${userReply ? `\nUser replied: ${userReply}` : ""}\n${userExchanges === 0 ? "First question." : "Go deeper."}`,
-    120);
-  return { done: false, question, draft: null };
-}
-
-async function handleAxiomRelay(body, env) {
-  const { entries, focus } = body;
-  if (!entries || !entries.length) return { report: "No entries to relay." };
-
-  const entryLines = entries.map((e, i) => `[${i}] [${(e.tag || "note").toUpperCase()}] ${e.text}`).join("\n");
-  const focusNote = focus ? `\nFocus area: ${focus}` : "";
-
-  // Stage 1 — decompose entries into surface/intent/constraint
-  const stage1System = `You are a strategic decomposition engine. For each numbered entry, extract:
-- surface: what is literally stated (1 sentence)
-- intent: the underlying goal or need (1 sentence)
-- constraint: what is blocking, limiting, or creating tension (1 sentence)
-Output ONLY a JSON array: [{"id":0,"surface":"...","intent":"...","constraint":"..."},...]
-No preamble. No commentary. Valid JSON only.`;
-  const stage1Raw = await callWorkersAI(env, stage1System, `Entries:${focusNote}\n${entryLines}`, 900);
-
-  // Stage 2 — identify tensions and opportunities across the decomposed entries
-  const stage2System = `You are a systems analyst. Given decomposed entries, identify exactly 3 tensions or leverage opportunities across them.
-Format EXACTLY as:
-TENSION_1
-[1-2 sentences]
-TENSION_2
-[1-2 sentences]
-TENSION_3
-[1-2 sentences]
-No other text.`;
-  const stage2Raw = await callWorkersAI(env, stage2System, `Decomposed entries:${focusNote}\n${stage1Raw}`, 400);
-
-  // Stage 3 — produce final relay report
-  const stage3System = `You are the Axiom Relay — a strategic synthesis engine. Produce a final report using EXACTLY these four sections:
-
-SIGNAL
-[2-3 sentences: the dominant pattern or core theme across all entries]
-
-LEVERAGE POINT
-[2-3 sentences: the single highest-value intervention or decision point]
-
-RELAY ACTIONS
-[3 concrete numbered actions, each under 15 words]
-
-DEAD WEIGHT
-[1-2 sentences: what should be dropped, deprioritised, or stopped]
-
-No other text. No preamble.`;
-  const stage3Raw = await callWorkersAI(env, stage3System, `Tensions identified:${focusNote}\n${stage2Raw}\n\nOriginal entries:\n${entryLines}`, 1200);
-
-  return { report: stage3Raw };
-}
-
-/* =============================================================
-   API HANDLERS
-   ============================================================= */
-async function handleSendEmail(body, env) {
-  const { to, subject, content } = body;
-  if (!to || !subject || !content) throw new Error("Missing required fields");
-  const html = `<div style="font-family:'DM Mono',monospace;max-width:600px;margin:0 auto;padding:20px;">
-    <div style="border-bottom:1px solid #3a3b3f;padding-bottom:12px;margin-bottom:20px;">
-      <h2 style="color:#a8b4c0;font-family:'Cormorant Garamond',serif;letter-spacing:0.12em;">ARCANTHYR</h2>
-    </div>
-    <div style="white-space:pre-wrap;line-height:1.7;color:#f0f1f2;">${content}</div>
-    <div style="border-top:1px solid #3a3b3f;margin-top:20px;padding-top:12px;font-size:12px;color:#888c94;">Sent from Arcanthyr Console</div>
-  </div>`;
-  const result = await sendEmail(env, to, subject, html);
-  return { success: true, message_id: result.id };
-}
-
-async function handleGetContacts(env) {
-  const { results } = await env.DB.prepare("SELECT * FROM email_contacts ORDER BY name ASC").all();
-  return results || [];
-}
-
-async function handleAddContact(body, env) {
-  const { name, email } = body;
-  if (!name || !email) throw new Error("Missing name or email");
-  const id = `contact-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  await env.DB.prepare("INSERT INTO email_contacts (id, name, email, created_at) VALUES (?, ?, ?, ?)")
-    .bind(id, name, email, new Date().toISOString()).run();
-  return { id, name, email };
-}
-
-async function handleDeleteContact(contactId, env) {
-  await env.DB.prepare("DELETE FROM email_contacts WHERE id = ?").bind(contactId).run();
-  return { success: true };
-}
-
-async function handleSearchCases(body, env) {
-  // Params:
-  //   query      – keyword search across case_name, facts, issues, holding, citation
-  //   court      – "all" | "supreme" | "magistrates" | "cca" | "fullcourt"
-  //   year       – exact year string "2024" (takes precedence over range)
-  //   year_from  – start of range "2020"
-  //   year_to    – end of range "2024"
-  //   limit      – page size (default 100, max 500)
-  //   offset     – pagination offset (default 0)
-  //
-  // Returns: { total, limit, offset, cases[] }
-  const {
-    query,
-    court,
-    year,
-    year_from,
-    year_to,
-    limit: rawLimit = 100,
-    offset: rawOffset = 0,
-  } = body;
-
-  const limit = Math.min(Number(rawLimit) || 100, 500);
-  const offset = Number(rawOffset) || 0;
-
-  const conditions = ["1=1"];
-  const params = [];
-
-  if (query && query.trim()) {
-    conditions.push("(case_name LIKE ? OR facts LIKE ? OR issues LIKE ? OR holding LIKE ? OR citation LIKE ?)");
-    const t = `%${query.trim()}%`;
-    params.push(t, t, t, t, t);
-  }
-
-  if (court && court !== "all") {
-    conditions.push("court = ?");
-    params.push(court);
-  }
-
-  if (year && year !== "all") {
-    conditions.push("strftime('%Y', case_date) = ?");
-    params.push(String(year));
-  } else {
-    if (year_from) { conditions.push("strftime('%Y', case_date) >= ?"); params.push(String(year_from)); }
-    if (year_to) { conditions.push("strftime('%Y', case_date) <= ?"); params.push(String(year_to)); }
-  }
-
-  const where = conditions.join(" AND ");
-
-  const countRow = await env.DB.prepare(`SELECT COUNT(*) as total FROM cases WHERE ${where}`)
-    .bind(...params).first();
-  const total = countRow?.total || 0;
-
-  const { results } = await env.DB.prepare(`
-    SELECT id, citation, court, case_date, case_name, url, facts, issues, holding,
-           principles_extracted, summary_quality_score
-    FROM cases WHERE ${where}
-    ORDER BY case_date DESC, citation DESC
-    LIMIT ? OFFSET ?
-  `).bind(...params, limit, offset).all();
-
-  return { total, limit, offset, cases: results || [] };
-}
-
-async function handleSearchPrinciples(body, env) {
-  const { query, limit = 50 } = body;
-  let sql = "SELECT * FROM legal_principles WHERE 1=1";
-  const params = [];
-  if (query && query.trim()) {
-    sql += " AND (principle_text LIKE ? OR keywords LIKE ? OR statute_refs LIKE ?)";
-    const t = `%${query}%`;
-    params.push(t, t, t);
-  }
-  sql += " ORDER BY date_added DESC LIMIT ?";
-  params.push(limit);
-  const { results } = await env.DB.prepare(sql).bind(...params).all();
-  return (results || []).map(r => ({
-    ...r,
-    keywords: JSON.parse(r.keywords || "[]"),
-    statute_refs: JSON.parse(r.statute_refs || "[]"),
-    case_citations: JSON.parse(r.case_citations || "[]"),
-  }));
-}
 
 function citationToId(citation) {
   return citation
@@ -2113,83 +1503,6 @@ function sanitiseFtsInput(raw) {
   return s;
 }
 
-function parseAustLIIResults(html) {
-  const COURT_MAP = { TASSC: 'supreme', TASCCA: 'cca', TASFC: 'fullcourt', TAMagC: 'magistrates' };
-  const cases = [];
-  const seen = new Set();
-  const pattern = /href="\/cgi-bin\/viewdoc\/(au\/cases\/tas\/(TASSC|TASCCA|TASFC|TAMagC)\/(\d{4})\/(\d+)\.html)[^"]*"[^>]*>([\s\S]*?)<\/a>/gi;
-  let m;
-  while ((m = pattern.exec(html)) !== null) {
-    const [, path, courtCode, year, num, rawName] = m;
-    const citation = `[${year}] ${courtCode} ${num}`;
-    if (seen.has(citation)) continue;
-    seen.add(citation);
-    const caseName = rawName
-      .replace(/<[^>]+>/g, '')           // strip HTML tags
-      .replace(/\s+/g, ' ')             // normalise whitespace
-      .replace(/&amp;/g, '&')           // decode HTML entity
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/\s*\[\d{4}\].*$/, '')   // strip citation + date suffix
-      .trim();
-    cases.push({
-      citation,
-      case_name: caseName,
-      url: `https://www.austlii.edu.au/cgi-bin/viewdoc/${path}`,
-      court: COURT_MAP[courtCode] || courtCode,
-      source: 'austlii'
-    });
-  }
-  return cases;
-}
-
-async function handleAustLIIWordSearch(url, env) {
-  const rawQ = (url.searchParams.get('q') || '').trim();
-  const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
-  if (!rawQ || rawQ.length < 2) {
-    return { ok: false, error: 'Query too short', cases: [], total: 0 };
-  }
-  const TAS_COURTS = [
-    'au/cases/tas/TASSC',
-    'au/cases/tas/TASCCA',
-    'au/cases/tas/TASFC',
-    'au/cases/tas/TAMagC'
-  ];
-  const baseParams = `query=${encodeURIComponent(rawQ)}&meta=%2Fau&method=auto&results=${limit}&rank=on`;
-  const maskParams = TAS_COURTS.map(c => `mask_path=${encodeURIComponent(c)}`).join('&');
-  const austliiUrl = `https://www.austlii.edu.au/cgi-bin/sinosrch.cgi?${baseParams}&${maskParams}`;
-  try {
-    const resp = await fetch(austliiUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.austlii.edu.au/forms/search1.html',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-AU,en;q=0.9'
-      }
-    });
-    if (!resp.ok) {
-      return { ok: false, error: `AustLII returned HTTP ${resp.status}`, cases: [], total: 0 };
-    }
-    const html = await resp.text();
-    const cases = parseAustLIIResults(html).slice(0, limit);
-    if (cases.length === 0) {
-      console.log('[austlii-word-search] 0 cases parsed. First tas href:', html.match(/href="[^"]*\/au\/cases\/tas[^"]*"/i)?.[0] || 'none found');
-    }
-    try {
-      await env.DB.prepare(
-        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
-      ).bind(
-        crypto.randomUUID(), rawQ, new Date().toISOString(),
-        '[]', 0, '[]', '[]', '[]',
-        cases.length, 'v68-history', null, null, 'austlii_word_search'
-      ).run();
-    } catch (_le) { console.error('query_log insert failed (austlii_word_search):', _le); }
-    return { ok: true, query: rawQ, cases, total: cases.length, source: 'austlii' };
-  } catch (err) {
-    console.error('handleAustLIIWordSearch error:', err.message);
-    return { ok: false, error: 'AustLII search failed — try again or check connection.', cases: [], total: 0 };
-  }
-}
 
 async function handleFetchJudgment(url, env) {
   const rawUrl = url.searchParams.get('url');
@@ -4294,43 +3607,7 @@ export default {
       });
     }
 
-    /* ── AI PROXY ROUTES ─────────────────────────────────────── */
-    if (url.pathname.startsWith("/api/ai/")) {
-      if (!rateLimit(`${ip}:ai`, 15, 60_000)) return json({ error: "Rate limit exceeded. Wait a moment." }, 429);
-      if (!env.AI) return json({ error: "AI binding not configured." }, 503);
-      if (request.method !== "POST") return json({ error: "AI routes accept POST only." }, 405);
 
-      const action = url.pathname.replace("/api/ai/", "");
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid JSON body." }, 400); }
-
-      try {
-        let result;
-        if (action === "draft") result = await handleDraft(body, env);
-        else if (action === "next-actions") result = await handleNextActions(body, env);
-        else if (action === "weekly-review") result = await handleWeeklyReview(body, env);
-        else if (action === "clarify-agent") result = await handleClarifyAgent(body, env);
-        else if (action === "axiom-relay") result = await handleAxiomRelay(body, env);
-        else return json({ error: `Unknown AI action: ${action}` }, 404);
-        return json({ result });
-      } catch (err) { return json({ error: err.message }, 500); }
-    }
-
-    /* ── EMAIL ROUTES ────────────────────────────────────────── */
-    if (url.pathname.startsWith("/api/email/")) {
-      if (!rateLimit(`${ip}:email`, 10, 60_000)) return json({ error: "Email rate limit exceeded." }, 429);
-      const action = url.pathname.replace("/api/email/", "");
-      const body = request.method === "POST" ? await request.json() : null;
-      try {
-        let result;
-        if (action === "send" && request.method === "POST") result = await handleSendEmail(body, env);
-        else if (action === "contacts" && request.method === "GET") result = await handleGetContacts(env);
-        else if (action === "contacts" && request.method === "POST") result = await handleAddContact(body, env);
-        else if (action.startsWith("contacts/") && request.method === "DELETE") result = await handleDeleteContact(action.replace("contacts/", ""), env);
-        else return json({ error: "Invalid email endpoint" }, 404);
-        return json({ result });
-      } catch (err) { return json({ error: err.message }, 500); }
-    }
 
     /* ── LEGAL RESEARCH ROUTES ───────────────────────────────── */
     if (url.pathname.startsWith("/api/legal/")) {
@@ -4339,12 +3616,7 @@ export default {
       const body = request.method === "POST" ? await request.json() : null;
       try {
         let result;
-        if (action === "sync-progress") result = await getSyncProgress(env);
-        else if (action === "search-cases" && request.method === "POST") result = await handleSearchCases(body, env);
-        else if (action === "search-principles" && request.method === "POST") result = await handleSearchPrinciples(body, env);
-        else if (action === "trigger-sync" && request.method === "POST") result = await runDailySync(env);
-        else if (action === "backfill-year" && request.method === "POST") result = await runYearBackfill(env, body.year || new Date().getFullYear() - 1);
-        else if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
+        if (action === "upload-case" && request.method === "POST") result = await handleUploadCase(body, env);
         else if (action === "reprocess-case" && request.method === "POST") result = await handleReprocessCase(body, env);
         else if (action === "extract-pdf" && request.method === "POST") result = await handleExtractPdf(body, env);
         else if (action === "upload-legislation" && request.method === "POST") result = await handleUploadLegislation(body, env);
@@ -4371,7 +3643,6 @@ export default {
         else if (action === "legislation-search" && request.method === "POST") result = await handleLegislationSearch(body, env);
         else if (action === "search-by-legislation" && request.method === "GET") result = await handleSearchByLegislation(url, env);
         else if (action === "word-search" && request.method === "GET") result = await handleWordSearch(url, env);
-        else if (action === "austlii-word-search" && request.method === "GET") result = await handleAustLIIWordSearch(url, env);
         else if (action === "fetch-judgment" && request.method === "GET") result = await handleFetchJudgment(url, env);
         else if (action === "amendments" && request.method === "GET") result = await handleAmendments(url, env);
         else if (action === "parliament-bill-url" && request.method === "GET") result = await handleParliamentBillUrl(url);
@@ -4382,14 +3653,10 @@ export default {
           if (body.missing_note !== undefined && body.missing_note !== null && typeof body.missing_note !== 'string') {
             return json({ result: { ok: false, error: 'missing_note must be a string' } }, 400);
           }
-          if (body.flagged_by !== undefined && body.flagged_by !== null && typeof body.flagged_by !== 'string') {
-            return json({ result: { ok: false, error: 'flagged_by must be a string' } }, 400);
-          }
           const note = (body.missing_note && typeof body.missing_note === 'string') ? body.missing_note.slice(0, 500) : null;
-          const flaggedBy = (body.flagged_by && typeof body.flagged_by === 'string') ? body.flagged_by.slice(0, 200) : 'admin';
           const dbResult = await env.DB.prepare(
-            `UPDATE query_log SET sufficient = 0, missing_note = ?, flagged_by = ? WHERE id = ?`
-          ).bind(note, flaggedBy, body.query_id).run();
+            `UPDATE query_log SET sufficient = 0, missing_note = ? WHERE id = ?`
+          ).bind(note, body.query_id).run();
           if (dbResult.meta.changes === 0) return json({ result: { ok: false, error: 'not found' } }, 404);
           result = { ok: true, updated: dbResult.meta.changes };
         }
@@ -4463,27 +3730,6 @@ export default {
     if (url.pathname === '/api/admin/health-reports' && request.method === 'POST') return handlePostHealthReport(request, env, corsHeaders);
     if (url.pathname === '/api/admin/health-clusters' && request.method === 'POST') return handlePostHealthClusters(request, env, corsHeaders);
 
-    /* ── FEEDBACK ROUTE ─────────────────────────────────────── */
-    if (url.pathname === '/api/pipeline/feedback' && request.method === 'POST') {
-      const key = request.headers.get('X-Nexus-Key');
-      if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: corsHeaders });
-      try {
-        const body = await request.json();
-        const { query_id, chunk_id, feedback_type, comment } = body;
-        const allowed = ['helpful', 'unhelpful', 'irrelevant', 'hallucinated'];
-        if (!feedback_type || !allowed.includes(feedback_type)) {
-          return new Response(JSON.stringify({ error: `feedback_type must be one of: ${allowed.join(', ')}` }), { status: 400, headers: corsHeaders });
-        }
-        if (!query_id) return new Response(JSON.stringify({ error: 'query_id required' }), { status: 400, headers: corsHeaders });
-        await env.DB.prepare(
-          `INSERT INTO synthesis_feedback (id, query_id, chunk_id, feedback_type, comment, created_at) VALUES (?1,?2,?3,?4,?5,?6)`
-        ).bind(crypto.randomUUID(), query_id, chunk_id || null, feedback_type, comment || null, new Date().toISOString()).run();
-        return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders });
-      } catch (err) {
-        console.error('feedback insert error:', err);
-        return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders });
-      }
-    }
 
     /* ── QUERY HISTORY ROUTES ───────────────────────────────── */
     if (url.pathname === '/api/query/history' && request.method === 'GET') return handleGetQueryHistory(request, env, corsHeaders);
@@ -4575,29 +3821,6 @@ export default {
       return handleTruncationResolve(request, env);
     }
 
-    /* ── TTS ROUTE ───────────────────────────────────────────── */
-    if (url.pathname === '/api/tts' && request.method === 'POST') {
-      try {
-        const body = await request.json();
-        const vpsRes = await fetch('https://nexus.arcanthyr.com/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Nexus-Key': env.NEXUS_SECRET_KEY },
-          body: JSON.stringify(body),
-        });
-        if (!vpsRes.ok) {
-          const errData = await vpsRes.json().catch(() => ({ error: 'TTS service error' }));
-          return new Response(JSON.stringify(errData), {
-            status: vpsRes.status,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        const wavBytes = await vpsRes.arrayBuffer();
-        return new Response(wavBytes, {
-          status: 200,
-          headers: { 'Content-Type': 'audio/wav', 'Access-Control-Allow-Origin': '*' },
-        });
-      } catch (err) { return json({ error: err.message }, 502); }
-    }
 
     /* ── INGEST ROUTES ────────────────────────────────────────── */
     if (url.pathname.startsWith("/api/ingest/")) {
@@ -4634,83 +3857,12 @@ export default {
       return json({ error: "Invalid ingest endpoint" }, 404);
     }
 
-    /* ── ENTRIES ROUTES ───────────────────────────────────────── */
-    if (url.pathname.startsWith("/api/entries")) {
-      const limits = {
-        GET: { max: 60, windowMs: 60_000 },
-        POST: { max: 20, windowMs: 60_000 },
-        DELETE: { max: 10, windowMs: 60_000 },
-        PATCH: { max: 10, windowMs: 60_000 },
-      };
-      const lim = limits[request.method];
-      if (lim && !rateLimit(`${ip}:${request.method}`, lim.max, lim.windowMs))
-        return json({ error: "Rate limit exceeded." }, 429);
 
-      if (request.method === "GET") {
-        const { results } = await env.DB
-          .prepare("SELECT * FROM entries WHERE deleted = 0 ORDER BY created_at DESC LIMIT 200").all();
-        return json({ entries: results });
-      }
-      if (request.method === "POST") {
-        const body = await request.json();
-        for (const k of ["id", "created_at", "text", "tag", "next", "clarify"]) {
-          if (body?.[k] === undefined || body?.[k] === null) return json({ error: `Missing required field: ${k}` }, 400);
-        }
-        await env.DB.prepare(`INSERT INTO entries (id, created_at, text, tag, next, clarify, draft, _v, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`)
-          .bind(body.id, body.created_at, body.text, body.tag, body.next, body.clarify, body.draft ?? null, body._v ?? 0).run();
-        return json({ ok: true });
-      }
-      if (request.method === "DELETE") {
-        const id = url.pathname.replace("/api/entries", "").replace(/^\//, "");
-        if (id) await env.DB.prepare("UPDATE entries SET deleted = 1 WHERE id = ?").bind(id).run();
-        else await env.DB.prepare("UPDATE entries SET deleted = 1 WHERE deleted = 0").run();
-        return json({ ok: true });
-      }
-      if (request.method === "PATCH") {
-        await env.DB.prepare("UPDATE entries SET deleted = 0 WHERE deleted = 1").run();
-        return json({ ok: true });
-      }
-    }
-
-    /* ── EMAIL DIGEST ROUTES ──────────────────────────────────── */
-    if (url.pathname === '/digest') {
-      if (request.method === 'GET') {
-        const html = await env.EMAIL_DIGEST.get('email-digest:latest');
-        if (!html) {
-          return new Response(
-            `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Arcanthyr Digest</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d0f;color:#b0b0b8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;display:flex;align-items:center;justify-content:center;min-height:100vh}.card{border:1px solid #2a2a32;border-radius:6px;padding:2rem 2.5rem;max-width:420px;text-align:center}h1{color:#e8e8f0;font-size:1rem;font-weight:600;letter-spacing:.04em;margin-bottom:.75rem}.sub{font-size:.8rem;color:#55555f}</style></head><body><div class="card"><h1>ARCANTHYR DIGEST</h1><p class="sub">No digest available yet.</p></div></body></html>`,
-            { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-          );
-        }
-        return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
-      }
-
-      if (request.method === 'POST') {
-        const authHeader = request.headers.get('Authorization') || '';
-        const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-        if (!env.DIGEST_API_KEY || token !== env.DIGEST_API_KEY) {
-          return json({ error: 'Unauthorized' }, 401);
-        }
-        const contentType = request.headers.get('Content-Type') || '';
-        let digestHtml;
-        if (contentType.includes('application/json')) {
-          let body;
-          try { body = await request.json(); } catch { return json({ error: 'Invalid JSON' }, 400); }
-          digestHtml = body.html || body.content || '';
-        } else {
-          digestHtml = await request.text();
-        }
-        if (!digestHtml) return json({ error: 'Empty body' }, 400);
-        await env.EMAIL_DIGEST.put('email-digest:latest', digestHtml);
-        return json({ ok: true });
-      }
-    }
 
     return new Response("Not found", { status: 404, headers: corsHeaders });
   },
 
   async scheduled(_event, env, ctx) {
-    ctx.waitUntil(runDailySync(env));
     ctx.waitUntil(runBatchedChunkCleanup(env));
   },
 
