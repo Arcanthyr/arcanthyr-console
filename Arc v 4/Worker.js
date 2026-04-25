@@ -180,44 +180,42 @@ const AUSTLII_COURTS = {
 async function fetchRecentAustLIICases(env, limit = 50) {
   const currentYear = new Date().getFullYear();
   const allNewCases = [];
+  const TAS_COURT_PATHS = [
+    'au/cases/tas/TASSC',
+    'au/cases/tas/TASCCA',
+    'au/cases/tas/TASFC',
+    'au/cases/tas/TAMagC',
+  ];
+  const maskParams = TAS_COURT_PATHS.map(p => `mask_path=${encodeURIComponent(p)}`).join('&');
+  const sinosrchUrl = `https://www.austlii.edu.au/cgi-bin/sinosrch.cgi?query=${encodeURIComponent(`[${currentYear}]`)}&meta=%2Fau&method=auto&results=${limit}&rank=on&${maskParams}`;
 
-  for (const [courtName, courtAbbrev] of Object.entries(AUSTLII_COURTS)) {
-    let num = 1;
-    let consecutiveMisses = 0;
-
-    while (consecutiveMisses < 5 && allNewCases.length < limit) {
-      const url = `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${courtAbbrev}/${currentYear}/${num}.html`;
-      try {
-        const resp = await fetch(url, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.austlii.edu.au/forms/search1.html',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-AU,en;q=0.9'
-          }
-        });
-        const status = resp.status;
-        const html = await resp.text();
-
-        if (status === 404 || status === 410) { consecutiveMisses++; num++; continue; }
-        if (status !== 200) { num++; continue; }
-
-        consecutiveMisses = 0;
-        const citation = `[${currentYear}] ${courtAbbrev} ${num}`;
-
-        const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(citation).first();
-        if (!exists) {
-          allNewCases.push({ citation, year: String(currentYear), court: courtName, court_abbrev: courtAbbrev, case_num: String(num), url, html });
-        }
-      } catch (error) {
-        console.error(`Error fetching ${courtAbbrev}/${currentYear}/${num}:`, error);
+  try {
+    const resp = await fetch(sinosrchUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.austlii.edu.au/forms/search1.html',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-AU,en;q=0.9'
       }
-      num++;
-      await new Promise(r => setTimeout(r, 1000));
+    });
+    if (!resp.ok) {
+      console.error(`fetchRecentAustLIICases: sinosrch returned ${resp.status}`);
+      return [];
     }
+    const html = await resp.text();
+    const parsed = parseAustLIIResults(html);
+    for (const c of parsed) {
+      if (allNewCases.length >= limit) break;
+      const exists = await env.DB.prepare("SELECT id FROM cases WHERE citation = ?").bind(c.citation).first();
+      if (!exists) {
+        allNewCases.push({ citation: c.citation, url: c.url, court: c.court });
+      }
+    }
+  } catch (err) {
+    console.error('fetchRecentAustLIICases error:', err.message);
   }
 
-  return allNewCases.slice(0, limit);
+  return allNewCases;
 }
 
 async function fetchCaseContent(url, preloadedHtml = null, env = null) {
