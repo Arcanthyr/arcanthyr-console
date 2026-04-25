@@ -212,6 +212,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Upload case text limit | 500K char cap · `handleFetchCaseUrl` and `handleUploadCase` both cap at 500,000 chars · `processCaseUpload` line ~269 also 500K but is dead code (neither handler calls it) · truncation events logged to `truncation_log` D1 table · raised from 200K session 43, corrected session 52 |
 | worker.js syntax check | Do NOT use `node --check` — false-passes on truncated files (session 83, confirmed). After any CC edit to worker.js, use `npm run build` from `arcanthyr-ui/` (rolldown pass catches all JS parse errors) before `wrangler deploy`. Pre-commit hook runs `@babel/parser` on staged `.js`/`.jsx` files automatically (added session 84). |
 | Worker.js capital W | Git tracks as `Worker.js` — always `git add "Arc v 4/Worker.js"` (capital W). Lowercase silently stages nothing on Windows. |
+| str_replace on markdown table rows | Known silent no-op when row contains pipes, backticks, or parens-heavy content (confirmed session 103). The Edit tool returns success but nothing changes. Reliable fallback: Python script with line-index deletion and explicit `utf-8` stdout wrapper. ALWAYS grep the file after editing a table row to confirm the change landed. |
 | truncation_log table | D1 table tracking cases truncated on upload · columns: id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved · status values: flagged/confirmed/replaced · `GET /api/pipeline/truncation-status` (no auth) returns flagged entries · `POST /api/pipeline/truncation-resolve` (X-Nexus-Key) for confirm/delete actions |
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
 | Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
@@ -260,7 +261,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
-Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.md. You must do all of the following — do not skip any step.
+**Authoritative procedure: `arcanthyr-session-closer` skill (Claude.ai side).** That skill generates the canonical CC prompt at session close, including all steps below plus changelog migration and cross-file staleness scan. The procedure here is a fallback for freehand closes — if you are reading this because the skill wasn't invoked, ensure all numbered steps below run, especially Step 5 (changelog migration) which is the failure mode that produced 8 sessions of drift across sessions 93–100.
 
 **1. Outstanding Priorities — reconcile, don't append**
 - Read every item in the Outstanding Priorities list
@@ -273,6 +274,11 @@ Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.
 - Remove any entry the session changelog shows as resolved
 - Update any entry where the status has partially changed (e.g. one sub-issue fixed, another remains)
 
+**1c. Cross-file staleness scan — components REMOVED or RENAMED only**
+- For every component named in this session as removed or renamed (route paths, table names, function names, file names, KV bindings), grep all five MDs (CLAUDE.md, CLAUDE_arch.md, CLAUDE_init.md, CLAUDE_decisions.md, CLAUDE_changelog.md) for the identifier
+- Read every hit; remove or update any description that is now stale
+- Additions don't need this scan — only removals/renames invalidate existing other-file content
+
 **2. SYSTEM STATE table — refresh all counts**
 - Re-query or update every numeric value in the SYSTEM STATE table to reflect current actuals
 - Do not leave stale counts from a previous session
@@ -283,15 +289,25 @@ Use this prompt at the end of every session to update CLAUDE.md and CLAUDE_arch.
 
 **4. CHANGES THIS SESSION — write the new block as normal**
 - Add the session block with what + why for each change
+- Insert immediately BEFORE the `## END-OF-SESSION UPDATE PROCEDURE` heading, not at end of file
 
-**5. Verify before finishing**
-- Read back the Outstanding Priorities list after your edits
-- Confirm no completed item remains in the list
-- Confirm no resolved KNOWN ISSUE remains
-- Confirm the datestamp is updated
-- Confirm SYSTEM STATE counts are current
+**5. Changelog migration — UNCONDITIONAL after every session close**
+- After Step 4, CLAUDE.md will contain 4 `## CHANGES THIS SESSION` blocks. Always.
+- Move the OLDEST block to CLAUDE_changelog.md: prepend it after the file header block, before the first existing `## CHANGES THIS SESSION` entry
+- Delete the moved block from CLAUDE.md
+- Update the CLAUDE_changelog.md header range line `*Sessions 21–N · ...*` to reflect the newly archived session number
+- Update the CLAUDE.md header pointer `Changelog archive → CLAUDE_changelog.md (sessions 21–N)` to match
+- This step has no condition. If you skip it, drift accumulates silently — eight sessions of accumulation at sessions 93–100 is what produced the session 103 drift audit.
 
-**Do not treat this as an append operation.** The Outstanding Priorities list and KNOWN ISSUES must reflect reality after this session, not accumulate history.
+**6. Verify before finishing — grep, don't trust the Edit return code**
+- `grep -c "^## CHANGES THIS SESSION" "Arc v 4/CLAUDE.md"` — must return exactly 3
+- `grep -n "END-OF-SESSION UPDATE PROCEDURE" "Arc v 4/CLAUDE.md"` — confirm new session block appears on a lower line number than this heading
+- For each str_replace performed this session, grep the file for distinctive new content to confirm it landed (Edit tool can silently no-op on markdown table rows — see SESSION RULES)
+- Read back Outstanding Priorities; confirm no completed item remains
+- Read back KNOWN ISSUES; confirm no resolved entry remains
+- Confirm datestamp updated and SYSTEM STATE counts current
+
+**Do not treat this as an append operation.** The Outstanding Priorities list and KNOWN ISSUES must reflect reality after this session, not accumulate history. The CHANGES THIS SESSION blocks must cycle out to the changelog at every close.
 
 ---
 
@@ -327,4 +343,4 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
