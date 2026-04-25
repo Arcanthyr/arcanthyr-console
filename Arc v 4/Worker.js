@@ -2195,9 +2195,15 @@ async function handleFetchJudgment(url, env) {
   const rawUrl = url.searchParams.get('url');
   const citation = url.searchParams.get('citation') || null;
 
-  if (!rawUrl || !rawUrl.includes('austlii.edu.au')) {
-    return { ok: false, error: 'url required and must be an austlii.edu.au URL' };
+  if (!rawUrl || (!rawUrl.includes('austlii.edu.au') && !rawUrl.includes('jade.io'))) {
+    return { ok: false, error: 'url required and must be an austlii.edu.au or jade.io URL' };
   }
+
+  // Translate AustLII viewdoc URLs to jade.io for the actual fetch (AustLII blocks CF-edge IPs).
+  // rawUrl is kept as the D1 cache key so existing cached AustLII-keyed entries are still found.
+  const fetchUrl = rawUrl.includes('/cgi-bin/viewdoc/')
+    ? 'https://jade.io' + rawUrl.replace('https://www.austlii.edu.au/cgi-bin/viewdoc', '').replace(/\.html$/, '')
+    : rawUrl;
 
   const cached = await env.DB.prepare(
     `SELECT html, fetched_at FROM austlii_cache WHERE url = ?`
@@ -2211,17 +2217,17 @@ async function handleFetchJudgment(url, env) {
   }
 
   try {
-    const resp = await fetch(rawUrl, {
+    const resp = await fetch(fetchUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.austlii.edu.au/',
+        'Referer': 'https://jade.io/',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-AU,en;q=0.9'
       }
     });
 
     if (!resp.ok) {
-      return { ok: false, error: `AustLII returned HTTP ${resp.status}` };
+      return { ok: false, error: `jade.io returned HTTP ${resp.status}` };
     }
 
     let html = await resp.text();
@@ -2236,7 +2242,7 @@ async function handleFetchJudgment(url, env) {
     return { ok: true, html, source: 'fetch' };
   } catch (err) {
     console.error('handleFetchJudgment error:', err.message);
-    return { ok: false, error: 'Failed to fetch judgment from AustLII.' };
+    return { ok: false, error: 'Failed to fetch judgment.' };
   }
 }
 
