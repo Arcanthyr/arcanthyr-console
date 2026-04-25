@@ -8,6 +8,7 @@
      - saveCaseToDb: saves raw_text alongside extracted fields
      - processCaseUpload: passes raw text through to DB
    ============================================================= */
+import puppeteer from "@cloudflare/puppeteer";
 console.log('Worker v7 loaded successfully');
 
 const _ratemap = new Map();
@@ -226,6 +227,18 @@ async function fetchCaseContent(url, preloadedHtml = null, env = null) {
     let html;
     if (preloadedHtml) {
       html = preloadedHtml;
+    } else if (url && url.includes('/cgi-bin/viewdoc/') && env?.BROWSER) {
+      // viewdoc URLs: AustLII returns 403 on raw CF-edge fetches; use a real browser
+      let browser;
+      try {
+        browser = await puppeteer.launch(env.BROWSER);
+        const page = await browser.newPage();
+        const resp = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        if (!resp || resp.status() !== 200) return null;
+        html = await page.content();
+      } finally {
+        if (browser) await browser.close();
+      }
     } else {
       // ── Route through VPS proxy to avoid Cloudflare edge IP blocks ────────
       const { html: fetchedHtml, status } = await handleFetchPage({ url }, env);
@@ -751,16 +764,18 @@ async function runDailySync(env) {
         casesFailed++;
         continue;
       }
-      const fullCaseData = { ...caseData, ...content };
-      const summary = await summarizeCase(env, fullCaseData);
-      const finalCaseData = { ...fullCaseData, case_name: summary.case_name || caseData.citation };
+      const caseId = caseData.citation.replace(/\s+/g, "-");
+      const caseYear = (caseData.citation.match(/\[(\d{4})\]/) || [null, caseData.year || new Date().getFullYear()])[1];
+      await env.DB.prepare(
+        `INSERT OR IGNORE INTO cases (id, citation, court, case_date, raw_text, enriched, embedded) VALUES (?, ?, ?, ?, ?, 0, 0)`
+      ).bind(caseId, caseData.citation, caseData.court, `${caseYear}-01-01`, content.full_text).run();
       await env.CASE_QUEUE.send({
         type: 'METADATA',
         url: caseData.url,
         citation: caseData.citation
       });
       casesProcessed++;
-      console.log(`✓ ${caseData.citation} — "${finalCaseData.case_name}"`);
+      console.log(`✓ queued ${caseData.citation}`);
       await new Promise(r => setTimeout(r, 2000));
     } catch (error) {
       errors.push(`${caseData.citation}: ${error.message}`);
