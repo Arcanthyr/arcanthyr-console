@@ -4160,7 +4160,17 @@ Direct navigation to https://arcanthyr.com/research (or any deep link) returns H
 ## Process notes
 
 **Commit messages require the same verification rigour as CLAUDE.md changelog entries.**
-Established session 103: Phase 1 commit 5064c9b had a fabricated message body that survived because diff verification was applied to CLAUDE.md docs but not to the commit description itself. The actual frontend diff diverged significantly from the message. Going forward: before any commit, verify the draft message against  Arc v 4/CLAUDE.md           | 20 +++++++++++++-------
- Arc v 4/CLAUDE_arch.md      | 18 ++++++------------
- Arc v 4/CLAUDE_decisions.md | 16 ++++++++++++++++
- 3 files changed, 35 insertions(+), 19 deletions(-) and spot-check per-file diffs. Commit messages are permanent audit-trail entries — fabricated descriptions compound into stale docs and misleading history.
+Established session 103: Phase 1 commit 5064c9b had a fabricated message body that survived because diff verification was applied to CLAUDE.md docs but not to the commit description itself. The actual frontend diff diverged significantly from the message. Going forward: before any commit, verify the draft message against `git diff --stat` and spot-check per-file diffs. Commit messages are permanent audit-trail entries — fabricated descriptions compound into stale docs and misleading history.
+
+---
+
+## Session 103 decisions — 25 April 2026 (close)
+
+**Process discipline — verification of session-summary documents against actual evidence**
+The Phase 1 commit message (5064c9b) was generated from the planning brief / session memory rather than from `git diff` output. It described frontend changes that did not appear in the actual diff (Stare Decisis tab removal, Productivity AI tab in Upload, ambient audio triggers in Research, nine api.js methods vs actual two). Caught at the next docs-commit gate when verbatim verification was applied to the CHANGES THIS SESSION block. Standing rule: commit message bodies AND CHANGES THIS SESSION blocks must be drafted from `git diff --stat` (file count) and per-file `git show <hash> -- <file>` output (actual content), not from plan/brief/memory. Same rigour as decisions.md entries.
+
+**Edit tool dead-end on markdown table rows — confirmed [dead end]**
+The Edit tool's str_replace fails silently on markdown table rows containing pipes, backticks, or parentheses-heavy content. Confirmed this session on the `/api/pipeline/feedback` route row in CLAUDE_arch.md — multiple Edit attempts succeeded as no-ops with no error returned. Reliable fallback: Python script with line-index deletion and explicit utf-8 stdout wrapper. Do not retry Edit tool on similar rows in future sessions; go straight to the Python fallback.
+
+**Phase 2/3/4 scoping decisions**
+Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destructive cleanup (this session); Phase 2 = architectural restructuring (tab renames, splits, Corpus Admin shell, globe removal); Phase 3 = per-tab logic (Insufficient rebuild, cites tallies, state filter wiring); Phase 4 = visual chrome (logo, landing rename, ALL CAPS, legislation title case). Reasoning: doing visual + architecture together creates two failure suspects per defect; doing logic before visual means restyling components that may be merged or relocated. Visual is deferred to last because it's pure cosmetic and lowest-risk to rework. Logo Image 3 (white-background bare emblem) confirmed over alternatives (cracked stone, silk) because the textured backgrounds collide with persistent chrome at any page background.

@@ -1,6 +1,18 @@
-# CLAUDE Changelog — Sessions 21–99
+# CLAUDE Changelog — Sessions 21–100
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
+
+---
+
+## CHANGES THIS SESSION (session 100) — 24 April 2026
+
+- **Stuck case [2023] TASSC 6 resolved** — `requeue-merge` (default, no target) fired merge for Bob Brown Foundation Inc v Barnett (No 2); all 14 chunks were done=1; deep_enriched now 1; sentencing_status=null correct (administrative case, isSentencingCase() gates on subject_matter='criminal'); D1 cases now 1,914/1,914 deep_enriched=1
+- **LLM variant-draw stabilisation — formally closed** — root cause (GPT-4.1-mini non-determinism, score swings ≤0.08) confirmed benign; grade-level P/Pa/M stable across 3 runs (session 95); internal citation churn is noise, not a quality defect; no action; KNOWN ISSUES entry updated
+- **Misclassification audit — complete** — ran documented audit SQL; all 11 "R v / Tasmania v / Police v" non-criminal cases are legitimately non-criminal (judicial review nomenclature, workers comp); Tasmania v Rattigan already confirmed criminal; zero genuine misclassifications; Option A re-embed audit prerequisite cleared
+- **Antonym-polluted CONCEPTS audit — retired** — 35 matches all chunks whose subject is the absence of a warrant or consent (correct per CONCEPTS rule: antonym terms permitted when the chunk's subject is literally that absence); no contamination evidence in query_log; audit item removed from to-do
+- **Tags column — removed from roadmap** — no taxonomy exists, no feature depends on it, category field handles taxonomy adequately; not worth building at current stage
+- **runDailySync — fix plan documented** — history recovered: CF edge IPs not blocked by AustLII (proven by word-search/fetch-judgment); VPS proxy path dead; fix is direct CF-edge fetch in fetchRecentAustLIICases + METADATA queue send replacing saveCaseToDb + Resend email removal; CC brief issued; deferred until scraper completes historical pass
+- **DLQ, word artifact, contamination — all confirmed clean** — dlq=1 total: 0; secondary_sources with Word artifact chars embedded=1: 0; query_log.sufficient=0: 0
 
 ---
 

@@ -409,3 +409,16 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 | api.js /api/legal/ response shape | `req()` for routes in the `/api/legal/` block returns `{ result: <payload> }` — consuming code must unwrap: `const { result } = await api.someRoute(...)` |
 | DLQ pending check | Canonical pending chunk query is now `done=0 AND dlq=0` — `done=0` alone includes dead-letter chunks. Update any admin query or requeue script accordingly. |
 | wrangler.toml binding syntax | Single-object bindings use `[binding_name]` (e.g. `[browser]`, `[ai]`); `[[binding_name]]` creates an array-of-tables and wrangler 4.75 rejects it — "should be an object but got [...]" |
+
+---
+
+## VERIFICATION & SCRIPTING
+
+**Verification discipline (added session 103)**
+- Before any dead-code removal phase, read the actual current file state via `view` or `cat`. Do NOT rely on CLAUDE.md descriptions to know what a file currently contains — CLAUDE.md describes design intent, not current implementation. Grounded: this session's Phase 1 plan assumed nine api.js methods to remove based on prior MD descriptions; the actual file contained only two.
+- Commit message bodies and CHANGES THIS SESSION blocks must be drafted from `git diff --stat` (file count) and per-file `git show <commit> -- <file>` output (actual content), not from session notes or plan briefs.
+- Isolate actual diff lines from `git show <hash> -- <file>` output by piping through `grep "^[-+]" | grep -v "^---\|^+++"` — the command's leading commit message body otherwise matches grep patterns and produces noise.
+
+**Python scripting on Windows / PowerShell (added session 103)**
+- Python scripts emitting non-cp1252 characters (em-dash, emoji, smart quotes) raise UnicodeEncodeError at print/write time on Windows default codepages. Always prepend `import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')` to any CC-invoked script handling those characters.
+- Inline `python3 -c "..."` mangles backtick characters via bash command substitution. When a script contains backticks, parentheses-heavy strings, or other shell-special characters, write to a temp file and invoke via `python3 path/to/file.py` instead.
