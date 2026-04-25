@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 24 April 2026 (end of session 99). Upload every session alongside CLAUDE.md.*
+*Updated: 25 April 2026 (end of session 101). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -46,7 +46,7 @@
 **MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
 
 **KV Namespace — EMAIL_DIGEST** (ID: 9ea5773d11ac40ce9904ca21c602e9f4):
-Used by email/contact management features (Resend email composer, contact list) and `runDailySync` email summary. Bound in `wrangler.toml`.
+Used by email/contact management features (Resend email composer, contact list). Bound in `wrangler.toml`. (runDailySync Resend email block removed session 101.)
 
 ---
 
@@ -96,6 +96,7 @@ Full D1/Workers/KV/R2 access
 **MCP — auslaw** (AustLII/Jade case search — installed session 72):
 `search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`, plus 6 additional tools — 10 total
 → Use for: Tasmanian/AustLII case lookup by citation or topic, Jade.io lookups, citation formatting — complements the local scraper and Arcanthyr retrieval. VPS-hosted docker container at `~/auslaw-mcp`, digest-pinned `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network `auslaw-mcp_auslaw-isolated` (NOT connected to any `ai-stack_*` network). Registered user-scope in `C:\Users\Hogan\.claude.json` as `auslaw`, transport is SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. All outbound traffic validated via tcpdump session 72 — talks only to `posh.austlii.edu.au` (138.25.65.147). `search_cases` is dead from VPS — root cause is AustLII TCP-level block of Contabo VPS IP (confirmed 21 April 2026) — not endpoint slowness — SYN to austlii.edu.au silently dropped, connection never completes; `search_by_citation` is reliable.
+- **AustLII CF-edge block — confirmed session 101** — AustLII now returns HTTP 403 for all CF-edge fetches (sinosrch, viewdoc, listing pages). Extends the VPS TCP block documented session 85. jade.io (`jade.io/au/cases/tas/COURT/YEAR/NUM`) is accessible from CF edge (confirmed 200); used by `handleFetchJudgment` as fetch source since session 101. Local scraper (residential IP) remains the only working AustLII bulk access path.
 
 **MCP tools vs auto-activating skills — key distinction:**
 - **MCP tools** (hex-ssh, sequential-thinking, playwright, context7, fetch, firecrawl, github, magic, cloudflare) — require **explicit invocation** by CC. They do not trigger automatically under any condition.
@@ -871,7 +872,7 @@ Source title uses chunk heading (not filename stem).
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
-- **Cloudflare Browser Rendering /crawl** — Available on Workers Free and Paid plans (account `def9cef091857f82b7e096def3faaa25` already has access, no upgrade needed). Submit a starting URL → receive async job ID → poll for results as HTML, Markdown, or structured JSON. Key features: crawl depth + page limits + wildcard URL filters; automatic page discovery from sitemaps and links; incremental crawling via `modifiedSince`/`maxAge` (skip unchanged pages on repeat runs); `render: false` static mode for non-JS sites. Respects robots.txt. Self-identifies as a bot — NOT suitable for AustLII (would be blocked; existing local scraper + Cloudflare edge proxy remains the correct AustLII path). Arcanthyr use cases: (1) Tasmanian Supreme Court sentencing remarks pages — crawl periodically, pipe Markdown output into `process_blocks.py` → upload via console → embed pass on VPS; (2) Law Reform Commission reports, Bar Association publications, and other secondary legal sources — replaces manual downloading. Implementation sketch: Worker cron trigger → POST to `/crawl` with target URL + scope controls → poll job ID → on completion fetch Markdown → split via `process_blocks.py` logic → upload-corpus → embed. Build after primary corpus (Hogan on Crime) is validated and scraper is running at volume.
+- **Cloudflare Browser Run (formerly Browser Rendering)** — Available on Workers Free and Paid plans (account `def9cef091857f82b7e096def3faaa25` already has access). Two distinct use cases: (1) **Single-page synchronous fetch** — `POST .../browser-rendering/markdown` with `{url}` returns Markdown directly, no polling; used by `fetchCaseContent` (Worker `abdf0dd0`) for viewdoc URLs that 403 raw CF-edge fetch; requires `[browser]` binding in `wrangler.toml` + `nodejs_compat` flag + `@cloudflare/puppeteer`. (2) **Multi-page async crawl** — `/crawl` endpoint: submit URL → receive job ID → poll for HTML/Markdown/JSON; supports crawl depth, URL filters, incremental crawling via `modifiedSince`; respects robots.txt; self-identifies as bot — NOT suitable for AustLII. Arcanthyr crawl use cases (deferred): Tasmanian Supreme Court sentencing pages, Law Reform Commission reports, Bar Association publications.
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested

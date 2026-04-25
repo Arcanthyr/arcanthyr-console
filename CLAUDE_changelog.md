@@ -1,6 +1,17 @@
-# CLAUDE Changelog — Sessions 21–97
+# CLAUDE Changelog — Sessions 21–98
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
+
+---
+
+## CHANGES THIS SESSION (session 98) — 24 April 2026
+
+- **V'ger `${principles}` parity with Sol — deployed** — `handleLegalQueryWorkersAI` `orderedChunks.map` now builds and appends `Key principles:` line to context chunks, matching Sol's `chunks.map` pattern exactly. Worker `724c5da9`, commit `66ffa55`.
+- **Word artifact cleanup — 411 rows cleaned** — New `gen_cleanup_sql.py` script scans `secondary_sources.raw_text` for Word formatting artifacts (curly quotes, em/en dashes, ellipsis, NBSP, soft hyphen, BOM) and generates UPDATE SQL. 411 of 1,444 rows cleaned; `embedded=0` reset for poller re-embed. Script committed with UTF-8 subprocess fix; `cleanup.sql` gitignored. Commits `2f07d2d`, `7434ecd`.
+- **RTF upload support** — `arcanthyr-ui/src/Upload.jsx` updated with spec'd `stripRtf` implementation; `.rtf` added to file input accept list. Commit `9f6351e`.
+- **Auto-populate citation/case name on upload** — `CasesTab.onDrop` now extracts citation and case name from first 1,000 chars of dropped file; staged items redesigned to two-row layout (filename/OCR/× on row 1; editable case name/citation/court fields on row 2). UI deployed `57929a49`. Commit `9f6351e`.
+- **Deferred list audit** — Full reconciliation pass across all deferred/frozen/roadmap items. `handleRequeueMerge` citation scoping confirmed already fixed in live code — removed from list. Stage 3 legislation embed and Q14 retrieval diagnostic confirmed stale; removed from FUTURE ROADMAP. `/search top_k=12` watch framing removed (documented constraint, not a monitored issue). CONCEPTS contamination watch reframed to passive real-use trigger.
+- **`gen_cleanup_sql.py` gap closed** — Script was referenced in MDs as runnable but had never been committed. Now committed and verified working.
 
 ---
 

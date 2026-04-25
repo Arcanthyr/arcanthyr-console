@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 24 April 2026 (end of session 100) · Supersedes all prior versions
+Updated: 25 April 2026 (end of session 101) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–97) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–98) — load conditionally
 
 ---
 
@@ -11,7 +11,7 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–97) — load conditiona
 Retrieval pipeline frozen at baseline 28P / 3Pa / 0M on the 31-query eval; 28,876 Qdrant points; four-pass architecture (Pass 1 unfiltered cosine → Pass 2 case chunks → Pass 3 secondary sources → Pass 4 citation authority); BM25 interleave live; vocabulary anchor prepend deployed across all Acts; subject-matter filter + query expansion + quarantine filter live on all passes. Known partials (Q9 guilty plea, Q14 s 37 EA, Q26 unreasonable verdict) attributed to content coverage and semantic ceiling, not retrieval defect.
 Re-opening requires a named trigger from real-use feedback (D1 query_log rows where sufficient=0), not from internal signals. Internal signals — score distributions, rank drift, baseline variance across runs, citation churn, variant instability — are explicitly not triggers. They are the over-optimisation signature. Triggers:
 
-1–3 logged failures that cluster on a nameable class → targeted fix matching the class (vocabulary asymmetry → legal-vocab dictionary / Option 2; ranking → oracle top-20 study; gap → corpus authoring).
+1–3 logged failures that cluster on a nameable class → targeted fix matching the class (gap → corpus authoring).
 1–3 non-clustered failures → noise, no action.
 4+ logged failures → extend benchmark to match real query distribution before any retrieval tuning.
 
@@ -19,7 +19,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## SYSTEM STATE — 24 April 2026 (end of session 98)
+## SYSTEM STATE — 25 April 2026 (end of session 101)
 
 | Component | Status |
 |---|---|
@@ -45,7 +45,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
 | Baseline (31 queries) | ≥28P / ≤3Pa / 0M — query expansion deployed session 77 (19 Apr 2026) · post-court-backfill snapshot captured session 94 at `~/retrieval_baseline_post_court_backfill.txt` · pre-variant-stab runs 1 & 2 captured session 95 at `~/retrieval_baseline_pre_variant_stab_run1.txt` and `run2.txt` (variance envelope: 31/31 top-1 citation drift across 3 samples, but P/Pa/M grade stable at 28P/3Pa/0M — grade-level robustness despite internal noise) · Q9 TASCCA re-rank visibly live; zero P→M regressions · session 74 canonical `~/retrieval_baseline_post_interleave.txt` retained as prior reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
 | procedure_notes | 319 success / ~340 not_sentencing |
-| auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · two-step search pattern documented |
+| auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · search_by_citation also dead (VPS TCP-blocked, returns 403 as of session 101) · two-step search pattern (word-search → search_by_citation) fully dead — no AustLII lookup path currently available from VPS or CF edge |
 | BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
 | Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) complete · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
 | Court hierarchy band | LIVE CORPUS-WIDE — session 94 payload backfill via `patch_court_payload.py` (located at `/home/tom/ai-stack/agent-general/src/` on VPS) · 1,914 citations / 26,157 case_chunk points patched · 0 null remaining · Q9 TASCCA re-rank confirmed live · revert path: `patch_court_payload.py --revert` |
@@ -72,7 +72,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
-- **CONCEPTS-adjacent vocabulary contamination** — session 46 CONCEPTS strip removed semantic disambiguation from secondary source body text · chunks about police-powers (George v Rockett, Samoukovic v Brown, prescribed belief) and honest/reasonable mistake defence have body text vocabulary (reasonable/belief/proof/standard/certainty) that overlaps with BRD queries · 6 chunks fixed session 51 with domain anchor sentences · trigger: real-use failure showing unexpected domain contamination on a BRD-adjacent query (query_log.sufficient=0) — same pattern will recur for any chunk discussing "reasonable" belief/assessment in a non-BRD context
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously · pending check for non-DLQ chunks is now done=0 AND dlq=0 — update any requeue tooling accordingly
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations · similarly, done=0 queries must include dlq=0 to exclude dead-letter chunks
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
@@ -88,8 +87,9 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **/search top_k=12 server-side cap** — server.py line 296 hard-caps at 12 regardless of requested top_k. Cap retained for latency bounding. Confirmed session 76: passing `"top_k": 12` in the request payload breaks the endpoint (returns 0 chunks) — the field is not accepted; omit it, default 6 is what the baseline script uses.
 - **Q27 (provocation) confirmed as corpus content gap** — provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Authoring decision, not retrieval defect.
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
+- **AustLII CF-edge block — confirmed session 101** — all CF-edge fetches to AustLII return HTTP 403 (sinosrch, viewdoc, listing pages); extends beyond the VPS TCP block (sessions 85/88). `handleAustLIIWordSearch` (Quick Search word-search) is dead — accepted loss, no clean replacement (jade.io search is POST-based). `handleFetchJudgment` restored via jade.io URL translation. jade.io confirmed 200 from CF edge. `search_by_citation` also dead (VPS TCP-blocked). Two-step search pattern (word-search → search_by_citation) fully dead — no replacement path currently available.
+- **`austlii_cache` key/fetch URL intentionally decoupled** — cache entries keyed on raw AustLII viewdoc URL (`rawUrl`) but fetched from jade.io since session 101. Stable AustLII URL as cache key; jade.io as live fetch source. Cache hit serves jade.io HTML against an AustLII-keyed entry — correct and intended behaviour. Do not "fix" this.
 - **Q14 semantic ceiling — known** — `manual-b4135-chunk` (s 37 EA leading questions doctrine) scores ~0.46 against "leading questions technique" query; case_chunks floor ~0.63–0.69. Vocabulary patch + anchor fix delivered (examination technique added to CONCEPTS, anchor=Yes confirmed). Gap is structural: "technique" query too broad, matched by examination/witness case_chunks. Chunk correctly authored and embedded. A practitioner querying "s 37 Evidence Act leading questions" retrieves it in top 3. Q14 passes on case chunks (Police v Endlay). Secondary source surfacing is a known ceiling, not a pipeline defect.
-- **Pass 4 authority_synthesis — same structural vulnerability as Pass 3** — authority_synthesis chunks face the same score-floor crowding as secondary sources. Quota approach generalises: add a second quota block when this becomes a visible problem. Flagged by Opus session 92 — watch item only.
 - **Party name constraint — DEPLOYED session 93** — Prophylactic bullet added to Sol citationRules block (worker.js ~L2663) and as item 3 in V'ger RULES block (worker.js ~L2905). Instructs LLM to cite by citation alone when source shows only citation without parties. Skipped on performMerge — operates on single case's own material, no pathway to fabricate. The "Police v FRS" for [2020] TASMC 9 flagged session 92 was NOT hallucination — it's stored practitioner shorthand (Option A confirmed): `cases.case_name` = "Police v FRS", `case_chunks.enriched_text` chunk 0 uses it, two authored secondary_sources chunks ("Police v FRS - Tendency Evidence Admissibility", "Police v FRS - Example Tendency Notice") use it by design. V'ger was retrieving faithfully. Summary criminal matters are routinely styled "Police v X" in Tasmanian practitioner reference even where formal AustLII parties name informants. No corpus cleanup needed.
 - **cases.embedded column unreliable as case-level gate** — Lambert and Stokes [2007] TASSC 76 shows `cases.embedded = 0` while all 49 chunks have `case_chunks.embedded = 1`. Same pattern family as the legislation_sections.embedding_model issue (session 90 finding). Canonical case-level embed signal is aggregation over case_chunks.embedded, not the case-row column. Do not use `cases.embedded` as a backlog gate or retrieval diagnostic.
 - **Retrieval stochastic variance across runs — diagnosis corrected session 94** — S92 vs S93 variance previously attributed to ANN jitter; session 94 VPS diagnostic confirmed root cause is GPT-4.1-mini variant generator non-determinism (default temperature ~1.0, no seeding). Same query → different variant set across calls → max-score merge over 4 legs produces score swings up to 0.08. Q5 Lambert 18 surfaces at rank 9 only when the "not testify" paraphrase variant is generated (1-in-3 runs); Q2 Dunning 10 best-of-legs is rank 15 (outside limit=12 cap). Session 100: formally closed — grade-level P/Pa/M stable across all variant draws (session 95 finding); internal citation churn is benign noise; no action.
@@ -161,7 +161,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Scraper wake tasks | Dedicated SYSTEM-level wake tasks created (session 46): `WakeForScraper` fires 10:55 AM daily, `WakeForScraperEvening` fires 4:55 PM daily · both have WakeToRun=True · wakes PC 5 min before scraper runs at 11:00 AM and 5:00 PM AEST · created as SYSTEM/HIGHEST so wake works from sleep without user login |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
 | TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is TCP-blocked by AustLII at network level — Contabo IP range silently dropped (confirmed session 85, re-confirmed session 88) |
-| runDailySync | Forward-looking new-case capture (up to 50/day) — deferred until scraper completes historical pass · fix required: (a) update `fetchRecentAustLIICases` to direct CF-edge fetch with browser headers — VPS proxy dead (VPS IP blocked); (b) replace `saveCaseToDb` with `CASE_PROCESSING_QUEUE.send({ type: 'METADATA' })` — function predates queue pipeline; (c) remove Resend email block · CF edge IPs not blocked by AustLII (proven by word-search and fetch-judgment routes) · CC brief issued session 100 |
+| runDailySync | Forward-looking new-case capture (up to 50/day) — deferred until scraper completes historical pass · (b)+(c) complete (Worker `3a24d1e3`): saveCaseToDb replaced with METADATA queue send, Resend email removed · `fetchCaseContent` BR path wired (Worker `abdf0dd0`): puppeteer fallback for viewdoc URLs · `fetchRecentAustLIICases` structural fix complete (sinosrch-based discovery, Worker `a23b7601`): reuses `parseAustLIIResults`, returns citation+url+court with no html so BR path handles content · remaining blocker: AustLII now 403s all CF-edge fetches (confirmed session 101) — jade.io listing page spike needed as discovery source replacement before runDailySync is production-ready |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
@@ -210,7 +210,8 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
 | Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
 | Truncation tolerance | CLAUDE.md is structured with operational content (state, priorities, rules) in the first ~300 lines. History and procedures at the tail tolerate truncation — they exist as in-session reference, not session-start-critical context |
-| auslaw-mcp search pattern | search_cases is dead from VPS (AustLII TCP block) · for topic-based discovery in CC/Cowork sessions: (1) POST https://arcanthyr.com/api/legal/word-search with X-Nexus-Key header to get citations; (2) feed citations to auslaw-mcp search_by_citation for full text |
+| auslaw-mcp search pattern | All AustLII lookup paths currently dead — search_cases dead (VPS TCP-block), word-search dead (AustLII CF-edge 403 confirmed session 101), search_by_citation dead (VPS TCP-block). Local scraper (residential IP) is the only working AustLII access path. For case text of known citations, jade.io URL format (`jade.io/au/cases/tas/COURT/YEAR/NUM`) is accessible from CF edge via `handleFetchJudgment`. |
+| Reachability testing | `mcp__fetch__fetch` is unreliable for reachability checks — fails with `AsyncClient.__init__() got an unexpected keyword argument 'proxies'` regardless of target URL · use Firecrawl instead · Firecrawl's infrastructure shares the datacenter IP class with Cloudflare edge — a 200 from Firecrawl predicts a 200 from a CF-edge fetch · `austliiUrl()` in Library.jsx always produces AustLII `/cgi-bin/viewdoc/au/cases/tas/COURT/YEAR/NUM.html` format — not jade.io format; `buildJadeUrl` is used only for the "Open on jade.io" anchor link, not passed to `handleFetchJudgment` |
 | CLAUDE_changelog.md | Load when investigating a past session's changes, debugging a regression to a specific date, or when referencing work from sessions older than the 3-session retention window |
 | Baseline output files | Always use timestamped snapshots (e.g. ~/retrieval_baseline_post_query_expansion.txt) — ~/retrieval_baseline_results.txt is Apr 16 stale; never grep it · canonical reference: ~/retrieval_baseline_post_query_expansion.txt (session 77) |
 
@@ -218,17 +219,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
 - Claude Code (VS Code) — file edits, terminal commands, git, wrangler deploys
 - PowerShell / SSH — VPS runtime commands, long-running Python scripts
-
----
-
-## CHANGES THIS SESSION (session 98) — 24 April 2026
-
-- **V'ger `${principles}` parity with Sol — deployed** — `handleLegalQueryWorkersAI` `orderedChunks.map` now builds and appends `Key principles:` line to context chunks, matching Sol's `chunks.map` pattern exactly. Worker `724c5da9`, commit `66ffa55`.
-- **Word artifact cleanup — 411 rows cleaned** — New `gen_cleanup_sql.py` script scans `secondary_sources.raw_text` for Word formatting artifacts (curly quotes, em/en dashes, ellipsis, NBSP, soft hyphen, BOM) and generates UPDATE SQL. 411 of 1,444 rows cleaned; `embedded=0` reset for poller re-embed. Script committed with UTF-8 subprocess fix; `cleanup.sql` gitignored. Commits `2f07d2d`, `7434ecd`.
-- **RTF upload support** — `arcanthyr-ui/src/Upload.jsx` updated with spec'd `stripRtf` implementation; `.rtf` added to file input accept list. Commit `9f6351e`.
-- **Auto-populate citation/case name on upload** — `CasesTab.onDrop` now extracts citation and case name from first 1,000 chars of dropped file; staged items redesigned to two-row layout (filename/OCR/× on row 1; editable case name/citation/court fields on row 2). UI deployed `57929a49`. Commit `9f6351e`.
-- **Deferred list audit** — Full reconciliation pass across all deferred/frozen/roadmap items. `handleRequeueMerge` citation scoping confirmed already fixed in live code — removed from list. Stage 3 legislation embed and Q14 retrieval diagnostic confirmed stale; removed from FUTURE ROADMAP. `/search top_k=12` watch framing removed (documented constraint, not a monitored issue). CONCEPTS contamination watch reframed to passive real-use trigger.
-- **`gen_cleanup_sql.py` gap closed** — Script was referenced in MDs as runnable but had never been committed. Now committed and verified working.
 
 ---
 
@@ -255,6 +245,15 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **DLQ, word artifact, contamination — all confirmed clean** — dlq=1 total: 0; secondary_sources with Word artifact chars embedded=1: 0; query_log.sufficient=0: 0
 
 ---
+
+## CHANGES THIS SESSION (session 101) — 25 April 2026
+
+- **fetchCaseContent BR path — deployed** — `@cloudflare/puppeteer` added to `Arc v 4/package.json`; `[browser]` binding + `nodejs_compat` flag added to `wrangler.toml`; viewdoc URLs now routed through puppeteer when `env.BROWSER` available. Worker `abdf0dd0`.
+- **fetchRecentAustLIICases structural fix — deployed** — sequential viewdoc probing loop replaced with sinosrch-based discovery (same pattern as `handleAustLIIWordSearch`, reuses `parseAustLIIResults`); returns citation+url+court with no html so `fetchCaseContent` BR path handles content extraction. Worker `a23b7601`.
+- **AustLII CF-edge block confirmed** — all CF-edge fetches to AustLII return HTTP 403 (sinosrch, viewdoc, listing pages); `search_by_citation` also dead (VPS TCP-blocked). CLAUDE.md "CF edge IPs not blocked" note was accurate at sessions 83–86, now stale. Quick Search word-search accepted loss.
+- **fetch-judgment restored via jade.io** — `handleFetchJudgment` translates AustLII viewdoc URLs to jade.io equivalent for fetch; `rawUrl` (AustLII) retained as D1 cache key (intentional decoupling). jade.io confirmed 200 from CF edge. Worker `a23b7601`, commit `91dd768`.
+- **Roadmap pruned** — model swap evaluation, RRF, legal-vocab dictionary, oracle top-20 study, Pass 4 authority_synthesis quota watch item, CONCEPTS contamination watch item all removed; real-use signals (query_log.sufficient=0) are the re-open gate.
+- **Cloudflare Browser Run (formerly Browser Rendering) — arch note updated** — `/markdown` endpoint documented for synchronous single-page fetches; single-page fetchCaseContent use case distinguished from crawl-at-scale.
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
