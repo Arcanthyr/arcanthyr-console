@@ -204,6 +204,7 @@ Retrieval layer is frozen as of session 96. See CLAUDE.md `## RETRIEVAL LAYER �
 - No `grep` — use `Select-String`
 - No `head` — use `Select-Object -First N`
 - No `Out-File` for corpus files — use Python to write (PowerShell BOM corrupts block separators)
+- `curl` is an alias for `Invoke-WebRequest` — fails with "NonInteractive mode" in CC's shell; always use `Invoke-WebRequest -UseBasicParsing` directly
 
 ---
 
@@ -407,3 +408,4 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 | New route auth pattern | Before specifying auth on a new route, check whether the calling component already has the credential. AmendmentPanel has no nexusKey — routes called from it must go in the `/api/legal/` rate-limited block (no X-Nexus-Key). Match the nearest equivalent existing route's auth pattern. |
 | api.js /api/legal/ response shape | `req()` for routes in the `/api/legal/` block returns `{ result: <payload> }` — consuming code must unwrap: `const { result } = await api.someRoute(...)` |
 | DLQ pending check | Canonical pending chunk query is now `done=0 AND dlq=0` — `done=0` alone includes dead-letter chunks. Update any admin query or requeue script accordingly. |
+| wrangler.toml binding syntax | Single-object bindings use `[binding_name]` (e.g. `[browser]`, `[ai]`); `[[binding_name]]` creates an array-of-tables and wrangler 4.75 rejects it — "should be an object but got [...]" |

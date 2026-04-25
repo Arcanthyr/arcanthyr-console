@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 25 April 2026 (end of session 101) · Supersedes all prior versions
+Updated: 25 April 2026 (end of session 102) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–98) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–99) — load conditionally
 
 ---
 
@@ -37,7 +37,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
 | Cloudflare Queue | drained |
-| Scraper | RUNNING — active year entries reset (TASSC/TASCCA/TASFC/TASMC 2026 deleted from progress.json, next run re-scrapes) · TASMC 2026 added to COURT_YEARS scope · INSERT OR IGNORE prevents duplicates |
+| Scraper | COMPLETE — full historical pass done 25 April 2026 (TASSC/TASCCA/TASFC/TASMC back to 2004) · running daily via Task Scheduler for forward-looking capture · INSERT OR IGNORE prevents duplicates |
 | arcanthyr.com | Live |
 | Subject matter filter | LIVE · SM_PENALTY=0.65 · LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE · Domain filter UI LIVE · Pass 2 MatchAny criminal/mixed hard filter LIVE (all three parts complete) |
 | Stare decisis UI | LIVE |
@@ -87,7 +87,8 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **/search top_k=12 server-side cap** — server.py line 296 hard-caps at 12 regardless of requested top_k. Cap retained for latency bounding. Confirmed session 76: passing `"top_k": 12` in the request payload breaks the endpoint (returns 0 chunks) — the field is not accepted; omit it, default 6 is what the baseline script uses.
 - **Q27 (provocation) confirmed as corpus content gap** — provocation defence was abolished in Tasmania 2003; corpus correctly sparse. Authoring decision, not retrieval defect.
 - **Stale baseline file gotcha** — `~/retrieval_baseline_results.txt` on VPS is Apr 16 (pre-quarantine) and is regularly what grep/head default to. Always use timestamped snapshots: `~/retrieval_baseline_pre_reembed.txt`, `_post_reembed.txt`, `_post_quarantine.txt`, `_pre_interleave.txt`, `_post_interleave.txt` (session 74 canonical). Session 75 lost 20 minutes chasing a phantom stub-quarantine leak diagnosed from the stale file.
-- **AustLII CF-edge block — confirmed session 101** — all CF-edge fetches to AustLII return HTTP 403 (sinosrch, viewdoc, listing pages); extends beyond the VPS TCP block (sessions 85/88). `handleAustLIIWordSearch` (Quick Search word-search) is dead — accepted loss, no clean replacement (jade.io search is POST-based). `handleFetchJudgment` restored via jade.io URL translation. jade.io confirmed 200 from CF edge. `search_by_citation` also dead (VPS TCP-blocked). Two-step search pattern (word-search → search_by_citation) fully dead — no replacement path currently available.
+- **AustLII CF-edge block — mechanism identified session 102** — block is Cloudflare Bot Management / Turnstile ("Just a moment..." + `challenges.cloudflare.com` in CSP), not an IP-range block; applies to all CF-origin automated requests regardless of egress path. CF Browser Rendering (headless Chromium) tested session 102 — also 403s; Bot Management identifies its own BR ASN by design, no CF-origin path can bypass. `lawlibrary.tas.gov.au` is behind the same CF Bot Management — identical response. AustLII usage policy explicitly prohibits spidering, scraping, crawling, vectorisation, and embedding of case law in writing. `handleAustLIIWordSearch` dead — accepted loss (jade.io search POST-based). `handleFetchJudgment` restored via jade.io URL translation (session 101). jade.io confirmed 200 from CF edge. `search_by_citation` dead (VPS TCP-block). Two-step search pattern fully dead. `runDailySync` permanently parked — all CF-edge discovery paths exhausted; local scraper on residential IP is permanent forward-looking capture. Heuristic: if CF Workers `fetch()` 403s a target, CF Browser Rendering will too — same ASN, same bot fingerprint.
+- **CF Browser Rendering wrangler.toml binding syntax** — correct TOML is `[browser]` (single brackets); `[[browser]]` creates an array-of-tables and wrangler 4.75 rejects it with "should be an object but got [...]". Apply same rule to any future single-object bindings in wrangler.toml.
 - **`austlii_cache` key/fetch URL intentionally decoupled** — cache entries keyed on raw AustLII viewdoc URL (`rawUrl`) but fetched from jade.io since session 101. Stable AustLII URL as cache key; jade.io as live fetch source. Cache hit serves jade.io HTML against an AustLII-keyed entry — correct and intended behaviour. Do not "fix" this.
 - **Q14 semantic ceiling — known** — `manual-b4135-chunk` (s 37 EA leading questions doctrine) scores ~0.46 against "leading questions technique" query; case_chunks floor ~0.63–0.69. Vocabulary patch + anchor fix delivered (examination technique added to CONCEPTS, anchor=Yes confirmed). Gap is structural: "technique" query too broad, matched by examination/witness case_chunks. Chunk correctly authored and embedded. A practitioner querying "s 37 Evidence Act leading questions" retrieves it in top 3. Q14 passes on case chunks (Police v Endlay). Secondary source surfacing is a known ceiling, not a pipeline defect.
 - **Party name constraint — DEPLOYED session 93** — Prophylactic bullet added to Sol citationRules block (worker.js ~L2663) and as item 3 in V'ger RULES block (worker.js ~L2905). Instructs LLM to cite by citation alone when source shows only citation without parties. Skipped on performMerge — operates on single case's own material, no pathway to fabricate. The "Police v FRS" for [2020] TASMC 9 flagged session 92 was NOT hallucination — it's stored practitioner shorthand (Option A confirmed): `cases.case_name` = "Police v FRS", `case_chunks.enriched_text` chunk 0 uses it, two authored secondary_sources chunks ("Police v FRS - Tendency Evidence Admissibility", "Police v FRS - Example Tendency Notice") use it by design. V'ger was retrieving faithfully. Summary criminal matters are routinely styled "Police v X" in Tasmanian practitioner reference even where formal AustLII parties name informants. No corpus cleanup needed.
@@ -161,7 +162,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Scraper wake tasks | Dedicated SYSTEM-level wake tasks created (session 46): `WakeForScraper` fires 10:55 AM daily, `WakeForScraperEvening` fires 4:55 PM daily · both have WakeToRun=True · wakes PC 5 min before scraper runs at 11:00 AM and 5:00 PM AEST · created as SYSTEM/HIGHEST so wake works from sleep without user login |
 | cases.id format | Now citation-derived (e.g. `2026-tassc-2`), not UUID · `citationToId()` helper in worker.js · both upload handlers use `INSERT OR IGNORE` — re-upload of existing citation is a no-op, enrichment data preserved |
 | TAMagC on AustLII | TAMagC cases exist on AustLII but the court is subject to outages · if scraper returns all 404s for a TAMagC year, check AustLII manually before marking as no data · do not assume structural absence · VPS is TCP-blocked by AustLII at network level — Contabo IP range silently dropped (confirmed session 85, re-confirmed session 88) |
-| runDailySync | Forward-looking new-case capture (up to 50/day) — deferred until scraper completes historical pass · (b)+(c) complete (Worker `3a24d1e3`): saveCaseToDb replaced with METADATA queue send, Resend email removed · `fetchCaseContent` BR path wired (Worker `abdf0dd0`): puppeteer fallback for viewdoc URLs · `fetchRecentAustLIICases` structural fix complete (sinosrch-based discovery, Worker `a23b7601`): reuses `parseAustLIIResults`, returns citation+url+court with no html so BR path handles content · remaining blocker: AustLII now 403s all CF-edge fetches (confirmed session 101) — jade.io listing page spike needed as discovery source replacement before runDailySync is production-ready |
+| runDailySync | PERMANENTLY PARKED — all CF-edge discovery paths exhausted (raw fetch 403, Browser Rendering 403 via same Bot Management ASN, VPS TCP-block, jade.io has no listing pages, lawlibrary.tas.gov.au blocked). Local Task Scheduler scraper is permanent forward-looking capture. Re-open only if a non-CF-origin, non-AustLII discovery source is identified (e.g. court RSS feed or public API not behind Bot Management). See CLAUDE_decisions.md session 102. |
 | PDF upload (case) | OCR fallback now wired — scanned PDFs auto-route to VPS /extract-pdf-ocr · citation and court auto-populate from OCR text · court detection checks header (first 500 chars) before full text |
 | server.py canonical copy | VPS is canonical — always SCP down before editing locally: `scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py"` |
 | SCP server.py to VPS | `scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py` then force-recreate agent-general |
@@ -222,18 +223,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ---
 
-## CHANGES THIS SESSION (session 99) — 24 April 2026
-
-- **Parliament bill page slug resolver — deployed** — new Worker route `GET /api/legal/parliament-bill-url?year=&billNumber=` fetches parliament.tas.gov.au year index, two-pass regex (href-pattern first, link-text fallback), returns `{ url }` or `{ url: null }`. `api.parliamentBillUrl()` in api.js. AmendmentRow converted from static `<a>` to async click handler with "Resolving..." state and Google search fallback. Commits `8923830`, `6041d5b`. Worker `108c46a5`.
-- **Dead letter queue — deployed** — `retry_count INTEGER DEFAULT 0` and `dlq INTEGER DEFAULT 0` added to case_chunks. CHUNK handler increments retry_count per attempt, sets dlq=1 at 3 failures and acks without retry. Merge pending check updated to `done=0 AND dlq=0` — cases with one dead chunk now complete their merge from remaining chunks. Admin route `GET /api/admin/dlq-chunks` (X-Nexus-Key). Commit `e204a56`, Worker `4dc5b443`.
-- **Hansard search widget — permanently closed** — parliament.tas.gov.au search is POST-only with no URL state; no stable result URL is constructable. Button cannot deep-link to results. Removed from roadmap. Google `site:parliament.tas.gov.au` pattern already used for bill pages is the correct approach for Hansard too.
-- **Roadmap/watchlist audit** — CHUNK max_tokens measured (non-issue: 2/26034 chunks near poller's 3k char limit, well under LLM ceiling); Auslaw MCP Track 2 removed (VPS TCP-blocked by AustLII, kills main benefit); Gmail/Google Calendar MCP confirmed irrelevant to Arcanthyr; tags column removed as watch item (no taxonomy, no feature depends on it); Pass 2 parity watch item retired (fixed session 98).
-- **Worker.js capital W — documented** — git tracks the Worker file as `Worker.js` (capital W). Windows case-insensitive FS causes `git add "Arc v 4/worker.js"` to silently stage nothing. Added to KNOWN ISSUES and SESSION RULES. All MD references corrected.
-- **`/api/legal/` auth model documented** — routes in this block are rate-limited only, no X-Nexus-Key. AmendmentPanel and similar user-facing components have no credential mechanism; new outbound-proxy routes must match the auth pattern of the nearest equivalent existing route.
-- **`api.js` result-wrapping documented** — `/api/legal/` block returns `json({ result })`, so all responses are shaped `{ result: { ... } }` and must be unwrapped in consuming code.
-
----
-
 ## CHANGES THIS SESSION (session 100) — 24 April 2026
 
 - **Stuck case [2023] TASSC 6 resolved** — `requeue-merge` (default, no target) fired merge for Bob Brown Foundation Inc v Barnett (No 2); all 14 chunks were done=1; deep_enriched now 1; sentencing_status=null correct (administrative case, isSentencingCase() gates on subject_matter='criminal'); D1 cases now 1,914/1,914 deep_enriched=1
@@ -254,6 +243,16 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **fetch-judgment restored via jade.io** — `handleFetchJudgment` translates AustLII viewdoc URLs to jade.io equivalent for fetch; `rawUrl` (AustLII) retained as D1 cache key (intentional decoupling). jade.io confirmed 200 from CF edge. Worker `a23b7601`, commit `91dd768`.
 - **Roadmap pruned** — model swap evaluation, RRF, legal-vocab dictionary, oracle top-20 study, Pass 4 authority_synthesis quota watch item, CONCEPTS contamination watch item all removed; real-use signals (query_log.sufficient=0) are the re-open gate.
 - **Cloudflare Browser Run (formerly Browser Rendering) — arch note updated** — `/markdown` endpoint documented for synchronous single-page fetches; single-page fetchCaseContent use case distinguished from crawl-at-scale.
+
+## CHANGES THIS SESSION (session 102) — 25 April 2026
+
+- **Scraper historical pass complete** — full TASSC/TASCCA/TASFC/TASMC corpus scraped back to 2004 as of 11:00 AM 25 April; terminal state `=== Scraper complete ===`; running daily via Task Scheduler as permanent forward-looking capture mechanism
+- **jade.io listing page spike — dead end confirmed** — jade.io router validates all URLs against individual-case AustLII regex; listing paths (`/TASSC/2026/`) rejected with plain-text error at router level; no listing pages exist architecturally; not a URL format issue
+- **CF Browser Rendering spike — dead end confirmed** — all targets (AustLII TASSC/TASCCA recent, lawlibrary.tas.gov.au) returned CF Bot Management 403; headless Chromium cannot pass Turnstile challenge by design; Cloudflare identifies its own BR ASN
+- **AustLII block mechanism identified** — CF Bot Management / Turnstile, not IP-range; "Just a moment..." + `challenges.cloudflare.com` CSP is the diagnostic tell; AustLII usage policy explicitly prohibits scraping/vectorisation in writing; local scraper on residential IP at human pace is the defensible path
+- **runDailySync permanently parked** — all CF-edge discovery paths exhausted (raw fetch, Browser Rendering, VPS TCP-block, jade.io no listings, lawlibrary.tas.gov.au blocked); no remaining untested paths; local Task Scheduler scraper is permanent forward-looking capture
+- **auslaw-mcp status clarified** — dead from VPS (TCP block on all AustLII connections); functional as CC session tool from local Windows machine (residential IP unblocked); container stays running on VPS
+- **Quick Search local word-search unaffected** — `api.wordSearch()` → local FTS5 is independent of AustLII leg; local corpus search works normally; only AustLII supplementary results panel dead
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

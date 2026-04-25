@@ -4125,3 +4125,16 @@ Model swap evaluation (GLM/Qwen3 vs GPT alternatives), RRF, legal-vocab dictiona
 
 **Firecrawl as CF-edge reachability proxy — rule of thumb confirmed**
 Firecrawl's infrastructure shares the datacenter IP class with Cloudflare edge. A 200 from Firecrawl predicts a 200 from a CF-edge `fetch()`. Faster than deploy-and-test cycle for reachability confirmation. Used this session to confirm jade.io accessibility before briefing the fetch-judgment swap.
+
+---
+
+## Session 102 decisions — 25 April 2026
+
+**runDailySync permanently parked — all discovery paths exhausted**
+Full discovery path audit conducted session 102. jade.io listing pages: dead end — jade.io router rejects all non-individual-case URLs at the architectural level (regex validation, not a configurable policy). CF Browser Rendering: dead end — Cloudflare Bot Management / Turnstile blocks headless Chromium from its own BR pool by design; same ASN fingerprint as Workers fetch. lawlibrary.tas.gov.au: dead end — behind identical CF Bot Management. AustLII usage policy explicitly prohibits spidering, scraping, vectorising, and embedding of case law. No remaining untested CF-edge discovery paths exist. Decision: park runDailySync indefinitely. Local Windows scraper on residential IP via Task Scheduler is permanent forward-looking capture. Re-open only if a non-CF-origin, non-AustLII discovery source is identified (e.g. a court RSS feed or public API not behind Bot Management).
+
+**CF Browser Rendering — dead end for AustLII bypass**
+Tested session 102 via throwaway worker with `[browser]` binding. All AustLII targets and lawlibrary.tas.gov.au returned 403 with Cloudflare "Just a moment..." Turnstile challenge. Cloudflare Bot Management identifies its own Browser Rendering ASN and applies the same challenge regardless of whether the request uses a real browser engine. This closes the question of whether a headless-browser approach from CF edge could bypass AustLII's block. It cannot. Do not retry without a non-CF-origin egress path.
+
+**AustLII usage policy — explicit prohibition on automated case law access**
+AustLII's published usage policy explicitly prohibits: spidering, scraping, crawling, mirroring, bulk querying, automated agents, and any programmatic access to case law — including indirect uses such as vectorisation, embedding, tokenisation, and summarisation. AustLII may block or take legal measures without notice. Individual end-user access for personal use remains permitted. The local scraper operating at human pace on residential IP is the defensible posture. Any CF-edge automated discovery or ingestion path is in direct conflict with this policy regardless of technical feasibility.

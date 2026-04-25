@@ -1,6 +1,18 @@
-# CLAUDE Changelog — Sessions 21–98
+# CLAUDE Changelog — Sessions 21–99
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
+
+---
+
+## CHANGES THIS SESSION (session 99) — 24 April 2026
+
+- **Parliament bill page slug resolver — deployed** — new Worker route `GET /api/legal/parliament-bill-url?year=&billNumber=` fetches parliament.tas.gov.au year index, two-pass regex (href-pattern first, link-text fallback), returns `{ url }` or `{ url: null }`. `api.parliamentBillUrl()` in api.js. AmendmentRow converted from static `<a>` to async click handler with "Resolving..." state and Google search fallback. Commits `8923830`, `6041d5b`. Worker `108c46a5`.
+- **Dead letter queue — deployed** — `retry_count INTEGER DEFAULT 0` and `dlq INTEGER DEFAULT 0` added to case_chunks. CHUNK handler increments retry_count per attempt, sets dlq=1 at 3 failures and acks without retry. Merge pending check updated to `done=0 AND dlq=0` — cases with one dead chunk now complete their merge from remaining chunks. Admin route `GET /api/admin/dlq-chunks` (X-Nexus-Key). Commit `e204a56`, Worker `4dc5b443`.
+- **Hansard search widget — permanently closed** — parliament.tas.gov.au search is POST-only with no URL state; no stable result URL is constructable. Button cannot deep-link to results. Removed from roadmap. Google `site:parliament.tas.gov.au` pattern already used for bill pages is the correct approach for Hansard too.
+- **Roadmap/watchlist audit** — CHUNK max_tokens measured (non-issue: 2/26034 chunks near poller's 3k char limit, well under LLM ceiling); Auslaw MCP Track 2 removed (VPS TCP-blocked by AustLII, kills main benefit); Gmail/Google Calendar MCP confirmed irrelevant to Arcanthyr; tags column removed as watch item (no taxonomy, no feature depends on it); Pass 2 parity watch item retired (fixed session 98).
+- **Worker.js capital W — documented** — git tracks the Worker file as `Worker.js` (capital W). Windows case-insensitive FS causes `git add "Arc v 4/worker.js"` to silently stage nothing. Added to KNOWN ISSUES and SESSION RULES. All MD references corrected.
+- **`/api/legal/` auth model documented** — routes in this block are rate-limited only, no X-Nexus-Key. AmendmentPanel and similar user-facing components have no credential mechanism; new outbound-proxy routes must match the auth pattern of the nearest equivalent existing route.
+- **`api.js` result-wrapping documented** — `/api/legal/` block returns `json({ result })`, so all responses are shaped `{ result: { ... } }` and must be unwrapped in consuming code.
 
 ---
 
