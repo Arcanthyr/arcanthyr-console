@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 25 April 2026 (end of session 102) · Supersedes all prior versions
+Updated: 25 April 2026 (end of session 103) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–99) — load conditionally
 
@@ -15,11 +15,11 @@ Re-opening requires a named trigger from real-use feedback (D1 query_log rows wh
 1–3 non-clustered failures → noise, no action.
 4+ logged failures → extend benchmark to match real query distribution before any retrieval tuning.
 
-Real-use failure captured via thumbs-down button on Research page answer view (wired session 95-post, sets query_log.sufficient=0 with optional missing_note). Flagger identity stored in query_log.flagged_by — defaults to 'admin' when no user identity is supplied. When multi-user auth is added, the worker handler must be updated to read flagged_by from authenticated session state rather than from request body. Review cadence: four-week minimum before any conclusion from the data.
+Real-use failure captured via thumbs-down button on Research page answer view (wired session 95-post, sets query_log.sufficient=0 with optional missing_note). Review cadence: four-week minimum before any conclusion from the data.
 
 ---
 
-## SYSTEM STATE — 25 April 2026 (end of session 101)
+## SYSTEM STATE — 25 April 2026 (end of session 103)
 
 | Component | Status |
 |---|---|
@@ -28,11 +28,10 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) · retry_count + dlq columns added (DLQ threshold: 3 failures); pending check is now done=0 AND dlq=0 |
 | D1 secondary_sources | 1,444 total · embedded=0: ~3 (nexus-save entries only — 411 Word-artifact rows cleaned session 98, embedded=0 reset for re-embed, poller clearing backlog) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
-| D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT, flagged_by TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) |
-| Insufficient feedback button | LIVE — ↓ Insufficient button in Research page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note + optional flagged_by; server defaults flagged_by='admin') · Worker version 4dc5b443 · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
+| D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) · flagged_by column dropped session 103 Phase 1 |
+| Insufficient feedback button | LIVE — ↓ Insufficient button in Research page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · Worker version 154b432b · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
 | Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
-| D1 synthesis_feedback | 0 rows · route wired session 68 (POST /api/pipeline/feedback) |
 | D1 case_citations | 6,959 rows |
 | D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
@@ -76,7 +75,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations · similarly, done=0 queries must include dlq=0 to exclude dead-letter chunks
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
 - **legislation.embedded is canonical embed gate** — `legislation_sections.embedding_model` is unreliable for Stage 1+2 sections (embedded before that column was being written by the poller). Do not use section-level column as backlog indicator. Correct query: `SELECT title, embedded FROM legislation` — Act-level flag is authoritative. The 1,731 `embedding_model IS NULL` count seen session 90 is noise, not backlog.
-- **Synthesis feedback loop — parked** — build plan exists at `SYNTHESIS_FEEDBACK_LOOP_BUILD_PLAN.md`, `approved` column on `secondary_sources` exists (session 68), `POST /api/pipeline/feedback` route live (session 68). Steps 2–9 unbuilt. Decision session 90: park until corpus growth stabilises. Rationale: corpus still growing, six-file build non-trivial for current value, saved answers would be superseded by better source material. Revisit when scraper is no longer adding large batches regularly.
 - **Qwen3 /query endpoint timeout** — server.py Qwen3 inference times out when scraper hammering Ollama · not a problem for UI (uses Claude API primary)
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
@@ -253,6 +251,14 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **runDailySync permanently parked** — all CF-edge discovery paths exhausted (raw fetch, Browser Rendering, VPS TCP-block, jade.io no listings, lawlibrary.tas.gov.au blocked); no remaining untested paths; local Task Scheduler scraper is permanent forward-looking capture
 - **auslaw-mcp status clarified** — dead from VPS (TCP block on all AustLII connections); functional as CC session tool from local Windows machine (residential IP unblocked); container stays running on VPS
 - **Quick Search local word-search unaffected** — `api.wordSearch()` → local FTS5 is independent of AustLII leg; local corpus search works normally; only AustLII supplementary results panel dead
+
+## CHANGES THIS SESSION (session 103) — 25 April 2026
+
+- **Phase 1 dead code removal — Worker.js (-844 lines across sessions 102–103)** — AustLII search path: handleAustLIIWordSearch, fetchRecentAustLIICases, runDailySync, runYearBackfill, AUSTLII_COURTS, parseAustLIIResults; Productivity AI: handleDraft, handleNextActions, handleWeeklyReview, handleClarifyAgent, handleAxiomRelay; email handlers: handleSendEmail, handleGetContacts, handleAddContact, handleDeleteContact; legal principles orphans: handleSearchCases, handleSearchPrinciples, savePrinciple, saveCaseToDb, processCaseUpload, getSyncProgress; Daily Digest block + scheduled handler call; synthesis feedback route (/api/pipeline/feedback); TTS route (/api/tts); all dead dispatch blocks (/api/ai/, /api/email/, /api/entries); procedurePassPrompt (orphaned by processCaseUpload removal); fetchCaseContent (orphaned by runDailySync/runYearBackfill removal); flagged_by from mark-insufficient handler (column already dropped)
+- **Phase 1 dead code removal — D1 schema** — ALTER TABLE query_log DROP COLUMN flagged_by; DROP TABLE synthesis_feedback (0 rows); DROP TABLE entries (9 rows); DROP TABLE legal_principles (210 rows); DROP TABLE email_contacts (2 rows)
+- **Phase 1 dead code removal — frontend** — deleted ReadButton.jsx, FloatingDock.jsx, tts.js; api.js: removed austliiWordSearch and flagSynthesis; ReadingPane.jsx: removed nexusKey/onNexusKeyChange props and the synthesis flag button (⚑ Flag) from SaveFlagPanel (SaveFlagPanel itself retained — insufficient button lives there); Library.jsx: removed AustLII external results panel and inline judgment viewer from Quick Search tab; Research.jsx: removed nexusKey state + handleNexusKeyChange and Daily Digest anchor link; Upload.jsx: updated AustLII placeholder text to "Source URL (optional)"
+- **wrangler.toml** — removed EMAIL_DIGEST KV namespace binding (9ea5773d11ac40ce9904ca21c602e9f4)
+- **/research direct-nav 404 — confirmed pre-existing** — Worker catch-all `return new Response("Not found", 404)` fires before SPA layer for direct deep-link navigation; client-side nav works correctly; not a Phase 1 regression; documented in CLAUDE_decisions.md
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

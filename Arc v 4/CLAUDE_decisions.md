@@ -4138,3 +4138,29 @@ Tested session 102 via throwaway worker with `[browser]` binding. All AustLII ta
 
 **AustLII usage policy — explicit prohibition on automated case law access**
 AustLII's published usage policy explicitly prohibits: spidering, scraping, crawling, mirroring, bulk querying, automated agents, and any programmatic access to case law — including indirect uses such as vectorisation, embedding, tokenisation, and summarisation. AustLII may block or take legal measures without notice. Individual end-user access for personal use remains permitted. The local scraper operating at human pace on residential IP is the defensible posture. Any CF-edge automated discovery or ingestion path is in direct conflict with this policy regardless of technical feasibility.
+
+---
+
+## Session 103 decisions — 25 April 2026
+
+**Phase 1 dead code removal — rationale and scope**
+Worker.js had accumulated ~800 lines of dead code across four categories: (1) AustLII search path (handleAustLIIWordSearch, fetchRecentAustLIICases, runDailySync, runYearBackfill, AUSTLII_COURTS, parseAustLIIResults) — permanently parked session 102 after all CF-edge discovery paths were exhausted; (2) Productivity AI handlers (handleDraft, handleNextActions, handleWeeklyReview, handleClarifyAgent, handleAxiomRelay) — routes existed in Worker.js but had no callers in arcanthyr-ui; (3) email handlers (handleSendEmail, handleGetContacts, handleAddContact, handleDeleteContact) — standalone email management feature that was never integrated into the research workflow; (4) legal principles orphans (handleSearchCases, handleSearchPrinciples, savePrinciple, saveCaseToDb, processCaseUpload, getSyncProgress) — superseded by the chunk-based enrichment pipeline. Two collateral orphans cleaned in the same commit: procedurePassPrompt (called only by processCaseUpload) and fetchCaseContent (called only by runDailySync/runYearBackfill). Removal rationale: archaeology debt — future sessions would inevitably spend time reading dead code to determine if it was load-bearing. No feature was removed from the live product.
+
+**D1 tables dropped — rationale**
+Four tables dropped as part of Phase 1: synthesis_feedback (0 rows, route removed, feedback loop parked session 90), entries (9 rows, the Productivity AI subsystem's journal table — dropped because the subsystem was orphaned in arcanthyr-ui), legal_principles (210 rows, the first-iteration per-case extracted principles table from the original saveCaseToDb → savePrinciple flow; replaced architecturally by the chunk-based enrichment pipeline, no direct successor table), email_contacts (2 rows, email management feature removed). Column dropped: query_log.flagged_by — the multi-user auth prerequisite for this column to carry value has not been built. The mark-insufficient handler's structural wiring is sound; full end-to-end verification deferred to Phase 3 redesign of the Insufficient surface. Removing flagged_by keeps the feedback schema minimal until auth is actually present.
+
+**EMAIL_DIGEST KV binding — removed**
+Unbound from wrangler.toml. Was used by the /digest Worker route (the abandoned Daily Digest publishing feature, removed this phase). Unrelated to the email_contacts D1 table, which used D1, not KV. No code in Worker.js calls env.EMAIL_DIGEST after Phase 1. Binding removal prevents wasted bind evaluation on every Worker request.
+
+**/research direct-nav 404 — confirmed pre-existing, not a regression**
+Direct navigation to https://arcanthyr.com/research (or any deep link) returns HTTP 404 in Playwright smoke tests. Root cause: the Worker script catch-all handler (return new Response("Not found", { status: 404 })) fires before the SPA layer (not_found_handling = "single-page-application" in wrangler.toml) gets a chance to serve index.html. This is structural and predates Phase 1. Client-side navigation (clicking Nav buttons, React Router links) works correctly as that path never hits the Worker catch-all. Fix if needed: either remove/condition the catch-all so Workers Assets handles unmatched routes, or add explicit route handlers for known SPA paths. Deferred — users enter via the landing page and navigate client-side; direct deep-link is not a current user flow.
+
+---
+
+## Process notes
+
+**Commit messages require the same verification rigour as CLAUDE.md changelog entries.**
+Established session 103: Phase 1 commit 5064c9b had a fabricated message body that survived because diff verification was applied to CLAUDE.md docs but not to the commit description itself. The actual frontend diff diverged significantly from the message. Going forward: before any commit, verify the draft message against  Arc v 4/CLAUDE.md           | 20 +++++++++++++-------
+ Arc v 4/CLAUDE_arch.md      | 18 ++++++------------
+ Arc v 4/CLAUDE_decisions.md | 16 ++++++++++++++++
+ 3 files changed, 35 insertions(+), 19 deletions(-) and spot-check per-file diffs. Commit messages are permanent audit-trail entries — fabricated descriptions compound into stale docs and misleading history.

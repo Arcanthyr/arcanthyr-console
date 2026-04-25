@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 25 April 2026 (end of session 101). Upload every session alongside CLAUDE.md.*
+*Updated: 25 April 2026 (end of session 103). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -45,8 +45,6 @@
 
 **MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
 
-**KV Namespace — EMAIL_DIGEST** (ID: 9ea5773d11ac40ce9904ca21c602e9f4):
-Used by email/contact management features (Resend email composer, contact list). Bound in `wrangler.toml`. (runDailySync Resend email block removed session 101.)
 
 ---
 
@@ -529,12 +527,11 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
 | `legislation_sections` | `id` TEXT | `legislation_id`, `section_number`, `heading`, `text` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
-| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char), `flagged_by` TEXT (200 char) · feedback system live session 96 (POST /api/legal/mark-insufficient route wired to Research page thumbs-down button) |
+| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char) · feedback system live session 96 (POST /api/legal/mark-insufficient route wired to Research page thumbs-down button) · flagged_by column dropped session 103 Phase 1 |
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
 | `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
 | `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · 253 rows · Qdrant filter deploy held for post-baseline |
-| `synthesis_feedback` | `id` TEXT (UUID) | Query feedback — `query_id`, `chunk_id`, `feedback_type` (CHECK: helpful/unhelpful/irrelevant/hallucinated), `comment`, `created_at` · empty, ready for route wiring |
 | `austlii_cache` | `url` TEXT (PK) | Full judgment HTML cache · columns: `url` (PK), `citation`, `html`, `fetched_at` · 30-day TTL enforced on read · CF-edge fetch (VPS IP blocked by AustLII) · upsert on stale |
 | `tbl_amendment_cache` | `act_id` TEXT (PK) | Cache for legislation.tas.gov.au CCL projectdata API responses · columns: `act_id` (e.g. `act-2001-076`), `payload` (JSON), `fetched_at` · 30-day TTL · keyed on act-YYYY-NNN identifier · populated by `GET /api/legal/amendments` route |
 
@@ -628,9 +625,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 **Active Workers AI calls:**
 - **`summarizeCase()`** — two-pass case enrichment at scrape/upload time
-- **`procedurePassPrompt`** — extracts in-court procedural sequences
 - **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle
-- **`handleAxiomRelay()`** — Three-stage relay pipeline
 
 ### worker.js — max_tokens on query handlers
 
@@ -689,7 +684,6 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
 | `/api/pipeline/fts-search-chunks` | GET | FTS5 search over case_chunks_fts · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet |
 | `/api/pipeline/case-chunks-fts-search` | GET | FTS5 search over case_chunks_fts with cases JOIN · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet (800 chars), case_name, court, subject_matter |
-| `/api/pipeline/feedback` | POST | Write synthesis feedback · body: query_id, chunk_id, feedback_type (helpful/unhelpful/irrelevant/hallucinated), comment · X-Nexus-Key · returns {ok, id} |
 | `/api/admin/approve-secondary` | POST | Approve/reject/delete secondary source · actions: approve (set approved=1), reject (DELETE WHERE approved=0), delete (Qdrant + FTS5 + D1 cleanup regardless of approved status) · X-Nexus-Key |
 | `/api/admin/pending-nexus` | GET | List secondary_sources WHERE approved=0 · returns id, title, category, raw_text, date_added · X-Nexus-Key |
 | `/api/research/history` | GET | Fetch 50 most recent query_log entries with answer_text · WHERE deleted=0 AND answer_text IS NOT NULL · no auth |
@@ -703,7 +697,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/legal/fetch-judgment` | GET | Fetch full AustLII judgment HTML · params: `url` (required, must be austlii.edu.au), `citation` (optional) · cache-first with 30-day TTL · CF-edge fetch with browser-mimicking headers · upserts to `austlii_cache` · returns `{ ok, html, source }` · session 86 |
 | `/api/legal/amendments` | GET | Fetch amendment timeline for a Tasmanian Act · param: `act=act-YYYY-NNN` · cache-first via `tbl_amendment_cache` (30-day TTL) · fetches CCL projectdata API on miss · returns full amendment history JSON · session 87 |
 | `/api/legal/resolve-act` | GET | Resolve Act name to CCL actId · param: `name=<Act title>` · writes `source_url` back to `legislation` table as side-effect on first resolution · used by AmendmentPanel.jsx as primary path when source_url not yet populated · session 87 |
-| `/api/legal/mark-insufficient` | POST | handleMarkInsufficient (inline handler in legal dispatch block, no auth, writes query_log.sufficient=0 with optional missing_note + flagged_by) |
+| `/api/legal/mark-insufficient` | POST | handleMarkInsufficient (inline handler in legal dispatch block, no auth, writes query_log.sufficient=0 with optional missing_note; flagged_by dropped session 103 Phase 1) |
 | `/api/legal/parliament-bill-url` | GET | resolves parliament.tas.gov.au bill page slug by year+billNumber; fetches year index, two-pass regex match; returns { result: { url } } or { result: { url: null } }; no auth (rate-limited block) |
 | `/api/admin/dlq-chunks` | GET | returns case_chunks where dlq=1; X-Nexus-Key; fields: id, citation, chunk_index, retry_count, preview |
 
@@ -873,7 +867,7 @@ Source title uses chunk heading (not filename stem).
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
 - **Retrieval eval framework** — formalise scored baseline as standing process
-- **Cloudflare Browser Run (formerly Browser Rendering)** — Available on Workers Free and Paid plans (account `def9cef091857f82b7e096def3faaa25` already has access). Two distinct use cases: (1) **Single-page synchronous fetch** — `POST .../browser-rendering/markdown` with `{url}` returns Markdown directly, no polling; used by `fetchCaseContent` (Worker `abdf0dd0`) for viewdoc URLs that 403 raw CF-edge fetch; requires `[browser]` binding in `wrangler.toml` (single brackets — `[[browser]]` is wrong TOML, wrangler rejects it as "should be an object but got [...]") + `nodejs_compat` flag + `@cloudflare/puppeteer`. (2) **Multi-page async crawl** — `/crawl` endpoint: submit URL → receive job ID → poll for HTML/Markdown/JSON; supports crawl depth, URL filters, incremental crawling via `modifiedSince`; respects robots.txt; self-identifies as bot — NOT suitable for AustLII. **AustLII Bot Management — tested and closed session 102**: CF Browser Rendering headless Chromium 403s AustLII exactly like raw fetch — Cloudflare Bot Management identifies its own BR ASN; no CF-origin path can bypass. Do not retry without a non-CF egress. Arcanthyr crawl use cases (deferred for non-AustLII targets): Tasmanian Supreme Court sentencing pages, Law Reform Commission reports, Bar Association publications.
+- **Cloudflare Browser Run (formerly Browser Rendering)** — Available on Workers Free and Paid plans (account `def9cef091857f82b7e096def3faaa25` already has access). Two distinct use cases: (1) **Single-page synchronous fetch** — `POST .../browser-rendering/markdown` with `{url}` returns Markdown directly, no polling; `[browser]` binding is in `wrangler.toml` (retained; `fetchCaseContent` which used it was removed session 103 Phase 1 — binding is unused but harmless); `[[browser]]` is wrong TOML, wrangler rejects it as "should be an object but got [...]"; requires `nodejs_compat` flag + `@cloudflare/puppeteer`. (2) **Multi-page async crawl** — `/crawl` endpoint: submit URL → receive job ID → poll for HTML/Markdown/JSON; supports crawl depth, URL filters, incremental crawling via `modifiedSince`; respects robots.txt; self-identifies as bot — NOT suitable for AustLII. **AustLII Bot Management — tested and closed session 102**: CF Browser Rendering headless Chromium 403s AustLII exactly like raw fetch — Cloudflare Bot Management identifies its own BR ASN; no CF-origin path can bypass. Do not retry without a non-CF egress. Arcanthyr crawl use cases (deferred for non-AustLII targets): Tasmanian Supreme Court sentencing pages, Law Reform Commission reports, Bar Association publications.
 - **Legislation enrichment via Claude API** — plain English summaries, cross-references
 - **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
 - **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
@@ -889,9 +883,9 @@ Source title uses chunk heading (not filename stem).
 - handleFetchForEmbedding SELECT now returns source_type
 - Qdrant secondary source upsert payload now includes source_type field
 
-### TTS — current state (sessions 60–62)
+### TTS — fully removed (session 103 Phase 1)
 
-MOSS-TTS-Nano fully removed from VPS (session 60). server.py `/tts` route and Worker `/api/tts` route retained as dormant-but-intact proxies to OpenAI TTS (`tts-1`, onyx/nova), should UI voice ever be re-enabled. UI voice toggle, speaker buttons, and ambient audio triggers stripped from arcanthyr-ui (sessions 61–62). `src/utils/tts.js` and `ReadButton.jsx` retained unmounted for future reactivation. Static MP3 preset approach (8 phrases × 2 voices) was designed session 62 then abandoned per userMemories. No active TTS work planned.
+MOSS-TTS-Nano removed from VPS (session 60). Worker `/api/tts` route, `src/utils/tts.js`, and `ReadButton.jsx` all removed session 103 Phase 1 cleanup. server.py `/tts` route (proxy to OpenAI TTS) retained on VPS — dormant, no Worker caller. If TTS is ever revived, re-add Worker route + frontend files from git history (commit `5064c9b`).
 
 
 ### server.py /search top_k cap
