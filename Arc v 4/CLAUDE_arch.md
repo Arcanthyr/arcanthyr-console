@@ -411,7 +411,9 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 
 ---
 
-## PHASE 5 DESIGN (LOCKED)
+## ORIGINAL RETRIEVAL DESIGN (PHASE 5 — LOCKED)
+
+*Historical name. Not related to the current Phase 1–4 site redesign sequence (see FUTURE ROADMAP).*
 
 - Qdrant top 6 chunks, min score 0.45, max 8
 - Re-rank by court hierarchy within 0.05 band: CCA/FullCourt > Supreme > Magistrates
@@ -465,7 +467,7 @@ cd "../Arc v 4" && npx wrangler deploy
 - `Landing.jsx` — immediate redirect to /research (auth removed session 17)
 - `Research.jsx` — query input, model toggle (Claude/Workers), filter chips, non-clickable source list, AI Summary auto-displays in reading pane after query
 - `Upload.jsx` — 3 tabs: Cases (file drop + AustLII URL input) / Secondary Sources (drag+drop .md/.txt) / Legislation (drag+drop .pdf/.txt)
-- `Library.jsx` — 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33) · year filter chips + court filter chips combinable · Legislation tab: Date Updated column (reads `current_as_at` via `r.date`), external link to legislation.tas.gov.au · Secondary Sources: Title column leftmost · `handleLibraryList` SELECT includes `principles_extracted` (session 33)
+- `Library.jsx` — 4 tabs: CASES/SECONDARY SOURCES/LEGISLATION/QUICK SEARCH · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33) · year filter chips + court filter chips combinable · Legislation tab: Date Updated column (reads `current_as_at` via `r.date`), external link to legislation.tas.gov.au · Secondary Sources: Title column leftmost · Quick Search: local FTS5 word search via `api.wordSearch()` (Phases 1+5 still live; AustLII external results panel and inline judgment viewer removed session 103 Phase 1) · `handleLibraryList` SELECT includes `principles_extracted` (session 33)
 - Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`
 
 ---

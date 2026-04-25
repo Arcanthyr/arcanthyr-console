@@ -248,9 +248,9 @@ Lives at `arcanthyr-console\ingest_corpus.py` (monorepo root — not inside `Arc
 | Sentencing backfill route | `POST /api/admin/backfill-sentencing` (X-Nexus-Key) — direct-write sentencing pass, limit 1–30 per call. Accepts optional `body.citations` array for targeted runs (session 55). SENTENCING_SYNTHESIS_PROMPT revised and validated session 55 — classification 6/6, fabrication 0. Safe to fire. |
 | scraper_progress.json | 8 stale entries cleared session 54. Safe to re-scrape already-ingested citations — INSERT OR IGNORE skips silently. |
 
-### TTS — current state (sessions 60–62)
+### TTS — fully removed (session 103 Phase 1)
 
-MOSS-TTS fully removed from VPS. server.py `/tts` and Worker `/api/tts` retained as dormant-but-intact OpenAI TTS (`tts-1`) proxies. UI voice controls stripped (sessions 61–62). Static MP3 preset approach abandoned. No active TTS work planned. See CLAUDE_arch.md `### TTS — current state` for details.
+MOSS-TTS removed from VPS (session 60). UI voice controls stripped (sessions 61–62). Static MP3 preset approach abandoned (session 62). Worker `/api/tts` route, `src/utils/tts.js`, and `ReadButton.jsx` all removed session 103 Phase 1 cleanup. server.py `/tts` route (proxy to OpenAI TTS) retained on VPS — dormant, no Worker caller. If TTS is ever revived, re-add Worker route + frontend files from git history (commit `5064c9b`). See CLAUDE_arch.md `### TTS — fully removed (session 103 Phase 1)` for details.
 
 ---
 
@@ -269,7 +269,7 @@ Third-party MCP server for AustLII/Jade case search. Runs on VPS, registered in 
 | MCP registration | User-scope in `C:\Users\Hogan\.claude.json` as name `auslaw` — registered via `claude mcp add-json` with backtick-escaped double-quoted JSON |
 | Transport | SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js` — `claude` CLI lives on Windows, not VPS |
 | Tools exposed | 10 total — `search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`, plus 6 others |
-| Tool reliability | `search_by_citation` instant and reliable · `search_cases` frequently times out against AustLII CGI endpoint (KNOWN ISSUE — AustLII slowness, not IP block) |
+| Tool reliability | All AustLII access paths from VPS DEAD — `search_cases` (VPS TCP-block, session 88), `search_by_citation` (VPS TCP-block, returns 403 as of session 101), word-search (CF-edge 403 via Bot Management, session 101). Two-step search pattern fully dead. `format_citation` and `jade_citation_lookup` may still work (no AustLII network call). auslaw-mcp container retained on VPS but currently functional only when invoked from local Windows CC (residential IP unblocked). |
 
 ### MCP registration — PowerShell gotchas
 
@@ -291,10 +291,15 @@ Third-party MCP server for AustLII/Jade case search. Runs on VPS, registered in 
 - Does NOT speak the HTTP CONNECT proxy protocol — cannot be used as `HTTPS_PROXY` target
 - If a third-party tool needs central outbound gating, either stand up a real proxy (Squid/mitmproxy) or modify the tool to call `/fetch-page` explicitly per-URL
 
-### auslaw-mcp `search_cases` timeout
+### auslaw-mcp `search_cases` / `search_by_citation` — both dead from VPS (sessions 88, 101, 102)
 
-- AustLII CGI endpoint slowness, not IP block. Use `search_by_citation` for known citations (round-trips fast). `search_cases` retry on short queries only.
-- Same backend as Quick Search Phase 2 (`/fetch-page` proxy to sinosrch.cgi) — Phase 2 build will need timeout tolerance.
+- VPS Contabo IP range TCP-blocked by AustLII at network level — confirmed session 88, re-confirmed session 101 (`search_by_citation` returns 403 as of session 101). NOT slowness.
+- CF-edge also blocked by Cloudflare Bot Management (sessions 101–102): all targets including sinosrch, viewdoc, lawlibrary.tas.gov.au return Turnstile challenge ("Just a moment..." + `challenges.cloudflare.com` in CSP).
+- CF Browser Rendering (headless Chromium) tested session 102 — Cloudflare identifies its own BR ASN, also 403. No CF-origin path can bypass.
+- Quick Search AustLII word-search: accepted loss (jade.io search is POST-based, no clean CF-edge replacement). Local FTS5 word-search path still works.
+- `handleFetchJudgment` restored via jade.io URL translation (session 101) — only working AustLII content path from CF edge. Cache key remains AustLII viewdoc URL (intentional decoupling); fetch source is jade.io.
+- `runDailySync` permanently parked (session 102). Local Windows scraper on residential IP via Task Scheduler is permanent forward-looking capture.
+- auslaw-mcp container retained on VPS but its AustLII-touching tools are dead from there. It works when invoked from local Windows CC only.
 
 ### server.py `/search` top_k cap
 
