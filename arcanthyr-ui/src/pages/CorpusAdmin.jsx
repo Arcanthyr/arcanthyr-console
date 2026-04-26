@@ -2,8 +2,11 @@ import { useState } from 'react';
 import Nav from '../components/Nav';
 import ComposePanel from '../components/ComposePanel';
 import HealthReportsPanel from '../components/HealthReportsPanel';
+import SecondarySourcesPanel from '../components/SecondarySourcesPanel';
+import UploadPanel from '../components/UploadPanel';
+import FeedbackPanel from '../components/FeedbackPanel';
 
-const SUB_TABS = ['COMPOSE', 'CORPUS', 'SECONDARY SOURCES', 'FEEDBACK'];
+const SUB_TABS = ['COMPOSE', 'CORPUS', 'SECONDARY SOURCES', 'UPLOAD', 'FEEDBACK'];
 
 export default function CorpusAdmin() {
   const [activeTab, setActiveTab] = useState('COMPOSE');
@@ -15,17 +18,10 @@ export default function CorpusAdmin() {
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {activeTab === 'COMPOSE' && <ComposePanel />}
         {activeTab === 'CORPUS' && <HealthReportsPanel />}
-        {activeTab === 'SECONDARY SOURCES' && <PlaceholderPanel>Secondary Sources — coming in Phase 3.</PlaceholderPanel>}
-        {activeTab === 'FEEDBACK' && <PlaceholderPanel>Feedback — coming in Phase 3.</PlaceholderPanel>}
+        {activeTab === 'SECONDARY SOURCES' && <SecondarySourcesPanel />}
+        {activeTab === 'UPLOAD' && <UploadPanel />}
+        {activeTab === 'FEEDBACK' && <FeedbackPanel />}
       </div>
-    </div>
-  );
-}
-
-function PlaceholderPanel({ children }) {
-  return (
-    <div style={{ flex: 1, overflow: 'auto', padding: '32px 24px', color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '13px' }}>
-      {children}
     </div>
   );
 }

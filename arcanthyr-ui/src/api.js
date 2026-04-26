@@ -153,6 +153,8 @@ export const api = {
     return data;
   },
 
+  feedback:           ()     => req('GET',  '/api/legal/feedback'),
+
   getQueryHistory:    ()     => req('GET',  '/api/query/history'),
   deleteQueryHistory: (id)   => req('POST', '/api/query/history/delete', { id }),
 

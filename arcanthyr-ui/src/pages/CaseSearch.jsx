@@ -2,11 +2,8 @@ import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
 import StareDecisisSection from '../components/StareDecisisSection';
-import AmendmentPanel from '../components/AmendmentPanel';
 
 const BASE = 'https://arcanthyr.com';
-
-const TABS = ['CASES', 'SECONDARY SOURCES', 'LEGISLATION'];
 
 const COURT_COLORS = {
   TASCCA: { color: '#4A9EFF', bg: '#1a3a5c' },
@@ -35,7 +32,6 @@ function statusDot(row) {
 }
 
 function austliiUrl(citation) {
-  // [year] TASCCA n → https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/TASCCA/year/n.html
   const m = citation?.match(/\[(\d{4})\]\s+(TASCCA|TASSC|TASMC)\s+(\d+)/);
   if (!m) return null;
   return `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/tas/${m[2]}/${m[1]}/${m[3]}.html`;
@@ -52,10 +48,24 @@ function buildJadeUrl(citation) {
   return `https://jade.io/au/cases/${path}/${year}/${num}`;
 }
 
-const STATES = ['TAS', 'QLD', 'WA', 'HCA', 'SA', 'NSW', 'VIC', 'NT', 'ALL'];
+/* State → court codes mapping. Unmapped states have no corpus cases yet → fallback to TAS. */
+const STATE_COURTS = {
+  ALL:  null,
+  TAS:  ['TASCCA', 'TASSC', 'TASMC'],
+  HCA:  ['HCA'],
+};
+const TAS_COURTS = ['TASCCA', 'TASSC', 'TASMC'];
+
+function filterByState(rows, state) {
+  if (state === 'ALL') return rows;
+  const courts = STATE_COURTS[state];
+  if (!courts) return rows.filter(r => TAS_COURTS.includes(r.court));
+  return rows.filter(r => courts.includes(r.court));
+}
+
+const STATE_OPTIONS = ['ALL', 'TAS', 'QLD', 'WA', 'HCA', 'SA', 'NSW', 'VIC', 'NT'];
 
 export default function CaseSearch() {
-  const [tab, setTab] = useState(0);
   const [selectedState, setSelectedState] = useState('TAS');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -64,8 +74,6 @@ export default function CaseSearch() {
   const [truncationMap, setTruncationMap] = useState({});
   const [selectedTruncation, setSelectedTruncation] = useState(null);
   const [nexusKey, setNexusKey] = useState('');
-  const [pendingItems, setPendingItems] = useState([]);
-  const [pendingLoading, setPendingLoading] = useState(false);
 
   useEffect(() => {
     load();
@@ -97,38 +105,6 @@ export default function CaseSearch() {
       .catch(err => console.warn('Truncation status fetch failed:', err));
   }
 
-  async function loadPending(key) {
-    const k = key !== undefined ? key : nexusKey;
-    if (!k) return;
-    setPendingLoading(true);
-    try {
-      const r = await api.fetchPendingNexus(k);
-      setPendingItems(r.items || []);
-    } catch {
-      setPendingItems([]);
-    } finally {
-      setPendingLoading(false);
-    }
-  }
-
-  async function handleApprove(id) {
-    await api.approveSecondary({ id, action: 'approve' }, nexusKey);
-    setPendingItems(prev => prev.filter(i => i.id !== id));
-  }
-
-  async function handleReject(id) {
-    if (!window.confirm('Delete this saved answer?')) return;
-    await api.approveSecondary({ id, action: 'reject' }, nexusKey);
-    setPendingItems(prev => prev.filter(i => i.id !== id));
-  }
-
-  async function handleDeleteNexus(id) {
-    if (!window.confirm('Permanently delete this saved answer from D1 and Qdrant?')) return;
-    await api.approveSecondary({ id, action: 'delete' }, nexusKey);
-    setPendingItems(prev => prev.filter(i => i.id !== id));
-    setData(prev => prev ? { ...prev, secondary: (prev.secondary || []).filter(r => r.id !== id) } : prev);
-  }
-
   async function handleDelete(docType, id) {
     if (!confirm(`Delete ${id}?`)) return;
     try {
@@ -158,42 +134,36 @@ export default function CaseSearch() {
     setSelectedTruncation(null);
   }
 
+  /* State-filtered rows, with TAS fallback if selection yields nothing */
+  const allCases = data?.cases || [];
+  const stateFiltered = filterByState(allCases, selectedState);
+  const caseRows = stateFiltered.length === 0 && selectedState !== 'ALL'
+    ? filterByState(allCases, 'TAS')
+    : stateFiltered;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-shell)' }}>
       <Nav />
-      <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', background: 'var(--bg-page)' }}>
-        {TABS.map((t, i) => (
-          <button key={t} onClick={() => { setTab(i); setSelectedCase(null); }} style={{
-            padding: '12px 24px', fontSize: '13px', background: 'transparent',
-            color: tab === i ? 'var(--accent)' : 'var(--text-secondary)',
-            borderBottom: tab === i ? '2px solid var(--accent)' : '2px solid transparent',
-          }}>
-            {t}
-          </button>
-        ))}
-        <button onClick={load} style={{ marginLeft: 'auto', padding: '12px 24px', fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-          ↻ Refresh
-        </button>
-      </div>
 
-      {/* State filter bar — scaffold only, no backend logic yet */}
-      <div style={{ display: 'flex', gap: '4px', padding: '8px 16px', background: 'var(--bg-page)', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', marginRight: '4px' }}>State</span>
-        {STATES.map(s => (
-          <button
-            key={s}
-            onClick={() => setSelectedState(s)}
+      {/* Filter bar */}
+      <div style={{ display: 'flex', gap: '12px', padding: '8px 16px', background: 'var(--bg-page)', borderBottom: '1px solid var(--border)', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>State</span>
+          <select
+            value={selectedState}
+            onChange={e => { setSelectedState(e.target.value); setSelectedCase(null); }}
             style={{
-              padding: '3px 10px', borderRadius: '12px', fontSize: '11px',
-              background: selectedState === s ? 'var(--accent-dim)' : 'var(--surface)',
-              color: selectedState === s ? 'var(--accent)' : 'var(--text-secondary)',
-              border: `1px solid ${selectedState === s ? 'var(--accent)' : 'var(--border)'}`,
-              transition: 'color 0.15s, border-color 0.15s, background 0.15s',
+              padding: '4px 8px', fontSize: '12px', background: 'var(--surface)',
+              border: '1px solid var(--border)', borderRadius: '4px',
+              color: 'var(--text-primary)', cursor: 'pointer',
             }}
           >
-            {s}
-          </button>
-        ))}
+            {STATE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <button onClick={load} style={{ padding: '4px 12px', fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', border: '1px solid var(--border)', borderRadius: '4px' }}>
+          ↻ Refresh
+        </button>
       </div>
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
@@ -201,27 +171,24 @@ export default function CaseSearch() {
           {loading && <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Loading…</div>}
           {error && <div style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</div>}
           {data && (
-            <>
-              {tab === 0 && <CasesTable rows={data.cases || []} onDelete={handleDelete} onSelect={setSelectedCase} selectedId={selectedCase?.id} truncationMap={truncationMap} onTruncationClick={setSelectedTruncation} />}
-              {tab === 1 && (
-                <>
-                  <PendingReviewSection
-                    items={pendingItems}
-                    loading={pendingLoading}
-                    nexusKey={nexusKey}
-                    onNexusKeyChange={(k) => { setNexusKey(k); loadPending(k); }}
-                    onApprove={handleApprove}
-                    onReject={handleReject}
-                    onDeleteNexus={handleDeleteNexus}
-                  />
-                  <CorpusTable rows={data.secondary || []} onDelete={handleDelete} onDeleteNexus={handleDeleteNexus} />
-                </>
-              )}
-              {tab === 2 && <LegislationTable rows={data.legislation || []} onDelete={handleDelete} />}
-            </>
+            <CasesTable
+              rows={caseRows}
+              onDelete={handleDelete}
+              onSelect={setSelectedCase}
+              selectedId={selectedCase?.id}
+              truncationMap={truncationMap}
+              onTruncationClick={setSelectedTruncation}
+            />
           )}
         </div>
-        {selectedCase && <CaseReadingPane c={selectedCase} onClose={() => setSelectedCase(null)} cases={data?.cases || []} onSelect={setSelectedCase} />}
+        {selectedCase && (
+          <CaseReadingPane
+            c={selectedCase}
+            onClose={() => setSelectedCase(null)}
+            cases={caseRows}
+            onSelect={setSelectedCase}
+          />
+        )}
       </div>
 
       {selectedTruncation && (
@@ -238,34 +205,6 @@ export default function CaseSearch() {
   );
 }
 
-function parseActNames(legislationExtracted) {
-  if (!legislationExtracted) return [];
-  let refs = [];
-  try {
-    refs = typeof legislationExtracted === 'string'
-      ? JSON.parse(legislationExtracted)
-      : legislationExtracted;
-    if (!Array.isArray(refs)) refs = [];
-  } catch { return []; }
-  const seen = new Set();
-  const result = [];
-  for (const ref of refs) {
-    if (typeof ref !== 'string') continue;
-    // Strip leading "s N " section prefix and trailing section refs
-    let name = ref
-      .replace(/^s\s+[\d\w.()\-]+\s+/i, '')
-      .replace(/\s+s\s+[\d\w.()\-]+\s*$/i, '')
-      .replace(/\s*\(Tas\)/gi, '')
-      .trim();
-    // Only include if it ends with a 4-digit year and looks like an Act title
-    if (name && /\d{4}$/.test(name) && !seen.has(name)) {
-      seen.add(name);
-      result.push(name);
-    }
-  }
-  return result;
-}
-
 /* ── Cases table ───────────────────────────────────────────── */
 const modeBtnStyle = (active) => ({
   padding: '5px 14px', fontSize: '12px', borderRadius: '4px', cursor: 'pointer',
@@ -276,41 +215,45 @@ const modeBtnStyle = (active) => ({
 });
 
 function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTruncationClick }) {
-  // Name/citation search state
   const [search, setSearch] = useState('');
   const [courtFilter, setCourtFilter] = useState([]);
-  const [yearFilter, setYearFilter] = useState([]);
+  const [yearFilter, setYearFilter] = useState('');
 
-  // Legislation section search state
-  const [searchMode, setSearchMode] = useState('name');     // 'name' | 'legislation' | 'word'
+  const [searchMode, setSearchMode] = useState('name');
   const [legQuery, setLegQuery] = useState('');
-  const [legResults, setLegResults] = useState(null);       // null = not searched yet
+  const [legResults, setLegResults] = useState(null);
   const [legLoading, setLegLoading] = useState(false);
   const [legOffset, setLegOffset] = useState(0);
   const [legHasMore, setLegHasMore] = useState(false);
 
-  // Word search state
   const [wordQuery, setWordQuery] = useState('');
-  const [wordResults, setWordResults] = useState(null);     // null = not searched yet
+  const [wordResults, setWordResults] = useState(null);
   const [wordLoading, setWordLoading] = useState(false);
-  const [wordMatchMode, setWordMatchMode] = useState(null); // 'phrase' | 'all_words' | 'fallback_single'
+  const [wordMatchMode, setWordMatchMode] = useState(null);
   const [wordHasMore, setWordHasMore] = useState(false);
 
   const courts = [...new Set(rows.map(r => r.court).filter(Boolean))].sort();
-  const years  = [...new Set(rows.map(r => r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0]).filter(Boolean))].sort().reverse();
 
-  const filtered = rows.filter(r => {
+  /* Year dropdown scoped to court-filtered rows */
+  const courtFiltered = rows.filter(r => courtFilter.length === 0 || courtFilter.includes(r.court));
+  const availableYears = [...new Set(
+    courtFiltered.map(r => r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0]).filter(Boolean)
+  )].sort().reverse();
+
+  /* Reset year filter if it's no longer in available years */
+  const effectiveYearFilter = availableYears.includes(yearFilter) ? yearFilter : '';
+
+  const filtered = courtFiltered.filter(r => {
     const matchSearch = !search ||
       r.citation?.toLowerCase().includes(search.toLowerCase()) ||
       r.title?.toLowerCase().includes(search.toLowerCase());
-    const matchCourt = courtFilter.length === 0 || courtFilter.includes(r.court);
     const rowYear = r.date?.slice(0, 4) || r.citation?.match(/\d{4}/)?.[0];
-    const matchYear = yearFilter.length === 0 || yearFilter.includes(rowYear);
-    return matchSearch && matchCourt && matchYear;
+    return matchSearch && (!effectiveYearFilter || rowYear === effectiveYearFilter);
   });
 
   function toggleChip(arr, setArr, val) {
     setArr(arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val]);
+    setYearFilter(''); // reset year when court changes
   }
 
   const chipStyle = (active) => ({
@@ -323,14 +266,8 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
 
   function handleModeSwitch(mode) {
     setSearchMode(mode);
-    setLegResults(null);
-    setLegQuery('');
-    setLegOffset(0);
-    setLegHasMore(false);
-    setWordResults(null);
-    setWordQuery('');
-    setWordMatchMode(null);
-    setWordHasMore(false);
+    setLegResults(null); setLegQuery(''); setLegOffset(0); setLegHasMore(false);
+    setWordResults(null); setWordQuery(''); setWordMatchMode(null); setWordHasMore(false);
   }
 
   async function runLegSearch(q, offset = 0) {
@@ -361,9 +298,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
       setWordHasMore(payload.has_more || false);
     } catch (e) {
       console.error('Word search failed:', e);
-      setWordResults([]);
-      setWordMatchMode(null);
-      setWordHasMore(false);
+      setWordResults([]); setWordMatchMode(null); setWordHasMore(false);
     } finally {
       setWordLoading(false);
     }
@@ -373,19 +308,12 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     <>
       {/* Search mode toggle */}
       <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
-        <button onClick={() => handleModeSwitch('name')} style={modeBtnStyle(searchMode === 'name')}>
-          Name / Citation
-        </button>
-        <button onClick={() => handleModeSwitch('legislation')} style={modeBtnStyle(searchMode === 'legislation')}>
-          Legislation section
-        </button>
-        <button onClick={() => handleModeSwitch('word')} style={modeBtnStyle(searchMode === 'word')}>
-          Word search
-        </button>
+        <button onClick={() => handleModeSwitch('name')} style={modeBtnStyle(searchMode === 'name')}>Name / Citation</button>
+        <button onClick={() => handleModeSwitch('legislation')} style={modeBtnStyle(searchMode === 'legislation')}>Legislation section</button>
+        <button onClick={() => handleModeSwitch('word')} style={modeBtnStyle(searchMode === 'word')}>Word search</button>
       </div>
 
       {searchMode === 'name' ? (
-        /* ── Name / citation search (existing behaviour) ── */
         <>
           <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input
@@ -394,16 +322,30 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
               placeholder="Search citation or case name…"
               style={{ padding: '8px 12px', fontSize: '13px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-primary)', outline: 'none', width: '100%', boxSizing: 'border-box' }}
             />
+            {/* Court chips */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {courts.map(c => (
                 <button key={c} onClick={() => toggleChip(courtFilter, setCourtFilter, c)} style={chipStyle(courtFilter.includes(c))}>{c}</button>
               ))}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {years.map(y => (
-                <button key={y} onClick={() => toggleChip(yearFilter, setYearFilter, y)} style={chipStyle(yearFilter.includes(y))}>{y}</button>
-              ))}
-            </div>
+            {/* Year dropdown scoped to court */}
+            {availableYears.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Year</span>
+                <select
+                  value={effectiveYearFilter}
+                  onChange={e => setYearFilter(e.target.value)}
+                  style={{
+                    padding: '4px 8px', fontSize: '12px', background: 'var(--surface)',
+                    border: '1px solid var(--border)', borderRadius: '4px',
+                    color: 'var(--text-primary)', cursor: 'pointer',
+                  }}
+                >
+                  <option value="">All years</option>
+                  {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+            )}
           </div>
           <Table
             cols={['Citation', 'Title / Subject', 'Court', 'Chunks', 'Status', 'Actions']}
@@ -460,12 +402,8 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
           />
         </>
       ) : searchMode === 'legislation' ? (
-        /* ── Legislation section search ── */
         <div>
-          <form
-            onSubmit={e => { e.preventDefault(); runLegSearch(legQuery); }}
-            style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}
-          >
+          <form onSubmit={e => { e.preventDefault(); runLegSearch(legQuery); }} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
             <input
               value={legQuery}
               onChange={e => setLegQuery(e.target.value)}
@@ -488,9 +426,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
           )}
 
           {legResults !== null && !legLoading && legResults.length === 0 && (
-            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
-              No cases found for this section.
-            </div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>No cases found for this section.</div>
           )}
 
           {legResults !== null && legResults.length > 0 && (
@@ -498,18 +434,10 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
                 {legResults.length} case{legResults.length !== 1 ? 's' : ''}{legHasMore ? '+' : ''} · ordered by court hierarchy, then date
               </div>
-              <LegislationResultsTable
-                results={legResults}
-                rows={rows}
-                onSelect={onSelect}
-                selectedId={selectedId}
-              />
+              <LegislationResultsTable results={legResults} rows={rows} onSelect={onSelect} selectedId={selectedId} />
               {legHasMore && (
-                <button
-                  onClick={() => runLegSearch(legQuery, legOffset + 50)}
-                  disabled={legLoading}
-                  style={{ marginTop: '14px', padding: '6px 18px', fontSize: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer', textTransform: 'uppercase' }}
-                >
+                <button onClick={() => runLegSearch(legQuery, legOffset + 50)} disabled={legLoading}
+                  style={{ marginTop: '14px', padding: '6px 18px', fontSize: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer', textTransform: 'uppercase' }}>
                   {legLoading ? 'Loading…' : 'Load more'}
                 </button>
               )}
@@ -517,12 +445,8 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
           )}
         </div>
       ) : (
-        /* ── Word search ── */
         <div>
-          <form
-            onSubmit={e => { e.preventDefault(); runWordSearch(wordQuery); }}
-            style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}
-          >
+          <form onSubmit={e => { e.preventDefault(); runWordSearch(wordQuery); }} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
             <input
               value={wordQuery}
               onChange={e => setWordQuery(e.target.value)}
@@ -540,290 +464,32 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
 
           {wordResults === null && !wordLoading && (
             <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
-              Free-text keyword search across the case corpus. Type a word or short phrase — multi-word queries are matched as a phrase first, then relaxed if nothing is found.
+              Free-text keyword search across the case corpus. Multi-word queries matched as phrase first, then relaxed if nothing found.
             </div>
           )}
 
           {wordResults !== null && !wordLoading && wordResults.length === 0 && (
-            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
-              No cases found containing that text.
-            </div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>No cases found containing that text.</div>
           )}
 
           {wordResults !== null && wordResults.length > 0 && (
             <>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
                 {wordResults.length} case{wordResults.length !== 1 ? 's' : ''}{wordHasMore ? '+' : ''}
-                {wordMatchMode === 'all_words' && (
-                  <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>
-                    · no exact-phrase matches; showing cases mentioning all words
-                  </span>
-                )}
-                {wordMatchMode === 'fallback_single' && (
-                  <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>
-                    · partial match on longest term
-                  </span>
-                )}
+                {wordMatchMode === 'all_words' && <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>· no exact-phrase matches; showing cases mentioning all words</span>}
+                {wordMatchMode === 'fallback_single' && <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>· partial match on longest term</span>}
               </div>
-              <WordSearchResultsTable
-                results={wordResults}
-                rows={rows}
-                onSelect={onSelect}
-                selectedId={selectedId}
-              />
+              <WordSearchResultsTable results={wordResults} rows={rows} onSelect={onSelect} selectedId={selectedId} />
             </>
           )}
-
         </div>
       )}
     </>
   );
 }
 
-/* ── Pending Review section ────────────────────────────────── */
-function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onApprove, onReject, onDeleteNexus }) {
-  const [busy, setBusy] = useState({});
-
-  async function doApprove(id) {
-    setBusy(b => ({ ...b, [id]: true }));
-    try { await onApprove(id); } catch (e) { alert(e.message); }
-    setBusy(b => ({ ...b, [id]: false }));
-  }
-
-  async function doReject(id) {
-    setBusy(b => ({ ...b, [id]: true }));
-    try { await onReject(id); } catch (e) { alert(e.message); }
-    setBusy(b => ({ ...b, [id]: false }));
-  }
-
-  async function doDelete(id) {
-    setBusy(b => ({ ...b, [id]: true }));
-    try { await onDeleteNexus(id); } catch (e) { alert(e.message); }
-    setBusy(b => ({ ...b, [id]: false }));
-  }
-
-  return (
-    <div style={{ marginBottom: '24px' }}>
-      {/* Key + load row */}
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '12px' }}>
-        <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
-          Pending Review
-          {items.length > 0 && (
-            <span style={{
-              marginLeft: '6px', padding: '1px 7px', borderRadius: '10px', fontSize: '10px',
-              background: 'rgba(255,165,0,0.18)', color: 'var(--amber)',
-            }}>{items.length}</span>
-          )}
-        </span>
-        {!nexusKey && (
-          <input
-            type="password"
-            placeholder="Admin key to load"
-            value={nexusKey}
-            onChange={e => onNexusKeyChange(e.target.value)}
-            style={{
-              padding: '3px 8px', fontSize: '11px', width: '160px',
-              background: 'var(--surface)', border: '1px solid var(--border)',
-              borderRadius: '4px', color: 'var(--text-primary)',
-            }}
-          />
-        )}
-        {loading && <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Loading…</span>}
-      </div>
-
-      {items.length === 0 && !loading && nexusKey && (
-        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '8px' }}>
-          No pending items.
-        </div>
-      )}
-
-      {items.map(item => (
-        <div key={item.id} style={{
-          padding: '12px 14px', marginBottom: '8px',
-          background: 'rgba(255,165,0,0.06)',
-          border: '1px solid rgba(255,165,0,0.25)',
-          borderRadius: '6px',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '2px' }}>{item.title}</div>
-              <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-                <span style={{ textTransform: 'capitalize' }}>{item.category}</span>
-                {item.date_added && <span>{item.date_added.slice(0, 10)}</span>}
-              </div>
-              <div style={{
-                fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6,
-                overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
-              }}>
-                {(item.raw_text || '').slice(0, 300)}
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-              <button
-                onClick={() => doApprove(item.id)}
-                disabled={busy[item.id]}
-                style={{
-                  padding: '5px 12px', fontSize: '11px', fontWeight: 600,
-                  background: 'rgba(74,255,130,0.12)', border: '1px solid rgba(74,255,130,0.35)',
-                  borderRadius: '4px', color: 'var(--green)', textTransform: 'uppercase',
-                  cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
-                }}
-              >
-                ✓ Approve
-              </button>
-              <button
-                onClick={() => doReject(item.id)}
-                disabled={busy[item.id]}
-                style={{
-                  padding: '5px 10px', fontSize: '11px',
-                  background: 'transparent', border: '1px solid rgba(232,74,74,0.3)',
-                  borderRadius: '4px', color: 'var(--red)',
-                  cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
-                }}
-              >
-                ✕
-              </button>
-              <button
-                onClick={() => doDelete(item.id)}
-                disabled={busy[item.id]}
-                title="Delete from D1 and Qdrant"
-                style={{
-                  padding: '5px 8px', fontSize: '11px',
-                  background: 'transparent', border: '1px solid rgba(232,74,74,0.2)',
-                  borderRadius: '4px', color: 'var(--text-muted)',
-                  cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
-                }}
-              >
-                🗑
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ── Corpus table ──────────────────────────────────────────── */
-function CorpusTable({ rows, onDelete, onDeleteNexus }) {
-  return (
-    <Table
-      cols={['Title / Domain', 'ID', 'Category', 'Status', 'Actions']}
-      rows={rows}
-      renderRow={r => {
-        const isMalformed = (r.id || '').includes('{');
-        const isNexusSave = (r.id || '').startsWith('nexus-save-');
-        return (
-          <tr key={r.id} style={{ background: isMalformed ? 'rgba(232,74,74,0.05)' : 'transparent' }}>
-            <td style={td}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.title}</div>
-                {r.court === 'authority_synthesis' && (
-                  <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', padding: '1px 6px', borderRadius: '3px', background: 'rgba(200,140,50,0.08)', color: '#C88C32', textTransform: 'uppercase', flexShrink: 0 }}>AUTHORITY</span>
-                )}
-              </div>
-              {r.court && r.court !== 'authority_synthesis' && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.court}</div>}
-            </td>
-            <td style={tdMono}>{r.id}</td>
-            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{r.category}</td>
-            <td style={td}>
-              {r.embedded
-                ? <span style={{ color: 'var(--green)', fontSize: '11px' }}>● Embedded</span>
-                : <span style={{ color: 'var(--amber)', fontSize: '11px' }}>● Pending</span>}
-            </td>
-            <td style={td}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {isMalformed && <span style={{ fontSize: '11px', color: 'var(--red)' }}>Malformed</span>}
-                {isNexusSave
-                  ? <button onClick={() => onDeleteNexus(r.id)} style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}>Delete</button>
-                  : <button onClick={() => onDelete('secondary', r.id)} style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}>Delete</button>
-                }
-              </div>
-            </td>
-          </tr>
-        );
-      }}
-    />
-  );
-}
-
-/* ── Legislation table ─────────────────────────────────────── */
-function actIdFromSourceUrl(sourceUrl) {
-  if (!sourceUrl) return null;
-  const m = /\/((?:act|sr)-\d{4}-\d{3})$/.exec(sourceUrl);
-  return m ? m[1] : null;
-}
-
-function LegislationTable({ rows, onDelete }) {
-  const [selectedLeg, setSelectedLeg] = useState(null);
-
-  function toggleLeg(r) {
-    setSelectedLeg(prev => prev?.id === r.id ? null : r);
-  }
-
-  return (
-    <div>
-      <Table
-        cols={['Act', 'Jurisdiction', 'Status', 'Date Updated', 'Actions']}
-        rows={rows}
-        renderRow={r => (
-          <tr
-            key={r.id}
-            onClick={() => toggleLeg(r)}
-            style={{
-              cursor: 'pointer',
-              background: selectedLeg?.id === r.id ? 'var(--surface-hover)' : 'transparent',
-              borderLeft: selectedLeg?.id === r.id ? '2px solid var(--accent)' : '2px solid transparent',
-            }}
-          >
-            <td style={td}>
-              <a
-                href="https://www.legislation.tas.gov.au"
-                target="_blank"
-                rel="noopener"
-                style={{ color: 'var(--accent)', textDecoration: 'none', textTransform: 'capitalize' }}
-                onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                onClick={e => e.stopPropagation()}
-              >
-                {r.title} ↗
-              </a>
-            </td>
-            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>{r.court}</td>
-            <td style={td}>
-              {r.embedded
-                ? <span style={{ color: 'var(--green)', fontSize: '11px' }}>● Embedded</span>
-                : <span style={{ color: 'var(--amber)', fontSize: '11px' }}>● Pending</span>}
-            </td>
-            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
-              {r.date || '—'}
-            </td>
-            <td style={td}>
-              <button
-                onClick={e => { e.stopPropagation(); onDelete('legislation', r.id); }}
-                style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}
-              >Delete</button>
-            </td>
-          </tr>
-        )}
-      />
-      {selectedLeg && (
-        <div style={{ marginTop: '16px', padding: '16px 20px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--surface)' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>{selectedLeg.title}</div>
-          <AmendmentPanel actId={actIdFromSourceUrl(selectedLeg.source_url)} actName={selectedLeg.title} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ── Shared ────────────────────────────────────────────────── */
-
-/* ── Legislation results table ─────────────────────────────── */
+/* ── Legislation results table (case search by section) ─────── */
 function LegislationResultsTable({ results, rows, onSelect, selectedId }) {
-  // When a result is clicked, prefer the full library row so the reading pane
-  // gets all fields (facts, principles_extracted, etc.). Falls back to the
-  // partial legislation-search row if the case isn't in the library list yet.
   function selectRow(r) {
     const full = rows.find(x => (x.ref || x.citation) === r.citation);
     onSelect(full || { ...r, ref: r.citation, title: r.case_name, date: r.case_date });
@@ -836,24 +502,14 @@ function LegislationResultsTable({ results, rows, onSelect, selectedId }) {
       renderRow={r => {
         const isSelected = r.citation === selectedId || r.citation === (rows.find(x => x.id === selectedId)?.ref);
         return (
-          <tr
-            key={r.citation}
-            onClick={() => selectRow(r)}
-            style={{
-              cursor: 'pointer',
-              background: isSelected ? 'var(--surface-hover)' : 'transparent',
-              borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
-            }}
-          >
+          <tr key={r.citation} onClick={() => selectRow(r)} style={{ cursor: 'pointer', background: isSelected ? 'var(--surface-hover)' : 'transparent', borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent' }}>
             <td style={tdMono}>{r.citation}</td>
             <td style={td}>
               <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
               {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
             </td>
             <td style={td}>{courtTag(r.court)}</td>
-            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
-              {r.case_date?.slice(0, 4) || '—'}
-            </td>
+            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.case_date?.slice(0, 4) || '—'}</td>
             <td style={{ ...td, maxWidth: '200px' }}>
               {r.matched_refs?.split(' | ').map((ref, i) => (
                 <div key={i} style={{ fontSize: '11px', fontFamily: 'monospace', color: 'var(--text-secondary)', marginBottom: '2px' }}>{ref}</div>
@@ -871,9 +527,6 @@ function LegislationResultsTable({ results, rows, onSelect, selectedId }) {
   );
 }
 
-/* Renders an FTS snippet containing <mark>…</mark> tags as React spans.
-   No dangerouslySetInnerHTML — we split the string and wrap matches in <strong>.
-   Any other HTML-like characters are treated as literal text. */
 function renderSnippet(snippet) {
   if (!snippet) return null;
   const parts = snippet.split(/(<mark>.*?<\/mark>)/g);
@@ -898,43 +551,23 @@ function WordSearchResultsTable({ results, rows, onSelect, selectedId }) {
         const isSelected = r.citation === selectedId || r.citation === (rows.find(x => x.id === selectedId)?.ref);
         const jadeUrl = buildJadeUrl(r.citation);
         return (
-          <tr
-            key={r.citation}
-            onClick={() => selectRow(r)}
-            style={{
-              cursor: 'pointer',
-              background: isSelected ? 'var(--surface-hover)' : 'transparent',
-              borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent',
-            }}
-          >
+          <tr key={r.citation} onClick={() => selectRow(r)} style={{ cursor: 'pointer', background: isSelected ? 'var(--surface-hover)' : 'transparent', borderLeft: isSelected ? '2px solid var(--accent)' : '2px solid transparent' }}>
             <td style={tdMono}>{r.citation}</td>
             <td style={td}>
               <div style={{ fontSize: '13px', color: 'var(--text-body)' }}>{r.case_name}</div>
               {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
             </td>
             <td style={td}>{courtTag(r.court)}</td>
-            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
-              {r.case_date?.slice(0, 4) || '—'}
-            </td>
+            <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.case_date?.slice(0, 4) || '—'}</td>
             <td style={{ ...td, maxWidth: '420px' }}>
-              <div style={{ fontSize: '12px', color: 'var(--text-body)', lineHeight: 1.5 }}>
-                {renderSnippet(r.snippet)}
-              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-body)', lineHeight: 1.5 }}>{renderSnippet(r.snippet)}</div>
               {r.match_count > 1 && (
-                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {r.match_count} matching chunks
-                </div>
+                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{r.match_count} matching chunks</div>
               )}
             </td>
             <td style={{ ...td, whiteSpace: 'nowrap' }}>
               {jadeUrl && (
-                <a
-                  href={jadeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={e => e.stopPropagation()}
-                  style={{ fontSize: '12px', color: 'var(--text-secondary)', textDecoration: 'none' }}
-                >
+                <a href={jadeUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: '12px', color: 'var(--text-secondary)', textDecoration: 'none' }}>
                   View on Jade ↗
                 </a>
               )}
@@ -953,20 +586,14 @@ function Table({ cols, rows, renderRow }) {
         <thead>
           <tr>
             {cols.map(c => (
-              <th key={c} style={{
-                textAlign: 'left', padding: '8px 12px',
-                fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: 'var(--text-muted)', borderBottom: '1px solid var(--border)',
-              }}>
-                {c}
-              </th>
+              <th key={c} style={{ textAlign: 'left', padding: '8px 12px', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--border)' }}>{c}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.length === 0 ? (
-            <tr><td colSpan={cols.length} style={{ padding: '24px 12px', color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '13px' }}>No records.</td></tr>
-          ) : rows.map(renderRow)}
+          {rows.length === 0
+            ? <tr><td colSpan={cols.length} style={{ padding: '24px 12px', color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '13px' }}>No records.</td></tr>
+            : rows.map(renderRow)}
         </tbody>
       </table>
     </div>
@@ -981,6 +608,16 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
   const url = austliiUrl(c.ref || c.citation);
   const [citeCounts, setCiteCounts] = useState(null);
 
+  /* Derive immediate cites count from authorities_extracted on the case row */
+  const citesImmediate = (() => {
+    try {
+      const a = c.authorities_extracted;
+      if (!a) return null;
+      const arr = typeof a === 'string' ? JSON.parse(a) : a;
+      return Array.isArray(arr) ? arr.length : null;
+    } catch { return null; }
+  })();
+
   useEffect(() => {
     const citation = c.ref || c.citation;
     if (!citation) return;
@@ -992,6 +629,9 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
       })
       .catch(() => {});
   }, [c.ref, c.citation]);
+
+  const displayCites = citeCounts !== null ? citeCounts.cites : citesImmediate;
+  const displayCitedBy = citeCounts !== null ? citeCounts.citedBy : null;
 
   return (
     <div style={{ flex: 1, background: 'var(--pane-bg)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -1010,15 +650,20 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
               {c.date && <span>{c.date.slice(0, 10)}</span>}
               {url && <a href={url} target="_blank" rel="noopener" style={{ fontSize: '11px', color: 'var(--accent)' }}>AustLII ↗</a>}
             </div>
-            {citeCounts !== null && (
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', letterSpacing: '0.03em' }}>
-                Cites: {citeCounts.cites} · Cited by: {citeCounts.citedBy}
-              </div>
-            )}
+            {/* Citation tallies — visible without expanding any toggle */}
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', letterSpacing: '0.03em' }}>
+              {displayCitedBy !== null && <span>Cited by {displayCitedBy}</span>}
+              {displayCitedBy !== null && displayCites !== null && <span> · </span>}
+              {displayCites !== null && <span>This case cites {displayCites}</span>}
+              {displayCitedBy === null && displayCites === null && (
+                <span style={{ opacity: 0.4 }}>Loading citation data…</span>
+              )}
+            </div>
           </div>
           <button onClick={onClose} style={{ fontSize: '18px', color: 'var(--pane-dim)', background: 'transparent', padding: '0 4px', lineHeight: 1, flexShrink: 0, marginLeft: '16px' }}>×</button>
         </div>
       </div>
+
       {/* Body */}
       <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
         <div style={{ marginBottom: 24 }}>
@@ -1106,50 +751,21 @@ function TruncationModal({ record, nexusKey, onNexusKeyChange, onConfirm, onDele
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-        background: 'rgba(0,0,0,0.65)', display: 'flex',
-        alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border-em)',
-          borderRadius: '10px',
-          padding: '28px',
-          maxWidth: '460px',
-          width: '90%',
-          color: 'var(--text-primary)',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--amber)', marginBottom: '20px' }}>
-          ⚠ Case Truncated
-        </div>
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={onClose}>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border-em)', borderRadius: '10px', padding: '28px', maxWidth: '460px', width: '90%', color: 'var(--text-primary)' }} onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--amber)', marginBottom: '20px' }}>⚠ Case Truncated</div>
 
-        {/* Detail grid */}
-        <div style={{
-          display: 'grid', gridTemplateColumns: '90px 1fr',
-          gap: '9px 14px', fontSize: '13px', marginBottom: '18px',
-        }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr', gap: '9px 14px', fontSize: '13px', marginBottom: '18px' }}>
           <span style={labelStyle}>Citation</span>
           <span style={{ fontFamily: 'monospace', fontSize: '12px', color: 'var(--text-secondary)', wordBreak: 'break-all' }}>{citation}</span>
-
           <span style={labelStyle}>Source</span>
           <span style={{ color: 'var(--text-body)' }}>{(record.source || '—').replace(/_/g, ' ')}</span>
-
           <span style={labelStyle}>Obtained</span>
           <span style={{ color: 'var(--text-body)' }}>{obtained.toLocaleString()} characters</span>
-
           {hasOriginal ? (
             <>
               <span style={labelStyle}>Original</span>
               <span style={{ color: 'var(--text-body)' }}>{record.original_length.toLocaleString()} characters ({pct}%)</span>
-
               <span style={labelStyle}>Missing</span>
               <span style={{ color: 'var(--red)' }}>~{missing.toLocaleString()} characters</span>
             </>
@@ -1161,7 +777,6 @@ function TruncationModal({ record, nexusKey, onNexusKeyChange, onConfirm, onDele
           )}
         </div>
 
-        {/* Retroactive note */}
         {record.original_length === -1 && (
           <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: 1.6 }}>
             Original size unknown — this case was flagged retroactively. No specific data on extent of deficiency.
@@ -1172,48 +787,21 @@ function TruncationModal({ record, nexusKey, onNexusKeyChange, onConfirm, onDele
           This case was truncated on upload. Content beyond the character limit was not indexed.
         </div>
 
-        {/* Admin key */}
         <input
           value={nexusKey}
           onChange={e => onNexusKeyChange(e.target.value)}
           placeholder="Admin key"
           type="password"
-          style={{
-            width: '100%', padding: '7px 10px', fontSize: '12px',
-            background: 'var(--surface-hover)', border: '1px solid var(--border)',
-            borderRadius: '4px', color: 'var(--text-primary)',
-            marginBottom: err ? '10px' : '16px', boxSizing: 'border-box',
-          }}
+          style={{ width: '100%', padding: '7px 10px', fontSize: '12px', background: 'var(--surface-hover)', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-primary)', marginBottom: err ? '10px' : '16px', boxSizing: 'border-box' }}
         />
 
-        {err && (
-          <div style={{ fontSize: '12px', color: 'var(--red)', marginBottom: '14px' }}>{err}</div>
-        )}
+        {err && <div style={{ fontSize: '12px', color: 'var(--red)', marginBottom: '14px' }}>{err}</div>}
 
-        {/* Actions */}
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-          <button
-            onClick={() => !busy && doAction('confirm')}
-            disabled={busy}
-            style={{
-              padding: '7px 16px', fontSize: '12px', fontWeight: 600,
-              background: 'var(--surface-hover)', border: '1px solid var(--border-em)',
-              borderRadius: '6px', color: 'var(--text-body)', textTransform: 'uppercase',
-              cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
-            }}
-          >
+          <button onClick={() => !busy && doAction('confirm')} disabled={busy} style={{ padding: '7px 16px', fontSize: '12px', fontWeight: 600, background: 'var(--surface-hover)', border: '1px solid var(--border-em)', borderRadius: '6px', color: 'var(--text-body)', textTransform: 'uppercase', cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1 }}>
             Confirm Index
           </button>
-          <button
-            onClick={() => !busy && doAction('delete')}
-            disabled={busy}
-            style={{
-              padding: '7px 16px', fontSize: '12px', fontWeight: 600,
-              background: 'rgba(232,74,74,0.12)', border: '1px solid rgba(232,74,74,0.4)',
-              borderRadius: '6px', color: 'var(--red)', textTransform: 'uppercase',
-              cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
-            }}
-          >
+          <button onClick={() => !busy && doAction('delete')} disabled={busy} style={{ padding: '7px 16px', fontSize: '12px', fontWeight: 600, background: 'rgba(232,74,74,0.12)', border: '1px solid rgba(232,74,74,0.4)', borderRadius: '6px', color: 'var(--red)', textTransform: 'uppercase', cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1 }}>
             Delete Case
           </button>
         </div>

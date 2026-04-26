@@ -1,0 +1,522 @@
+import { useState, useRef, useEffect } from 'react';
+import PipelineStatus from './PipelineStatus';
+import { api } from '../api';
+
+const COURTS = ['TASCCA', 'TASSC', 'TASMC', 'HCA'];
+const JURISDICTIONS = ['TAS', 'CTH', 'VIC', 'NSW', 'QLD', 'WA', 'SA', 'ACT', 'NT'];
+
+export default function UploadPanel() {
+  return (
+    <div style={{ flex: 1, overflow: 'auto', padding: '32px', maxWidth: '760px', width: '100%', margin: '0 auto' }}>
+      <CasesTab />
+      <div style={{ margin: '40px 0 0', borderTop: '1px solid var(--border)', paddingTop: '40px' }}>
+        <CorpusTab />
+      </div>
+      <div style={{ margin: '40px 0 0', borderTop: '1px solid var(--border)', paddingTop: '40px' }}>
+        <LegislationTab />
+      </div>
+    </div>
+  );
+}
+
+/* ── Cases tab ─────────────────────────────────────────────── */
+function CasesTab() {
+  const fileRef = useRef();
+  const [staged, setStaged] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [pipeline, setPipeline] = useState([]);
+  const [url, setUrl] = useState('');
+  const [urlUploading, setUrlUploading] = useState(false);
+  const [urlError, setUrlError] = useState('');
+
+  async function onDrop(e) {
+    e.preventDefault();
+    const files = [...(e.dataTransfer?.files || e.target.files || [])];
+    const newFiles = await Promise.all(files.map(f => new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const text = (ev.target.result || '').slice(0, 1000);
+        const citationMatch = text.match(/\[(\d{4})\]\s+(TASSC|TASCCA|TASMC|TASFC)\s+(\d+)/i);
+        const courtMap = { TASSC: 'TASSC', TASCCA: 'TASCCA', TASMC: 'TASMC', TASFC: 'TASSC' };
+        const citation = citationMatch
+          ? `[${citationMatch[1]}] ${citationMatch[2].toUpperCase()} ${citationMatch[3]}`
+          : '';
+        const court = citationMatch ? (courtMap[citationMatch[2].toUpperCase()] || 'TASCCA') : 'TASCCA';
+        const nameMatch = citationMatch ? text.match(/^(.+?)\s*\[/m) : null;
+        const caseName = nameMatch ? nameMatch[1].trim() : '';
+        resolve({ file: f, citation, court, caseName, ocr: false });
+      };
+      reader.onerror = () => resolve({ file: f, citation: '', court: 'TASCCA', caseName: '', ocr: false });
+      reader.readAsText(f.slice(0, 4096));
+    })));
+    setStaged(s => [...s, ...newFiles]);
+  }
+
+  async function uploadAll() {
+    setUploading(true);
+    for (const item of staged) {
+      if (!item.citation) continue;
+      const fd = new FormData();
+      fd.append('file', item.file);
+      fd.append('citation', item.citation);
+      fd.append('court', item.court);
+      try {
+        const r = await api.uploadCase(fd);
+        const cit = r.result?.citation || item.citation;
+        if (r.result?.ocr) {
+          setStaged(s => s.map(x => x.citation === item.citation ? { ...x, ocr: true } : x));
+        }
+        setPipeline(p => [...p, cit]);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    setStaged([]);
+    setUploading(false);
+  }
+
+  async function uploadUrl() {
+    if (!url.trim()) return;
+    setUrlUploading(true);
+    setUrlError('');
+    try {
+      const r = await api.fetchCaseUrl({ url: url.trim() });
+      const cit = r.result?.citation || url.trim();
+      setPipeline(p => [...p, cit]);
+      setUrl('');
+    } catch (e) {
+      setUrlError(e.message);
+    } finally {
+      setUrlUploading(false);
+    }
+  }
+
+  return (
+    <div>
+      <SectionTitle>Upload cases</SectionTitle>
+      <div
+        onDrop={onDrop} onDragOver={e => e.preventDefault()}
+        onClick={() => fileRef.current.click()}
+        style={dropZoneStyle}
+      >
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+          Drop PDF, TXT or DOCX files here, or click to browse
+        </div>
+        <input ref={fileRef} type="file" multiple accept=".pdf,.txt,.docx" onChange={onDrop} style={{ display: 'none' }} />
+      </div>
+
+      <div style={{ marginTop: '20px' }}>
+        <label style={labelStyle}>Or paste AustLII URL directly</label>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="url"
+            placeholder="Source URL (optional)"
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            style={{ ...smallInput, flex: 1 }}
+          />
+          <button
+            onClick={uploadUrl}
+            disabled={urlUploading || !url.trim()}
+            style={{ ...primaryBtn, opacity: urlUploading || !url.trim() ? 0.5 : 1 }}
+          >
+            {urlUploading ? '…' : 'Fetch'}
+          </button>
+        </div>
+        {urlError && <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--red)' }}>{urlError}</div>}
+      </div>
+
+      {staged.length > 0 && (
+        <div style={{ marginTop: '16px' }}>
+          {staged.map((item, i) => (
+            <div key={i} style={{
+              display: 'flex', flexDirection: 'column', gap: '6px',
+              padding: '10px 0', borderBottom: '1px solid var(--border)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ flex: 1, fontSize: '13px', color: 'var(--text-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {item.file.name}
+                </div>
+                {item.ocr && <span style={{ fontSize: '10px', padding: '2px 6px', background: 'rgba(232,168,56,0.15)', color: 'var(--amber)', borderRadius: '3px' }}>OCR</span>}
+                <button onClick={() => setStaged(s => s.filter((_, j) => j !== i))} style={{ color: 'var(--text-muted)', fontSize: '16px' }}>×</button>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <input
+                  value={item.caseName}
+                  onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, caseName: e.target.value } : x))}
+                  placeholder="Case name"
+                  style={{ ...smallInput, flex: 1, minWidth: '160px' }}
+                />
+                <input
+                  value={item.citation}
+                  onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, citation: e.target.value } : x))}
+                  placeholder="Citation e.g. [2024] TASCCA 12"
+                  style={{ ...smallInput, width: '200px' }}
+                />
+                <select
+                  value={item.court}
+                  onChange={e => setStaged(s => s.map((x, j) => j === i ? { ...x, court: e.target.value } : x))}
+                  style={{ ...smallInput, width: '100px' }}
+                >
+                  {COURTS.map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+          ))}
+          <button onClick={uploadAll} disabled={uploading} style={{ ...primaryBtn, marginTop: '12px' }}>
+            {uploading ? 'Uploading…' : `Upload ${staged.filter(x => x.citation).length} file${staged.length !== 1 ? 's' : ''}`}
+          </button>
+        </div>
+      )}
+
+      {pipeline.length > 0 && (
+        <div style={{ marginTop: '32px' }}>
+          <SectionTitle>Pipeline queue</SectionTitle>
+          {pipeline.map(cit => <PipelineStatus key={cit} citation={cit} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── RTF stripper ──────────────────────────────────────────── */
+function stripRtf(raw) {
+  return raw
+    .replace(/\{\\[^{}]*\}/g, '')
+    .replace(/\\[a-z]+\d*\s?/gi, '')
+    .replace(/[^\x20-\x7E\n\r]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* ── Corpus tab ────────────────────────────────────────────── */
+function CorpusTab() {
+  const [text, setText] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalSlug, setModalSlug] = useState('');
+  const [modalCategory, setModalCategory] = useState('doctrine');
+  const [modalSourceType, setModalSourceType] = useState('');
+  const [jobId, setJobId] = useState(null);
+  const [jobStatus, setJobStatus] = useState(null);
+  const fileRef = useRef();
+
+  useEffect(() => {
+    if (!jobId) return;
+    const timer = setInterval(async () => {
+      try {
+        const s = await api.pollIngestStatus(jobId);
+        setJobStatus(s);
+        if (s.status === 'complete' || s.status === 'failed') {
+          clearInterval(timer);
+          setJobId(null);
+          setJobStatus(null);
+          if (s.status === 'complete') {
+            setResult(`✓ ${s.chunks_inserted} chunk${s.chunks_inserted !== 1 ? 's' : ''} ingested from ${s.filename}`);
+          } else {
+            setSubmitError(s.error || 'Processing failed');
+          }
+        }
+      } catch (e) {
+        clearInterval(timer);
+        setJobId(null);
+        setJobStatus(null);
+        setSubmitError(e.message);
+      }
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [jobId]);
+
+  async function startProcessDocument(file) {
+    setResult('');
+    setSubmitError('');
+    setJobId(null);
+    setJobStatus(null);
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const file_b64 = ev.target.result.split(',')[1];
+      try {
+        const r = await api.processDocument({ file_b64, filename: file.name });
+        setJobId(r.job_id);
+        setJobStatus({ status: r.status });
+      } catch (e) {
+        setSubmitError(e.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer?.files?.[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'md') {
+      const reader = new FileReader();
+      reader.onload = ev => setText(ev.target.result);
+      reader.readAsText(file);
+    } else if (ext === 'rtf') {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        setText(stripRtf(ev.target.result));
+      };
+      reader.readAsText(file);
+    } else if (['pdf', 'docx', 'txt'].includes(ext)) {
+      startProcessDocument(file);
+    }
+  }
+
+  function handleFileInput(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (ext === 'rtf') {
+      const reader = new FileReader();
+      reader.onload = ev => setText(stripRtf(ev.target.result));
+      reader.readAsText(file);
+    } else {
+      startProcessDocument(file);
+    }
+    e.target.value = '';
+  }
+
+  async function handleSubmit() {
+    if (!text.trim()) return;
+    if (text.trimStart().startsWith('<!-- block_')) {
+      await doUpload({});
+      return;
+    }
+    setModalTitle('');
+    setModalSlug('');
+    setModalCategory('doctrine');
+    setModalSourceType('');
+    setShowModal(true);
+  }
+
+  async function doUpload(modalValues) {
+    setShowModal(false);
+    setUploading(true);
+    setResult('');
+    setSubmitError('');
+    try {
+      if (text.trimStart().startsWith('<!-- block_')) {
+        const citationMatch = text.match(/\[CITATION:\s*([^\]]+)\]/);
+        if (!citationMatch) {
+          setSubmitError('No [CITATION:] field found in block text — add one before uploading.');
+          return;
+        }
+        await api.uploadCorpus({ text });
+        setResult(`✓ Ingested: ${citationMatch[1].trim()}`);
+      } else {
+        const r = await api.formatAndUpload({ text, mode: 'single', title: modalValues.title, slug: modalValues.slug, category: modalValues.category, source_type: modalValues.source_type });
+        setResult(`✓ ${r.result?.count || 'Uploaded'} chunks ingested`);
+      }
+      setText('');
+    } catch (e) {
+      setSubmitError(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const inputStyle = { ...smallInput, display: 'block', width: '100%', marginBottom: '12px' };
+  const isProcessing = !!jobId;
+
+  return (
+    <div>
+      <SectionTitle>Upload secondary source</SectionTitle>
+      <div
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        onClick={() => fileRef.current.click()}
+        style={{
+          border: `2px dashed ${dragging ? 'var(--accent)' : 'var(--border-em)'}`,
+          borderRadius: '6px', padding: '28px', textAlign: 'center', cursor: 'pointer',
+          marginBottom: '16px', background: dragging ? 'var(--accent-dim)' : 'var(--surface)',
+          fontSize: '13px', color: 'var(--text-secondary)',
+        }}
+      >
+        {dragging
+          ? 'Drop file here'
+          : isProcessing
+          ? 'Processing…'
+          : 'Drop .pdf, .docx or .txt to process via VPS · Drop .md or .rtf to load into text area · or click to browse'}
+      </div>
+      <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.rtf" onChange={handleFileInput} style={{ display: 'none' }} />
+
+      {isProcessing && jobStatus && (
+        <div style={{ marginBottom: '12px', fontSize: '13px', color: 'var(--text-secondary)', padding: '10px 12px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '4px' }}>
+          ⟳ {jobStatus.status}
+          {jobStatus.total_blocks ? ` · block ${jobStatus.block_current || 0}/${jobStatus.total_blocks}` : ''}
+          {jobStatus.chunks_parsed > 0 ? ` · ${jobStatus.chunks_parsed} chunks parsed` : ''}
+          {jobStatus.chunks_inserted > 0 ? ` · ${jobStatus.chunks_inserted} inserted` : ''}
+        </div>
+      )}
+
+      <label style={labelStyle}>Or paste pre-formatted blocks / raw source text</label>
+      <textarea
+        value={text} onChange={e => setText(e.target.value)}
+        rows={14} placeholder={'Paste raw source text (GPT will format) or pre-formatted blocks starting with <!-- block_NNN master -->'}
+        style={{
+          display: 'block', width: '100%', padding: '12px',
+          background: 'var(--surface)', border: '1px solid var(--border)',
+          borderRadius: '4px', color: 'var(--text-primary)', fontSize: '13px',
+          lineHeight: 1.6, resize: 'vertical', fontFamily: 'monospace',
+        }}
+      />
+      <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button onClick={handleSubmit} disabled={uploading || !text.trim()} style={{ ...primaryBtn, opacity: uploading || !text.trim() ? 0.5 : 1 }}>
+          {uploading ? 'Uploading…' : 'Upload corpus'}
+        </button>
+        {result && <span style={{ fontSize: '13px', color: '#6abf6a' }}>{result}</span>}
+      </div>
+      {submitError && <p style={{ color: '#ff6b6b', fontSize: '12px', marginTop: '8px' }}>{submitError}</p>}
+
+      {showModal && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', zIndex: 100,
+        }}>
+          <div style={{
+            background: 'var(--surface)', border: '1px solid var(--border-em)',
+            borderRadius: '8px', padding: '28px', width: '480px', maxWidth: '90vw',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '20px' }}>Confirm chunk details</div>
+            <label style={labelStyle}>Title</label>
+            <input value={modalTitle} onChange={e => setModalTitle(e.target.value)} placeholder="Document title" style={inputStyle} />
+            <label style={labelStyle}>Reference ID</label>
+            <input value={modalSlug} onChange={e => setModalSlug(e.target.value)} placeholder="e.g. sentencing-act-commentary-2024" style={inputStyle} />
+            <label style={labelStyle}>Category</label>
+            <select value={modalCategory} onChange={e => setModalCategory(e.target.value)} style={inputStyle}>
+              {['annotation', 'case authority', 'procedure', 'doctrine', 'checklist', 'practice note', 'script', 'legislation'].map(c => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+            <label style={labelStyle}>Source type</label>
+            <input value={modalSourceType} onChange={e => setModalSourceType(e.target.value)} placeholder="textbook | article | practice note | commentary | judgment" style={inputStyle} />
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '20px' }}>
+              <button onClick={() => setShowModal(false)} style={{ color: 'var(--text-secondary)', fontSize: '13px', padding: '8px 16px' }}>Cancel</button>
+              <button
+                onClick={() => doUpload({ title: modalTitle, slug: modalSlug, category: modalCategory, source_type: modalSourceType })}
+                style={{ background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: '13px', padding: '8px 20px', borderRadius: '4px' }}
+              >
+                Upload
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Legislation tab ───────────────────────────────────────── */
+function LegislationTab() {
+  const fileRef = useRef();
+  const [actName, setActName] = useState('');
+  const [jurisdiction, setJurisdiction] = useState('TAS');
+  const [sourceUrl, setSourceUrl] = useState('');
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState('');
+  const [dragging, setDragging] = useState(false);
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragging(false);
+    const dropped = e.dataTransfer?.files?.[0];
+    if (dropped) setFile(dropped);
+  }
+
+  async function handleSubmit() {
+    if (!actName || !file) return;
+    setUploading(true);
+    setResult('');
+    try {
+      const doc_text = await file.text();
+      const r = await api.uploadLegislation({
+        doc_text,
+        title: actName,
+        jurisdiction,
+        ...(sourceUrl ? { source_url: sourceUrl } : {}),
+      });
+      setResult(`✓ ${r.result?.sections_parsed || 'Uploaded'} sections ingested`);
+      setActName(''); setSourceUrl(''); setFile(null);
+    } catch (e) {
+      setResult(`Error: ${e.message}`);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div>
+      <SectionTitle>Upload legislation</SectionTitle>
+      <label style={labelStyle}>Act name</label>
+      <input value={actName} onChange={e => setActName(e.target.value)} placeholder="Evidence Act 2001" style={{ ...smallInput, display: 'block', width: '100%', marginBottom: '12px' }} />
+      <label style={labelStyle}>Jurisdiction</label>
+      <select value={jurisdiction} onChange={e => setJurisdiction(e.target.value)} style={{ ...smallInput, display: 'block', width: '160px', marginBottom: '12px' }}>
+        {JURISDICTIONS.map(j => <option key={j}>{j}</option>)}
+      </select>
+      <label style={labelStyle}>Source URL (optional)</label>
+      <input value={sourceUrl} onChange={e => setSourceUrl(e.target.value)} placeholder="https://legislation.tas.gov.au/..." style={{ ...smallInput, display: 'block', width: '100%', marginBottom: '16px' }} />
+      <label style={labelStyle}>File (PDF or TXT)</label>
+      <div
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={handleDrop}
+        onClick={() => fileRef.current.click()}
+        style={{
+          border: `2px dashed ${dragging ? 'var(--accent)' : 'var(--border-em)'}`,
+          borderRadius: '6px', padding: '28px', textAlign: 'center', cursor: 'pointer',
+          marginBottom: '4px', background: dragging ? 'var(--accent-dim)' : 'var(--surface)',
+          fontSize: '13px', color: 'var(--text-secondary)',
+        }}
+      >
+        {file ? file.name : dragging ? 'Drop file here' : 'Drag & drop PDF or TXT here, or click to browse'}
+      </div>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: 1.5 }}>
+        For best results, use HTML source from legislation.tas.gov.au — disable legislative history, copy the page text into a .txt file before uploading. Avoid PDFs.
+      </div>
+      <input ref={fileRef} type="file" accept=".pdf,.txt" onChange={e => setFile(e.target.files[0])} style={{ display: 'none' }} />
+      <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button onClick={handleSubmit} disabled={uploading || !actName || !file} style={{ ...primaryBtn, opacity: uploading || !actName || !file ? 0.5 : 1 }}>
+          {uploading ? 'Uploading…' : 'Upload'}
+        </button>
+        {result && <span style={{ fontSize: '13px', color: result.startsWith('✓') ? '#6abf6a' : 'var(--red)' }}>{result}</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ── Shared ────────────────────────────────────────────────── */
+function SectionTitle({ children }) {
+  return <div style={{ fontWeight: 700, fontSize: '14px', color: 'var(--text-body)', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{children}</div>;
+}
+
+const dropZoneStyle = {
+  border: '1px dashed var(--border-em)', borderRadius: '6px',
+  padding: '40px', textAlign: 'center', cursor: 'pointer',
+  background: 'var(--surface)', transition: 'border-color 0.2s',
+};
+const smallInput = {
+  padding: '7px 10px', background: 'var(--surface)',
+  border: '1px solid var(--border)', borderRadius: '4px',
+  color: 'var(--text-primary)', fontSize: '13px',
+};
+const labelStyle = {
+  display: 'block', fontSize: '11px', letterSpacing: '0.08em',
+  textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '6px',
+};
+const primaryBtn = {
+  padding: '9px 20px', background: 'var(--accent)', color: '#fff',
+  fontWeight: 700, fontSize: '13px', borderRadius: '4px',
+  cursor: 'pointer',
+};

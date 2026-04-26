@@ -1070,6 +1070,7 @@ async function handleLibraryList(env) {
              processed_date, summary_quality_score, 'case' AS doc_type,
              LENGTH(raw_text) AS raw_size, enriched, deep_enriched, subject_matter,
              facts, holding, holdings_extracted, principles_extracted, legislation_extracted,
+             authorities_extracted,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation) AS chunk_count,
              (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation AND embedded = 1) AS chunks_embedded
       FROM cases ORDER BY processed_date DESC
@@ -3648,6 +3649,13 @@ export default {
         else if (action === "parliament-bill-url" && request.method === "GET") result = await handleParliamentBillUrl(url);
         else if (action === "resolve-act" && request.method === "GET") result = await handleResolveAct(url, env);
         else if (action === "section-lookup" && request.method === "POST") result = await handleSectionLookup(body, env);
+        else if (action === "feedback" && request.method === "GET") {
+          const { results } = await env.DB.prepare(
+            `SELECT id, query_text, answer_text, model, missing_note, timestamp, result_ids, result_scores, result_sources
+             FROM query_log WHERE sufficient = 0 ORDER BY timestamp DESC LIMIT 100`
+          ).all();
+          result = { rows: results || [] };
+        }
         else if (action === "mark-insufficient" && request.method === "POST") {
           if (!body?.query_id) return json({ result: { ok: false, error: 'query_id required' } }, 400);
           if (body.missing_note !== undefined && body.missing_note !== null && typeof body.missing_note !== 'string') {
