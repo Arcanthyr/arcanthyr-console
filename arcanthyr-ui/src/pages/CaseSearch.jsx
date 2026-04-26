@@ -171,7 +171,7 @@ export default function CaseSearch() {
             {t}
           </button>
         ))}
-        <button onClick={load} style={{ marginLeft: 'auto', padding: '12px 24px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+        <button onClick={load} style={{ marginLeft: 'auto', padding: '12px 24px', fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
           ↻ Refresh
         </button>
       </div>
@@ -272,6 +272,7 @@ const modeBtnStyle = (active) => ({
   background: active ? 'rgba(74,158,255,0.15)' : 'transparent',
   border: `1px solid ${active ? '#4A9EFF' : 'var(--border)'}`,
   color: active ? '#4A9EFF' : 'var(--text-secondary)',
+  textTransform: 'uppercase',
 });
 
 function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTruncationClick }) {
@@ -450,7 +451,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
                       {url && r.enriched && (
                         <a href={url} target="_blank" rel="noopener" onClick={e => e.stopPropagation()} style={{ fontSize: '11px', color: 'var(--accent)' }}>AustLII ↗</a>
                       )}
-                      <button onClick={e => { e.stopPropagation(); onDelete('case', r.ref || r.id); }} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
+                      <button onClick={e => { e.stopPropagation(); onDelete('case', r.ref || r.id); }} style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}>Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -474,7 +475,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
             <button
               type="submit"
               disabled={legLoading || !legQuery.trim()}
-              style={{ padding: '8px 18px', fontSize: '13px', background: 'rgba(74,158,255,0.15)', border: '1px solid #4A9EFF', borderRadius: '4px', color: '#4A9EFF', cursor: 'pointer', whiteSpace: 'nowrap', opacity: (legLoading || !legQuery.trim()) ? 0.5 : 1 }}
+              style={{ padding: '8px 18px', fontSize: '13px', background: 'rgba(74,158,255,0.15)', border: '1px solid #4A9EFF', borderRadius: '4px', color: '#4A9EFF', cursor: 'pointer', whiteSpace: 'nowrap', textTransform: 'uppercase', opacity: (legLoading || !legQuery.trim()) ? 0.5 : 1 }}
             >
               {legLoading ? 'Searching…' : 'Search'}
             </button>
@@ -507,7 +508,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
                 <button
                   onClick={() => runLegSearch(legQuery, legOffset + 50)}
                   disabled={legLoading}
-                  style={{ marginTop: '14px', padding: '6px 18px', fontSize: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                  style={{ marginTop: '14px', padding: '6px 18px', fontSize: '12px', background: 'transparent', border: '1px solid var(--border)', borderRadius: '4px', color: 'var(--text-secondary)', cursor: 'pointer', textTransform: 'uppercase' }}
                 >
                   {legLoading ? 'Loading…' : 'Load more'}
                 </button>
@@ -531,7 +532,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
             <button
               type="submit"
               disabled={wordLoading || !wordQuery.trim()}
-              style={{ padding: '8px 18px', fontSize: '13px', background: 'rgba(74,158,255,0.15)', border: '1px solid #4A9EFF', borderRadius: '4px', color: '#4A9EFF', cursor: 'pointer', whiteSpace: 'nowrap', opacity: (wordLoading || !wordQuery.trim()) ? 0.5 : 1 }}
+              style={{ padding: '8px 18px', fontSize: '13px', background: 'rgba(74,158,255,0.15)', border: '1px solid #4A9EFF', borderRadius: '4px', color: '#4A9EFF', cursor: 'pointer', whiteSpace: 'nowrap', textTransform: 'uppercase', opacity: (wordLoading || !wordQuery.trim()) ? 0.5 : 1 }}
             >
               {wordLoading ? 'Searching…' : 'Search'}
             </button>
@@ -664,7 +665,7 @@ function PendingReviewSection({ items, loading, nexusKey, onNexusKeyChange, onAp
                 style={{
                   padding: '5px 12px', fontSize: '11px', fontWeight: 600,
                   background: 'rgba(74,255,130,0.12)', border: '1px solid rgba(74,255,130,0.35)',
-                  borderRadius: '4px', color: 'var(--green)',
+                  borderRadius: '4px', color: 'var(--green)', textTransform: 'uppercase',
                   cursor: busy[item.id] ? 'not-allowed' : 'pointer', opacity: busy[item.id] ? 0.5 : 1,
                 }}
               >
@@ -734,8 +735,8 @@ function CorpusTable({ rows, onDelete, onDeleteNexus }) {
               <div style={{ display: 'flex', gap: '8px' }}>
                 {isMalformed && <span style={{ fontSize: '11px', color: 'var(--red)' }}>Malformed</span>}
                 {isNexusSave
-                  ? <button onClick={() => onDeleteNexus(r.id)} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
-                  : <button onClick={() => onDelete('secondary', r.id)} style={{ fontSize: '11px', color: 'var(--red)' }}>Delete</button>
+                  ? <button onClick={() => onDeleteNexus(r.id)} style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}>Delete</button>
+                  : <button onClick={() => onDelete('secondary', r.id)} style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}>Delete</button>
                 }
               </div>
             </td>
@@ -780,7 +781,7 @@ function LegislationTable({ rows, onDelete }) {
                 href="https://www.legislation.tas.gov.au"
                 target="_blank"
                 rel="noopener"
-                style={{ color: 'var(--accent)', textDecoration: 'none' }}
+                style={{ color: 'var(--accent)', textDecoration: 'none', textTransform: 'capitalize' }}
                 onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                 onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                 onClick={e => e.stopPropagation()}
@@ -800,7 +801,7 @@ function LegislationTable({ rows, onDelete }) {
             <td style={td}>
               <button
                 onClick={e => { e.stopPropagation(); onDelete('legislation', r.id); }}
-                style={{ fontSize: '11px', color: 'var(--red)' }}
+                style={{ fontSize: '11px', color: 'var(--red)', textTransform: 'uppercase' }}
               >Delete</button>
             </td>
           </tr>
@@ -1197,7 +1198,7 @@ function TruncationModal({ record, nexusKey, onNexusKeyChange, onConfirm, onDele
             style={{
               padding: '7px 16px', fontSize: '12px', fontWeight: 600,
               background: 'var(--surface-hover)', border: '1px solid var(--border-em)',
-              borderRadius: '6px', color: 'var(--text-body)',
+              borderRadius: '6px', color: 'var(--text-body)', textTransform: 'uppercase',
               cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
             }}
           >
@@ -1209,7 +1210,7 @@ function TruncationModal({ record, nexusKey, onNexusKeyChange, onConfirm, onDele
             style={{
               padding: '7px 16px', fontSize: '12px', fontWeight: 600,
               background: 'rgba(232,74,74,0.12)', border: '1px solid rgba(232,74,74,0.4)',
-              borderRadius: '6px', color: 'var(--red)',
+              borderRadius: '6px', color: 'var(--red)', textTransform: 'uppercase',
               cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
             }}
           >

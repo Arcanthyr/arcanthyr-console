@@ -35,7 +35,7 @@ export default function Nav() {
         }}
       >
         <img
-          src="/unnamed.jpg"
+          src="/this one.png"
           alt=""
           style={{
             height: '56px',

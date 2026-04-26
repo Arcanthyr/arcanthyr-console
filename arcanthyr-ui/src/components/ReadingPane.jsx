@@ -17,7 +17,7 @@ export default function ReadingPane({ selected, answer, query, queryId, onShare,
         justifyContent: 'center',
         color: 'var(--text-muted)',
       }}>
-        <img src="/unnamed.jpg" alt="" style={{ width: '48px', opacity: 0.08, marginBottom: '16px' }} />
+        <img src="/this one.png" alt="" style={{ width: '48px', opacity: 0.08, marginBottom: '16px' }} />
         <div style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
           Ask a question
         </div>
@@ -51,6 +51,7 @@ export default function ReadingPane({ selected, answer, query, queryId, onShare,
               color: 'var(--text-secondary)',
               background: 'transparent',
               letterSpacing: '0.04em',
+              textTransform: 'uppercase',
               transition: 'color 0.2s, background 0.2s',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
@@ -165,6 +166,7 @@ function CasePane({ selected, answer, query, queryId, onShare, onClose }) {
                 color: 'var(--text-secondary)',
                 background: 'transparent',
                 letterSpacing: '0.04em',
+                textTransform: 'uppercase',
                 transition: 'color 0.2s, background 0.2s',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
@@ -201,6 +203,7 @@ function CasePane({ selected, answer, query, queryId, onShare, onClose }) {
               borderBottom: tab === i ? '2px solid var(--accent)' : '2px solid transparent',
               background: 'transparent',
               letterSpacing: '0.04em',
+              textTransform: 'uppercase',
             }}>
               {t}
             </button>
@@ -302,7 +305,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
               display: 'flex', alignItems: 'center', gap: '5px',
               padding: '5px 12px', fontSize: '11px', borderRadius: '4px',
               border: '1px solid var(--border)', background: 'transparent',
-              color: 'var(--text-secondary)', letterSpacing: '0.04em',
+              color: 'var(--text-secondary)', letterSpacing: '0.04em', textTransform: 'uppercase',
               cursor: saveOpen ? 'default' : 'pointer', opacity: saveOpen ? 0.6 : 1,
               transition: 'color 0.2s, border-color 0.2s, background 0.2s',
             }}
@@ -323,7 +326,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
             style={{
               fontSize: '11px', padding: '5px 10px', background: 'transparent',
               border: 'none', color: 'var(--text-muted)', cursor: (thumbsFlagging || thumbsOpen) ? 'default' : 'pointer',
-              letterSpacing: '0.04em', transition: 'color 0.2s',
+              letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.2s',
             }}
             onMouseEnter={e => { if (!thumbsOpen) e.currentTarget.style.color = 'var(--text-secondary)'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
@@ -364,6 +367,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
               style={{
                 padding: '5px 14px', fontSize: '12px', fontWeight: 600,
                 background: 'var(--accent)', color: '#fff', borderRadius: '4px',
+                textTransform: 'uppercase',
                 cursor: thumbsFlagging ? 'not-allowed' : 'pointer', opacity: thumbsFlagging ? 0.6 : 1,
               }}
             >
@@ -375,6 +379,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
               style={{
                 fontSize: '12px', color: 'var(--text-secondary)', background: 'transparent',
                 border: '1px solid var(--border)', borderRadius: '4px', padding: '5px 10px',
+                textTransform: 'uppercase',
                 cursor: thumbsFlagging ? 'not-allowed' : 'pointer', opacity: thumbsFlagging ? 0.6 : 1,
               }}
             >
@@ -382,7 +387,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
             </button>
             <button
               onClick={() => { setThumbsOpen(false); setThumbsNote(''); setThumbsError(''); }}
-              style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', textTransform: 'uppercase' }}
             >
               Cancel
             </button>
@@ -443,6 +448,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
               style={{
                 padding: '6px 16px', fontSize: '12px', fontWeight: 600,
                 background: 'var(--accent)', color: '#fff', borderRadius: '4px',
+                textTransform: 'uppercase',
                 cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
               }}
             >
@@ -450,7 +456,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
             </button>
             <button
               onClick={() => { setSaveOpen(false); setSaveError(''); }}
-              style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', textTransform: 'uppercase' }}
             >
               Cancel
             </button>

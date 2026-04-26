@@ -3859,7 +3859,7 @@ export default {
 
 
 
-    return new Response("Not found", { status: 404, headers: corsHeaders });
+    return env.ASSETS.fetch(new Request(new URL('/index.html', request.url)));
   },
 
   async scheduled(_event, env, ctx) {

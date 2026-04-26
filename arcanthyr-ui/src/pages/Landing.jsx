@@ -54,8 +54,8 @@ export default function Landing() {
 
         {/* Sigil — 2× larger */}
         <motion.img
-          src="/unnamed.jpg"
-          alt="Arcanthyr"
+          src="/this one.png"
+          alt="The Arc"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 0.9, scale: 1 }}
           transition={{ delay: 0.4, duration: 0.9, ease: 'easeOut' }}
@@ -78,7 +78,7 @@ export default function Landing() {
             textTransform: 'uppercase', marginBottom: '7px',
           }}
         >
-          Arcanthyr
+          THE ARC
         </motion.div>
 
         {/* Tagline */}

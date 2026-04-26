@@ -3,7 +3,7 @@
 CLAUDE.md — Arcanthyr Session File
 Updated: 26 April 2026 (end of session 105) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–102) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–103) — load conditionally
 
 ---
 
@@ -63,13 +63,10 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ## OUTSTANDING PRIORITIES
 
-- **Phase 4 — visual chrome**: logo swap (Image 3, white-background bare emblem, top-left, all sub-pages); "Arcanthyr"→"THE ARC" landing rename; ALL CAPS toggle/button/tab labels; title-case legislation names.
-
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **ReadingPane.jsx third logo reference** — `/unnamed.jpg` appears in three places: Nav.jsx (56px, primary sub-page logo), Landing.jsx (320px centred sigil), and ReadingPane.jsx empty state (48px, opacity 0.08). Phase 4 logo swap must update all three references, not just Nav.jsx. Read ReadingPane.jsx before implementing Task 1.
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
@@ -223,17 +220,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 103) — 25 April 2026
-
-- **Phase 1 dead code removal — Worker.js (-844 lines this session)** — AustLII search path: handleAustLIIWordSearch, fetchRecentAustLIICases, runDailySync, runYearBackfill, AUSTLII_COURTS, parseAustLIIResults; Productivity AI: handleDraft, handleNextActions, handleWeeklyReview, handleClarifyAgent, handleAxiomRelay; email handlers: handleSendEmail, handleGetContacts, handleAddContact, handleDeleteContact; legal principles orphans: handleSearchCases, handleSearchPrinciples, savePrinciple, saveCaseToDb, processCaseUpload, getSyncProgress; Daily Digest block + scheduled handler call; synthesis feedback route (/api/pipeline/feedback); TTS route (/api/tts); all dead dispatch blocks (/api/ai/, /api/email/, /api/entries); procedurePassPrompt (orphaned by processCaseUpload removal); fetchCaseContent (orphaned by runDailySync/runYearBackfill removal); flagged_by from mark-insufficient handler (column already dropped)
-- **Phase 1 dead code removal — D1 schema** — ALTER TABLE query_log DROP COLUMN flagged_by; DROP TABLE synthesis_feedback (0 rows); DROP TABLE entries (9 rows); DROP TABLE legal_principles (210 rows); DROP TABLE email_contacts (2 rows)
-- **Phase 1 dead code removal — frontend** — deleted ReadButton.jsx, FloatingDock.jsx, tts.js; api.js: removed austliiWordSearch and flagSynthesis; ReadingPane.jsx: removed nexusKey/onNexusKeyChange props and the synthesis flag button (⚑ Flag) from SaveFlagPanel (SaveFlagPanel itself retained — insufficient button lives there); Library.jsx: removed AustLII external results panel and inline judgment viewer from Quick Search tab; Research.jsx: removed nexusKey state + handleNexusKeyChange and Daily Digest anchor link; Upload.jsx: updated AustLII placeholder text to "Source URL (optional)"
-- **wrangler.toml** — removed EMAIL_DIGEST KV namespace binding (9ea5773d11ac40ce9904ca21c602e9f4)
-- **/research direct-nav 404 — confirmed pre-existing** — Worker catch-all `return new Response("Not found", 404)` fires before SPA layer for direct deep-link navigation; client-side nav works correctly; not a Phase 1 regression; documented in CLAUDE_decisions.md
-- **Discovery → verification → execution cadence held** — initial CC discovery missed VanishingInput as a live import in Landing.jsx; second-pass verification grep before each frontend deletion caught it before action. V1/V2/V3 verification gates also caught austlii_cache as the active judgment cache (kept) and getSyncProgress as orphaned alongside legal_principles (added to drop list mid-execution).
-- **Commit-message fabrication caught at docs-commit gate** — Phase 1 commit body (5064c9b) claimed surfaces not in the actual diff (Stare Decisis tab removal, Productivity AI tab in Upload, ambient audio triggers in Research, 9 api.js methods vs actual 2). Post-mortem commit c063802 supersedes with diff-grounded text. New CLAUDE_init.md rule: commit message bodies AND CHANGES THIS SESSION blocks must be drafted from `git diff` evidence, not session memory or plan briefs.
-- **Phase 2/3/4 scope decided** — Phase 2 (architecture): rename Research→INTEL, Library→CASE SEARCH, split Legislation, create Corpus Admin shell (Compose/Corpus/Secondary Sources/Feedback), kill Three.js globe, state filter scaffold (TAS default). Phase 3 (per-tab logic): rebuild Insufficient with commentary popup + visible state; cites/cited-by tallies on case selection. Phase 4 (visual chrome): logo Image 3 top-left, "Arcanthyr"→"THE ARC", ALL CAPS, title-case legislation names. Logo Image 3 (white-background bare emblem) confirmed for site mark.
-
 ## CHANGES THIS SESSION (session 104) — 26 April 2026
 
 - **Worker.js → worker.js rename — permanent fix** — two-step `git mv` via temp name (Windows case-insensitive FS requires it); wrangler.toml `main` was already lowercase; grep confirmed zero other capital-W references; deployed 721c9f4a; SESSION RULES and KNOWN ISSUES capital-W entries retired
@@ -248,6 +234,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Phase 3 — Citation tallies in CASE SEARCH (CaseSearch.jsx)** — `CaseReadingPane` now calls `api.caseAuthority(citation)` eagerly in a `useEffect` on case selection; renders "Cites: N · Cited by: N" in the case header below court/date row; two-call approach: tally eager (this useEffect), StareDecisisSection detail list lazy on expand — no interface change to StareDecisisSection required
 - **Phase 3 — Double-Nav fix + dead page cleanup** — extracted inner content of Compose.jsx and HealthReports.jsx into `components/ComposePanel.jsx` and `components/HealthReportsPanel.jsx` (no Nav wrapper, `flex: 1` outer div); rewrote CorpusAdmin.jsx to single unified layout: one Nav, one SubTabBar, panel dispatch via conditional render; deleted five dead page files: Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx from `pages/`; grep confirmed zero remaining imports before deletion
 - **Phase 3 — Dead sources variable removed (Intel.jsx)** — removed `sources` state (declared, set from API, never consumed in render); cleaned four locations: state declaration, reset in handleQueryWith, set in try block, reset in loadHistoryItem
+- **Phase 4 — Visual chrome (complete)** — logo swap: all three `/unnamed.jpg` references updated to `/this one.png` (Nav.jsx 56px, Landing.jsx 320px sigil, ReadingPane.jsx 48px empty state); wordmark "Arcanthyr" → "THE ARC" in Landing.jsx (visible text only; ShareModal email subject unchanged); `textTransform: 'uppercase'` added via inline CSS (no hardcoded strings) to all interactive toggle/button/tab labels across ReadingPane.jsx (TABS, Share, Save to Nexus, Insufficient, Submit, Skip, Cancel, Confirm), Intel.jsx (Sol/V'ger model toggles), CaseSearch.jsx (mode toggle buttons, Search submits, Refresh, Approve, Confirm Index, Delete Case, Load more, all Delete action buttons) — Ask → design exception; `textTransform: 'capitalize'` safety-net on LegislationTable Act column link; deployed Worker 879841b5
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

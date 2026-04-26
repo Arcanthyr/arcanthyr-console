@@ -1,8 +1,19 @@
-# CLAUDE Changelog — Sessions 21–102
+# CLAUDE Changelog — Sessions 21–103
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 103) — 25 April 2026
+
+- **Phase 1 dead code removal — Worker.js (-844 lines this session)** — AustLII search path: handleAustLIIWordSearch, fetchRecentAustLIICases, runDailySync, runYearBackfill, AUSTLII_COURTS, parseAustLIIResults; Productivity AI: handleDraft, handleNextActions, handleWeeklyReview, handleClarifyAgent, handleAxiomRelay; email handlers: handleSendEmail, handleGetContacts, handleAddContact, handleDeleteContact; legal principles orphans: handleSearchCases, handleSearchPrinciples, savePrinciple, saveCaseToDb, processCaseUpload, getSyncProgress; Daily Digest block + scheduled handler call; synthesis feedback route (/api/pipeline/feedback); TTS route (/api/tts); all dead dispatch blocks (/api/ai/, /api/email/, /api/entries); procedurePassPrompt (orphaned by processCaseUpload removal); fetchCaseContent (orphaned by runDailySync/runYearBackfill removal); flagged_by from mark-insufficient handler (column already dropped)
+- **Phase 1 dead code removal — D1 schema** — ALTER TABLE query_log DROP COLUMN flagged_by; DROP TABLE synthesis_feedback (0 rows); DROP TABLE entries (9 rows); DROP TABLE legal_principles (210 rows); DROP TABLE email_contacts (2 rows)
+- **Phase 1 dead code removal — frontend** — deleted ReadButton.jsx, FloatingDock.jsx, tts.js; api.js: removed austliiWordSearch and flagSynthesis; ReadingPane.jsx: removed nexusKey/onNexusKeyChange props and the synthesis flag button (⚑ Flag) from SaveFlagPanel (SaveFlagPanel itself retained — insufficient button lives there); Library.jsx: removed AustLII external results panel and inline judgment viewer from Quick Search tab; Research.jsx: removed nexusKey state + handleNexusKeyChange and Daily Digest anchor link; Upload.jsx: updated AustLII placeholder text to "Source URL (optional)"
+- **wrangler.toml** — removed EMAIL_DIGEST KV namespace binding (9ea5773d11ac40ce9904ca21c602e9f4)
+- **/research direct-nav 404 — confirmed pre-existing** — Worker catch-all `return new Response("Not found", 404)` fires before SPA layer for direct deep-link navigation; client-side nav works correctly; not a Phase 1 regression; documented in CLAUDE_decisions.md
+- **Discovery → verification → execution cadence held** — initial CC discovery missed VanishingInput as a live import in Landing.jsx; second-pass verification grep before each frontend deletion caught it before action. V1/V2/V3 verification gates also caught austlii_cache as the active judgment cache (kept) and getSyncProgress as orphaned alongside legal_principles (added to drop list mid-execution).
+- **Commit-message fabrication caught at docs-commit gate** — Phase 1 commit body (5064c9b) claimed surfaces not in the actual diff (Stare Decisis tab removal, Productivity AI tab in Upload, ambient audio triggers in Research, 9 api.js methods vs actual 2). Post-mortem commit c063802 supersedes with diff-grounded text. New CLAUDE_init.md rule: commit message bodies AND CHANGES THIS SESSION blocks must be drafted from `git diff` evidence, not session memory or plan briefs.
+- **Phase 2/3/4 scope decided** — Phase 2 (architecture): rename Research→INTEL, Library→CASE SEARCH, split Legislation, create Corpus Admin shell (Compose/Corpus/Secondary Sources/Feedback), kill Three.js globe, state filter scaffold (TAS default). Phase 3 (per-tab logic): rebuild Insufficient with commentary popup + visible state; cites/cited-by tallies on case selection. Phase 4 (visual chrome): logo Image 3 top-left, "Arcanthyr"→"THE ARC", ALL CAPS, title-case legislation names. Logo Image 3 (white-background bare emblem) confirmed for site mark.
 
 ## CHANGES THIS SESSION (session 102) — 25 April 2026
 

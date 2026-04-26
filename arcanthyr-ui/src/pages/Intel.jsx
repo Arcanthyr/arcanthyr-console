@@ -185,6 +185,7 @@ export default function Intel() {
                   background: model === m ? 'var(--accent-dim)' : 'var(--surface)',
                   color: model === m ? 'var(--accent)' : 'var(--text-secondary)',
                   border: `1px solid ${model === m ? 'var(--accent)' : 'var(--border)'}`,
+                  textTransform: 'uppercase',
                 }}
               >
                 {m === 'claude' ? 'Sol' : "V'ger"}
