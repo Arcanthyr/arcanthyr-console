@@ -69,6 +69,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ## KNOWN ISSUES / WATCH LIST
 
+- **ReadingPane.jsx third logo reference** — `/unnamed.jpg` appears in three places: Nav.jsx (56px, primary sub-page logo), Landing.jsx (320px centred sigil), and ReadingPane.jsx empty state (48px, opacity 0.08). Phase 4 logo swap must update all three references, not just Nav.jsx. Read ReadingPane.jsx before implementing Task 1.
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
@@ -213,6 +214,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | Reachability testing | `mcp__fetch__fetch` is unreliable for reachability checks — fails with `AsyncClient.__init__() got an unexpected keyword argument 'proxies'` regardless of target URL · use Firecrawl instead · Firecrawl's infrastructure shares the datacenter IP class with Cloudflare edge — a 200 from Firecrawl predicts a 200 from a CF-edge fetch · `austliiUrl()` in CaseSearch.jsx (was Library.jsx) always produces AustLII `/cgi-bin/viewdoc/au/cases/tas/COURT/YEAR/NUM.html` format — not jade.io format; `buildJadeUrl` is used only for the "Open on jade.io" anchor link, not passed to `handleFetchJudgment` |
 | CLAUDE_changelog.md | Load when investigating a past session's changes, debugging a regression to a specific date, or when referencing work from sessions older than the 3-session retention window |
 | Baseline output files | Always use timestamped snapshots (e.g. ~/retrieval_baseline_post_query_expansion.txt) — ~/retrieval_baseline_results.txt is Apr 16 stale; never grep it · canonical reference: ~/retrieval_baseline_post_query_expansion.txt (session 77) |
+| grep on CLAUDE.md | Always use `grep -a` — the file contains a null byte and returns "Binary file matches" without the flag; every content or line-number check on CLAUDE.md requires `grep -a` |
 
 **Tooling:**
 - Claude.ai — architecture, planning, debugging, writing CLAUDE.md, code review
