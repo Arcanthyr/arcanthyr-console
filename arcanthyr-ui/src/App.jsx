@@ -1,22 +1,20 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
-import Research from './pages/Research';
-import Upload from './pages/Upload';
-import Library from './pages/Library';
-import Compose from './pages/Compose';
-import HealthReports from './pages/HealthReports';
+import Intel from './pages/Intel';
+import CaseSearch from './pages/CaseSearch';
+import Legislation from './pages/Legislation';
+import CorpusAdmin from './pages/CorpusAdmin';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"              element={<Landing />} />
-        <Route path="/research"      element={<Research />} />
-        <Route path="/upload"        element={<Upload />} />
-        <Route path="/library"       element={<Library />} />
-        <Route path="/compose"       element={<Compose />} />
-        <Route path="/health-reports" element={<HealthReports />} />
-        <Route path="*"              element={<Navigate to="/" replace />} />
+        <Route path="/"            element={<Landing />} />
+        <Route path="/intel"       element={<Intel />} />
+        <Route path="/case-search" element={<CaseSearch />} />
+        <Route path="/legislation" element={<Legislation />} />
+        <Route path="/corpus-admin" element={<CorpusAdmin />} />
+        <Route path="*"            element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

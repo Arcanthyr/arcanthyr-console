@@ -104,7 +104,7 @@ export default function Landing() {
         >
           <VanishingInput
             placeholder=""
-            onSubmit={(q) => navigate(`/research?q=${encodeURIComponent(q)}`)}
+            onSubmit={(q) => navigate(`/intel?q=${encodeURIComponent(q)}`)}
           />
         </motion.div>
 
@@ -122,7 +122,7 @@ export default function Landing() {
           {SUGGESTIONS.map(s => (
             <button
               key={s}
-              onClick={() => navigate(`/research?q=${encodeURIComponent(s)}`)}
+              onClick={() => navigate(`/intel?q=${encodeURIComponent(s)}`)}
               style={{
                 background: 'transparent', border: '1px solid #1E2124',
                 borderRadius: '20px', padding: '5px 14px', fontSize: '10px',
@@ -145,10 +145,10 @@ export default function Landing() {
           style={{ display: 'flex', gap: '32px' }}
         >
           {[
-            { label: 'Research', path: '/research' },
-            { label: 'Library',  path: '/library'  },
-            { label: 'Upload',   path: '/upload'   },
-            { label: 'Compose',  path: '/compose'  },
+            { label: 'Intel',        path: '/intel'        },
+            { label: 'Case Search',  path: '/case-search'  },
+            { label: 'Legislation',  path: '/legislation'  },
+            { label: 'Corpus Admin', path: '/corpus-admin' },
           ].map(({ label, path }) => (
             <button
               key={path}

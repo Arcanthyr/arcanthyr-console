@@ -1,21 +1,6 @@
 import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
-import Globe from '../components/ui/Globe';
 import { api } from '../api';
-
-// ── Globe locations & arcs ────────────────────────────────────
-const LOCATIONS = [
-  { name: 'Devonport',  lat: -41.1775, lng: 146.3497, label: 'DVP  −41.18°  146.35°' },
-  { name: 'Ulverstone', lat: -41.1569, lng: 146.1731, label: 'ULV  −41.16°  146.17°' },
-  { name: 'Burnie',     lat: -41.0549, lng: 145.9099, label: 'BUR  −41.05°  145.91°' },
-  { name: 'Melbourne',  lat: -37.8136, lng: 144.9631, label: 'MEL  −37.81°  144.96°' },
-];
-
-const ARCS = [
-  { from: LOCATIONS[0], to: LOCATIONS[3], altitude: 0.3 },  // Devonport → Melbourne
-  { from: LOCATIONS[2], to: LOCATIONS[3], altitude: 0.28 }, // Burnie → Melbourne
-  { from: LOCATIONS[0], to: LOCATIONS[2], altitude: 0.1 },  // Devonport → Burnie
-];
 
 // ── localStorage helpers ──────────────────────────────────────
 const CONTACTS_KEY  = 'arcanthyr_contacts';
@@ -99,26 +84,6 @@ export default function Compose() {
       <Nav />
 
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-
-        {/* ── Globe panel ── */}
-        <div style={{
-          flex: '0 0 460px',
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          borderRight: '1px solid var(--border)',
-          background: 'var(--bg-page)',
-          overflow: 'hidden',
-          position: 'relative',
-        }}>
-          <Globe size={420} locations={LOCATIONS} arcs={ARCS} />
-          <div style={{
-            position: 'absolute', bottom: '24px',
-            fontSize: '10px', fontStyle: 'italic',
-            color: 'var(--text-muted)', letterSpacing: '0.08em',
-          }}>
-            Dispatching from Tasmania, Australia
-          </div>
-        </div>
 
         {/* ── Right panel ── */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
