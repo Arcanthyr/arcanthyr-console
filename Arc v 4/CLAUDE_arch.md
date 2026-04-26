@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 26 April 2026 (end of session 104). Upload every session alongside CLAUDE.md.*
+*Updated: 26 April 2026 (end of session 105). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -314,8 +314,8 @@ Four processing paths:
 3. **Raw text <800 words** — calls GPT with Master Prompt + short-source note appended (demands separate chunks per doctrinal unit, strict CASE AUTHORITY CHUNK RULE)
 4. **Single-chunk mode** — `body.mode='single'` bypasses GPT entirely; wraps text in `<!-- block_0001 master -->` header using provided `title`, `slug`, `category`; calls `parseFormattedChunks()` and inserts as one chunk
 
-**Word/PDF drag-drop pipeline (session 32 — confirmed working):**
-Upload.jsx accepts `.pdf`, `.docx`, `.txt` on Secondary Sources tab → reads as base64 DataURL → `api.processDocument({ file_b64, filename })` → Worker proxy `POST /api/ingest/process-document` → server.py `process_document()` → background thread: extract text → split blocks → GPT-4o-mini format → `post_chunk_to_worker` → Worker `POST /api/legal/upload-corpus` → D1 insert `enriched=1, embedded=0` → poller embeds to Qdrant.
+**Word/PDF drag-drop pipeline (session 32 — backend live; frontend dormant pending Phase 3):**
+Upload.jsx (now deleted session 105) accepted `.pdf`, `.docx`, `.txt` on Secondary Sources tab → reads as base64 DataURL → `api.processDocument({ file_b64, filename })` → Worker proxy `POST /api/ingest/process-document` → server.py `process_document()` → background thread: extract text → split blocks → GPT-4o-mini format → `post_chunk_to_worker` → Worker `POST /api/legal/upload-corpus` → D1 insert `enriched=1, embedded=0` → poller embeds to Qdrant. Frontend will be ported to CorpusAdmin SECONDARY SOURCES sub-tab in Phase 3. Backend pipeline unchanged.
 
 Key fix (session 32): `post_chunk_to_worker` was sending base64-encoded text with `encoding: "base64"` flag — Worker has no decode step, all chunks silently skipped. Fixed to send raw UTF-8.
 
@@ -464,11 +464,12 @@ cd "../Arc v 4" && npx wrangler deploy
 - Never send `query_text` from frontend — Worker reads `body.query`
 
 **Pages (all in `src/pages/`):**
-- `Landing.jsx` — immediate redirect to /research (auth removed session 17)
-- `Research.jsx` — query input, model toggle (Claude/Workers), filter chips, non-clickable source list, AI Summary auto-displays in reading pane after query
-- `Upload.jsx` — 3 tabs: Cases (file drop + AustLII URL input) / Secondary Sources (drag+drop .md/.txt) / Legislation (drag+drop .pdf/.txt)
-- `Library.jsx` — 4 tabs: CASES/SECONDARY SOURCES/LEGISLATION/QUICK SEARCH · case rows clickable → split reading pane with Facts/Holding/Principles tabs · Principles tab reads `c.principles_extracted` (fixed session 33) · year filter chips + court filter chips combinable · Legislation tab: Date Updated column (reads `current_as_at` via `r.date`), external link to legislation.tas.gov.au · Secondary Sources: Title column leftmost · Quick Search: local FTS5 word search via `api.wordSearch()` (Phases 1+5 still live; AustLII external results panel and inline judgment viewer removed session 103 Phase 1) · `handleLibraryList` SELECT includes `principles_extracted` (session 33)
-- Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`
+- `Landing.jsx` — immediate redirect to /intel (auth removed session 17, route updated Phase 2 session 104)
+- `Intel.jsx` — INTEL page (renamed from Research.jsx session 104) · query textarea, model toggle (Sol/V'ger), domain filter chips, source type filter chips, result cards, query history, reading pane
+- `CaseSearch.jsx` — CASE SEARCH page (renamed from Library.jsx session 104) · 4 tabs: CASES/SECONDARY SOURCES/LEGISLATION/QUICK SEARCH · case rows clickable → split reading pane with Facts/Holding/Principles/Stare Decisis tabs · citation tallies (Cites N · Cited by N) in case header (added session 105) · year/court filter chips · state filter scaffold (TAS default)
+- `Legislation.jsx` — stub, added Phase 2 session 104
+- `CorpusAdmin.jsx` — Corpus Admin shell · 4 sub-tabs: COMPOSE (→ ComposePanel), CORPUS (→ HealthReportsPanel), SECONDARY SOURCES (placeholder Phase 3), FEEDBACK (placeholder Phase 3)
+- Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`, `ComposePanel.jsx`, `HealthReportsPanel.jsx`
 
 ---
 
@@ -869,9 +870,9 @@ Source title uses chunk heading (not filename stem).
 - **Retrieval regression fixes (session 64 — remaining steps deferred):**
   - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
   - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64. DEFERRED — same gate as Step 3.
-- **Legislation section search in Library** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in Library.jsx. treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
-- **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on Research page · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
-- **Word/PDF drag-and-drop upload pipeline** — COMPLETE. Upload.jsx accepts .pdf/.docx/.txt on Secondary Sources tab → process-document → server.py background extraction → GPT-4o-mini format → D1 insert → poller embeds to Qdrant. Live since session 32.
+- **Legislation section search in CASE SEARCH** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in CaseSearch.jsx (was Library.jsx). treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
+- **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on INTEL page (was Research page) · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
+- **Word/PDF drag-and-drop upload pipeline** — backend COMPLETE (session 32). Upload.jsx deleted session 105 (Phase 3 cleanup); frontend will be ported to CorpusAdmin SECONDARY SOURCES sub-tab. Backend route `/api/ingest/process-document` + server.py `process_document()` + poller embed path all still live.
 - **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
 - **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
 - **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
@@ -883,7 +884,7 @@ Source title uses chunk heading (not filename stem).
 - **Procedural sequence assembly** — given a query like "how do I handle a hostile witness" or "what do I do at a bail application", an agent retrieves all relevant procedure, script, doctrine, and checklist chunks then sequences them into a step-by-step response rather than returning them as parallel flat results. Requires a dedicated "sequence assembly" prompt layer after retrieval, before Qwen3 synthesis. Highest value for procedural queries where order matters. Build after retrieval quality is stable.
 - **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
 - **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
-- **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in Library.jsx, AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑").
+- **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in CaseSearch.jsx (was Library.jsx), AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑").
 ### Secondary Sources Upload — Session 39 changes
 - Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
 - source_type passed from modal → Worker handleFormatAndUpload → D1 secondary_sources.source_type

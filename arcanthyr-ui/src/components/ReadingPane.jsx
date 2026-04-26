@@ -241,6 +241,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
   const [thumbsNote, setThumbsNote] = useState('');
   const [thumbsFlagged, setThumbsFlagged] = useState(false);
   const [thumbsFlagging, setThumbsFlagging] = useState(false);
+  const [thumbsError, setThumbsError] = useState('');
 
   function openSave() {
     const today = new Date().toISOString().slice(0, 10);
@@ -271,15 +272,19 @@ function SaveFlagPanel({ query, answer, queryId }) {
     }
   }
 
-  async function doThumbsDown() {
+  async function doThumbsDown(noteOverride) {
     if (!queryId) return;
+    const note = noteOverride !== undefined ? noteOverride : (thumbsNote.trim() || null);
+    setThumbsError('');
     setThumbsFlagging(true);
     try {
-      await api.markInsufficient(queryId, thumbsNote.trim() || null, null);
+      await api.markInsufficient(queryId, note, null);
       setThumbsFlagged(true);
       setThumbsOpen(false);
+      setThumbsNote('');
     } catch (e) {
       console.error('markInsufficient failed:', e);
+      setThumbsError(e.message || 'Could not save feedback — try again');
     } finally {
       setThumbsFlagging(false);
     }
@@ -313,7 +318,7 @@ function SaveFlagPanel({ query, answer, queryId }) {
         {/* Insufficient — sets query_log.sufficient=0 */}
         {!thumbsFlagged ? (
           <button
-            onClick={() => { setThumbsOpen(o => !o); setThumbsNote(''); }}
+            onClick={() => { setThumbsOpen(o => !o); setThumbsNote(''); setThumbsError(''); }}
             disabled={thumbsFlagging || thumbsOpen}
             style={{
               fontSize: '11px', padding: '5px 10px', background: 'transparent',
@@ -347,6 +352,11 @@ function SaveFlagPanel({ query, answer, queryId }) {
               boxSizing: 'border-box', fontFamily: 'inherit',
             }}
           />
+          {thumbsError && (
+            <div style={{ fontSize: '11px', color: 'var(--red)', marginTop: '6px' }}>
+              {thumbsError}
+            </div>
+          )}
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
             <button
               onClick={doThumbsDown}
@@ -357,10 +367,21 @@ function SaveFlagPanel({ query, answer, queryId }) {
                 cursor: thumbsFlagging ? 'not-allowed' : 'pointer', opacity: thumbsFlagging ? 0.6 : 1,
               }}
             >
-              {thumbsFlagging ? 'Logging…' : 'Log'}
+              {thumbsFlagging ? 'Submitting…' : 'Submit'}
             </button>
             <button
-              onClick={() => { setThumbsOpen(false); setThumbsNote(''); }}
+              onClick={() => doThumbsDown('')}
+              disabled={thumbsFlagging}
+              style={{
+                fontSize: '12px', color: 'var(--text-secondary)', background: 'transparent',
+                border: '1px solid var(--border)', borderRadius: '4px', padding: '5px 10px',
+                cursor: thumbsFlagging ? 'not-allowed' : 'pointer', opacity: thumbsFlagging ? 0.6 : 1,
+              }}
+            >
+              Skip
+            </button>
+            <button
+              onClick={() => { setThumbsOpen(false); setThumbsNote(''); setThumbsError(''); }}
               style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Cancel

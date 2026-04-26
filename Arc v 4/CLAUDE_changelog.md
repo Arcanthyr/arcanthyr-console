@@ -1,8 +1,18 @@
-# CLAUDE Changelog — Sessions 21–101
+# CLAUDE Changelog — Sessions 21–102
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 102) — 25 April 2026
+
+- **Scraper historical pass complete** — full TASSC/TASCCA/TASFC/TASMC corpus scraped back to 2004 as of 11:00 AM 25 April; terminal state `=== Scraper complete ===`; running daily via Task Scheduler as permanent forward-looking capture mechanism
+- **jade.io listing page spike — dead end confirmed** — jade.io router validates all URLs against individual-case AustLII regex; listing paths (`/TASSC/2026/`) rejected with plain-text error at router level; no listing pages exist architecturally; not a URL format issue
+- **CF Browser Rendering spike — dead end confirmed** — all targets (AustLII TASSC/TASCCA recent, lawlibrary.tas.gov.au) returned CF Bot Management 403; headless Chromium cannot pass Turnstile challenge by design; Cloudflare identifies its own BR ASN
+- **AustLII block mechanism identified** — CF Bot Management / Turnstile, not IP-range; "Just a moment..." + `challenges.cloudflare.com` CSP is the diagnostic tell; AustLII usage policy explicitly prohibits scraping/vectorisation in writing; local scraper on residential IP at human pace is the defensible path
+- **runDailySync permanently parked** — all CF-edge discovery paths exhausted (raw fetch, Browser Rendering, VPS TCP-block, jade.io no listings, lawlibrary.tas.gov.au blocked); no remaining untested paths; local Task Scheduler scraper is permanent forward-looking capture
+- **auslaw-mcp status clarified** — dead from VPS (TCP block on all AustLII connections); functional as CC session tool from local Windows machine (residential IP unblocked); container stays running on VPS
+- **Quick Search local word-search unaffected** — `api.wordSearch()` → local FTS5 is independent of AustLII leg; local corpus search works normally; only AustLII supplementary results panel dead
 
 ## CHANGES THIS SESSION (session 101) — 25 April 2026
 

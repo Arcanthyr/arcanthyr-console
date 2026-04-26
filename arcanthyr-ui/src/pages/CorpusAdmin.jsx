@@ -1,53 +1,31 @@
 import { useState } from 'react';
 import Nav from '../components/Nav';
-import Compose from './Compose';
-import HealthReports from './HealthReports';
+import ComposePanel from '../components/ComposePanel';
+import HealthReportsPanel from '../components/HealthReportsPanel';
 
 const SUB_TABS = ['COMPOSE', 'CORPUS', 'SECONDARY SOURCES', 'FEEDBACK'];
 
 export default function CorpusAdmin() {
   const [activeTab, setActiveTab] = useState('COMPOSE');
 
-  // COMPOSE and CORPUS render their own Nav — hand them the full page directly
-  // to avoid double-Nav. Phase 3 will extract inner content properly.
-  if (activeTab === 'COMPOSE') {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <SubTabBar activeTab={activeTab} onTabChange={setActiveTab} />
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <Compose />
-        </div>
-      </div>
-    );
-  }
-
-  if (activeTab === 'CORPUS') {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <SubTabBar activeTab={activeTab} onTabChange={setActiveTab} />
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <HealthReports />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-shell)' }}>
       <Nav />
       <SubTabBar activeTab={activeTab} onTabChange={setActiveTab} />
-      <div style={{ flex: 1, overflow: 'auto', padding: '32px 24px' }}>
-        {activeTab === 'SECONDARY SOURCES' && (
-          <div style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '13px' }}>
-            Secondary Sources — coming in Phase 3.
-          </div>
-        )}
-        {activeTab === 'FEEDBACK' && (
-          <div style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '13px' }}>
-            Feedback — coming in Phase 3.
-          </div>
-        )}
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        {activeTab === 'COMPOSE' && <ComposePanel />}
+        {activeTab === 'CORPUS' && <HealthReportsPanel />}
+        {activeTab === 'SECONDARY SOURCES' && <PlaceholderPanel>Secondary Sources — coming in Phase 3.</PlaceholderPanel>}
+        {activeTab === 'FEEDBACK' && <PlaceholderPanel>Feedback — coming in Phase 3.</PlaceholderPanel>}
       </div>
+    </div>
+  );
+}
+
+function PlaceholderPanel({ children }) {
+  return (
+    <div style={{ flex: 1, overflow: 'auto', padding: '32px 24px', color: 'var(--text-muted)', fontStyle: 'italic', fontSize: '13px' }}>
+      {children}
     </div>
   );
 }

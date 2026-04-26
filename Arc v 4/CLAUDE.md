@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 26 April 2026 (end of session 104) · Supersedes all prior versions
+Updated: 26 April 2026 (end of session 105) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–101) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–102) — load conditionally
 
 ---
 
@@ -15,11 +15,11 @@ Re-opening requires a named trigger from real-use feedback (D1 query_log rows wh
 1–3 non-clustered failures → noise, no action.
 4+ logged failures → extend benchmark to match real query distribution before any retrieval tuning.
 
-Real-use failure captured via thumbs-down button on Research page answer view (wired session 95-post, sets query_log.sufficient=0 with optional missing_note). Review cadence: four-week minimum before any conclusion from the data.
+Real-use failure captured via thumbs-down button on INTEL page answer view (wired session 95-post, sets query_log.sufficient=0 with optional missing_note). Review cadence: four-week minimum before any conclusion from the data.
 
 ---
 
-## SYSTEM STATE — 25 April 2026 (end of session 103)
+## SYSTEM STATE — 26 April 2026 (end of session 105)
 
 | Component | Status |
 |---|---|
@@ -29,7 +29,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | D1 secondary_sources | 1,444 total · embedded=0: ~3 (nexus-save entries only — 411 Word-artifact rows cleaned session 98, embedded=0 reset for re-embed, poller clearing backlog) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) · flagged_by column dropped session 103 Phase 1 |
-| Insufficient feedback button | LIVE — ↓ Insufficient button in Research page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · Worker version 7bd582cd · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
+| Insufficient feedback button | LIVE — ↓ Insufficient button in INTEL page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · popup with Submit/Skip buttons + visible error state on API failure (session 105) · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
 | Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
 | D1 case_citations | 6,959 rows |
@@ -63,20 +63,16 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ## OUTSTANDING PRIORITIES
 
-- **Phase 3 — per-tab logic**: rebuild Insufficient surface with commentary popup + visible success/error state (also fixes Bug A silent-error swallow in ReadingPane.jsx doThumbsDown); cites-tally and cited-by tally on case selection in CASE SEARCH; per-tab UI logic per redesign brief.
 - **Phase 4 — visual chrome**: logo swap (Image 3, white-background bare emblem, top-left, all sub-pages); "Arcanthyr"→"THE ARC" landing rename; ALL CAPS toggle/button/tab labels; title-case legislation names.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
-- **Insufficient button silent error swallow** — `doThumbsDown` in ReadingPane.jsx catches API errors with `console.error` only; no user-visible feedback on failure. Frontend wiring is structurally sound; will be resolved by Phase 3 rebuild with commentary popup + visible success/error state.
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously · pending check for non-DLQ chunks is now done=0 AND dlq=0 — update any requeue tooling accordingly
-- **Double-Nav on CorpusAdmin sub-tabs** — Compose.jsx and HealthReports.jsx are standalone page components that own their own `<Nav />`. Rendering them as sub-tab content inside CorpusAdmin.jsx produces a double nav bar. Phase 3 will extract inner content from both pages before deletion. Old page files (Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx) remain in `pages/` as dead code — not routed; delete in Phase 3 once extraction is confirmed clean.
-- **`sources` dead variable in Intel.jsx** — `sources` state is set from the API response but never consumed in the render (pre-existing from Research.jsx). No functional impact. Clean up in Phase 3.
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations · similarly, done=0 queries must include dlq=0 to exclude dead-letter chunks
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
 - **legislation.embedded is canonical embed gate** — `legislation_sections.embedding_model` is unreliable for Stage 1+2 sections (embedded before that column was being written by the poller). Do not use section-level column as backlog indicator. Correct query: `SELECT title, embedded FROM legislation` — Act-level flag is authoritative. The 1,731 `embedding_model IS NULL` count seen session 90 is noise, not backlog.
@@ -139,7 +135,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | server.py search field | Search endpoint expects `query_text` (not `query`) · "query_text is required" = wrong field name · endpoint: `POST localhost:18789/search` |
 | retrieval_baseline.sh | KEY auto-reads from `~/ai-stack/.env.secrets` using `cut -d= -f2-` (preserve trailing `=`) · results in ~/retrieval_baseline_results.txt · pre-RRF baseline at ~/retrieval_baseline_pre_rrf.txt — do not overwrite · 31 queries (Q1–Q31) · run after any retrieval architecture change before further work |
 | ingest_corpus.py | Lives at `arcanthyr-console\ingest_corpus.py` (NOT inside `Arc v 4/`) · INPUT_FILE hardcoded — change manually · PROCEDURE_ONLY=False for full corpus ingest · Block separator format MUST be `<!-- block_NNN master -->` or `<!-- block_NNN procedure -->` followed by `### Heading` then `[DOMAIN:]` on next line · Use Python (not PowerShell Out-File) to create corpus files — PowerShell BOM/encoding corrupts block separators · upload-corpus uses destructive upsert — do NOT re-run against already-ingested citations |
-| Upload.jsx edits | Always read the full component before making changes — prior sessions may have partially implemented roadmap items (RTF branches, citation extraction, accept attrs). Partial pre-implementations are not documented in roadmap entries. |
 | ingest_part2.py | Lives at `arcanthyr-console\ingest_part2.py` — standalone copy of ingest_corpus.py with INPUT_FILE hardcoded to master_corpus_part2.md and PROCEDURE_ONLY=False |
 | FTS5 wipe before re-ingest | Before any corpus re-ingest run: `DELETE FROM secondary_sources_fts` via wrangler d1 — INSERT OR REPLACE fix deployed session 12 (version 2d3716de) so this should no longer be needed, but if 500 errors appear on upload-corpus, wipe FTS5 first |
 | Bash scripts on VPS | Large pastes truncate in SSH terminal — create files locally and SCP to VPS instead |
@@ -215,7 +210,7 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
 | Truncation tolerance | CLAUDE.md is structured with operational content (state, priorities, rules) in the first ~300 lines. History and procedures at the tail tolerate truncation — they exist as in-session reference, not session-start-critical context |
 | auslaw-mcp search pattern | All AustLII lookup paths currently dead — search_cases dead (VPS TCP-block), word-search dead (AustLII CF-edge 403 confirmed session 101), search_by_citation dead (VPS TCP-block). Local scraper (residential IP) is the only working AustLII access path. For case text of known citations, jade.io URL format (`jade.io/au/cases/tas/COURT/YEAR/NUM`) is accessible from CF edge via `handleFetchJudgment`. |
-| Reachability testing | `mcp__fetch__fetch` is unreliable for reachability checks — fails with `AsyncClient.__init__() got an unexpected keyword argument 'proxies'` regardless of target URL · use Firecrawl instead · Firecrawl's infrastructure shares the datacenter IP class with Cloudflare edge — a 200 from Firecrawl predicts a 200 from a CF-edge fetch · `austliiUrl()` in Library.jsx always produces AustLII `/cgi-bin/viewdoc/au/cases/tas/COURT/YEAR/NUM.html` format — not jade.io format; `buildJadeUrl` is used only for the "Open on jade.io" anchor link, not passed to `handleFetchJudgment` |
+| Reachability testing | `mcp__fetch__fetch` is unreliable for reachability checks — fails with `AsyncClient.__init__() got an unexpected keyword argument 'proxies'` regardless of target URL · use Firecrawl instead · Firecrawl's infrastructure shares the datacenter IP class with Cloudflare edge — a 200 from Firecrawl predicts a 200 from a CF-edge fetch · `austliiUrl()` in CaseSearch.jsx (was Library.jsx) always produces AustLII `/cgi-bin/viewdoc/au/cases/tas/COURT/YEAR/NUM.html` format — not jade.io format; `buildJadeUrl` is used only for the "Open on jade.io" anchor link, not passed to `handleFetchJudgment` |
 | CLAUDE_changelog.md | Load when investigating a past session's changes, debugging a regression to a specific date, or when referencing work from sessions older than the 3-session retention window |
 | Baseline output files | Always use timestamped snapshots (e.g. ~/retrieval_baseline_post_query_expansion.txt) — ~/retrieval_baseline_results.txt is Apr 16 stale; never grep it · canonical reference: ~/retrieval_baseline_post_query_expansion.txt (session 77) |
 
@@ -225,16 +220,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - PowerShell / SSH — VPS runtime commands, long-running Python scripts
 
 ---
-
-## CHANGES THIS SESSION (session 102) — 25 April 2026
-
-- **Scraper historical pass complete** — full TASSC/TASCCA/TASFC/TASMC corpus scraped back to 2004 as of 11:00 AM 25 April; terminal state `=== Scraper complete ===`; running daily via Task Scheduler as permanent forward-looking capture mechanism
-- **jade.io listing page spike — dead end confirmed** — jade.io router validates all URLs against individual-case AustLII regex; listing paths (`/TASSC/2026/`) rejected with plain-text error at router level; no listing pages exist architecturally; not a URL format issue
-- **CF Browser Rendering spike — dead end confirmed** — all targets (AustLII TASSC/TASCCA recent, lawlibrary.tas.gov.au) returned CF Bot Management 403; headless Chromium cannot pass Turnstile challenge by design; Cloudflare identifies its own BR ASN
-- **AustLII block mechanism identified** — CF Bot Management / Turnstile, not IP-range; "Just a moment..." + `challenges.cloudflare.com` CSP is the diagnostic tell; AustLII usage policy explicitly prohibits scraping/vectorisation in writing; local scraper on residential IP at human pace is the defensible path
-- **runDailySync permanently parked** — all CF-edge discovery paths exhausted (raw fetch, Browser Rendering, VPS TCP-block, jade.io no listings, lawlibrary.tas.gov.au blocked); no remaining untested paths; local Task Scheduler scraper is permanent forward-looking capture
-- **auslaw-mcp status clarified** — dead from VPS (TCP block on all AustLII connections); functional as CC session tool from local Windows machine (residential IP unblocked); container stays running on VPS
-- **Quick Search local word-search unaffected** — `api.wordSearch()` → local FTS5 is independent of AustLII leg; local corpus search works normally; only AustLII supplementary results panel dead
 
 ## CHANGES THIS SESSION (session 103) — 25 April 2026
 
@@ -254,6 +239,13 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Phase 2 architectural restructure — complete** — Research→INTEL (`/intel`), Library→CASE SEARCH (`/case-search`); Legislation and Corpus Admin added as top-level tabs; Nav: INTEL/CASE SEARCH/LEGISLATION/CORPUS ADMIN; Landing navigate calls updated; Intel.jsx and CaseSearch.jsx from renamed copies; Legislation.jsx stub; CorpusAdmin.jsx shell with COMPOSE/CORPUS/SECONDARY SOURCES/FEEDBACK sub-tabs; Globe.jsx deleted; three/three-globe/@react-three/drei/@react-three/fiber/cobe removed from package.json; state filter scaffold on CASE SEARCH (TAS default, local state only); deployed 57e1beb6; commit 33b6ce9
 - **CC compression guidance — documented** — same-instance compress preferred for sequential task chains with shared state; fresh CC instance appropriate for genuinely independent tasks; Claude.ai session restart recommended proactively when window length affects quality; added to CLAUDE_init.md
 - **components/ui/ subdirectory — documented** — Globe.jsx actual path was `components/ui/Globe.jsx` not `components/Globe.jsx`; `components/ui/` not previously documented anywhere; added to CLAUDE_arch.md; rule: always grep for actual component path, never assume flat layout
+
+## CHANGES THIS SESSION (session 105) — 26 April 2026
+
+- **Phase 3 — Insufficient button rebuild (ReadingPane.jsx)** — `doThumbsDown` refactored with optional `noteOverride` param; Submit button sends note from textarea, Skip button calls `doThumbsDown('')` explicitly passing empty string (bypasses whatever thumbsNote contains); visible error state added (`thumbsError` state displayed in popup on API failure); toggle button onClick resets both `thumbsNote` and `thumbsError` on open; Cancel also clears `thumbsError`; resolves silent error swallow
+- **Phase 3 — Citation tallies in CASE SEARCH (CaseSearch.jsx)** — `CaseReadingPane` now calls `api.caseAuthority(citation)` eagerly in a `useEffect` on case selection; renders "Cites: N · Cited by: N" in the case header below court/date row; two-call approach: tally eager (this useEffect), StareDecisisSection detail list lazy on expand — no interface change to StareDecisisSection required
+- **Phase 3 — Double-Nav fix + dead page cleanup** — extracted inner content of Compose.jsx and HealthReports.jsx into `components/ComposePanel.jsx` and `components/HealthReportsPanel.jsx` (no Nav wrapper, `flex: 1` outer div); rewrote CorpusAdmin.jsx to single unified layout: one Nav, one SubTabBar, panel dispatch via conditional render; deleted five dead page files: Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx from `pages/`; grep confirmed zero remaining imports before deletion
+- **Phase 3 — Dead sources variable removed (Intel.jsx)** — removed `sources` state (declared, set from API, never consumed in render); cleaned four locations: state declaration, reset in handleQueryWith, set in try block, reset in loadHistoryItem
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

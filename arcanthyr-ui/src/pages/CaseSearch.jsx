@@ -978,6 +978,19 @@ const tdMono = { ...td, fontFamily: 'monospace', fontSize: '12px', color: 'var(-
 /* ── Case reading pane ─────────────────────────────────────── */
 function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
   const url = austliiUrl(c.ref || c.citation);
+  const [citeCounts, setCiteCounts] = useState(null);
+
+  useEffect(() => {
+    const citation = c.ref || c.citation;
+    if (!citation) return;
+    setCiteCounts(null);
+    api.caseAuthority(citation)
+      .then(r => {
+        const d = r.result ?? r;
+        setCiteCounts({ cites: (d.cites ?? []).length, citedBy: d.cited_by_count ?? 0 });
+      })
+      .catch(() => {});
+  }, [c.ref, c.citation]);
 
   return (
     <div style={{ flex: 1, background: 'var(--pane-bg)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -996,6 +1009,11 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
               {c.date && <span>{c.date.slice(0, 10)}</span>}
               {url && <a href={url} target="_blank" rel="noopener" style={{ fontSize: '11px', color: 'var(--accent)' }}>AustLII ↗</a>}
             </div>
+            {citeCounts !== null && (
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', letterSpacing: '0.03em' }}>
+                Cites: {citeCounts.cites} · Cited by: {citeCounts.citedBy}
+              </div>
+            )}
           </div>
           <button onClick={onClose} style={{ fontSize: '18px', color: 'var(--pane-dim)', background: 'transparent', padding: '0 4px', lineHeight: 1, flexShrink: 0, marginLeft: '16px' }}>×</button>
         </div>

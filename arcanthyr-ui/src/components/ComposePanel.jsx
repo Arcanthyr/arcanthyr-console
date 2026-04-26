@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import Nav from '../components/Nav';
 import { api } from '../api';
 
 // ── localStorage helpers ──────────────────────────────────────
-const CONTACTS_KEY  = 'arcanthyr_contacts';
-const HISTORY_KEY   = 'arcanthyr_messages';
+const CONTACTS_KEY = 'arcanthyr_contacts';
+const HISTORY_KEY  = 'arcanthyr_messages';
 
-const loadLS  = (key, def) => { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } };
-const saveLS  = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+const loadLS = (key, def) => { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } };
+const saveLS = (key, val) => localStorage.setItem(key, JSON.stringify(val));
 
 // ── Shared field style ────────────────────────────────────────
 const fieldStyle = {
@@ -30,8 +29,8 @@ const label = (text) => (
   </div>
 );
 
-// ── Main component ────────────────────────────────────────────
-export default function Compose() {
+// ── Main panel ────────────────────────────────────────────────
+export default function ComposePanel() {
   const [tab, setTab]           = useState('compose'); // 'compose' | 'contacts' | 'history'
   const [to, setTo]             = useState('');
   const [subject, setSubject]   = useState('');
@@ -60,7 +59,6 @@ export default function Compose() {
     };
 
     try {
-      // Uses the existing /api/legal/share Worker route (Resend)
       await api.share({ to: entry.to, subject: entry.subject, researchSummary: entry.body, note: '' });
       entry.status = 'sent';
       setStatus({ ok: true, msg: 'Dispatched via Resend.' });
@@ -77,51 +75,40 @@ export default function Compose() {
   };
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100vh',
-      background: 'var(--bg-page)', fontFamily: "'Libre Baskerville', serif",
-    }}>
-      <Nav />
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'var(--bg-page)', fontFamily: "'Libre Baskerville', serif" }}>
 
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+      {/* Tab bar */}
+      <div style={{
+        display: 'flex', borderBottom: '1px solid var(--border)',
+        background: 'var(--bg-topbar)', flexShrink: 0,
+      }}>
+        {[
+          { id: 'compose',  label: 'Compose' },
+          { id: 'contacts', label: 'Contacts' },
+          { id: 'history',  label: `History${history.length ? ` (${history.length})` : ''}` },
+        ].map(t => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            style={{
+              padding: '13px 22px', fontSize: '12px',
+              background: 'transparent',
+              color: tab === t.id ? 'var(--accent)' : 'var(--text-secondary)',
+              borderBottom: tab === t.id ? '2px solid var(--accent)' : '2px solid transparent',
+              letterSpacing: '0.06em',
+              transition: 'color 0.15s',
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-        {/* ── Right panel ── */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
-          {/* Tab bar */}
-          <div style={{
-            display: 'flex', borderBottom: '1px solid var(--border)',
-            background: 'var(--bg-topbar)', flexShrink: 0,
-          }}>
-            {[
-              { id: 'compose',  label: 'Compose' },
-              { id: 'contacts', label: 'Contacts' },
-              { id: 'history',  label: `History${history.length ? ` (${history.length})` : ''}` },
-            ].map(t => (
-              <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                style={{
-                  padding: '13px 22px', fontSize: '12px',
-                  background: 'transparent',
-                  color: tab === t.id ? 'var(--accent)' : 'var(--text-secondary)',
-                  borderBottom: tab === t.id ? '2px solid var(--accent)' : '2px solid transparent',
-                  letterSpacing: '0.06em',
-                  transition: 'color 0.15s',
-                }}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Tab content */}
-          <div style={{ flex: 1, overflow: 'auto' }}>
-            {tab === 'compose'  && <ComposeTab to={to} setTo={setTo} subject={subject} setSubject={setSubject} body={body} setBody={setBody} sending={sending} status={status} onSend={handleSend} contacts={contacts} />}
-            {tab === 'contacts' && <ContactsTab contacts={contacts} setContacts={setContacts} onSelect={email => { setTo(email); setTab('compose'); }} />}
-            {tab === 'history'  && <HistoryTab history={history} setHistory={setHistory} />}
-          </div>
-        </div>
+      {/* Tab content */}
+      <div style={{ flex: 1, overflow: 'auto' }}>
+        {tab === 'compose'  && <ComposeTab to={to} setTo={setTo} subject={subject} setSubject={setSubject} body={body} setBody={setBody} sending={sending} status={status} onSend={handleSend} contacts={contacts} />}
+        {tab === 'contacts' && <ContactsTab contacts={contacts} setContacts={setContacts} onSelect={email => { setTo(email); setTab('compose'); }} />}
+        {tab === 'history'  && <HistoryTab history={history} setHistory={setHistory} />}
       </div>
     </div>
   );
@@ -322,7 +309,6 @@ function HistoryTab({ history, setHistory }) {
               transition: 'background 0.15s',
             }}
           >
-            {/* Status dot */}
             <span style={{ fontSize: '10px', color: STATUS_COLORS[m.status] || 'var(--text-muted)', flexShrink: 0 }}>●</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

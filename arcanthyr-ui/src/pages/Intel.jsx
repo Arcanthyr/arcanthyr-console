@@ -14,7 +14,6 @@ export default function Intel() {
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState([]);
   const [answer, setAnswer] = useState('');
-  const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('ALL');
   const [showShare, setShowShare] = useState(false);
@@ -45,7 +44,6 @@ export default function Intel() {
     setError('');
     setResults([]);
     setAnswer('');
-    setSources([]);
     setSelected(null);
     setQueryId(null);
     try {
@@ -55,7 +53,6 @@ export default function Intel() {
       const raw = r.results || r.sources || [];
       setAnswer(ans);
       setResults(raw);
-      setSources(r.sources || []);
       const qid = r.query_id || null;
       setQueryId(qid);
       if (qid) {
@@ -78,7 +75,6 @@ export default function Intel() {
     setQuery(item.query_text);
     setAnswer(item.answer_text || '');
     setResults([]);
-    setSources([]);
     setQueryId(item.id);
     setSelected(null);
     setError('');

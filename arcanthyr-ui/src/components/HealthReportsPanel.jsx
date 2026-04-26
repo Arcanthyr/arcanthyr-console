@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import Nav from '../components/Nav';
+import { useState } from 'react';
 
 const BASE = 'https://arcanthyr.com';
 
-export default function HealthReports() {
+export default function HealthReportsPanel() {
   const [nexusKey, setNexusKey] = useState('');
   const [reports, setReports] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -44,11 +43,10 @@ export default function HealthReports() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-shell)' }}>
-      <Nav />
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', background: 'var(--bg-shell)' }}>
 
       {/* Auth bar */}
-      <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--bg-page)', display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <div style={{ padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--bg-page)', display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
         <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Admin key:</span>
         <input
           type="password"
