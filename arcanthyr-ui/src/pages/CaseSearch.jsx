@@ -6,10 +6,10 @@ import StareDecisisSection from '../components/StareDecisisSection';
 const BASE = 'https://arcanthyr.com';
 
 const COURT_COLORS = {
-  cca:         { color: '#4A9EFF', bg: '#1a3a5c' },
-  supreme:     { color: '#4A9EFF', bg: '#1a3a5c' },
-  magistrates: { color: '#4A9EFF', bg: '#1a3a5c' },
-  fullcourt:   { color: '#4A9EFF', bg: '#1a3a5c' },
+  cca:         { color: '#C8CDD2', bg: '#1e2124' },
+  supreme:     { color: '#C8CDD2', bg: '#1e2124' },
+  magistrates: { color: '#C8CDD2', bg: '#1e2124' },
+  fullcourt:   { color: '#C8CDD2', bg: '#1e2124' },
   HCA:         { color: '#E84A4A', bg: '#2a1a1a' },
 };
 
@@ -29,7 +29,7 @@ function statusDot(row) {
   if (row.enrichment_error) return <span title={row.enrichment_error} style={{ color: 'var(--red)', fontSize: '11px' }}>● Error</span>;
   if (!row.enriched) return <span style={{ color: 'var(--accent)', fontSize: '11px', animation: 'pulse 1.5s infinite' }}>● Processing</span>;
   if (row.chunks_embedded < row.chunk_count) return <span style={{ color: 'var(--accent)', fontSize: '11px' }}>● Embedding</span>;
-  return <span style={{ color: 'var(--green)', fontSize: '11px' }}>● Indexed</span>;
+  return <span style={{ color: '#4A9EFF', fontSize: '11px' }}>● Indexed</span>;
 }
 
 function austliiUrl(citation) {
