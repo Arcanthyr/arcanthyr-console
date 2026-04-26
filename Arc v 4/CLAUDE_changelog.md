@@ -1,8 +1,16 @@
-# CLAUDE Changelog — Sessions 21–103
+# CLAUDE Changelog — Sessions 21–104
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 104) — 26 April 2026
+
+- **Worker.js → worker.js rename — permanent fix** — two-step `git mv` via temp name (Windows case-insensitive FS requires it); wrangler.toml `main` was already lowercase; grep confirmed zero other capital-W references; deployed 721c9f4a; SESSION RULES and KNOWN ISSUES capital-W entries retired
+- **/research direct-nav 404 — fixed** — three deploys to land: `env.ASSETS.fetch(request)` failed (no binding declared); `binding = "ASSETS"` added to wrangler.toml `[assets]` but `not_found_handling` applies to platform serving not `.fetch()` API; final fix: `env.ASSETS.fetch(new Request(new URL('/index.html', request.url)))` — explicit `/index.html` request bypasses not_found_handling entirely; deployed 375e4585
+- **Phase 2 architectural restructure — complete** — Research→INTEL (`/intel`), Library→CASE SEARCH (`/case-search`); Legislation and Corpus Admin added as top-level tabs; Nav: INTEL/CASE SEARCH/LEGISLATION/CORPUS ADMIN; Landing navigate calls updated; Intel.jsx and CaseSearch.jsx from renamed copies; Legislation.jsx stub; CorpusAdmin.jsx shell with COMPOSE/CORPUS/SECONDARY SOURCES/FEEDBACK sub-tabs; Globe.jsx deleted; three/three-globe/@react-three/drei/@react-three/fiber/cobe removed from package.json; state filter scaffold on CASE SEARCH (TAS default, local state only); deployed 57e1beb6; commit 33b6ce9
+- **CC compression guidance — documented** — same-instance compress preferred for sequential task chains with shared state; fresh CC instance appropriate for genuinely independent tasks; Claude.ai session restart recommended proactively when window length affects quality; added to CLAUDE_init.md
+- **components/ui/ subdirectory — documented** — Globe.jsx actual path was `components/ui/Globe.jsx` not `components/Globe.jsx`; `components/ui/` not previously documented anywhere; added to CLAUDE_arch.md; rule: always grep for actual component path, never assume flat layout
 
 ## CHANGES THIS SESSION (session 103) — 25 April 2026
 

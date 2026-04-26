@@ -414,6 +414,7 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 | api.js /api/legal/ response shape | `req()` for routes in the `/api/legal/` block returns `{ result: <payload> }` — consuming code must unwrap: `const { result } = await api.someRoute(...)` |
 | DLQ pending check | Canonical pending chunk query is now `done=0 AND dlq=0` — `done=0` alone includes dead-letter chunks. Update any admin query or requeue script accordingly. |
 | wrangler.toml binding syntax | Single-object bindings use `[binding_name]` (e.g. `[browser]`, `[ai]`); `[[binding_name]]` creates an array-of-tables and wrangler 4.75 rejects it — "should be an object but got [...]" |
+| `cases.court` filter pre-check | Before writing any filter that touches `cases.court`, run `SELECT court, COUNT(*) FROM cases GROUP BY court` via D1 MCP to confirm live values. Column stores `supreme` / `cca` / `fullcourt` / `magistrates` (D1 lowercase), not AustLII codes. 30-second check prevents zero-match filters. |
 
 ---
 

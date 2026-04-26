@@ -4188,3 +4188,10 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 - **Phase 4 visual chrome scope** — Task 4 (legislation title-case) required no hardcoded string changes; all legislation names already title-case in UI or outside scope; D1-sourced titles handled by CSS textTransform on the cell only. Ask → button in Intel.jsx left as design exception — arrow makes it a directional affordance, not a label.
 - **Logo asset filename** — new emblem asset placed in public/ as "this one" (with extension); all three /unnamed.jpg references updated. Asset filename preserved as provided.
 - **Session numbering failure mode documented** — CC's session-close writer bundled Phase 4 into session 105 block when context was compacted mid-session; it saw 2 existing blocks instead of 3 and appended to the most recent. Fix: added compaction check to END-OF-SESSION UPDATE PROCEDURE.
+
+### Session 107 decisions — 26 April 2026
+
+- **UI sub-tab reorganisation completed** — Secondary Sources moved from Case Search to Corpus Admin; Legislation sub-page transplanted to Legislation main page; Compose renamed EMAIL and moved to last position in Corpus Admin. Rationale: matches original session 106 brief; post-rebuild the moves were not executed.
+- **State filter: multi-select tab row retained (not dropdown)** — original brief specified selectable state tabs, not a dropdown; earlier session misread this as dropdown. TAS fallback on empty-result states is the correct behaviour for a TAS-only corpus.
+- **Court tag colours unified to white-on-dark for all four Tasmanian court levels** — HCA red retained as distinct. Reason: colour differentiation across court levels added visual noise without informational value in a single-jurisdiction corpus.
+- **Dead end: keying any filter or colour map on AustLII codes against `cases.court`** — D1 stores lowercase abbreviated values (`supreme`, `cca`, `fullcourt`, `magistrates`). Filters using `TASCCA`, `TASSC`, `TASMC` return zero matches. Do not retry without first running `SELECT court, COUNT(*) FROM cases GROUP BY court` to confirm stored values.

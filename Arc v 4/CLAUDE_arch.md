@@ -561,6 +561,8 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 
 **NOTE (session 43):** Correct AustLII court code for Magistrates Court is TASMC (not TAMagC). The scraper COURTS list has been corrected. The Worker's AUSTLII_COURTS map still uses TAMagC as the internal court label → TAMagC AustLII path — this may also need updating if the Worker's legacy daily sync is ever re-enabled.
 
+**CaseSearch.jsx vs StareDecisisSection.jsx — COURT_COLORS key mismatch** — CaseSearch keys its COURT_COLORS map on D1 lowercase values (`supreme`, `cca`, `fullcourt`, `magistrates`). StareDecisisSection keys its COURT_COLORS map on AustLII uppercase codes (`TASSC`, `TASCCA`, etc.). Both are correct for their data source. When modifying either, use the key scheme native to that component's data.
+
 ### backfill_case_chunk_names.py
 
 - Location: `arcanthyr-console\backfill_case_chunk_names.py` (local) · `/home/tom/backfill_case_chunk_names.py` (VPS)
@@ -768,6 +770,7 @@ Browse, re-read, and promote past queries without re-querying.
 - Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched, subject_matter`
 - `subject_matter TEXT` — added session 14 · values: criminal/civil/administrative/family/mixed/unknown · derived at merge step from most frequent chunk-level classification
 - `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete and merge runs
+- `court TEXT` — D1 lowercase abbreviated values: `supreme` (TASSC), `cca` (TASCCA), `fullcourt` (TASFC), `magistrates` (TASMC). These are NOT AustLII URL codes — do not filter using `TASSC`/`TASCCA`/`TASFC`/`TASMC`. AustLII codes appear in the citation string only.
 - `procedure_notes TEXT` — populated by sentencing second pass for criminal judgments · NULL for non-criminal or non-sentencing cases
 - `sentencing_status TEXT` — added session 57 · values: NULL (not yet processed) / 'success' (procedure_notes written) / 'failed' (isSentencingCase=true but extraction failed) / 'not_sentencing' (isSentencingCase=false) · use `WHERE sentencing_status='failed'` for precise retry targeting
 

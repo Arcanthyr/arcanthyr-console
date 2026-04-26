@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 26 April 2026 (end of session 106) · Supersedes all prior versions
+Updated: 26 April 2026 (end of session 107) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–103) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–104) — load conditionally
 
 ---
 
@@ -96,6 +96,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Body-level alias injection is a conditional lever, not a universal one** — Established experimentally session 76. Body-text prose injection shifts the embedding vector enough to win top-rank on queries whose wording overlaps the injected prose, but does not help queries that diverge lexically from the injected wording — even when the underlying concept is identical. Consequence: corpus-side aliasing work has a permanent ceiling imposed by query-side variation. Aliasing by body edit remains viable for closing specific high-value query pairs only if user phrasing can be predicted; query expansion (deployed session 77) is the architectural fix for open-ended recall. Do not attempt further corpus-side aliasing injection as a substitute for the query expansion path.
 - **Parallel CC workflow — preferred pattern** — for tasks with independent sub-tasks and no shared state risk, direct multiple CC instances concurrently. Tom and Claude.ai oversee and coordinate, CC instances implement in parallel. Flag suitable tasks for parallelisation at session planning stage.
 - **MCP D1 PRAGMA table_info truncation** — session 95-post, the Cloudflare Developer Platform MCP d1_database_query tool returned cid 0–17 on PRAGMA table_info(query_log), silently omitting cid 18+. This masked a pre-existing `sufficient` column at cid 18 (origin unrecovered from Claude.ai conversation history; added in an unlogged Cowork or CC session between Phase 4 word-search deploy ~20 April and session 95 on 24 April; column had zero non-null values corpus-wide so no operational impact). Cause suspected: MCP result-row cap on wide tables. Workaround: for schema-existence checks on any table with >~15 columns, use `SELECT <col> FROM <table> LIMIT 0` — returns "no such column" if absent, empty success if present, no row-cap risk. Reserve PRAGMA for narrow tables or when you can verify the output includes the highest expected cid.
+- **`cases.court` stores D1 lowercase abbreviations, not AustLII codes** — values are `supreme` / `cca` / `fullcourt` / `magistrates`. AustLII codes (`TASSC`, `TASCCA`, `TASFC`, `TASMC`) appear in the citation string only. Any filter, colour map, or query keyed on AustLII codes will return zero matches. Before writing any filter touching `cases.court`, run `SELECT court, COUNT(*) FROM cases GROUP BY court` via D1 MCP to confirm live values.
+- **Dual `COURT_COLORS` maps with different key schemes** — `CaseSearch.jsx` keys on D1 lowercase values (`supreme`, `cca`, `fullcourt`, `magistrates`); `StareDecisisSection.jsx` keys on AustLII uppercase codes (`TASSC`, `TASCCA`, etc.). These are intentionally different schemas — do not unify without checking both components. If adding a new court colour, update both maps with the correct key for each file.
 
 ---
 
@@ -223,14 +225,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 104) — 26 April 2026
-
-- **Worker.js → worker.js rename — permanent fix** — two-step `git mv` via temp name (Windows case-insensitive FS requires it); wrangler.toml `main` was already lowercase; grep confirmed zero other capital-W references; deployed 721c9f4a; SESSION RULES and KNOWN ISSUES capital-W entries retired
-- **/research direct-nav 404 — fixed** — three deploys to land: `env.ASSETS.fetch(request)` failed (no binding declared); `binding = "ASSETS"` added to wrangler.toml `[assets]` but `not_found_handling` applies to platform serving not `.fetch()` API; final fix: `env.ASSETS.fetch(new Request(new URL('/index.html', request.url)))` — explicit `/index.html` request bypasses not_found_handling entirely; deployed 375e4585
-- **Phase 2 architectural restructure — complete** — Research→INTEL (`/intel`), Library→CASE SEARCH (`/case-search`); Legislation and Corpus Admin added as top-level tabs; Nav: INTEL/CASE SEARCH/LEGISLATION/CORPUS ADMIN; Landing navigate calls updated; Intel.jsx and CaseSearch.jsx from renamed copies; Legislation.jsx stub; CorpusAdmin.jsx shell with COMPOSE/CORPUS/SECONDARY SOURCES/FEEDBACK sub-tabs; Globe.jsx deleted; three/three-globe/@react-three/drei/@react-three/fiber/cobe removed from package.json; state filter scaffold on CASE SEARCH (TAS default, local state only); deployed 57e1beb6; commit 33b6ce9
-- **CC compression guidance — documented** — same-instance compress preferred for sequential task chains with shared state; fresh CC instance appropriate for genuinely independent tasks; Claude.ai session restart recommended proactively when window length affects quality; added to CLAUDE_init.md
-- **components/ui/ subdirectory — documented** — Globe.jsx actual path was `components/ui/Globe.jsx` not `components/Globe.jsx`; `components/ui/` not previously documented anywhere; added to CLAUDE_arch.md; rule: always grep for actual component path, never assume flat layout
-
 ## CHANGES THIS SESSION (session 105) — 26 April 2026
 
 - **Phase 3 — Insufficient button rebuild (ReadingPane.jsx)** — `doThumbsDown` refactored with optional `noteOverride` param; Submit button sends note from textarea, Skip button calls `doThumbsDown('')` explicitly passing empty string (bypasses whatever thumbsNote contains); visible error state added (`thumbsError` state displayed in popup on API failure); toggle button onClick resets both `thumbsNote` and `thumbsError` on open; Cancel also clears `thumbsError`; resolves silent error swallow
@@ -245,6 +239,16 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **ALL CAPS labels** — `textTransform: 'uppercase'` applied to all interactive labels across ReadingPane.jsx, Intel.jsx, CaseSearch.jsx; Ask → button left as design exception; hardcoded uppercase strings untouched
 - **Legislation title-case safety net** — `textTransform: 'capitalize'` added to LegislationTable Act column cell; no hardcoded legislation name strings required changing (all already title-case or outside scope)
 - **Session numbering corrected** — Phase 4 bullet incorrectly bundled into session 105 block by CC's session-close writer; extracted and placed in correct session 106 block
+
+## CHANGES THIS SESSION (session 107) — 26 April 2026
+
+- **Post-rebuild UI fixes (6)** — moved Secondary Sources sub-tab from Case Search into Corpus Admin placeholder; transplanted Legislation sub-page from Case Search into Legislation main page shell; added "This case cites N · Cited by N" tallies inline in case header without toggle; converted state filter to multi-select tabs (TAS default, TAS fallback on empty); converted year filter to court-scoped dropdown; added GET /api/legal/feedback route surfacing query_log WHERE sufficient=0
+- **Corpus Admin restored** — Upload sub-page rewired (had disappeared post-rebuild); Feedback sub-page built (query text, missing_note, model, answer, chunks — read-only); Compose renamed EMAIL and moved to far-right tab; tab order: CORPUS · SECONDARY SOURCES · UPLOAD · FEEDBACK · EMAIL
+- **INTEL page fixes** — SOURCE label added to third toggle row; CRIMINAL pre-selected as Domain default; Save to Nexus border removed to match Insufficient styling
+- **Legislation page enhancements** — View Online button wired to source_url captured at upload; row-click anywhere opens amendment drawer; Similarity % replaces "matching chunks" in word search results
+- **Court filter bug fixed** — TAS state tab was returning empty results because filter keyed on AustLII codes (`TASSC` etc.) while `cases.court` stores D1 lowercase abbreviations (`supreme`, `cca`, `fullcourt`, `magistrates`); STATE_COURTS.TAS remapped to D1 values; COURT_COLORS map corrected to match
+- **Court tag + badge styling** — all four court tags unified to white text on dark background; Indexed badge changed from green to blue; HCA red unchanged
+- **Schema gotcha documented** — `cases.court` value set added to CLAUDE_arch.md; dual COURT_COLORS map split (CaseSearch vs StareDecisis) added to KNOWN ISSUES
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
