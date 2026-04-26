@@ -304,13 +304,13 @@ function SaveFlagPanel({ query, answer, queryId }) {
             style={{
               display: 'flex', alignItems: 'center', gap: '5px',
               padding: '5px 12px', fontSize: '11px', borderRadius: '4px',
-              border: '1px solid var(--border)', background: 'transparent',
+              border: 'none', background: 'transparent',
               color: 'var(--text-secondary)', letterSpacing: '0.04em', textTransform: 'uppercase',
               cursor: saveOpen ? 'default' : 'pointer', opacity: saveOpen ? 0.6 : 1,
-              transition: 'color 0.2s, border-color 0.2s, background 0.2s',
+              transition: 'color 0.2s, background 0.2s',
             }}
-            onMouseEnter={e => { if (!saveOpen) { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--border-em)'; } }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border)'; }}
+            onMouseEnter={e => { if (!saveOpen) { e.currentTarget.style.background = 'var(--surface)'; e.currentTarget.style.color = 'var(--text-primary)'; } }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
           >
             ⊕ Save to Nexus
           </button>

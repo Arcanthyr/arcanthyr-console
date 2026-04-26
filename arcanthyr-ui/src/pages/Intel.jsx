@@ -19,7 +19,7 @@ export default function Intel() {
   const [showShare, setShowShare] = useState(false);
   const [error, setError] = useState('');
   const [model, setModel] = useState('workers');
-  const [subjectFilter, setSubjectFilter] = useState('all');
+  const [subjectFilter, setSubjectFilter] = useState('criminal');
   const [selected, setSelected] = useState(null);
   const [queryId, setQueryId] = useState(null);
   const [history, setHistory] = useState([]);
@@ -213,7 +213,8 @@ export default function Intel() {
           </div>
 
           {/* Source type filter chips */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '10px 16px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '10px 16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', marginRight: '2px' }}>Source</span>
             {FILTERS.map(f => (
               <button
                 key={f}

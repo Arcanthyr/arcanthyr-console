@@ -54,19 +54,21 @@ const STATE_COURTS = {
   TAS:  ['TASCCA', 'TASSC', 'TASMC'],
   HCA:  ['HCA'],
 };
-const TAS_COURTS = ['TASCCA', 'TASSC', 'TASMC'];
-
-function filterByState(rows, state) {
-  if (state === 'ALL') return rows;
-  const courts = STATE_COURTS[state];
-  if (!courts) return rows.filter(r => TAS_COURTS.includes(r.court));
-  return rows.filter(r => courts.includes(r.court));
+function filterByStates(rows, states) {
+  if (states.includes('ALL')) return rows;
+  const allowedCourts = new Set();
+  states.forEach(s => {
+    const courts = STATE_COURTS[s];
+    if (courts) courts.forEach(c => allowedCourts.add(c));
+  });
+  if (allowedCourts.size === 0) return rows;
+  return rows.filter(r => allowedCourts.has(r.court));
 }
 
 const STATE_OPTIONS = ['ALL', 'TAS', 'QLD', 'WA', 'HCA', 'SA', 'NSW', 'VIC', 'NT'];
 
 export default function CaseSearch() {
-  const [selectedState, setSelectedState] = useState('TAS');
+  const [selectedStates, setSelectedStates] = useState(['TAS']);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -134,11 +136,28 @@ export default function CaseSearch() {
     setSelectedTruncation(null);
   }
 
+  function toggleState(s) {
+    if (s === 'ALL') {
+      setSelectedStates(['ALL']);
+      setSelectedCase(null);
+      return;
+    }
+    setSelectedStates(prev => {
+      const withoutAll = prev.filter(x => x !== 'ALL');
+      if (withoutAll.includes(s)) {
+        const next = withoutAll.filter(x => x !== s);
+        return next.length === 0 ? ['TAS'] : next;
+      }
+      return [...withoutAll, s];
+    });
+    setSelectedCase(null);
+  }
+
   /* State-filtered rows, with TAS fallback if selection yields nothing */
   const allCases = data?.cases || [];
-  const stateFiltered = filterByState(allCases, selectedState);
-  const caseRows = stateFiltered.length === 0 && selectedState !== 'ALL'
-    ? filterByState(allCases, 'TAS')
+  const stateFiltered = filterByStates(allCases, selectedStates);
+  const caseRows = stateFiltered.length === 0 && !selectedStates.includes('ALL')
+    ? filterByStates(allCases, ['TAS'])
     : stateFiltered;
 
   return (
@@ -146,20 +165,24 @@ export default function CaseSearch() {
       <Nav />
 
       {/* Filter bar */}
-      <div style={{ display: 'flex', gap: '12px', padding: '8px 16px', background: 'var(--bg-page)', borderBottom: '1px solid var(--border)', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>State</span>
-          <select
-            value={selectedState}
-            onChange={e => { setSelectedState(e.target.value); setSelectedCase(null); }}
-            style={{
-              padding: '4px 8px', fontSize: '12px', background: 'var(--surface)',
-              border: '1px solid var(--border)', borderRadius: '4px',
-              color: 'var(--text-primary)', cursor: 'pointer',
-            }}
-          >
-            {STATE_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
+      <div style={{ display: 'flex', gap: '8px', padding: '8px 16px', background: 'var(--bg-page)', borderBottom: '1px solid var(--border)', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', marginRight: '4px' }}>State</span>
+          {STATE_OPTIONS.map(s => (
+            <button
+              key={s}
+              onClick={() => toggleState(s)}
+              style={{
+                padding: '3px 10px', fontSize: '11px', borderRadius: '12px', cursor: 'pointer',
+                textTransform: 'uppercase',
+                background: selectedStates.includes(s) ? 'rgba(74,158,255,0.15)' : 'transparent',
+                border: `1px solid ${selectedStates.includes(s) ? '#4A9EFF' : 'var(--border)'}`,
+                color: selectedStates.includes(s) ? '#4A9EFF' : 'var(--text-secondary)',
+              }}
+            >
+              {s}
+            </button>
+          ))}
         </div>
         <button onClick={load} style={{ padding: '4px 12px', fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', border: '1px solid var(--border)', borderRadius: '4px' }}>
           ↻ Refresh
@@ -348,7 +371,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
             )}
           </div>
           <Table
-            cols={['Citation', 'Title / Subject', 'Court', 'Chunks', 'Status', 'Actions']}
+            cols={['Citation', 'Title / Subject', 'Court', 'Status', 'Actions']}
             rows={filtered}
             renderRow={r => {
               const url = austliiUrl(r.ref || r.citation);
@@ -371,9 +394,6 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
                     {r.subject_matter && <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{r.subject_matter}</div>}
                   </td>
                   <td style={td}>{courtTag(r.court)}</td>
-                  <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)' }}>
-                    {r.chunks_embedded}/{r.chunk_count}
-                  </td>
                   <td style={td}>
                     {truncationMap[r.id] ? (
                       <button
@@ -561,9 +581,6 @@ function WordSearchResultsTable({ results, rows, onSelect, selectedId }) {
             <td style={{ ...td, fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.case_date?.slice(0, 4) || '—'}</td>
             <td style={{ ...td, maxWidth: '420px' }}>
               <div style={{ fontSize: '12px', color: 'var(--text-body)', lineHeight: 1.5 }}>{renderSnippet(r.snippet)}</div>
-              {r.match_count > 1 && (
-                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{r.match_count} matching chunks</div>
-              )}
             </td>
             <td style={{ ...td, whiteSpace: 'nowrap' }}>
               {jadeUrl && (

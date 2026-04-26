@@ -6,18 +6,18 @@ import SecondarySourcesPanel from '../components/SecondarySourcesPanel';
 import UploadPanel from '../components/UploadPanel';
 import FeedbackPanel from '../components/FeedbackPanel';
 
-const SUB_TABS = ['COMPOSE', 'CORPUS', 'SECONDARY SOURCES', 'UPLOAD', 'FEEDBACK'];
+const SUB_TABS = ['CORPUS', 'SECONDARY SOURCES', 'UPLOAD', 'FEEDBACK', 'EMAIL'];
 
 export default function CorpusAdmin() {
-  const [activeTab, setActiveTab] = useState('COMPOSE');
+  const [activeTab, setActiveTab] = useState('CORPUS');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-shell)' }}>
       <Nav />
       <SubTabBar activeTab={activeTab} onTabChange={setActiveTab} />
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {activeTab === 'COMPOSE' && <ComposePanel />}
         {activeTab === 'CORPUS' && <HealthReportsPanel />}
+        {activeTab === 'EMAIL' && <ComposePanel />}
         {activeTab === 'SECONDARY SOURCES' && <SecondarySourcesPanel />}
         {activeTab === 'UPLOAD' && <UploadPanel />}
         {activeTab === 'FEEDBACK' && <FeedbackPanel />}

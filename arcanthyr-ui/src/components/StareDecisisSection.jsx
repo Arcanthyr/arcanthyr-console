@@ -116,13 +116,15 @@ export default function StareDecisisSection({ citation, onSelectCase }) {
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 0', background: 'transparent', cursor: 'pointer',
-          color: 'var(--pane-text)',
+          padding: '10px 12px', margin: '0 -12px', background: 'transparent', cursor: 'pointer',
+          color: 'var(--pane-text)', borderRadius: '4px', transition: 'background 0.15s',
         }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(74,158,255,0.06)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{
-            fontSize: 11, letterSpacing: '0.08em', color: 'var(--pane-dim)',
+            fontSize: 12, letterSpacing: '0.08em', color: 'var(--text-secondary)',
             textTransform: 'uppercase', fontWeight: 600,
           }}>
             Case Authority
