@@ -6,10 +6,11 @@ import StareDecisisSection from '../components/StareDecisisSection';
 const BASE = 'https://arcanthyr.com';
 
 const COURT_COLORS = {
-  TASCCA: { color: '#4A9EFF', bg: '#1a3a5c' },
-  TASSC:  { color: '#C8CDD2', bg: '#1e2124' },
-  TASMC:  { color: '#6abf6a', bg: '#1a3a1a' },
-  HCA:    { color: '#E84A4A', bg: '#2a1a1a' },
+  cca:         { color: '#4A9EFF', bg: '#1a3a5c' },
+  supreme:     { color: '#C8CDD2', bg: '#1e2124' },
+  magistrates: { color: '#6abf6a', bg: '#1a3a1a' },
+  fullcourt:   { color: '#9B7FD4', bg: '#231a3a' },
+  HCA:         { color: '#E84A4A', bg: '#2a1a1a' },
 };
 
 function courtTag(court) {
@@ -48,10 +49,10 @@ function buildJadeUrl(citation) {
   return `https://jade.io/au/cases/${path}/${year}/${num}`;
 }
 
-/* State → court codes mapping. Unmapped states have no corpus cases yet → fallback to TAS. */
+/* State → D1 court values mapping. D1 stores courts as 'supreme'/'cca'/'fullcourt'/'magistrates'. */
 const STATE_COURTS = {
   ALL:  null,
-  TAS:  ['TASCCA', 'TASSC', 'TASMC'],
+  TAS:  ['supreme', 'cca', 'fullcourt', 'magistrates'],
   HCA:  ['HCA'],
 };
 function filterByStates(rows, states) {
@@ -61,7 +62,7 @@ function filterByStates(rows, states) {
     const courts = STATE_COURTS[s];
     if (courts) courts.forEach(c => allowedCourts.add(c));
   });
-  if (allowedCourts.size === 0) return rows;
+  if (allowedCourts.size === 0) return [];
   return rows.filter(r => allowedCourts.has(r.court));
 }
 
