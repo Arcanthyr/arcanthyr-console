@@ -7,9 +7,9 @@ const BASE = 'https://arcanthyr.com';
 
 const COURT_COLORS = {
   cca:         { color: '#4A9EFF', bg: '#1a3a5c' },
-  supreme:     { color: '#C8CDD2', bg: '#1e2124' },
-  magistrates: { color: '#6abf6a', bg: '#1a3a1a' },
-  fullcourt:   { color: '#9B7FD4', bg: '#231a3a' },
+  supreme:     { color: '#4A9EFF', bg: '#1a3a5c' },
+  magistrates: { color: '#4A9EFF', bg: '#1a3a5c' },
+  fullcourt:   { color: '#4A9EFF', bg: '#1a3a5c' },
   HCA:         { color: '#E84A4A', bg: '#2a1a1a' },
 };
 
