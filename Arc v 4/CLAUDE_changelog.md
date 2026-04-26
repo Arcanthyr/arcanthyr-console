@@ -1,8 +1,17 @@
-# CLAUDE Changelog — Sessions 21–100
+# CLAUDE Changelog — Sessions 21–101
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 101) — 25 April 2026
+
+- **fetchCaseContent BR path — deployed** — `@cloudflare/puppeteer` added to `Arc v 4/package.json`; `[browser]` binding + `nodejs_compat` flag added to `wrangler.toml`; viewdoc URLs now routed through puppeteer when `env.BROWSER` available. Worker `abdf0dd0`.
+- **fetchRecentAustLIICases structural fix — deployed** — sequential viewdoc probing loop replaced with sinosrch-based discovery (same pattern as `handleAustLIIWordSearch`, reuses `parseAustLIIResults`); returns citation+url+court with no html so `fetchCaseContent` BR path handles content extraction. Worker `a23b7601`.
+- **AustLII CF-edge block confirmed** — all CF-edge fetches to AustLII return HTTP 403 (sinosrch, viewdoc, listing pages); `search_by_citation` also dead (VPS TCP-blocked). CLAUDE.md "CF edge IPs not blocked" note was accurate at sessions 83–86, now stale. Quick Search word-search accepted loss.
+- **fetch-judgment restored via jade.io** — `handleFetchJudgment` translates AustLII viewdoc URLs to jade.io equivalent for fetch; `rawUrl` (AustLII) retained as D1 cache key (intentional decoupling). jade.io confirmed 200 from CF edge. Worker `a23b7601`, commit `91dd768`.
+- **Roadmap pruned** — model swap evaluation, RRF, legal-vocab dictionary, oracle top-20 study, Pass 4 authority_synthesis quota watch item, CONCEPTS contamination watch item all removed; real-use signals (query_log.sufficient=0) are the re-open gate.
+- **Cloudflare Browser Run (formerly Browser Rendering) — arch note updated** — `/markdown` endpoint documented for synchronous single-page fetches; single-page fetchCaseContent use case distinguished from crawl-at-scale.
 
 ## CHANGES THIS SESSION (session 100) — 24 April 2026
 

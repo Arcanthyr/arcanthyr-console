@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 25 April 2026 (end of session 103) · Supersedes all prior versions
+Updated: 26 April 2026 (end of session 104) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–100) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–101) — load conditionally
 
 ---
 
@@ -63,22 +63,20 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 
 ## OUTSTANDING PRIORITIES
 
-- **Phase 2 — architectural restructuring**: rename Research→INTEL, Library→CASE SEARCH, split Legislation as own top-level tab, create Corpus Admin shell with sub-tabs (Compose/Corpus/Secondary Sources/Feedback), kill Three.js globe in Compose, state filter scaffolding above CASE SEARCH (TAS default; QLD/WA/HCA/SA/NSW/VIC/NT/ALL).
 - **Phase 3 — per-tab logic**: rebuild Insufficient surface with commentary popup + visible success/error state (also fixes Bug A silent-error swallow in ReadingPane.jsx doThumbsDown); cites-tally and cited-by tally on case selection in CASE SEARCH; per-tab UI logic per redesign brief.
 - **Phase 4 — visual chrome**: logo swap (Image 3, white-background bare emblem, top-left, all sub-pages); "Arcanthyr"→"THE ARC" landing rename; ALL CAPS toggle/button/tab labels; title-case legislation names.
-- **/research direct-nav 404 fix**: pre-existing structural; Worker catch-all fires before Workers Assets SPA fallback. Worth fixing before Phase 2 ships, because Phase 2 multiplies affected surface from one route to four (INTEL/CASE SEARCH/LEGISLATION/CORPUS ADMIN).
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
 - **Insufficient button silent error swallow** — `doThumbsDown` in ReadingPane.jsx catches API errors with `console.error` only; no user-visible feedback on failure. Frontend wiring is structurally sound; will be resolved by Phase 3 rebuild with commentary popup + visible success/error state.
-- **/research direct-nav 404** — Worker catch-all `return new Response("Not found", { status: 404 })` fires before Workers Assets SPA fallback for direct deep-link navigation. Client-side nav fine. Affects shareable URLs to /research, /library, /upload, /compose. Pre-existing; multiplies to four routes after Phase 2 ships.
-- **Worker.js capital W — git staging** — git tracks the Worker file as `Worker.js` (capital W). On Windows (case-insensitive FS), `git add "Arc v 4/worker.js"` silently succeeds but stages nothing. Always use `git add "Arc v 4/Worker.js"`. SESSION RULES and CLAUDE_arch.md previously wrote lowercase `worker.js` — both now corrected.
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously · pending check for non-DLQ chunks is now done=0 AND dlq=0 — update any requeue tooling accordingly
+- **Double-Nav on CorpusAdmin sub-tabs** — Compose.jsx and HealthReports.jsx are standalone page components that own their own `<Nav />`. Rendering them as sub-tab content inside CorpusAdmin.jsx produces a double nav bar. Phase 3 will extract inner content from both pages before deletion. Old page files (Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx) remain in `pages/` as dead code — not routed; delete in Phase 3 once extraction is confirmed clean.
+- **`sources` dead variable in Intel.jsx** — `sources` state is set from the API response but never consumed in the render (pre-existing from Research.jsx). No functional impact. Clean up in Phase 3.
 - **Never reset enriched=0 on all cases** — this triggers full Pass 1 + chunk re-split + CHUNK re-processing for all cases · use `requeue-merge` (synthesis-only) or `requeue-chunks` (chunk-only) for targeted operations · similarly, done=0 queries must include dlq=0 to exclude dead-letter chunks
 - **fetch-case-url vs upload-case** — URL-based ingestion must use `POST /api/legal/fetch-case-url` · `upload-case` is for direct text upload only · posting {url} to upload-case crashes on citation.match(undefined)
 - **legislation.embedded is canonical embed gate** — `legislation_sections.embedding_model` is unreliable for Stage 1+2 sections (embedded before that column was being written by the poller). Do not use section-level column as backlog indicator. Correct query: `SELECT title, embedded FROM legislation` — Act-level flag is authoritative. The 1,731 `embedding_model IS NULL` count seen session 90 is noise, not backlog.
@@ -211,7 +209,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 | hex-ssh deploys | CC force-recreate via hex-ssh remote-ssh will always get ephemeral ports unless env is loaded — the docker-compose.yml fix (session 41) now handles this via env_file: but AGENT_GENERAL_PORT still needs to be in .env.config (added session 41) |
 | Upload case text limit | 500K char cap · `handleFetchCaseUrl` and `handleUploadCase` both cap at 500,000 chars · `processCaseUpload` line ~269 also 500K but is dead code (neither handler calls it) · truncation events logged to `truncation_log` D1 table · raised from 200K session 43, corrected session 52 |
 | worker.js syntax check | Do NOT use `node --check` — false-passes on truncated files (session 83, confirmed). After any CC edit to worker.js, use `npm run build` from `arcanthyr-ui/` (rolldown pass catches all JS parse errors) before `wrangler deploy`. Pre-commit hook runs `@babel/parser` on staged `.js`/`.jsx` files automatically (added session 84). |
-| Worker.js capital W | Git tracks as `Worker.js` — always `git add "Arc v 4/Worker.js"` (capital W). Lowercase silently stages nothing on Windows. |
 | str_replace on markdown table rows | Known silent no-op when row contains pipes, backticks, or parens-heavy content (confirmed session 103). The Edit tool returns success but nothing changes. Reliable fallback: Python script with line-index deletion and explicit `utf-8` stdout wrapper. ALWAYS grep the file after editing a table row to confirm the change landed. |
 | truncation_log table | D1 table tracking cases truncated on upload · columns: id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved · status values: flagged/confirmed/replaced · `GET /api/pipeline/truncation-status` (no auth) returns flagged entries · `POST /api/pipeline/truncation-resolve` (X-Nexus-Key) for confirm/delete actions |
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
@@ -228,15 +225,6 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - PowerShell / SSH — VPS runtime commands, long-running Python scripts
 
 ---
-
-## CHANGES THIS SESSION (session 101) — 25 April 2026
-
-- **fetchCaseContent BR path — deployed** — `@cloudflare/puppeteer` added to `Arc v 4/package.json`; `[browser]` binding + `nodejs_compat` flag added to `wrangler.toml`; viewdoc URLs now routed through puppeteer when `env.BROWSER` available. Worker `abdf0dd0`.
-- **fetchRecentAustLIICases structural fix — deployed** — sequential viewdoc probing loop replaced with sinosrch-based discovery (same pattern as `handleAustLIIWordSearch`, reuses `parseAustLIIResults`); returns citation+url+court with no html so `fetchCaseContent` BR path handles content extraction. Worker `a23b7601`.
-- **AustLII CF-edge block confirmed** — all CF-edge fetches to AustLII return HTTP 403 (sinosrch, viewdoc, listing pages); `search_by_citation` also dead (VPS TCP-blocked). CLAUDE.md "CF edge IPs not blocked" note was accurate at sessions 83–86, now stale. Quick Search word-search accepted loss.
-- **fetch-judgment restored via jade.io** — `handleFetchJudgment` translates AustLII viewdoc URLs to jade.io equivalent for fetch; `rawUrl` (AustLII) retained as D1 cache key (intentional decoupling). jade.io confirmed 200 from CF edge. Worker `a23b7601`, commit `91dd768`.
-- **Roadmap pruned** — model swap evaluation, RRF, legal-vocab dictionary, oracle top-20 study, Pass 4 authority_synthesis quota watch item, CONCEPTS contamination watch item all removed; real-use signals (query_log.sufficient=0) are the re-open gate.
-- **Cloudflare Browser Run (formerly Browser Rendering) — arch note updated** — `/markdown` endpoint documented for synchronous single-page fetches; single-page fetchCaseContent use case distinguished from crawl-at-scale.
 
 ## CHANGES THIS SESSION (session 102) — 25 April 2026
 
@@ -258,6 +246,14 @@ Real-use failure captured via thumbs-down button on Research page answer view (w
 - **Discovery → verification → execution cadence held** — initial CC discovery missed VanishingInput as a live import in Landing.jsx; second-pass verification grep before each frontend deletion caught it before action. V1/V2/V3 verification gates also caught austlii_cache as the active judgment cache (kept) and getSyncProgress as orphaned alongside legal_principles (added to drop list mid-execution).
 - **Commit-message fabrication caught at docs-commit gate** — Phase 1 commit body (5064c9b) claimed surfaces not in the actual diff (Stare Decisis tab removal, Productivity AI tab in Upload, ambient audio triggers in Research, 9 api.js methods vs actual 2). Post-mortem commit c063802 supersedes with diff-grounded text. New CLAUDE_init.md rule: commit message bodies AND CHANGES THIS SESSION blocks must be drafted from `git diff` evidence, not session memory or plan briefs.
 - **Phase 2/3/4 scope decided** — Phase 2 (architecture): rename Research→INTEL, Library→CASE SEARCH, split Legislation, create Corpus Admin shell (Compose/Corpus/Secondary Sources/Feedback), kill Three.js globe, state filter scaffold (TAS default). Phase 3 (per-tab logic): rebuild Insufficient with commentary popup + visible state; cites/cited-by tallies on case selection. Phase 4 (visual chrome): logo Image 3 top-left, "Arcanthyr"→"THE ARC", ALL CAPS, title-case legislation names. Logo Image 3 (white-background bare emblem) confirmed for site mark.
+
+## CHANGES THIS SESSION (session 104) — 26 April 2026
+
+- **Worker.js → worker.js rename — permanent fix** — two-step `git mv` via temp name (Windows case-insensitive FS requires it); wrangler.toml `main` was already lowercase; grep confirmed zero other capital-W references; deployed 721c9f4a; SESSION RULES and KNOWN ISSUES capital-W entries retired
+- **/research direct-nav 404 — fixed** — three deploys to land: `env.ASSETS.fetch(request)` failed (no binding declared); `binding = "ASSETS"` added to wrangler.toml `[assets]` but `not_found_handling` applies to platform serving not `.fetch()` API; final fix: `env.ASSETS.fetch(new Request(new URL('/index.html', request.url)))` — explicit `/index.html` request bypasses not_found_handling entirely; deployed 375e4585
+- **Phase 2 architectural restructure — complete** — Research→INTEL (`/intel`), Library→CASE SEARCH (`/case-search`); Legislation and Corpus Admin added as top-level tabs; Nav: INTEL/CASE SEARCH/LEGISLATION/CORPUS ADMIN; Landing navigate calls updated; Intel.jsx and CaseSearch.jsx from renamed copies; Legislation.jsx stub; CorpusAdmin.jsx shell with COMPOSE/CORPUS/SECONDARY SOURCES/FEEDBACK sub-tabs; Globe.jsx deleted; three/three-globe/@react-three/drei/@react-three/fiber/cobe removed from package.json; state filter scaffold on CASE SEARCH (TAS default, local state only); deployed 57e1beb6; commit 33b6ce9
+- **CC compression guidance — documented** — same-instance compress preferred for sequential task chains with shared state; fresh CC instance appropriate for genuinely independent tasks; Claude.ai session restart recommended proactively when window length affects quality; added to CLAUDE_init.md
+- **components/ui/ subdirectory — documented** — Globe.jsx actual path was `components/ui/Globe.jsx` not `components/Globe.jsx`; `components/ui/` not previously documented anywhere; added to CLAUDE_arch.md; rule: always grep for actual component path, never assume flat layout
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

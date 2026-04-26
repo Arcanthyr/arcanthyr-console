@@ -369,7 +369,7 @@ The inflation is cosmetic — logic is correct. But it makes code review noisy a
 
 ## Session 84 — Pre-commit hook (20 April 2026)
 
-Pre-commit hook lives at `arcanthyr-console/.git/hooks/pre-commit` (not tracked by git — `.git/` is excluded). If lost (fresh clone, OS reinstall), recreate manually: bash shebang, `git diff --cached -z --name-only --diff-filter=ACM | grep -zE '\.(js|jsx)$'` piped to `while IFS= read -r -d '' f` loop, runs `node -e` babel parse on each file, exits 1 on failure. `NODE_PATH` must point to `arcanthyr-ui/node_modules` (that is where `@babel/parser` is installed). Space-safe by design — required for `Arc v 4/Worker.js`.
+Pre-commit hook lives at `arcanthyr-console/.git/hooks/pre-commit` (not tracked by git — `.git/` is excluded). If lost (fresh clone, OS reinstall), recreate manually: bash shebang, `git diff --cached -z --name-only --diff-filter=ACM | grep -zE '\.(js|jsx)$'` piped to `while IFS= read -r -d '' f` loop, runs `node -e` babel parse on each file, exits 1 on failure. `NODE_PATH` must point to `arcanthyr-ui/node_modules` (that is where `@babel/parser` is installed). Space-safe by design — required for `Arc v 4/worker.js`.
 
 ### Embed backlog queries (session 90)
 
@@ -427,3 +427,22 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 **Python scripting on Windows / PowerShell (added session 103)**
 - Python scripts emitting non-cp1252 characters (em-dash, emoji, smart quotes) raise UnicodeEncodeError at print/write time on Windows default codepages. Always prepend `import sys, io; sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')` to any CC-invoked script handling those characters.
 - Inline `python3 -c "..."` mangles backtick characters via bash command substitution. When a script contains backticks, parentheses-heavy strings, or other shell-special characters, write to a temp file and invoke via `python3 path/to/file.py` instead.
+
+---
+
+## CC Instance Management (session 104)
+
+**CC instance management:**
+- Sequential task chains with shared state → compress and continue in the same CC instance. Fresh instances require full discovery context reconstruction in briefs — error-prone and token-heavy.
+- Fresh CC instance is appropriate for genuinely independent tasks with no shared state (e.g. a standalone bug fix unrelated to a larger task chain).
+- Claude.ai sessions: restart proactively when the conversation window is long enough to affect quality. Earlier context competes with working content for attention. The planning assistant (Claude.ai) will flag this — don't wait for quality degradation to be obvious.
+- Rule: if a task block depends on confirmed findings from a prior task in the same session, compress; don't start fresh.
+
+**Bash tool path format:**
+- The bash tool requires Unix-style absolute paths: `/c/Users/Hogan/...` not `C:\Users\Hogan\...`. Windows backslash paths fail silently with "unexpected EOF while looking for matching quote."
+
+**Large file renames (CC):**
+- `cp OldFile.jsx NewFile.jsx` then a single Edit to update the exported function name is far cheaper than rewriting with Write — avoids transcribing 1000+ lines verbatim.
+
+**Git staging with pre-existing unstaged changes:**
+- When `git status` shows pre-existing unstaged modifications on files unrelated to the current task, stage explicitly by file name (`git add "path/to/file"`) rather than `git add -A` to avoid polluting the commit.

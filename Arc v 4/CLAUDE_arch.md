@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 25 April 2026 (end of session 103). Upload every session alongside CLAUDE.md.*
+*Updated: 26 April 2026 (end of session 104). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -499,6 +499,10 @@ cd "../Arc v 4" && npx wrangler deploy
 | docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
 | run_scraper.bat | `C:\Users\Hogan\run_scraper.bat` — LOCAL path required |
 | `Dockerfile.agent` | VPS | agent-general image definition — python-docx, qdrant-client, pypdf etc. baked in |
+
+**arcanthyr-ui/src/components/ui/** — sub-directory for lower-level UI primitives (VanishingInput.jsx; Globe.jsx lived here before deletion session 104). Component paths must be discovered by grep — do not assume flat `components/` layout.
+
+**wrangler.toml `[assets]` binding** — `binding = "ASSETS"` required in the `[assets]` stanza for `env.ASSETS.fetch()` to work in the Worker catch-all SPA handler. Added session 104 for `/index.html` direct-nav fix. Without it, `env.ASSETS` is undefined and the catch-all throws.
 
 **server.py is volume-mounted** (`./agent-general/src:/app/src` in docker-compose.yml) — NOT baked into image. Changes only require: edit locally → SCP to VPS → `docker compose up -d --force-recreate agent-general` → health check. No rebuild unless Dockerfile changes.
 
