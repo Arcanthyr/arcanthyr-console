@@ -1,7 +1,7 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 26 April 2026 (end of session 105) · Supersedes all prior versions
+Updated: 26 April 2026 (end of session 106) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 Changelog archive → CLAUDE_changelog.md (sessions 21–103) — load conditionally
 
@@ -203,6 +203,9 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | Upload case text limit | 500K char cap · `handleFetchCaseUrl` and `handleUploadCase` both cap at 500,000 chars · `processCaseUpload` line ~269 also 500K but is dead code (neither handler calls it) · truncation events logged to `truncation_log` D1 table · raised from 200K session 43, corrected session 52 |
 | worker.js syntax check | Do NOT use `node --check` — false-passes on truncated files (session 83, confirmed). After any CC edit to worker.js, use `npm run build` from `arcanthyr-ui/` (rolldown pass catches all JS parse errors) before `wrangler deploy`. Pre-commit hook runs `@babel/parser` on staged `.js`/`.jsx` files automatically (added session 84). |
 | str_replace on markdown table rows | Known silent no-op when row contains pipes, backticks, or parens-heavy content (confirmed session 103). The Edit tool returns success but nothing changes. Reliable fallback: Python script with line-index deletion and explicit `utf-8` stdout wrapper. ALWAYS grep the file after editing a table row to confirm the change landed. |
+| Null byte in CLAUDE.md — generalised str_replace failure root cause | The file contains a null byte that causes silent no-ops on any multi-line block containing em-dashes, arrows, backticks, or pipes — not just table rows. When any str_replace silently fails on CLAUDE.md, the null byte is the likely cause. Fix: use Python line-index deletion (read file → identify line numbers → rewrite without target lines) rather than str_replace for affected blocks. |
+| Multi-line block deletion (CHANGES THIS SESSION blocks etc.) | Python line-index deletion is the reliable method: read file, identify start/end line numbers of the block, rewrite file omitting those lines. The str_replace approach fails on these blocks for the same null-byte reason as table rows. |
+| `replace_all: true` on Edit tool | When the same CSS change applies to multiple identical inline style objects in one file, use `replace_all: true` rather than sequential single-target edits. Faster and safer than a search-and-replace loop. |
 | truncation_log table | D1 table tracking cases truncated on upload · columns: id, citation, original_length, truncated_to, source, status, date_truncated, date_resolved · status values: flagged/confirmed/replaced · `GET /api/pipeline/truncation-status` (no auth) returns flagged entries · `POST /api/pipeline/truncation-resolve` (X-Nexus-Key) for confirm/delete actions |
 | docker compose port interpolation | ${VAR} in ports mapping is interpolated at parse time from .env only — env_file: does NOT apply · hardcode invariant ports directly in docker-compose.yml |
 | Session health check | At session start, if `$TEMP\arcanthyr_health.txt` exists, read it and summarise corpus state (total cases, enrichment queue depth, embedding backlog) before doing anything else |
@@ -234,7 +237,14 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Phase 3 — Citation tallies in CASE SEARCH (CaseSearch.jsx)** — `CaseReadingPane` now calls `api.caseAuthority(citation)` eagerly in a `useEffect` on case selection; renders "Cites: N · Cited by: N" in the case header below court/date row; two-call approach: tally eager (this useEffect), StareDecisisSection detail list lazy on expand — no interface change to StareDecisisSection required
 - **Phase 3 — Double-Nav fix + dead page cleanup** — extracted inner content of Compose.jsx and HealthReports.jsx into `components/ComposePanel.jsx` and `components/HealthReportsPanel.jsx` (no Nav wrapper, `flex: 1` outer div); rewrote CorpusAdmin.jsx to single unified layout: one Nav, one SubTabBar, panel dispatch via conditional render; deleted five dead page files: Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx from `pages/`; grep confirmed zero remaining imports before deletion
 - **Phase 3 — Dead sources variable removed (Intel.jsx)** — removed `sources` state (declared, set from API, never consumed in render); cleaned four locations: state declaration, reset in handleQueryWith, set in try block, reset in loadHistoryItem
-- **Phase 4 — Visual chrome (complete)** — logo swap: all three `/unnamed.jpg` references updated to `/this one.png` (Nav.jsx 56px, Landing.jsx 320px sigil, ReadingPane.jsx 48px empty state); wordmark "Arcanthyr" → "THE ARC" in Landing.jsx (visible text only; ShareModal email subject unchanged); `textTransform: 'uppercase'` added via inline CSS (no hardcoded strings) to all interactive toggle/button/tab labels across ReadingPane.jsx (TABS, Share, Save to Nexus, Insufficient, Submit, Skip, Cancel, Confirm), Intel.jsx (Sol/V'ger model toggles), CaseSearch.jsx (mode toggle buttons, Search submits, Refresh, Approve, Confirm Index, Delete Case, Load more, all Delete action buttons) — Ask → design exception; `textTransform: 'capitalize'` safety-net on LegislationTable Act column link; deployed Worker 879841b5
+
+## CHANGES THIS SESSION (session 106) — 26 April 2026
+
+- **Logo swap** — Nav.jsx, Landing.jsx, and ReadingPane.jsx all updated to reference new `public/“this one”` emblem asset; all three prior `/unnamed.jpg` references replaced including the 48px empty-state reference in ReadingPane.jsx
+- **“THE ARC” landing rename** — Landing.jsx:81 wordmark string changed from `Arcanthyr` to `THE ARC`; existing `textTransform: uppercase` wrapper makes it render correctly; ShareModal email subject unchanged
+- **ALL CAPS labels** — `textTransform: 'uppercase'` applied to all interactive labels across ReadingPane.jsx, Intel.jsx, CaseSearch.jsx; Ask → button left as design exception; hardcoded uppercase strings untouched
+- **Legislation title-case safety net** — `textTransform: 'capitalize'` added to LegislationTable Act column cell; no hardcoded legislation name strings required changing (all already title-case or outside scope)
+- **Session numbering corrected** — Phase 4 bullet incorrectly bundled into session 105 block by CC's session-close writer; extracted and placed in correct session 106 block
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
@@ -267,6 +277,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 **4. CHANGES THIS SESSION — write the new block as normal**
 - Add the session block with what + why for each change
 - Insert immediately BEFORE the `## END-OF-SESSION UPDATE PROCEDURE` heading, not at end of file
+- **Context compaction check** — if context was compacted mid-session, verify the most recent block's session number before appending. The block count heuristic ("will contain 4 blocks — always") assumes no compaction. If the most recent block's session number is not the previous session, add a new block rather than appending to the existing one.
 
 **5. Changelog migration — UNCONDITIONAL after every session close**
 - After Step 4, CLAUDE.md will contain 4 `## CHANGES THIS SESSION` blocks. Always.
