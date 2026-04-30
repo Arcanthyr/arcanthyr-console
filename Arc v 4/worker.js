@@ -2334,7 +2334,6 @@ async function handleFetchCasesForXref(request, env, corsHeaders) {
       WHERE authorities_extracted IS NOT NULL
         AND authorities_extracted != '[]'
         AND authorities_extracted != ''
-        AND subject_matter IN ('criminal', 'mixed')
       ORDER BY citation
       LIMIT ? OFFSET ?
     `).bind(limit, offset).all();

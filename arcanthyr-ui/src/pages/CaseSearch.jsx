@@ -147,19 +147,15 @@ export default function CaseSearch() {
       const withoutAll = prev.filter(x => x !== 'ALL');
       if (withoutAll.includes(s)) {
         const next = withoutAll.filter(x => x !== s);
-        return next.length === 0 ? ['TAS'] : next;
+        return next.length === 0 ? ['ALL'] : next;
       }
       return [...withoutAll, s];
     });
     setSelectedCase(null);
   }
 
-  /* State-filtered rows, with TAS fallback if selection yields nothing */
   const allCases = data?.cases || [];
-  const stateFiltered = filterByStates(allCases, selectedStates);
-  const caseRows = stateFiltered.length === 0 && !selectedStates.includes('ALL')
-    ? filterByStates(allCases, ['TAS'])
-    : stateFiltered;
+  const caseRows = filterByStates(allCases, selectedStates);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-shell)' }}>
@@ -194,7 +190,12 @@ export default function CaseSearch() {
         <div style={{ flex: selectedCase ? '0 0 480px' : '1', overflow: 'auto', padding: '24px', borderRight: selectedCase ? '1px solid var(--border)' : 'none' }}>
           {loading && <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Loading…</div>}
           {error && <div style={{ color: 'var(--red)', fontSize: '13px' }}>{error}</div>}
-          {data && (
+          {data && caseRows.length === 0 && !selectedStates.includes('ALL') && (
+            <div style={{ color: 'var(--text-secondary)', fontSize: '13px', padding: '8px 0', fontStyle: 'italic' }}>
+              There are no cases in the corpus for this jurisdiction at present.
+            </div>
+          )}
+          {data && (caseRows.length > 0 || selectedStates.includes('ALL')) && (
             <CasesTable
               rows={caseRows}
               onDelete={handleDelete}
@@ -733,6 +734,7 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
         })()}
         <StareDecisisSection
           citation={c.ref}
+          citesCount={citesImmediate}
           onSelectCase={(citation) => {
             const match = cases.find(x => x.ref === citation);
             if (match) onSelect(match);

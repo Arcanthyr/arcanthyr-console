@@ -1,8 +1,15 @@
-# CLAUDE Changelog — Sessions 21–104
+# CLAUDE Changelog — Sessions 21–105
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 105) — 26 April 2026
+
+- **Phase 3 — Insufficient button rebuild (ReadingPane.jsx)** — `doThumbsDown` refactored with optional `noteOverride` param; Submit button sends note from textarea, Skip button calls `doThumbsDown('')` explicitly passing empty string (bypasses whatever thumbsNote contains); visible error state added (`thumbsError` state displayed in popup on API failure); toggle button onClick resets both `thumbsNote` and `thumbsError` on open; Cancel also clears `thumbsError`; resolves silent error swallow
+- **Phase 3 — Citation tallies in CASE SEARCH (CaseSearch.jsx)** — `CaseReadingPane` now calls `api.caseAuthority(citation)` eagerly in a `useEffect` on case selection; renders "Cites: N · Cited by: N" in the case header below court/date row; two-call approach: tally eager (this useEffect), StareDecisisSection detail list lazy on expand — no interface change to StareDecisisSection required
+- **Phase 3 — Double-Nav fix + dead page cleanup** — extracted inner content of Compose.jsx and HealthReports.jsx into `components/ComposePanel.jsx` and `components/HealthReportsPanel.jsx` (no Nav wrapper, `flex: 1` outer div); rewrote CorpusAdmin.jsx to single unified layout: one Nav, one SubTabBar, panel dispatch via conditional render; deleted five dead page files: Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx from `pages/`; grep confirmed zero remaining imports before deletion
+- **Phase 3 — Dead sources variable removed (Intel.jsx)** — removed `sources` state (declared, set from API, never consumed in render); cleaned four locations: state declaration, reset in handleQueryWith, set in try block, reset in loadHistoryItem
 
 ## CHANGES THIS SESSION (session 104) — 26 April 2026
 

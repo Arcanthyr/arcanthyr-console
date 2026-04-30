@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 
 const links = [
-  { to: '/intel',        label: 'INTEL'        },
+  { to: '/intel',        label: 'AI ASSIST'    },
   { to: '/case-search',  label: 'CASE SEARCH'  },
   { to: '/legislation',  label: 'LEGISLATION'  },
   { to: '/corpus-admin', label: 'CORPUS ADMIN' },
@@ -14,7 +14,7 @@ export default function Nav() {
     <nav style={{
       display: 'flex',
       alignItems: 'center',
-      gap: '0',
+      gap: '6px',
       height: '72px',
       background: 'var(--bg-topbar)',
       borderBottom: '1px solid var(--border)',
@@ -35,7 +35,7 @@ export default function Nav() {
         }}
       >
         <img
-          src="/this one.png"
+          src="/thisone.png"
           alt=""
           style={{
             height: '56px',
@@ -56,13 +56,16 @@ export default function Nav() {
           style={({ isActive }) => ({
             fontSize: '12px',
             padding: '0 14px',
-            height: '56px',
+            height: '40px',
+            minWidth: '120px',
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'center',
             color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
-            borderBottom: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+            border: isActive ? '1px solid var(--accent)' : '1px solid var(--border-em)',
+            borderRadius: '3px',
             letterSpacing: '0.04em',
-            transition: 'color 0.15s, background 0.15s',
+            transition: 'color 0.15s, background 0.15s, border-color 0.15s',
           })}>
           {l.label}
         </NavLink>

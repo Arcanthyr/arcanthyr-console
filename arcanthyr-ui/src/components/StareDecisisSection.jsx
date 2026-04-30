@@ -87,7 +87,7 @@ const sectionLabel = {
   textTransform: 'uppercase', marginBottom: 8, fontWeight: 600,
 };
 
-export default function StareDecisisSection({ citation, onSelectCase }) {
+export default function StareDecisisSection({ citation, onSelectCase, citesCount = null }) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -144,6 +144,15 @@ export default function StareDecisisSection({ citation, onSelectCase }) {
               color: citedByCount > 0 ? 'var(--accent)' : 'var(--text-muted)',
             }}>
               Cited by {citedByCount}
+            </span>
+          )}
+          {citesCount !== null && (
+            <span style={{
+              padding: '1px 8px', borderRadius: '3px', fontSize: '11px', fontWeight: 600,
+              background: citesCount > 0 ? 'rgba(74,158,255,0.13)' : 'rgba(120,128,135,0.1)',
+              color: citesCount > 0 ? 'var(--accent)' : 'var(--text-muted)',
+            }}>
+              Cites {citesCount}
             </span>
           )}
         </div>

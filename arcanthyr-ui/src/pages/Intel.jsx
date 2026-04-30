@@ -15,10 +15,10 @@ export default function Intel() {
   const [results, setResults] = useState([]);
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState('ALL');
   const [showShare, setShowShare] = useState(false);
   const [error, setError] = useState('');
   const [model, setModel] = useState('workers');
+  const [filter, setFilter] = useState('ALL');
   const [subjectFilter, setSubjectFilter] = useState('criminal');
   const [selected, setSelected] = useState(null);
   const [queryId, setQueryId] = useState(null);
@@ -175,7 +175,7 @@ export default function Intel() {
 
           {/* Model toggle */}
           <div style={{ padding: '8px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Model</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', minWidth: '56px' }}>Model</span>
             {['claude', 'workers'].map(m => (
               <button
                 key={m}
@@ -195,7 +195,7 @@ export default function Intel() {
 
           {/* Domain filter chips */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px 16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', marginRight: '2px' }}>Domain</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', minWidth: '56px' }}>Domain</span>
             {DOMAIN_FILTERS.map(f => (
               <button
                 key={f}
@@ -213,8 +213,8 @@ export default function Intel() {
           </div>
 
           {/* Source type filter chips */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '10px 16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', marginRight: '2px' }}>Source</span>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px 16px', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', minWidth: '56px' }}>Source</span>
             {FILTERS.map(f => (
               <button
                 key={f}

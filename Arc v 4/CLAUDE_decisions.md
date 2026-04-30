@@ -4195,3 +4195,10 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 - **State filter: multi-select tab row retained (not dropdown)** — original brief specified selectable state tabs, not a dropdown; earlier session misread this as dropdown. TAS fallback on empty-result states is the correct behaviour for a TAS-only corpus.
 - **Court tag colours unified to white-on-dark for all four Tasmanian court levels** — HCA red retained as distinct. Reason: colour differentiation across court levels added visual noise without informational value in a single-jurisdiction corpus.
 - **Dead end: keying any filter or colour map on AustLII codes against `cases.court`** — D1 stores lowercase abbreviated values (`supreme`, `cca`, `fullcourt`, `magistrates`). Filters using `TASCCA`, `TASSC`, `TASMC` return zero matches. Do not retry without first running `SELECT court, COUNT(*) FROM cases GROUP BY court` to confirm stored values.
+
+### Session 108 decisions — 30 April 2026
+
+- State filter no-fallback: removed TAS substitution when a non-TAS state returns zero results. Rationale: state tabs are genuine filters, not suggestions — showing TAS cases when QLD is selected is actively misleading. Empty state with message is the correct UX.
+- xref_agent scope expanded to all subject matters: removed `subject_matter IN ('criminal', 'mixed')` filter from Worker.js handleFetchCasesForXref. Rationale: corpus now covers all subject matters; restricting authority indexing to criminal/mixed left 1,084 deep-enriched cases with no citation cross-reference data.
+- INTEL renamed AI ASSIST (label only, route /intel unchanged). Rationale: label better describes the page function to a general user; route stability preserves any bookmarks or direct links.
+- Dead end — SSH run_in_background output files unreliable for long-running backfill verification (early truncation due to buffering). D1 MCP COUNT(*) is the correct verification method for insert-based backfills. Do not retry log-file approach.

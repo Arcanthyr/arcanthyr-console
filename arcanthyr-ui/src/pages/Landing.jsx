@@ -20,7 +20,7 @@ export default function Landing() {
   return (
     <div style={{
       fontFamily: "'Libre Baskerville', serif",
-      background: '#0A0C0E',
+      background: '#000000',
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
@@ -29,17 +29,6 @@ export default function Landing() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-
-      {/* Subtle scrolling grid — uses grid-scroll keyframe from index.css */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundImage: 'linear-gradient(rgba(74,158,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(74,158,255,0.03) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
-        animation: 'grid-scroll 12s linear infinite',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
 
       {/* ── Main content ── */}
       <div style={{
@@ -54,7 +43,7 @@ export default function Landing() {
 
         {/* Sigil — 2× larger */}
         <motion.img
-          src="/this one.png"
+          src="/thisone.png"
           alt="The Arc"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 0.9, scale: 1 }}
@@ -142,10 +131,10 @@ export default function Landing() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.25, duration: 0.6 }}
-          style={{ display: 'flex', gap: '32px' }}
+          style={{ display: 'flex', gap: '6px' }}
         >
           {[
-            { label: 'Intel',        path: '/intel'        },
+            { label: 'AI Assist',    path: '/intel'        },
             { label: 'Case Search',  path: '/case-search'  },
             { label: 'Legislation',  path: '/legislation'  },
             { label: 'Corpus Admin', path: '/corpus-admin' },
@@ -154,16 +143,18 @@ export default function Landing() {
               key={path}
               onClick={() => navigate(path)}
               style={{
-                background: 'none', border: 'none',
+                minWidth: '120px', height: '40px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'transparent',
+                border: '1px solid #252A2E',
+                borderRadius: '3px',
                 fontFamily: "'Libre Baskerville', serif",
-                fontSize: '11px', fontWeight: 700,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: '#7A8087', cursor: 'pointer', padding: '8px 0',
-                borderBottom: '0.5px solid transparent',
-                transition: 'color 0.2s, border-color 0.2s',
+                fontSize: '12px', letterSpacing: '0.04em', textTransform: 'uppercase',
+                color: '#7A8087', cursor: 'pointer',
+                transition: 'color 0.15s, background 0.15s, border-color 0.15s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#E8E9EA'; e.currentTarget.style.borderBottomColor = '#4A9EFF'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#7A8087'; e.currentTarget.style.borderBottomColor = 'transparent'; }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#4A9EFF'; e.currentTarget.style.borderColor = '#4A9EFF'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#7A8087'; e.currentTarget.style.borderColor = '#252A2E'; e.currentTarget.style.background = 'transparent'; }}
             >
               {label}
             </button>

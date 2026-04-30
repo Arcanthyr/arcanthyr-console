@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 26 April 2026 (end of session 107) · Supersedes all prior versions
+Updated: 30 April 2026 (end of session 108) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–104) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–105) — load conditionally
 
 ---
 
@@ -32,8 +32,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | Insufficient feedback button | LIVE — ↓ Insufficient button in INTEL page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · popup with Submit/Skip buttons + visible error state on API failure (session 105) · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
 | Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
-| D1 case_citations | 6,959 rows |
-| D1 case_legislation_refs | 5,147 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
+| D1 case_citations | 10,575 rows · subject_matter filter removed session 108 — now indexes all deep_enriched=1 cases |
+| D1 case_legislation_refs | 5,356 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
 | Cloudflare Queue | drained |
 | Scraper | COMPLETE — full historical pass done 25 April 2026 (TASSC/TASCCA/TASFC/TASMC back to 2004) · running daily via Task Scheduler for forward-looking capture · INSERT OR IGNORE prevents duplicates |
@@ -98,6 +98,9 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **MCP D1 PRAGMA table_info truncation** — session 95-post, the Cloudflare Developer Platform MCP d1_database_query tool returned cid 0–17 on PRAGMA table_info(query_log), silently omitting cid 18+. This masked a pre-existing `sufficient` column at cid 18 (origin unrecovered from Claude.ai conversation history; added in an unlogged Cowork or CC session between Phase 4 word-search deploy ~20 April and session 95 on 24 April; column had zero non-null values corpus-wide so no operational impact). Cause suspected: MCP result-row cap on wide tables. Workaround: for schema-existence checks on any table with >~15 columns, use `SELECT <col> FROM <table> LIMIT 0` — returns "no such column" if absent, empty success if present, no row-cap risk. Reserve PRAGMA for narrow tables or when you can verify the output includes the highest expected cid.
 - **`cases.court` stores D1 lowercase abbreviations, not AustLII codes** — values are `supreme` / `cca` / `fullcourt` / `magistrates`. AustLII codes (`TASSC`, `TASCCA`, `TASFC`, `TASMC`) appear in the citation string only. Any filter, colour map, or query keyed on AustLII codes will return zero matches. Before writing any filter touching `cases.court`, run `SELECT court, COUNT(*) FROM cases GROUP BY court` via D1 MCP to confirm live values.
 - **Dual `COURT_COLORS` maps with different key schemes** — `CaseSearch.jsx` keys on D1 lowercase values (`supreme`, `cca`, `fullcourt`, `magistrates`); `StareDecisisSection.jsx` keys on AustLII uppercase codes (`TASSC`, `TASCCA`, etc.). These are intentionally different schemas — do not unify without checking both components. If adding a new court colour, update both maps with the correct key for each file.
+- **Landing.jsx nav buttons are a separate component from Nav.jsx** — no shared code between them. Editing Nav.jsx has zero effect on Landing.jsx button styling. When making nav changes, always edit both files explicitly. Not a bug — by design — but cost a full component read to discover session 108.
+- **CaseSearch.jsx state/court filtering is entirely client-side** — `filterByStates` runs post-fetch on the full case list loaded at mount. `handleLibraryList` accepts no state or court filter params. The `STATE_COURTS` map currently only has entries for `TAS` and `HCA`; all other keys return `undefined` → silent empty-set from `filterByStates`. Any future state addition requires an explicit entry in that map.
+- **xref_agent subject_matter filter was in Worker.js, not xref_agent.py** — `handleFetchCasesForXref` (Worker.js line ~2337) held the `AND subject_matter IN ('criminal', 'mixed')` clause. Removed session 108; xref now covers all `deep_enriched=1` cases. If filter needs restoring, look in Worker.js not the Python script.
 
 ---
 
@@ -225,13 +228,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 105) — 26 April 2026
-
-- **Phase 3 — Insufficient button rebuild (ReadingPane.jsx)** — `doThumbsDown` refactored with optional `noteOverride` param; Submit button sends note from textarea, Skip button calls `doThumbsDown('')` explicitly passing empty string (bypasses whatever thumbsNote contains); visible error state added (`thumbsError` state displayed in popup on API failure); toggle button onClick resets both `thumbsNote` and `thumbsError` on open; Cancel also clears `thumbsError`; resolves silent error swallow
-- **Phase 3 — Citation tallies in CASE SEARCH (CaseSearch.jsx)** — `CaseReadingPane` now calls `api.caseAuthority(citation)` eagerly in a `useEffect` on case selection; renders "Cites: N · Cited by: N" in the case header below court/date row; two-call approach: tally eager (this useEffect), StareDecisisSection detail list lazy on expand — no interface change to StareDecisisSection required
-- **Phase 3 — Double-Nav fix + dead page cleanup** — extracted inner content of Compose.jsx and HealthReports.jsx into `components/ComposePanel.jsx` and `components/HealthReportsPanel.jsx` (no Nav wrapper, `flex: 1` outer div); rewrote CorpusAdmin.jsx to single unified layout: one Nav, one SubTabBar, panel dispatch via conditional render; deleted five dead page files: Research.jsx, Library.jsx, Upload.jsx, Compose.jsx, HealthReports.jsx from `pages/`; grep confirmed zero remaining imports before deletion
-- **Phase 3 — Dead sources variable removed (Intel.jsx)** — removed `sources` state (declared, set from API, never consumed in render); cleaned four locations: state declaration, reset in handleQueryWith, set in try block, reset in loadHistoryItem
-
 ## CHANGES THIS SESSION (session 106) — 26 April 2026
 
 - **Logo swap** — Nav.jsx, Landing.jsx, and ReadingPane.jsx all updated to reference new `public/“this one”` emblem asset; all three prior `/unnamed.jpg` references replaced including the 48px empty-state reference in ReadingPane.jsx
@@ -249,6 +245,17 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Court filter bug fixed** — TAS state tab was returning empty results because filter keyed on AustLII codes (`TASSC` etc.) while `cases.court` stores D1 lowercase abbreviations (`supreme`, `cca`, `fullcourt`, `magistrates`); STATE_COURTS.TAS remapped to D1 values; COURT_COLORS map corrected to match
 - **Court tag + badge styling** — all four court tags unified to white text on dark background; Indexed badge changed from green to blue; HCA red unchanged
 - **Schema gotcha documented** — `cases.court` value set added to CLAUDE_arch.md; dual COURT_COLORS map split (CaseSearch vs StareDecisis) added to KNOWN ISSUES
+
+## CHANGES THIS SESSION (session 108) — 30 April 2026
+
+- **Nav button borders corpus-wide** — uniform 120×40px bordered boxes deployed to Nav.jsx; Landing.jsx required a separate edit (independent implementation — no shared component with Nav.jsx)
+- **Case Search state filter fixed** — removed TAS fallback from `toggleState` and `caseRows`; non-TAS selections now show empty state message "There are no cases in the corpus for this jurisdiction at present"; filtering confirmed 100% client-side via `filterByStates`
+- **INTEL renamed AI ASSIST** — label changed in Nav.jsx and Landing.jsx; route `/intel` unchanged
+- **"Cites N" pill added to case detail** — `citesCount` prop wired to `StareDecisisSection.jsx` from pre-existing `citesImmediate` local variable in CaseSearch.jsx; no new API call
+- **Corpus Admin Upload sub-tabbed** — `UploadPanel` split into Cases (default) / Legislation / Secondary Sources sub-tabs
+- **Landing page grid removed** — `linear-gradient` checker pattern and `@keyframes grid-scroll` removed from Landing.jsx and index.css
+- **Intel page cleanup** — Source filter row restored (accidentally removed with chunk display), toggle alignment fixed via fixed-width labels, chunk display removed from results
+- **xref_agent scope expanded** — `AND subject_matter IN ('criminal', 'mixed')` removed from `handleFetchCasesForXref` in Worker.js (version 86921e1e); backfill ran immediately; case_citations 7,213 → 10,575 (+3,362); case_legislation_refs 5,147 → 5,356 (+209)
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

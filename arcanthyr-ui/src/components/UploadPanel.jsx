@@ -5,16 +5,44 @@ import { api } from '../api';
 const COURTS = ['TASCCA', 'TASSC', 'TASMC', 'HCA'];
 const JURISDICTIONS = ['TAS', 'CTH', 'VIC', 'NSW', 'QLD', 'WA', 'SA', 'ACT', 'NT'];
 
+const UPLOAD_TABS = ['Cases', 'Legislation', 'Secondary Sources'];
+
 export default function UploadPanel() {
+  const [tab, setTab] = useState('Cases');
   return (
-    <div style={{ flex: 1, overflow: 'auto', padding: '32px', maxWidth: '760px', width: '100%', margin: '0 auto' }}>
-      <CasesTab />
-      <div style={{ margin: '40px 0 0', borderTop: '1px solid var(--border)', paddingTop: '40px' }}>
-        <CorpusTab />
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <UploadSubTabBar tab={tab} onTabChange={setTab} />
+      <div style={{ flex: 1, overflow: 'auto', padding: '32px', maxWidth: '760px', width: '100%', margin: '0 auto' }}>
+        {tab === 'Cases' && <CasesTab />}
+        {tab === 'Legislation' && <LegislationTab />}
+        {tab === 'Secondary Sources' && <CorpusTab />}
       </div>
-      <div style={{ margin: '40px 0 0', borderTop: '1px solid var(--border)', paddingTop: '40px' }}>
-        <LegislationTab />
-      </div>
+    </div>
+  );
+}
+
+function UploadSubTabBar({ tab, onTabChange }) {
+  return (
+    <div style={{
+      display: 'flex', gap: '2px', padding: '0 24px',
+      borderBottom: '1px solid var(--border)', background: 'var(--bg-page)', flexShrink: 0,
+    }}>
+      {UPLOAD_TABS.map(t => (
+        <button
+          key={t}
+          onClick={() => onTabChange(t)}
+          style={{
+            padding: '10px 14px', fontSize: '11px', fontWeight: 600,
+            letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
+            borderBottom: `2px solid ${tab === t ? 'var(--accent)' : 'transparent'}`,
+            background: 'transparent', cursor: 'pointer',
+            transition: 'color 0.15s, border-color 0.15s',
+          }}
+        >
+          {t}
+        </button>
+      ))}
     </div>
   );
 }

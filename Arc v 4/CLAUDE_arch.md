@@ -466,10 +466,11 @@ cd "../Arc v 4" && npx wrangler deploy
 **Pages (all in `src/pages/`):**
 - `Landing.jsx` — immediate redirect to /intel (auth removed session 17, route updated Phase 2 session 104)
 - `Intel.jsx` — INTEL page (renamed from Research.jsx session 104) · query textarea, model toggle (Sol/V'ger), domain filter chips, source type filter chips, result cards, query history, reading pane
-- `CaseSearch.jsx` — CASE SEARCH page (renamed from Library.jsx session 104) · 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · CASES tab has three search-mode toggles: Name/Citation · Legislation section · Word search (formerly "Quick Search" tab, now inline modes within CASES tab) · case rows clickable → split CaseReadingPane: Facts/Holding/Principles/Stare Decisis rendered as labelled scroll sections (textTransform: uppercase), NOT a tabbed interface; the tab bar (Principles/Chunks/AI Summary) belongs to CasePane in ReadingPane.jsx on the INTEL page, not CASE SEARCH · citation tallies (Cites N · Cited by N) in case header (added session 105) · year/court filter chips · state filter scaffold (TAS default)
+- `CaseSearch.jsx` — CASE SEARCH page (renamed from Library.jsx session 104) · 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · CASES tab has three search-mode toggles: Name/Citation · Legislation section · Word search (formerly "Quick Search" tab, now inline modes within CASES tab) · case rows clickable → split CaseReadingPane: Facts/Holding/Principles/Stare Decisis rendered as labelled scroll sections (textTransform: uppercase), NOT a tabbed interface; the tab bar (Principles/Chunks/AI Summary) belongs to CasePane in ReadingPane.jsx on the INTEL page, not CASE SEARCH · citation tallies (Cites N · Cited by N) in case header (added session 105) · year/court filter chips · state filter scaffold (TAS default) · Note: state/court filtering is entirely client-side — filterByStates runs on the full case list fetched at mount; handleLibraryList has no server-side filter params. STATE_COURTS map must have an explicit entry for any state that needs filtering (currently TAS and HCA only).
 - `Legislation.jsx` — stub, added Phase 2 session 104
-- `CorpusAdmin.jsx` — Corpus Admin shell · 4 sub-tabs: COMPOSE (→ ComposePanel), CORPUS (→ HealthReportsPanel), SECONDARY SOURCES (placeholder Phase 3), FEEDBACK (placeholder Phase 3)
+- `CorpusAdmin.jsx` — Corpus Admin shell · Top-level tabs: CORPUS (→ HealthReportsPanel) · SECONDARY SOURCES (→ SecondarySourcesPanel) · UPLOAD (→ UploadPanel, itself sub-tabbed: Cases / Legislation / Secondary Sources) · FEEDBACK (→ FeedbackPanel) · EMAIL (→ ComposePanel)
 - Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`, `ComposePanel.jsx`, `HealthReportsPanel.jsx`
+- `UploadPanel.jsx` — renders the UPLOAD sub-tab content inside CorpusAdmin. Split into three internal sub-tabs as of session 108: Cases (default, case upload form), Legislation (legislation upload form), Secondary Sources (secondary sources upload form).
 
 ---
 
@@ -745,7 +746,7 @@ Browse, re-read, and promote past queries without re-querying.
 ### xref_agent.py (session 57)
 - Location: VPS `~/ai-stack/agent-general/src/xref_agent.py`
 - Cron: `0 3 * * *` in tom's crontab — logs to `~/ai-stack/xref_agent.log`
-- Filters: `subject_matter IN ('criminal', 'mixed')` — civil/admin excluded
+- Processes all deep_enriched=1 cases regardless of subject_matter (filter removed session 108). Filter was located in handleFetchCasesForXref in Worker.js, not in xref_agent.py itself.
 - Treatment upgrade: `upgrade_treatment()` post-processes `'cited'` using `why` keywords → applied/distinguished/not followed/referred to
 - Idempotent: `INSERT OR IGNORE` with SHA1 IDs — safe to re-run
 - Worker batch writes: `env.DB.batch()` in 100-row chunks (not sequential await)

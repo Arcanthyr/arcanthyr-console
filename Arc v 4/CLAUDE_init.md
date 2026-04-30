@@ -447,3 +447,14 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 
 **Git staging with pre-existing unstaged changes:**
 - When `git status` shows pre-existing unstaged modifications on files unrelated to the current task, stage explicitly by file name (`git add "path/to/file"`) rather than `git add -A` to avoid polluting the commit.
+
+---
+
+## Operational Quick-Reference (session 108)
+
+| Pattern | Note |
+|---|---|
+| git show for recovery | `git show <commit>:<file>` is the correct path when a working file has accumulated silent regressions — faster and authoritative vs reconstructing from session summaries |
+| Backfill verification | For INSERT OR IGNORE backfills, skip log files (SSH buffering truncates them). Query D1 directly via MCP COUNT(*) — faster and authoritative |
+| Deploy before diagnosing | "Loading forever" or "500 on selection" symptoms should trigger a fresh deploy before wrangler tail investigation — stale build artefacts masquerade as code defects |
+| Nav + Landing always both | Any change to navigation styling or labels requires editing both Nav.jsx and Landing.jsx explicitly — they share no button implementation |

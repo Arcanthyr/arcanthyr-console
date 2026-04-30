@@ -17,7 +17,7 @@ export default function ReadingPane({ selected, answer, query, queryId, onShare,
         justifyContent: 'center',
         color: 'var(--text-muted)',
       }}>
-        <img src="/this one.png" alt="" style={{ width: '48px', opacity: 0.08, marginBottom: '16px' }} />
+        <img src="/thisone.png" alt="" style={{ width: '48px', opacity: 0.08, marginBottom: '16px' }} />
         <div style={{ fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
           Ask a question
         </div>
