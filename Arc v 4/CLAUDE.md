@@ -63,6 +63,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ## OUTSTANDING PRIORITIES
 
+- **subject_matter misclassification audit — deferred** — Rattigan and Pilling confirmed wrong subject_matter values. 3-part fix pending full audit: (1) Worker route update, (2) poller metadata dict, (3) case chunk re-embed for affected cases. Do not implement any part of the fix before audit scope is established. Trigger: complete audit → identify all misclassified cases → then implement in one coordinated pass.
+
 ---
 
 ## KNOWN ISSUES / WATCH LIST
@@ -101,6 +103,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Landing.jsx nav buttons are a separate component from Nav.jsx** — no shared code between them. Editing Nav.jsx has zero effect on Landing.jsx button styling. When making nav changes, always edit both files explicitly. Not a bug — by design — but cost a full component read to discover session 108.
 - **CaseSearch.jsx state/court filtering is entirely client-side** — `filterByStates` runs post-fetch on the full case list loaded at mount. `handleLibraryList` accepts no state or court filter params. The `STATE_COURTS` map currently only has entries for `TAS` and `HCA`; all other keys return `undefined` → silent empty-set from `filterByStates`. Any future state addition requires an explicit entry in that map.
 - **xref_agent subject_matter filter was in Worker.js, not xref_agent.py** — `handleFetchCasesForXref` (Worker.js line ~2337) held the `AND subject_matter IN ('criminal', 'mixed')` clause. Removed session 108; xref now covers all `deep_enriched=1` cases. If filter needs restoring, look in Worker.js not the Python script.
+- **subject_matter misclassification — Rattigan and Pilling confirmed wrong** — at least two cases have incorrect subject_matter values causing misclassification in retrieval and xref. Full corpus audit needed before fix. 3-part fix when ready: (1) Worker route handling of subject_matter on ingest/update, (2) poller metadata dict, (3) targeted case chunk re-embed for affected citations. Do not re-embed individual cases before audit is complete — scope unknown.
 
 ---
 

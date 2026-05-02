@@ -57,7 +57,7 @@ docker compose ps
 
 ### VPS: server.py health check
 
-Service proof-of-life: `docker compose logs --tail=20 agent-general | grep 'Nexus ingest server running'` — server.py does not expose /status or /health. If the line is present and dated after the file mtime, the container is running current code.
+Service proof-of-life: `curl -s http://localhost:18789/health` — returns `{"status":"ok"}` (no auth required). Alternatively `docker compose logs --tail=20 agent-general | grep 'Nexus ingest server running'` — if the line is present and dated after file mtime, container is running current code.
 
 Container name discovery: run `docker compose ps` from `~/ai-stack` — Compose v2 naming varies. Do not hardcode container names with `-1` suffix.
 

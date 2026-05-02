@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 26 April 2026 (end of session 105). Upload every session alongside CLAUDE.md.*
+*Updated: 30 April 2026 (end of session 108). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -391,7 +391,7 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 |---|---|---|---|
 | GET | `/health` | inline | Returns `{"status":"ok"}` — no auth |
 | POST | `/ingest` | `ingest_text()` | Embed + upsert chunk to Qdrant |
-| POST | `/search` | `search_text()` | Five-pass retrieval |
+| POST | `/search` | `search_text()` | Four-pass retrieval |
 | POST | `/query` | `query_qwen()` | DEAD CODE — nothing calls it; retained in file. All retrieval goes through `/search`. See session 58 diagnosis. |
 | POST | `/extract-pdf` | `extract_pdf_text()` | pdfminer only |
 | POST | `/extract-pdf-ocr` | `extract_pdf_text_ocr()` | pdfminer + OCR fallback |
@@ -465,7 +465,7 @@ cd "../Arc v 4" && npx wrangler deploy
 
 **Pages (all in `src/pages/`):**
 - `Landing.jsx` — immediate redirect to /intel (auth removed session 17, route updated Phase 2 session 104)
-- `Intel.jsx` — INTEL page (renamed from Research.jsx session 104) · query textarea, model toggle (Sol/V'ger), domain filter chips, source type filter chips, result cards, query history, reading pane
+- `Intel.jsx` — INTEL page (renamed from Research.jsx session 104; label changed to AI ASSIST session 108 — route /intel unchanged) · query textarea, model toggle (Sol/V'ger), domain filter chips, source type filter chips, result cards, query history, reading pane
 - `CaseSearch.jsx` — CASE SEARCH page (renamed from Library.jsx session 104) · 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · CASES tab has three search-mode toggles: Name/Citation · Legislation section · Word search (formerly "Quick Search" tab, now inline modes within CASES tab) · case rows clickable → split CaseReadingPane: Facts/Holding/Principles/Stare Decisis rendered as labelled scroll sections (textTransform: uppercase), NOT a tabbed interface; the tab bar (Principles/Chunks/AI Summary) belongs to CasePane in ReadingPane.jsx on the INTEL page, not CASE SEARCH · citation tallies (Cites N · Cited by N) in case header (added session 105) · year/court filter chips · state filter scaffold (TAS default) · Note: state/court filtering is entirely client-side — filterByStates runs on the full case list fetched at mount; handleLibraryList has no server-side filter params. STATE_COURTS map must have an explicit entry for any state that needs filtering (currently TAS and HCA only).
 - `Legislation.jsx` — stub, added Phase 2 session 104
 - `CorpusAdmin.jsx` — Corpus Admin shell · Top-level tabs: CORPUS (→ HealthReportsPanel) · SECONDARY SOURCES (→ SecondarySourcesPanel) · UPLOAD (→ UploadPanel, itself sub-tabbed: Cases / Legislation / Secondary Sources) · FEEDBACK (→ FeedbackPanel) · EMAIL (→ ComposePanel)
@@ -867,9 +867,7 @@ Source title uses chunk heading (not filename stem).
 
 *Canonical location for all roadmap items. CLAUDE.md carries only OUTSTANDING PRIORITIES (current sprint). This section is reconciled at session close — completed items removed, new items added.*
 
-- **Phase 2 — architectural restructuring (session 103 scoped)**: rename Research→INTEL, Library→CASE SEARCH, split Legislation as own top-level tab, create Corpus Admin shell with sub-tabs (Compose/Corpus/Secondary Sources/Feedback), kill Three.js globe in Compose, state filter scaffolding above CASE SEARCH (TAS default; QLD/WA/HCA/SA/NSW/VIC/NT/ALL). Also fix /research direct-nav 404 (Worker catch-all removal) before Phase 2 ships — Phase 2 multiplies affected surface from one route to four.
-- **Phase 3 — per-tab logic (session 103 scoped)**: rebuild Insufficient surface with commentary popup + visible success/error state (fixes ReadingPane.jsx doThumbsDown silent error swallow); cites-tally and cited-by tally on case selection in CASE SEARCH; per-tab UI logic per redesign brief.
-- **Phase 4 — visual chrome (session 103 scoped)**: logo swap (Image 3, white-background bare emblem, top-left, all sub-pages); "Arcanthyr"→"THE ARC" landing rename; ALL CAPS toggle/button/tab labels; title-case legislation names. Visual deferred to last — lowest rework risk, no architecture dependency.
+- **Phase 2 / Phase 3 / Phase 4 — COMPLETE (sessions 103–108)** — architectural restructuring, per-tab logic, and visual chrome all shipped. Site now: INTEL (→ AI ASSIST label session 108) / CASE SEARCH / LEGISLATION / CORPUS ADMIN tabs; THE ARC landing; ALL CAPS labels; logo swapped.
 - **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
 - **Retrieval regression fixes (session 64 — remaining steps deferred):**
   - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
