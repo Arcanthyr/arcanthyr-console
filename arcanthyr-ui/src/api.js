@@ -1,27 +1,12 @@
 const BASE = import.meta.env.VITE_API_BASE || 'https://arcanthyr.com';
 
-let _getToken = null;
-
-export function initApi(getToken) {
-  _getToken = getToken;
-}
-
 async function req(method, path, body, extraHeaders = {}) {
   const headers = { 'Content-Type': 'application/json', ...extraHeaders };
-  if (_getToken) {
-    try {
-      const token = await _getToken();
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-    } catch {
-      // proceed without token — Worker will reject if auth is required
-    }
-  }
   const res = await fetch(BASE + path, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
-  if (res.status === 401) throw new Error('Access denied — your account is not authorised to use this system.');
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
