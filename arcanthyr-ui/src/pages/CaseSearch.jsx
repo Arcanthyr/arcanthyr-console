@@ -67,6 +67,7 @@ function filterByStates(rows, states) {
 }
 
 const STATE_OPTIONS = ['ALL', 'TAS', 'QLD', 'WA', 'HCA', 'SA', 'NSW', 'VIC', 'NT'];
+const DOMAIN_FILTERS = ['ALL', 'CRIMINAL', 'ADMINISTRATIVE', 'CIVIL'];
 
 export default function CaseSearch() {
   const [selectedStates, setSelectedStates] = useState(['TAS']);
@@ -256,6 +257,8 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
   const [wordLoading, setWordLoading] = useState(false);
   const [wordMatchMode, setWordMatchMode] = useState(null);
   const [wordHasMore, setWordHasMore] = useState(false);
+  const [wordDomainFilter, setWordDomainFilter] = useState('all');
+  const [nameDomainFilter, setNameDomainFilter] = useState('all');
 
   const courts = [...new Set(rows.map(r => r.court).filter(Boolean))].sort();
 
@@ -293,6 +296,8 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
     setSearchMode(mode);
     setLegResults(null); setLegQuery(''); setLegOffset(0); setLegHasMore(false);
     setWordResults(null); setWordQuery(''); setWordMatchMode(null); setWordHasMore(false);
+    setWordDomainFilter('all');
+    setNameDomainFilter('all');
   }
 
   async function runLegSearch(q, offset = 0) {
@@ -328,6 +333,20 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
       setWordLoading(false);
     }
   }
+
+  const filteredNameResults = nameDomainFilter === 'all'
+    ? filtered
+    : filtered.filter(r => {
+        if (nameDomainFilter === 'criminal') return r.subject_matter === 'criminal' || r.subject_matter === 'mixed';
+        return r.subject_matter === nameDomainFilter;
+      });
+
+  const filteredWordResults = wordDomainFilter === 'all' || !wordResults
+    ? wordResults
+    : wordResults.filter(r => {
+        if (wordDomainFilter === 'criminal') return r.subject_matter === 'criminal' || r.subject_matter === 'mixed';
+        return r.subject_matter === wordDomainFilter;
+      });
 
   return (
     <>
@@ -371,10 +390,28 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
                 </select>
               </div>
             )}
+            {/* Domain filter chips */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', minWidth: '56px' }}>Domain</span>
+              {DOMAIN_FILTERS.map(f => (
+                <button
+                  key={f}
+                  onClick={() => setNameDomainFilter(f.toLowerCase())}
+                  style={{
+                    padding: '3px 10px', borderRadius: '12px', fontSize: '11px', cursor: 'pointer',
+                    background: nameDomainFilter === f.toLowerCase() ? 'var(--accent-dim)' : 'var(--surface)',
+                    color: nameDomainFilter === f.toLowerCase() ? 'var(--accent)' : 'var(--text-secondary)',
+                    border: `1px solid ${nameDomainFilter === f.toLowerCase() ? 'var(--accent)' : 'var(--border)'}`,
+                  }}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
           <Table
             cols={['Citation', 'Title / Subject', 'Court', 'Status', 'Actions']}
-            rows={filtered}
+            rows={filteredNameResults}
             renderRow={r => {
               const url = austliiUrl(r.ref || r.citation);
               const isMalformed = (r.ref || '').includes('{');
@@ -468,7 +505,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
         </div>
       ) : (
         <div>
-          <form onSubmit={e => { e.preventDefault(); runWordSearch(wordQuery); }} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+          <form onSubmit={e => { e.preventDefault(); runWordSearch(wordQuery); }} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
             <input
               value={wordQuery}
               onChange={e => setWordQuery(e.target.value)}
@@ -484,24 +521,43 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
             </button>
           </form>
 
-          {wordResults === null && !wordLoading && (
+          {/* Domain filter chips */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px', alignItems: 'center' }}>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.05em', textTransform: 'uppercase', minWidth: '56px' }}>Domain</span>
+            {DOMAIN_FILTERS.map(f => (
+              <button
+                key={f}
+                onClick={() => setWordDomainFilter(f.toLowerCase())}
+                style={{
+                  padding: '3px 10px', borderRadius: '12px', fontSize: '11px', cursor: 'pointer',
+                  background: wordDomainFilter === f.toLowerCase() ? 'var(--accent-dim)' : 'var(--surface)',
+                  color: wordDomainFilter === f.toLowerCase() ? 'var(--accent)' : 'var(--text-secondary)',
+                  border: `1px solid ${wordDomainFilter === f.toLowerCase() ? 'var(--accent)' : 'var(--border)'}`,
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {filteredWordResults === null && !wordLoading && (
             <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>
               Free-text keyword search across the case corpus. Multi-word queries matched as phrase first, then relaxed if nothing found.
             </div>
           )}
 
-          {wordResults !== null && !wordLoading && wordResults.length === 0 && (
+          {filteredWordResults !== null && !wordLoading && filteredWordResults.length === 0 && (
             <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontStyle: 'italic', paddingTop: '8px' }}>No cases found containing that text.</div>
           )}
 
-          {wordResults !== null && wordResults.length > 0 && (
+          {filteredWordResults !== null && filteredWordResults.length > 0 && (
             <>
               <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-                {wordResults.length} case{wordResults.length !== 1 ? 's' : ''}{wordHasMore ? '+' : ''}
+                {filteredWordResults.length} case{filteredWordResults.length !== 1 ? 's' : ''}{wordHasMore ? '+' : ''}
                 {wordMatchMode === 'all_words' && <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>· no exact-phrase matches; showing cases mentioning all words</span>}
                 {wordMatchMode === 'fallback_single' && <span style={{ marginLeft: '10px', fontStyle: 'italic', color: 'var(--text-muted)' }}>· partial match on longest term</span>}
               </div>
-              <WordSearchResultsTable results={wordResults} rows={rows} onSelect={onSelect} selectedId={selectedId} />
+              <WordSearchResultsTable results={filteredWordResults} rows={rows} onSelect={onSelect} selectedId={selectedId} />
             </>
           )}
         </div>

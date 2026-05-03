@@ -4217,3 +4217,10 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 - JWKS endpoint authentication — api.clerk.com/v1/jwks requires Authorization: Bearer CLERK_SECRET_KEY header. Unauthenticated fetch returns error, silently failing JWT verification and 401ing all requests. Dead end: attempting JWKS fetch without auth looked correct from Clerk docs but failed at runtime.
 - wrangler tail from CC on Windows — dead end. PS 5.1 blocks &, Start-Job doesn't persist, npx is not a Win32 exe for Start-Process. Browser console or Tom running tail manually in a separate terminal is the only viable diagnostic path.
 - Dummy token curl test for Clerk JWKS log — dead end. verifyClerkToken returns null before the JWKS fetch if the JWT header fails base64/JSON decode. Malformed test tokens bail silently before the debug log fires; only a real browser-issued Clerk JWT triggers the full verification path.
+
+## Session 112 decisions — 3 May 2026
+
+- Sol model changed to Haiku (claude-haiku-4-5-20251001) — Sonnet was timing out; Haiku is 3x cheaper, lower latency; quality ladder is now V'ger (Qwen3) → Haiku → Sonnet
+- AbortSignal.timeout(25000) added to Nexus fetch in Worker — prevents Cloudflare 524 from propagating as HTTP 500; clean timeout error surfaced to UI instead
+- Flask threading fix deferred — server.py threading constraint confirmed as the root cause of session-ending outage; fix (threaded=True or gunicorn) is the first priority next session; do not open UI in multiple tabs until fixed
+- Dead end: curl Nexus while request in-flight — compounds the block rather than diagnosing it; always check docker compose logs --tail=5 agent-general first to confirm no active request before attempting any diagnostic curl

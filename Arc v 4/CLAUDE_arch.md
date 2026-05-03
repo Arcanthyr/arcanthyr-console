@@ -409,6 +409,8 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 | `_bm25_corpus` | dict | In-memory BM25 corpus cache |
 | `BM25_TTL` | 600 | BM25 corpus rebuild TTL in seconds |
 
+**agent-general (server.py): single-threaded Flask** — no gunicorn, no async. One blocked request (e.g. hung query expansion LLM call) blocks all /search requests and /health checks. Fix: app.run(..., threaded=True) or gunicorn --workers 2. Priority: fix before next production use with concurrent tabs.
+
 ---
 
 ## ORIGINAL RETRIEVAL DESIGN (PHASE 5 — LOCKED)
@@ -641,7 +643,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 | Handler | Model | max_tokens |
 |---|---|---|
-| `handleLegalQuery()` | Claude API (claude-sonnet-4-6) | 2,000 |
+| `handleLegalQuery()` | Claude API (claude-haiku-4-5-20251001) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
 ### Sol vs V'ger context block discriminator

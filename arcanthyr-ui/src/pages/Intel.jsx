@@ -17,7 +17,7 @@ export default function Intel() {
   const [loading, setLoading] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [error, setError] = useState('');
-  const [model, setModel] = useState('workers');
+  const [model, setModel] = useState('claude');
   const [filter, setFilter] = useState('ALL');
   const [subjectFilter, setSubjectFilter] = useState('criminal');
   const [selected, setSelected] = useState(null);

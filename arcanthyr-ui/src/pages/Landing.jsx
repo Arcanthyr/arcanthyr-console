@@ -35,7 +35,7 @@ export default function Landing() {
 
         {/* Sigil — 2× larger */}
         <motion.img
-          src="/thisone.png"
+          src="/logo.png"
           alt="The Arc"
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 0.9, scale: 1 }}

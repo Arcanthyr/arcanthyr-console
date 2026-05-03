@@ -61,6 +61,8 @@ Service proof-of-life: `curl -s http://localhost:18789/health` — returns `{"st
 
 Container name discovery: run `docker compose ps` from `~/ai-stack` — Compose v2 naming varies. Do not hardcode container names with `-1` suffix.
 
+**Before any Nexus diagnostic curl:** run `docker compose logs --tail=5 agent-general` first — if a request is in-flight (last log line is 'Query expansion:' with no Pass 1 following), the server is blocked; restart first, then curl.
+
 ### SCP server.py (canonical copy is on VPS — always pull before editing)
 ```powershell
 # Download from VPS

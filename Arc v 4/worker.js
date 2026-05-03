@@ -1978,6 +1978,7 @@ async function handleLegalQuery(body, env) {
       "Content-Type": "application/json",
       "X-Nexus-Key": env.NEXUS_SECRET_KEY,
     },
+    signal: AbortSignal.timeout(25000),
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,
@@ -2074,7 +2075,7 @@ ${answerNote}`;
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-6",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 2000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
@@ -2214,6 +2215,7 @@ async function handleLegalQueryWorkersAI(body, env) {
   const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Nexus-Key": env.NEXUS_SECRET_KEY },
+    signal: AbortSignal.timeout(25000),
     body: JSON.stringify({
       query_text: query.trim(),
       top_k: top_k || 6,

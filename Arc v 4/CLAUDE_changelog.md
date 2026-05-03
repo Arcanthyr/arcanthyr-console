@@ -1,8 +1,19 @@
-# CLAUDE Changelog — Sessions 21–107
+# CLAUDE Changelog — Sessions 21–108
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 108) — 30 April 2026
+
+- **Nav button borders corpus-wide** — uniform 120×40px bordered boxes deployed to Nav.jsx; Landing.jsx required a separate edit (independent implementation — no shared component with Nav.jsx)
+- **Case Search state filter fixed** — removed TAS fallback from `toggleState` and `caseRows`; non-TAS selections now show empty state message "There are no cases in the corpus for this jurisdiction at present"; filtering confirmed 100% client-side via `filterByStates`
+- **INTEL renamed AI ASSIST** — label changed in Nav.jsx and Landing.jsx; route `/intel` unchanged
+- **"Cites N" pill added to case detail** — `citesCount` prop wired to `StareDecisisSection.jsx` from pre-existing `citesImmediate` local variable in CaseSearch.jsx; no new API call
+- **Corpus Admin Upload sub-tabbed** — `UploadPanel` split into Cases (default) / Legislation / Secondary Sources sub-tabs
+- **Landing page grid removed** — `linear-gradient` checker pattern and `@keyframes grid-scroll` removed from Landing.jsx and index.css
+- **Intel page cleanup** — Source filter row restored (accidentally removed with chunk display), toggle alignment fixed via fixed-width labels, chunk display removed from results
+- **xref_agent scope expanded** — `AND subject_matter IN ('criminal', 'mixed')` removed from `handleFetchCasesForXref` in Worker.js (version 86921e1e); backfill ran immediately; case_citations 7,213 → 10,575 (+3,362); case_legislation_refs 5,147 → 5,356 (+209)
 
 ## CHANGES THIS SESSION (session 107) — 26 April 2026
 

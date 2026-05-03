@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 3 May 2026 (end of session 110) · Supersedes all prior versions
+Updated: 3 May 2026 (end of session 112) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–107) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–108) — load conditionally
 
 ---
 
@@ -63,6 +63,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ## OUTSTANDING PRIORITIES
 
+- **agent-general Flask threading** — server.py runs single-threaded; one stuck query expansion call blocks all /search requests and /health; needs threaded=True or gunicorn with workers before next production use
 - **subject_matter misclassification audit — deferred** — Rattigan and Pilling confirmed wrong subject_matter values. 3-part fix pending full audit: (1) Worker route update, (2) poller metadata dict, (3) case chunk re-embed for affected cases. Do not implement any part of the fix before audit scope is established. Trigger: complete audit → identify all misclassified cases → then implement in one coordinated pass.
 - **Clerk auth Worker JWT verification — incomplete** — Frontend gate live (ClerkProvider, AuthGate, UserButton, api.js token wiring all deployed). Worker gate deployed (APPROVED_EMAILS, verifyClerkToken with authenticated JWKS fetch, requireApprovedEmail on /api/* routes). API calls still returning 401 at session close — JWKS verification outcome unknown. Next session: open arcanthyr.com in browser, sign in, run wrangler tail in parallel, reload page, confirm `[clerk] jwks status: 200 auth header present: true` in tail output. If status 200 and header present, JWT decode/verify step in verifyClerkToken is the failure point — inspect RS256 verify logic. Remove debug logs (App.jsx line 17, verifyClerkToken console.log) after confirming working.
 
@@ -110,6 +111,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **case-detail double-unwrap — GET /api/legal/case-detail response shape is `{ result: { case: row } }`** — consuming code must unwrap as `r.result?.case ?? r.case`. The standard `/api/legal/` wrapping pattern is documented but the nested `result.case` key is not. Future callers writing `r.result` will get `{ case: row }`, not the row itself.
 - **precompact.ps1 hook broken — silent failure on every compact** — PowerShell parse error on unicode/emoji character at line 27. Hook silently fails; compaction still runs but the hook does not execute. Not yet fixed — needs line 27 identified and the offending character removed or escaped.
 - **subject_matter misclassification — Rattigan and Pilling confirmed wrong** — at least two cases have incorrect subject_matter values causing misclassification in retrieval and xref. Full corpus audit needed before fix. 3-part fix when ready: (1) Worker route handling of subject_matter on ingest/update, (2) poller metadata dict, (3) targeted case chunk re-embed for affected citations. Do not re-embed individual cases before audit is complete — scope unknown.
+- **agent-general single-threaded Flask** — a hung query expansion LLM call blocks the entire server indefinitely; concurrent UI tabs can trigger this; fix is threaded=True in app.run or gunicorn
+- **Query expansion AbortController (3s) in server.py appears non-functional** — server was observed blocked at query expansion for 2m15s+, far past the configured limit; timeout behaviour is unconfirmed
 
 ---
 
@@ -202,7 +205,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | arcanthyr-ui git repo | `arcanthyr-ui` is part of the monorepo — tracked under `arcanthyr-console/arcanthyr-ui/` · no separate GitHub repo · git root is `arcanthyr-console/`, not `arcanthyr-ui/` · migrated session 35 (was briefly a separate repo, absorbed into monorepo same session) |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
 | arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ · Do NOT `git add public/assets/` — build assets under public/assets/ are gitignored; only public/index.html and source files need staging |
-| Model toggle names | Sol = Claude API (claude-sonnet) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
+| Model toggle names | Sol = Claude API (claude-haiku-4-5-20251001) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
 | JWT secret | worker.js uses `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY` · no separate JWT_SECRET set in Wrangler — NEXUS_SECRET_KEY is signing key |
 | worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
 | Vite proxy IPv6 fix | proxy target hardcoded to `104.21.1.159` with `Host: arcanthyr.com` header + `secure: false` · Node.js on Windows prefers IPv6 but proxy fails · IPv4 workaround required |
@@ -237,17 +240,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 108) — 30 April 2026
-
-- **Nav button borders corpus-wide** — uniform 120×40px bordered boxes deployed to Nav.jsx; Landing.jsx required a separate edit (independent implementation — no shared component with Nav.jsx)
-- **Case Search state filter fixed** — removed TAS fallback from `toggleState` and `caseRows`; non-TAS selections now show empty state message "There are no cases in the corpus for this jurisdiction at present"; filtering confirmed 100% client-side via `filterByStates`
-- **INTEL renamed AI ASSIST** — label changed in Nav.jsx and Landing.jsx; route `/intel` unchanged
-- **"Cites N" pill added to case detail** — `citesCount` prop wired to `StareDecisisSection.jsx` from pre-existing `citesImmediate` local variable in CaseSearch.jsx; no new API call
-- **Corpus Admin Upload sub-tabbed** — `UploadPanel` split into Cases (default) / Legislation / Secondary Sources sub-tabs
-- **Landing page grid removed** — `linear-gradient` checker pattern and `@keyframes grid-scroll` removed from Landing.jsx and index.css
-- **Intel page cleanup** — Source filter row restored (accidentally removed with chunk display), toggle alignment fixed via fixed-width labels, chunk display removed from results
-- **xref_agent scope expanded** — `AND subject_matter IN ('criminal', 'mixed')` removed from `handleFetchCasesForXref` in Worker.js (version 86921e1e); backfill ran immediately; case_citations 7,213 → 10,575 (+3,362); case_legislation_refs 5,147 → 5,356 (+209)
-
 ## CHANGES THIS SESSION (session 109) — 3 May 2026
 
 - **Drift audit — 7 MD fixes** — datestamp, /search route note (Five→Four pass), subject_matter audit item in OUTSTANDING PRIORITIES + KNOWN ISSUES, Phase 2/3/4 roadmap collapsed to COMPLETE line, Intel.jsx AI ASSIST label noted, CLAUDE_init.md health check updated to curl primary; committed c483e0a
@@ -266,6 +258,15 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - Worker route exclusion corrected — initial exclusion blocked SPA shell routes; replaced with !pathname.startsWith('/api/') so gate applies to API calls only; SPA navigation and static assets pass through freely
 - Clerk auth incomplete at close — Worker returning 401 on all API calls; JWKS verification outcome unconfirmed; see OUTSTANDING PRIORITIES for next-session diagnostic steps
 - legislation.jurisdiction schema corrected in CLAUDE_arch.md — column is `jurisdiction` (physical), aliased as `court` in SELECT; MD previously listed alias name as real column name
+
+## CHANGES THIS SESSION (session 112) — 3 May 2026
+
+- Sol model swapped — handleLegalQuery changed from claude-sonnet-4-6 to claude-haiku-4-5-20251001 (version 050ed45b); Sonnet was timing out with HTTP 500
+- Nexus 524 root cause confirmed — agent-general Flask is single-threaded; a hung query expansion call at 13:54 UTC blocked all subsequent /search requests for the rest of the session
+- VPS confirmed healthy — 16Gi free RAM, Qdrant responding normally (0.08–3.5s query latency), load 4.45/8 CPUs; bottleneck is Flask concurrency not hardware
+- Query expansion timeout non-functional — server.py AbortController configured for 3s but server stayed blocked 2m15s+; needs investigation
+- AbortSignal.timeout(25000) added to both Nexus fetch calls in Worker — prevents 524 hanging at Cloudflare edge; clean timeout error returned instead (deployment unconfirmed end of session)
+- Flask threading fix not completed — session ended with queries still failing; threaded=True or gunicorn required before next session
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
