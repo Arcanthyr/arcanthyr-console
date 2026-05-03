@@ -1,8 +1,18 @@
-# CLAUDE Changelog — Sessions 21–106
+# CLAUDE Changelog — Sessions 21–107
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 107) — 26 April 2026
+
+- **Post-rebuild UI fixes (6)** — moved Secondary Sources sub-tab from Case Search into Corpus Admin placeholder; transplanted Legislation sub-page from Case Search into Legislation main page shell; added "This case cites N · Cited by N" tallies inline in case header without toggle; converted state filter to multi-select tabs (TAS default, TAS fallback on empty); converted year filter to court-scoped dropdown; added GET /api/legal/feedback route surfacing query_log WHERE sufficient=0
+- **Corpus Admin restored** — Upload sub-page rewired (had disappeared post-rebuild); Feedback sub-page built (query text, missing_note, model, answer, chunks — read-only); Compose renamed EMAIL and moved to far-right tab; tab order: CORPUS · SECONDARY SOURCES · UPLOAD · FEEDBACK · EMAIL
+- **INTEL page fixes** — SOURCE label added to third toggle row; CRIMINAL pre-selected as Domain default; Save to Nexus border removed to match Insufficient styling
+- **Legislation page enhancements** — View Online button wired to source_url captured at upload; row-click anywhere opens amendment drawer; Similarity % replaces "matching chunks" in word search results
+- **Court filter bug fixed** — TAS state tab was returning empty results because filter keyed on AustLII codes (`TASSC` etc.) while `cases.court` stores D1 lowercase abbreviations (`supreme`, `cca`, `fullcourt`, `magistrates`); STATE_COURTS.TAS remapped to D1 values; COURT_COLORS map corrected to match
+- **Court tag + badge styling** — all four court tags unified to white text on dark background; Indexed badge changed from green to blue; HCA red unchanged
+- **Schema gotcha documented** — `cases.court` value set added to CLAUDE_arch.md; dual COURT_COLORS map split (CaseSearch vs StareDecisis) added to KNOWN ISSUES
 
 ## CHANGES THIS SESSION (session 106) — 26 April 2026
 

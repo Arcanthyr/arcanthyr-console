@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 3 May 2026 (end of session 109) · Supersedes all prior versions
+Updated: 3 May 2026 (end of session 110) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–106) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–107) — load conditionally
 
 ---
 
@@ -64,12 +64,16 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 ## OUTSTANDING PRIORITIES
 
 - **subject_matter misclassification audit — deferred** — Rattigan and Pilling confirmed wrong subject_matter values. 3-part fix pending full audit: (1) Worker route update, (2) poller metadata dict, (3) case chunk re-embed for affected cases. Do not implement any part of the fix before audit scope is established. Trigger: complete audit → identify all misclassified cases → then implement in one coordinated pass.
+- **Clerk auth Worker JWT verification — incomplete** — Frontend gate live (ClerkProvider, AuthGate, UserButton, api.js token wiring all deployed). Worker gate deployed (APPROVED_EMAILS, verifyClerkToken with authenticated JWKS fetch, requireApprovedEmail on /api/* routes). API calls still returning 401 at session close — JWKS verification outcome unknown. Next session: open arcanthyr.com in browser, sign in, run wrangler tail in parallel, reload page, confirm `[clerk] jwks status: 200 auth header present: true` in tail output. If status 200 and header present, JWT decode/verify step in verifyClerkToken is the failure point — inspect RS256 verify logic. Remove debug logs (App.jsx line 17, verifyClerkToken console.log) after confirming working.
 
 ---
 
 ## KNOWN ISSUES / WATCH LIST
 
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
+- **`legislation` table column is `jurisdiction` not `court`** — `handleLibraryList` queries `jurisdiction AS court` and `handleUploadLegislation` inserts into `jurisdiction`. CLAUDE_arch.md D1 schema listed it as `court` (the alias name, not the real column). Any raw SQL written against this table must use `jurisdiction`. Fixed in CLAUDE_arch.md this session.
+- **`wrangler tail` not usable from CC on Windows** — PowerShell 5.1 blocks `&`, `Start-Job` doesn't persist across tool calls, `npx` is not a Win32 exe for `Start-Process`. Do not attempt CC-side `wrangler tail` diagnostics; browser console or Tom running tail manually in a separate terminal is the only reliable path.
+- **Clerk auth — API calls 401 at session close** — JWKS fetch authenticated with CLERK_SECRET_KEY, AuthGate pattern deployed, session token email claim added in Clerk Dashboard. Root cause of remaining 401 unconfirmed — next session verify with real browser JWT via wrangler tail before any further code changes.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously · pending check for non-DLQ chunks is now done=0 AND dlq=0 — update any requeue tooling accordingly
@@ -233,16 +237,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 107) — 26 April 2026
-
-- **Post-rebuild UI fixes (6)** — moved Secondary Sources sub-tab from Case Search into Corpus Admin placeholder; transplanted Legislation sub-page from Case Search into Legislation main page shell; added "This case cites N · Cited by N" tallies inline in case header without toggle; converted state filter to multi-select tabs (TAS default, TAS fallback on empty); converted year filter to court-scoped dropdown; added GET /api/legal/feedback route surfacing query_log WHERE sufficient=0
-- **Corpus Admin restored** — Upload sub-page rewired (had disappeared post-rebuild); Feedback sub-page built (query text, missing_note, model, answer, chunks — read-only); Compose renamed EMAIL and moved to far-right tab; tab order: CORPUS · SECONDARY SOURCES · UPLOAD · FEEDBACK · EMAIL
-- **INTEL page fixes** — SOURCE label added to third toggle row; CRIMINAL pre-selected as Domain default; Save to Nexus border removed to match Insufficient styling
-- **Legislation page enhancements** — View Online button wired to source_url captured at upload; row-click anywhere opens amendment drawer; Similarity % replaces "matching chunks" in word search results
-- **Court filter bug fixed** — TAS state tab was returning empty results because filter keyed on AustLII codes (`TASSC` etc.) while `cases.court` stores D1 lowercase abbreviations (`supreme`, `cca`, `fullcourt`, `magistrates`); STATE_COURTS.TAS remapped to D1 values; COURT_COLORS map corrected to match
-- **Court tag + badge styling** — all four court tags unified to white text on dark background; Indexed badge changed from green to blue; HCA red unchanged
-- **Schema gotcha documented** — `cases.court` value set added to CLAUDE_arch.md; dual COURT_COLORS map split (CaseSearch vs StareDecisis) added to KNOWN ISSUES
-
 ## CHANGES THIS SESSION (session 108) — 30 April 2026
 
 - **Nav button borders corpus-wide** — uniform 120×40px bordered boxes deployed to Nav.jsx; Landing.jsx required a separate edit (independent implementation — no shared component with Nav.jsx)
@@ -263,6 +257,15 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Suggestion pills removed** — `SUGGESTIONS` constant and `<motion.div>` pill block deleted from Landing.jsx; no dead state or handlers remain
 - **Landing nav borders widened** — `1px solid #252A2E` → `2px solid #252A2E` on four tab buttons in Landing.jsx only; Nav.jsx untouched
 - **Case Search 500 eliminated** — `handleLibraryList` stripped of 6 large text columns + correlated subqueries replaced with LEFT JOIN aggregates; new `handleCaseDetail` handler + `GET /api/legal/case-detail` route added; payload 12.2 MB → 1.18 MB, intermittent 500 eliminated (Worker df0572c3)
+
+## CHANGES THIS SESSION (session 110) — 3 May 2026
+
+- Amendment history fix — `useState(false)` → `useState(true)` in AmendmentPanel.jsx restores auto-expand on row click; `key={selectedLeg.id}` on LegislationPanel.jsx forces full remount on selection change, preventing stale state carrying over from prior row
+- Clerk frontend deployed — ClerkProvider in main.jsx, SignedIn/SignedOut gate in Landing.jsx, AuthGate wrapping Routes in App.jsx (gates on `isLoaded`, calls `initApi(getToken)` synchronously before any child renders), UserButton in Nav.jsx, Authorization header wiring in api.js; build clean at 502 modules
+- Clerk Worker gate deployed — APPROVED_EMAILS constant (hardcoded; Allowlist is Pro-only on Hobby plan), verifyClerkToken() with JWKS fetch authenticated via CLERK_SECRET_KEY, requireApprovedEmail() on all /api/* routes; CLERK_SECRET_KEY set via wrangler secret put; session token email claim added in Clerk Dashboard (Configure → Sessions → Customize)
+- Worker route exclusion corrected — initial exclusion blocked SPA shell routes; replaced with !pathname.startsWith('/api/') so gate applies to API calls only; SPA navigation and static assets pass through freely
+- Clerk auth incomplete at close — Worker returning 401 on all API calls; JWKS verification outcome unconfirmed; see OUTSTANDING PRIORITIES for next-session diagnostic steps
+- legislation.jurisdiction schema corrected in CLAUDE_arch.md — column is `jurisdiction` (physical), aliased as `court` in SELECT; MD previously listed alias name as real column name
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

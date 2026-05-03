@@ -13,6 +13,87 @@ console.log('Worker v7 loaded successfully');
 
 const _ratemap = new Map();
 
+/* =============================================================
+   CLERK AUTH — EMAIL ALLOWLIST
+   ============================================================= */
+const APPROVED_EMAILS = [
+  'peter.mckenna@police.tas.gov.au',
+  'shane.biddle@police.tas.gov.au',
+  'thomas.hogan@police.tas.gov.au',
+  'hogan.online@hotmail.com',
+  'gavin.thomas@police.tas.gov.au',
+  'phillip.money@police.tas.gov.au',
+  'adam.spencer@police.tas.gov.au',
+  'phillipa.edwards@justice.tas.gov.au',
+];
+
+let _jwksCache = null;
+let _jwksCachedAt = 0;
+
+// NOTE: Clerk must be configured to include email in the session token.
+// Clerk Dashboard → Configure → Sessions → Edit session token →
+// add: "email": "{{user.primary_email_address.email_address}}"
+async function verifyClerkToken(request, env) {
+  const authHeader = request.headers.get('Authorization') || '';
+  if (!authHeader.startsWith('Bearer ')) return null;
+  const token = authHeader.slice(7);
+
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  let header;
+  try {
+    header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+  } catch { return null; }
+
+  const now = Math.floor(Date.now() / 1000);
+  if (!_jwksCache || (now - _jwksCachedAt) > 3600) {
+    try {
+      const jwksResp = await fetch('https://api.clerk.com/v1/jwks', {
+        headers: { 'Authorization': `Bearer ${env.CLERK_SECRET_KEY}` },
+      });
+      console.log('[clerk] jwks status:', jwksResp.status, 'auth header present:', !!request.headers.get('Authorization'));
+      if (!jwksResp.ok) return null;
+      _jwksCache = await jwksResp.json();
+      _jwksCachedAt = now;
+    } catch { return null; }
+  }
+
+  const jwk = _jwksCache.keys?.find(k => k.kid === header.kid);
+  if (!jwk) return null;
+
+  try {
+    const key = await crypto.subtle.importKey(
+      'jwk', jwk,
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false, ['verify']
+    );
+    const sigBytes = Uint8Array.from(
+      atob(parts[2].replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)
+    );
+    const dataBytes = new TextEncoder().encode(`${parts[0]}.${parts[1]}`);
+    const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, sigBytes, dataBytes);
+    if (!valid) return null;
+
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (payload.exp && payload.exp < now) return null;
+    return { email: payload.email || null, userId: payload.sub || null };
+  } catch { return null; }
+}
+
+async function requireApprovedEmail(request, env, corsHeaders) {
+  const { pathname } = new URL(request.url);
+  if (!pathname.startsWith('/api/')) return null;
+  const claims = await verifyClerkToken(request, env);
+  if (!claims?.email || !APPROVED_EMAILS.includes(claims.email.toLowerCase())) {
+    return new Response(JSON.stringify({ error: 'Access denied' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  return null;
+}
+
 function rateLimit(key, max, windowMs) {
   const now = Date.now();
   const record = _ratemap.get(key);
@@ -3578,7 +3659,7 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin": allowedOrigin,
       "Access-Control-Allow-Methods": "GET,POST,DELETE,PATCH,OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, X-Nexus-Key",
+      "Access-Control-Allow-Headers": "Content-Type, X-Nexus-Key, Authorization",
       "Access-Control-Allow-Credentials": "true",
     };
 
@@ -3587,6 +3668,10 @@ export default {
     const json = (data, status = 200) => new Response(JSON.stringify(data), {
       status, headers: { ...corsHeaders, "Content-Type": "application/json" }
     });
+
+    /* ── CLERK EMAIL GATE ────────────────────────────────────── */
+    const denied = await requireApprovedEmail(request, env, corsHeaders);
+    if (denied) return denied;
 
     /* ── AUTH ROUTES ─────────────────────────────────────────── */
     if (url.pathname === '/api/auth/login' && request.method === 'POST') {

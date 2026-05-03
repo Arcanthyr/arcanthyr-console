@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { UserButton } from '@clerk/clerk-react';
 
 const links = [
   { to: '/intel',        label: 'AI ASSIST'    },
@@ -70,6 +71,16 @@ export default function Nav() {
           {l.label}
         </NavLink>
       ))}
+
+      <div style={{ marginLeft: 'auto' }}>
+        <UserButton appearance={{
+          elements: {
+            avatarBox: { width: 28, height: 28 },
+            userButtonAvatarBox: { border: '1px solid rgba(255,255,255,0.3)' },
+          },
+          variables: { colorPrimary: '#ffffff' },
+        }} />
+      </div>
 
     </nav>
   );

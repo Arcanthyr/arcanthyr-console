@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../api';
 
 export default function AmendmentPanel({ actName, actId: initialActId }) {
-  const [expanded, setExpanded]   = useState(false);
+  const [expanded, setExpanded]   = useState(true);
   const [actId, setActId]         = useState(initialActId || null);
   const [actTitle, setActTitle]   = useState(null);
   const [amendments, setAmendments] = useState(null);

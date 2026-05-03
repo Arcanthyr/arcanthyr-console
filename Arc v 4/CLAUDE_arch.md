@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 3 May 2026 (end of session 109). Upload every session alongside CLAUDE.md.*
+*Updated: 3 May 2026 (end of session 110). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -532,7 +532,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `cases` | `id` TEXT (citation-derived) | `citation`, `court`, `case_name`, `facts`, `issues`, `holding`, `principles_extracted`, `holdings_extracted`, `authorities_extracted`, `subject_matter`, `enriched`, `deep_enriched`, `procedure_notes` |
 | `case_chunks` | `id` TEXT (`{citation}__chunk__{N}`) | `citation`, `chunk_index`, `chunk_text`, `enriched_text`, `principles_json`, `done`, `embedded` |
 | `secondary_sources` | `id` TEXT | `title`, `raw_text`, `enriched_text`, `category`, `source_type`, `enriched`, `embedded` |
-| `legislation` | `id` TEXT | `title`, `court`, `sections_json`, `embedded`, `current_as_at` |
+| `legislation` | `id` TEXT (PK) | Full column list: `id`, `title`, `jurisdiction` (physical column — aliased as `court` in SELECT queries), `year`, `source_url`, `raw_text`, `summary`, `defined_terms`, `offence_elements`, `sections_json`, `embedded`, `current_as_at`, `processed_date` · `handleLibraryList` queries `jurisdiction AS court` · `handleUploadLegislation` inserts into `jurisdiction` — do not use the alias name in raw SQL |
 | `legislation_sections` | `id` TEXT | `legislation_id`, `section_number`, `heading`, `text` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
 | `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired`, `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char) · feedback system live session 96 (POST /api/legal/mark-insufficient route wired to Research page thumbs-down button) · flagged_by column dropped session 103 Phase 1 |
@@ -842,6 +842,32 @@ Browse, re-read, and promote past queries without re-querying.
 ### handleUploadLegislation — batch insert fix (session 82)
 
 Three frontend bugs fixed session 82: (1) api.js sent FormData/multipart — Worker expects JSON; fixed to `JSON.stringify` with `Content-Type: application/json`; (2) Upload.jsx passed `act_name` and a File object — Worker expects `title` (string) and `doc_text` (string); fixed to read file with `file.text()` then pass string fields; (3) response field was `r.result?.sections` — correct field is `r.result?.sections_parsed`. Worker-side: replaced sequential per-section INSERT loop with chunked `env.DB.batch()` (99 statements/batch) to prevent CPU timeout on large Acts.
+
+---
+
+### Clerk Authentication (session 110)
+
+**Frontend:**
+- `@clerk/clerk-react` installed in `arcanthyr-ui/`
+- `ClerkProvider` wraps root in `main.jsx` with `publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}`
+- `VITE_CLERK_PUBLISHABLE_KEY` in `arcanthyr-ui/.env.local` (gitignored via `*.local`) — pk_test_... for development instance (`discrete-gorilla-44.clerk.accounts.dev`)
+- `Landing.jsx` — `<SignedOut>` shows sign-in form; `<SignedIn>` redirects to /intel
+- `App.jsx` — `AuthGate` wraps `<Routes>`: returns null until `isLoaded=true`, then calls `initApi(getToken)` synchronously before children render; `ProtectedRoute` redirects unauthenticated users to /
+- `Nav.jsx` — `<UserButton />` at nav right end (sign-out + profile)
+- `api.js` — `initApi(fn)` stores getToken reference; `req()` attaches `Authorization: Bearer <token>` on every call; 401 throws "Access denied — your account is not authorised to use this system"
+
+**Worker:**
+- `APPROVED_EMAILS` constant near top of worker.js — hardcoded list of approved addresses (Clerk Allowlist is Pro-only on Hobby plan)
+- `verifyClerkToken(request, env)` — reads Authorization header, fetches JWKS from `https://api.clerk.com/v1/jwks` with `Authorization: Bearer ${env.CLERK_SECRET_KEY}` header (required — unauthenticated fetch returns error), caches result 1 hour in module-level var, verifies RS256 signature via crypto.subtle, returns email on success or null
+- `requireApprovedEmail(request, env)` — calls verifyClerkToken, checks email (lowercase) against APPROVED_EMAILS, returns 401 JSON if not approved; returns null if approved
+- Runs on all `/api/*` routes only — SPA shell, assets, and non-API paths excluded via `!pathname.startsWith('/api/')`
+- `CLERK_SECRET_KEY` set via `npx wrangler secret put CLERK_SECRET_KEY` (sk_test_...)
+
+**Clerk Dashboard config required:**
+- Configure → Sessions → Customize session token → add `{"email": "{{user.primary_email_address.email_address}}"}` — without this, payload.email is null and all users get 401
+- Allowlist (Protect → Restrictions → Allowlist) is a Pro feature — not used; email gate is in Worker code instead
+
+**Known timing rule:** Clerk's `getToken` returns null before `isLoaded=true` even if stored synchronously. Always gate on `isLoaded` before calling `initApi` — the AuthGate wrapper pattern is the safe implementation.
 
 ---
 

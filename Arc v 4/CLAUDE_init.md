@@ -464,3 +464,8 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 
 Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated subqueries per row, total response < ~3 MB. Over ~5 MB risks intermittent 30s Worker wall-clock timeout (CF limit). Rule of thumb: check `columns × avg_bytes × row_count` before writing any endpoint that scans the full cases table. Intermittent 500s on list endpoints → check payload size first, not VPS or Qdrant.
 | Nav + Landing always both | Any change to navigation styling or labels requires editing both Nav.jsx and Landing.jsx explicitly — they share no button implementation |
+| Clerk publishable key | `VITE_CLERK_PUBLISHABLE_KEY=pk_test_...` in `arcanthyr-ui/.env.local` — gitignored via `*.local`; present at local build time; no build server so gitignore is not a problem |
+| Clerk secret key | `npx wrangler secret put CLERK_SECRET_KEY` from `Arc v 4/` — paste sk_test_... value; required for authenticated JWKS fetch in verifyClerkToken |
+| Clerk session token email claim | Dashboard → Configure → Sessions → Customize session token → add `{"email": "{{user.primary_email_address.email_address}}"}` — without this payload.email is null and all users get 401 |
+| Clerk AuthGate pattern | AuthGate wraps <Routes> in App.jsx; returns null until isLoaded=true; calls initApi(getToken) synchronously; Clerk's getToken returns null before isLoaded even if stored synchronously — always gate on isLoaded |
+| APPROVED_EMAILS | Hardcoded array near top of worker.js — edit and wrangler deploy to add/remove users |

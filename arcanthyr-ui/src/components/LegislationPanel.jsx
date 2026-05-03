@@ -126,7 +126,7 @@ export default function LegislationPanel() {
           <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px', textTransform: 'capitalize' }}>
             {selectedLeg.title}
           </div>
-          <AmendmentPanel actId={actIdFromSourceUrl(selectedLeg.source_url)} actName={selectedLeg.title} />
+          <AmendmentPanel key={selectedLeg.id} actId={actIdFromSourceUrl(selectedLeg.source_url)} actName={selectedLeg.title} />
         </div>
       )}
     </div>
