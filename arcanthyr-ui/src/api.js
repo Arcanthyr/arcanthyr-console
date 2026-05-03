@@ -28,6 +28,7 @@ export const api = {
   library:       ()           => req('GET',  '/api/legal/library'),
   caseStatus:    (citation)   => req('GET',  `/api/legal/case-status?citation=${encodeURIComponent(citation)}`),
   caseAuthority: (citation)   => req('GET',  `/api/legal/case-authority?citation=${encodeURIComponent(citation)}`),
+  caseDetail:    (citation)   => req('GET',  `/api/legal/case-detail?citation=${encodeURIComponent(citation)}`),
   searchByLegislation: (q, limit = 50, offset = 0) =>
     req('GET', `/api/legal/search-by-legislation?q=${encodeURIComponent(q)}&limit=${limit}&offset=${offset}`),
   wordSearch: (q, limit = 30, court = null) => {

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 30 April 2026 (end of session 108). Upload every session alongside CLAUDE.md.*
+*Updated: 3 May 2026 (end of session 109). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -709,6 +709,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/legal/resolve-act` | GET | Resolve Act name to CCL actId · param: `name=<Act title>` · writes `source_url` back to `legislation` table as side-effect on first resolution · used by AmendmentPanel.jsx as primary path when source_url not yet populated · session 87 |
 | `/api/legal/mark-insufficient` | POST | handleMarkInsufficient (inline handler in legal dispatch block, no auth, writes query_log.sufficient=0 with optional missing_note; flagged_by dropped session 103 Phase 1) |
 | `/api/legal/parliament-bill-url` | GET | resolves parliament.tas.gov.au bill page slug by year+billNumber; fetches year index, two-pass regex match; returns { result: { url } } or { result: { url: null } }; no auth (rate-limited block) |
+| `/api/legal/case-detail` | GET | Single-row full-text fetch for one case by citation · `handleCaseDetail()` · response shape `{ result: { case: row } }` · caller unwraps as `r.result?.case ?? r.case` · no auth (rate-limited /api/legal/* block) |
 | `/api/admin/dlq-chunks` | GET | returns case_chunks where dlq=1; X-Nexus-Key; fields: id, citation, chunk_index, retry_count, preview |
 
 ### Query logging (session 65)

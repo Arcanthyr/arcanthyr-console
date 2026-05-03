@@ -241,7 +241,7 @@ export default function Intel() {
                 No results.
               </div>
             )}
-            {filtered.map((r, i) => {
+            {false && filtered.map((r, i) => {
               const isActive = !!selected && resultKey(selected) === resultKey(r);
               return (
                 <ResultCard

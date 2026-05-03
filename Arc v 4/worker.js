@@ -1066,14 +1066,15 @@ async function handleFormatAndUpload(body, env) {
 async function handleLibraryList(env) {
   const [cases, legislation, sources] = await Promise.all([
     env.DB.prepare(`
-      SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
-             processed_date, summary_quality_score, 'case' AS doc_type,
-             LENGTH(raw_text) AS raw_size, enriched, deep_enriched, subject_matter,
-             facts, holding, holdings_extracted, principles_extracted, legislation_extracted,
-             authorities_extracted,
-             (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation) AS chunk_count,
-             (SELECT COUNT(*) FROM case_chunks WHERE citation = cases.citation AND embedded = 1) AS chunks_embedded
-      FROM cases ORDER BY processed_date DESC
+      SELECT c.id, c.citation AS ref, c.case_name AS title, c.court, c.case_date AS date,
+             c.processed_date, c.summary_quality_score, 'case' AS doc_type,
+             LENGTH(c.raw_text) AS raw_size, c.enriched, c.deep_enriched, c.subject_matter,
+             COUNT(cc.id) AS chunk_count,
+             SUM(CASE WHEN cc.embedded = 1 THEN 1 ELSE 0 END) AS chunks_embedded
+      FROM cases c
+      LEFT JOIN case_chunks cc ON cc.citation = c.citation
+      GROUP BY c.id
+      ORDER BY c.processed_date DESC
     `).all(),
     env.DB.prepare(`
       SELECT id, id AS ref, title, jurisdiction AS court, current_as_at AS date,
@@ -1100,6 +1101,18 @@ async function handleLibraryList(env) {
       secondary: (sources.results || []).length,
     }
   };
+}
+
+async function handleCaseDetail(citation, env) {
+  if (!citation) return { ok: false, error: 'citation required' };
+  const row = await env.DB.prepare(`
+    SELECT id, citation AS ref, case_name AS title, court, case_date AS date,
+           facts, holding, holdings_extracted, principles_extracted,
+           legislation_extracted, authorities_extracted
+    FROM cases WHERE citation = ? LIMIT 1
+  `).bind(citation).first();
+  if (!row) return { ok: false, error: 'Case not found' };
+  return { ok: true, case: row };
 }
 
 async function handleLibraryDelete(docType, id, env) {
@@ -3624,6 +3637,10 @@ export default {
         else if (action === "upload-corpus" && request.method === "POST") result = await handleUploadCorpus(body, env);
         else if (action === "format-and-upload" && request.method === "POST") result = await handleFormatAndUpload(body, env);
         else if (action === "library" && request.method === "GET") result = await handleLibraryList(env);
+        else if (action === "case-detail" && request.method === "GET") {
+          const citation = url.searchParams.get('citation');
+          result = await handleCaseDetail(citation ? decodeURIComponent(citation) : null, env);
+        }
         else if (action === "case-authority" && request.method === "GET") {
           const citation = url.searchParams.get('citation');
           if (!citation) return json({ error: 'citation required' }, 400);

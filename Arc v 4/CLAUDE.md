@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 30 April 2026 (end of session 108) · Supersedes all prior versions
+Updated: 3 May 2026 (end of session 109) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–105) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–106) — load conditionally
 
 ---
 
@@ -31,7 +31,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) · flagged_by column dropped session 103 Phase 1 |
 | Insufficient feedback button | LIVE — ↓ Insufficient button in INTEL page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · popup with Submit/Skip buttons + visible error state on API failure (session 105) · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
-| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 57719d21 |
+| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version df0572c3-9ebd-4d8c-b4c5-d6ecfd679dd1 |
 | D1 case_citations | 10,575 rows · subject_matter filter removed session 108 — now indexes all deep_enriched=1 cases |
 | D1 case_legislation_refs | 5,356 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
@@ -103,6 +103,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Landing.jsx nav buttons are a separate component from Nav.jsx** — no shared code between them. Editing Nav.jsx has zero effect on Landing.jsx button styling. When making nav changes, always edit both files explicitly. Not a bug — by design — but cost a full component read to discover session 108.
 - **CaseSearch.jsx state/court filtering is entirely client-side** — `filterByStates` runs post-fetch on the full case list loaded at mount. `handleLibraryList` accepts no state or court filter params. The `STATE_COURTS` map currently only has entries for `TAS` and `HCA`; all other keys return `undefined` → silent empty-set from `filterByStates`. Any future state addition requires an explicit entry in that map.
 - **xref_agent subject_matter filter was in Worker.js, not xref_agent.py** — `handleFetchCasesForXref` (Worker.js line ~2337) held the `AND subject_matter IN ('criminal', 'mixed')` clause. Removed session 108; xref now covers all `deep_enriched=1` cases. If filter needs restoring, look in Worker.js not the Python script.
+- **case-detail double-unwrap — GET /api/legal/case-detail response shape is `{ result: { case: row } }`** — consuming code must unwrap as `r.result?.case ?? r.case`. The standard `/api/legal/` wrapping pattern is documented but the nested `result.case` key is not. Future callers writing `r.result` will get `{ case: row }`, not the row itself.
+- **precompact.ps1 hook broken — silent failure on every compact** — PowerShell parse error on unicode/emoji character at line 27. Hook silently fails; compaction still runs but the hook does not execute. Not yet fixed — needs line 27 identified and the offending character removed or escaped.
 - **subject_matter misclassification — Rattigan and Pilling confirmed wrong** — at least two cases have incorrect subject_matter values causing misclassification in retrieval and xref. Full corpus audit needed before fix. 3-part fix when ready: (1) Worker route handling of subject_matter on ingest/update, (2) poller metadata dict, (3) targeted case chunk re-embed for affected citations. Do not re-embed individual cases before audit is complete — scope unknown.
 
 ---
@@ -231,14 +233,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 106) — 26 April 2026
-
-- **Logo swap** — Nav.jsx, Landing.jsx, and ReadingPane.jsx all updated to reference new `public/“this one”` emblem asset; all three prior `/unnamed.jpg` references replaced including the 48px empty-state reference in ReadingPane.jsx
-- **“THE ARC” landing rename** — Landing.jsx:81 wordmark string changed from `Arcanthyr` to `THE ARC`; existing `textTransform: uppercase` wrapper makes it render correctly; ShareModal email subject unchanged
-- **ALL CAPS labels** — `textTransform: 'uppercase'` applied to all interactive labels across ReadingPane.jsx, Intel.jsx, CaseSearch.jsx; Ask → button left as design exception; hardcoded uppercase strings untouched
-- **Legislation title-case safety net** — `textTransform: 'capitalize'` added to LegislationTable Act column cell; no hardcoded legislation name strings required changing (all already title-case or outside scope)
-- **Session numbering corrected** — Phase 4 bullet incorrectly bundled into session 105 block by CC's session-close writer; extracted and placed in correct session 106 block
-
 ## CHANGES THIS SESSION (session 107) — 26 April 2026
 
 - **Post-rebuild UI fixes (6)** — moved Secondary Sources sub-tab from Case Search into Corpus Admin placeholder; transplanted Legislation sub-page from Case Search into Legislation main page shell; added "This case cites N · Cited by N" tallies inline in case header without toggle; converted state filter to multi-select tabs (TAS default, TAS fallback on empty); converted year filter to court-scoped dropdown; added GET /api/legal/feedback route surfacing query_log WHERE sufficient=0
@@ -259,6 +253,16 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Landing page grid removed** — `linear-gradient` checker pattern and `@keyframes grid-scroll` removed from Landing.jsx and index.css
 - **Intel page cleanup** — Source filter row restored (accidentally removed with chunk display), toggle alignment fixed via fixed-width labels, chunk display removed from results
 - **xref_agent scope expanded** — `AND subject_matter IN ('criminal', 'mixed')` removed from `handleFetchCasesForXref` in Worker.js (version 86921e1e); backfill ran immediately; case_citations 7,213 → 10,575 (+3,362); case_legislation_refs 5,147 → 5,356 (+209)
+
+## CHANGES THIS SESSION (session 109) — 3 May 2026
+
+- **Drift audit — 7 MD fixes** — datestamp, /search route note (Five→Four pass), subject_matter audit item in OUTSTANDING PRIORITIES + KNOWN ISSUES, Phase 2/3/4 roadmap collapsed to COMPLETE line, Intel.jsx AI ASSIST label noted, CLAUDE_init.md health check updated to curl primary; committed c483e0a
+- **Session-closer skill hardened** — two grep verify steps added for both Updated: headers (CLAUDE_arch.md + CLAUDE.md); catches stale datestamp before sign-off rather than at next drift audit
+- **Insufficient? button** — label changed from `Insufficient` to `Insufficient?`, color changed from `var(--text-muted)` to `var(--red)` matching site error pattern; hover states updated (ReadingPane.jsx:334)
+- **Chunk cards hidden** — `filtered.map(...)` wrapped in `{false && ...}` in Intel.jsx:244; Source toggle chips (ALL/CASES/CORPUS/LEGISLATION) remain fully functional
+- **Suggestion pills removed** — `SUGGESTIONS` constant and `<motion.div>` pill block deleted from Landing.jsx; no dead state or handlers remain
+- **Landing nav borders widened** — `1px solid #252A2E` → `2px solid #252A2E` on four tab buttons in Landing.jsx only; Nav.jsx untouched
+- **Case Search 500 eliminated** — `handleLibraryList` stripped of 6 large text columns + correlated subqueries replaced with LEFT JOIN aggregates; new `handleCaseDetail` handler + `GET /api/legal/case-detail` route added; payload 12.2 MB → 1.18 MB, intermittent 500 eliminated (Worker df0572c3)
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

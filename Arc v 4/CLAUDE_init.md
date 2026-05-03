@@ -457,4 +457,10 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 | git show for recovery | `git show <commit>:<file>` is the correct path when a working file has accumulated silent regressions — faster and authoritative vs reconstructing from session summaries |
 | Backfill verification | For INSERT OR IGNORE backfills, skip log files (SSH buffering truncates them). Query D1 directly via MCP COUNT(*) — faster and authoritative |
 | Deploy before diagnosing | "Loading forever" or "500 on selection" symptoms should trigger a fresh deploy before wrangler tail investigation — stale build artefacts masquerade as code defects |
+
+---
+
+### D1 list query payload limit
+
+Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated subqueries per row, total response < ~3 MB. Over ~5 MB risks intermittent 30s Worker wall-clock timeout (CF limit). Rule of thumb: check `columns × avg_bytes × row_count` before writing any endpoint that scans the full cases table. Intermittent 500s on list endpoints → check payload size first, not VPS or Qdrant.
 | Nav + Landing always both | Any change to navigation styling or labels requires editing both Nav.jsx and Landing.jsx explicitly — they share no button implementation |

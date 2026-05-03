@@ -626,11 +626,27 @@ const tdMono = { ...td, fontFamily: 'monospace', fontSize: '12px', color: 'var(-
 function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
   const url = austliiUrl(c.ref || c.citation);
   const [citeCounts, setCiteCounts] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(true);
 
-  /* Derive immediate cites count from authorities_extracted on the case row */
+  useEffect(() => {
+    setDetail(null);
+    setDetailLoading(true);
+    const citation = c.ref || c.citation;
+    if (!citation) { setDetailLoading(false); return; }
+    api.caseDetail(citation)
+      .then(r => {
+        const d = r.result?.case ?? r.case ?? null;
+        setDetail(d);
+      })
+      .catch(() => {})
+      .finally(() => setDetailLoading(false));
+  }, [c.ref, c.citation]);
+
+  /* Derive immediate cites count from authorities_extracted once detail loaded */
   const citesImmediate = (() => {
     try {
-      const a = c.authorities_extracted;
+      const a = detail?.authorities_extracted ?? c.authorities_extracted;
       if (!a) return null;
       const arr = typeof a === 'string' ? JSON.parse(a) : a;
       return Array.isArray(arr) ? arr.length : null;
@@ -685,21 +701,28 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
 
       {/* Body */}
       <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
+        {detailLoading && (
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '16px' }}>Loading…</div>
+        )}
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 11, letterSpacing: '0.08em', color: '#3D4247', textTransform: 'uppercase', marginBottom: 8 }}>Facts</div>
-          <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--pane-text)' }}>{c.facts || 'Not extracted'}</p>
+          <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--pane-text)' }}>{detail?.facts || (detailLoading ? '…' : 'Not extracted')}</p>
         </div>
         <div style={{ marginBottom: 24 }}>
           <div style={{ fontSize: 11, letterSpacing: '0.08em', color: '#3D4247', textTransform: 'uppercase', marginBottom: 8 }}>Holding</div>
-          <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--pane-text)' }}>{c.holding && c.holding !== 'AI extraction failed' ? c.holding : 'Not extracted'}</p>
+          <p style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--pane-text)' }}>
+            {detail?.holding && detail.holding !== 'AI extraction failed' ? detail.holding : (detailLoading ? '…' : 'Not extracted')}
+          </p>
         </div>
         <div>
           <div style={{ fontSize: 11, letterSpacing: '0.08em', color: '#3D4247', textTransform: 'uppercase', marginBottom: 8 }}>Principles</div>
-          {(() => {
+          {detailLoading ? (
+            <p style={{ fontSize: 14, color: 'var(--pane-dim)', fontStyle: 'italic' }}>…</p>
+          ) : (() => {
             try {
-              const items = typeof c.principles_extracted === 'string'
-                ? JSON.parse(c.principles_extracted)
-                : (c.principles_extracted || []);
+              const items = typeof detail?.principles_extracted === 'string'
+                ? JSON.parse(detail.principles_extracted)
+                : (detail?.principles_extracted || []);
               if (!items.length) return <p style={{ fontSize: 14, color: '#3D4247', fontStyle: 'italic' }}>None extracted</p>;
               return <ol style={{ paddingLeft: 18 }}>{items.map((h, i) => (
                 <li key={i} style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--pane-text)', marginBottom: 8 }}>
@@ -711,11 +734,11 @@ function CaseReadingPane({ c, onClose, cases = [], onSelect }) {
             }
           })()}
         </div>
-        {(() => {
+        {!detailLoading && (() => {
           let refs = [];
           try {
-            refs = typeof c.legislation_extracted === 'string'
-              ? JSON.parse(c.legislation_extracted) : (c.legislation_extracted || []);
+            refs = typeof detail?.legislation_extracted === 'string'
+              ? JSON.parse(detail.legislation_extracted) : (detail?.legislation_extracted || []);
             if (!Array.isArray(refs)) refs = [];
           } catch { refs = []; }
           if (!refs.length) return null;

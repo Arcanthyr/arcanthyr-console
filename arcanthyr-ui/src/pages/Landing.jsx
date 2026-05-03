@@ -6,14 +6,6 @@ import '@fontsource/libre-baskerville/400-italic.css';
 
 import VanishingInput from '../components/ui/VanishingInput';
 
-const SUGGESTIONS = [
-  'Evidence Act 2001 (Tas)',
-  'Criminal Code s234',
-  'Sentencing guidelines',
-  'Bail Act 1994',
-  'Court of Appeal — recent',
-];
-
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -97,35 +89,6 @@ export default function Landing() {
           />
         </motion.div>
 
-        {/* Suggestion pills */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.6 }}
-          style={{
-            display: 'flex', flexWrap: 'wrap', gap: '8px',
-            justifyContent: 'center', maxWidth: '560px',
-            marginBottom: '44px',
-          }}
-        >
-          {SUGGESTIONS.map(s => (
-            <button
-              key={s}
-              onClick={() => navigate(`/intel?q=${encodeURIComponent(s)}`)}
-              style={{
-                background: 'transparent', border: '1px solid #1E2124',
-                borderRadius: '20px', padding: '5px 14px', fontSize: '10px',
-                fontFamily: "'Libre Baskerville', serif", letterSpacing: '0.05em',
-                color: '#7A8087', cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s, background 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#C8CDD2'; e.currentTarget.style.borderColor = '#252A2E'; e.currentTarget.style.background = 'rgba(74,158,255,0.05)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#7A8087'; e.currentTarget.style.borderColor = '#1E2124'; e.currentTarget.style.background = 'transparent'; }}
-            >
-              {s}
-            </button>
-          ))}
-        </motion.div>
-
         {/* Nav links */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -146,7 +109,7 @@ export default function Landing() {
                 minWidth: '120px', height: '40px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent',
-                border: '1px solid #252A2E',
+                border: '2px solid #252A2E',
                 borderRadius: '3px',
                 fontFamily: "'Libre Baskerville', serif",
                 fontSize: '12px', letterSpacing: '0.04em', textTransform: 'uppercase',

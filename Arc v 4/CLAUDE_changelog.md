@@ -1,8 +1,16 @@
-# CLAUDE Changelog — Sessions 21–105
+# CLAUDE Changelog — Sessions 21–106
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 106) — 26 April 2026
+
+- **Logo swap** — Nav.jsx, Landing.jsx, and ReadingPane.jsx all updated to reference new `public/"this one"` emblem asset; all three prior `/unnamed.jpg` references replaced including the 48px empty-state reference in ReadingPane.jsx
+- **"THE ARC" landing rename** — Landing.jsx:81 wordmark string changed from `Arcanthyr` to `THE ARC`; existing `textTransform: uppercase` wrapper makes it render correctly; ShareModal email subject unchanged
+- **ALL CAPS labels** — `textTransform: 'uppercase'` applied to all interactive labels across ReadingPane.jsx, Intel.jsx, CaseSearch.jsx; Ask → button left as design exception; hardcoded uppercase strings untouched
+- **Legislation title-case safety net** — `textTransform: 'capitalize'` added to LegislationTable Act column cell; no hardcoded legislation name strings required changing (all already title-case or outside scope)
+- **Session numbering corrected** — Phase 4 bullet incorrectly bundled into session 105 block by CC's session-close writer; extracted and placed in correct session 106 block
 
 ## CHANGES THIS SESSION (session 105) — 26 April 2026
 

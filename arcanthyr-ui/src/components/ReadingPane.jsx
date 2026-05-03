@@ -325,13 +325,13 @@ function SaveFlagPanel({ query, answer, queryId }) {
             disabled={thumbsFlagging || thumbsOpen}
             style={{
               fontSize: '11px', padding: '5px 10px', background: 'transparent',
-              border: 'none', color: 'var(--text-muted)', cursor: (thumbsFlagging || thumbsOpen) ? 'default' : 'pointer',
+              border: 'none', color: 'var(--red)', cursor: (thumbsFlagging || thumbsOpen) ? 'default' : 'pointer',
               letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.2s',
             }}
-            onMouseEnter={e => { if (!thumbsOpen) e.currentTarget.style.color = 'var(--text-secondary)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+            onMouseEnter={e => { if (!thumbsOpen) e.currentTarget.style.color = 'var(--red)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--red)'; }}
           >
-            {thumbsFlagging ? '…' : '↓ Insufficient'}
+            {thumbsFlagging ? '…' : '↓ Insufficient?'}
           </button>
         ) : (
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.04em' }}>↓ Logged</span>
