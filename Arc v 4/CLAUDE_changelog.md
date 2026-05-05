@@ -1,8 +1,18 @@
-# CLAUDE Changelog — Sessions 21–108
+# CLAUDE Changelog — Sessions 21–109
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 109) — 3 May 2026
+
+- **Drift audit — 7 MD fixes** — datestamp, /search route note (Five→Four pass), subject_matter audit item in OUTSTANDING PRIORITIES + KNOWN ISSUES, Phase 2/3/4 roadmap collapsed to COMPLETE line, Intel.jsx AI ASSIST label noted, CLAUDE_init.md health check updated to curl primary; committed c483e0a
+- **Session-closer skill hardened** — two grep verify steps added for both Updated: headers (CLAUDE_arch.md + CLAUDE.md); catches stale datestamp before sign-off rather than at next drift audit
+- **Insufficient? button** — label changed from `Insufficient` to `Insufficient?`, color changed from `var(--text-muted)` to `var(--red)` matching site error pattern; hover states updated (ReadingPane.jsx:334)
+- **Chunk cards hidden** — `filtered.map(...)` wrapped in `{false && ...}` in Intel.jsx:244; Source toggle chips (ALL/CASES/CORPUS/LEGISLATION) remain fully functional
+- **Suggestion pills removed** — `SUGGESTIONS` constant and `<motion.div>` pill block deleted from Landing.jsx; no dead state or handlers remain
+- **Landing nav borders widened** — `1px solid #252A2E` → `2px solid #252A2E` on four tab buttons in Landing.jsx only; Nav.jsx untouched
+- **Case Search 500 eliminated** — `handleLibraryList` stripped of 6 large text columns + correlated subqueries replaced with LEFT JOIN aggregates; new `handleCaseDetail` handler + `GET /api/legal/case-detail` route added; payload 12.2 MB → 1.18 MB, intermittent 500 eliminated (Worker df0572c3)
 
 ## CHANGES THIS SESSION (session 108) — 30 April 2026
 

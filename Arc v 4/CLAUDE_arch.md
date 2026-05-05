@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 3 May 2026 (end of session 110). Upload every session alongside CLAUDE.md.*
+*Updated: 4 May 2026 (end of session 113). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -409,7 +409,7 @@ Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-mer
 | `_bm25_corpus` | dict | In-memory BM25 corpus cache |
 | `BM25_TTL` | 600 | BM25 corpus rebuild TTL in seconds |
 
-**agent-general (server.py): single-threaded Flask** — no gunicorn, no async. One blocked request (e.g. hung query expansion LLM call) blocks all /search requests and /health checks. Fix: app.run(..., threaded=True) or gunicorn --workers 2. Priority: fix before next production use with concurrent tabs.
+**agent-general (server.py): ThreadingHTTPServer (stdlib)** — server.py uses Python stdlib `http.server.ThreadingHTTPServer`, NOT Flask. Switched from `HTTPServer` → `ThreadingHTTPServer` session 113 (two-line fix, no new dependencies, no Dockerfile rebuild). Each request now runs in its own thread; a hung query expansion call no longer blocks /search or /health. `docker compose restart` is sufficient after any server.py edit.
 
 ---
 
@@ -847,29 +847,14 @@ Three frontend bugs fixed session 82: (1) api.js sent FormData/multipart — Wor
 
 ---
 
-### Clerk Authentication (session 110)
+### Authentication model (session 113)
 
-**Frontend:**
-- `@clerk/clerk-react` installed in `arcanthyr-ui/`
-- `ClerkProvider` wraps root in `main.jsx` with `publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}`
-- `VITE_CLERK_PUBLISHABLE_KEY` in `arcanthyr-ui/.env.local` (gitignored via `*.local`) — pk_test_... for development instance (`discrete-gorilla-44.clerk.accounts.dev`)
-- `Landing.jsx` — `<SignedOut>` shows sign-in form; `<SignedIn>` redirects to /intel
-- `App.jsx` — `AuthGate` wraps `<Routes>`: returns null until `isLoaded=true`, then calls `initApi(getToken)` synchronously before children render; `ProtectedRoute` redirects unauthenticated users to /
-- `Nav.jsx` — `<UserButton />` at nav right end (sign-out + profile)
-- `api.js` — `initApi(fn)` stores getToken reference; `req()` attaches `Authorization: Bearer <token>` on every call; 401 throws "Access denied — your account is not authorised to use this system"
+`useAuth.js` (`arcanthyr-ui/src/useAuth.js`) — three exports:
+- `isAuthed()` — checks `sessionStorage.getItem('arc_authed') === '1'`
+- `promptAuth()` — calls `window.prompt()` with password; sets `arc_authed=1` on match
+- `requireAuth()` — isAuthed() || promptAuth(); return value is the call gate
 
-**Worker:**
-- `APPROVED_EMAILS` constant near top of worker.js — hardcoded list of approved addresses (Clerk Allowlist is Pro-only on Hobby plan)
-- `verifyClerkToken(request, env)` — reads Authorization header, fetches JWKS from `https://api.clerk.com/v1/jwks` with `Authorization: Bearer ${env.CLERK_SECRET_KEY}` header (required — unauthenticated fetch returns error), caches result 1 hour in module-level var, verifies RS256 signature via crypto.subtle, returns email on success or null
-- `requireApprovedEmail(request, env)` — calls verifyClerkToken, checks email (lowercase) against APPROVED_EMAILS, returns 401 JSON if not approved; returns null if approved
-- Runs on all `/api/*` routes only — SPA shell, assets, and non-API paths excluded via `!pathname.startsWith('/api/')`
-- `CLERK_SECRET_KEY` set via `npx wrangler secret put CLERK_SECRET_KEY` (sk_test_...)
-
-**Clerk Dashboard config required:**
-- Configure → Sessions → Customize session token → add `{"email": "{{user.primary_email_address.email_address}}"}` — without this, payload.email is null and all users get 401
-- Allowlist (Protect → Restrictions → Allowlist) is a Pro feature — not used; email gate is in Worker code instead
-
-**Known timing rule:** Clerk's `getToken` returns null before `isLoaded=true` even if stored synchronously. Always gate on `isLoaded` before calling `initApi` — the AuthGate wrapper pattern is the safe implementation.
+Gated actions: Intel query submit (form + Enter + URL auto-run), CaseSearch case open, leg search, word search. Session-scoped (clears on tab close). No Worker-side gate — client-only.
 
 ---
 

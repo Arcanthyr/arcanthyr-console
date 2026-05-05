@@ -4224,3 +4224,36 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 - AbortSignal.timeout(25000) added to Nexus fetch in Worker — prevents Cloudflare 524 from propagating as HTTP 500; clean timeout error surfaced to UI instead
 - Flask threading fix deferred — server.py threading constraint confirmed as the root cause of session-ending outage; fix (threaded=True or gunicorn) is the first priority next session; do not open UI in multiple tabs until fixed
 - Dead end: curl Nexus while request in-flight — compounds the block rather than diagnosing it; always check docker compose logs --tail=5 agent-general first to confirm no active request before attempting any diagnostic curl
+---
+
+## Session 113 — 4 May 2026
+
+**Decision: ThreadingHTTPServer over gunicorn for server.py concurrency fix**
+- server.py used stdlib HTTPServer (single-threaded) — root cause of all session 112 Nexus 524s
+- Option A: switch to gunicorn + workers (multi-process, heavier, requires pip install in Dockerfile)
+- Option B: ThreadingHTTPServer (stdlib, two-line change, no new deps, no Dockerfile rebuild)
+- **Chose B.** Single host, low concurrency, no CPU-bound work in the request path. ThreadingHTTPServer gives per-request threads which is all that was needed. Gunicorn would be appropriate if concurrency ever reaches multi-core saturation — that is not the current failure mode.
+
+**Decision: Abandon Clerk, use sessionStorage password gate**
+- Clerk frontend was fully deployed (ClerkProvider, AuthGate, UserButton, api.js token wiring)
+- Worker gate deployed (APPROVED_EMAILS, verifyClerkToken with JWKS fetch, requireApprovedEmail)
+- Session 112 close: API calls still returning 401; JWKS verification outcome unconfirmed
+- Root diagnosis: the debugging path requires wrangler tail running in parallel with a real browser session, which is not achievable from CC on Windows (wrangler tail blocked by PowerShell 5.1)
+- Clerk adds dependency on an external service, publishable/secret keys, and a JWKS fetch on every API call — all for a single-user tool used by Tom alone
+- **Chose password gate:** sessionStorage + window.prompt() — zero external dependencies, session-scoped, trivially auditable. Sufficient for a tool used by one person on a known device.
+
+**Decision: Restore Sol to claude-sonnet-4-6**
+- Session 112 switched Sol to haiku to work around HTTP 500 timeouts from server.py blocking
+- With ThreadingHTTPServer fix deployed, the root cause is gone
+- Sonnet restored with AbortSignal.timeout tightened from 25s to 20s (more CF wall-clock budget)
+
+**Dead end: wrangler pages deploy**
+- `npx wrangler pages deploy dist/ --project-name arcanthyr` tried during PowerShell deploy
+- The site is served by a Worker with `[assets]` binding, NOT a Pages project
+- Pages deploy created a separate deployment unrelated to arcanthyr.com; correct path is always: npm run build -> copy to public/ -> wrangler deploy
+
+**Dead end: cp -r in PowerShell**
+- `cp -r dist/. "../Arc v 4/public/"` in PowerShell (via git bash) silently skipped the existing `public/dist/` subdirectory from a prior bad deploy
+- Files ended up in the wrong paths; Cloudflare asset manifest pointed at wrong hashes
+- Fix: `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"` plus remove any stale `public/dist/` subdir before re-deploying
+

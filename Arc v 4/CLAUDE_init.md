@@ -33,6 +33,31 @@ git push origin master
 wrangler deploy
 ```
 
+### Deploy arcanthyr-ui frontend
+
+```powershell
+# From arcanthyr-ui/
+npm run build
+
+# Copy built files to Worker public/ (PowerShell — use -Force to overwrite existing)
+Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"
+
+# Deploy Worker from Arc v 4/
+cd "../Arc v 4"
+npx wrangler deploy
+```
+
+**PowerShell gotcha:** `cp -r dist/. "../Arc v 4/public/"` silently skips existing subdirectories.
+Use `Copy-Item -Recurse -Force dist/* ...` instead.
+If a stale `public/dist/` subdir exists from a prior bad deploy, remove it first:
+```powershell
+Remove-Item -Recurse "Arc v 4/public/dist"
+```
+
+**Do NOT** use `wrangler pages deploy` — the app is served by a Worker, not Pages.
+**Do NOT** add `_redirects` to `public/` — conflicts with Workers Assets and causes infinite loop.
+
+
 ### D1 Database (always add `--remote` for live data)
 ```bash
 wrangler d1 execute arcanthyr --remote --command "SELECT COUNT(*) FROM cases"
@@ -466,8 +491,9 @@ Default for a frozen component with no logged real-use failure is no work. Propo
 
 Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated subqueries per row, total response < ~3 MB. Over ~5 MB risks intermittent 30s Worker wall-clock timeout (CF limit). Rule of thumb: check `columns × avg_bytes × row_count` before writing any endpoint that scans the full cases table. Intermittent 500s on list endpoints → check payload size first, not VPS or Qdrant.
 | Nav + Landing always both | Any change to navigation styling or labels requires editing both Nav.jsx and Landing.jsx explicitly — they share no button implementation |
-| Clerk publishable key | `VITE_CLERK_PUBLISHABLE_KEY=pk_test_...` in `arcanthyr-ui/.env.local` — gitignored via `*.local`; present at local build time; no build server so gitignore is not a problem |
-| Clerk secret key | `npx wrangler secret put CLERK_SECRET_KEY` from `Arc v 4/` — paste sk_test_... value; required for authenticated JWKS fetch in verifyClerkToken |
-| Clerk session token email claim | Dashboard → Configure → Sessions → Customize session token → add `{"email": "{{user.primary_email_address.email_address}}"}` — without this payload.email is null and all users get 401 |
-| Clerk AuthGate pattern | AuthGate wraps <Routes> in App.jsx; returns null until isLoaded=true; calls initApi(getToken) synchronously; Clerk's getToken returns null before isLoaded even if stored synchronously — always gate on isLoaded |
-| APPROVED_EMAILS | Hardcoded array near top of worker.js — edit and wrangler deploy to add/remove users |
+| Password gate auth | `useAuth.js` — `requireAuth()` checks `sessionStorage.getItem('arc_authed') === '1'`; on first access calls `window.prompt()`; sets `arc_authed=1` on correct password. Gate is session-scoped (clears on tab close). No Worker-side gate. |
+
+---
+
+**grep on CLAUDE.md:** Always use `grep -a` — the file contains a null byte and returns "Binary file matches" without the flag. Every content or line-number check on CLAUDE.md requires `grep -a`.
+

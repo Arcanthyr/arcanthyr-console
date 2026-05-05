@@ -5,6 +5,7 @@ import ResultCard from '../components/ResultCard';
 import ReadingPane from '../components/ReadingPane';
 import ShareModal from '../components/ShareModal';
 import { api } from '../api';
+import { requireAuth } from '../useAuth';
 
 const FILTERS = ['ALL', 'CASES', 'CORPUS', 'LEGISLATION'];
 const DOMAIN_FILTERS = ['ALL', 'CRIMINAL', 'ADMINISTRATIVE', 'CIVIL'];
@@ -40,6 +41,7 @@ export default function Intel() {
 
   async function handleQueryWith(q) {
     if (!q?.trim()) return;
+    if (!requireAuth()) return;
     setLoading(true);
     setError('');
     setResults([]);

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import { api } from '../api';
 import StareDecisisSection from '../components/StareDecisisSection';
+import { requireAuth } from '../useAuth';
 
 const BASE = 'https://arcanthyr.com';
 
@@ -83,6 +84,11 @@ export default function CaseSearch() {
     load();
     loadTruncations();
   }, []);
+
+  function handleSelectCase(r) {
+    if (!requireAuth()) return;
+    setSelectedCase(r);
+  }
 
   async function load() {
     setLoading(true);
@@ -200,7 +206,7 @@ export default function CaseSearch() {
             <CasesTable
               rows={caseRows}
               onDelete={handleDelete}
-              onSelect={setSelectedCase}
+              onSelect={handleSelectCase}
               selectedId={selectedCase?.id}
               truncationMap={truncationMap}
               onTruncationClick={setSelectedTruncation}
@@ -302,6 +308,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
 
   async function runLegSearch(q, offset = 0) {
     if (!q.trim()) return;
+    if (!requireAuth()) return;
     setLegLoading(true);
     try {
       const r = await api.searchByLegislation(q, 50, offset);
@@ -319,6 +326,7 @@ function CasesTable({ rows, onDelete, onSelect, selectedId, truncationMap, onTru
 
   async function runWordSearch(q) {
     if (!q.trim()) return;
+    if (!requireAuth()) return;
     setWordLoading(true);
     try {
       const r = await api.wordSearch(q, 30);

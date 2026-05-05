@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 3 May 2026 (end of session 112) · Supersedes all prior versions
+Updated: 4 May 2026 (end of session 113) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–108) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–109) — load conditionally
 
 ---
 
@@ -63,9 +63,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ## OUTSTANDING PRIORITIES
 
-- **agent-general Flask threading** — server.py runs single-threaded; one stuck query expansion call blocks all /search requests and /health; needs threaded=True or gunicorn with workers before next production use
 - **subject_matter misclassification audit — deferred** — Rattigan and Pilling confirmed wrong subject_matter values. 3-part fix pending full audit: (1) Worker route update, (2) poller metadata dict, (3) case chunk re-embed for affected cases. Do not implement any part of the fix before audit scope is established. Trigger: complete audit → identify all misclassified cases → then implement in one coordinated pass.
-- **Clerk auth Worker JWT verification — incomplete** — Frontend gate live (ClerkProvider, AuthGate, UserButton, api.js token wiring all deployed). Worker gate deployed (APPROVED_EMAILS, verifyClerkToken with authenticated JWKS fetch, requireApprovedEmail on /api/* routes). API calls still returning 401 at session close — JWKS verification outcome unknown. Next session: open arcanthyr.com in browser, sign in, run wrangler tail in parallel, reload page, confirm `[clerk] jwks status: 200 auth header present: true` in tail output. If status 200 and header present, JWT decode/verify step in verifyClerkToken is the failure point — inspect RS256 verify logic. Remove debug logs (App.jsx line 17, verifyClerkToken console.log) after confirming working.
 
 ---
 
@@ -74,7 +72,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **`/api/legal/` block is rate-limited only** — routes in this block (amendments, fetch-judgment, parliament-bill-url, etc.) carry no X-Nexus-Key auth. Calling components such as AmendmentPanel have no nexusKey prop. Any new route called from a user-facing component without an existing credential mechanism must go in this block, not behind X-Nexus-Key, unless a credential flow is added to the component first.
 - **`legislation` table column is `jurisdiction` not `court`** — `handleLibraryList` queries `jurisdiction AS court` and `handleUploadLegislation` inserts into `jurisdiction`. CLAUDE_arch.md D1 schema listed it as `court` (the alias name, not the real column). Any raw SQL written against this table must use `jurisdiction`. Fixed in CLAUDE_arch.md this session.
 - **`wrangler tail` not usable from CC on Windows** — PowerShell 5.1 blocks `&`, `Start-Job` doesn't persist across tool calls, `npx` is not a Win32 exe for `Start-Process`. Do not attempt CC-side `wrangler tail` diagnostics; browser console or Tom running tail manually in a separate terminal is the only reliable path.
-- **Clerk auth — API calls 401 at session close** — JWKS fetch authenticated with CLERK_SECRET_KEY, AuthGate pattern deployed, session token email claim added in Clerk Dashboard. Root cause of remaining 401 unconfirmed — next session verify with real browser JWT via wrangler tail before any further code changes.
 - **`api.js req()` wraps `/api/legal/` responses as `{ result: ... }`** — the block returns `json({ result })`, so consuming code must unwrap: `const { result } = await api.parliamentBillUrl(...)`, then `result.url`. This shape is not obvious from the route handler alone.
 - **Planning brief command hygiene** — session 97: the planning assistant re-introduced `node --check worker.js` in a CC brief despite SESSION RULES retiring it session 84. When generating CC briefs, cross-check any shell command against SESSION RULES before including it.
 - **Bulk requeue race condition** — firing >500 simultaneous CHUNK messages causes GPT-4o-mini rate limit exhaustion and merge race conditions · always use batched approach (limit=250) for bulk requeue operations · never reset all chunks simultaneously · pending check for non-DLQ chunks is now done=0 AND dlq=0 — update any requeue tooling accordingly
@@ -111,8 +108,9 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **case-detail double-unwrap — GET /api/legal/case-detail response shape is `{ result: { case: row } }`** — consuming code must unwrap as `r.result?.case ?? r.case`. The standard `/api/legal/` wrapping pattern is documented but the nested `result.case` key is not. Future callers writing `r.result` will get `{ case: row }`, not the row itself.
 - **precompact.ps1 hook broken — silent failure on every compact** — PowerShell parse error on unicode/emoji character at line 27. Hook silently fails; compaction still runs but the hook does not execute. Not yet fixed — needs line 27 identified and the offending character removed or escaped.
 - **subject_matter misclassification — Rattigan and Pilling confirmed wrong** — at least two cases have incorrect subject_matter values causing misclassification in retrieval and xref. Full corpus audit needed before fix. 3-part fix when ready: (1) Worker route handling of subject_matter on ingest/update, (2) poller metadata dict, (3) targeted case chunk re-embed for affected citations. Do not re-embed individual cases before audit is complete — scope unknown.
-- **agent-general single-threaded Flask** — a hung query expansion LLM call blocks the entire server indefinitely; concurrent UI tabs can trigger this; fix is threaded=True in app.run or gunicorn
-- **Query expansion AbortController (3s) in server.py appears non-functional** — server was observed blocked at query expansion for 2m15s+, far past the configured limit; timeout behaviour is unconfirmed
+- **server.py uses ThreadingHTTPServer, not Flask** — server.py is Python stdlib `http.server.ThreadingHTTPServer`, NOT Flask. Prior MDs said "Flask threading — needs threaded=True or gunicorn." Fix was two-line change: `ThreadingHTTPServer` import + use at line 1716. No new dependencies, no Dockerfile rebuild required. `docker compose restart` is sufficient after server.py edit via hex-ssh.
+- **AbortSignal.timeout cold-start race** — After `docker compose restart agent-general`, server needs ~2s to bind. curl immediately after restart returns HTTP 000 (connection refused). Wait and retry — not a sign of failure.
+- **Password gate auth — sessionStorage, prompt-based** — `useAuth.js` stores `arc_authed = "1"` in sessionStorage; `requireAuth()` calls `window.prompt()` on first access. Gated on: Intel search (form submit, Enter key, URL auto-run useEffect), CaseSearch case open, legislation search, word search. Gate clears on tab close. Password in useAuth.js source.
 
 ---
 
@@ -204,8 +202,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | Third-party tool security audit | Before installing any MCP server, plugin, or skills repo: audit every non-markdown file via Fetch MCP for raw content · Check for undisclosed outbound connections, platform onboarding, or credential harvesting · Delete any .mcp.json found in cloned skill repos before use |
 | arcanthyr-ui git repo | `arcanthyr-ui` is part of the monorepo — tracked under `arcanthyr-console/arcanthyr-ui/` · no separate GitHub repo · git root is `arcanthyr-console/`, not `arcanthyr-ui/` · migrated session 35 (was briefly a separate repo, absorbed into monorepo same session) |
 | arcanthyr-ui dev server | `cd "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\arcanthyr-ui"` then `npm run dev` · Browser calls arcanthyr.com Worker directly (no Vite proxy) · auth removed for local dev — no login required |
-| arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ · Do NOT `git add public/assets/` — build assets under public/assets/ are gitignored; only public/index.html and source files need staging |
-| Model toggle names | Sol = Claude API (claude-haiku-4-5-20251001) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
+| arcanthyr-ui deploy | Build: cd arcanthyr-ui → npm run build → cp -r dist/. "../Arc v 4/public/" → cd "../Arc v 4" → npx wrangler deploy · Do NOT use wrangler pages deploy · Do NOT add _redirects to public/ · Do NOT `git add public/assets/` — build assets under public/assets/ are gitignored; only public/index.html and source files need staging · PowerShell deploy: use `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"` — `cp -r dist/.` in PowerShell silently skips existing subdirs; stale `public/dist/` subdir from a prior bad deploy causes wrong paths — remove with `Remove-Item -Recurse "Arc v 4/public/dist"` before re-deploying |
+| Model toggle names | Sol = Claude API (claude-sonnet-4-6) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default |
 | JWT secret | worker.js uses `env.JWT_SECRET` fallback to `env.NEXUS_SECRET_KEY` · no separate JWT_SECRET set in Wrangler — NEXUS_SECRET_KEY is signing key |
 | worker.js query field | Frontend sends `{ query }` → Worker reads `body.query` → calls server.py with `{ query_text }` · never send query_text from frontend |
 | Vite proxy IPv6 fix | proxy target hardcoded to `104.21.1.159` with `Host: arcanthyr.com` header + `secure: false` · Node.js on Windows prefers IPv6 but proxy fails · IPv4 workaround required |
@@ -240,16 +238,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 109) — 3 May 2026
-
-- **Drift audit — 7 MD fixes** — datestamp, /search route note (Five→Four pass), subject_matter audit item in OUTSTANDING PRIORITIES + KNOWN ISSUES, Phase 2/3/4 roadmap collapsed to COMPLETE line, Intel.jsx AI ASSIST label noted, CLAUDE_init.md health check updated to curl primary; committed c483e0a
-- **Session-closer skill hardened** — two grep verify steps added for both Updated: headers (CLAUDE_arch.md + CLAUDE.md); catches stale datestamp before sign-off rather than at next drift audit
-- **Insufficient? button** — label changed from `Insufficient` to `Insufficient?`, color changed from `var(--text-muted)` to `var(--red)` matching site error pattern; hover states updated (ReadingPane.jsx:334)
-- **Chunk cards hidden** — `filtered.map(...)` wrapped in `{false && ...}` in Intel.jsx:244; Source toggle chips (ALL/CASES/CORPUS/LEGISLATION) remain fully functional
-- **Suggestion pills removed** — `SUGGESTIONS` constant and `<motion.div>` pill block deleted from Landing.jsx; no dead state or handlers remain
-- **Landing nav borders widened** — `1px solid #252A2E` → `2px solid #252A2E` on four tab buttons in Landing.jsx only; Nav.jsx untouched
-- **Case Search 500 eliminated** — `handleLibraryList` stripped of 6 large text columns + correlated subqueries replaced with LEFT JOIN aggregates; new `handleCaseDetail` handler + `GET /api/legal/case-detail` route added; payload 12.2 MB → 1.18 MB, intermittent 500 eliminated (Worker df0572c3)
-
 ## CHANGES THIS SESSION (session 110) — 3 May 2026
 
 - Amendment history fix — `useState(false)` → `useState(true)` in AmendmentPanel.jsx restores auto-expand on row click; `key={selectedLeg.id}` on LegislationPanel.jsx forces full remount on selection change, preventing stale state carrying over from prior row
@@ -267,6 +255,14 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - Query expansion timeout non-functional — server.py AbortController configured for 3s but server stayed blocked 2m15s+; needs investigation
 - AbortSignal.timeout(25000) added to both Nexus fetch calls in Worker — prevents 524 hanging at Cloudflare edge; clean timeout error returned instead (deployment unconfirmed end of session)
 - Flask threading fix not completed — session ended with queries still failing; threaded=True or gunicorn required before next session
+
+## CHANGES THIS SESSION (session 113) — 4 May 2026
+
+- **server.py threading fix** — `HTTPServer` → `ThreadingHTTPServer` (stdlib, no new deps, no Dockerfile rebuild); resolves single-threaded blocking that caused session 112 Nexus 524s under concurrent queries; `docker compose restart` sufficient; health check confirmed 200 after restart
+- **Sol model restored to claude-sonnet-4-6** — reverts session 112 haiku workaround; threading fix eliminates root-cause timeout; `AbortSignal.timeout` tightened 25000 → 20000ms on both Nexus fetch calls in Worker.js (deployed version 73cefa03)
+- **Clerk auth removed, password gate deployed** — Clerk fully reverted; `useAuth.js` added with `requireAuth()` / `isAuthed()` / `promptAuth()` (sessionStorage + window.prompt); gated on Intel search (all entry paths), CaseSearch case open, leg search, word search; build + deploy confirmed clean
+- **PowerShell deploy `-Force` rule added** — `cp -r dist/. public/` in PowerShell silently skips existing subdirs; correct form is `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"`; stale `public/dist/` subdir from bad prior deploy must be removed first
+- **CLAUDE.md/arch.md mis-labels corrected** — "Flask threading" entries replaced with accurate ThreadingHTTPServer description; Clerk auth sections removed; Model toggle names updated haiku → sonnet
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
