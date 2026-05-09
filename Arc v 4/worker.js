@@ -730,6 +730,13 @@ async function handleUploadLegislation(body, env) {
     );
     await env.DB.batch(stmts);
   }
+  for (let i = 0; i < sections.length; i += BATCH_SIZE) {
+    const ftsStmts = sections.slice(i, i + BATCH_SIZE).map(section =>
+      env.DB.prepare(`INSERT OR REPLACE INTO legislation_sections_fts (section_id, legislation_id, section_number, heading, text) VALUES (?, ?, ?, ?, ?)`)
+        .bind(section.id, section.legislation_id, section.section_number, section.heading, section.text)
+    );
+    await env.DB.batch(ftsStmts);
+  }
 
   return {
     id,
@@ -1128,6 +1135,7 @@ async function handleLibraryDelete(docType, id, env) {
   // ── Step 1: Delete child records first (FK constraint) ───────
   if (docType === 'legislation') {
     await env.DB.prepare("DELETE FROM legislation_sections WHERE legislation_id = ?").bind(id).run();
+    await env.DB.prepare("DELETE FROM legislation_sections_fts WHERE legislation_id = ?").bind(id).run();
   }
 
   // ── Step 2: Delete from D1 ───────────────────────────────────
