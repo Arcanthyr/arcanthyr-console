@@ -2106,7 +2106,7 @@ ${answerNote}`;
     const _qs = query.trim();
     while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
     await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)`
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`
     ).bind(
       queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
@@ -2114,7 +2114,8 @@ ${answerNote}`;
       JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
       chunks.length, 'v68-history', answer.slice(0, 2000), 'claude', 'semantic',
-      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null
+      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null,
+      _diag.rrf_quota_filled ?? null
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -2324,7 +2325,7 @@ async function handleLegalQueryWorkersAI(body, env) {
     const _qs = query.trim();
     while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
     await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)`
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`
     ).bind(
       queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
@@ -2332,7 +2333,8 @@ async function handleLegalQueryWorkersAI(body, env) {
       JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
       orderedChunks.length, 'v68-history', answer.slice(0, 2000), 'workers-ai', 'semantic',
-      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null
+      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null,
+      _diag.rrf_quota_filled ?? null
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -3787,7 +3789,7 @@ export default {
       if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: corsHeaders });
       try {
         const q = url.searchParams.get('q');
-        const limit = Math.min(parseInt(url.searchParams.get('limit') || '8'), 20);
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '24'), 50);
         if (!q) return new Response(JSON.stringify({ error: 'q required' }), { status: 400, headers: corsHeaders });
         const result = await env.DB.prepare(
           `SELECT fts.chunk_id, fts.citation, SUBSTR(fts.enriched_text, 1, 800) as enriched_text,
@@ -3802,6 +3804,52 @@ export default {
       } catch (err) {
         console.error('case-chunks-fts-search error:', err);
         return new Response(JSON.stringify({ error: err.message, chunks: [] }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
+    }
+
+    /* ── SECONDARY SOURCES FTS SEARCH (for server.py fts_leg) ── */
+    if (url.pathname === '/api/pipeline/secondary-sources-fts-search' && request.method === 'GET') {
+      const key = request.headers.get('X-Nexus-Key');
+      if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: corsHeaders });
+      try {
+        const q = url.searchParams.get('q');
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '24'), 50);
+        if (!q) return new Response(JSON.stringify({ error: 'q required' }), { status: 400, headers: corsHeaders });
+        const result = await env.DB.prepare(
+          `SELECT fts.source_id, fts.title, SUBSTR(fts.raw_text, 1, 800) AS raw_text
+           FROM secondary_sources_fts fts
+           WHERE secondary_sources_fts MATCH ?1
+           ORDER BY rank
+           LIMIT ?2`
+        ).bind(q, limit).all();
+        return new Response(JSON.stringify({ chunks: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      } catch (err) {
+        console.error('secondary-sources-fts-search error:', err);
+        return new Response(JSON.stringify({ error: err.message, chunks: [] }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
+    }
+
+    /* ── LEGISLATION SECTIONS FTS SEARCH (for server.py fts_leg) */
+    if (url.pathname === '/api/pipeline/legislation-sections-fts-search' && request.method === 'GET') {
+      const key = request.headers.get('X-Nexus-Key');
+      if (key !== env.NEXUS_SECRET_KEY) return new Response(JSON.stringify({ error: 'Unauthorised' }), { status: 401, headers: corsHeaders });
+      try {
+        const q = url.searchParams.get('q');
+        const limit = Math.min(parseInt(url.searchParams.get('limit') || '24'), 50);
+        if (!q) return new Response(JSON.stringify({ error: 'q required' }), { status: 400, headers: corsHeaders });
+        const result = await env.DB.prepare(
+          `SELECT fts.section_id, fts.legislation_id, fts.section_number, fts.heading,
+                  fts.text, l.title AS legislation_title
+           FROM legislation_sections_fts fts
+           LEFT JOIN legislation l ON fts.legislation_id = l.id
+           WHERE legislation_sections_fts MATCH ?1
+           ORDER BY rank
+           LIMIT ?2`
+        ).bind(q, limit).all();
+        return new Response(JSON.stringify({ sections: result.results }), { headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      } catch (err) {
+        console.error('legislation-sections-fts-search error:', err);
+        return new Response(JSON.stringify({ error: err.message, sections: [] }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
       }
     }
 

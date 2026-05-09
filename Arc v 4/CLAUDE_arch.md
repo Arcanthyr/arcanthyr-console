@@ -237,9 +237,9 @@ VPS enrichment_poller.py (permanent Docker service, --loop):
 
 1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty(chunk, query_text_lower)` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`; legislation chunks penalised via 3-tier whitelist: `LEG_WHITELIST_CORE` Acts exempt (1.0), `LEG_WHITELIST_ADJACENT` Acts penalised at `LEG_PENALTY_ADJACENT=0.85` unless keyword bridge matches query, all other legislation at `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
 2. **Pass 2 — case chunks appended** — `must=[type=case_chunk, subject_matter IN (criminal,mixed)]` hard filter (session 78, `MatchAny`), threshold 0.35, limit 8. `apply_sm_penalty()` still applied post-query (in-memory cache penalty for cases whose subject_matter wasn't yet in Qdrant payload at embed time). Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
-3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2. **Pass 2 and Pass 3 run concurrently via ThreadPoolExecutor(max_workers=2) with separate QdrantClient instances (client2, client3) — deployed session 114.**
+3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2. **Pass 2, Pass 3, and FTS leg run concurrently via ThreadPoolExecutor(max_workers=3) with separate QdrantClient instances (client2, client3) — deployed session 114/115.**
 4. **Pass 4 — citation authority agent (LIVE)** — gated by `should_fire_pass4(query_text)`: (a) keyword match in `AUTHORITY_KEYWORDS` (treatment vocab + citation-profile vocab + passive-voice forms — see session 81 calibration); (b) query ≤60 chars AND ≥1 citation (bare-lookup); (c) ≥2 citations (relationship intent). When gate fires: `type=authority_synthesis` must filter, `quarantined=True` must_not, threshold 0.50, limit 3, 500ms ThreadPoolExecutor timeout. Deduped against `seen_ids`. `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` as of session 81. Note: `AUTHORITY_PASS_TIMEOUT_SEC` is a local variable defined inside search_text(), not a module-level constant — grepping server.py at module scope returns nothing.
-5. **BM25/FTS5 interleave** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Novel case_chunks_fts hits → BM25_INTERLEAVE_SCORE=0.50 (competes with borderline semantic 0.45–0.49); boost path uses BM25_SCORE_KEYWORD=0.0139 (additive delta for already-returned chunks). Re-sort by score after FTS append. Final top_k cap.
+5. **FTS leg + RRF fusion (session 115)** — `fts_leg(query_text)` runs concurrently with Pass 2/3 in the ThreadPoolExecutor (max_workers=3). Queries all three FTS tables: `case_chunks_fts`, `secondary_sources_fts`, `legislation_sections_fts` — LIMIT 24 each. Query construction: (1) extract literal-quoted phrases → (2) tokenize residual with stop-word filter → (3) build bigram shingles → (4) OR-join all as quoted-phrase or singleton MATCH operands; no term cap (fixes H1: old [:8] cap dropped "significant"/"relationship"). Results tagged `_fts_rank`. **RRF fusion (k=60):** semantic results + FTS results merged via `score = 1.0/(60+rank)`; final scores ~0.013–0.017 (old cosine scale 0.45–0.65 is retired from the fused output). **Min-quota floor:** after RRF sort, guarantees min(2, available-fts-only) FTS-only slots in final top_k by promoting from below the cap. `rrf_quota_filled` records how many slots were force-promoted. Feature flag: `USE_FTS_LEG` env var, default "1" — set to "0" in `.env.config` + force-recreate for instant rollback without Worker redeploy. **Section-ref BM25 UNCHANGED** — `/s\s*(\d+[A-Za-z]*)/` detection + BM25_SCORE_EXACT_SECTION/BM25_SCORE_CASE_REF boost path still runs after RRF fusion. **Retired:** `BM25_INTERLEAVE_SCORE` (0.50 novel-hit path) and `BM25_SCORE_KEYWORD` (0.0139 boost delta) — these constants no longer exist in server.py.
 6. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
 
 **Why RRF was reverted (session 42):** RRF requires independent retrieval signals across legs. Leg B (extract_legal_concepts) used the same embedding model on a munged version of the same query — no independent signal. At ~10K vectors, same chunks dominated all legs, causing wrong-domain chunks to accumulate multi-leg RRF score via surface vocabulary overlap (e.g. self-defence "reasonable belief" scoring high on BRD query). Baseline regression: 10/5/0 → ~8/2/4.
@@ -537,7 +537,7 @@ CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
 | `legislation` | `id` TEXT (PK) | Full column list: `id`, `title`, `jurisdiction` (physical column — aliased as `court` in SELECT queries), `year`, `source_url`, `raw_text`, `summary`, `defined_terms`, `offence_elements`, `sections_json`, `embedded`, `current_as_at`, `processed_date` · `handleLibraryList` queries `jurisdiction AS court` · `handleUploadLegislation` inserts into `jurisdiction` — do not use the alias name in raw SQL |
 | `legislation_sections` | `id` TEXT | `legislation_id`, `section_number`, `heading`, `text` |
 | `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
-| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired` INTEGER (section-ref BM25 path only — fires when `/s\s*(\d+[A-Za-z]*)/` matches in query_text; does NOT record FTS keyword interleave path), `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char), `fts_keyword_fired` INTEGER (records fetch_case_chunks_fts call), `fts_keyword_hits` INTEGER (raw FTS MATCH row count pre-dedup), `fts_keyword_added` INTEGER (novel-hit-path additions to result set) · feedback system live session 96 · flagged_by dropped session 103 Phase 1 |
+| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired` INTEGER (section-ref BM25 path only — fires when `/s\s*(\d+[A-Za-z]*)/` matches in query_text; does NOT record FTS keyword interleave path), `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char), `fts_keyword_fired` INTEGER (records fts_leg() call — 1 when USE_FTS_LEG=1, which is the current default), `fts_keyword_hits` INTEGER (total FTS rows returned across all three FTS tables before dedup), `fts_keyword_added` INTEGER (count of FTS-contributed chunks in final result set), `rrf_quota_filled` INTEGER (count of FTS-only chunks force-promoted by min-quota floor) · feedback system live session 96 · flagged_by dropped session 103 Phase 1 |
 | `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
 | `legislation_sections_fts` | FTS5 virtual table | `section_id` (UNINDEXED), `legislation_id` (UNINDEXED), `section_number` (UNINDEXED), `heading`, `text` · porter tokenizer · synced from handleUploadLegislation (INSERT OR REPLACE) and handleLibraryDelete (DELETE WHERE legislation_id) · backfilled session 115 (2305 rows) · FTS5 export limitation applies — wrangler d1 export does not support virtual tables |
 | `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
@@ -625,12 +625,14 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 - Gated by `BM25_FTS_ENABLED = True` in server.py
 
 **D1 FTS5 (`case_chunks_fts`) — session 68 deployed, session 74 interleave mode:**
-- Worker route: `GET /api/pipeline/case-chunks-fts-search` (deployed `d90ab456`)
-- server.py: `fetch_case_chunks_fts(query_text)` deployed to VPS session 73 (session 68 gap resolved)
-- Stop-word filtered, OR-joined terms (max 8), 10s timeout
-- Wired into `search_text()` after existing BM25 case-law layer, before domain filter
-- SM penalty applied, deduped against seen_ids + existing_ids, multi-signal boost on overlap
-- **Interleave mode (session 74):** split-constant design — `BM25_INTERLEAVE_SCORE=0.50` for novel hits (competes with borderline semantic 0.45–0.49), `BM25_SCORE_KEYWORD=0.0139` for boost path (additive delta only). Re-sort at line 587 after FTS append.
+**Session 115 — replaced old interleave with fts_leg() + RRF (see FTS leg architecture section above)**
+
+Three Worker routes now called by `fts_leg()` in server.py:
+- `GET /api/pipeline/case-chunks-fts-search` — limit 24, cap 50 (was 8/20)
+- `GET /api/pipeline/secondary-sources-fts-search` — new session 115; limit 24, cap 50
+- `GET /api/pipeline/legislation-sections-fts-search` — new session 115; limit 24, cap 50
+
+**Retired (session 115):** `fetch_case_chunks_fts()`, `BM25_INTERLEAVE_SCORE`, `BM25_SCORE_KEYWORD`, split-constant scoring, `bm25_source` tag. The section-ref BM25 path (`bm25_fired` column) is UNCHANGED.
 
 ### Workers AI (Cloudflare) — model and usage inventory
 
@@ -644,7 +646,7 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 
 | Handler | Model | max_tokens |
 |---|---|---|
-| `handleLegalQuery()` | Claude API (claude-haiku-4-5-20251001) | 2,000 |
+| `handleLegalQuery()` | Claude API (claude-sonnet-4-6) | 2,000 |
 | `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
 
 ### Sol vs V'ger context block discriminator
@@ -696,7 +698,9 @@ All three embed passes previously truncated payload text to [:1000]. Fixed:
 | `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
 | `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
 | `/api/pipeline/fts-search-chunks` | GET | FTS5 search over case_chunks_fts · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet |
-| `/api/pipeline/case-chunks-fts-search` | GET | FTS5 search over case_chunks_fts with cases JOIN · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet (800 chars), case_name, court, subject_matter |
+| `/api/pipeline/case-chunks-fts-search` | GET | FTS5 search over case_chunks_fts with cases JOIN · params: q (MATCH query), limit default 24 cap 50 (session 115 — was 8/20) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet (800 chars), case_name, court, subject_matter · called by fts_leg() |
+| `/api/pipeline/secondary-sources-fts-search` | GET | FTS5 search over secondary_sources_fts · new session 115 · params: q (MATCH query), limit default 24 cap 50 · X-Nexus-Key · returns `{chunks: [{source_id, title, raw_text}]}` · called by fts_leg() |
+| `/api/pipeline/legislation-sections-fts-search` | GET | FTS5 search over legislation_sections_fts with LEFT JOIN to legislation for legislation_title · new session 115 · params: q (MATCH query), limit default 24 cap 50 · X-Nexus-Key · returns `{sections: [{section_id, legislation_id, section_number, heading, text, legislation_title}]}` · called by fts_leg() |
 | `/api/admin/approve-secondary` | POST | Approve/reject/delete secondary source · actions: approve (set approved=1), reject (DELETE WHERE approved=0), delete (Qdrant + FTS5 + D1 cleanup regardless of approved status) · X-Nexus-Key |
 | `/api/admin/pending-nexus` | GET | List secondary_sources WHERE approved=0 · returns id, title, category, raw_text, date_added · X-Nexus-Key |
 | `/api/research/history` | GET | Fetch 50 most recent query_log entries with answer_text · WHERE deleted=0 AND answer_text IS NOT NULL · no auth |
@@ -927,13 +931,31 @@ MOSS-TTS-Nano removed from VPS (session 60). Worker `/api/tts` route, `src/utils
 - Defence-in-depth: Pass 2 filter is a no-op on case_chunks (no quarantined field) but catches future payload changes
 - Confirm `grep -c "must_not" /home/tom/ai-stack/agent-general/src/server.py` returns 3 after any server.py edit
 
-### BM25 FTS deploy pattern
+### FTS leg architecture (session 115 — replaced old BM25 interleave)
 
-- Worker route (`/api/pipeline/case-chunks-fts-search`) is Cloudflare edge, auth'd with X-Nexus-Key
-- server.py `fetch_case_chunks_fts()` calls it via `requests.get` with 10s timeout; stop-word filter + OR-join up to 8 terms
-- Chunks returned with `bm25_source="case_chunks_fts"` tag; dedup against `seen_ids` (chunk_id) and `existing_ids` (citation)
-- **Split-constant scoring (session 74):** boost path uses `BM25_SCORE_KEYWORD` (~0.0139, additive delta for already-returned chunks); novel-hit path uses `BM25_INTERLEAVE_SCORE` (0.50, competes with borderline semantic at Pass-1 threshold 0.45)
-- Separate `bm25_source` value for case-law layer (`"case_legislation_ref"`) — two distinct BM25 pathways, both live
+**Three Worker routes queried by `fts_leg()` in server.py:**
+- `GET /api/pipeline/case-chunks-fts-search` — queries `case_chunks_fts MATCH ?1` with JOIN to cases; limit default 24, cap 50; X-Nexus-Key
+- `GET /api/pipeline/secondary-sources-fts-search` — queries `secondary_sources_fts MATCH ?1`; limit default 24, cap 50; X-Nexus-Key; returns `{chunks: [{source_id, title, raw_text}]}`
+- `GET /api/pipeline/legislation-sections-fts-search` — queries `legislation_sections_fts MATCH ?1` with LEFT JOIN to legislation for `legislation_title`; limit default 24, cap 50; X-Nexus-Key; returns `{sections: [{section_id, legislation_id, section_number, heading, text, legislation_title}]}`
+
+**`fts_leg()` query construction (no term cap — fixes H1):**
+1. Extract literal-quoted phrase segments from query via regex
+2. Tokenize residual; apply stop-word filter; min length 3 chars
+3. Generate bigram shingles from tokens
+4. OR-join: quoted phrases + shingles + singletons → FTS5 MATCH expression
+5. Fire all three routes; collect and tag results with `_fts_source` and `_fts_rank`
+
+**RRF fusion:**
+- `canonical_id(chunk)` = `chunk._id or chunk._qdrant_id or chunk.citation` — cross-leg dedup key
+- `rrf_score(rank) = 1.0 / (60 + rank)` — eliminates score-scale incompatibility (semantic ~0.45–0.65 vs FTS fixed 0.50)
+- Final fused scores: ~0.013–0.017 range; chunks appearing in both legs score ~0.026–0.030
+- `_in_semantic` / `_in_fts` payload flags indicate which legs contributed per chunk
+
+**Section-ref BM25 path UNCHANGED** — `BM25_SCORE_EXACT_SECTION` (~0.0159) and `BM25_SCORE_CASE_REF` (~0.0147) still run post-RRF on section-ref queries; `bm25_fired` column records this path; `fts_keyword_fired` records the FTS leg — both can be 1 simultaneously
+
+**Retired constants (no longer in server.py):** `BM25_SCORE_KEYWORD`, `BM25_INTERLEAVE_SCORE`, `fetch_case_chunks_fts()`
+
+**Rollback:** `USE_FTS_LEG=0` in `~/ai-stack/.env.config` + `docker compose up -d --force-recreate agent-general` — no Worker redeploy needed
 
 ### Query expansion — LIVE (session 77)
 
