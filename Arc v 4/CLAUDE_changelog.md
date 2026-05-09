@@ -1,8 +1,17 @@
-# CLAUDE Changelog — Sessions 21–109
+# CLAUDE Changelog — Sessions 21–110
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 110) — 3 May 2026
+
+- Amendment history fix — `useState(false)` → `useState(true)` in AmendmentPanel.jsx restores auto-expand on row click; `key={selectedLeg.id}` on LegislationPanel.jsx forces full remount on selection change, preventing stale state carrying over from prior row
+- Clerk frontend deployed — ClerkProvider in main.jsx, SignedIn/SignedOut gate in Landing.jsx, AuthGate wrapping Routes in App.jsx (gates on `isLoaded`, calls `initApi(getToken)` synchronously before any child renders), UserButton in Nav.jsx, Authorization header wiring in api.js; build clean at 502 modules
+- Clerk Worker gate deployed — APPROVED_EMAILS constant (hardcoded; Allowlist is Pro-only on Hobby plan), verifyClerkToken() with JWKS fetch authenticated via CLERK_SECRET_KEY, requireApprovedEmail() on all /api/* routes; CLERK_SECRET_KEY set via wrangler secret put; session token email claim added in Clerk Dashboard (Configure → Sessions → Customize)
+- Worker route exclusion corrected — initial exclusion blocked SPA shell routes; replaced with !pathname.startsWith('/api/') so gate applies to API calls only; SPA navigation and static assets pass through freely
+- Clerk auth incomplete at close — Worker returning 401 on all API calls; JWKS verification outcome unconfirmed; see OUTSTANDING PRIORITIES for next-session diagnostic steps
+- legislation.jurisdiction schema corrected in CLAUDE_arch.md — column is `jurisdiction` (physical), aliased as `court` in SELECT; MD previously listed alias name as real column name
 
 ## CHANGES THIS SESSION (session 109) — 3 May 2026
 

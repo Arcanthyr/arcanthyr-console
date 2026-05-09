@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 4 May 2026 (end of session 113) · Supersedes all prior versions
+Updated: 9 May 2026 (end of session 114) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–109) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–110) — load conditionally
 
 ---
 
@@ -31,7 +31,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) · flagged_by column dropped session 103 Phase 1 |
 | Insufficient feedback button | LIVE — ↓ Insufficient button in INTEL page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · popup with Submit/Skip buttons + visible error state on API failure (session 105) · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
-| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version df0572c3-9ebd-4d8c-b4c5-d6ecfd679dd1 |
+| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version e3d273e6-266c-428b-ba82-76a1e61b1ac5 |
 | D1 case_citations | 10,575 rows · subject_matter filter removed session 108 — now indexes all deep_enriched=1 cases |
 | D1 case_legislation_refs | 5,356 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
@@ -64,6 +64,8 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 ## OUTSTANDING PRIORITIES
 
 - **subject_matter misclassification audit — deferred** — Rattigan and Pilling confirmed wrong subject_matter values. 3-part fix pending full audit: (1) Worker route update, (2) poller metadata dict, (3) case chunk re-embed for affected cases. Do not implement any part of the fix before audit scope is established. Trigger: complete audit → identify all misclassified cases → then implement in one coordinated pass.
+- **SSE streaming (deferred)** — stream Claude API response token-by-token to browser via text/event-stream; proper UX fix (user sees tokens from ~5s rather than spinner for 15s); not urgent post-retrieval optimisation but on the "do eventually" list
+- **FTS5 first-class parallel retrieval pass** — systemic fix for compound legal term decomposition: promote FTS5 from boost-only to an independent retrieval leg running in parallel with semantic passes; fix for the class of query where component words individually outscore definitional chunks (e.g. "significant relationship" → "significant probative value" + "relationship evidence"); BM25 must independently retrieve, not just re-rank already-retrieved chunks
 
 ---
 
@@ -111,6 +113,11 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **server.py uses ThreadingHTTPServer, not Flask** — server.py is Python stdlib `http.server.ThreadingHTTPServer`, NOT Flask. Prior MDs said "Flask threading — needs threaded=True or gunicorn." Fix was two-line change: `ThreadingHTTPServer` import + use at line 1716. No new dependencies, no Dockerfile rebuild required. `docker compose restart` is sufficient after server.py edit via hex-ssh.
 - **AbortSignal.timeout cold-start race** — After `docker compose restart agent-general`, server needs ~2s to bind. curl immediately after restart returns HTTP 000 (connection refused). Wait and retry — not a sign of failure.
 - **Password gate auth — sessionStorage, prompt-based** — `useAuth.js` stores `arc_authed = "1"` in sessionStorage; `requireAuth()` calls `window.prompt()` on first access. Gated on: Intel search (form submit, Enter key, URL auto-run useEffect), CaseSearch case open, legislation search, word search. Gate clears on tab close. Password in useAuth.js source.
+- **generate_query_variants() is a synchronous latency floor** — blocking OpenAI call (3.0s timeout) runs entirely before Pass 1 fan-out begins; not a parallel step; every query pays this cost before any Qdrant work starts; if variant generation times out or is slow, it delays the entire pipeline
+- **QdrantClient per-request instantiation** — no module-level singleton; each function (search_text, ingest_text, delete_citation, delete_type) creates its own QdrantClient(url=QDRANT_HOST) locally; thread-safe by design (no shared state) but each request pays TCP connection setup cost; relevant for any future connection-pool or concurrency work
+- **Worker.js capital W** — source file is `Arc v 4/Worker.js` (capital W); glob/grep for `worker.js` finds only build outputs in `dist/` and `public/`, not the source; always reference as `Worker.js` in CC briefs
+- **AUTHORITY_PASS_TIMEOUT_SEC is a local variable, not a module-level constant** — defined inside search_text() at runtime; grepping server.py at module level returns nothing; any future edit to this value must target the correct scope inside search_text()
+- **Compound legal term retrieval gap — systemic** — dense embeddings decompose multi-word terms of art into component words; terms whose components are individually high-frequency in criminal law text (e.g. "significant relationship" → "significant" + "relationship") produce false-positive chunk matches; BM25 boost pass does not rescue because it re-ranks already-retrieved chunks rather than independently retrieving; FTS5 first-class pass is the architectural fix (see OUTSTANDING PRIORITIES)
 
 ---
 
@@ -238,15 +245,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 110) — 3 May 2026
-
-- Amendment history fix — `useState(false)` → `useState(true)` in AmendmentPanel.jsx restores auto-expand on row click; `key={selectedLeg.id}` on LegislationPanel.jsx forces full remount on selection change, preventing stale state carrying over from prior row
-- Clerk frontend deployed — ClerkProvider in main.jsx, SignedIn/SignedOut gate in Landing.jsx, AuthGate wrapping Routes in App.jsx (gates on `isLoaded`, calls `initApi(getToken)` synchronously before any child renders), UserButton in Nav.jsx, Authorization header wiring in api.js; build clean at 502 modules
-- Clerk Worker gate deployed — APPROVED_EMAILS constant (hardcoded; Allowlist is Pro-only on Hobby plan), verifyClerkToken() with JWKS fetch authenticated via CLERK_SECRET_KEY, requireApprovedEmail() on all /api/* routes; CLERK_SECRET_KEY set via wrangler secret put; session token email claim added in Clerk Dashboard (Configure → Sessions → Customize)
-- Worker route exclusion corrected — initial exclusion blocked SPA shell routes; replaced with !pathname.startsWith('/api/') so gate applies to API calls only; SPA navigation and static assets pass through freely
-- Clerk auth incomplete at close — Worker returning 401 on all API calls; JWKS verification outcome unconfirmed; see OUTSTANDING PRIORITIES for next-session diagnostic steps
-- legislation.jurisdiction schema corrected in CLAUDE_arch.md — column is `jurisdiction` (physical), aliased as `court` in SELECT; MD previously listed alias name as real column name
-
 ## CHANGES THIS SESSION (session 112) — 3 May 2026
 
 - Sol model swapped — handleLegalQuery changed from claude-sonnet-4-6 to claude-haiku-4-5-20251001 (version 050ed45b); Sonnet was timing out with HTTP 500
@@ -263,6 +261,15 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Clerk auth removed, password gate deployed** — Clerk fully reverted; `useAuth.js` added with `requireAuth()` / `isAuthed()` / `promptAuth()` (sessionStorage + window.prompt); gated on Intel search (all entry paths), CaseSearch case open, leg search, word search; build + deploy confirmed clean
 - **PowerShell deploy `-Force` rule added** — `cp -r dist/. public/` in PowerShell silently skips existing subdirs; correct form is `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"`; stale `public/dist/` subdir from bad prior deploy must be removed first
 - **CLAUDE.md/arch.md mis-labels corrected** — "Flask threading" entries replaced with accurate ThreadingHTTPServer description; Clerk auth sections removed; Model toggle names updated haiku → sonnet
+
+## CHANGES THIS SESSION (session 114) — 9 May 2026
+- **Pass 2+3 concurrent retrieval** — ThreadPoolExecutor(max_workers=2) with separate client2/client3 QdrantClient instances; timestamp-confirmed 53–61μs gap between passes (was ~2s sequential); retrieval wall time cut from ~14–18s to ~4–6s
+- **AbortSignal.timeout 20s → 25s** — both handleLegalQuery and V'ger Nexus fetch paths; worker e3d273e6-266c-428b-ba82-76a1e61b1ac5
+- **HTTP 500 root cause resolved** — total query time now ~14–18s (retrieval 4–6s + Sonnet ~10–12s); clear of CF 30s wall-clock ceiling; 500s should not recur under normal load
+- **SSE streaming deferred** — architecturally correct UX fix (progressive token display); not needed post-retrieval optimisation; parked for dedicated session
+- **subject_matter family→mixed — three cross-domain cases** — [2024] TASFC 2, [2023] TASSC 15, [2020] TASSC 3 retagged in D1 + 34 Qdrant points patched; significant relationship definitional cases now eligible for Pass 2 criminal/mixed filter
+- **Relationships Act re-embed queued** — legislation.embedded reset to 0 for relationships-act-2003-tas; s 4 sections confirmed in D1 with embedding_model = null; poller to embed
+- **Systemic compound-term retrieval gap identified** — dense embeddings decompose legal terms of art into component words; FTS5 first-class parallel retrieval pass identified as systemic fix; flagged for dedicated session
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

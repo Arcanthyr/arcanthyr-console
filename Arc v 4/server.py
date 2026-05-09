@@ -1,5 +1,5 @@
 import os, json, uuid, base64, io, re, requests, threading, time, concurrent.futures
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 from qdrant_client.models import Filter, FieldCondition, MatchValue, MatchAny
@@ -561,42 +561,33 @@ def search_text(body):
     top_score_str = f"{chunks[0]['score']:.3f}" if chunks else "n/a"
     print(f"[+] Pass 1 fan-out: {len(all_queries)} queries, {len(merged)} unique chunks, top score {top_score_str}")
 
-    # ── Pass 2 — case chunks ─────────────────────────────────────────────────
-    p2 = client.query_points(
-        collection_name=COLLECTION,
-        query=query_vector,
-        query_filter=Filter(
-            must=[FieldCondition(key="type", match=MatchValue(value="case_chunk")), FieldCondition(key="subject_matter", match=MatchAny(any=["criminal","mixed"]))],
-            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
-        ),
-        limit=8,
-        score_threshold=0.35,
-        with_payload=True,
+    # ── Pass 2 + 3 — concurrent Qdrant calls, sequential dedup ───────────────
+    p2_filter = Filter(
+        must=[FieldCondition(key="type", match=MatchValue(value="case_chunk")), FieldCondition(key="subject_matter", match=MatchAny(any=["criminal","mixed"]))],
+        must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True))]
     )
+    p3_filter = Filter(
+        must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))],
+        must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True)), FieldCondition(key="type", match=MatchValue(value="authority_synthesis"))]
+    )
+    client2 = QdrantClient(url=QDRANT_HOST)
+    client3 = QdrantClient(url=QDRANT_HOST)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
+        f2 = ex.submit(client2.query_points, collection_name=COLLECTION, query=query_vector, query_filter=p2_filter, limit=8, score_threshold=0.35, with_payload=True)
+        f3 = ex.submit(client3.query_points, collection_name=COLLECTION, query=query_vector, query_filter=p3_filter, limit=8, score_threshold=0.25, with_payload=True)
+        p2 = f2.result()
+        p3 = f3.result()
+
     for h in p2.points:
         if str(h.id) not in seen_ids:
             seen_ids.add(str(h.id))
             chunks.append(apply_sm_penalty(hit_to_chunk(h), query_text_lower))
-
     print(f"[+] {len(chunks)} chunks after Pass 2")
 
-    # ── Pass 3 — secondary sources ───────────────────────────────────────────
-    p3 = client.query_points(
-        collection_name=COLLECTION,
-        query=query_vector,
-        query_filter=Filter(
-            must=[FieldCondition(key="type", match=MatchValue(value="secondary_source"))],
-            must_not=[FieldCondition(key="quarantined", match=MatchValue(value=True)), FieldCondition(key="type", match=MatchValue(value="authority_synthesis"))]
-        ),
-        limit=8,
-        score_threshold=0.25,
-        with_payload=True,
-    )
     for h in p3.points:
         if str(h.id) not in seen_ids:
             seen_ids.add(str(h.id))
             chunks.append(hit_to_chunk(h))
-
     print(f"[+] {len(chunks)} chunks after Pass 3")
 
     # ── BM25 — fetch sections referenced in query text ───────────────────────
@@ -1713,6 +1704,6 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(404, {"error": "not found"})
 
 if __name__ == "__main__":
-    server = HTTPServer(("0.0.0.0", PORT), Handler)
+    server = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
     print(f"Nexus ingest server running on port {PORT}")
     server.serve_forever()

@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 4 May 2026 (end of session 113). Upload every session alongside CLAUDE.md.*
+*Updated: 9 May 2026 (end of session 114). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -237,8 +237,8 @@ VPS enrichment_poller.py (permanent Docker service, --loop):
 
 1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty(chunk, query_text_lower)` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`; legislation chunks penalised via 3-tier whitelist: `LEG_WHITELIST_CORE` Acts exempt (1.0), `LEG_WHITELIST_ADJACENT` Acts penalised at `LEG_PENALTY_ADJACENT=0.85` unless keyword bridge matches query, all other legislation at `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
 2. **Pass 2 — case chunks appended** — `must=[type=case_chunk, subject_matter IN (criminal,mixed)]` hard filter (session 78, `MatchAny`), threshold 0.35, limit 8. `apply_sm_penalty()` still applied post-query (in-memory cache penalty for cases whose subject_matter wasn't yet in Qdrant payload at embed time). Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
-3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2.
-4. **Pass 4 — citation authority agent (LIVE)** — gated by `should_fire_pass4(query_text)`: (a) keyword match in `AUTHORITY_KEYWORDS` (treatment vocab + citation-profile vocab + passive-voice forms — see session 81 calibration); (b) query ≤60 chars AND ≥1 citation (bare-lookup); (c) ≥2 citations (relationship intent). When gate fires: `type=authority_synthesis` must filter, `quarantined=True` must_not, threshold 0.50, limit 3, 500ms ThreadPoolExecutor timeout. Deduped against `seen_ids`. `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` as of session 81.
+3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2. **Pass 2 and Pass 3 run concurrently via ThreadPoolExecutor(max_workers=2) with separate QdrantClient instances (client2, client3) — deployed session 114.**
+4. **Pass 4 — citation authority agent (LIVE)** — gated by `should_fire_pass4(query_text)`: (a) keyword match in `AUTHORITY_KEYWORDS` (treatment vocab + citation-profile vocab + passive-voice forms — see session 81 calibration); (b) query ≤60 chars AND ≥1 citation (bare-lookup); (c) ≥2 citations (relationship intent). When gate fires: `type=authority_synthesis` must filter, `quarantined=True` must_not, threshold 0.50, limit 3, 500ms ThreadPoolExecutor timeout. Deduped against `seen_ids`. `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` as of session 81. Note: `AUTHORITY_PASS_TIMEOUT_SEC` is a local variable defined inside search_text(), not a module-level constant — grepping server.py at module scope returns nothing.
 5. **BM25/FTS5 interleave** — section refs → BM25_SCORE_EXACT_SECTION (~0.0159), case-by-ref → BM25_SCORE_CASE_REF (~0.0147). Novel case_chunks_fts hits → BM25_INTERLEAVE_SCORE=0.50 (competes with borderline semantic 0.45–0.49); boost path uses BM25_SCORE_KEYWORD=0.0139 (additive delta for already-returned chunks). Re-sort by score after FTS append. Final top_k cap.
 6. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
 
@@ -936,7 +936,7 @@ MOSS-TTS-Nano removed from VPS (session 60). Worker `/api/tts` route, `src/utils
 
 ### Query expansion — LIVE (session 77)
 
-`generate_query_variants()` function in `server.py` calls GPT-4o-mini with `response_format={"type":"json_object"}` and a 3.0s hard timeout. Returns `{"variants": [str, str, str]}` — one statutory, one practitioner-shorthand, one doctrinal variant. Returns `[]` on any failure (timeout, parse error, API error).
+`generate_query_variants()` function in `server.py` calls GPT-4o-mini with `response_format={"type":"json_object"}` and a 3.0s hard timeout. Returns `{"variants": [str, str, str]}` — one statutory, one practitioner-shorthand, one doctrinal variant. Returns `[]` on any failure (timeout, parse error, API error). **Blocking synchronous call — runs entirely before Pass 1 fan-out begins; constitutes a sequential latency floor (~0–3s) on every query.**
 
 `QUERY_EXPANSION_ENABLED = os.getenv("QUERY_EXPANSION_ENABLED", "true").lower() == "true"` — per-call env flag. Rollback: add `QUERY_EXPANSION_ENABLED=false` to `~/ai-stack/.env.config` + force-recreate. No code revert needed.
 

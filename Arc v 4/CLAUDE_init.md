@@ -97,6 +97,11 @@ scp "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py" tom@
 ```
 After uploading server.py, force-recreate the container on VPS: `docker compose up -d --force-recreate agent-general`
 
+**server.py edit rules (session 114):**
+- **Pyright after every server.py edit** — run Pyright diagnostics on server.py after every edit before SCP to VPS; catches NameError, import issues, type failures silently missed by syntax checks; caught bare `ThreadPoolExecutor` (should be `concurrent.futures.ThreadPoolExecutor`) session 114
+- **/tmp/qvenv for VPS patch scripts** — one-off VPS scripts importing qdrant-client directly require the qvenv venv: `source /tmp/qvenv/bin/activate`; if cleared (it's in /tmp): `python3 -m venv /tmp/qvenv && /tmp/qvenv/bin/pip install qdrant-client -q`; system Python on VPS does not have qdrant-client
+- **Worker.js capital W** — source file is `Arc v 4/Worker.js` (capital W); glob/grep for `worker.js` finds only build outputs in `dist/` and `public/`, not the source; always reference as `Worker.js` in CC briefs
+
 ### Retrieval baseline
 ```bash
 # On VPS — results in ~/retrieval_baseline_results.txt

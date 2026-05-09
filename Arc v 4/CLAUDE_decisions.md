@@ -4257,3 +4257,15 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 - Files ended up in the wrong paths; Cloudflare asset manifest pointed at wrong hashes
 - Fix: `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"` plus remove any stale `public/dist/` subdir before re-deploying
 
+### Session 114 decisions — 9 May 2026
+
+- Pass 2+3 concurrent execution — server.py Pass 2 and Pass 3 Qdrant calls changed from sequential to concurrent using ThreadPoolExecutor(max_workers=2). Separate QdrantClient instances (client2, client3) used per thread to match the existing per-request instantiation pattern and avoid any connection-state contention. Confirmed fully concurrent via timestamps (53–61μs gap). Retrieval time reduced from ~14–18s to ~4–6s.
+
+- SSE streaming deferred — identified as architecturally correct fix for progressive token display UX; not implemented because Pass 2+3 concurrency resolved the HTTP 500 problem without it. Revisit in a dedicated session; estimated 3–4 hours CC work (worker.js streaming path + frontend EventSource reader + api.js bypass for streaming endpoint).
+
+- subject_matter family→mixed patch — [2024] TASFC 2, [2023] TASSC 15, [2020] TASSC 3 retagged from family to mixed in both D1 (cases.subject_matter) and Qdrant payload (34 points). Rationale: these cases define "significant relationship" under the Relationships Act and that definition is directly operative in criminal proceedings; mixed tag is defensible — they are relevant to criminal practice even though the underlying proceedings were civil/succession.
+
+- FTS5 first-class parallel retrieval pass — identified as systemic fix for compound legal term decomposition failure. Current BM25 implementation is a boost-only pass on already-retrieved chunks; it cannot rescue definitional chunks that never entered the pool. Proper fix: run FTS5 as an independent retrieval leg (exact phrase/AND search against case_chunks_fts), inject top results into pool before final cap. Affects the entire class of multi-word terms of art whose components are individually high-frequency in criminal law text. Park for dedicated session — scope is server.py search_text() only.
+
+- Dead end — bare ThreadPoolExecutor import — using ThreadPoolExecutor(...) directly in server.py causes NameError at runtime; the existing import is `import concurrent.futures`, requiring `concurrent.futures.ThreadPoolExecutor(...)`. Pyright caught this before deploy. Always run Pyright diagnostics after server.py edits before SCP.
+
