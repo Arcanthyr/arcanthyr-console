@@ -2091,20 +2091,22 @@ ${answerNote}`;
   const answer = claudeData.content?.[0]?.text || "No response from model.";
 
   // ── Query logging ─────────────────────────────────────────────
+  const _diag = nexusData?.diagnostics || {};
   try {
     const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
     const _refs = []; let _m;
     const _qs = query.trim();
     while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
     await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)`
     ).bind(
       queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
       JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
       JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      chunks.length, 'v68-history', answer.slice(0, 2000), 'claude', 'semantic'
+      chunks.length, 'v68-history', answer.slice(0, 2000), 'claude', 'semantic',
+      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
@@ -2307,20 +2309,22 @@ async function handleLegalQueryWorkersAI(body, env) {
     "No response from model.";
 
   // ── Query logging ─────────────────────────────────────────────
+  const _diag = nexusData?.diagnostics || {};
   try {
     const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
     const _refs = []; let _m;
     const _qs = query.trim();
     while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
     await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)`
     ).bind(
       queryId, _qs, new Date().toISOString(),
       JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
       JSON.stringify(orderedChunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
       JSON.stringify(orderedChunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
       JSON.stringify(orderedChunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      orderedChunks.length, 'v68-history', answer.slice(0, 2000), 'workers-ai', 'semantic'
+      orderedChunks.length, 'v68-history', answer.slice(0, 2000), 'workers-ai', 'semantic',
+      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null
     ).run();
   } catch (_le) { console.error('query_log insert failed:', _le); }
 
