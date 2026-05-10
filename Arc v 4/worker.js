@@ -2191,7 +2191,7 @@ ${answerNote}`;
       // D1 UPDATE always runs regardless of normal/abnormal stream end
       try {
         await env.DB.prepare("UPDATE query_log SET answer_text = ? WHERE id = ?")
-          .bind(accumulatedText.slice(0, 2000), queryId).run();
+          .bind(accumulatedText, queryId).run();
       } catch (e) { console.error("query_log stream UPDATE failed:", e); }
     },
   });
@@ -2202,7 +2202,7 @@ ${answerNote}`;
     try {
       await env.DB.prepare(
         "UPDATE query_log SET answer_text = ? WHERE id = ? AND answer_text = ''"
-      ).bind(accumulatedText.slice(0, 2000), queryId).run();
+      ).bind(accumulatedText, queryId).run();
     } catch (_e) { /* swallow */ }
   })());
 
