@@ -23,6 +23,59 @@ export const api = {
       subject_matter_filter: subjectFilter && subjectFilter !== 'all' ? subjectFilter.toLowerCase() : null,
     }),
 
+  // SSE streaming query (Sol/Claude path only).
+  // Calls onMeta once with { query_id, model, sources, chunk_count }.
+  // Calls onDelta for each text token. Calls onDone when message_stop received.
+  streamQuery: async (query_text, subjectFilter, { onMeta, onDelta, onDone, signal } = {}) => {
+    const response = await fetch(BASE + '/api/legal/legal-query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: query_text,
+        subject_matter_filter: subjectFilter && subjectFilter !== 'all' ? subjectFilter.toLowerCase() : null,
+      }),
+      signal,
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split('\n\n');
+      buffer = events.pop(); // last fragment may be incomplete
+
+      for (const block of events) {
+        if (!block.trim()) continue;
+        const lines = block.split('\n');
+        let eventType = 'message';
+        let dataStr = '';
+        for (const line of lines) {
+          if (line.startsWith('event: ')) eventType = line.slice(7).trim();
+          else if (line.startsWith('data: ')) dataStr += line.slice(6);
+        }
+        if (!dataStr) continue;
+        try {
+          const data = JSON.parse(dataStr);
+          if (eventType === 'arcanthyr_meta') {
+            onMeta?.(data);
+          } else if (data.type === 'content_block_delta' && data.delta?.type === 'text_delta') {
+            onDelta?.(data.delta.text);
+          } else if (data.type === 'message_stop') {
+            onDone?.();
+          }
+        } catch (_e) {
+          console.warn('SSE parse failed:', block);
+        }
+      }
+    }
+  },
+
   cases:         ()           => req('GET',  '/api/legal/cases'),
   corpus:        ()           => req('GET',  '/api/legal/corpus'),
   legislation:   ()           => req('GET',  '/api/legal/legislation'),

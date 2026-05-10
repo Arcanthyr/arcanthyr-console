@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Nav from '../components/Nav';
 import ResultCard from '../components/ResultCard';
@@ -24,10 +24,16 @@ export default function Intel() {
   const [selected, setSelected] = useState(null);
   const [queryId, setQueryId] = useState(null);
   const [history, setHistory] = useState([]);
+  const streamControllerRef = useRef(null);
 
   // Fetch query history on mount
   useEffect(() => {
     api.getQueryHistory().then(d => setHistory(d.history || [])).catch(() => {});
+  }, []);
+
+  // Abort any in-flight stream on unmount
+  useEffect(() => {
+    return () => { streamControllerRef.current?.abort('unmount'); };
   }, []);
 
   // Auto-run query if pre-populated from landing page search
@@ -42,34 +48,99 @@ export default function Intel() {
   async function handleQueryWith(q) {
     if (!q?.trim()) return;
     if (!requireAuth()) return;
+
+    // Cancel any previous in-flight stream
+    streamControllerRef.current?.abort('new-query');
+
     setLoading(true);
     setError('');
     setResults([]);
     setAnswer('');
     setSelected(null);
     setQueryId(null);
-    try {
-      const data = await api.query(q.trim(), model, subjectFilter);
-      const r = data.result || data;
-      const ans = r.answer || r.response || '';
-      const raw = r.results || r.sources || [];
-      setAnswer(ans);
-      setResults(raw);
-      const qid = r.query_id || null;
-      setQueryId(qid);
-      if (qid) {
-        setHistory(prev => [{
-          id: qid,
-          query_text: q.trim(),
-          answer_text: ans,
-          model: r.model || model,
-          timestamp: new Date().toISOString(),
-        }, ...prev.filter(h => h.id !== qid).slice(0, 49)]);
+
+    // V'ger path — Workers AI doesn't stream, keep existing JSON approach
+    if (model === 'workers') {
+      try {
+        const data = await api.query(q.trim(), 'workers', subjectFilter);
+        const r = data.result || data;
+        const ans = r.answer || r.response || '';
+        setAnswer(ans);
+        setResults(r.results || r.sources || []);
+        const qid = r.query_id || null;
+        setQueryId(qid);
+        if (qid) {
+          setHistory(prev => [{
+            id: qid, query_text: q.trim(), answer_text: ans,
+            model: r.model || 'workers', timestamp: new Date().toISOString(),
+          }, ...prev.filter(h => h.id !== qid).slice(0, 49)]);
+        }
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
       }
+      return;
+    }
+
+    // Sol path — streaming SSE
+    const abortController = new AbortController();
+    streamControllerRef.current = abortController;
+
+    const wallClockTimer = setTimeout(() => abortController.abort('wall-clock'), 120000);
+    let idleTimer = setTimeout(() => abortController.abort('idle'), 30000);
+    const resetIdle = () => {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => abortController.abort('idle'), 30000);
+    };
+
+    let isFirstDelta = true;
+    let accumulatedAnswer = '';
+    let capturedQueryId = null;
+    let capturedModel = 'claude';
+
+    try {
+      await api.streamQuery(q.trim(), subjectFilter, {
+        signal: abortController.signal,
+        onMeta: (meta) => {
+          capturedQueryId = meta.query_id;
+          capturedModel = meta.model || 'claude';
+          setQueryId(meta.query_id);
+          setResults(meta.sources || []);
+        },
+        onDelta: (text) => {
+          resetIdle();
+          if (isFirstDelta) {
+            isFirstDelta = false;
+            setLoading(false); // hide spinner; text starts flowing
+          }
+          accumulatedAnswer += text;
+          setAnswer(prev => prev + text);
+        },
+        onDone: () => {
+          setLoading(false);
+          if (capturedQueryId) {
+            setHistory(prev => [{
+              id: capturedQueryId, query_text: q.trim(),
+              answer_text: accumulatedAnswer, model: capturedModel,
+              timestamp: new Date().toISOString(),
+            }, ...prev.filter(h => h.id !== capturedQueryId).slice(0, 49)]);
+          }
+        },
+      });
     } catch (e) {
-      setError(e.message);
-    } finally {
+      if (e.name === 'AbortError') {
+        const reason = abortController.signal.reason;
+        if (reason !== 'new-query' && reason !== 'unmount') {
+          setError(`Response stream aborted (${reason || 'unknown'})`);
+        }
+      } else {
+        setError(e.message);
+      }
       setLoading(false);
+    } finally {
+      clearTimeout(idleTimer);
+      clearTimeout(wallClockTimer);
     }
   }
 

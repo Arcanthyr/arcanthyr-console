@@ -1974,10 +1974,11 @@ async function fetchSectionContext(sectionNum, actName, env) {
          → re-ranked chunks → Claude API with context
          → grounded answer with source citations
    ============================================================= */
-async function handleLegalQuery(body, env) {
+async function handleLegalQuery(body, env, ctx, corsHeaders) {
   const { query, top_k, score_threshold, subject_matter_filter } = body;
   if (!query || !query.trim()) throw new Error("query field required");
   const queryId = crypto.randomUUID();
+  const encoder = new TextEncoder();
 
   // ── Step 1: Retrieve relevant chunks from Qdrant via nexus ──
   const nexusRes = await fetch("https://nexus.arcanthyr.com/search", {
@@ -1999,30 +2000,59 @@ async function handleLegalQuery(body, env) {
   const nexusData = await nexusRes.json();
   const chunks = (nexusData.chunks || []).filter(c => !(c.court === null && c.year === null && typeof c.citation === 'string' && !c.citation.match(/^\[\d{4}\]/)));
   const hasCases = chunks.length > 0;
+  const _diag = nexusData?.diagnostics || {};
 
-  // ── Step 1b: Section query detection — prepend legislation text ─
+  // ── Step 1b: Section query detection — prepend legislation text ──
   let sectionContext = null;
   const parsed = parseSectionQuery(query.trim());
   if (parsed) {
     sectionContext = await fetchSectionContext(parsed.sectionNum, parsed.actName, env);
   }
 
-  // ── Step 2: Build context ────────────────────────────────────
-  if (chunks.length === 0 && !sectionContext) {
-    // Log zero-result queries too
-    try {
-      await env.DB.prepare(
-        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)`
-      ).bind(queryId, query.trim(), new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v68-history', 'No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.', 'claude', 'semantic').run();
-    } catch (_le) { console.error('query_log insert failed (zero-result):', _le); }
-    return {
-      answer: "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.",
-      sources: [],
-      chunk_count: 0,
-      query_id: queryId,
-    };
+  // ── Query log fields (computed from nexus data, reused below) ──
+  const _qs = query.trim();
+  const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
+  const _refs = []; let _m;
+  while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
+  const _logIds     = JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown'));
+  const _logScores  = JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null));
+  const _logSources = JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown'));
+
+  // ── Deduplicated source list (for arcanthyr_meta) ──
+  const seen = new Set();
+  const caseSources = chunks
+    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
+    .map(c => ({
+      citation: c.citation, court: c.court, year: c.year, score: c.score,
+      summary: c.summary || "", type: c.type, source_type: c.source_type,
+    }));
+  const sources = sectionContext
+    ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
+    : caseSources;
+
+  // ── Helper: synthetic SSE response (no upstream to stream from) ──
+  const sseHeaders = { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no', ...corsHeaders };
+  function syntheticSSE(meta, text) {
+    const body = [
+      `event: arcanthyr_meta\ndata: ${JSON.stringify(meta)}\n\n`,
+      `data: ${JSON.stringify({ type: 'content_block_delta', index: 0, delta: { type: 'text_delta', text } })}\n\n`,
+      `data: ${JSON.stringify({ type: 'message_stop' })}\n\n`,
+    ].join('');
+    return new Response(encoder.encode(body), { headers: sseHeaders });
   }
 
+  // ── Step 2: Zero-result early return (synthetic SSE) ──
+  if (chunks.length === 0 && !sectionContext) {
+    const zeroAnswer = "No sufficiently relevant cases or legislation were found for that query. Try rephrasing, or the relevant material may not yet be ingested.";
+    try {
+      await env.DB.prepare(
+        `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`
+      ).bind(queryId, _qs, new Date().toISOString(), '[]', 0, '[]', '[]', '[]', 0, 'v68-history', zeroAnswer, 'claude', 'semantic', _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null, _diag.rrf_quota_filled ?? null).run();
+    } catch (_le) { console.error('query_log insert failed (zero-result):', _le); }
+    return syntheticSSE({ query_id: queryId, model: 'claude', sources: [], chunk_count: 0 }, zeroAnswer);
+  }
+
+  // ── Step 3: Build context ──
   const caseBlocks = chunks.map((c) => {
     const caseName = c.case_name ? `${c.case_name} ` : '';
     const courtSuffix = c.court && c.court.toLowerCase() !== 'unknown' ? ` (${c.court})` : '';
@@ -2074,8 +2104,22 @@ ${citationRules}
 
 ${answerNote}`;
 
-  // ── Step 3: Call Claude API ──────────────────────────────────
-  const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+  // ── Step 4: Pre-stream query_log INSERT with answer_text='' ──
+  try {
+    await env.DB.prepare(
+      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`
+    ).bind(
+      queryId, _qs, new Date().toISOString(),
+      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
+      _logIds, _logScores, _logSources,
+      chunks.length, 'v68-history', '', 'claude', 'semantic',
+      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null,
+      _diag.rrf_quota_filled ?? null
+    ).run();
+  } catch (_le) { console.error('query_log pre-stream insert failed:', _le); }
+
+  // ── Step 5: Upstream Claude API call with stream: true ──
+  const upstream = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -2085,59 +2129,84 @@ ${answerNote}`;
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
+      stream: true,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     }),
   });
 
-  if (!claudeRes.ok) {
-    const errText = await claudeRes.text();
-    throw new Error(`Claude API error: ${claudeRes.status} — ${errText}`);
+  if (!upstream.ok) {
+    const errText = await upstream.text();
+    throw new Error(`Claude API error: ${upstream.status} — ${errText}`);
   }
 
-  const claudeData = await claudeRes.json();
-  const answer = claudeData.content?.[0]?.text || "No response from model.";
+  // ── Step 6: ReadableStream — prepend arcanthyr_meta, pipe upstream, accumulate text ──
+  let accumulatedText = "";
+  let sseLineBuffer = ""; // cross-chunk line buffer for accumulator only
+  const decoder = new TextDecoder();
+  const meta = { query_id: queryId, model: 'claude', sources, chunk_count: chunks.length };
 
-  // ── Query logging ─────────────────────────────────────────────
-  const _diag = nexusData?.diagnostics || {};
-  try {
-    const _refPat = /\bs\s*(\d+[A-Za-z]*)/gi;
-    const _refs = []; let _m;
-    const _qs = query.trim();
-    while ((_m = _refPat.exec(_qs)) !== null) _refs.push(_m[0].trim());
-    await env.DB.prepare(
-      `INSERT INTO query_log (id, query_text, timestamp, refs_extracted, bm25_fired, result_ids, result_scores, result_sources, total_candidates, client_version, answer_text, model, search_type, fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17)`
-    ).bind(
-      queryId, _qs, new Date().toISOString(),
-      JSON.stringify(_refs), _refs.length > 0 ? 1 : 0,
-      JSON.stringify(chunks.slice(0,5).map(c => c._id || c._qdrant_id || c.citation || 'unknown')),
-      JSON.stringify(chunks.slice(0,5).map(c => typeof c.score==='number' ? Math.round(c.score*10000)/10000 : null)),
-      JSON.stringify(chunks.slice(0,5).map(c => c.type || c.source_type || 'unknown')),
-      chunks.length, 'v68-history', answer.slice(0, 2000), 'claude', 'semantic',
-      _diag.fts_keyword_fired ?? null, _diag.fts_keyword_hits ?? null, _diag.fts_keyword_added ?? null,
-      _diag.rrf_quota_filled ?? null
-    ).run();
-  } catch (_le) { console.error('query_log insert failed:', _le); }
+  const readable = new ReadableStream({
+    async start(controller) {
+      // Prepend arcanthyr_meta before any Anthropic events
+      controller.enqueue(encoder.encode(
+        `event: arcanthyr_meta\ndata: ${JSON.stringify(meta)}\n\n`
+      ));
 
-  // ── Step 4: Return answer + deduplicated source list ─────────
-  const seen = new Set();
-  const caseSources = chunks
-    .filter(c => { if (seen.has(c.citation)) return false; seen.add(c.citation); return true; })
-    .map(c => ({
-      citation: c.citation,
-      court: c.court,
-      year: c.year,
-      score: c.score,
-      summary: c.summary || "",
-      type: c.type,
-      source_type: c.source_type,
-    }));
+      const reader = upstream.body.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-  const sources = sectionContext
-    ? [{ citation: sectionContext.label, court: 'legislation', year: null, score: 1.0, summary: sectionContext.heading }, ...caseSources]
-    : caseSources;
+          // Observe each chunk for text_delta accumulation (side-effect only).
+          // Use a line buffer so JSON objects split across read() boundaries are handled correctly.
+          sseLineBuffer += decoder.decode(value, { stream: true });
+          const lines = sseLineBuffer.split("\n");
+          sseLineBuffer = lines.pop() ?? ""; // hold incomplete last line
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            try {
+              const evt = JSON.parse(line.slice(6));
+              if (evt.type === "content_block_delta" && evt.delta?.type === "text_delta") {
+                accumulatedText += evt.delta.text;
+              }
+            } catch { /* genuinely malformed line — harmless */ }
+          }
 
-  return { answer, sources, chunk_count: chunks.length, model: "claude", query_id: queryId };
+          try {
+            controller.enqueue(value);
+          } catch (_e) {
+            // Consumer disconnected — stop enqueuing but finish reading to accumulate
+            break;
+          }
+        }
+      } catch (_e) {
+        // Upstream read error — stream ends abnormally
+      } finally {
+        try { reader.releaseLock(); } catch (_e) { /* already released */ }
+        try { controller.close(); } catch (_e) { /* already closed */ }
+      }
+
+      // D1 UPDATE always runs regardless of normal/abnormal stream end
+      try {
+        await env.DB.prepare("UPDATE query_log SET answer_text = ? WHERE id = ?")
+          .bind(accumulatedText.slice(0, 2000), queryId).run();
+      } catch (e) { console.error("query_log stream UPDATE failed:", e); }
+    },
+  });
+
+  // Belt-and-braces UPDATE via waitUntil for cases where start() is cut short
+  ctx.waitUntil((async () => {
+    await new Promise(resolve => setTimeout(resolve, 130000));
+    try {
+      await env.DB.prepare(
+        "UPDATE query_log SET answer_text = ? WHERE id = ? AND answer_text = ''"
+      ).bind(accumulatedText.slice(0, 2000), queryId).run();
+    } catch (_e) { /* swallow */ }
+  })());
+
+  return new Response(readable, { headers: sseHeaders });
 }
 
 
@@ -3582,7 +3651,7 @@ async function handleMarkLegislationEmbedded(request, env, corsHeaders) {
    MAIN FETCH HANDLER
    ============================================================= */
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     console.log('Request received:', request.url);
     const url = new URL(request.url);
     const origin = request.headers.get("Origin") || "";
@@ -3708,7 +3777,7 @@ export default {
           if (dbResult.meta.changes === 0) return json({ result: { ok: false, error: 'not found' } }, 404);
           result = { ok: true, updated: dbResult.meta.changes };
         }
-        else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env);
+        else if (action === "legal-query" && request.method === "POST") result = await handleLegalQuery(body, env, ctx, corsHeaders);
         else if (action === "legal-query-workers-ai" && request.method === "POST") result = await handleLegalQueryWorkersAI(body, env);
         else if (action === "fetch-page" && request.method === "POST") result = await handleFetchPage(body, env);
         else if (action === "fetch-case-url" && request.method === "POST") result = await handleFetchCaseUrl(body, env);
@@ -3721,6 +3790,7 @@ export default {
           return new Response(JSON.stringify({ status, enriched: row.enriched, embedded: row.embedded, error: row.enrichment_error }), { headers: corsHeaders });
         }
         else return json({ error: "Invalid legal endpoint" }, 404);
+        if (result instanceof Response) return result;
         return json({ result });
       } catch (err) { console.error('legal-query error:', err); return json({ error: err.message }, 500); }
     }
