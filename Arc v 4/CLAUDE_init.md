@@ -185,7 +185,7 @@ Upload (PDF/text)
 
 ---
 
-### Retrieval Pipeline (sequential four-pass + BM25 interleave — frozen session 96)
+### Retrieval Pipeline (sequential four-pass + FTS leg / RRF fusion — re-opened sessions 114-115)
 
 Triggered by `POST /api/legal/legal-query` → delegates to `server.py /search`:
 
@@ -193,10 +193,10 @@ Triggered by `POST /api/legal/legal-query` → delegates to `server.py /search`:
 2. **Pass 2** — case_chunks filtered to criminal/mixed, threshold 0.35, appended (cannot displace Pass 1)
 3. **Pass 3** — secondary_sources, threshold 0.25, appended
 4. **Pass 4** — authority_synthesis, gated by `should_fire_pass4`, threshold 0.50
-5. **BM25 interleave** — section refs + case-by-ref + novel case_chunks_fts hits
+5. **FTS leg + RRF fusion (k=60)** — `fts_leg()` queries case_chunks_fts + secondary_sources_fts + legislation_sections_fts (LIMIT 24 each) concurrently with Pass 2/3; min(2, available) FTS-only quota floor; section-ref BM25 path (`BM25_SCORE_EXACT_SECTION`, `BM25_SCORE_CASE_REF`) unchanged
 6. **LLM synthesis** — Sol (Claude API) or V'ger (Workers AI Qwen3)
 
-Retrieval layer is frozen as of session 96. See CLAUDE.md `## RETRIEVAL LAYER — FROZEN` for re-opening conditions. Full architecture in CLAUDE_arch.md.
+Retrieval layer was frozen 24 April 2026 (session 96), re-opened sessions 114-115 for compound-term retrieval gap (FTS leg shipped). Refreeze gated on baseline re-run. See CLAUDE.md `## RETRIEVAL LAYER — FROZEN` for full conditions. Full architecture in CLAUDE_arch.md.
 
 ---
 

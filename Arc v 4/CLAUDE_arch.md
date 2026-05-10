@@ -93,7 +93,7 @@ Full D1/Workers/KV/R2 access
 
 **MCP — auslaw** (AustLII/Jade case search — installed session 72):
 `search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`, plus 6 additional tools — 10 total
-→ Use for: Tasmanian/AustLII case lookup by citation or topic, Jade.io lookups, citation formatting — complements the local scraper and Arcanthyr retrieval. VPS-hosted docker container at `~/auslaw-mcp`, digest-pinned `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network `auslaw-mcp_auslaw-isolated` (NOT connected to any `ai-stack_*` network). Registered user-scope in `C:\Users\Hogan\.claude.json` as `auslaw`, transport is SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. All outbound traffic validated via tcpdump session 72 — talks only to `posh.austlii.edu.au` (138.25.65.147). `search_cases` is dead from VPS — root cause is AustLII TCP-level block of Contabo VPS IP (confirmed 21 April 2026) — not endpoint slowness — SYN to austlii.edu.au silently dropped, connection never completes; `search_by_citation` is reliable.
+→ Use for: Tasmanian/AustLII case lookup by citation or topic, Jade.io lookups, citation formatting — complements the local scraper and Arcanthyr retrieval. VPS-hosted docker container at `~/auslaw-mcp`, digest-pinned `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network `auslaw-mcp_auslaw-isolated` (NOT connected to any `ai-stack_*` network). Registered user-scope in `C:\Users\Hogan\.claude.json` as `auslaw`, transport is SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. All outbound traffic validated via tcpdump session 72 — talks only to `posh.austlii.edu.au` (138.25.65.147). `search_cases` is dead from VPS — root cause is AustLII TCP-level block of Contabo VPS IP (confirmed 21 April 2026) — not endpoint slowness — SYN to austlii.edu.au silently dropped, connection never completes; `search_by_citation` also dead from VPS (TCP-block, 403 as of session 101).
 - **AustLII CF-edge block — mechanism identified session 102** — block is Cloudflare Bot Management / Turnstile, not IP-range; "Just a moment..." + `challenges.cloudflare.com` CSP is the diagnostic tell. CF Browser Rendering (headless Chromium) also 403s — Bot Management identifies its own BR ASN by design. `lawlibrary.tas.gov.au` behind same CF Bot Management. jade.io (`jade.io/au/cases/tas/COURT/YEAR/NUM`) accessible from CF edge (confirmed 200); used by `handleFetchJudgment` since session 101. jade.io has no listing pages (router validates all URLs against individual-case AustLII regex). Local scraper on residential IP is the only working AustLII bulk access path and permanent forward-looking capture mechanism.
 
 **MCP tools vs auto-activating skills — key distinction:**
@@ -442,7 +442,7 @@ cd "../Arc v 4" && npx wrangler deploy
 
 **_redirects:** Do NOT add a _redirects file to arcanthyr-ui/public/ — it conflicts with Workers Assets and causes infinite loop error 10021.
 
-**Model toggle names:** Sol = Claude API (claude-sonnet) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default
+**Model toggle names:** Sol = Claude API (claude-sonnet-4-6) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default
 
 **Globe dependencies:** Three.js + @react-three/fiber + @react-three/drei · Earth texture from unpkg · lives on Compose page
 
@@ -818,8 +818,7 @@ Browse, re-read, and promote past queries without re-querying.
 - Auth: KEY auto-reads from `~/ai-stack/.env` — no manual export needed
 - Field name: `query_text`
 - Results in `~/retrieval_baseline_results.txt`
-- **Last run: 22 Mar 2026 (session 13) — 14 pass / 3 partial / 0 fail (new corpus)**
-- Q2 BRD partial (BRD chunk now ingested — verify next run) · Q9 guilty plea partial (corpus gap) · Q13 case_chunk RRF noise
+- **Current baseline: 28P / 3Pa / 0M on 31-query eval (frozen 24 April 2026, re-opened sessions 114-115)** — known partials Q9 (guilty plea, content gap), Q14 (s 37 EA, semantic ceiling), Q26 (unreasonable verdict). Canonical timestamped snapshot: `~/retrieval_baseline_post_court_backfill.txt` (session 94). Pre-session-115 snapshots at `_pre_variant_stab_run1.txt` / `_run2.txt`. Generic `~/retrieval_baseline_results.txt` is Apr 16 stale — do not grep.
 
 ### retrieval_baseline.sh — KEY extraction
 - KEY is read from `~/ai-stack/.env.secrets` (not `.env` — `.env` does not contain secrets)

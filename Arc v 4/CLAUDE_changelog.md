@@ -6,12 +6,21 @@
 
 ## CHANGES THIS SESSION (session 112) — 3 May 2026
 
+
+
 - Sol model swapped — handleLegalQuery changed from claude-sonnet-4-6 to claude-haiku-4-5-20251001 (version 050ed45b); Sonnet was timing out with HTTP 500
+
 - Nexus 524 root cause confirmed — agent-general Flask is single-threaded; a hung query expansion call at 13:54 UTC blocked all subsequent /search requests for the rest of the session
+
 - VPS confirmed healthy — 16Gi free RAM, Qdrant responding normally (0.08–3.5s query latency), load 4.45/8 CPUs; bottleneck is Flask concurrency not hardware
+
 - Query expansion timeout non-functional — server.py AbortController configured for 3s but server stayed blocked 2m15s+; needs investigation
+
 - AbortSignal.timeout(25000) added to both Nexus fetch calls in Worker — prevents 524 hanging at Cloudflare edge; clean timeout error returned instead (deployment unconfirmed end of session)
+
 - Flask threading fix not completed — session ended with queries still failing; threaded=True or gunicorn required before next session
+
+
 
 
 ## CHANGES THIS SESSION (session 110) — 3 May 2026
@@ -293,6 +302,13 @@
 
 ---
 
+## CHANGES THIS SESSION (session 84) — 20 April 2026
+
+- **SCP/CRLF hardening deployed** — `.gitattributes` added at repo root pinning `*.js`, `*.jsx`, `*.py`, `*.md`, `*.json` to `eol=lf` (commit `02b61be`). Pre-commit hook at `.git/hooks/pre-commit` runs `@babel/parser` on staged JS/JSX files; hook uses `#!/bin/bash` + null-separated `git diff -z` + `while IFS= read -r -d ''` loop — space-safe for `Arc v 4/Worker.js` paths (for f in `$STAGED` split on spaces, initial approach failed immediately).
+- **Worker.js git record fixed** — git HEAD `1e6fb23` (s83 close commit) contained s82 truncated 4527-line file; correct 4556-line s83 restoration was deployed to Cloudflare but not committed. Fixed: commit `853a56d`. `public/index.html` (unstaged from s83) committed in same batch.
+- **`node --check` retired** — SESSION RULE updated: `npm run build` (rolldown pass) is now the pre-deploy gate. `node --check` confirmed false-passing on truncated files — exit 0 with no output on file cut mid-expression.
+- **SKILL.md false alarm** — session-closer reported `arcanthyr-session-closer/SKILL.md` truncated at line 40; CC cat confirmed 94 lines, intact. No repair needed. Consistent with known session-closer false-commit pattern.
+- **File audit clean** — `api.js`, `Library.jsx`, `Upload.jsx`, `public/index.html`, `server.py`, `enrichment_poller.py` all pass tail-completeness check. No further truncation casualties beyond the three fixed in s83.
 ## CHANGES THIS SESSION (session 83) — 20 April 2026
 
 - **Word Search feature for Case Library deployed** — new Worker route `GET /api/legal/word-search` (no X-Nexus-Key, matches `search-by-legislation` auth pattern) queries `case_chunks_fts` with phrase-match-first strategy and silent fallback to AND-of-all-tokens when phrase match returns zero rows. SQL uses `GROUP BY citation` with `MIN(bm25(case_chunks_fts)) AS best_rank` — one row per case, snippet from best-ranked chunk, `match_count` column showing how many chunks inside the case hit. Sanitiser strips FTS5 Booleans (`"`, `*`, `()`, `:`, `NEAR`, `AND`, `OR`, `NOT`) so users never need operator syntax. `api.wordSearch(q, limit, court)` added to `arcanthyr-ui/src/api.js`. `Library.jsx` CasesTable extended with third search mode ("Word search") — state plumbing, form UI, results table, safe `renderSnippet()` helper splitting on `<mark>…</mark>` with `<strong>` React nodes (no `dangerouslySetInnerHTML`). Worker version `1334562d-526d-432c-bdf0-ee6e201059b5`.
@@ -315,6 +331,16 @@
 - **Upload UI helper text added** — legislation dropzone now shows "For best results, use HTML source from legislation.tas.gov.au — disable legislative history, copy the page text into a .txt file before uploading. Avoid PDFs."
 
 ---
+
+## CHANGES THIS SESSION (session 81) — 21 April 2026
+
+- **Pass 4 enabled — AUTHORITY_PASS_ENABLED=true** — Flag flipped in `~/ai-stack/.env.config` (sed in-place replacing `false` → `true`), agent-general force-recreated. Confirmed live via VPS log: `[Pass 4] gate=FIRE reason=bare-lookup hits=0 ENABLED=true` (no longer shadow). 500ms cold-cache timeouts observed on first queries post-restart — expected, should warm up with traffic.
+
+- **AUTHORITY_KEYWORDS calibrated via 24-query shadow probe battery** — Fired all 24 queries via Playwright to generate shadow-mode log events before flip. Findings: (1) 3 topical-authority phrases produced false positives on doctrinal queries (`"authority on"`, `"leading authority on"`, `"key authority on"`) — removed; (2) 4 passive-voice treatment queries missed (`"has X been followed/distinguished/applied/considered"`) — 10 passive-voice forms added (`been followed`, `been applied`, `been distinguished`, `been overruled`, `been approved`, `been adopted`, `been considered`, `been cited`, `been treated`, `often cited`). Post-calibration fire rate on battery: 14/24 (58%) — correctly composed (citation-shaped queries FIRE, doctrinal queries SKIP). Multi-citation rule (rule 3) confirmed never fires independently — queries with ≥2 citations that are also ≤60 chars are always captured by bare-lookup first.
+
+- **worker.js sources mapper fix — type and source_type now flow to frontend** — Both `handleLegalQuery` and `handleLegalQueryWorkersAI` `caseSources` mapper previously returned `{ citation, court, year, score, summary }` with no `type` field. Added `type: c.type, source_type: c.source_type` to both. Verified via Playwright React fiber: results now carry `type: "case_chunk"` / `type: "secondary_source"`. `authority_synthesis` chunks will render amber AUTHORITY tag correctly when they surface. Worker version 57719d21.
+
+- **Remaining tag issue noted (minor)** — `TYPE_TAGS["secondary"]` key in ResultCard.jsx doesn't match actual value `"secondary_source"` from server.py — secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` alias key to TYPE_TAGS. Logged as new KNOWN ISSUE. Court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant payloads — separate open issue.
 
 ## CHANGES THIS SESSION (session 80) — 20 April 2026
 
@@ -849,7 +875,7 @@ Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Bac
 - Port 3000: locked to loopback only
 - NEXUS_SECRET_KEY rotation still pending (exposed session 58)
 
-## CHANGES THIS SESSION (session 58) — 15 April 2026
+## CHANGES THIS SESSION (session 58 — diagnostic) — 15 April 2026
 
 ### Retrieval diagnostic — "elements of assault" returning no results
 - Root cause identified: 114 secondary source rows have YAML-style `---` frontmatter in `raw_text`; poller strip regex (session 46) used `^` anchor that never matched because `---\n` precedes `[CONCEPTS:]`
@@ -890,7 +916,7 @@ Worker 3ddbcf68 live. Poller running clean, embedding from 2007 TASSC range. Bac
 - NEXUS_SECRET_KEY was exposed in conversation history this session
 - Rotate when convenient: generate new key, wrangler secret put, update VPS .env
 
-## CHANGES THIS SESSION (session — 15 Apr 2026)
+## CHANGES THIS SESSION (session 58 — TTS install) — 15 Apr 2026
 
 ### MOSS-TTS-Nano — installed and integrated
 - Cloned repo to ~/ai-stack/MOSS-TTS-Nano on VPS
@@ -1122,7 +1148,7 @@ Cases: 1,234+ (scraper running). Case chunks: 18,271+ all embedded. Secondary so
 
 - **subject_matter filter — LIVE** — Cache-based penalty approach (no case chunk re-embed required). New Worker route `GET /api/pipeline/case-subjects` returns full `{citation: subject_matter}` map for all cases (no X-Nexus-Key required). New server.py globals: `SM_PENALTY = 0.65`, `SM_ALLOW = {'criminal', 'mixed'}`, `_sm_cache`, `_sm_cache_ts`, `get_subject_matter_cache()` (hourly refresh via requests.get to Worker). `apply_sm_penalty()` applied to `case_chunk` type results in Pass 1 (after scoring, before court hierarchy re-rank) and in Pass 2 append loop. **Bug fix**: added `chunks.sort(key=lambda c: -c["score"])` between penalty application and court hierarchy re-rank — without this, `top_score` used the pre-penalty sort order making the cosine band wrong. Worker deployed via wrangler. Server.py deployed and verified (grep confirmed SM_PENALTY, get_subject_matter_cache, apply_sm_penalty all present). SM cache loaded on first search: 1,234 entries. Baseline wins: Q4 (tendency evidence clean), Q10 (s164 corroboration now at position 1 — was failure-to-give-evidence chunk), Q14 (s37 leading questions now at position 1 — coronial inquiry chunk gone).
 
-- **Misclassification audit** — Prior KNOWN ISSUES entries for Tasmania v Pilling [2020] TASSC 13 and Tasmania v Pilling (No 2) [2020] TASSC 46 were incorrect — both are workers compensation cases, correctly classified as administrative. Three genuine misclassifications corrected via Cloudflare MCP D1 UPDATE to `subject_matter='criminal'`: [2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69.
+- **Misclassification audit** — Prior KNOWN ISSUES entries for Tasmania v Pilling [2020] TASSC 13 and Tasmania v Pilling (No 2) [2020] TASSC 46 were incorrect — both are workers compensation cases, correctly classified as administrative. Three genuine misclassifications corrected via Cloudflare MCP D1 UPDATE to `subject_matter='criminal'`: [2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69. [2022] TASSC 69 retag did not persist (D1 spot-check 10 May 2026 returned `administrative`); re-applied via D1 MCP during 10 May reconciliation pass. Qdrant payload patch for the 5 attached case_chunks pending — see Phase 6.
 
 - **Full 31-query retrieval baseline run** — Post-SM filter. 12 clear passes / ~13 partials / 3 miss (all corpus gaps). SM filter wins confirmed: Q4, Q10, Q14. Q8 improved: s55 relevance chunk now at position 3 (was position 1). Q2 regression identified and fixed (see below). Corpus gap misses: Q24 (committal procedure), Q27 (provocation/manslaughter), Q31 (right to silence) — no doctrine in corpus, require new chunks.
 
@@ -1628,7 +1654,7 @@ Worker c4eff825 live. Modal fixed and simplified. source_type now flows from upl
 
 - **Legislation Act-title prefix re-embed deferred** — audit confirmed session 25 fix never reached VPS (VPS `run_legislation_embedding_pass()` still uses `embed_text = s['text']`). Scheduled for next session after secondary source re-embed completes.
 
-## CHANGES THIS SESSION (session 27) — 30 March 2026
+## CHANGES THIS SESSION (session 28) — 30 March 2026
 
 - **Dedup fix — secondary source pass** — `_qdrant_id` (Qdrant point UUID) added as secondary dedup key in Pass 3 secondary source guard. `existing_qdrant_ids_sec` built from all chunks already collected; guard now checks `str(hit.id) in existing_qdrant_ids_sec` in addition to citation string match. `_qdrant_id` also stored on appended secondary source chunks. Why: semantic pass and Pass 3 were returning the same Qdrant point twice — once with `citation: "unknown"` (stale payload era) causing citation-based dedup to miss it; UUID check is payload-independent and catches all cases.
 
@@ -1768,20 +1794,3 @@ Worker c4eff825 live. Modal fixed and simplified. source_type now flows from upl
 
 - **worker.js version** — `ba8bafa0`
 
-## CHANGES THIS SESSION (session 81) — 21 April 2026
-
-- **Pass 4 enabled — AUTHORITY_PASS_ENABLED=true** — Flag flipped in `~/ai-stack/.env.config` (sed in-place replacing `false` → `true`), agent-general force-recreated. Confirmed live via VPS log: `[Pass 4] gate=FIRE reason=bare-lookup hits=0 ENABLED=true` (no longer shadow). 500ms cold-cache timeouts observed on first queries post-restart — expected, should warm up with traffic.
-
-- **AUTHORITY_KEYWORDS calibrated via 24-query shadow probe battery** — Fired all 24 queries via Playwright to generate shadow-mode log events before flip. Findings: (1) 3 topical-authority phrases produced false positives on doctrinal queries (`"authority on"`, `"leading authority on"`, `"key authority on"`) — removed; (2) 4 passive-voice treatment queries missed (`"has X been followed/distinguished/applied/considered"`) — 10 passive-voice forms added (`been followed`, `been applied`, `been distinguished`, `been overruled`, `been approved`, `been adopted`, `been considered`, `been cited`, `been treated`, `often cited`). Post-calibration fire rate on battery: 14/24 (58%) — correctly composed (citation-shaped queries FIRE, doctrinal queries SKIP). Multi-citation rule (rule 3) confirmed never fires independently — queries with ≥2 citations that are also ≤60 chars are always captured by bare-lookup first.
-
-- **worker.js sources mapper fix — type and source_type now flow to frontend** — Both `handleLegalQuery` and `handleLegalQueryWorkersAI` `caseSources` mapper previously returned `{ citation, court, year, score, summary }` with no `type` field. Added `type: c.type, source_type: c.source_type` to both. Verified via Playwright React fiber: results now carry `type: "case_chunk"` / `type: "secondary_source"`. `authority_synthesis` chunks will render amber AUTHORITY tag correctly when they surface. Worker version 57719d21.
-
-- **Remaining tag issue noted (minor)** — `TYPE_TAGS["secondary"]` key in ResultCard.jsx doesn't match actual value `"secondary_source"` from server.py — secondary source cards show raw `"secondary_source"` label instead of `"CORPUS"`. Fix: add `"secondary_source"` alias key to TYPE_TAGS. Logged as new KNOWN ISSUE. Court-based tags (SC/MC/CCA) still require non-empty court field from Qdrant payloads — separate open issue.
-
-## CHANGES THIS SESSION (session 84) — 20 April 2026
-
-- **SCP/CRLF hardening deployed** — `.gitattributes` added at repo root pinning `*.js`, `*.jsx`, `*.py`, `*.md`, `*.json` to `eol=lf` (commit `02b61be`). Pre-commit hook at `.git/hooks/pre-commit` runs `@babel/parser` on staged JS/JSX files; hook uses `#!/bin/bash` + null-separated `git diff -z` + `while IFS= read -r -d ''` loop — space-safe for `Arc v 4/Worker.js` paths (for f in `$STAGED` split on spaces, initial approach failed immediately).
-- **Worker.js git record fixed** — git HEAD `1e6fb23` (s83 close commit) contained s82 truncated 4527-line file; correct 4556-line s83 restoration was deployed to Cloudflare but not committed. Fixed: commit `853a56d`. `public/index.html` (unstaged from s83) committed in same batch.
-- **`node --check` retired** — SESSION RULE updated: `npm run build` (rolldown pass) is now the pre-deploy gate. `node --check` confirmed false-passing on truncated files — exit 0 with no output on file cut mid-expression.
-- **SKILL.md false alarm** — session-closer reported `arcanthyr-session-closer/SKILL.md` truncated at line 40; CC cat confirmed 94 lines, intact. No repair needed. Consistent with known session-closer false-commit pattern.
-- **File audit clean** — `api.js`, `Library.jsx`, `Upload.jsx`, `public/index.html`, `server.py`, `enrichment_poller.py` all pass tail-completeness check. No further truncation casualties beyond the three fixed in s83.
