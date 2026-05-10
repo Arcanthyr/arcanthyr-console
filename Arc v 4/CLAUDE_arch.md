@@ -1,5 +1,5 @@
 # CLAUDE_arch.md — Arcanthyr Architecture Reference
-*Updated: 9 May 2026 (end of session 115). Upload every session alongside CLAUDE.md.*
+*Updated: 10 May 2026 (end of session 118). Upload every session alongside CLAUDE.md.*
 
 ---
 
@@ -641,6 +641,7 @@ Three Worker routes now called by `fts_leg()` in server.py:
 **Active Workers AI calls:**
 - **`summarizeCase()`** — two-pass case enrichment at scrape/upload time
 - **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle
+- **Workers AI path is JSON-only by platform constraint** — Workers AI has no SSE / streaming API; V'ger responses are buffered single-turn.
 
 ### worker.js — max_tokens on query handlers
 
@@ -651,8 +652,8 @@ Three Worker routes now called by `fts_leg()` in server.py:
 
 ### Sol vs V'ger context block discriminator
 
-- Sol synthesis path: `handleLegalQuery` — context built from `chunks.map(...)` (L~2633)
-- V'ger synthesis path: `handleLegalQueryWorkersAI` — context built from `orderedChunks.map(...)` (L~2878)
+- Sol synthesis path: `handleLegalQuery` — rewritten session 118 as `ReadableStream`-based SSE proxy; streams Anthropic SSE events directly to browser with a prepended `arcanthyr_meta` event carrying `query_id`, `model`, and `sources`; context still built from `chunks.map(...)` (L~2633)
+- V'ger synthesis path: `handleLegalQueryWorkersAI` — JSON-only (Workers AI has no streaming API); context built from `orderedChunks.map(...)` (L~2878); response returned as single buffered JSON
 - To locate either block in worker.js, grep for `chunks.map` (Sol) or `orderedChunks.map` (V'ger) — label strings like `[CASE EXCERPT]` and `[ANNOTATION]` appear in both blocks and are not reliable discriminators.
 
 ### Sentencing Second Pass (session 31, updated session 47)

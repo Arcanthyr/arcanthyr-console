@@ -4,11 +4,11 @@
 
 CLAUDE.md — Arcanthyr Session File
 
-Updated: 10 May 2026 (end of session 117) · Supersedes all prior versions
+Updated: 10 May 2026 (end of session 118) · Supersedes all prior versions
 
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
-Changelog archive → CLAUDE_changelog.md (sessions 21–114) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–115) — load conditionally
 
 
 
@@ -44,7 +44,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## SYSTEM STATE — 10 May 2026 (end of session 117)
+## SYSTEM STATE — 10 May 2026 (end of session 118)
 
 
 
@@ -63,7 +63,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | D1 case_chunks_fts | 26,034 rows — 1:1 with D1 case_chunks where enriched_text IS NOT NULL · 194 dupes deleted session 75 · DELETE-then-INSERT upsert via Worker e5934624 |
 
 | D1 legislation_sections_fts | 2305 rows · FTS5 virtual · porter tokenizer · synced via handleUploadLegislation + handleLibraryDelete · backfilled session 115 |
-| D1 query_log | 152 rows total · 0 with sufficient=0 across freeze window (no real-use failures logged) · answer_text + model columns added session 69 · feedback system live session 96 · flagged_by dropped session 103 Phase 1 · fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled columns added session 115 |
+| D1 query_log | 158 rows total · 0 with sufficient=0 across freeze window (no real-use failures logged) · answer_text + model columns added session 69 · feedback system live session 96 · flagged_by dropped session 103 Phase 1 · fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled columns added session 115 |
 
 | Insufficient feedback button | LIVE — ↓ Insufficient button in INTEL page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · popup with Submit/Skip buttons + visible error state on API failure (session 105) · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 
@@ -133,7 +133,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-- **SSE streaming (deferred)** — stream Claude API response token-by-token to browser via text/event-stream; proper UX fix (user sees tokens from ~5s rather than spinner for 15s); not urgent post-retrieval optimisation but on the "do eventually" list
 
 
 
@@ -492,16 +491,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## CHANGES THIS SESSION (session 115) — 9 May 2026
-
-- **FTS first-class parallel retrieval leg shipped** — server.py `fts_leg()` queries `case_chunks_fts` + `secondary_sources_fts` + `legislation_sections_fts` (LIMIT 24 each), fused with semantic via RRF (k=60); `min(2, available)` FTS-only quota floor; concurrent in ThreadPoolExecutor (max_workers 2→3); `USE_FTS_LEG` env flag for instant rollback. Solves H1 (`[:8]` token cap dropping key terms on verbose queries) and H2 (0.50-vs-0.62 score displacement) jointly.
-- **`legislation_sections_fts` virtual table created and backfilled** — 2305 rows; porter tokenizer; synced via `handleUploadLegislation` (line ~733) and `handleLibraryDelete` (line ~1138); named-driver `"significant relationship"` MATCH returns Relationships Act s 4 plus 5 sibling sections. Definitional anchors now FTS-reachable independent of Qdrant embed state.
-- **Query log diagnostics for FTS keyword path** — added `fts_keyword_fired`, `fts_keyword_hits`, `fts_keyword_added`, `rrf_quota_filled` columns; server.py `/search` returns `diagnostics` block; Worker writes the four columns in both Sol and V’ger `query_log` INSERTs. Replaces the misleading `bm25_fired` reading for FTS-path observability (`bm25_fired` semantics unchanged — section-ref path only).
-- **Verification panel — Q1 partial, Q2/Q3/Q4 pass** — Q1 (verbose quoted) Relationships Act s 4 at rank 3, retagged cases absent from top-5 (residual phrase-operand weighting under OR-join, logged only); Q2 (short) s 4 rank 4 + `[2020] TASSC 3` rank 2; Q3 section-ref path unchanged; Q4 generic on-topic. `rrf_quota_filled=0` on both verification queries — natural RRF fusion sufficient, quota floor never invoked.
-- **Retired retrieval components** — `fetch_case_chunks_fts()`, BM25 novel-hit interleave path (~lines 687–712), additive boost path (~lines 678–684), constants `BM25_INTERLEAVE_SCORE` and `BM25_SCORE_KEYWORD`. Section-ref BM25 path (`extract_section_references`, `BM25_SCORE_EXACT_SECTION`, `BM25_SCORE_CASE_REF`) untouched.
-- **`result_scores` column scale change** — RRF range ~0.013–0.017 (was cosine 0.45–0.75 + 0.50 mix). Score-scale incompatibility was the proximate cause of H2; abandoning shared scale eliminates the failure mode.
-- **CLAUDE_arch.md drift fixes — in-line this session** — Sol model name contradiction (`claude-haiku-4-5-20251001` vs `claude-sonnet-4-6`) corrected per session 113 revert; case-chunks-fts-search limit doc corrected to reflect actual current Worker cap.
-
 ## CHANGES THIS SESSION (session 116) — 10 May 2026
 
 - **MD reconciliation pass — 4 files** — cross-file audit of CLAUDE.md / arch.md / init.md / changelog.md; 14 targeted edits + changelog block surgery via Python line-index method (CRLF→LF normalisation expected diff inflation); commit `00c5af1`.
@@ -522,6 +511,17 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Secondary_sources backlog clarified** — 6 embedded=0 rows are nexus-save entries gated by `approved=0` in poller SQL, not poller backlog. SYSTEM STATE row reworded from "clearing" to "pending Library approval".
 - **Null-byte handling refinement** — surrogateescape decode/encode roundtrip preserves the null byte but Python `.replace()` still fails when null byte is within the target region (surrogate vs literal mismatch); line-index deletion is canonical, not fallback. Captured in CLAUDE_init.md.
 - **Operational rules captured (CLAUDE_init.md)** — hex-ssh `remote-ssh` deduplicates/truncates output (use `ssh-read-lines plain=true` for verbatim file reads); baseline script output path vs `ALLOWED_DIRS` mismatch (cp into `~/ai-stack/` before reading); CC Python rule corrected (`python3` via Bash works; only PS `python`/`py` blocked by Windows Store stub); after multi-edit Python passes on CLAUDE.md, re-grep target line numbers (paragraph replacements shift subsequent line indices).
+
+## CHANGES THIS SESSION (session 118) — 10 May 2026
+
+- **SSE streaming LIVE for Sol synthesis** — `handleLegalQuery` rewritten as ReadableStream-based proxy; pre-stream D1 INSERT with empty `answer_text`, post-stream UPDATE in `start()` finally with accumulated text, `ctx.waitUntil` 130s belt-and-braces idempotent UPDATE (`AND answer_text = ''` guard); `arcanthyr_meta` first event carries `query_id`/`model`; Anthropic SSE passes through unchanged after meta. Worker fetch handler signature now `async fetch(request, env, ctx)`. Synthetic SSE for zero-result case.
+- **Frontend streaming consumer** — `streamQuery()` added to `arcanthyr-ui/src/api.js`; Intel.jsx branches on model, Sol uses streaming with 30s idle / 120s wall-clock `AbortController`, V'ger unchanged on JSON. Spinner hides on first delta; abort reasons distinguish idle / wall-clock / unmount / new-query silently. `instanceof Response` check in dispatcher bypasses `json({ result })` wrapping for streamed responses.
+- **`answer_text` truncation removed** — `.slice(0, 2000)` cap removed from both write paths in `handleLegalQuery`; verified post-fix at 5,255 chars with clean sentence tail. Cap had been silently truncating the query history side panel and `sufficient=0` admin review on every long synthesis since SSE shipped — telemetry-quality bug masquerading as defensive code.
+- **Abort path verified end-to-end** — tab-close mid-stream produced row 9d72253d with 2,000 chars accumulated and mid-sentence tail; confirms closure capture of `accumulatedText` across async `reader.read()` boundaries, `enqueue` throw on browser disconnect as the loop-exit mechanism, and `AND answer_text = ''` idempotency on the 130s belt-and-braces UPDATE. All three independently-failing components confirmed.
+- **TransformStream pattern abandoned** — TransformStream + `pipeThrough` produced 0-byte SSE responses in CF Workers; replaced with explicit `new ReadableStream({ async start(controller) { reader.read() loop } })`. Logged in CLAUDE_init.md.
+- **SSE line buffer mandatory** — naive `decode(value).split("\n")` loses ~50% of text deltas at chunk boundaries; rolling `sseLineBuffer` accumulator across `read()` calls is required, not optional. Logged in CLAUDE_init.md.
+- **V'ger streaming non-viable by platform constraint** — Workers AI (Qwen3) has no SSE API surface; V'ger path is JSON-only structurally, not deferral. Captured in CLAUDE_arch.md. Idle / wall-clock timeouts shipped untested (low blast radius — known-untested rather than verified).
+
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

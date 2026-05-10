@@ -1,8 +1,19 @@
-# CLAUDE Changelog — Sessions 21–114
+# CLAUDE Changelog — Sessions 21–115
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 115) — 9 May 2026
+
+- **FTS first-class parallel retrieval leg shipped** — server.py `fts_leg()` queries `case_chunks_fts` + `secondary_sources_fts` + `legislation_sections_fts` (LIMIT 24 each), fused with semantic via RRF (k=60); `min(2, available)` FTS-only quota floor; concurrent in ThreadPoolExecutor (max_workers 2→3); `USE_FTS_LEG` env flag for instant rollback. Solves H1 (`[:8]` token cap dropping key terms on verbose queries) and H2 (0.50-vs-0.62 score displacement) jointly.
+- **`legislation_sections_fts` virtual table created and backfilled** — 2305 rows; porter tokenizer; synced via `handleUploadLegislation` (line ~733) and `handleLibraryDelete` (line ~1138); named-driver `"significant relationship"` MATCH returns Relationships Act s 4 plus 5 sibling sections. Definitional anchors now FTS-reachable independent of Qdrant embed state.
+- **Query log diagnostics for FTS keyword path** — added `fts_keyword_fired`, `fts_keyword_hits`, `fts_keyword_added`, `rrf_quota_filled` columns; server.py `/search` returns `diagnostics` block; Worker writes the four columns in both Sol and V’ger `query_log` INSERTs. Replaces the misleading `bm25_fired` reading for FTS-path observability (`bm25_fired` semantics unchanged — section-ref path only).
+- **Verification panel — Q1 partial, Q2/Q3/Q4 pass** — Q1 (verbose quoted) Relationships Act s 4 at rank 3, retagged cases absent from top-5 (residual phrase-operand weighting under OR-join, logged only); Q2 (short) s 4 rank 4 + `[2020] TASSC 3` rank 2; Q3 section-ref path unchanged; Q4 generic on-topic. `rrf_quota_filled=0` on both verification queries — natural RRF fusion sufficient, quota floor never invoked.
+- **Retired retrieval components** — `fetch_case_chunks_fts()`, BM25 novel-hit interleave path (~lines 687–712), additive boost path (~lines 678–684), constants `BM25_INTERLEAVE_SCORE` and `BM25_SCORE_KEYWORD`. Section-ref BM25 path (`extract_section_references`, `BM25_SCORE_EXACT_SECTION`, `BM25_SCORE_CASE_REF`) untouched.
+- **`result_scores` column scale change** — RRF range ~0.013–0.017 (was cosine 0.45–0.75 + 0.50 mix). Score-scale incompatibility was the proximate cause of H2; abandoning shared scale eliminates the failure mode.
+- **CLAUDE_arch.md drift fixes — in-line this session** — Sol model name contradiction (`claude-haiku-4-5-20251001` vs `claude-sonnet-4-6`) corrected per session 113 revert; case-chunks-fts-search limit doc corrected to reflect actual current Worker cap.
+
 
 ## CHANGES THIS SESSION (session 114) — 9 May 2026
 

@@ -4310,3 +4310,16 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 **[2026-05-10]** *Session 117 — post-FTS-leg refreeze* — score 8, both
 
 Baseline re-run validated 30P/1Pa/0M post-FTS-leg deploy (session 115). FTS leg + RRF fusion (k=60) closed three prior partials documented in CLAUDE.md FROZEN block: Q9 guilty plea discount (DPP v Broad [2018] TASCCA 5 chunk 13 surfaces 20% quantum + Butt v Tasmania reference), Q14 leading questions in chief (manual-b4135-chunk at #1, semantic ceiling closed), Q26 unreasonable verdict ([2020] TASCCA 5 + [2021] TASCCA 15 carry top-2 with Pell/M v The Queen/MFA + Anderson v Tasmania). One new partial introduced: Q19 aggravated assault sentencing range — content-side gap (s 184 quantum under-specified in corpus), not retrieval defect. All refreeze conditions met: ≥28P, ≤3Pa, 0M, no P→M regressions, zero `query_log.sufficient=0` across 17-day re-open window. Refrozen with `~/retrieval_baseline_post_fts_leg.txt` as canonical reference.
+
+## Session 118 decisions — 10 May 2026
+
+**[2026-05-10]** *Session 118 — SSE streaming for Sol synthesis*
+
+- **Transport: `fetch()` + `ReadableStream`, not `EventSource`** — Worker returns `text/event-stream`; frontend uses `response.body.getReader()` + `TextDecoder` + rolling `sseLineBuffer`. `EventSource` rejected: GET-only, no body, no signal/abort.
+- **Wire format: passthrough Anthropic SSE + one prepended `arcanthyr_meta` event** — Worker prepends a single `event: arcanthyr_meta\ndata: {...}\n\n` carrying `query_id`, `model`, and `sources` before streaming Anthropic events unchanged. Avoids re-encoding or buffering the Anthropic stream.
+- **Idle 30s + wall-clock 120s ceiling on frontend** — `AbortController` with two timers; idle resets on each `onDelta`; wall-clock is absolute. Abort reasons (`idle`, `wall-clock`, `new-query`, `unmount`) distinguish silent vs user-visible error display.
+- **Pre-stream D1 INSERT + post-stream UPDATE on `query_log`** — INSERT with empty `answer_text` before stream starts (captures `query_id` for meta event); UPDATE in `finally` block with `ctx.waitUntil` for 130s belt-and-braces idempotent UPDATE (`AND answer_text = ''` guard prevents overwrite if stream completed normally).
+- **`.slice(0, 2000)` cap on `answer_text` removed** — cap was silently truncating query history and `sufficient=0` admin review on every long synthesis. Telemetry-quality bug masquerading as defensive code.
+- **Dead end: `TransformStream` + `pipeThrough` for Workers SSE** — produces 0-byte responses in CF Workers; replaced with explicit `new ReadableStream({ async start(controller) { reader.read() loop } })`.
+- **Dead end: fixed-time sleep as streaming-abort test strategy** — `browser_wait_for(ms)` does not guarantee first-delta arrival; test aborts before stream begins and passes vacuously. Correct pattern: `browser_wait_for` on a DOM selector that appears on first delta (spinner gone, text node present).
+- **Dead end: Playwright `target: "ref=..."` selector** — `ref=` engine not supported in this Playwright MCP build; CSS selectors only.

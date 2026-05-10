@@ -100,7 +100,7 @@ After uploading server.py, force-recreate the container on VPS: `docker compose 
 **server.py edit rules (session 114):**
 - **Pyright after every server.py edit** — run Pyright diagnostics on server.py after every edit before SCP to VPS; catches NameError, import issues, type failures silently missed by syntax checks; caught bare `ThreadPoolExecutor` (should be `concurrent.futures.ThreadPoolExecutor`) session 114
 - **/tmp/qvenv for VPS patch scripts** — one-off VPS scripts importing qdrant-client directly require the qvenv venv: `source /tmp/qvenv/bin/activate`; if cleared (it's in /tmp): `python3 -m venv /tmp/qvenv && /tmp/qvenv/bin/pip install qdrant-client -q`; system Python on VPS does not have qdrant-client
-- **Worker.js capital W** — source file is `Arc v 4/Worker.js` (capital W); glob/grep for `worker.js` finds only build outputs in `dist/` and `public/`, not the source; always reference as `Worker.js` in CC briefs
+- **Worker.js casing — scope-dependent** — file on disk is `Worker.js` (capital W) and grep/glob/CC briefs reference it that way. BUT git tracks it case-insensitively as `worker.js` (lowercase) — `git add "Arc v 4/Worker.js"` silently no-ops. Use lowercase `worker.js` in git commands; use `Worker.js` everywhere else.
 
 ### Retrieval baseline
 ```bash
@@ -539,3 +539,15 @@ Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated 
 
 **Null-byte `.replace()` failure with `surrogateescape`.** The `surrogateescape` decode/encode roundtrip preserves null bytes as surrogate characters (U+DC00) in the decoded string. Python `.replace()` fails silently when the null byte sits within the search target region — the surrogate in the decoded string does not match the clean literal in the search pattern. Line-index deletion (`raw.split(b'
 ')`, assert on distinctive token, `del lines[start:end]`, rejoin) is the canonical method for removing blocks from CLAUDE.md, not a fallback. The same failure mode applies to any file containing null or non-UTF-8 bytes read with `surrogateescape`.
+
+## Operational rules from session 118
+
+**Workers SSE: `TransformStream` + `pipeThrough` produces 0-byte responses in CF Workers.** When proxying an upstream SSE stream to the browser, do NOT use `TransformStream` + `readable.pipeThrough()` — CF Workers returns a 0-byte response body. The working pattern is an explicit `new ReadableStream({ async start(controller) { ... reader.read() loop ... } })` where the loop calls `controller.enqueue(chunk)` and `controller.close()` directly.
+
+**SSE line-buffer accumulator is mandatory across `reader.read()` boundaries.** `decode(value).split('\n')` loses approximately 50% of text deltas because SSE event blocks can span multiple `read()` chunks. A rolling `sseLineBuffer` string that accumulates across calls, splitting on `\n\n` to extract complete events, is required — not optional. Without it, deltas are silently dropped.
+
+**`controller.enqueue(value)` throws on browser disconnect in Workers SSE.** When the browser closes the connection mid-stream, the next `controller.enqueue()` call throws (error class varies by runtime). This throw is the loop-exit mechanism — catch it, break, and fall into the `finally` block. The `AND answer_text = ''` idempotency guard on the belt-and-braces `ctx.waitUntil` UPDATE depends on this closure path executing cleanly.
+
+**D1 `TEXT` columns have no enforced length limit — defensive caps mask telemetry.** D1 stores arbitrary-length text in TEXT columns regardless of any documented "limit." A `.slice(0, N)` cap on `answer_text` writes silently truncated rows that pass all validation while corrupting query history and `sufficient=0` admin review. Remove caps from D1 write paths; apply limits only at UI display layer if needed.
+
+**Playwright `target: "ref=..."` selectors not supported.** The `ref=` targeting engine (locating elements by React/framework internal ref) is not available in this Playwright MCP build. Use CSS selectors (`#id`, `.class`, `[data-testid=...]`, element type) for all `browser_click`, `browser_type`, and `browser_wait_for` targets.
