@@ -4,11 +4,11 @@
 
 CLAUDE.md — Arcanthyr Session File
 
-Updated: 9 May 2026 (end of session 115) · Supersedes all prior versions
+Updated: 10 May 2026 (end of session 116) · Supersedes all prior versions
 
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
-Changelog archive → CLAUDE_changelog.md (sessions 21–112) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–113) — load conditionally
 
 
 
@@ -42,7 +42,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## SYSTEM STATE — 10 May 2026 (refreshed mid-session 115 reconciliation)
+## SYSTEM STATE — 10 May 2026 (end of session 116)
 
 
 
@@ -131,6 +131,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
+- **Baseline re-run on 31-query benchmark** — gate retrieval refreeze decision post-FTS-leg deploy (session 115). Run `~/retrieval_baseline.sh` on VPS, capture timestamped snapshot at `~/retrieval_baseline_post_fts_leg.txt`, evaluate against 28P/3Pa/0M baseline. If passing or improving: refreeze with new baseline. If regressed: investigate before any retrieval work.
 - **SSE streaming (deferred)** — stream Claude API response token-by-token to browser via text/event-stream; proper UX fix (user sees tokens from ~5s rather than spinner for 15s); not urgent post-retrieval optimisation but on the "do eventually" list
 
 
@@ -490,22 +491,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## CHANGES THIS SESSION (session 113) — 4 May 2026
-
-
-
-- **server.py threading fix** — `HTTPServer` → `ThreadingHTTPServer` (stdlib, no new deps, no Dockerfile rebuild); resolves single-threaded blocking that caused session 112 Nexus 524s under concurrent queries; `docker compose restart` sufficient; health check confirmed 200 after restart
-
-- **Sol model restored to claude-sonnet-4-6** — reverts session 112 haiku workaround; threading fix eliminates root-cause timeout; `AbortSignal.timeout` tightened 25000 → 20000ms on both Nexus fetch calls in Worker.js (deployed version 73cefa03)
-
-- **Clerk auth removed, password gate deployed** — Clerk fully reverted; `useAuth.js` added with `requireAuth()` / `isAuthed()` / `promptAuth()` (sessionStorage + window.prompt); gated on Intel search (all entry paths), CaseSearch case open, leg search, word search; build + deploy confirmed clean
-
-- **PowerShell deploy `-Force` rule added** — `cp -r dist/. public/` in PowerShell silently skips existing subdirs; correct form is `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"`; stale `public/dist/` subdir from bad prior deploy must be removed first
-
-- **CLAUDE.md/arch.md mis-labels corrected** — "Flask threading" entries replaced with accurate ThreadingHTTPServer description; Clerk auth sections removed; Model toggle names updated haiku → sonnet
-
-
-
 ## CHANGES THIS SESSION (session 114) — 9 May 2026
 
 - **Pass 2+3 concurrent retrieval** — ThreadPoolExecutor(max_workers=2) with separate client2/client3 QdrantClient instances; timestamp-confirmed 53–61μs gap between passes (was ~2s sequential); retrieval wall time cut from ~14–18s to ~4–6s
@@ -533,6 +518,17 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Retired retrieval components** — `fetch_case_chunks_fts()`, BM25 novel-hit interleave path (~lines 687–712), additive boost path (~lines 678–684), constants `BM25_INTERLEAVE_SCORE` and `BM25_SCORE_KEYWORD`. Section-ref BM25 path (`extract_section_references`, `BM25_SCORE_EXACT_SECTION`, `BM25_SCORE_CASE_REF`) untouched.
 - **`result_scores` column scale change** — RRF range ~0.013–0.017 (was cosine 0.45–0.75 + 0.50 mix). Score-scale incompatibility was the proximate cause of H2; abandoning shared scale eliminates the failure mode.
 - **CLAUDE_arch.md drift fixes — in-line this session** — Sol model name contradiction (`claude-haiku-4-5-20251001` vs `claude-sonnet-4-6`) corrected per session 113 revert; case-chunks-fts-search limit doc corrected to reflect actual current Worker cap.
+
+## CHANGES THIS SESSION (session 116) — 10 May 2026
+
+- **MD reconciliation pass — 4 files** — cross-file audit of CLAUDE.md / arch.md / init.md / changelog.md; 14 targeted edits + changelog block surgery via Python line-index method (CRLF→LF normalisation expected diff inflation); commit `00c5af1`.
+- **CLAUDE.md SYSTEM STATE refresh — 10 sessions of drift caught** — `case_citations` 10,575→17,099 (+6,524), `case_legislation_refs` 5,356→15,966 (+10,610), `legislation` 8 Acts→26 (full Tasmanian criminal stack), `secondary_sources` 1,444→1,447, `query_log` 152 total · `sufficient=0` count: 0 across freeze window. Driver: xref_agent cron has been mutating D1 nightly without per-session re-query — this is the highest-recurring drift class and the cheapest to mechanise via a SYSTEM STATE refresh script.
+- **FROZEN block rewritten** — BM25 novel-hit interleave description retired (FTS leg + RRF k=60 deployed session 115); explicit re-open note for sessions 114-115 (compound-term retrieval gap); refreeze gated on 31-query baseline re-run confirming ≥28P/3Pa/0M post-FTS-leg.
+- **Stale entries pruned** — `subject_matter` Outstanding Priority + Known Issue (audit complete session 100), `Word artifact noise` simplified, CLAUDE_arch.md line 96 contradiction (`search_by_citation is reliable` half-sentence struck), `claude-sonnet` → `claude-sonnet-4-6` at line 445, `retrieval_baseline.sh` 22-March stale entry refreshed to current frozen-state baseline.
+- **Changelog block surgery** — 30-March mis-labelled "session 27" → genuine **session 28**; malformed "session — 15 Apr" header → **session 58 (TTS install)** with existing 58 → **session 58 (diagnostic)** (two close blocks for same day, both legitimate); sessions 81 + 84 moved from EOF to chronological position.
+- **[2022] TASSC 69 retag drift caught and re-applied** — D1 spot-check showed `subject_matter='administrative'` despite session 51 changelog claiming criminal retag; re-applied via D1 MCP (DPP v Greenham Tasmania Pty Ltd is corporate criminal prosecution); 5 attached `case_chunks` Qdrant payload patched `administrative→criminal` via `/tmp/qvenv` Python script; SM cache auto-refreshes within hour. Demonstrates silent-MCP-update-failure class.
+- **precompact.ps1 hook fixed in flight** — earlier CC investigation reported file clean; live `/compact` run produced parse error from corrupted em-dash at line 27 (encoding mishap). Replaced with ASCII hyphen; parse confirmed clean.
+- **Operational rules captured (CLAUDE_init.md)** — Python table-row matching collision rule (assert unique-token match, not row-prefix); hex-ssh constraints (newlines blocked in `remote-ssh`, `ALLOWED_LOCAL_DIRS = OneDrive\\Arcanthyr\\` only, `rm` is BLOCKED_COMMAND); Windows stdout `UnicodeEncodeError` after `f.write()` is non-fatal — verify file with grep, don't retry script.
 
 ## END-OF-SESSION UPDATE PROCEDURE
 

@@ -514,3 +514,15 @@ Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated 
 **Playwright auth gate bypass.** When using `browser_evaluate` against the Arcanthyr UI: inject `sessionStorage.setItem('arc_authed','1')` immediately after `page.goto()`, before any query submission. Otherwise the `window.prompt()` auth dialog races against page load and Playwright stalls.
 
 **Route limit caps drift silently in CLAUDE_arch.md.** After original deploy notes, Worker route limit defaults can change in code without arch.md being updated. Verify against live Worker source (`Arc v 4/worker.js`) before relying on documented caps. Pattern caught session 115 on `case-chunks-fts-search` — arch.md said "max 50", actual was 8.
+
+## Operational rules from session 116 reconciliation
+
+**Python table-row matching — assert unique-token match, never row-prefix.** When writing a Python script to rewrite a markdown table row in CLAUDE.md (or any MD with multiple tables), match by a substring unique to the target row, not by `startswith('| <component_name> |`)`. The `enrichment_poller` row exists in both SYSTEM STATE and SESSION RULES tables; row-prefix matching corrupts the wrong one silently. Specific tokens to disambiguate: SYSTEM STATE has `embedded=0` or count digits, SESSION RULES has `Runs as permanent` or operational verbs. Always `assert match_count == 1` before writing.
+
+**hex-ssh `remote-ssh` rejects newlines.** Single-line commands only. Multi-line workflow: write script to a path under `C:\Users\Hogan\OneDrive\Arcanthyr\`, `ssh-upload` to VPS, single-line invocation of the uploaded script. Do not attempt multi-line `remote-ssh` invocations.
+
+**hex-ssh `ALLOWED_LOCAL_DIRS` constraint.** Limited to `C:\Users\Hogan\OneDrive\Arcanthyr\` and subdirectories. `AppData\Local\Temp\`, system temp paths, and other locations outside this tree are rejected for `ssh-upload`. Stage scripts under the OneDrive\Arcanthyr tree.
+
+**hex-ssh BLOCKED_COMMAND list — `rm` confirmed blocked.** `rm` cannot be invoked via `remote-ssh`. No workaround. VPS-side cleanup of uploaded scripts requires Tom to run manually or a dedicated future tool. Other blocked commands likely exist; assume any destructive shell command may be blocked and test before relying on it.
+
+**Windows stdout `UnicodeEncodeError` after `f.write()` is non-fatal.** When a Python script writing UTF-8 to a file then prints status output containing non-cp1252 chars (`\u2192`, `\u2014`, etc.), the `UnicodeEncodeError` fires AFTER the file write completed successfully. Verify file content with `grep -a` rather than retrying the script. Existing `subprocess.run wrangler stdout encoding` rule (session 98) covers stdout-capture; this is the print-side complement.

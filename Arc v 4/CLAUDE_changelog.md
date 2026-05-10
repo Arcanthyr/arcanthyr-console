@@ -1,8 +1,24 @@
-# CLAUDE Changelog — Sessions 21–112
+# CLAUDE Changelog — Sessions 21–113
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 113) — 4 May 2026
+
+
+
+- **server.py threading fix** — `HTTPServer` → `ThreadingHTTPServer` (stdlib, no new deps, no Dockerfile rebuild); resolves single-threaded blocking that caused session 112 Nexus 524s under concurrent queries; `docker compose restart` sufficient; health check confirmed 200 after restart
+
+- **Sol model restored to claude-sonnet-4-6** — reverts session 112 haiku workaround; threading fix eliminates root-cause timeout; `AbortSignal.timeout` tightened 25000 → 20000ms on both Nexus fetch calls in Worker.js (deployed version 73cefa03)
+
+- **Clerk auth removed, password gate deployed** — Clerk fully reverted; `useAuth.js` added with `requireAuth()` / `isAuthed()` / `promptAuth()` (sessionStorage + window.prompt); gated on Intel search (all entry paths), CaseSearch case open, leg search, word search; build + deploy confirmed clean
+
+- **PowerShell deploy `-Force` rule added** — `cp -r dist/. public/` in PowerShell silently skips existing subdirs; correct form is `Copy-Item -Recurse -Force dist/* "../Arc v 4/public/"`; stale `public/dist/` subdir from bad prior deploy must be removed first
+
+- **CLAUDE.md/arch.md mis-labels corrected** — "Flask threading" entries replaced with accurate ThreadingHTTPServer description; Clerk auth sections removed; Model toggle names updated haiku → sonnet
+
+
 
 ## CHANGES THIS SESSION (session 112) — 3 May 2026
 
