@@ -4304,3 +4304,9 @@ Site redesign sequenced into 4 phases by risk and dependency: Phase 1 = destruct
 **Dead end — hex-ssh `remote-ssh` with embedded newlines.** Always rejected with `UNSAFE_ARG: command contains newlines`. Required pattern: write script to a path under `C:\Users\Hogan\OneDrive\Arcanthyr\` (NOT `AppData\Local\Temp` — outside `ALLOWED_LOCAL_DIRS`), `ssh-upload` to VPS, single-line invocation. Do not attempt multi-line `remote-ssh` again.
 
 **Dead end — VPS file cleanup via hex-ssh.** `rm` is in the hex-ssh BLOCKED_COMMAND list. No workaround via hex-ssh. VPS-side cleanup of uploaded scripts requires Tom to run manually (or a dedicated future tool); do not attempt to use `remote-ssh` to invoke `rm` directly.
+
+## Session 117 decisions — 10 May 2026
+
+**[2026-05-10]** *Session 117 — post-FTS-leg refreeze* — score 8, both
+
+Baseline re-run validated 30P/1Pa/0M post-FTS-leg deploy (session 115). FTS leg + RRF fusion (k=60) closed three prior partials documented in CLAUDE.md FROZEN block: Q9 guilty plea discount (DPP v Broad [2018] TASCCA 5 chunk 13 surfaces 20% quantum + Butt v Tasmania reference), Q14 leading questions in chief (manual-b4135-chunk at #1, semantic ceiling closed), Q26 unreasonable verdict ([2020] TASCCA 5 + [2021] TASCCA 15 carry top-2 with Pell/M v The Queen/MFA + Anderson v Tasmania). One new partial introduced: Q19 aggravated assault sentencing range — content-side gap (s 184 quantum under-specified in corpus), not retrieval defect. All refreeze conditions met: ≥28P, ≤3Pa, 0M, no P→M regressions, zero `query_log.sufficient=0` across 17-day re-open window. Refrozen with `~/retrieval_baseline_post_fts_leg.txt` as canonical reference.

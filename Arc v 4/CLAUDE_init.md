@@ -526,3 +526,16 @@ Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated 
 **hex-ssh BLOCKED_COMMAND list — `rm` confirmed blocked.** `rm` cannot be invoked via `remote-ssh`. No workaround. VPS-side cleanup of uploaded scripts requires Tom to run manually or a dedicated future tool. Other blocked commands likely exist; assume any destructive shell command may be blocked and test before relying on it.
 
 **Windows stdout `UnicodeEncodeError` after `f.write()` is non-fatal.** When a Python script writing UTF-8 to a file then prints status output containing non-cp1252 chars (`\u2192`, `\u2014`, etc.), the `UnicodeEncodeError` fires AFTER the file write completed successfully. Verify file content with `grep -a` rather than retrying the script. Existing `subprocess.run wrangler stdout encoding` rule (session 98) covers stdout-capture; this is the print-side complement.
+
+---
+
+## Operational rules from session 117 close
+
+**hex-ssh `remote-ssh` deduplicates and truncates output.** The tool suppresses repeated lines and caps total output length. For verbatim file reads (baseline results, long log files), use `ssh-read-lines plain=true` in batches instead of `remote-ssh cat`. Never rely on `remote-ssh cat` for content that exceeds a few hundred lines or has repetitive structure.
+
+**Baseline script output path vs `ALLOWED_DIRS`.** `~/retrieval_baseline.sh` writes results to `~/retrieval_baseline_post_*.txt` which is outside hex-ssh `ALLOWED_DIRS` (`/home/tom/ai-stack`). After running the baseline, `cp ~/retrieval_baseline_post_fts_leg.txt ~/ai-stack/` before attempting `ssh-read-lines`. Apply same rule to any VPS script that writes output to `~/` or any path outside `/home/tom/ai-stack`.
+
+**CLAUDE.md multi-edit line-number reshift.** After any Python pass on CLAUDE.md that adds or removes lines (paragraph replacements, block deletions), all subsequent line indices shift. Do not reuse pre-computed line numbers across multiple Python edit scripts. Re-grep for target content before each subsequent line-index operation. This applies even within a single session close where multiple scripts run sequentially.
+
+**Null-byte `.replace()` failure with `surrogateescape`.** The `surrogateescape` decode/encode roundtrip preserves null bytes as surrogate characters (U+DC00) in the decoded string. Python `.replace()` fails silently when the null byte sits within the search target region — the surrogate in the decoded string does not match the clean literal in the search pattern. Line-index deletion (`raw.split(b'
+')`, assert on distinctive token, `del lines[start:end]`, rejoin) is the canonical method for removing blocks from CLAUDE.md, not a fallback. The same failure mode applies to any file containing null or non-UTF-8 bytes read with `surrogateescape`.

@@ -4,11 +4,11 @@
 
 CLAUDE.md — Arcanthyr Session File
 
-Updated: 10 May 2026 (end of session 116) · Supersedes all prior versions
+Updated: 10 May 2026 (end of session 117) · Supersedes all prior versions
 
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
-Changelog archive → CLAUDE_changelog.md (sessions 21–113) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–114) — load conditionally
 
 
 
@@ -16,11 +16,13 @@ Changelog archive → CLAUDE_changelog.md (sessions 21–113) — load condition
 
 
 
-## RETRIEVAL LAYER — FROZEN (24 April 2026)
+## RETRIEVAL LAYER — FROZEN (10 May 2026)
 
-Retrieval pipeline was frozen 24 April 2026 at baseline 28P / 3Pa / 0M on the 31-query eval; 28,876 Qdrant points; four-pass architecture (Pass 1 unfiltered cosine → Pass 2 case chunks → Pass 3 secondary sources → Pass 4 citation authority); FTS leg + RRF fusion (k=60) replaced BM25 novel-hit interleave session 115; section-ref BM25 path unchanged; vocabulary anchor prepend deployed across all Acts; subject-matter filter + query expansion + quarantine filter live on all passes. Known partials (Q9 guilty plea, Q14 s 37 EA, Q26 unreasonable verdict) attributed to content coverage and semantic ceiling, not retrieval defect.
+Retrieval pipeline refrozen 10 May 2026 at baseline 30P / 1Pa / 0M on the 31-query eval (post-FTS-leg validation, session 117); 28,876 Qdrant points; four-pass architecture (Pass 1 unfiltered cosine → Pass 2 case chunks → Pass 3 secondary sources → Pass 4 citation authority); FTS leg + RRF fusion (k=60) replaced BM25 novel-hit interleave session 115; section-ref BM25 path unchanged; vocabulary anchor prepend deployed across all Acts; subject-matter filter + query expansion + quarantine filter live on all passes.
 
-Re-opened sessions 114-115 for systemic compound-term retrieval gap (FTS leg shipped). Refreeze gated on baseline re-run confirming ≥28P/3Pa/0M post-FTS-leg on the 31-query eval. `query_log.sufficient=0` count: 0 across freeze window (24 April → 10 May, ~16 days). Permanent re-opening criteria below remain operative.
+Re-opening sessions 114-115 closed three prior partials: Q9 (DPP v Broad [2018] TASCCA 5 chunk 13 surfaces 20% discount quantum + Butt v Tasmania reference), Q14 (manual-b4135-chunk at #1, semantic ceiling on s 37 EA leading questions closed), Q26 ([2020] TASCCA 5 with Pell/M v The Queen/MFA + [2021] TASCCA 15 with Anderson v Tasmania carry the unreasonable verdict ground at top-2). New partial: Q19 aggravated assault sentencing range — top-3 cover adjacent violent offence sentencing (s 172 GBH per Barron, strangulation per Mayne) but no s 184 quantum chunk surfaces; content-side gap, not retrieval defect; addressable via authoring if real-use signal supports it.
+
+`query_log.sufficient=0` count: 0 across re-open window (24 April → 10 May, ~17 days). Permanent re-opening criteria below remain operative.
 
 Re-opening requires a named trigger from real-use feedback (D1 query_log rows where sufficient=0), not from internal signals. Internal signals — score distributions, rank drift, baseline variance across runs, citation churn, variant instability — are explicitly not triggers. They are the over-optimisation signature. Triggers:
 
@@ -42,7 +44,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## SYSTEM STATE — 10 May 2026 (end of session 116)
+## SYSTEM STATE — 10 May 2026 (end of session 117)
 
 
 
@@ -56,7 +58,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) · DLQ: 0 · retry_count + dlq columns added (DLQ threshold: 3 failures); pending check is now done=0 AND dlq=0 |
 
-| D1 secondary_sources | 1,447 total · embedded=0: 6 (nexus-save / re-embed entries) · 411 Word-artifact rows cleaned session 98 |
+| D1 secondary_sources | 1,447 total · embedded=0: 6 (nexus-save entries pending Library approval — gated by approved=0 in poller SQL, not poller backlog) · 411 Word-artifact rows cleaned session 98 |
 
 | D1 case_chunks_fts | 26,034 rows — 1:1 with D1 case_chunks where enriched_text IS NOT NULL · 194 dupes deleted session 75 · DELETE-then-INSERT upsert via Worker e5934624 |
 
@@ -89,7 +91,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 | Query history | LIVE — answer_text + model stored per query, side panel on Research page, click-to-view, Save to Nexus / Delete per entry |
 
-| Baseline (31 queries) | ≥28P / ≤3Pa / 0M — query expansion deployed session 77 (19 Apr 2026) · post-court-backfill snapshot captured session 94 at `~/retrieval_baseline_post_court_backfill.txt` · pre-variant-stab runs 1 & 2 captured session 95 at `~/retrieval_baseline_pre_variant_stab_run1.txt` and `run2.txt` (variance envelope: 31/31 top-1 citation drift across 3 samples, but P/Pa/M grade stable at 28P/3Pa/0M — grade-level robustness despite internal noise) · Q9 TASCCA re-rank visibly live; zero P→M regressions · session 74 canonical `~/retrieval_baseline_post_interleave.txt` retained as prior reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
+| Baseline (31 queries) | 30P / 1Pa / 0M — post-FTS-leg refreeze confirmed session 117 (10 May 2026) · canonical snapshot `~/retrieval_baseline_post_fts_leg.txt` · prior partials Q9/Q14/Q26 closed by FTS leg; new partial Q19 (agg assault sentencing range, content-side) · prior baseline files retained: `~/retrieval_baseline_post_court_backfill.txt` (session 94, 28P/3Pa/0M); session 74 canonical `~/retrieval_baseline_post_interleave.txt` for historical reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
 
 | procedure_notes | 319 success / ~340 not_sentencing |
 
@@ -131,7 +133,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-- **Baseline re-run on 31-query benchmark** — gate retrieval refreeze decision post-FTS-leg deploy (session 115). Run `~/retrieval_baseline.sh` on VPS, capture timestamped snapshot at `~/retrieval_baseline_post_fts_leg.txt`, evaluate against 28P/3Pa/0M baseline. If passing or improving: refreeze with new baseline. If regressed: investigate before any retrieval work.
 - **SSE streaming (deferred)** — stream Claude API response token-by-token to browser via text/event-stream; proper UX fix (user sees tokens from ~5s rather than spinner for 15s); not urgent post-retrieval optimisation but on the "do eventually" list
 
 
@@ -277,7 +278,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 | CC brief pattern | Ask CC to read files and report state BEFORE making changes |
 
-| CC cannot run Python | Windows Store stub blocks it — run Python in PowerShell terminal directly |
+| CC Python path | PowerShell `python` and `py` blocked by Windows Store stub — do not use · `python3` via the Bash tool works cleanly (Git Bash environment) — use for CC-side Python scripts · "run Python in PowerShell terminal directly" applies to interactive/long-running terminal scripts only |
 
 | CC vs SSH | CC for local file edits · SSH terminal for VPS runtime commands |
 
@@ -491,24 +492,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## CHANGES THIS SESSION (session 114) — 9 May 2026
-
-- **Pass 2+3 concurrent retrieval** — ThreadPoolExecutor(max_workers=2) with separate client2/client3 QdrantClient instances; timestamp-confirmed 53–61μs gap between passes (was ~2s sequential); retrieval wall time cut from ~14–18s to ~4–6s
-
-- **AbortSignal.timeout 20s → 25s** — both handleLegalQuery and V'ger Nexus fetch paths; worker e3d273e6-266c-428b-ba82-76a1e61b1ac5
-
-- **HTTP 500 root cause resolved** — total query time now ~14–18s (retrieval 4–6s + Sonnet ~10–12s); clear of CF 30s wall-clock ceiling; 500s should not recur under normal load
-
-- **SSE streaming deferred** — architecturally correct UX fix (progressive token display); not needed post-retrieval optimisation; parked for dedicated session
-
-- **subject_matter family→mixed — three cross-domain cases** — [2024] TASFC 2, [2023] TASSC 15, [2020] TASSC 3 retagged in D1 + 34 Qdrant points patched; significant relationship definitional cases now eligible for Pass 2 criminal/mixed filter
-
-- **Relationships Act re-embed queued** — legislation.embedded reset to 0 for relationships-act-2003-tas; s 4 sections confirmed in D1 with embedding_model = null; poller to embed
-
-- **Systemic compound-term retrieval gap identified** — dense embeddings decompose legal terms of art into component words; FTS5 first-class parallel retrieval pass identified as systemic fix; flagged for dedicated session
-
-
-
 ## CHANGES THIS SESSION (session 115) — 9 May 2026
 
 - **FTS first-class parallel retrieval leg shipped** — server.py `fts_leg()` queries `case_chunks_fts` + `secondary_sources_fts` + `legislation_sections_fts` (LIMIT 24 each), fused with semantic via RRF (k=60); `min(2, available)` FTS-only quota floor; concurrent in ThreadPoolExecutor (max_workers 2→3); `USE_FTS_LEG` env flag for instant rollback. Solves H1 (`[:8]` token cap dropping key terms on verbose queries) and H2 (0.50-vs-0.62 score displacement) jointly.
@@ -529,6 +512,16 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **[2022] TASSC 69 retag drift caught and re-applied** — D1 spot-check showed `subject_matter='administrative'` despite session 51 changelog claiming criminal retag; re-applied via D1 MCP (DPP v Greenham Tasmania Pty Ltd is corporate criminal prosecution); 5 attached `case_chunks` Qdrant payload patched `administrative→criminal` via `/tmp/qvenv` Python script; SM cache auto-refreshes within hour. Demonstrates silent-MCP-update-failure class.
 - **precompact.ps1 hook fixed in flight** — earlier CC investigation reported file clean; live `/compact` run produced parse error from corrupted em-dash at line 27 (encoding mishap). Replaced with ASCII hyphen; parse confirmed clean.
 - **Operational rules captured (CLAUDE_init.md)** — Python table-row matching collision rule (assert unique-token match, not row-prefix); hex-ssh constraints (newlines blocked in `remote-ssh`, `ALLOWED_LOCAL_DIRS = OneDrive\\Arcanthyr\\` only, `rm` is BLOCKED_COMMAND); Windows stdout `UnicodeEncodeError` after `f.write()` is non-fatal — verify file with grep, don't retry script.
+
+## CHANGES THIS SESSION (session 117) — 10 May 2026
+
+- **Post-FTS-leg baseline + manual grading** — `~/retrieval_baseline.sh` re-run, output saved at `~/retrieval_baseline_post_fts_leg.txt`; chunk-by-chunk grading via Cloudflare D1 MCP inspection of disputed top-3 chunks; final 30P/1Pa/0M.
+- **Three prior partials closed** — Q9 ([2018] TASCCA 5 chunk 13 surfaces 20% discount + Butt v Tasmania reference), Q14 (`manual-b4135-chunk` at #1, documented semantic ceiling closed), Q26 ([2020] TASCCA 5 with Pell/M v The Queen/MFA + [2021] TASCCA 15 with Anderson v Tasmania at top-2).
+- **One new partial — Q19 aggravated assault sentencing range** — top-3 cover adjacent violent offences (s 172 GBH per Barron, strangulation per Mayne) but no s 184 quantum chunk surfaces; content-side gap; benchmark phrasing artificial; parked for real-use signal per freeze policy, not pre-emptive authoring.
+- **Refreeze applied (mid-session edits)** — FROZEN block rewritten 24 April → 10 May, baseline 28P/3Pa/0M → 30P/1Pa/0M; SYSTEM STATE Baseline row + secondary_sources row updated; OUTSTANDING PRIORITIES baseline-rerun item removed; CLAUDE_decisions.md session 117 entry appended.
+- **Secondary_sources backlog clarified** — 6 embedded=0 rows are nexus-save entries gated by `approved=0` in poller SQL, not poller backlog. SYSTEM STATE row reworded from "clearing" to "pending Library approval".
+- **Null-byte handling refinement** — surrogateescape decode/encode roundtrip preserves the null byte but Python `.replace()` still fails when null byte is within the target region (surrogate vs literal mismatch); line-index deletion is canonical, not fallback. Captured in CLAUDE_init.md.
+- **Operational rules captured (CLAUDE_init.md)** — hex-ssh `remote-ssh` deduplicates/truncates output (use `ssh-read-lines plain=true` for verbatim file reads); baseline script output path vs `ALLOWED_DIRS` mismatch (cp into `~/ai-stack/` before reading); CC Python rule corrected (`python3` via Bash works; only PS `python`/`py` blocked by Windows Store stub); after multi-edit Python passes on CLAUDE.md, re-grep target line numbers (paragraph replacements shift subsequent line indices).
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
