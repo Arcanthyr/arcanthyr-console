@@ -502,3 +502,15 @@ Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated 
 
 **grep on CLAUDE.md:** Always use `grep -a` — the file contains a null byte and returns "Binary file matches" without the flag. Every content or line-number check on CLAUDE.md requires `grep -a`.
 
+
+## Retrieval and observability rules (session 115)
+
+**Retrieval rollback without redeploy.** To disable the FTS first-class leg and revert to semantic-only retrieval: edit `.env.config` on VPS, set `USE_FTS_LEG=0`, then `docker compose up -d --force-recreate agent-general` from `~/ai-stack/`. `force-recreate` is required — `restart` preserves the original env. No Worker redeploy needed.
+
+**`bm25_fired` is section-ref-only.** When diagnosing FTS keyword path activity in `query_log`, read `fts_keyword_fired`, `fts_keyword_hits`, `fts_keyword_added`. The `bm25_fired` column records only whether the section-ref regex `\bs\s*(\d+[A-Za-z]*)` matched in the query text — it says nothing about FTS keyword interleave or the FTS leg.
+
+**git add casing on Windows.** `git add "Arc v 4/Worker.js"` silently no-ops because git internally tracks the file as `worker.js` regardless of disk casing. Always use lowercase in git add commands: `git add "Arc v 4/worker.js"`. SESSION RULES "always reference as `Worker.js`" applies to documentation and human-readable references, not to git CLI arguments.
+
+**Playwright auth gate bypass.** When using `browser_evaluate` against the Arcanthyr UI: inject `sessionStorage.setItem('arc_authed','1')` immediately after `page.goto()`, before any query submission. Otherwise the `window.prompt()` auth dialog races against page load and Playwright stalls.
+
+**Route limit caps drift silently in CLAUDE_arch.md.** After original deploy notes, Worker route limit defaults can change in code without arch.md being updated. Verify against live Worker source (`Arc v 4/worker.js`) before relying on documented caps. Pattern caught session 115 on `case-chunks-fts-search` — arch.md said "max 50", actual was 8.

@@ -1,9 +1,9 @@
 @CLAUDE_arch.md
 
 CLAUDE.md — Arcanthyr Session File
-Updated: 9 May 2026 (end of session 114) · Supersedes all prior versions
+Updated: 9 May 2026 (end of session 115) · Supersedes all prior versions
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
-Changelog archive → CLAUDE_changelog.md (sessions 21–110) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–112) — load conditionally
 
 ---
 
@@ -28,10 +28,11 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | D1 case_chunks | 26,051 total · embedded=0: 17 (all header chunks, null enriched_text — permanently excluded by design; effective backlog: 0) · retry_count + dlq columns added (DLQ threshold: 3 failures); pending check is now done=0 AND dlq=0 |
 | D1 secondary_sources | 1,444 total · embedded=0: ~3 (nexus-save entries only — 411 Word-artifact rows cleaned session 98, embedded=0 reset for re-embed, poller clearing backlog) |
 | D1 case_chunks_fts | 26,034 rows — 1:1 match with D1 case_chunks where enriched_text IS NOT NULL · 194 duplicate rows deleted session 75 · root cause fixed Worker e5934624 (DELETE-then-INSERT upsert) |
-| D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) · flagged_by column dropped session 103 Phase 1 |
+| D1 legislation_sections_fts | 2305 rows · FTS5 virtual · porter tokenizer · synced via handleUploadLegislation + handleLibraryDelete · backfilled session 115 |
+| D1 query_log | Active — answer_text + model columns added session 69, deleted soft-delete column added · feedback system live session 96 (sufficient INTEGER, missing_note TEXT; POST /api/legal/mark-insufficient wired to thumbs-down button on Research page) · flagged_by column dropped session 103 Phase 1 · fts_keyword_fired, fts_keyword_hits, fts_keyword_added, rrf_quota_filled columns added session 115 |
 | Insufficient feedback button | LIVE — ↓ Insufficient button in INTEL page ReadingPane SaveFlagPanel · POST /api/legal/mark-insufficient (no auth, accepts query_id + optional missing_note) · popup with Submit/Skip buttons + visible error state on API failure (session 105) · see RETRIEVAL LAYER — FROZEN block above SYSTEM STATE for feedback-triggered re-opening conditions |
 | D1 quarantined_chunks | 253 rows · Qdrant quarantined=true flag LIVE on all 253 points · server.py must_not filter LIVE on all four passes (Pass 1, Pass 2, Pass 3, Pass 4) |
-| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version e3d273e6-266c-428b-ba82-76a1e61b1ac5 |
+| Pass 4 / Citation authority agent | LIVE — `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` · keyword list calibrated session 81 (3 false-positive topical phrases removed, 10 passive-voice forms added) · Worker version 4c1c3cec-abf9-42bb-87a7-04e3b207d72b |
 | D1 case_citations | 10,575 rows · subject_matter filter removed session 108 — now indexes all deep_enriched=1 cases |
 | D1 case_legislation_refs | 5,356 rows · source_url backfilled for 5 Acts (Evidence, Criminal Code, Justices, Misuse of Drugs, Police Offences) |
 | enrichment_poller | RUNNING — Stage 3 legislation embed complete (all 8 Acts embedded=1) · corpus secondary source backlog clear |
@@ -45,7 +46,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | Baseline (31 queries) | ≥28P / ≤3Pa / 0M — query expansion deployed session 77 (19 Apr 2026) · post-court-backfill snapshot captured session 94 at `~/retrieval_baseline_post_court_backfill.txt` · pre-variant-stab runs 1 & 2 captured session 95 at `~/retrieval_baseline_pre_variant_stab_run1.txt` and `run2.txt` (variance envelope: 31/31 top-1 citation drift across 3 samples, but P/Pa/M grade stable at 28P/3Pa/0M — grade-level robustness despite internal noise) · Q9 TASCCA re-rank visibly live; zero P→M regressions · session 74 canonical `~/retrieval_baseline_post_interleave.txt` retained as prior reference · generic `~/retrieval_baseline_results.txt` still Apr 16, do not grep |
 | procedure_notes | 319 success / ~340 not_sentencing |
 | auslaw-mcp | RUNNING on VPS — digest-pinned `sha256:480e8968...`, isolated network `auslaw-mcp_auslaw-isolated`, 10 tools via Windows Claude Code (user-scope `auslaw`) · (b)(c)(d) hardening complete session 88 · search_cases dead (VPS TCP-blocked by AustLII) · search_by_citation also dead (VPS TCP-blocked, returns 403 as of session 101) · two-step search pattern (word-search → search_by_citation) fully dead — no AustLII lookup path currently available from VPS or CF edge |
-| BM25 case_chunks_fts | LIVE — interleave mode, split-constant design: BM25_SCORE_KEYWORD=0.0139 (boost path, additive) · BM25_INTERLEAVE_SCORE=0.50 (novel-hit path, competes with borderline semantic) · SM_PENALTY retained (0.50×0.65=0.325 suppresses SM-mismatched novel hits) |
+| FTS retrieval leg | LIVE — fts_leg() queries case_chunks_fts + secondary_sources_fts + legislation_sections_fts (LIMIT 24 each); RRF fusion (k=60) with semantic passes; min(2, available) FTS-only quota floor; USE_FTS_LEG env flag (default 1); Worker 4c1c3cec · section-ref BM25 path (BM25_SCORE_EXACT_SECTION, BM25_SCORE_CASE_REF) unchanged |
 | Legislation anchor | LIVE — vocabulary anchor prepend deployed in poller [LEG] pass (session 90) · format: Key terms: {act_title}; s {section_number} {heading}. · Stage 1 (EA 245) + Stage 2 (CC 468, MDA 253, JA 163, POA 143) complete · Stage 3 (SA 147, YJA 216, JR 96) complete · future legislation uploads anchor automatically · legislation.embedded is canonical backlog gate — legislation_sections.embedding_model unreliable for Stage 1+2 sections |
 | Court hierarchy band | LIVE CORPUS-WIDE — session 94 payload backfill via `patch_court_payload.py` (located at `/home/tom/ai-stack/agent-general/src/` on VPS) · 1,914 citations / 26,157 case_chunk points patched · 0 null remaining · Q9 TASCCA re-rank confirmed live · revert path: `patch_court_payload.py --revert` |
 
@@ -65,7 +66,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 - **subject_matter misclassification audit — deferred** — Rattigan and Pilling confirmed wrong subject_matter values. 3-part fix pending full audit: (1) Worker route update, (2) poller metadata dict, (3) case chunk re-embed for affected cases. Do not implement any part of the fix before audit scope is established. Trigger: complete audit → identify all misclassified cases → then implement in one coordinated pass.
 - **SSE streaming (deferred)** — stream Claude API response token-by-token to browser via text/event-stream; proper UX fix (user sees tokens from ~5s rather than spinner for 15s); not urgent post-retrieval optimisation but on the "do eventually" list
-- **FTS5 first-class parallel retrieval pass** — systemic fix for compound legal term decomposition: promote FTS5 from boost-only to an independent retrieval leg running in parallel with semantic passes; fix for the class of query where component words individually outscore definitional chunks (e.g. "significant relationship" → "significant probative value" + "relationship evidence"); BM25 must independently retrieve, not just re-rank already-retrieved chunks
 
 ---
 
@@ -84,6 +84,7 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **Workers AI content moderation** — Qwen3 blocks graphic evidence · CHUNK enrichment on GPT-4o-mini · Pass 1/Pass 2 still on Workers AI — monitor
 - **Word artifact noise** — 131 chunks cleaned 18 Mar 2026 · re-run gen_cleanup_sql.py if new Word-derived chunks ingested
 - **FTS5 export limitation** — wrangler d1 export does not support virtual tables
+- **`legislation_sections_fts` is a virtual table** — wrangler d1 export does not support virtual tables; backup/migration via SELECT INTO standard table if needed.
 - **Scraper no per-case resume — known limitation** — progress file stores only `court_year: "done"`; mid-year failure restarts full year scrape. Harmless due to `INSERT OR IGNORE`. Per-case checkpointing not worth engineering effort at current stage.
 - **Pass 2 principles irrelevant / merge overwrite — acknowledged, no fix** — Qwen3 Pass 2 extracts case-level `principles_extracted` but CHUNK handler (GPT-4.1-mini) overwrites this field with chunk-level data; merge uses chunk-level output only; Pass 2 principles never surface to user. Not causing visible defect — merge works correctly off chunk data. No fix planned.
 - **Synthesis skip on null enriched_text** — performMerge synthesis call requires enrichedTexts.length > 0 · cases whose chunks have null enriched_text fall back to raw principle concatenation (old format)
@@ -168,7 +169,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 | D1 no citation column | secondary_sources PK is `id` (TEXT) — no `citation` column. Never query `WHERE citation =`. |
 | callWorkersAI fix | reasoning_content fallback added — if content is null, falls back to reasoning_content before text. Fixes Qwen3 thinking mode responses. |
 | poller batch/sleep | Default batch: 50 · Loop sleep: 15 seconds |
-| BM25_FTS_ENABLED | Kill switch REMOVED — variable does not exist. TWO FTS5/BM25 passes in server.py: (1) secondary_sources FTS5 — LIVE, gates on section refs detected in query (via fetch_sections_by_reference / fts-search Worker route); (2) case_chunks_fts BM25 pass — session 65 changelog claims deployed but ABSENT from both local and VPS server.py — DEPLOY GAP, needs re-deploy. BM25_SCORE_KEYWORD constant defined at line 31 but currently unused. |
 | Pass 3 threshold | Lowered 0.35 → 0.25, limit raised 4 → 8 (session 28) — secondary source recall gap diagnosed via Ratten v R not surfacing · chunk_id debug log added to Pass 3 in server.py (fires unconditionally) |
 | VPS doc ID format | server.py `post_chunk_to_worker` generates citation-derived IDs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format · both are valid · if duplicate rows appear for VPS-uploaded docs, check for GPT generating slightly different citation strings on re-run |
 | update-secondary-raw | POST /api/pipeline/update-secondary-raw — updates raw_text + resets embedded=0 on secondary_sources row · requires X-Nexus-Key · body: {id, raw_text} · deployed session 28 worker.js version 65017090 |
@@ -246,15 +246,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ---
 
-## CHANGES THIS SESSION (session 112) — 3 May 2026
-
-- Sol model swapped — handleLegalQuery changed from claude-sonnet-4-6 to claude-haiku-4-5-20251001 (version 050ed45b); Sonnet was timing out with HTTP 500
-- Nexus 524 root cause confirmed — agent-general Flask is single-threaded; a hung query expansion call at 13:54 UTC blocked all subsequent /search requests for the rest of the session
-- VPS confirmed healthy — 16Gi free RAM, Qdrant responding normally (0.08–3.5s query latency), load 4.45/8 CPUs; bottleneck is Flask concurrency not hardware
-- Query expansion timeout non-functional — server.py AbortController configured for 3s but server stayed blocked 2m15s+; needs investigation
-- AbortSignal.timeout(25000) added to both Nexus fetch calls in Worker — prevents 524 hanging at Cloudflare edge; clean timeout error returned instead (deployment unconfirmed end of session)
-- Flask threading fix not completed — session ended with queries still failing; threaded=True or gunicorn required before next session
-
 ## CHANGES THIS SESSION (session 113) — 4 May 2026
 
 - **server.py threading fix** — `HTTPServer` → `ThreadingHTTPServer` (stdlib, no new deps, no Dockerfile rebuild); resolves single-threaded blocking that caused session 112 Nexus 524s under concurrent queries; `docker compose restart` sufficient; health check confirmed 200 after restart
@@ -271,6 +262,16 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **subject_matter family→mixed — three cross-domain cases** — [2024] TASFC 2, [2023] TASSC 15, [2020] TASSC 3 retagged in D1 + 34 Qdrant points patched; significant relationship definitional cases now eligible for Pass 2 criminal/mixed filter
 - **Relationships Act re-embed queued** — legislation.embedded reset to 0 for relationships-act-2003-tas; s 4 sections confirmed in D1 with embedding_model = null; poller to embed
 - **Systemic compound-term retrieval gap identified** — dense embeddings decompose legal terms of art into component words; FTS5 first-class parallel retrieval pass identified as systemic fix; flagged for dedicated session
+
+## CHANGES THIS SESSION (session 115) — 9 May 2026
+
+- **FTS first-class parallel retrieval leg shipped** — server.py `fts_leg()` queries `case_chunks_fts` + `secondary_sources_fts` + `legislation_sections_fts` (LIMIT 24 each), fused with semantic via RRF (k=60); `min(2, available)` FTS-only quota floor; concurrent in ThreadPoolExecutor (max_workers 2→3); `USE_FTS_LEG` env flag for instant rollback. Solves H1 (`[:8]` token cap dropping key terms on verbose queries) and H2 (0.50-vs-0.62 score displacement) jointly.
+- **`legislation_sections_fts` virtual table created and backfilled** — 2305 rows; porter tokenizer; synced via `handleUploadLegislation` (line ~733) and `handleLibraryDelete` (line ~1138); named-driver `"significant relationship"` MATCH returns Relationships Act s 4 plus 5 sibling sections. Definitional anchors now FTS-reachable independent of Qdrant embed state.
+- **Query log diagnostics for FTS keyword path** — added `fts_keyword_fired`, `fts_keyword_hits`, `fts_keyword_added`, `rrf_quota_filled` columns; server.py `/search` returns `diagnostics` block; Worker writes the four columns in both Sol and V’ger `query_log` INSERTs. Replaces the misleading `bm25_fired` reading for FTS-path observability (`bm25_fired` semantics unchanged — section-ref path only).
+- **Verification panel — Q1 partial, Q2/Q3/Q4 pass** — Q1 (verbose quoted) Relationships Act s 4 at rank 3, retagged cases absent from top-5 (residual phrase-operand weighting under OR-join, logged only); Q2 (short) s 4 rank 4 + `[2020] TASSC 3` rank 2; Q3 section-ref path unchanged; Q4 generic on-topic. `rrf_quota_filled=0` on both verification queries — natural RRF fusion sufficient, quota floor never invoked.
+- **Retired retrieval components** — `fetch_case_chunks_fts()`, BM25 novel-hit interleave path (~lines 687–712), additive boost path (~lines 678–684), constants `BM25_INTERLEAVE_SCORE` and `BM25_SCORE_KEYWORD`. Section-ref BM25 path (`extract_section_references`, `BM25_SCORE_EXACT_SECTION`, `BM25_SCORE_CASE_REF`) untouched.
+- **`result_scores` column scale change** — RRF range ~0.013–0.017 (was cosine 0.45–0.75 + 0.50 mix). Score-scale incompatibility was the proximate cause of H2; abandoning shared scale eliminates the failure mode.
+- **CLAUDE_arch.md drift fixes — in-line this session** — Sol model name contradiction (`claude-haiku-4-5-20251001` vs `claude-sonnet-4-6`) corrected per session 113 revert; case-chunks-fts-search limit doc corrected to reflect actual current Worker cap.
 
 ## END-OF-SESSION UPDATE PROCEDURE
 
@@ -357,4 +358,3 @@ Use this checklist for any enrichment_poller.py change that affects Qdrant paylo
 
 ---
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

@@ -1,8 +1,18 @@
-# CLAUDE Changelog — Sessions 21–110
+# CLAUDE Changelog — Sessions 21–112
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 112) — 3 May 2026
+
+- Sol model swapped — handleLegalQuery changed from claude-sonnet-4-6 to claude-haiku-4-5-20251001 (version 050ed45b); Sonnet was timing out with HTTP 500
+- Nexus 524 root cause confirmed — agent-general Flask is single-threaded; a hung query expansion call at 13:54 UTC blocked all subsequent /search requests for the rest of the session
+- VPS confirmed healthy — 16Gi free RAM, Qdrant responding normally (0.08–3.5s query latency), load 4.45/8 CPUs; bottleneck is Flask concurrency not hardware
+- Query expansion timeout non-functional — server.py AbortController configured for 3s but server stayed blocked 2m15s+; needs investigation
+- AbortSignal.timeout(25000) added to both Nexus fetch calls in Worker — prevents 524 hanging at Cloudflare edge; clean timeout error returned instead (deployment unconfirmed end of session)
+- Flask threading fix not completed — session ended with queries still failing; threaded=True or gunicorn required before next session
+
 
 ## CHANGES THIS SESSION (session 110) — 3 May 2026
 

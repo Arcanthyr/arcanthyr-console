@@ -28,8 +28,7 @@ COURT_HIERARCHY = {
 # Synthetic RRF scores for BM25 hits — 1/(60+rank)
 BM25_SCORE_EXACT_SECTION = 1 / (60 + 3)   # ~0.0159 — exact section ref match
 BM25_SCORE_CASE_REF      = 1 / (60 + 8)   # ~0.0147 — case-by-legislation-ref match
-BM25_SCORE_KEYWORD       = 1 / (60 + 12)  # ~0.0139 — general keyword match (boost path: additive delta for chunks already in results)
-BM25_INTERLEAVE_SCORE    = 0.50           # interleave mode — novel FTS hits compete with borderline semantic (0.45 Pass 1 threshold, 0.65 strong floor)
+USE_FTS_LEG = os.getenv("USE_FTS_LEG", "1") == "1"  # set to "0" in .env.config for instant rollback
 
 # Subject-matter filter — applied to case chunks in Pass 1 + Pass 2.
 # Non-criminal case chunks receive a score penalty so they do not displace
@@ -205,30 +204,160 @@ def fetch_cases_by_legislation_ref(references):
         return []
 
 
-def fetch_case_chunks_fts(query_text):
-    """Fetch case chunks from D1 FTS5 index via Worker route (keyword recall)."""
+def fts_leg(query_text: str) -> list:
+    """Independent FTS retrieval leg. Queries case_chunks_fts, secondary_sources_fts,
+    and legislation_sections_fts concurrently, returns up to ~72 candidates tagged with
+    _fts_source and _fts_rank for downstream RRF fusion."""
     if not query_text or not query_text.strip():
         return []
+
+    LIMIT_PER_TABLE = 24
+    STOP_WORDS = {
+        'the','a','an','in','of','to','for','and','or','is','was','are',
+        'on','by','at','it','with','as','from','that','this','not','what',
+        'how','do','does','can','if','any','list','give','please','me','you',
+        'get','are','all','its','has','had','been','will','would','could',
+        'should','may','might','did','does',
+    }
+
+    # Step 1: extract literal-quoted segments (single or double quotes)
+    quoted_phrases = []
+    residual = query_text
+    for m in re.finditer(r'["‘’“”]([^"‘’“”]+)["‘’“”]', query_text):
+        phrase = m.group(1).strip()
+        if phrase:
+            quoted_phrases.append(phrase)
+        residual = residual.replace(m.group(0), ' ')
+
+    # Step 2: tokenize residual
+    tokens = [
+        w for w in re.sub(r'[^\w\s]', '', residual.lower()).split()
+        if w not in STOP_WORDS and len(w) > 2
+    ]
+
+    # Step 3: bigram shingles from tokens in order
+    shingles = [f'{tokens[i]} {tokens[i+1]}' for i in range(len(tokens) - 1)]
+
+    # Step 4: build OR-joined MATCH expression (no cap on terms)
+    def escape_fts(t):
+        return re.sub(r'[*+\-^()]', '', t).strip()
+
+    operands = []
+    for phrase in quoted_phrases:
+        esc = escape_fts(phrase)
+        if esc:
+            operands.append(f'"{esc}"')
+    for shingle in shingles:
+        esc = escape_fts(shingle)
+        if esc:
+            operands.append(f'"{esc}"')
+    for token in tokens:
+        esc = escape_fts(token)
+        if esc:
+            operands.append(esc)
+
+    if not operands:
+        return []
+
+    match_expr = ' OR '.join(operands)
+    results = []
+
+    # case_chunks_fts
     try:
-        stop = {'the','a','an','in','of','to','for','and','or','is','was','are',
-                'on','by','at','it','with','as','from','that','this','not','what',
-                'how','do','does','can','if'}
-        terms = [w for w in re.sub(r'[^\w\s]', '', query_text.lower()).split()
-                 if w not in stop and len(w) > 2]
-        if not terms:
-            return []
-        fts_query = ' OR '.join(terms[:8])  # cap to 8 terms for performance
         resp = requests.get(
             f"{WORKER_URL}/api/pipeline/case-chunks-fts-search",
-            params={"q": fts_query, "limit": "8"},
+            params={"q": match_expr, "limit": str(LIMIT_PER_TABLE)},
             headers={"X-Nexus-Key": NEXUS_KEY},
             timeout=10
         )
         resp.raise_for_status()
-        return resp.json().get("chunks", [])
+        for i, c in enumerate(resp.json().get("chunks", [])):
+            results.append({
+                "_id": c.get("chunk_id", ""),
+                "citation": c.get("citation", ""),
+                "case_name": c.get("case_name", ""),
+                "court": c.get("court", ""),
+                "year": "",
+                "text": c.get("enriched_text", ""),
+                "summary": "", "outcome": "", "principles": [], "legislation": [],
+                "chunk": 0, "total_chunks": 1,
+                "type": "case_chunk",
+                "_qdrant_id": "",
+                "section_number": "", "heading": "", "leg_title": "",
+                "bm25": True,
+                "_fts_source": "case_chunks",
+                "_fts_rank": i + 1,
+            })
     except Exception as e:
-        print(f"[!] case_chunks_fts fetch error: {e}")
-        return []
+        print(f"[!] fts_leg case_chunks error: {e}")
+
+    # secondary_sources_fts
+    try:
+        resp = requests.get(
+            f"{WORKER_URL}/api/pipeline/secondary-sources-fts-search",
+            params={"q": match_expr, "limit": str(LIMIT_PER_TABLE)},
+            headers={"X-Nexus-Key": NEXUS_KEY},
+            timeout=10
+        )
+        resp.raise_for_status()
+        for i, s in enumerate(resp.json().get("chunks", [])):
+            results.append({
+                "_id": s.get("source_id", ""),
+                "citation": s.get("source_id", ""),
+                "case_name": s.get("title", ""),
+                "court": "", "year": "",
+                "text": s.get("raw_text", ""),
+                "summary": "", "outcome": "", "principles": [], "legislation": [],
+                "chunk": 0, "total_chunks": 1,
+                "type": "secondary_source",
+                "_qdrant_id": "",
+                "section_number": "", "heading": "", "leg_title": "",
+                "bm25": True,
+                "_fts_source": "secondary_sources",
+                "_fts_rank": i + 1,
+            })
+    except Exception as e:
+        print(f"[!] fts_leg secondary_sources error: {e}")
+
+    # legislation_sections_fts
+    try:
+        resp = requests.get(
+            f"{WORKER_URL}/api/pipeline/legislation-sections-fts-search",
+            params={"q": match_expr, "limit": str(LIMIT_PER_TABLE)},
+            headers={"X-Nexus-Key": NEXUS_KEY},
+            timeout=10
+        )
+        resp.raise_for_status()
+        for i, leg in enumerate(resp.json().get("sections", [])):
+            leg_id = leg.get("legislation_id", "")
+            sec_id = leg.get("section_id", "")
+            leg_title = leg.get("legislation_title") or leg_id
+            sec_num = leg.get("section_number", "")
+            results.append({
+                "_id": sec_id,
+                "citation": f"{leg_title} s {sec_num}" if sec_num else leg_title,
+                "case_name": leg_title,
+                "court": "", "year": "",
+                "text": leg.get("text", ""),
+                "summary": "", "outcome": "", "principles": [], "legislation": [],
+                "chunk": 0, "total_chunks": 1,
+                "type": "legislation",
+                "_qdrant_id": "",
+                "section_number": sec_num,
+                "heading": leg.get("heading", ""),
+                "leg_title": leg_title,
+                "bm25": True,
+                "_fts_source": "legislation_sections",
+                "_fts_rank": i + 1,
+            })
+    except Exception as e:
+        print(f"[!] fts_leg legislation_sections error: {e}")
+
+    cc = sum(1 for r in results if r["_fts_source"] == "case_chunks")
+    ss = sum(1 for r in results if r["_fts_source"] == "secondary_sources")
+    ls = sum(1 for r in results if r["_fts_source"] == "legislation_sections")
+    print(f"[+] fts_leg: {len(results)} candidates ({cc} case_chunks, {ss} secondary_sources, {ls} legislation_sections)")
+    return results
 
 
 def chunk_text(text):
@@ -572,11 +701,13 @@ def search_text(body):
     )
     client2 = QdrantClient(url=QDRANT_HOST)
     client3 = QdrantClient(url=QDRANT_HOST)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
         f2 = ex.submit(client2.query_points, collection_name=COLLECTION, query=query_vector, query_filter=p2_filter, limit=8, score_threshold=0.35, with_payload=True)
         f3 = ex.submit(client3.query_points, collection_name=COLLECTION, query=query_vector, query_filter=p3_filter, limit=8, score_threshold=0.25, with_payload=True)
+        f_fts = ex.submit(fts_leg, query_text) if USE_FTS_LEG else None
         p2 = f2.result()
         p3 = f3.result()
+        fts_chunks = f_fts.result() if f_fts is not None else []
 
     for h in p2.points:
         if str(h.id) not in seen_ids:
@@ -668,52 +799,60 @@ def search_text(body):
                         break
         print(f"[+] BM25 cases: added {added_cases} cases citing referenced legislation")
 
-    # ── BM25 case_chunks_fts — keyword recall across all case chunk enriched_text ──
-    fts_chunks = fetch_case_chunks_fts(query_text)
-    fts_added = 0
-    for fc in fts_chunks:
-        chunk_id = fc.get('chunk_id', '')
-        citation = fc.get('citation', '')
-        # Dedup against everything already collected
-        if chunk_id in seen_ids or citation in existing_ids:
-            # Multi-signal boost — already in results
-            for c in chunks:
-                if c.get('_id') == chunk_id or c.get('citation') == citation:
-                    c['score'] = round(c['score'] + BM25_SCORE_KEYWORD, 4)
-                    break
-            continue
-        # Apply SM penalty before adding
-        sm_val = sm_cache.get(citation, 'unknown') if sm_cache else 'unknown'
-        raw_score = BM25_INTERLEAVE_SCORE
-        if sm_val not in SM_ALLOW:
-            raw_score = round(raw_score * SM_PENALTY, 4)
-        seen_ids.add(chunk_id)
-        existing_ids.add(citation)
-        chunks.append({
-            "score":          raw_score,
-            "citation":       citation,
-            "case_name":      fc.get('case_name', ''),
-            "court":          fc.get('court', ''),
-            "year":           "",
-            "text":           fc.get('enriched_text', ''),
-            "summary":        "",
-            "outcome":        "",
-            "principles":     [],
-            "legislation":    [],
-            "chunk":          0,
-            "total_chunks":   1,
-            "type":           "case_chunk",
-            "_id":            chunk_id,
-            "_qdrant_id":     "",
-            "section_number": "",
-            "heading":        "",
-            "leg_title":      "",
-            "bm25":           True,
-            "bm25_source":    "case_chunks_fts"
-        })
-        fts_added += 1
-    if fts_added or fts_chunks:
-        print(f"[+] BM25 case_chunks_fts: added {fts_added}, boosted {len(fts_chunks) - fts_added} existing")
+    # ── FTS leg — RRF fusion with semantic leg ───────────────────────────────
+    rrf_quota_filled = 0
+    if USE_FTS_LEG and fts_chunks:
+        RRF_K = 60
+
+        def rrf_score(rank):
+            return 1.0 / (RRF_K + rank)
+
+        def canonical_id(chunk):
+            return chunk.get("_id") or chunk.get("_qdrant_id") or chunk.get("citation", "")
+
+        chunks.sort(key=lambda c: -c["score"])
+        combined = {}
+        for rank, chunk in enumerate(chunks, start=1):
+            cid = canonical_id(chunk)
+            if cid:
+                entry = combined.setdefault(cid, {"payload": chunk})
+                entry["semantic_rank"] = rank
+
+        for fts_chunk in fts_chunks:
+            cid = canonical_id(fts_chunk)
+            if not cid:
+                continue
+            rank = fts_chunk.get("_fts_rank", 999)
+            entry = combined.setdefault(cid, {"payload": fts_chunk})
+            entry["fts_rank"] = rank
+
+        for entry in combined.values():
+            s = 0.0
+            if "semantic_rank" in entry:
+                s += rrf_score(entry["semantic_rank"])
+            if "fts_rank" in entry:
+                s += rrf_score(entry["fts_rank"])
+            entry["payload"]["score"] = round(s, 6)
+            entry["payload"]["_in_semantic"] = "semantic_rank" in entry
+            entry["payload"]["_in_fts"] = "fts_rank" in entry
+
+        chunks = [e["payload"] for e in sorted(combined.values(), key=lambda e: -e["payload"]["score"])]
+        fts_count = sum(1 for c in chunks if c.get("_in_fts"))
+        print(f"[+] FTS leg RRF fusion: {len(chunks)} total, {fts_count} with FTS contribution")
+
+        # ── FTS min-quota floor — guarantee min(2, available) FTS-only slots ─
+        fts_only_all = [c for c in chunks if c.get("_in_fts") and not c.get("_in_semantic")]
+        fts_only_in_top = sum(1 for c in chunks[:top_k] if c.get("_in_fts") and not c.get("_in_semantic"))
+        target_quota = min(2, len(fts_only_all))
+        if fts_only_in_top < target_quota:
+            needed = target_quota - fts_only_in_top
+            fts_only_below = [c for c in chunks[top_k:] if c.get("_in_fts") and not c.get("_in_semantic")][:needed]
+            if fts_only_below:
+                kept = [c for c in chunks[:top_k] if not (c.get("_in_fts") and not c.get("_in_semantic"))]
+                kept = kept[:top_k - len(fts_only_below)]
+                chunks = kept + fts_only_below + chunks[top_k:]
+                rrf_quota_filled = len(fts_only_below)
+                print(f"[+] FTS min-quota: forced {rrf_quota_filled} FTS-only chunks into top_{top_k}")
 
     # ── Domain filter — hard exclude non-matching case chunks ────────────────
     if subject_matter_filter and subject_matter_filter != 'all':
@@ -769,7 +908,8 @@ def search_text(body):
     # survived the score-based cap, promote the highest-scoring one (if it
     # clears SWAP_MIN_SCORE) into the last slot.
     SECONDARY_QUOTA = 1
-    SWAP_MIN_SCORE  = 0.40
+    # In RRF mode scores are ~0.013-0.017; drop threshold to 0 so quota still fires
+    SWAP_MIN_SCORE  = 0.0 if USE_FTS_LEG else 0.40
 
     chunks.sort(key=lambda c: -c["score"])
 
@@ -791,8 +931,17 @@ def search_text(body):
     else:
         chunks = chunks[:top_k]
 
-    print(f"[+] Returning {len(chunks)} chunks after BM25 merge and final cap")
-    return chunks
+    fts_in_final = sum(1 for c in chunks if c.get("_in_fts")) if USE_FTS_LEG else 0
+    print(f"[+] Returning {len(chunks)} chunks (FTS leg active={USE_FTS_LEG}, FTS in final={fts_in_final})")
+    return {
+        "chunks": chunks,
+        "diagnostics": {
+            "fts_keyword_fired": 1 if USE_FTS_LEG else 0,
+            "fts_keyword_hits": len(fts_chunks),
+            "fts_keyword_added": fts_in_final,
+            "rrf_quota_filled": rrf_quota_filled,
+        }
+    }
 
 def query_qwen(body):
     """
@@ -816,7 +965,7 @@ def query_qwen(body):
         "query_text":      query_text,
         "top_k":           top_k,
         "score_threshold": score_threshold,
-    })
+    })["chunks"]
 
     if not chunks:
         return {
@@ -1553,8 +1702,8 @@ class Handler(BaseHTTPRequestHandler):
             if not self.check_auth(): return
             body = self.read_body()
             try:
-                chunks = search_text(body)
-                self.send_json(200, {"ok": True, "chunks": chunks, "count": len(chunks)})
+                result = search_text(body)
+                self.send_json(200, {"ok": True, "chunks": result["chunks"], "count": len(result["chunks"]), "diagnostics": result["diagnostics"]})
             except ValueError as e:
                 self.send_json(400, {"error": str(e)})
             except Exception as e:
