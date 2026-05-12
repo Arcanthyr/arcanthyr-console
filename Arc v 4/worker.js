@@ -507,7 +507,8 @@ async function handleFetchCaseUrl(body, env) {
   const allowed = url.includes('austlii.edu.au') || url.includes('jade.io');
   if (!allowed) throw new Error("Only austlii.edu.au and jade.io URLs are permitted");
 
-  const { html, status } = await handleFetchPage({ url }, env);
+  const fetchUrl = austliiToJade(url);
+  const { html, status } = await handleFetchPage({ url: fetchUrl }, env);
   if (status !== 200) throw new Error(`Fetch failed with HTTP ${status}`);
 
   const contentMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
@@ -518,6 +519,36 @@ async function handleFetchCaseUrl(body, env) {
     .trim();
 
   if (!plainText) throw new Error("No text content extracted from URL");
+
+  const MIN_CASE_TEXT_LENGTH = 1000;
+  if (plainText.length < MIN_CASE_TEXT_LENGTH) {
+    throw new Error(
+      `Fetched content too short (${plainText.length} chars, ` +
+      `minimum ${MIN_CASE_TEXT_LENGTH}). Likely a "not found" or ` +
+      `error page from the source. Case may not exist on jade.io ` +
+      `— TASMC coverage is patchy. Consider manual paste once the ` +
+      `RTF/Word upload path is built.`
+    );
+  }
+
+  const SENTINELS = [
+    'document content not found',
+    'not found in jade',
+    'page not found',
+    'we could not find',
+    'you can try it at austlii',
+  ];
+  const lowered = plainText.toLowerCase();
+  for (const s of SENTINELS) {
+    if (lowered.includes(s)) {
+      throw new Error(
+        `Fetched content contains error sentinel ("${s}"). ` +
+        `Likely jade.io does not have this case. ` +
+        `TASMC coverage on jade is incomplete; use scraper or ` +
+        `manual upload path instead.`
+      );
+    }
+  }
 
   // Resolve citation — use provided value, else parse AustLII URL path
   let citation = citationIn;
@@ -1530,6 +1561,12 @@ function sanitiseFtsInput(raw) {
 }
 
 
+function austliiToJade(rawUrl) {
+  return rawUrl.includes('/cgi-bin/viewdoc/')
+    ? 'https://jade.io' + rawUrl.replace('https://www.austlii.edu.au/cgi-bin/viewdoc', '').replace(/\.html$/, '')
+    : rawUrl;
+}
+
 async function handleFetchJudgment(url, env) {
   const rawUrl = url.searchParams.get('url');
   const citation = url.searchParams.get('citation') || null;
@@ -1540,9 +1577,7 @@ async function handleFetchJudgment(url, env) {
 
   // Translate AustLII viewdoc URLs to jade.io for the actual fetch (AustLII blocks CF-edge IPs).
   // rawUrl is kept as the D1 cache key so existing cached AustLII-keyed entries are still found.
-  const fetchUrl = rawUrl.includes('/cgi-bin/viewdoc/')
-    ? 'https://jade.io' + rawUrl.replace('https://www.austlii.edu.au/cgi-bin/viewdoc', '').replace(/\.html$/, '')
-    : rawUrl;
+  const fetchUrl = austliiToJade(rawUrl);
 
   const cached = await env.DB.prepare(
     `SELECT html, fetched_at FROM austlii_cache WHERE url = ?`

@@ -1,8 +1,20 @@
-# CLAUDE Changelog — Sessions 21–115
+# CLAUDE Changelog — Sessions 21–116
 
 *Archived CHANGES THIS SESSION blocks for historical reference. Load conditionally when investigating past sessions or debugging regressions to a specific date. Current session state in CLAUDE.md (3-session rolling window).*
 
 ---
+
+## CHANGES THIS SESSION (session 116) — 10 May 2026
+
+- **MD reconciliation pass — 4 files** — cross-file audit of CLAUDE.md / arch.md / init.md / changelog.md; 14 targeted edits + changelog block surgery via Python line-index method (CRLF→LF normalisation expected diff inflation); commit `00c5af1`.
+- **CLAUDE.md SYSTEM STATE refresh — 10 sessions of drift caught** — `case_citations` 10,575→17,099 (+6,524), `case_legislation_refs` 5,356→15,966 (+10,610), `legislation` 8 Acts→26 (full Tasmanian criminal stack), `secondary_sources` 1,444→1,447, `query_log` 152 total · `sufficient=0` count: 0 across freeze window. Driver: xref_agent cron has been mutating D1 nightly without per-session re-query — this is the highest-recurring drift class and the cheapest to mechanise via a SYSTEM STATE refresh script.
+- **FROZEN block rewritten** — BM25 novel-hit interleave description retired (FTS leg + RRF k=60 deployed session 115); explicit re-open note for sessions 114-115 (compound-term retrieval gap); refreeze gated on 31-query baseline re-run confirming ≥28P/3Pa/0M post-FTS-leg.
+- **Stale entries pruned** — `subject_matter` Outstanding Priority + Known Issue (audit complete session 100), `Word artifact noise` simplified, CLAUDE_arch.md line 96 contradiction (`search_by_citation is reliable` half-sentence struck), `claude-sonnet` → `claude-sonnet-4-6` at line 445, `retrieval_baseline.sh` 22-March stale entry refreshed to current frozen-state baseline.
+- **Changelog block surgery** — 30-March mis-labelled "session 27" → genuine **session 28**; malformed "session — 15 Apr" header → **session 58 (TTS install)** with existing 58 → **session 58 (diagnostic)** (two close blocks for same day, both legitimate); sessions 81 + 84 moved from EOF to chronological position.
+- **[2022] TASSC 69 retag drift caught and re-applied** — D1 spot-check showed `subject_matter='administrative'` despite session 51 changelog claiming criminal retag; re-applied via D1 MCP (DPP v Greenham Tasmania Pty Ltd is corporate criminal prosecution); 5 attached `case_chunks` Qdrant payload patched `administrative→criminal` via `/tmp/qvenv` Python script; SM cache auto-refreshes within hour. Demonstrates silent-MCP-update-failure class.
+- **precompact.ps1 hook fixed in flight** — earlier CC investigation reported file clean; live `/compact` run produced parse error from corrupted em-dash at line 27 (encoding mishap). Replaced with ASCII hyphen; parse confirmed clean.
+- **Operational rules captured (CLAUDE_init.md)** — Python table-row matching collision rule (assert unique-token match, not row-prefix); hex-ssh constraints (newlines blocked in `remote-ssh`, `ALLOWED_LOCAL_DIRS = OneDrive\\Arcanthyr\\` only, `rm` is BLOCKED_COMMAND); Windows stdout `UnicodeEncodeError` after `f.write()` is non-fatal — verify file with grep, don't retry script.
+
 
 ## CHANGES THIS SESSION (session 115) — 9 May 2026
 

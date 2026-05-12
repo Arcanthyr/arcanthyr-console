@@ -4,7 +4,7 @@ export function isAuthed() {
 
 export function promptAuth() {
   const pw = window.prompt('Enter access password:');
-  if (pw === 'Trustknowone1') {
+  if (pw === 'FTP') {
     sessionStorage.setItem('arc_authed', '1');
     return true;
   }

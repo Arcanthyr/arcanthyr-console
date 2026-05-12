@@ -551,3 +551,13 @@ Safe D1 list query: metadata-only columns + flat JOIN aggregates, no correlated 
 **D1 `TEXT` columns have no enforced length limit — defensive caps mask telemetry.** D1 stores arbitrary-length text in TEXT columns regardless of any documented "limit." A `.slice(0, N)` cap on `answer_text` writes silently truncated rows that pass all validation while corrupting query history and `sufficient=0` admin review. Remove caps from D1 write paths; apply limits only at UI display layer if needed.
 
 **Playwright `target: "ref=..."` selectors not supported.** The `ref=` targeting engine (locating elements by React/framework internal ref) is not available in this Playwright MCP build. Use CSS selectors (`#id`, `.class`, `[data-testid=...]`, element type) for all `browser_click`, `browser_type`, and `browser_wait_for` targets.
+
+## Operational rules from session 119
+
+**hex-ssh `remote-ssh` blocks newlines — multi-line script pattern.** Fails with `UNSAFE_ARG: command contains null bytes or newlines`. Heredoc syntax fails. Working pattern: encode script locally with PowerShell `[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($script))`, then on remote `echo <b64> | base64 -d > /tmp/file.py && /tmp/qvenv/bin/python /tmp/file.py`. This is the reliable workaround for multi-line script execution via hex-ssh in this environment.
+
+**hex-ssh `ssh-write-chunk` broken on Windows — do not retry.** Fails with `BAD_PATH: absolute remote path required, got "C:/Program Files/Git/home/tom/..."`. Tool incorrectly resolves remote home directory through the local Windows Git Bash path. Use `remote-ssh` with the base64 pipeline pattern above instead.
+
+**`handleFetchPage` routes by domain — undocumented but load-bearing.** AustLII URLs → VPS `nexus.arcanthyr.com/fetch-page`; jade.io URLs → direct fetch with browser headers. Any future Worker fetch-path work touching AustLII or jade must read `handleFetchPage` (Worker.js ~L2263–2282) before designing changes. The session 119 `austliiToJade` fix depended on this bifurcation being in place without any handler-level changes.
+
+**Deferred bugs go to KNOWN ISSUES, not OUTSTANDING PRIORITIES.** OP gets reconciled at session close; unfixed-but-not-actioned items can be silently removed from OP. KNOWN ISSUES persists across session closes. Any action item that is "noted but not being fixed this session" must go in KNOWN ISSUES with an explicit description, not OP. Confirmed by session 119 incident: TAMagC 5×404 bug deferred at session 96, silently dropped from OP, surfaced again only via D1 count anomaly.

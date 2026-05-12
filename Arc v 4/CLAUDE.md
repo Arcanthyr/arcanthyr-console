@@ -4,11 +4,11 @@
 
 CLAUDE.md — Arcanthyr Session File
 
-Updated: 10 May 2026 (end of session 118) · Supersedes all prior versions
+Updated: 12 May 2026 (end of session 119) · Supersedes all prior versions
 
 Full architecture reference → CLAUDE_arch.md — UPLOAD EVERY SESSION alongside CLAUDE.md
 
-Changelog archive → CLAUDE_changelog.md (sessions 21–115) — load conditionally
+Changelog archive → CLAUDE_changelog.md (sessions 21–116) — load conditionally
 
 
 
@@ -130,8 +130,9 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 ## OUTSTANDING PRIORITIES
 
+1. **TASMC scraper repair** — TASMC pipeline confirmed dead across both ingestion paths (scraper false-completion 2017, 2018–2026; jade.io coverage gap structural). Scraper is the only viable path. Three parts: (a) reset `scraper_progress.json` for TAMagC years 2017, 2018–2026; (b) manual backfill run scoped to those years from `C:\Users\Hogan\run_scraper.bat`; (c) harden `austlii_scraper.py` 5×404 termination heuristic — year only marked done if ≥1 200 observed for that court+year. Backfill before heuristic fix is fine — heuristic only matters for future runs.
 
-
+2. **Cases sub-tab drag-and-drop with RTF (Task 2)** — Path A architecture chosen: new `POST /api/ingest/extract-text` endpoint on server.py (reuses existing python-docx/pypdf/striprtf extractors, returns `{ text }`, no D1 write), thin Worker proxy route, UploadPanel Cases sub-tab rewired to call `extractText(file)` then `uploadCase({ case_text, citation, court })`. RTF first; DOCX/PDF come free via existing extractors. Design questions still open: citation source (auto-detect from text vs manual field vs both); court source same; form UX (single file vs batch); sync vs async. Resolve before drafting CC brief.
 
 
 
@@ -238,6 +239,18 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **`bm25_fired` column name is misleading** — records section-ref BM25 path only (fires when `/s\s*(\d+[A-Za-z]*)/` matches query_text); does NOT record FTS keyword interleave path. Use `fts_keyword_fired`, `fts_keyword_hits`, `fts_keyword_added` for keyword interleave diagnostics.
 
 - **Compound legal term retrieval gap — systemic** — dense embeddings decompose multi-word terms of art into component words; terms whose components are individually high-frequency in criminal law text (e.g. "significant relationship" → "significant" + "relationship") produce false-positive chunk matches; BM25 boost pass does not rescue because it re-ranks already-retrieved chunks rather than independently retrieving; FTS5 first-class pass is the architectural fix (see OUTSTANDING PRIORITIES)
+
+- **jade.io TASMC coverage gap — structural** — jade.io has full coverage of TASSC/TASCCA/TASFC but Magistrates Court coverage is patchy. Fetch returns HTTP 200 with sentinel body "Document content not found in Jade: [citation] - you can try it at Austlii". Affects every `handleFetch*` path that routes via jade.io. URL upload via the jade workaround is therefore not viable for TASMC; scraper (residential IP) is the only TASMC ingestion path. Discovered session 119 when [2024] TASMC 11 test upload silently embedded a 79-char sentinel page as case authority before cleanup.
+
+- **TASMC scraper false-completion 2017, 2018–2026** — diagnosed session 119 via D1 count anomaly (TASMC: 2025/2026 zero, 2024 = 4, 2023 = 3, 2017 absent). Root cause from session 96 changelog: scraper marks year `done` after 5×404s without requiring a prior 200, then daily scrape permanently skips the year. Repair pending in Outstanding Priorities. Until repaired, TASMC ingestion is fully dead.
+
+- **handleFetchPage routes by domain — undocumented bifurcation** — `handleFetchPage` (Worker.js ~L2263–2282) silently routes AustLII URLs through VPS (`nexus.arcanthyr.com/fetch-page`) and jade.io URLs via direct browser-header fetch. This is the load-bearing mechanism behind the session 119 `austliiToJade` fix — passing a translated jade URL automatically takes the right branch. Any future fetch-path work must read `handleFetchPage` before designing — routing is not visible from the call site.
+
+- **Worker.js L3722 `request.json()` unconditional on /api/legal/ POSTs — kills FormData uploads** — every POST to /api/legal/ runs `await request.json()` at the router. `upload-case` from the Cases sub-tab drag-and-drop sends multipart/form-data; JSON parse throws SyntaxError before `handleUploadCase` is reached. Drag-and-drop upload has therefore never worked. Will be fixed by Task 2 (Path A extract-text endpoint, frontend sends JSON not FormData). Recorded as DEFERRED BUG until Task 2 lands — do not remove this entry until drag-and-drop is verified end-to-end.
+
+- **handleFetchCaseUrl defensive checks live at Worker.js:523–551** — 1000-char minimum length floor + 5-string case-insensitive sentinel detection ("document content not found", "not found in jade", "page not found", "we could not find", "you can try it at austlii"). Both throw before D1 write and Queue enqueue. Added session 119 after a sentinel page was embedded as case authority. Any future URL fetch handler (handleFetchJudgment, handleFetchPage callers) should consider the same guard — defensive checks currently only protect handleFetchCaseUrl.
+
+- **Deferred bugs go to KNOWN ISSUES, not OUTSTANDING PRIORITIES** — process rule learned session 119. TAMagC 5×404 false-completion was deferred to OP at session 96 ("Action deferred to Outstanding Priorities") then silently removed from OP between session 96 and session 118 without being fixed; surfaced only through a D1 count anomaly investigation at session 119. OP gets reconciled at session close; KNOWN ISSUES persists. Any action item that is "noted but not being fixed this session" belongs in KNOWN ISSUES with an explicit description, not OP.
 
 
 
@@ -491,17 +504,6 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 
 
 
-## CHANGES THIS SESSION (session 116) — 10 May 2026
-
-- **MD reconciliation pass — 4 files** — cross-file audit of CLAUDE.md / arch.md / init.md / changelog.md; 14 targeted edits + changelog block surgery via Python line-index method (CRLF→LF normalisation expected diff inflation); commit `00c5af1`.
-- **CLAUDE.md SYSTEM STATE refresh — 10 sessions of drift caught** — `case_citations` 10,575→17,099 (+6,524), `case_legislation_refs` 5,356→15,966 (+10,610), `legislation` 8 Acts→26 (full Tasmanian criminal stack), `secondary_sources` 1,444→1,447, `query_log` 152 total · `sufficient=0` count: 0 across freeze window. Driver: xref_agent cron has been mutating D1 nightly without per-session re-query — this is the highest-recurring drift class and the cheapest to mechanise via a SYSTEM STATE refresh script.
-- **FROZEN block rewritten** — BM25 novel-hit interleave description retired (FTS leg + RRF k=60 deployed session 115); explicit re-open note for sessions 114-115 (compound-term retrieval gap); refreeze gated on 31-query baseline re-run confirming ≥28P/3Pa/0M post-FTS-leg.
-- **Stale entries pruned** — `subject_matter` Outstanding Priority + Known Issue (audit complete session 100), `Word artifact noise` simplified, CLAUDE_arch.md line 96 contradiction (`search_by_citation is reliable` half-sentence struck), `claude-sonnet` → `claude-sonnet-4-6` at line 445, `retrieval_baseline.sh` 22-March stale entry refreshed to current frozen-state baseline.
-- **Changelog block surgery** — 30-March mis-labelled "session 27" → genuine **session 28**; malformed "session — 15 Apr" header → **session 58 (TTS install)** with existing 58 → **session 58 (diagnostic)** (two close blocks for same day, both legitimate); sessions 81 + 84 moved from EOF to chronological position.
-- **[2022] TASSC 69 retag drift caught and re-applied** — D1 spot-check showed `subject_matter='administrative'` despite session 51 changelog claiming criminal retag; re-applied via D1 MCP (DPP v Greenham Tasmania Pty Ltd is corporate criminal prosecution); 5 attached `case_chunks` Qdrant payload patched `administrative→criminal` via `/tmp/qvenv` Python script; SM cache auto-refreshes within hour. Demonstrates silent-MCP-update-failure class.
-- **precompact.ps1 hook fixed in flight** — earlier CC investigation reported file clean; live `/compact` run produced parse error from corrupted em-dash at line 27 (encoding mishap). Replaced with ASCII hyphen; parse confirmed clean.
-- **Operational rules captured (CLAUDE_init.md)** — Python table-row matching collision rule (assert unique-token match, not row-prefix); hex-ssh constraints (newlines blocked in `remote-ssh`, `ALLOWED_LOCAL_DIRS = OneDrive\\Arcanthyr\\` only, `rm` is BLOCKED_COMMAND); Windows stdout `UnicodeEncodeError` after `f.write()` is non-fatal — verify file with grep, don't retry script.
-
 ## CHANGES THIS SESSION (session 117) — 10 May 2026
 
 - **Post-FTS-leg baseline + manual grading** — `~/retrieval_baseline.sh` re-run, output saved at `~/retrieval_baseline_post_fts_leg.txt`; chunk-by-chunk grading via Cloudflare D1 MCP inspection of disputed top-3 chunks; final 30P/1Pa/0M.
@@ -521,6 +523,16 @@ Real-use failure captured via thumbs-down button on INTEL page answer view (wire
 - **TransformStream pattern abandoned** — TransformStream + `pipeThrough` produced 0-byte SSE responses in CF Workers; replaced with explicit `new ReadableStream({ async start(controller) { reader.read() loop } })`. Logged in CLAUDE_init.md.
 - **SSE line buffer mandatory** — naive `decode(value).split("\n")` loses ~50% of text deltas at chunk boundaries; rolling `sseLineBuffer` accumulator across `read()` calls is required, not optional. Logged in CLAUDE_init.md.
 - **V'ger streaming non-viable by platform constraint** — Workers AI (Qwen3) has no SSE API surface; V'ger path is JSON-only structurally, not deferral. Captured in CLAUDE_arch.md. Idle / wall-clock timeouts shipped untested (low blast radius — known-untested rather than verified).
+
+
+## CHANGES THIS SESSION (session 119) — 12 May 2026
+
+- **URL upload restored for jade-carried courts** — `austliiToJade()` helper added at Worker.js module scope (extracted from inline logic in handleFetchJudgment); `handleFetchCaseUrl` now translates AustLII URLs to jade.io before `handleFetchPage` call, citation auto-detect still reads original URL; `handleFetchJudgment` refactored to use the helper (Worker version 915575be then 61094e60). Restores URL upload for TASSC/TASCCA/TASFC; TASMC affected by structural jade coverage gap (see KNOWN ISSUES).
+- **Defensive checks deployed on handleFetchCaseUrl** — 1000-char minimum length floor + 5-string sentinel detection at Worker.js:523–551, both throw before D1 write and Queue enqueue. Triggered by session 119 incident: [2024] TASMC 11 URL upload silently embedded a 79-char jade sentinel page as case authority. Validated end-to-end: re-attempt produces clean UI error, D1 untouched.
+- **Corpus corruption from sentinel incident cleaned** — 1 Qdrant point (general-docs-v2) deleted via /tmp/qvenv script; case_chunks_fts, case_chunks, cases rows for [2024] TASMC 11 deleted via D1 MCP. Counts restored to pre-incident state. No xref entries to clean (case too new).
+- **TASMC scraper false-completion discovered corpus-wide** — diagnosed via D1 count query: TASMC 2025/2026 zero, 2024 = 4, 2023 = 3, 2017 absent entirely; superior courts unaffected. Root cause confirmed as the deferred session 96 TAMagC 5×404 bug. Repair scope added to OUTSTANDING PRIORITIES.
+- **Drag-and-drop architecture chosen for Task 2** — Path A (new `POST /api/ingest/extract-text` endpoint that returns text only, frontend then calls `uploadCase`) over Path B (extend process-document with target=cases). Path A reuses existing python-docx/pypdf extractors, no D1 write paths added, RTF works day one and DOCX/PDF come free.
+- **Process meta-finding — deferred OP items can vanish silently** — TAMagC fix was deferred at session 96, removed from OP between session 96 and 118 without being fixed, surfaced only at session 119 via D1 anomaly. KNOWN ISSUES discipline rule added: deferred action items go to KNOWN ISSUES not OP.
 
 
 ## END-OF-SESSION UPDATE PROCEDURE
