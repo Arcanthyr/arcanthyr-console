@@ -15,8 +15,8 @@ ingest_part1_log.txt
 ingest_part2_log.txt
 
 # Scraper logs (scraper_progress.json stays tracked)
-Local Scraper/scraper.log
-Local Scraper/qdrant_backfill.log
+pipeline/scraping/scraper.log
+pipeline/scraping/qdrant_backfill.log
 
 # Data files and binaries
 data-*.zip
@@ -49,4 +49,4 @@ cleanup.sql
 .wrangler/
 
 # Playwright test artifacts
-arcanthyr-ui/.playwright-mcp/
+Arcanthyr UI/.playwright-mcp/
