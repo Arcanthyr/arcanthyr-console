@@ -1,0 +1,15 @@
+## CHANGES THIS SESSION (session 114) — 9 May 2026
+
+- **Pass 2+3 concurrent retrieval** — ThreadPoolExecutor(max_workers=2) with separate client2/client3 QdrantClient instances; timestamp-confirmed 53–61μs gap between passes (was ~2s sequential); retrieval wall time cut from ~14–18s to ~4–6s
+
+- **AbortSignal.timeout 20s → 25s** — both handleLegalQuery and V'ger Nexus fetch paths; worker e3d273e6-266c-428b-ba82-76a1e61b1ac5
+
+- **HTTP 500 root cause resolved** — total query time now ~14–18s (retrieval 4–6s + Sonnet ~10–12s); clear of CF 30s wall-clock ceiling; 500s should not recur under normal load
+
+- **SSE streaming deferred** — architecturally correct UX fix (progressive token display); not needed post-retrieval optimisation; parked for dedicated session
+
+- **subject_matter family→mixed — three cross-domain cases** — [2024] TASFC 2, [2023] TASSC 15, [2020] TASSC 3 retagged in D1 + 34 Qdrant points patched; significant relationship definitional cases now eligible for Pass 2 criminal/mixed filter
+
+- **Relationships Act re-embed queued** — legislation.embedded reset to 0 for relationships-act-2003-tas; s 4 sections confirmed in D1 with embedding_model = null; poller to embed
+
+- **Systemic compound-term retrieval gap identified** — dense embeddings decompose legal terms of art into component words; FTS5 first-class parallel retrieval pass identified as systemic fix; flagged for dedicated session

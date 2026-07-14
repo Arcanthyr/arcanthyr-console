@@ -1,0 +1,92 @@
+MODE B — EIC DRAFT: SINGLE NAMED WITNESS
+Target witness: [INSERT FULL NAME]
+Witness type:   [CIVILIAN / POLICE OFFICER]
+Statement date: [INSERT DATE]
+Do not proceed past this block until the target witness is named.
+All drafting in Section 1 is confined to this witness only.
+All Scope Notes in Section 5 are assessed relative to this witness only.
+STEP 0 — PRE-DRAFT GATES (apply before drafting anything)
+Gate 1 — Binding prior analysis
+Apply Master Rule 11 (Binding Prior Analysis — Gate 1).
+Mode B-specific Gate 1 extensions:
+
+Draft the live EIC using LIVE particulars only.
+For PRECARIOUS / UNKNOWN exhibits: do not draft a tender block. Insert a PRE-TRIAL ISSUE flag at the point the tender would occur (format below).
+
+Gate 2 — Witness allocation
+If a Mode F allocation table is present in this chat:
+
+The PRIMARY SCOPE and DO NOT COVER fields for this witness are controlling. Confine EIC to the assigned scope.
+If this witness's statement contains evidence not covered by the allocation table and not assigned to any other witness, include it and flag: [NOT IN MODE F ALLOCATION — included because no other witness covers this point].
+
+If no Mode F allocation table is present:
+
+Draft EIC based on this witness's statement and the master prompt rules. Note at the top of the output: [NO MODE F ALLOCATION — full witness scope applied].
+
+Gate 3 — Witness type
+Confirm the witness type declared above and apply the corresponding rules. This controls the identification block (Section 1 opening) and the scope of permissible questioning.
+If the named witness is a police officer, confine the entire EIC to:
+
+Personal attendance, procedure, and scene observations
+Exhibit pathway and continuity for exhibits this officer personally handled or produced
+Any record of interview or interview process this officer personally conducted or participated in, to the extent admissions are relied upon
+Do not draft questions that repeat civilian witness evidence. Omit and flag as a SCOPE NOTE.
+
+SECTION 1 — LIVE EIC
+Opening identification block (mandatory — insert before any substantive questions):
+If witness is a civilian:
+Q: Can you please state your full name for the court?
+Q: Where do you live? [suburb/area only — do not elicit full address in open court unless necessary]
+Q: What do you do for work?
+[Adapt the third question to the witness — omit or modify if occupation is irrelevant or sensitive]
+If witness is a police officer:
+Q: Can you please state your full name for the court?
+Q: What is your rank and current posting?
+Q: How long have you been a police officer?
+Q: Were you on duty on [date]?
+Draft rules:
+Chronological order
+Foundation before each topic area
+Non-leading except where plainly permissible
+Tag every question: [Charge X | Element: Y | Particular: Z]
+Confine strictly to LIVE particulars
+Do not include questions unsupported by the available evidence
+Exhibit tender blocks: include inline at the point of tender, subject to Gate 1 exhibit classifications.
+PRE-TRIAL ISSUE flag format — insert inline at the exact point a question sequence breaks:
+⚠️ PRE-TRIAL ISSUE
+Missing: [what foundation or exhibit authentication is absent]
+Required: [what is needed to resolve it]
+Effect: [why this blocks the question sequence]
+Do not continue an affected question sequence past a PRE-TRIAL ISSUE flag unless the remaining questions are independent of the missing foundation.
+Conditional question integration in Section 1:
+Where a PARKED or FAIL-AS-PLEADED particular falls in chronological sequence, include the question(s) at that point in Section 1 with the following inline flag immediately after the question:
+⚠️ CONDITIONAL [PARKED — {one-line summary of pre-condition}] → full details at Section 2
+or
+⚠️ CONDITIONAL [FAIL-AS-PLEADED — {one-line summary of what is required}] → full details at Section 2
+Tag each conditional question: [CONDITIONAL — PARKED] or [CONDITIONAL — FAIL-AS-PLEADED]
+Do not present conditional questions as part of the live runnable EIC. The inline flag must make their status immediately apparent to the reader.
+SECTION 2 — CONDITIONAL QUESTIONS REGISTER
+For each PARKED or FAIL-AS-PLEADED particular relevant to this witness, produce one block using this template:
+⚠️ CONDITIONAL — NOT FOR USE
+Particular: [state the particular]
+Mode A status: [PARKED / FAIL-AS-PLEADED]
+Pre-condition: [PARKED: state what amendment, statement, or authentication step is required before use | FAIL-AS-PLEADED: state what fundamental change — amendment, re-charge, or new evidence — is required]
+Effect if unmet: [why this particular cannot safely be run as pleaded]
+Do not repeat the question text here. Questions appear in Section 1 at their chronological position. This register exists to provide the full status and pre-condition detail that the Section 1 inline flag summarises.
+If no conditional particulars apply to this witness: state NO CONDITIONAL PARTICULARS FOR THIS WITNESS.
+SECTION 3 — ADMISSIBILITY WATCHLIST
+For each issue:
+Issue:
+Source:
+Risk: [LOW / MODERATE / HIGH]
+Likely defence challenge:
+Prosecution response:
+SECTION 4 — INVESTIGATION GAPS
+For each gap:
+Missing item:
+Why it matters:
+How to fix:
+Urgency: [HIGH / MEDIUM / LOW]
+SECTION 5 — SCOPE NOTES
+List any questions omitted because they belong to another witness. For each: identify the point omitted and the witness who should cover it.
+If none: state NO SCOPE NOTES.

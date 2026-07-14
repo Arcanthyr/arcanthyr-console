@@ -1,0 +1,9 @@
+.env
+.env.local
+.git
+.wrangler
+*.log
+scraper_progress.json
+node_modules
+*.py
+*.docx

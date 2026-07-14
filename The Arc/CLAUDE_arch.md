@@ -1,0 +1,1009 @@
+# CLAUDE_arch.md — Arcanthyr Architecture Reference
+*Updated: 10 May 2026 (end of session 118). Upload every session alongside CLAUDE.md.*
+
+---
+
+## ARCHITECTURE OVERVIEW
+
+**Stack:** Cloudflare Worker (`arcanthyr-api`) + D1 (`arcanthyr`) + Qdrant (`general-docs-v2`) + Ollama/pplx-embed (Docker) + nexus `server.py` (Docker `agent-general`)
+
+| Component | Detail |
+|---|---|
+| VPS | Contabo · `31.220.86.192` · Ubuntu 24.04 · 23GB RAM · 6 vCPU |
+| Live site | `arcanthyr.com` (Cloudflare Worker custom domain) |
+| GitHub | `https://github.com/Arcanthyr/arcanthyr-console` |
+| Git root | `arcanthyr-console/` (monorepo since session 35) · `Arc v 4/`, `arcanthyr-ui/`, `Local Scraper/`, and root scripts all tracked here · git commands run from `arcanthyr-console/` · wrangler/npx commands still run from `Arc v 4/` |
+| Cloudflare plan | Workers Paid ($5/month) · Account ID: `def9cef091857f82b7e096def3faaa25` |
+
+**D1 vs Qdrant:**
+- D1 = source of truth / relational. Text and metadata live here permanently.
+- Qdrant = semantic search index. Vectors + chunk_id payload pointing back to D1. Rebuilt from D1 if needed.
+- Library delete wipes Qdrant chunks but NOT D1 rows.
+- Full reset: `wrangler d1 execute DELETE` on relevant table + Qdrant collection delete + recreate.
+
+---
+
+## MCP SERVERS & TOOLS
+
+### Claude.ai (available to Claude in every session)
+
+| Tool category | Tools |
+|---|---|
+| Web | `web_search`, `web_fetch`, `image_search` |
+| Files (container) | `bash_tool` (network disabled), `view`, `str_replace`, `create_file`, `present_files` |
+| Memory & history | `memory_user_edits`, `conversation_search`, `recent_chats` |
+| Visualisation | `visualize:show_widget`, `visualize:read_me` |
+| Utilities | `ask_user_input_v0`, `message_compose_v1`, `recipe_display_v0`, `weather_fetch`, `fetch_sports_data`, `places_search`, `places_map_display_v0`, `tool_search` |
+
+**MCP — Claude in Chrome** (browser automation on Tom's machine):
+`navigate`, `read_page`, `find`, `form_input`, `javascript_tool`, `get_page_text`, `read_console_messages`, `read_network_requests`, `computer` (mouse/keyboard/screenshot), `tabs_create/close/context`, `shortcuts_list/execute`, `file_upload`, `upload_image`, `resize_window`, `switch_browser`, `gif_creator`
+→ Use for: testing arcanthyr.com UI, inspecting network requests, reading browser console errors
+
+**MCP — Cloudflare Developer Platform** (claude.ai connector):
+`accounts_list`, `set_active_account`, `d1_database_create/delete/get/query`, `d1_databases_list`, `workers_list`, `workers_get_worker`, `workers_get_worker_code`, `kv_namespace_create/delete/get/update`, `kv_namespaces_list`, `r2_bucket_create/delete/get`, `r2_buckets_list`, `hyperdrive_config_*`, `search_cloudflare_documentation`, `migrate_pages_to_workers_guide`
+→ Use for: querying live D1 without wrangler, checking deployed worker versions, reading live worker.js code
+
+**MCP — Gmail / Google Calendar** (claude.ai connector — OAuth not yet completed, auth-only)
+
+
+---
+
+### Claude Code (CC — available in every CC session)
+
+**Built-in:** `Read`, `Write`, `Edit`, `Bash`, `Glob`, `Grep`, `LS`, `WebFetch`, `TodoWrite`, `Task`, `NotebookRead/Edit`
+
+**MCP — cloudflare** (mcp.cloudflare.com):
+`mcp__cloudflare__execute`, `mcp__cloudflare__search`
+
+**MCP — Cloudflare Developer Platform** (claude.ai connector — same as Claude.ai above):
+Full D1/Workers/KV/R2 access
+
+**MCP — context7**:
+`resolve-library-id`, `query-docs`
+→ Use for: looking up current Cloudflare Workers API docs and other library documentation
+
+**MCP — fetch**:
+`mcp__fetch__fetch`
+→ Use for: fetching URLs directly from CC
+
+**MCP — firecrawl**:
+`firecrawl_scrape`, `firecrawl_crawl`, `firecrawl_check_crawl_status`, `firecrawl_search`, `firecrawl_extract`, `firecrawl_map`, `firecrawl_agent`, `firecrawl_agent_status`, `firecrawl_browser_create/delete/execute/list`
+→ Use for: JS-rendered web scraping (potential AustLII alternative to Python scraper)
+
+**MCP — github**:
+`get_file_contents`, `create_or_update_file`, `push_files`, `search_code`, `search_repositories`, `search_issues/users`, `get/list/create/update_issue`, `add_issue_comment`, `get/list/create_pull_request`, `get_pull_request_comments/files/reviews/status`, `create_pull_request_review`, `update_pull_request_branch`, `merge_pull_request`, `list_commits`, `create_branch`, `fork_repository`, `create_repository`
+→ Use for: reading/writing files on GitHub directly, creating issues and PRs — alternative to git CLI
+
+**MCP — hex-ssh**:
+`ssh-read-lines`, `ssh-write-chunk`, `ssh-edit-block`, `ssh-search-code`, `ssh-verify`, `ssh-upload`, `ssh-download`, `remote-ssh`
+→ Use for: reading and editing server.py and other VPS files directly without SCP; replaces manual SCP workflow for server.py edits
+
+**MCP — magic (21st.dev)**:
+`21st_magic_component_builder`, `21st_magic_component_refiner`, `21st_magic_component_inspiration`, `logo_search`
+→ Use for: UI component generation for arcanthyr-ui frontend work
+
+**MCP — playwright**:
+`browser_navigate`, `browser_navigate_back`, `browser_snapshot`, `browser_take_screenshot`, `browser_click`, `browser_type`, `browser_fill_form`, `browser_select_option`, `browser_hover`, `browser_drag`, `browser_press_key`, `browser_wait_for`, `browser_evaluate`, `browser_run_code`, `browser_file_upload`, `browser_handle_dialog`, `browser_console_messages`, `browser_network_requests`, `browser_tabs`, `browser_resize`, `browser_close`
+→ Use for: automated browser testing of arcanthyr.com from CC (headless)
+
+**MCP — sequential-thinking**:
+`sequentialthinking`
+→ Use for: complex multi-step reasoning tasks where structured chain-of-thought helps
+→ Installed globally as `mcp-server-sequential-thinking` (v2025.12.18) — config updated from npx to direct binary (session 49). Restart CC after any reinstall.
+
+**MCP — auslaw** (AustLII/Jade case search — installed session 72):
+`search_cases`, `search_by_citation`, `format_citation`, `jade_citation_lookup`, plus 6 additional tools — 10 total
+→ Use for: Tasmanian/AustLII case lookup by citation or topic, Jade.io lookups, citation formatting — complements the local scraper and Arcanthyr retrieval. VPS-hosted docker container at `~/auslaw-mcp`, digest-pinned `ghcr.io/russellbrenner/auslaw-mcp@sha256:480e8968b34e43d6d4a6eec3c43ca4dc0d98e63e08faf3645fb8fafb1a307ced`, isolated network `auslaw-mcp_auslaw-isolated` (NOT connected to any `ai-stack_*` network). Registered user-scope in `C:\Users\Hogan\.claude.json` as `auslaw`, transport is SSH-wrapped `docker exec -i auslaw-mcp node /app/dist/index.js`. All outbound traffic validated via tcpdump session 72 — talks only to `posh.austlii.edu.au` (138.25.65.147). `search_cases` is dead from VPS — root cause is AustLII TCP-level block of Contabo VPS IP (confirmed 21 April 2026) — not endpoint slowness — SYN to austlii.edu.au silently dropped, connection never completes; `search_by_citation` also dead from VPS (TCP-block, 403 as of session 101).
+- **AustLII CF-edge block — mechanism identified session 102** — block is Cloudflare Bot Management / Turnstile, not IP-range; "Just a moment..." + `challenges.cloudflare.com` CSP is the diagnostic tell. CF Browser Rendering (headless Chromium) also 403s — Bot Management identifies its own BR ASN by design. `lawlibrary.tas.gov.au` behind same CF Bot Management. jade.io (`jade.io/au/cases/tas/COURT/YEAR/NUM`) accessible from CF edge (confirmed 200); used by `handleFetchJudgment` since session 101. jade.io has no listing pages (router validates all URLs against individual-case AustLII regex). Local scraper on residential IP is the only working AustLII bulk access path and permanent forward-looking capture mechanism.
+
+**MCP tools vs auto-activating skills — key distinction:**
+- **MCP tools** (hex-ssh, sequential-thinking, playwright, context7, fetch, firecrawl, github, magic, cloudflare) — require **explicit invocation** by CC. They do not trigger automatically under any condition.
+- **Superpowers skills** (systematic-debugging, verification-before-completion, test-driven-development) — **auto-activate** on matching conditions (bug/failure reported; about to claim work complete; implementing a feature/bugfix). No invocation needed.
+- **code-simplifier** — built-in Claude Code plugin (tengu_amber_lattice plugin system), already enabled in `~/.claude.json`. Not a separate MCP server. The `/simplify` skill covers the same purpose explicitly.
+
+**Skills — ~/.claude/skills/ (installed session 40)**
+
+*Pre-existing (session 38):*
+- `alirezarezvani-claude-skills` — 220+ skills: senior-architect, dependency-auditor, RAG architect, security auditor
+- `jezweb-claude-skills` — Cloudflare Workers, Vite+React, D1/Drizzle, Hono, shadcn, Tailwind v4
+- `vercel-agent-skills` — Web design guidelines (WCAG/UX audit) + React best practices
+
+*Superpowers (obra/superpowers — installed session 40):*
+- `systematic-debugging` — Auto-activates on bugs/failures; four-phase root-cause process before fixes
+- `verification-before-completion` — Auto-activates before claiming work done; enforces evidence-over-claims
+- `test-driven-development` — Auto-activates on feature/bugfix implementation; red-green-refactor
+- `subagent-driven-development` — Parallel subagents per task with review checkpoints between iterations
+
+*Antigravity (sickn33/antigravity-awesome-skills — installed session 40):*
+- `rag-engineer` — RAG systems: chunking, embeddings, hybrid search patterns
+- `vector-database-engineer` — Qdrant/pgvector index config, HNSW/IVF/PQ, hybrid search
+- `embedding-strategies` — Embedding model selection, chunking optimisation, domain fine-tuning
+- `python-pro` — Python 3.12+, uv, ruff, pydantic, async patterns
+- `async-python-patterns` — asyncio, aiohttp, concurrent I/O, WebSocket, background tasks
+- `docker-expert` — Multi-stage builds, container security hardening, compose patterns
+- `prompt-engineering` — Few-shot, chain-of-thought, structured outputs, agent behaviour
+- `context-window-management` — Token budgeting, context summarisation, serial position effects
+- `bash-linux` — Bash/Linux scripting patterns
+
+---
+
+### VPS Environment Files
+
+`.env.secrets` — MANUAL ONLY, never read via CC or hex-ssh:
+- Contains: `RESEND_API_KEY`, `CLAUDE_API_KEY`, `NEXUS_SECRET_KEY`, `OPENAI_API_KEY`, `Nexus_arc_bridge_key`, `GITHUB_TOKEN`
+- Location: `~/ai-stack/.env.secrets`
+- chmod 600 — only readable by tom
+
+`.env.config` — CC-safe, no secrets:
+- Contains: non-sensitive config vars only (currently just a comment header — empty)
+- Location: `~/ai-stack/.env.config`
+- CC may freely read and edit this file
+
+`docker-compose.yml` references both files via `env_file: [.env.secrets, .env.config]`
+
+**agent-general port** — hardcoded `127.0.0.1:18789->18789/tcp` in docker-compose.yml since session 45 · previously used `${AGENT_GENERAL_PORT}` variable which was never read at compose parse time (only `.env` is read for port interpolation, not `env_file:`) · do not revert to variable form
+
+`.env.backup` — original combined `.env`, retained as backup at `~/ai-stack/.env.backup`
+
+**`~/ai-stack/.env` (session 46):** Created with pinned port vars — `QDRANT_GENERAL_PORT=6334`, `QDRANT_SENSITIVE_PORT=6335`, `OLLAMA_PORT=11434`, `AGENT_SENSITIVE_PORT=18791`. Previously missing, causing docker compose to assign ephemeral host ports on each `compose up`. Qdrant now reliably reachable from VPS host at `localhost:6334`. Ollama has no host port binding — use `docker exec agent-general` for any host-side embedding calls (e.g. `docker exec agent-general python3 -c "..."`).
+
+When CC needs a secret value (e.g. for a health check), use remote-ssh to grep the specific key only:
+`grep NEXUS_SECRET_KEY ~/ai-stack/.env.secrets | cut -d= -f2`
+Never ask CC to read the full `.env.secrets` file.
+
+---
+
+## DOCKER INTERNAL HOSTNAMES — CRITICAL
+
+**`localhost` inside a Docker container refers to that container, not the VPS host. All inter-container calls must use Docker service names.**
+
+| Service | Host-side | Inside Docker container |
+|---|---|---|
+| Qdrant general | `http://localhost:6334` | `http://qdrant-general:6333` |
+| Ollama | not accessible from host | `http://ollama:11434` |
+| agent-general nexus | `http://localhost:18789` | `http://agent-general:18789` |
+
+**Nexus health check port is 18789** — always curl `http://localhost:18789/health` after restart.
+
+**enrichment-poller is a permanent Docker service (added session 5):**
+The poller runs as a dedicated container with `restart: unless-stopped`. No tmux required.
+
+Start/restart:
+```bash
+cd ~/ai-stack
+docker compose up -d enrichment-poller
+```
+
+Check logs:
+```bash
+docker compose logs --tail=50 enrichment-poller
+```
+
+The service uses the same image as agent-general, same volume mount (`./agent-general/src:/app/src`), and reads `OLLAMA_URL` + `QDRANT_URL` from environment. Changes to enrichment_poller.py take effect immediately — no rebuild needed.
+
+Do NOT run the poller manually via `docker compose exec` anymore — the service handles it.
+
+**agent-general container env vars (docker-compose.yml):** `NEXUS_SECRET_KEY`, `WORKER_URL` (= `https://arcanthyr.com`), `OPENAI_API_KEY` (required for `/process-document` GPT calls), `OLLAMA_URL`, `QDRANT_URL`. If `OPENAI_API_KEY` is missing, `/process-document` jobs will fail at the enriching step.
+
+**Never test API routes via SSH from PowerShell** — SSH quoting mangles auth headers. SSH to VPS first, then run curl locally.
+
+**Header chunks:** `chunk_index=0` rows with `enriched_text=NULL` are intentionally never embedded. The `AND cc.enriched_text IS NOT NULL` gate in `fetch-case-chunks-for-embedding` excludes them at the Worker level — they never enter the poller cycle. They sit permanently at `embedded=0`. Accurate backlog query: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`.
+
+**docker compose restart vs force-recreate:** After any key rotation or `env_file` change, always use `docker compose up -d --force-recreate <service>`. `docker compose restart` stops and restarts the same container — the environment baked in at creation time stays frozen. `force-recreate` creates a new container that re-reads `env_file`, picking up rotated keys. Root cause of session 63 poller 401 crash-loop: container created before session 61 NEXUS rotation kept the old key through every restart until force-recreated. Diagnose: `docker compose exec enrichment-poller printenv NEXUS_SECRET_KEY` — if blank or wrong, force-recreate.
+
+---
+
+## DATA FLOW PIPELINE (v2 — CURRENT)
+
+```
+Console upload → Worker → D1 (raw_text stored, enriched=1, embedded=0)
+                       → NO nexus call (fire-and-forget removed in v9)
+                       → upload-corpus and format-and-upload set enriched=1 on INSERT (session 26)
+
+VPS enrichment_poller.py (permanent Docker service, --loop):
+  [EMBED] pass   → enriched=1, embedded=0 rows → pplx-embed → Qdrant → embedded=1
+  [CASE-EMBED]   → case_chunks done=1, embedded=0 → pplx-embed → Qdrant → embedded=1
+  [LEG]          → legislation embedded=0 → pplx-embed → Qdrant → embedded=1
+  [ENRICH]       → unenriched secondary_sources → GPT-4o-mini (OpenAI API) → enriched_text → enriched=1
+```
+
+**Secondary sources enriched=1 on insert (session 26):** Console upload routes (`handleUploadCorpus`, `handleFormatAndUpload`) both set `enriched=1` on INSERT — no manual `wrangler d1` step needed after any console upload. Poller embed pass picks up `enriched=1, embedded=0` rows. If using a custom ingest path outside the Worker routes, verify enriched=1 is set manually before the poller runs.
+
+**Enrichment model by content type:**
+
+| Content | Enrichment model | Notes |
+|---|---|---|
+| Scraped cases (bulk) | Workers AI / Qwen3-30b — in Worker at ingest time | Free, automated, NOT via VPS poller |
+| Manual case uploads | Workers AI — same Worker path | NOT via VPS poller |
+| Secondary sources corpus | None — raw_text IS the content | embed raw_text directly, enriched_text stays NULL |
+| Legislation | None — raw statutory text embedded directly | |
+| Future secondary source uploads (small volume) | GPT-4o-mini-2024-07-18 via OpenAI API (OPENAI_API_KEY in VPS .env) | switched from Claude API session 13 — Claude API key unavailable |
+
+**Secondary sources corpus — session 12 state (historical):** 1,171 rows · all enriched=1 · embedded=0 (poller embedding overnight). `enriched_text` is NULL — correct, poller falls back to `raw_text`. Do NOT run `--mode enrich` on these rows.
+
+---
+
+## RETRIEVAL ARCHITECTURE (sequential four-pass + BM25 interleave — frozen session 96)
+
+**Actual pipeline — Worker.js handleLegalQuery:**
+- Calls server.py /search
+- Takes nexusData.chunks verbatim — no reordering, no blending
+- Assembles context and passes to Claude API (primary) / Workers AI Qwen3 (fallback)
+- handleLegalQueryWorkersAI only: citation detection → case_chunk sort to front + cap 2 secondary sources + [CASE EXCERPT]/[ANNOTATION] labels
+
+**Actual pipeline — server.py search_text():**
+
+### Retrieval Pipeline (Sequential Pass — session 42, reverted from RRF)
+
+1. **Pass 1 — unfiltered semantic** — `client.query_points()`, threshold 0.45, limit top_k*2. Short legislation filter (type=legislation + len<200 removed). **SM penalty:** `apply_sm_penalty(chunk, query_text_lower)` applied to all results — non-criminal/non-mixed `case_chunk` types multiplied by `SM_PENALTY=0.65`; legislation chunks penalised via 3-tier whitelist: `LEG_WHITELIST_CORE` Acts exempt (1.0), `LEG_WHITELIST_ADJACENT` Acts penalised at `LEG_PENALTY_ADJACENT=0.85` unless keyword bridge matches query, all other legislation at `SM_PENALTY=0.65`. Re-sort by penalised scores (required before court hierarchy band to get correct `top_score`). Court hierarchy re-rank within 0.05 cosine band: HCA(4) > CCA/FullCourt(3) > Supreme(2) > Magistrates(1). Cap to top_k. `seen_ids` set built from Pass 1 results.
+2. **Pass 2 — case chunks appended** — `must=[type=case_chunk, subject_matter IN (criminal,mixed)]` hard filter (session 78, `MatchAny`), threshold 0.35, limit 8. `apply_sm_penalty()` still applied post-query (in-memory cache penalty for cases whose subject_matter wasn't yet in Qdrant payload at embed time). Deduped against `seen_ids`. Appended after Pass 1 — cannot displace Pass 1 results.
+3. **Pass 3 — secondary sources appended** — `type=secondary_source` filter, threshold 0.25, limit 8. Deduped against `seen_ids`. Appended after Pass 2. **Pass 2, Pass 3, and FTS leg run concurrently via ThreadPoolExecutor(max_workers=3) with separate QdrantClient instances (client2, client3) — deployed session 114/115.**
+4. **Pass 4 — citation authority agent (LIVE)** — gated by `should_fire_pass4(query_text)`: (a) keyword match in `AUTHORITY_KEYWORDS` (treatment vocab + citation-profile vocab + passive-voice forms — see session 81 calibration); (b) query ≤60 chars AND ≥1 citation (bare-lookup); (c) ≥2 citations (relationship intent). When gate fires: `type=authority_synthesis` must filter, `quarantined=True` must_not, threshold 0.50, limit 3, 500ms ThreadPoolExecutor timeout. Deduped against `seen_ids`. `AUTHORITY_PASS_ENABLED=true` in `~/ai-stack/.env.config` as of session 81. Note: `AUTHORITY_PASS_TIMEOUT_SEC` is a local variable defined inside search_text(), not a module-level constant — grepping server.py at module scope returns nothing.
+5. **FTS leg + RRF fusion (session 115)** — `fts_leg(query_text)` runs concurrently with Pass 2/3 in the ThreadPoolExecutor (max_workers=3). Queries all three FTS tables: `case_chunks_fts`, `secondary_sources_fts`, `legislation_sections_fts` — LIMIT 24 each. Query construction: (1) extract literal-quoted phrases → (2) tokenize residual with stop-word filter → (3) build bigram shingles → (4) OR-join all as quoted-phrase or singleton MATCH operands; no term cap (fixes H1: old [:8] cap dropped "significant"/"relationship"). Results tagged `_fts_rank`. **RRF fusion (k=60):** semantic results + FTS results merged via `score = 1.0/(60+rank)`; final scores ~0.013–0.017 (old cosine scale 0.45–0.65 is retired from the fused output). **Min-quota floor:** after RRF sort, guarantees min(2, available-fts-only) FTS-only slots in final top_k by promoting from below the cap. `rrf_quota_filled` records how many slots were force-promoted. Feature flag: `USE_FTS_LEG` env var, default "1" — set to "0" in `.env.config` + force-recreate for instant rollback without Worker redeploy. **Section-ref BM25 UNCHANGED** — `/s\s*(\d+[A-Za-z]*)/` detection + BM25_SCORE_EXACT_SECTION/BM25_SCORE_CASE_REF boost path still runs after RRF fusion. **Retired:** `BM25_INTERLEAVE_SCORE` (0.50 novel-hit path) and `BM25_SCORE_KEYWORD` (0.0139 boost delta) — these constants no longer exist in server.py.
+6. **LLM synthesis** — top chunks to Claude API (Sol) or Qwen3 Workers AI (V'ger)
+
+**Why RRF was reverted (session 42):** RRF requires independent retrieval signals across legs. Leg B (extract_legal_concepts) used the same embedding model on a munged version of the same query — no independent signal. At ~10K vectors, same chunks dominated all legs, causing wrong-domain chunks to accumulate multi-leg RRF score via surface vocabulary overlap (e.g. self-defence "reasonable belief" scoring high on BRD query). Baseline regression: 10/5/0 → ~8/2/4.
+
+**Key implementation notes:**
+- `env_file:` in docker-compose.yml supplies secrets to agent-general — do not re-add secret vars to `environment:` block
+- Force-recreate requires `AGENT_GENERAL_PORT=18789` prefix if running outside sourced shell (now in .env.config, should be automatic)
+
+### RRF retry conditions (Opus session 42)
+
+Do not retry RRF until all four conditions are met:
+1. **Corpus >50K vectors** — diversity across legs requires enough vectors that different legs surface genuinely different candidates
+2. **Independent retrieval signals** — Leg B needs a truly different signal: different embedding model, learned sparse encoder (SPLADE), or native BM25 as a prefetch leg
+3. **Per-leg diagnostics** — log each leg's top-3 independently before fusing so noise injection is visible
+4. **Comprehensive doctrine chunk coverage** — corpus gaps cause RRF to amplify wrong-domain chunks that happen to match query vocabulary
+
+### subject_matter filter — design for session 43
+
+**Problem:** Pass 1 is unfiltered — non-criminal case chunks (coronial, civil, administrative) can outscore criminal doctrine chunks on queries where witness/examination vocabulary appears in both domains. Corpus is 320 criminal / 393 non-criminal and scraper will worsen this ratio.
+
+**Misclassification audit — complete (session 100). No genuine misclassifications found. Historical corrected cases:**
+- Tasmania v Rattigan [2021] TASSC 28 — tagged administrative, is criminal
+- Tasmania v Pilling [2020] TASSC 13 — tagged administrative, is criminal
+- Tasmania v Pilling (No 2) [2020] TASSC 46 — tagged administrative, is criminal
+
+Full audit query:
+```sql
+SELECT citation, case_name, subject_matter FROM cases
+WHERE subject_matter != 'criminal'
+AND (case_name LIKE 'R v%' OR case_name LIKE 'Tasmania v%' OR case_name LIKE 'Police v%')
+```
+
+**DEPLOYED session 51 — Cache-based penalty (Option C):**
+- Hourly in-memory cache loaded from `GET /api/pipeline/case-subjects` Worker route
+- `SM_PENALTY = 0.65`, `SM_ALLOW = {'criminal', 'mixed'}` globals in server.py
+- `get_subject_matter_cache()` — loads cache, refreshes if >3600s stale or empty
+- `apply_sm_penalty(chunk)` — if `type=case_chunk` and citation's SM not in SM_ALLOW, multiply score by 0.65
+- Applied in Pass 1 (after scoring, before court hierarchy re-rank) AND in Pass 2 append loop
+- **Critical**: re-sort by penalised scores BEFORE computing `top_score` for court hierarchy band
+- Misclassification audit: Pilling cases correctly administrative (workers comp); 3 genuine misclassifications corrected ([2021] TASMC 13, [2020] TASSC 16, [2022] TASSC 69); Tasmania v Rattigan confirmed criminal (subject_matter='criminal' verified D1 session 100)
+
+**Option A — Qdrant payload re-embed (deferred):**
+- Would enable native Qdrant filter on `subject_matter` field in Pass 1 query
+- Requires: JOIN cases in `fetch-case-chunks-for-embedding` route, add `subject_matter` to poller metadata dict, reset all case chunks embedded=0, full re-embed
+- Lower priority now that cache penalty is delivering results (Q4, Q10, Q14 fixed)
+- Prerequisite satisfied: misclassification audit complete (session 100) — all non-criminal "R v / Tasmania v / Police v" cases verified legitimately non-criminal (judicial review nomenclature); zero genuine misclassifications found
+
+**Real systemic fix:** get `subject_matter` into Qdrant payload (requires re-embed) so Pass 1 can filter at Qdrant level without cache. Option A's re-embed is a prerequisite for this.
+
+**Diagnostic rule:** empty or unexpected results → first check:
+`docker compose logs --tail=50 agent-general`
+Skip/error messages are logged per-pass and visible immediately.
+
+---
+
+## CORPUS PIPELINE — SECONDARY SOURCES (v3, session 12)
+
+**Session 13 corpus state (historical):**
+- Part 1: 488 chunks · Part 2: 683 chunks · BRD manual chunk: 1 · Total: 1,172 chunks
+- All enriched=1 · all embedded=1 · FTS5 backfilled (1,171 rows — BRD chunk also in FTS5)
+- Next sequential block number for `ingest_corpus.py` bulk runs: hoc-b057 (hoc-b056 is highest corpus block)
+- Console uploads via `format-and-upload` use timestamp-derived block numbers (`hoc-b{4-digit-timestamp}`) — sequential counter only applies to bulk `ingest_corpus.py` runs
+- Malformed row hoc-b{BLOCK_NUMBER}-m001-drug-treatment-orders — FIXED session 24 (corrected to hoc-b054)
+- Corpus uses preservation-focused Master prompt + Repair pass from process_blocks.py
+
+**format-and-upload — primary console upload route (session 26):**
+`POST /api/legal/format-and-upload` · auth: User-Agent spoof (`Mozilla/5.0 (compatible; Arcanthyr/1.0)`) · sets `enriched=1` on INSERT automatically · handled by `handleFormatAndUpload`
+
+Four processing paths:
+1. **Pre-formatted blocks** — text starts with `<!-- block_` → `parseFormattedChunks()` called directly, no GPT call
+2. **Raw text >800 words** — calls GPT-4o-mini-2024-07-18 with Master Prompt
+3. **Raw text <800 words** — calls GPT with Master Prompt + short-source note appended (demands separate chunks per doctrinal unit, strict CASE AUTHORITY CHUNK RULE)
+4. **Single-chunk mode** — `body.mode='single'` bypasses GPT entirely; wraps text in `<!-- block_0001 master -->` header using provided `title`, `slug`, `category`; calls `parseFormattedChunks()` and inserts as one chunk
+
+**Word/PDF drag-drop pipeline (session 32 — backend live; frontend dormant pending Phase 3):**
+Upload.jsx (now deleted session 105) accepted `.pdf`, `.docx`, `.txt` on Secondary Sources tab → reads as base64 DataURL → `api.processDocument({ file_b64, filename })` → Worker proxy `POST /api/ingest/process-document` → server.py `process_document()` → background thread: extract text → split blocks → GPT-4o-mini format → `post_chunk_to_worker` → Worker `POST /api/legal/upload-corpus` → D1 insert `enriched=1, embedded=0` → poller embeds to Qdrant. Frontend will be ported to CorpusAdmin SECONDARY SOURCES sub-tab in Phase 3. Backend pipeline unchanged.
+
+Key fix (session 32): `post_chunk_to_worker` was sending base64-encoded text with `encoding: "base64"` flag — Worker has no decode step, all chunks silently skipped. Fixed to send raw UTF-8.
+
+ID format: citation-derived slugs (e.g. `DocTitle__Citation`) — different from console paste `hoc-b{timestamp}` format. Both valid. Re-uploading same doc skips silently via `INSERT OR IGNORE`.
+
+**cases.id format (session 34):** `cases.id` is now citation-derived (e.g. `2026-tassc-2`), not UUID. `citationToId()` helper in worker.js normalises citation → lowercase slug. Both `handleUploadCase` and `handleFetchCaseUrl` use `INSERT OR IGNORE` — re-uploading an existing citation is a no-op, enrichment data is preserved. All 580 pre-existing UUID rows were backfilled via D1 UPDATE. No Qdrant changes required — Qdrant payloads reference `citation` not `cases.id`.
+
+`.md` files on drop: load into textarea instead of triggering pipeline — intentional, allows preview/edit before submit.
+
+**Parser fix (ingest_corpus.py session 9):**
+- Heading regex: `#+ .+` (was `###? .+`) — now accepts single # headings
+- Metadata lookahead: `\[[A-Z]+:` (was `\[DOMAIN:`) — now accepts any bracket field
+- PROCEDURE_ONLY flag: False for full corpus ingest
+
+**FTS5 and corpus re-ingest (session 12):**
+- Root cause of 500 errors on upload-corpus: `handleUploadCorpus` FTS5 insert had no ON CONFLICT clause
+- Fix: `INSERT OR REPLACE INTO secondary_sources_fts` deployed version 2d3716de
+- If 500 errors ever recur on upload-corpus: `DELETE FROM secondary_sources_fts` then retry
+- FTS5 table is currently empty — backfill needed after embed pass completes
+
+**FTS5 backfill command (run after embed pass complete):**
+```sql
+INSERT INTO secondary_sources_fts (rowid, source_id, title, raw_text)
+SELECT rowid, id, title, raw_text FROM secondary_sources
+WHERE id NOT IN (SELECT source_id FROM secondary_sources_fts)
+```
+
+---
+
+## ASYNC JOB PATTERN — LIVE (deployed 18 March 2026, session 2)
+
+**Problem:** fetch-case-url and PDF case uploads timeout on large judgments. Worker has 30s wall-clock limit.
+
+**Confirmed correct solution: Cloudflare Queues**
+
+**LIVE implementation:**
+- Queue name: `arcanthyr-case-processing`
+- **METADATA message:** Pass 1 (first 8k chars) → one Workers AI call → writes `case_name`, `judge`, `parties`, `facts`, `issues`, `enriched=1` to D1 → splits full `raw_text` into 3k-char chunks → writes to `case_chunks` table → enqueues one CHUNK message per chunk → `ack()`
+- **CHUNK message:** reads `chunk_text` from `case_chunks` → GPT-4o-mini-2024-07-18 call with v3 prompt → writes `principles_json` + `enriched_text`, sets `done=1` → checks `COUNT(*) WHERE done=0 AND dlq=0` (dlq=0 excludes dead-letter chunks — added session 99) → if 0, calls `performMerge()` → `ack()`
+- **MERGE message (session 22):** synthesis-only re-merge — reads all `principles_json` from `case_chunks`, runs `performMerge()` with synthesis GPT-4o-mini call, writes case-level principles → `ack()`
+- **Frontend:** polls `/api/legal/case-status` — `enriched=1` set after Pass 1, `deep_enriched=1` set after merge
+
+### performMerge() — shared merge function (session 22)
+
+Used by both CHUNK handler (when last chunk completes) and MERGE handler (re-merge only). Steps:
+1. Collect `allPrinciples`, `allHoldings`, `allLegislation`, `allAuthorities` from all chunk `principles_json`
+2. Collect `enriched_text` from reasoning/mixed chunks into `enrichedTexts` array
+3. If `enrichedTexts.length > 0`: make GPT-4o-mini synthesis call with enriched_text + Pass 1 context → produces 4-8 case-specific principles
+4. If synthesis fails or enrichedTexts empty: fall back to raw `allPrinciples` concatenation
+  → Sentencing second pass (conditional — fires if `subject_matter='criminal'` or sentencing keywords in chunks):
+      → `isSentencingCase()` checks subject_matter + keyword scan across principles_json + issues string
+      → GPT-4o-mini: `SENTENCING_SYNTHESIS_PROMPT` → `{sentencing_found, procedure_notes, sentencing_principles}`
+      → If `sentencing_found=true`: `procedure_notes` written to cases table, `sentencing_principles` appended to `synthesisedPrinciples`
+      → If `sentencing_found=false`: no-op, case gets doctrine principles only
+5. Atomic gate: `UPDATE cases SET deep_enriched=1 WHERE citation=? AND deep_enriched=0` — only one worker proceeds
+6. Write `principles_extracted`, `holdings_extracted`, `legislation_extracted`, `authorities_extracted`, `subject_matter`, `holding`, `procedure_notes` to D1
+
+**Synthesis prompt** produces principles as JSON array of `{ principle, statute_refs, keywords }` — no type/confidence/source_mode fields. Case-specific prose style, not generic IF/THEN.
+
+**Synthesis skip condition:** If all chunks have null `enriched_text` (pre-Fix-1 bad chunks), synthesis is skipped and raw concatenation is used. This produces old-format principles. Fix: re-merge after chunks are re-enriched.
+
+**Synthesis error handling:** catch block logs `[queue] synthesis failed for {citation}, falling back to raw concat: {error}` and sets `synthesisedPrinciples = allPrinciples` (old format with `type`/`confidence`). No retry. If synthesis fails, case gets old-format principles silently — check Worker real-time logs to diagnose.
+
+**NOTE (session 43):** Merge synthesis output schema changed. synthSystem now requests `{"principles": [...], "holdings": []}` JSON object instead of a bare array. Parser extracts both keys. `synthesisedHoldings` is pushed into `allHoldings` before the D1 write. Fallback path (synthesis failure) unchanged — falls back to chunk-level `allHoldings`.
+
+---
+
+## NEXUS SERVER.PY — ROUTES AND GLOBALS
+
+**All routes require `X-Nexus-Key` header except `/health`.**
+
+| Method | Route | Handler | Notes |
+|---|---|---|---|
+| GET | `/health` | inline | Returns `{"status":"ok"}` — no auth |
+| POST | `/ingest` | `ingest_text()` | Embed + upsert chunk to Qdrant |
+| POST | `/search` | `search_text()` | Four-pass retrieval |
+| POST | `/query` | `query_qwen()` | DEAD CODE — nothing calls it; retained in file. All retrieval goes through `/search`. See session 58 diagnosis. |
+| POST | `/extract-pdf` | `extract_pdf_text()` | pdfminer only |
+| POST | `/extract-pdf-ocr` | `extract_pdf_text_ocr()` | pdfminer + OCR fallback |
+| POST | `/delete` | `delete_citation()` | Delete Qdrant vectors by `citation` field |
+| POST | `/delete-by-type` | `delete_type()` | Delete Qdrant vectors by `type` field |
+| POST | `/process-document` | `process_document()` | Extract text → split → GPT enrichment → D1 |
+| GET | `/ingest-status/<job_id>` | `get_ingest_status()` | Returns live job state |
+
+**Key module-level globals (server.py):**
+
+| Global | Value | Purpose |
+|---|---|---|
+| `EMBED_MODEL` | `argus-ai/pplx-embed-context-v1-0.6b:fp32` | Ollama embedding model |
+| `COLLECTION` | `general-docs-v2` | Qdrant collection name |
+| `_bm25_corpus` | dict | In-memory BM25 corpus cache |
+| `BM25_TTL` | 600 | BM25 corpus rebuild TTL in seconds |
+
+**agent-general (server.py): ThreadingHTTPServer (stdlib)** — server.py uses Python stdlib `http.server.ThreadingHTTPServer`, NOT Flask. Switched from `HTTPServer` → `ThreadingHTTPServer` session 113 (two-line fix, no new dependencies, no Dockerfile rebuild). Each request now runs in its own thread; a hung query expansion call no longer blocks /search or /health. `docker compose restart` is sufficient after any server.py edit.
+
+---
+
+## ORIGINAL RETRIEVAL DESIGN (PHASE 5 — LOCKED)
+
+*Historical name. Not related to the current Phase 1–4 site redesign sequence (see FUTURE ROADMAP).*
+
+- Qdrant top 6 chunks, min score 0.45, max 8
+- Re-rank by court hierarchy within 0.05 band: CCA/FullCourt > Supreme > Magistrates
+- Full metadata per chunk
+- Claude API primary → Workers AI (Qwen3-30b) fallback
+- API key via `npx wrangler secret put ANTHROPIC_API_KEY`
+
+---
+
+## ARCANTHYR-UI (session 19 — DEPLOYED)
+
+### arcanthyr-ui — Frontend Architecture (session 19)
+
+**Deployment:** React/Vite app built to `dist/`, copied into `Arc v 4/public/`, served by Worker via `[assets]` binding at arcanthyr.com. NOT a separate Cloudflare Pages deployment.
+
+**Deploy command:**
+```
+cd arcanthyr-ui && npm run build
+cp -r dist/. "../Arc v 4/public/"
+cd "../Arc v 4" && npx wrangler deploy
+```
+
+**SPA routing:** `not_found_handling = "single-page-application"` in wrangler.toml — catches all deep links and serves index.html.
+
+**_redirects:** Do NOT add a _redirects file to arcanthyr-ui/public/ — it conflicts with Workers Assets and causes infinite loop error 10021.
+
+**Model toggle names:** Sol = Claude API (claude-sonnet-4-6) · V'ger = Workers AI (Cloudflare Qwen3-30b) · V'ger is default
+
+**Globe dependencies:** Three.js + @react-three/fiber + @react-three/drei · Earth texture from unpkg · lives on Compose page
+
+**Stack:** React + Vite
+**Repo location:** `arcanthyr-console/arcanthyr-ui/` — tracked in monorepo (no separate GitHub repo · absorbed session 35)
+**Dev server:** `npm run dev` from `arcanthyr-console/arcanthyr-ui/` · `http://localhost:5173`
+
+**API base (session 17+):**
+- `api.js BASE = 'https://arcanthyr.com'` — browser calls Worker directly, no proxy
+- Vite proxy removed — `vite.config.js` has no server.proxy section
+- CORS on Worker allows `http://localhost:5173` → preflight passes cleanly
+
+**Auth flow (local dev — session 17+):**
+- Auth removed for local dev — verify/login/logout are no-op stubs returning `{ ok: true }`
+- Landing.jsx immediately redirects to /research (no password screen)
+- Worker JWT/cookie auth still live in production — unaffected
+
+**API field names (critical):**
+- Frontend → Worker: `{ query }` (not query_text)
+- Worker → server.py: `{ query_text }` (Worker translates internally)
+- Never send `query_text` from frontend — Worker reads `body.query`
+
+**Pages (all in `src/pages/`):**
+- `Landing.jsx` — immediate redirect to /intel (auth removed session 17, route updated Phase 2 session 104)
+- `Intel.jsx` — INTEL page (renamed from Research.jsx session 104; label changed to AI ASSIST session 108 — route /intel unchanged) · query textarea, model toggle (Sol/V'ger), domain filter chips, source type filter chips, result cards, query history, reading pane
+- `CaseSearch.jsx` — CASE SEARCH page (renamed from Library.jsx session 104) · 3 tabs: CASES/SECONDARY SOURCES/LEGISLATION · CASES tab has three search-mode toggles: Name/Citation · Legislation section · Word search (formerly "Quick Search" tab, now inline modes within CASES tab) · case rows clickable → split CaseReadingPane: Facts/Holding/Principles/Stare Decisis rendered as labelled scroll sections (textTransform: uppercase), NOT a tabbed interface; the tab bar (Principles/Chunks/AI Summary) belongs to CasePane in ReadingPane.jsx on the INTEL page, not CASE SEARCH · citation tallies (Cites N · Cited by N) in case header (added session 105) · year/court filter chips · state filter scaffold (TAS default) · Note: state/court filtering is entirely client-side — filterByStates runs on the full case list fetched at mount; handleLibraryList has no server-side filter params. STATE_COURTS map must have an explicit entry for any state that needs filtering (currently TAS and HCA only).
+- `Legislation.jsx` — stub, added Phase 2 session 104
+- `CorpusAdmin.jsx` — Corpus Admin shell · Top-level tabs: CORPUS (→ HealthReportsPanel) · SECONDARY SOURCES (→ SecondarySourcesPanel) · UPLOAD (→ UploadPanel, itself sub-tabbed: Cases / Legislation / Secondary Sources) · FEEDBACK (→ FeedbackPanel) · EMAIL (→ ComposePanel)
+- Components: `Nav.jsx`, `ResultCard.jsx`, `PrincipleCard.jsx`, `ReadingPane.jsx`, `ShareModal.jsx`, `PipelineStatus.jsx`, `ComposePanel.jsx`, `HealthReportsPanel.jsx`
+- `UploadPanel.jsx` — renders the UPLOAD sub-tab content inside CorpusAdmin. Split into three internal sub-tabs as of session 108: Cases (default, case upload form), Legislation (legislation upload form), Secondary Sources (secondary sources upload form).
+
+---
+
+## KEY FILE LOCATIONS
+
+| File | Path |
+|---|---|
+| enrichment_poller.py | `Arc v 4/enrichment_poller.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
+| server.py (nexus) | `Arc v 4/server.py` (local) · `~/ai-stack/agent-general/src/server.py` (VPS canonical) |
+| xref_agent.py | `Arc v 4/xref_agent.py` (repo) · `~/ai-stack/agent-general/src/` (VPS) |
+| corpus_health_check.py | `Arc v 4/corpus_health_check.py` (repo) · `~/ai-stack/agent-general/src/corpus_health_check.py` (VPS) · cron: `0 2 1 * *` · logs to `~/ai-stack/health_check.log` |
+| ingest_corpus.py | `arcanthyr-console/ingest_corpus.py` — run from there, NOT from `Arc v 4/` |
+| ingest_part2.py | `arcanthyr-console/ingest_part2.py` — standalone part2 ingest script |
+| ingest_authority_chunks.py | `arcanthyr-console/scripts/ingest_authority_chunks.py` — standalone authority-synthesis ingest script; reads from `scripts/authority-chunks-staging/`; run from console root |
+| retrieval_baseline.sh | `arcanthyr-console/retrieval_baseline.sh` (repo) · VPS `~/retrieval_baseline.sh` — results in ~/retrieval_baseline_results.txt |
+| master_corpus_part1.md | `arcanthyr-console/master_corpus_part1.md` — 488 chunks (session 12) |
+| master_corpus_part2.md | `arcanthyr-console/master_corpus_part2.md` — 683 chunks (session 12) |
+| sentencing_first_offenders.md | `arcanthyr-console/sentencing_first_offenders.md` — 1 procedure chunk, ingested session 4 |
+| Worker.js | `Arc v 4/Worker.js` |
+| CLAUDE.md | `Arc v 4/CLAUDE.md` |
+| CLAUDE_arch.md | `Arc v 4/CLAUDE_arch.md` |
+| arcanthyr-ui | `arcanthyr-console/arcanthyr-ui/` — React/Vite frontend · `npm run dev` from this dir |
+| api.js | `arcanthyr-console/arcanthyr-ui/src/api.js` — all Worker API calls |
+| vite.config.js | `arcanthyr-console/arcanthyr-ui/vite.config.js` — no proxy (removed session 17) |
+| austlii_scraper.py | `arcanthyr-console/Local Scraper/austlii_scraper.py` — Windows only |
+| scraper_progress.json | `arcanthyr-console/Local Scraper/scraper_progress.json` |
+| scraper.log | `arcanthyr-console/Local Scraper/scraper.log` |
+| docker-compose.yml | `~/ai-stack/docker-compose.yml` (VPS) |
+| run_scraper.bat | `C:\Users\Hogan\run_scraper.bat` — LOCAL path required |
+| `Dockerfile.agent` | VPS | agent-general image definition — python-docx, qdrant-client, pypdf etc. baked in |
+
+**arcanthyr-ui/src/components/ui/** — sub-directory for lower-level UI primitives (VanishingInput.jsx; Globe.jsx lived here before deletion session 104). Component paths must be discovered by grep — do not assume flat `components/` layout.
+
+**wrangler.toml `[assets]` binding** — `binding = "ASSETS"` required in the `[assets]` stanza for `env.ASSETS.fetch()` to work in the Worker catch-all SPA handler. Added session 104 for `/index.html` direct-nav fix. Without it, `env.ASSETS` is undefined and the catch-all throws.
+
+**server.py is volume-mounted** (`./agent-general/src:/app/src` in docker-compose.yml) — NOT baked into image. Changes only require: edit locally → SCP to VPS → `docker compose up -d --force-recreate agent-general` → health check. No rebuild unless Dockerfile changes.
+
+---
+
+## D1 SCHEMA — SECONDARY_SOURCES_FTS (added session 3)
+
+FTS5 virtual table for full-text search over secondary_sources corpus.
+
+```sql
+CREATE VIRTUAL TABLE secondary_sources_fts USING fts5(
+    source_id UNINDEXED,
+    title,
+    raw_text,
+    tokenize='porter'
+);
+```
+
+---
+
+## D1 DATABASE — KEY TABLES
+
+| Table | Primary Key | Key columns |
+|---|---|---|
+| `cases` | `id` TEXT (citation-derived) | `citation`, `court`, `case_name`, `facts`, `issues`, `holding`, `principles_extracted`, `holdings_extracted`, `authorities_extracted`, `subject_matter`, `enriched`, `deep_enriched`, `procedure_notes` |
+| `case_chunks` | `id` TEXT (`{citation}__chunk__{N}`) | `citation`, `chunk_index`, `chunk_text`, `enriched_text`, `principles_json`, `done`, `embedded` |
+| `secondary_sources` | `id` TEXT | `title`, `raw_text`, `enriched_text`, `category`, `source_type`, `enriched`, `embedded` |
+| `legislation` | `id` TEXT (PK) | Full column list: `id`, `title`, `jurisdiction` (physical column — aliased as `court` in SELECT queries), `year`, `source_url`, `raw_text`, `summary`, `defined_terms`, `offence_elements`, `sections_json`, `embedded`, `current_as_at`, `processed_date` · `handleLibraryList` queries `jurisdiction AS court` · `handleUploadLegislation` inserts into `jurisdiction` — do not use the alias name in raw SQL |
+| `legislation_sections` | `id` TEXT | `legislation_id`, `section_number`, `heading`, `text` |
+| `truncation_log` | `id` TEXT (= cases.id) | `original_length`, `truncated_to`, `source`, `status`, `date_truncated`, `date_resolved` |
+| `query_log` | `id` TEXT (UUID) | `query_text`, `answer_text`, `model`, `deleted`, `timestamp`, `refs_extracted`, `bm25_fired` INTEGER (section-ref BM25 path only — fires when `/s\s*(\d+[A-Za-z]*)/` matches in query_text; does NOT record FTS keyword interleave path), `result_ids`, `result_scores`, `result_sources`, `total_candidates`, `query_type`, `target_chunk_id`, `target_rank`, `session_id`, `client_version`, `sufficient` INTEGER, `missing_note` TEXT (500 char), `fts_keyword_fired` INTEGER (records fts_leg() call — 1 when USE_FTS_LEG=1, which is the current default), `fts_keyword_hits` INTEGER (total FTS rows returned across all three FTS tables before dedup), `fts_keyword_added` INTEGER (count of FTS-contributed chunks in final result set), `rrf_quota_filled` INTEGER (count of FTS-only chunks force-promoted by min-quota floor) · feedback system live session 96 · flagged_by dropped session 103 Phase 1 |
+| `case_chunks_fts` | FTS5 virtual table | `chunk_id` (UNINDEXED), `citation` (UNINDEXED), `enriched_text` · porter tokenizer · synced from CHUNK handler on enriched_text write |
+| `legislation_sections_fts` | FTS5 virtual table | `section_id` (UNINDEXED), `legislation_id` (UNINDEXED), `section_number` (UNINDEXED), `heading`, `text` · porter tokenizer · synced from handleUploadLegislation (INSERT OR REPLACE) and handleLibraryDelete (DELETE WHERE legislation_id) · backfilled session 115 (2305 rows) · FTS5 export limitation applies — wrangler d1 export does not support virtual tables |
+| `health_check_reports` | `id` UUID | Monthly corpus audit reports — `summary_text`, `report_json` (full structured output), `cluster_count`, `contradiction_count`, `gap_count`, `run_date` |
+| `health_check_clusters` | `run_id + chunk_id` (composite) | Per-run cluster assignments from GPT-4o-mini pre-pass — `cluster_label`, auditable per `run_date` |
+| `quarantined_chunks` | `id` TEXT | Stub quarantine table — `citation`, `chunk_index`, `quarantine_date`, `signal_length`, `signal_overlap`, `signal_truncation`, `reviewed`, `review_date`, `review_action` · 253 rows · Qdrant filter deploy held for post-baseline |
+| `austlii_cache` | `url` TEXT (PK) | Full judgment HTML cache · columns: `url` (PK), `citation`, `html`, `fetched_at` · 30-day TTL enforced on read · CF-edge fetch (VPS IP blocked by AustLII) · upsert on stale |
+| `tbl_amendment_cache` | `act_id` TEXT (PK) | Cache for legislation.tas.gov.au CCL projectdata API responses · columns: `act_id` (e.g. `act-2001-076`), `payload` (JSON), `fetched_at` · 30-day TTL · keyed on act-YYYY-NNN identifier · populated by `GET /api/legal/amendments` route |
+
+---
+
+## COMPONENT NOTES
+
+### austlii_scraper.py
+
+- Location: `arcanthyr-console\Local Scraper\austlii_scraper.py`
+- Progress: `arcanthyr-console\Local Scraper\scraper_progress.json`
+- Log: `arcanthyr-console\Local Scraper\scraper.log`
+- Runs on Windows via Task Scheduler (VPS IP banned by AustLII)
+- Task Scheduler tasks: `run_scraper` (8am AEST) + `run_scraper_evening` (6pm AEST)
+- SESSION_LIMIT: 150 per run
+- Behavioural jitter: 7% chance 25-45s additional pause
+- Business hours gate in scraper handles time window
+- Exit code 2 = business hours gate fired (normal/expected outside hours)
+- **Historical pass COMPLETE** — full TASSC/TASCCA/TASFC/TASMC corpus scraped back to 2004 as of 25 April 2026; now running daily for forward-looking new-case capture only
+
+**NOTE (session 43):** Correct AustLII court code for Magistrates Court is TASMC (not TAMagC). The scraper COURTS list has been corrected. The Worker's AUSTLII_COURTS map still uses TAMagC as the internal court label → TAMagC AustLII path — this may also need updating if the Worker's legacy daily sync is ever re-enabled.
+
+**CaseSearch.jsx vs StareDecisisSection.jsx — COURT_COLORS key mismatch** — CaseSearch keys its COURT_COLORS map on D1 lowercase values (`supreme`, `cca`, `fullcourt`, `magistrates`). StareDecisisSection keys its COURT_COLORS map on AustLII uppercase codes (`TASSC`, `TASCCA`, etc.). Both are correct for their data source. When modifying either, use the key scheme native to that component's data.
+
+### backfill_case_chunk_names.py
+
+- Location: `arcanthyr-console\backfill_case_chunk_names.py` (local) · `/home/tom/backfill_case_chunk_names.py` (VPS)
+- Run from VPS only — fetches cases via Worker API, updates Qdrant at `localhost:6334`
+- Do NOT run from Windows — Qdrant port 6334 is localhost-only on VPS
+
+### enrichment_poller.py
+
+Volume-mounted at `./agent-general/src:/app/src`. Runs as permanent Docker service.
+
+**Modes:** `--mode enrich`, `--mode embed`, `--mode both`, `--mode reconcile`, `--loop`, `--status`
+
+**Cases enrichment path:** handled by Cloudflare Queue consumer (Worker), not the poller. METADATA message → Pass 1 metadata + chunk split. CHUNK messages → per-chunk principle extraction → merge with synthesis.
+
+**Default batch:** 50 · **Loop sleep:** 15 seconds
+
+**CONCEPTS header strip (session 46):** Poller strips `[CONCEPTS:...]` and `Concepts:...` header lines from the start of embed text before the Ollama embedding call and before populating the Qdrant `text` payload field. Regex: `re.sub(r'^\[?concepts:[^\]\n]*\]?\s*\n+', '', text, flags=re.IGNORECASE)`. Deployed at line 695 of enrichment_poller.py. Root cause: for secondary sources with NULL enriched_text, the CONCEPTS header was the dominant embedding signal, drifting vectors away from the actual doctrine content.
+
+### Embedding-time vocabulary prepend (session 65)
+
+Two functions in enrichment_poller.py construct retrieval-optimized embedding text by extracting stored metadata and prepending a "Key terms:" anchor before the embedding model sees the text:
+
+- `build_secondary_embedding_text(raw_text, enriched_text=None)` — extracts CONCEPTS, ACT, CASE, TOPIC from raw_text header lines; builds "Key terms: {act}; {concepts}; {case_ref}." anchor; prepends before body (enriched_text if available, otherwise stripped raw_text)
+- `build_case_chunk_embedding_text(enriched_text, principles_json_str)` — extracts legislation refs (first 3) and key_authorities names (first 3) from principles_json; builds "Key terms:" anchor; prepends before enriched_text
+
+The anchor is for the embedding model ONLY. Qdrant `text` payload remains body-only (strip_frontmatter result). The anchor is NOT stored in D1 — it's computed on the fly.
+
+Debug log: `[EMBED_ANCHOR]` confirms anchor presence and embed_text length per chunk.
+
+### Embedding text contamination rule (session 51)
+
+**Never add cross-domain disambiguation to enriched_text or raw_text body text.**
+
+Example of what went wrong: adding "distinct from the George v Rockett prescribed belief test" to BRD chunk enriched_text caused the BRD chunks to drop out of top-6 results entirely. The embedding model cannot reason about negation — "I am NOT about X" is semantically equivalent to "I am about X." The model sees proximity to X either way.
+
+**Rule:** Put domain anchor sentences on COMPETING chunks only (e.g., "POLICE OFFICER PRESCRIBED BELIEF STANDARD — this is about police powers, not standard of proof"). Keep the TARGET chunk's embedding text purely about the target domain. Zero cross-references to what it is not.
+
+### enrichment_poller.py — payload text limits (fixed session 9)
+
+All three embed passes previously truncated payload text to [:1000]. Fixed:
+- secondary_sources embed pass: [:5000]
+- case_chunk embed pass: [:3000]
+- legislation embed pass: [:3000]
+
+### BM25 + RRF Hybrid Retrieval (added session 3)
+
+**In-memory BM25 corpus (`_bm25_corpus` in server.py):**
+- Built on first search query after container start
+- Loads all `embedded=1` secondary_sources rows via GET `/api/pipeline/bm25-corpus`
+- Invalidated: `dirty=True` on any ingest call + TTL 600s fallback
+
+**D1 FTS5 (`secondary_sources_fts`):**
+- Created session 3 · porter tokenizer
+- **Backfilled session 13** — 1,171 rows · clean INSERT after wipe · all three retrieval passes operational
+- Queried via Worker POST `/api/pipeline/fts-search`
+- Gated by `BM25_FTS_ENABLED = True` in server.py
+
+**D1 FTS5 (`case_chunks_fts`) — session 68 deployed, session 74 interleave mode:**
+**Session 115 — replaced old interleave with fts_leg() + RRF (see FTS leg architecture section above)**
+
+Three Worker routes now called by `fts_leg()` in server.py:
+- `GET /api/pipeline/case-chunks-fts-search` — limit 24, cap 50 (was 8/20)
+- `GET /api/pipeline/secondary-sources-fts-search` — new session 115; limit 24, cap 50
+- `GET /api/pipeline/legislation-sections-fts-search` — new session 115; limit 24, cap 50
+
+**Retired (session 115):** `fetch_case_chunks_fts()`, `BM25_INTERLEAVE_SCORE`, `BM25_SCORE_KEYWORD`, split-constant scoring, `bm25_source` tag. The section-ref BM25 path (`bm25_fired` column) is UNCHANGED.
+
+### Workers AI (Cloudflare) — model and usage inventory
+
+**Current model:** `@cf/qwen/qwen3-30b-a3b-fp8` — used for ALL Workers AI calls.
+
+**Active Workers AI calls:**
+- **`summarizeCase()`** — two-pass case enrichment at scrape/upload time
+- **`handleLegalQueryWorkersAI()`** — Phase 5 fast/free query toggle
+- **Workers AI path is JSON-only by platform constraint** — Workers AI has no SSE / streaming API; V'ger responses are buffered single-turn.
+
+### worker.js — max_tokens on query handlers
+
+| Handler | Model | max_tokens |
+|---|---|---|
+| `handleLegalQuery()` | Claude API (claude-sonnet-4-6) | 2,000 |
+| `handleLegalQueryWorkersAI()` | Workers AI (Qwen3-30b) | 2,000 |
+
+### Sol vs V'ger context block discriminator
+
+- Sol synthesis path: `handleLegalQuery` — rewritten session 118 as `ReadableStream`-based SSE proxy; streams Anthropic SSE events directly to browser with a prepended `arcanthyr_meta` event carrying `query_id`, `model`, and `sources`; context still built from `chunks.map(...)` (L~2633)
+- V'ger synthesis path: `handleLegalQueryWorkersAI` — JSON-only (Workers AI has no streaming API); context built from `orderedChunks.map(...)` (L~2878); response returned as single buffered JSON
+- To locate either block in worker.js, grep for `chunks.map` (Sol) or `orderedChunks.map` (V'ger) — label strings like `[CASE EXCERPT]` and `[ANNOTATION]` appear in both blocks and are not reliable discriminators.
+
+### Sentencing Second Pass (session 31, updated session 47)
+
+- Constant: `SENTENCING_SYNTHESIS_PROMPT` — module level in worker.js
+- Helper: `isSentencingCase(caseRow, allChunks)` — three checks: (1) `subject_matter='criminal'`, (2) sentencing keyword regex across `principles_json`, (3) issues string scan
+- Fires inside `performMerge()` after main synthesis, before D1 write
+- Cost: ~$0.001/case, only on criminal cases (~60% of corpus)
+- Output: `procedure_notes` (200-400 word structured prose) + 2-4 sentencing principles merged into `principles_extracted`
+- Non-destructive: non-sentencing criminal cases return `sentencing_found=false`, no extra cost beyond the one GPT call
+- Triggered by `requeue-merge` automatically — no separate route needed
+- `subject_matter` must be included in both CHUNK and MERGE handler SELECTs and passed through the inline `caseRow` object to `performMerge` — omitting it silently breaks Check 1
+- **sentencingTexts input (session 47):** reads chunk_text from ALL chunks (no type filter) — previously filtered to reasoning/mixed/procedural only, which excluded evidence chunks containing prior history, victim impact, and personal circumstances
+- **sentencing_found guard (session 47):** returns true for imposed, varied, confirmed, or reviewed sentences — only returns false for judgments with no sentence quantum discussion at all (interlocutory, acquittal, evidence ruling)
+- **procedure_notes coverage (session 47):** includes concurrent/cumulative sentences, time served declarations, backdating, and ancillary orders (compensation, restraining orders, sex offender registration, forfeiture, licence disqualification)
+- **sentUser context (session 50):** `caseRow.holding` (Pass 1 outcome) added to sentUser prompt as `Outcome (Pass 1 summary)` before chunk texts. Requires `holding` field in both CHUNK handler and MERGE handler caseRow SELECTs. Root cause: Pass 1 sentence quantum was never reaching sentencing synthesis — chunk-level allHoldings is often empty for CCA appeal cases where no single chunk captures the full disposition.
+- **Input cap (session 50):** Raised from 40K to 120K chars. Previous 40K cap was truncating sentencing content from long CCA judgments (24+ chunks, ~60K chars total). gpt-4o-mini supports 128K token context — 120K chars ≈ 30K tokens, well within limit. 25-second AbortController provides timeout protection regardless of input size.
+- **Timeout and token limits (session 53):** `sentTimeout` raised from 25s to 45s — large cases (16+ chunks, ~48K chars input) were hitting the abort threshold under concurrent queue load. `max_completion_tokens` raised from 2000 to 4000 — complex multi-party sentencing responses were being truncated mid-JSON, causing silent SyntaxError in the catch block and null `procedure_notes`. Both changes apply to the sentencing synthesis OpenAI call only (not main synthesis or CHUNK enrichment).
+- **CHUNK handler holding fix (session 53):** CHUNK handler `performMerge` call now includes `holding: caseRow?.holding` in the inline caseRow. Previously `holding` was fetched at line 3227 but dropped when constructing the inline object — `caseRow.holding` was `undefined` in `sentUser` for all cases processed via the normal scraper path. MERGE handler (requeue-merge path) was already correct via its explicit DB fetch.
+
+### Sentencing Backfill Route (session 54)
+
+- Admin route: `POST /api/admin/backfill-sentencing` — X-Nexus-Key auth, accepts `{"limit": N}` clamped to [1,30]
+- Function: `runSentencingBackfill(env, limit)` in worker.js (alongside performMerge)
+- Targets: `subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1`
+- Mirrors performMerge() sentencing block exactly: same chunk fetch, same allHoldings construction, same sentUser structure (120K cap), same OpenAI parameters (gpt-4.1-mini-2025-04-14, max_completion_tokens 4000, 45s AbortController), same isSentencingCase() guard
+- Writes only `procedure_notes` and appends to `principles_extracted` via read-modify-write. Does NOT touch deep_enriched, does NOT re-run main synthesis, does NOT use the queue
+- NULL procedure_notes is the implicit retry flag — failed cases stay in result set
+- Returns: `{ ok, processed, skippedNotSentencing, failed, candidatesInBatch, remaining, errors }`
+- **STATUS: ACTIVE** — SENTENCING_SYNTHESIS_PROMPT rewritten session 55 and validated (classification 6/6, fabrication 0). Safe to fire.
+- **Session 55 prompt rewrite:** Three-step prompt — Step 1 classifies case type (first_instance/sentence_appeal/sentence_review vs non-sentencing) with explicit positive/negative case lists; Step 2 extracts with different schemas for first-instance vs appeal/review (appeal schema includes original sentence, appellate standard applied, House v The Queen, grounds, outcome); Step 3 formats JSON. Input is ALL chunk_text (no type filtering — this was already the case pre-session-55, the prompt just mislabeled it as "reasoning sections"). Output includes `case_type` field (logged, not stored to D1). Key instruction: "never invent comparable cases — only include cases explicitly cited in the judgment text."
+- **Citation targeting (session 55):** accepts optional `body.citations` array. If present: queries `WHERE citation IN (...)` with no `procedure_notes IS NULL` constraint (re-runs work). If absent: original sweep query (`subject_matter='criminal' AND procedure_notes IS NULL AND deep_enriched=1`).
+
+### sentencing_status column (deployed session 57)
+
+`sentencing_status TEXT` added to cases table via `ALTER TABLE`. Values: NULL (not yet processed), 'success' (procedure_notes written), 'failed' (isSentencingCase=true but extraction failed), 'not_sentencing' (isSentencingCase=false). Implemented in both `performMerge()` and `runSentencingBackfill()`. Sweep query updated to `sentencing_status IS NULL OR sentencing_status='failed'` for precise retries. 305 NOT_SENTENCING sentinel strings cleaned from procedure_notes in same deployment. Use `WHERE sentencing_status='failed'` for targeted retry runs.
+
+### worker.js — admin routes
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/api/admin/requeue-chunks` | POST | Re-enqueues done=0 chunks · accepts `{"limit":N}` |
+| `/api/admin/requeue-metadata` | POST | Re-enqueues enriched=0 cases (full Pass 1 + CHUNK pipeline) |
+| `/api/admin/requeue-merge` | POST | Re-triggers merge · accepts `{"limit":N}` · optional `"target":"remerge"` queries deep_enriched=1 cases, resets to 0 before enqueuing MERGE · default (no target) queries deep_enriched=0 with runtime chunk check |
+| `/api/pipeline/fts-search-chunks` | GET | FTS5 search over case_chunks_fts · params: q (MATCH query), limit (max 50) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet |
+| `/api/pipeline/case-chunks-fts-search` | GET | FTS5 search over case_chunks_fts with cases JOIN · params: q (MATCH query), limit default 24 cap 50 (session 115 — was 8/20) · X-Nexus-Key · returns chunk_id, citation, enriched_text snippet (800 chars), case_name, court, subject_matter · called by fts_leg() |
+| `/api/pipeline/secondary-sources-fts-search` | GET | FTS5 search over secondary_sources_fts · new session 115 · params: q (MATCH query), limit default 24 cap 50 · X-Nexus-Key · returns `{chunks: [{source_id, title, raw_text}]}` · called by fts_leg() |
+| `/api/pipeline/legislation-sections-fts-search` | GET | FTS5 search over legislation_sections_fts with LEFT JOIN to legislation for legislation_title · new session 115 · params: q (MATCH query), limit default 24 cap 50 · X-Nexus-Key · returns `{sections: [{section_id, legislation_id, section_number, heading, text, legislation_title}]}` · called by fts_leg() |
+| `/api/admin/approve-secondary` | POST | Approve/reject/delete secondary source · actions: approve (set approved=1), reject (DELETE WHERE approved=0), delete (Qdrant + FTS5 + D1 cleanup regardless of approved status) · X-Nexus-Key |
+| `/api/admin/pending-nexus` | GET | List secondary_sources WHERE approved=0 · returns id, title, category, raw_text, date_added · X-Nexus-Key |
+| `/api/research/history` | GET | Fetch 50 most recent query_log entries with answer_text · WHERE deleted=0 AND answer_text IS NOT NULL · no auth |
+| `/api/research/history-delete` | POST | Soft-delete query_log entry (SET deleted=1) · body: {id} · no auth |
+| `/api/legal/format-and-upload` | POST | Dual-mode corpus upload — pre-formatted blocks (parse direct), raw text (GPT Master Prompt, short-source variant <800 words), or `mode='single'` (bypass GPT, wrap in block header) · `handleFormatAndUpload` · auth: User-Agent spoof |
+| `/api/admin/health-reports` | GET | List all health check reports (summary only, no report_json), DESC, LIMIT 24 · X-Nexus-Key |
+| `/api/admin/health-reports/:id` | GET | Single health check report including full report_json · X-Nexus-Key |
+| `/api/admin/health-reports` | POST | Write monthly health check report (id, summary_text, report_json, cluster_count, contradiction_count, gap_count) · X-Nexus-Key |
+| `/api/admin/health-clusters` | POST | Write cluster assignments batch (run_id, run_date, assignments[]) via D1 batch() · X-Nexus-Key |
+| `/api/legal/word-search` | GET | FTS5 phrase-first word search over `case_chunks_fts` · params: `q` (sanitised, Booleans stripped), `limit` (max 50, default 30), `court` (optional filter) · returns `{ ok, match_mode, results:[{citation, case_name, court, year, match_count, snippet, best_rank}] }` · `GROUP BY citation` with `MIN(bm25)` for best-chunk snippet · silent fallback from phrase match to AND-of-tokens · no auth (rate-limited /api/legal/* pattern) · session 83 |
+| `/api/legal/fetch-judgment` | GET | Fetch full AustLII judgment HTML · params: `url` (required, must be austlii.edu.au), `citation` (optional) · cache-first with 30-day TTL · CF-edge fetch with browser-mimicking headers · upserts to `austlii_cache` · returns `{ ok, html, source }` · session 86 |
+| `/api/legal/amendments` | GET | Fetch amendment timeline for a Tasmanian Act · param: `act=act-YYYY-NNN` · cache-first via `tbl_amendment_cache` (30-day TTL) · fetches CCL projectdata API on miss · returns full amendment history JSON · session 87 |
+| `/api/legal/resolve-act` | GET | Resolve Act name to CCL actId · param: `name=<Act title>` · writes `source_url` back to `legislation` table as side-effect on first resolution · used by AmendmentPanel.jsx as primary path when source_url not yet populated · session 87 |
+| `/api/legal/mark-insufficient` | POST | handleMarkInsufficient (inline handler in legal dispatch block, no auth, writes query_log.sufficient=0 with optional missing_note; flagged_by dropped session 103 Phase 1) |
+| `/api/legal/parliament-bill-url` | GET | resolves parliament.tas.gov.au bill page slug by year+billNumber; fetches year index, two-pass regex match; returns { result: { url } } or { result: { url: null } }; no auth (rate-limited block) |
+| `/api/legal/case-detail` | GET | Single-row full-text fetch for one case by citation · `handleCaseDetail()` · response shape `{ result: { case: row } }` · caller unwraps as `r.result?.case ?? r.case` · no auth (rate-limited /api/legal/* block) |
+| `/api/admin/dlq-chunks` | GET | returns case_chunks where dlq=1; X-Nexus-Key; fields: id, citation, chunk_index, retry_count, preview |
+
+**AustLII→jade.io URL translation — handleFetchJudgment, handleFetchCaseUrl, handleFetchPage (session 101/119):**
+`austliiToJade(rawUrl)` helper at Worker.js module scope (above handleFetchJudgment): transforms `https://www.austlii.edu.au/cgi-bin/viewdoc/au/cases/...` → `https://jade.io/au/cases/...` (strips `/cgi-bin/viewdoc` prefix and `.html` suffix); no-op on jade.io URLs and non-viewdoc AustLII URLs. `handleFetchJudgment` uses the helper to derive `fetchUrl`; `rawUrl` is kept as the D1 `austlii_cache` key so existing AustLII-keyed cached entries remain valid. `handleFetchCaseUrl` (added session 119) translates the user-supplied AustLII URL to jade.io before passing to `handleFetchPage`; citation auto-detect regex still reads the original `url` variable (needs `.html` suffix and AustLII path structure to match). `handleFetchPage` routes by domain: AustLII URLs → VPS `nexus.arcanthyr.com/fetch-page`; jade.io URLs → direct fetch with browser `User-Agent` + `Referer: https://jade.io/` + `Accept` headers (Worker.js ~L2263–2282). This bifurcation is the load-bearing mechanism — passing a translated jade URL causes `handleFetchPage` to take the direct-fetch branch without any handler-level changes. Defensive checks at `handleFetchCaseUrl:523–551` (session 119): 1000-char minimum length floor + 5-string case-insensitive sentinel detection; both throw before D1 write and Queue enqueue — see KNOWN ISSUES for full description.
+
+### Query logging (session 65)
+
+query_log table populated by inline INSERT in both `handleLegalQuery` (Claude API path) and `handleLegalQueryWorkersAI` (Workers AI path). Fires after retrieval results assembled, before synthesis LLM call. Non-fatal — catch block logs error but does not break queries. client_version field enables A/B comparison across deploys.
+
+Indexes: timestamp, query_type, bm25_fired. Analysis queries documented in `The Vault/arcanthyr-query-logging-and-collision-analysis.md`.
+
+**Answer storage (session 69):** `answer_text TEXT` and `model TEXT` columns added to query_log. Both `handleLegalQuery` and `handleLegalQueryWorkersAI` now store the full synthesis answer and model identifier ("sol"/"vger") in the existing query_log INSERT. `deleted INTEGER DEFAULT 0` added for soft-delete from history UI. Non-fatal — if the write fails, the query still returns normally.
+
+### Save to Nexus (session 69)
+
+Synthesis answer promotion loop. Good AI answers can be saved back into secondary_sources corpus with human review gate.
+
+**Flow:** Research page Save to Nexus button → inline confirmation panel (title editable, category dropdown) → POST to `/api/legal/format-and-upload` with `mode: 'single'`, `approved: 0` → D1 row created with `approved=0` → poller skips (SQL gate `AND approved = 1`) → Library Pending Review section shows row → Approve → `approved=1` → poller embeds to Qdrant → answer surfaces in future retrieval.
+
+**Delete action:** `POST /api/admin/approve-secondary` with `action: "delete"` — removes from Qdrant (via server.py /delete), FTS5, and D1 regardless of approved status. Only shown on nexus-save rows.
+
+**Date in IDs:** Slug format `nexus-save-{YYYY-MM-DD}-{timestamp}`. Title pre-filled with `${queryText} (${today})`.
+
+### Query history (session 69)
+
+Browse, re-read, and promote past queries without re-querying.
+
+**Panel:** Collapsible side panel on Research page. Shows 50 most recent queries with answer_text. Each entry: truncated query text (~60 chars), date+time, model pill (Sol/V'ger). Click loads cached answer in reading pane and populates search input. Does NOT re-run query.
+
+**Actions per entry:** Save to Nexus (same flow as synthesis panel), Delete (soft delete, fade-out animation).
+
+**Auto-refresh:** New query results auto-prepend to history list (optimistic UI using returned query_id).
+
+### Stare decisis — handleCaseAuthority (session 68)
+
+`handleCaseAuthority(citation, env)` resolves the corpus citation to a `case_name` via D1 lookup, then uses the case_name for the "cited_by" query (`WHERE LOWER(TRIM(cc.cited_case)) = LOWER(TRIM(?))`). Root cause: `case_citations.cited_case` stores authority names extracted by GPT in xref_agent.py (`auth.get('name')` — e.g. "House v The King"), not bracket citations ("[1936] HCA 40"). The "cites" direction works directly because `citing_case` stores corpus citations. The LEFT JOIN to `cases` on `citing_case` enriches results with `court` and `case_name` for display. Deployed and verified session 68 — 33 cited_by results for a well-cited case, treatment pills rendering correctly.
+
+### xref_agent.py (session 57)
+- Location: VPS `~/ai-stack/agent-general/src/xref_agent.py`
+- Cron: `0 3 * * *` in tom's crontab — logs to `~/ai-stack/xref_agent.log`
+- Processes all deep_enriched=1 cases regardless of subject_matter (filter removed session 108). Filter was located in handleFetchCasesForXref in Worker.js, not in xref_agent.py itself.
+- Treatment upgrade: `upgrade_treatment()` post-processes `'cited'` using `why` keywords → applied/distinguished/not followed/referred to
+- Idempotent: `INSERT OR IGNORE` with SHA1 IDs — safe to re-run
+- Worker batch writes: `env.DB.batch()` in 100-row chunks (not sequential await)
+
+### Qdrant payload field names
+
+- Secondary source type filter: field = `type`, value = `secondary_source`
+- Legislation type filter: field = `type`, value = `legislation`
+- Case chunk type filter: field = `type`, value = `case_chunk`
+- Authority synthesis type: field = `type`, value = `authority_synthesis` — **LIVE** (session 79 ingest; session 80 Pass 4; session 81 enabled): 233 chunks ingested and embedded. Normal retrieval (Pass 1, Pass 3) blocked via `must_not` filter. Pass 4 gate LIVE — `AUTHORITY_PASS_ENABLED=true` in `.env.config`, AUTHORITY_KEYWORDS calibrated (3 false-positive phrases removed, 10 passive-voice forms added).
+
+### secondary_sources D1 schema notes
+
+- PK is `id` (TEXT) — populated from CITATION metadata field in corpus
+- **No `citation` column exists** — do not query for it. Always use `id`.
+- Canonical category values: annotation, case authority, procedure, doctrine, checklist, practice note, script, legislation
+- Full column list: `id, title, source_type, author, date_published, tags, related_cases, related_acts, raw_text, chunk_count, date_added, enriched_text, enriched, embedded, enrichment_error, category, embedding_model, embedding_version, approved`
+
+### cases D1 schema notes
+
+- PK is `id` (TEXT) — citation with spaces replaced by hyphens
+- Full column list: `id, citation, court, case_date, case_name, url, full_text, facts, issues, holding, holdings_extracted, principles_extracted, legislation_extracted, key_authorities, offences, judge, parties, procedure_notes, processed_date, summary_quality_score, enriched, embedded, deep_enriched, subject_matter`
+- `subject_matter TEXT` — added session 14 · values: criminal/civil/administrative/family/mixed/unknown · derived at merge step from most frequent chunk-level classification
+- `deep_enriched INTEGER DEFAULT 0` — set to 1 after all CHUNK messages complete and merge runs
+- `court TEXT` — D1 lowercase abbreviated values: `supreme` (TASSC), `cca` (TASCCA), `fullcourt` (TASFC), `magistrates` (TASMC). These are NOT AustLII URL codes — do not filter using `TASSC`/`TASCCA`/`TASFC`/`TASMC`. AustLII codes appear in the citation string only.
+- `procedure_notes TEXT` — populated by sentencing second pass for criminal judgments · NULL for non-criminal or non-sentencing cases
+- `sentencing_status TEXT` — added session 57 · values: NULL (not yet processed) / 'success' (procedure_notes written) / 'failed' (isSentencingCase=true but extraction failed) / 'not_sentencing' (isSentencingCase=false) · use `WHERE sentencing_status='failed'` for precise retry targeting
+
+### case_chunks D1 schema
+
+- `id TEXT PRIMARY KEY` — format: `{citation}__chunk__{N}`
+- Full column list: `id, citation, chunk_index, chunk_text, principles_json, enriched_text, done, embedded, retry_count, dlq`
+- `enriched_text TEXT` — added session 14 · stores v3 prompt output · used as embed source by poller · no chunk_text fallback — chunks with null enriched_text are excluded at SQL level
+- `done INTEGER DEFAULT 0` — set to 1 after CHUNK queue consumer writes `principles_json`
+- `embedded INTEGER DEFAULT 0` — set to 1 after VPS poller upserts chunk vector to Qdrant
+- **Header chunk null enriched_text (intentionally unembedded)** — `chunk_index=0` rows with `done=1, enriched_text IS NULL` sit permanently at `embedded=0`. CHUNK v3 classifies these as `header` type and intentionally writes no enriched prose. `fetch-case-chunks-for-embedding` excludes them via `AND cc.enriched_text IS NOT NULL` — they never enter the poller cycle. The poller Python skip guard is a harmless safety net. Accurate backlog count: `SELECT COUNT(*) FROM case_chunks WHERE embedded=0 AND enriched_text IS NOT NULL`.
+- `retry_count INTEGER` (default 0 — incremented per CHUNK enrichment attempt) · `dlq INTEGER` (default 0 — set to 1 when retry_count reaches 3; excluded from pending checks)
+
+### CHUNK queue consumer control-flow shape
+
+- `for (const msg of batch.messages) { try { if type==='CHUNK' { ...processing...; msg.ack() } else if type==='MERGE' { ... } } catch { msg.retry() } }`. `continue` inside `try{}` inside the `for` is safe and is the cleanest early-exit pattern for guard clauses (e.g. DLQ check). Knowing this shape is necessary before reasoning about any queue handler control-flow change.
+
+### ingest_corpus.py
+
+- INPUT_FILE is hardcoded — must be manually changed between runs
+- Located at: `C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\ingest_corpus.py`
+- PROCEDURE_ONLY flag — False for full corpus ingest
+- Dedup logic: repeated citations get [2], [3] suffixes
+- DESTRUCTIVE UPSERT WARNING: ON CONFLICT DO UPDATE resets embedded=0 on citation collision
+
+### master_corpus files (session 12)
+
+- master_corpus_part1.md: 488 chunks · `arcanthyr-console/master_corpus_part1.md`
+- master_corpus_part2.md: 683 chunks · `arcanthyr-console/master_corpus_part2.md`
+- New corpus: preservation-focused Master prompt + Repair pass · hoc-b{N}-m{N}-{slug} citation format
+- Total: 1,171 chunks · all enriched=1 · poller embedding overnight
+
+### retrieval_baseline.sh
+
+- Location: VPS `~/retrieval_baseline.sh`
+- Auth: KEY auto-reads from `~/ai-stack/.env` — no manual export needed
+- Field name: `query_text`
+- Results in `~/retrieval_baseline_results.txt`
+- **Current baseline: 28P / 3Pa / 0M on 31-query eval (frozen 24 April 2026, re-opened sessions 114-115)** — known partials Q9 (guilty plea, content gap), Q14 (s 37 EA, semantic ceiling), Q26 (unreasonable verdict). Canonical timestamped snapshot: `~/retrieval_baseline_post_court_backfill.txt` (session 94). Pre-session-115 snapshots at `_pre_variant_stab_run1.txt` / `_run2.txt`. Generic `~/retrieval_baseline_results.txt` is Apr 16 stale — do not grep.
+
+### retrieval_baseline.sh — KEY extraction
+- KEY is read from `~/ai-stack/.env.secrets` (not `.env` — `.env` does not contain secrets)
+- `cut -d= -f2-` required (not `cut -d= -f2`) — base64 keys end with `=` padding; `-f2` drops it, causing silent auth failure
+- Always `unset KEY` before running if KEY was manually exported in the current shell session
+- **Confirmed working as of session 64** — session 61/63 breakage (wrong env path + cut -d= -f2 stripping base64 padding) confirmed fixed session 63, verified session 64 via 4-step diagnostic · script reads KEY from ~/ai-stack/.env.secrets with cut -d= -f2- · always unset KEY before running if KEY was manually exported · current baseline: 10/13/8 (session 64, 31 queries) · saved at ~/retrieval_baseline_results_apr16.txt
+
+### Word artifact cleanup
+
+- **gen_cleanup_sql.py** — run locally, strips Word formatting artifacts from raw_text
+- **131 rows cleaned 18 Mar 2026** — re-run if new Word-derived chunks ingested
+
+---
+
+## PROCESS_BLOCKS.PY PIPELINE NOTES
+
+- `gpt-4.1-mini-2025-04-14` — use this model string. Do NOT use gpt-5.x — near-empty output
+- `max_completion_tokens` not `max_tokens`; no `temperature`; normalise `\r\n`
+- `PART1_END = 28` in process_blocks.py
+- 56 blocks total · completed 20 Mar 2026 (session 10 overnight run)
+- New Master prompt: preservation-focused, 500-800 word body target, verbatim/near-verbatim prose
+- REPAIR_PROMPT: second pass catches thin chunks
+- Citation format: `hoc-b{N}-m{N}-{slug}`
+
+---
+
+### handleUploadLegislation — batch insert fix (session 82)
+
+Three frontend bugs fixed session 82: (1) api.js sent FormData/multipart — Worker expects JSON; fixed to `JSON.stringify` with `Content-Type: application/json`; (2) Upload.jsx passed `act_name` and a File object — Worker expects `title` (string) and `doc_text` (string); fixed to read file with `file.text()` then pass string fields; (3) response field was `r.result?.sections` — correct field is `r.result?.sections_parsed`. Worker-side: replaced sequential per-section INSERT loop with chunked `env.DB.batch()` (99 statements/batch) to prevent CPU timeout on large Acts.
+
+---
+
+### Authentication model (session 113)
+
+`useAuth.js` (`arcanthyr-ui/src/useAuth.js`) — three exports:
+- `isAuthed()` — checks `sessionStorage.getItem('arc_authed') === '1'`
+- `promptAuth()` — calls `window.prompt()` with password; sets `arc_authed=1` on match
+- `requireAuth()` — isAuthed() || promptAuth(); return value is the call gate
+
+Gated actions: Intel query submit (form + Enter + URL auto-run), CaseSearch case open, leg search, word search. Session-scoped (clears on tab close). No Worker-side gate — client-only.
+
+---
+
+### Secondary Sources Upload Pipeline
+
+Two paths:
+
+**Paste path** (single formatted block):
+- Upload.jsx detects <!-- block_ prefix → extracts [CITATION:] client-side → api.uploadCorpus → handleUploadCorpus → D1 insert (enriched=1, embedded=0) → poller embeds
+
+**Drag-and-drop path** (.docx/.pdf/.txt):
+- File base64 encoded → POST /api/ingest/process-document → Worker proxies to server.py /process-document → background thread: extract text (python-docx/pypdf) → split_chunks_from_markdown → per-block GPT-4o-mini Master Prompt → post_chunk_to_worker → D1 inserts → job_id returned → UI polls /api/ingest/status/:jobId every 5s
+
+Citation priority in split_chunks_from_markdown:
+1. [CASE:] value → {source_name}_{slugified_case}
+2. [CITATION:] value (not bare year) → {source_name}_{slugified_citation}
+3. Fallback → {source_name}_chunk_{i+1:04d}_{heading_slug}
+
+Source title uses chunk heading (not filename stem).
+
+---
+
+## FUTURE ROADMAP
+
+*Canonical location for all roadmap items. CLAUDE.md carries only OUTSTANDING PRIORITIES (current sprint). This section is reconciled at session close — completed items removed, new items added.*
+
+- **Phase 2 / Phase 3 / Phase 4 — COMPLETE (sessions 103–108)** — architectural restructuring, per-tab logic, and visual chrome all shipped. Site now: INTEL (→ AI ASSIST label session 108) / CASE SEARCH / LEGISLATION / CORPUS ADMIN tabs; THE ARC landing; ALL CAPS labels; logo swapped.
+- **Agent work (post-corpus validation)** — contradiction detection, coverage gap analysis, citation network traversal. Build after scraper completion and retrieval quality stabilisation.
+- **Retrieval regression fixes (session 64 — remaining steps deferred):**
+  - Step 3: Vocabulary injection pass — use stored Concepts terms from raw_text (1,081/1,199 rows) to inject vocabulary into body prose; Opus-designed rewrite prompt with safeguards (entity preservation, cosine similarity ≥ 0.88, length ±20%, novelty check); manual review of 20 rewrites before bulk run; versioned (raw_text_v1/v2). DEFERRED — may be deprioritised if vocabulary anchors + practitioner aliasing (Priority #2) produce strong improvement.
+  - Step 4: Enrichment prompt fix — Master Prompt and CHUNK prompt v3 additions to front-load specialist vocabulary in opening sentences; Opus consultation prompt prepared session 64. DEFERRED — same gate as Step 3.
+- **Legislation section search in CASE SEARCH** — COMPLETE session 71. `GET /api/legal/search-by-legislation` Worker route, pure SQL over `case_legislation_refs`, `normaliseSectionQuery()` helper, `LegislationResultsTable` frontend component in CaseSearch.jsx (was Library.jsx). treatment_gap flag returned on every response — xref_agent.py enhancement needed to capture treatment/context per legislation ref.
+- **Domain filter UI** — DEPLOYED session 61 · ALL/CRIMINAL/ADMINISTRATIVE/CIVIL chips on INTEL page (was Research page) · subject_matter_filter param threaded frontend → api.js → Worker → server.py · cache-based hard exclusion for case_chunks when filter explicitly set · ALL behaviour unchanged (existing SM_PENALTY applies)
+- **Word/PDF drag-and-drop upload pipeline** — backend COMPLETE (session 32). Upload.jsx deleted session 105 (Phase 3 cleanup); frontend will be ported to CorpusAdmin SECONDARY SOURCES sub-tab. Backend route `/api/ingest/process-document` + server.py `process_document()` + poller embed path all still live.
+- **RRF retry** — do not retry until: corpus >50K vectors; independent retrieval signals across legs (different embedding model, SPLADE, or BM25 prefetch); per-leg diagnostics logged before fusing; comprehensive doctrine chunk coverage. Current corpus ~10K vectors, single embedding model — prerequisites not met.
+- **Pass 2 (Qwen3) prompt quality review** — CLOSED. Live D1 sample confirms 1381/1382 cases have principles; quality is case-specific. Merge synthesis bypasses Pass 2 output. No action required.
+- **Extend scraper to HCA/FCAFC** — after async pattern confirmed at volume
+- **Retrieval eval framework** — formalise scored baseline as standing process
+- **Cloudflare Browser Run (formerly Browser Rendering)** — Available on Workers Free and Paid plans (account `def9cef091857f82b7e096def3faaa25` already has access). Two distinct use cases: (1) **Single-page synchronous fetch** — `POST .../browser-rendering/markdown` with `{url}` returns Markdown directly, no polling; `[browser]` binding is in `wrangler.toml` (retained; `fetchCaseContent` which used it was removed session 103 Phase 1 — binding is unused but harmless); `[[browser]]` is wrong TOML, wrangler rejects it as "should be an object but got [...]"; requires `nodejs_compat` flag + `@cloudflare/puppeteer`. (2) **Multi-page async crawl** — `/crawl` endpoint: submit URL → receive job ID → poll for HTML/Markdown/JSON; supports crawl depth, URL filters, incremental crawling via `modifiedSince`; respects robots.txt; self-identifies as bot — NOT suitable for AustLII. **AustLII Bot Management — tested and closed session 102**: CF Browser Rendering headless Chromium 403s AustLII exactly like raw fetch — Cloudflare Bot Management identifies its own BR ASN; no CF-origin path can bypass. Do not retry without a non-CF egress. Arcanthyr crawl use cases (deferred for non-AustLII targets): Tasmanian Supreme Court sentencing pages, Law Reform Commission reports, Bar Association publications.
+- **Legislation enrichment via Claude API** — plain English summaries, cross-references
+- **CHUNK finish_reason: length** — increase CHUNK max_tokens from 1,500 if truncation rate unacceptable
+- **Word artifact cleanup** — re-run gen_cleanup_sql.py if new Word-derived chunks ingested
+- **Procedural sequence assembly** — given a query like "how do I handle a hostile witness" or "what do I do at a bail application", an agent retrieves all relevant procedure, script, doctrine, and checklist chunks then sequences them into a step-by-step response rather than returning them as parallel flat results. Requires a dedicated "sequence assembly" prompt layer after retrieval, before Qwen3 synthesis. Highest value for procedural queries where order matters. Build after retrieval quality is stable.
+- **Bulk enrichment audit** — periodic scan of D1 for secondary source chunks where `[CONCEPTS:]` contains fewer than 5 terms, indicating thin enrichment. Flag rows to a `needs_enrichment` queue, re-run enrichment pass via GPT-4o-mini with an expanded concepts prompt. Complements the monthly health check (which catches structural gaps) by catching quality gaps in already-ingested chunks. Low priority — build if retrieval misses are traced to sparse concept vectors.
+- **Doctrine authoring — Q10 and Q24** — Q10 (s 164/s 165/Longman unreliability warning) and Q24 (Tas committal procedure / preliminary examination / s 57A Justices Act). Ingest via secondary_sources upload pipeline in pre-formatted block mode.
+- **Quick Search practitioner UI tab (arcanthyr.com)** — ALL FIVE PHASES COMPLETE (sessions 83–86). Phase 1: `GET /api/legal/word-search` FTS word-search (bm25/JOIN incompatibility + D1 100-var limit fixed). Phase 2: `GET /api/legal/austlii-word-search` CF-edge fetch, `parseAustLIIResults()` regex parser, async parallel UI, "In corpus" chips. Phase 3: `buildJadeUrl()` in CaseSearch.jsx (was Library.jsx), AustLII-style path `jade.io/au/cases/tas/COURT/YEAR/NUM`. Phase 4: `query_log.search_type` column, word-search queries logged. Phase 5: `austlii_cache` D1 table + `GET /api/legal/fetch-judgment` + inline `dangerouslySetInnerHTML` viewer (600px serif pane, "Read ↓ / Close ↑").
+### Secondary Sources Upload — Session 39 changes
+- Upload modal (arcanthyr-ui/src/Upload.jsx) now collects: Title, Reference ID, Category, Source type
+- source_type passed from modal → Worker handleFormatAndUpload → D1 secondary_sources.source_type
+- date_published auto-set to upload date (new Date().toISOString().split('T')[0]) in Worker — not collected from UI
+- tags remain '[]' on insert — to be populated by enrichment poller in future
+- handleFetchForEmbedding SELECT now returns source_type
+- Qdrant secondary source upsert payload now includes source_type field
+
+### TTS — fully removed (session 103 Phase 1)
+
+MOSS-TTS-Nano removed from VPS (session 60). Worker `/api/tts` route, `src/utils/tts.js`, and `ReadButton.jsx` all removed session 103 Phase 1 cleanup. server.py `/tts` route (proxy to OpenAI TTS) retained on VPS — dormant, no Worker caller. If TTS is ever revived, re-add Worker route + frontend files from git history (commit `5064c9b`).
+
+
+### server.py /search top_k cap
+
+- Hard-caps at 12 at line 296 regardless of client top_k parameter: `top_k = min(int(body.get("top_k", 6)), 12)`
+- Post-session-74 interleave deploy this is no longer blocking for the FTS-new-chunk path (novel hits at 0.50 synthetic displace borderline semantic and surface within the 12-slot cap). Cap retained for latency bounding.
+- When running `retrieval_baseline.sh` or any curl test, requesting top_k > 12 silently returns only 12
+
+### server.py must_not quarantine filter
+
+- Deployed on all three Qdrant passes (Pass 1 wrapped new Filter, Pass 2 extended existing Filter, Pass 3 extended existing Filter)
+- Defence-in-depth: Pass 2 filter is a no-op on case_chunks (no quarantined field) but catches future payload changes
+- Confirm `grep -c "must_not" /home/tom/ai-stack/agent-general/src/server.py` returns 3 after any server.py edit
+
+### FTS leg architecture (session 115 — replaced old BM25 interleave)
+
+**Three Worker routes queried by `fts_leg()` in server.py:**
+- `GET /api/pipeline/case-chunks-fts-search` — queries `case_chunks_fts MATCH ?1` with JOIN to cases; limit default 24, cap 50; X-Nexus-Key
+- `GET /api/pipeline/secondary-sources-fts-search` — queries `secondary_sources_fts MATCH ?1`; limit default 24, cap 50; X-Nexus-Key; returns `{chunks: [{source_id, title, raw_text}]}`
+- `GET /api/pipeline/legislation-sections-fts-search` — queries `legislation_sections_fts MATCH ?1` with LEFT JOIN to legislation for `legislation_title`; limit default 24, cap 50; X-Nexus-Key; returns `{sections: [{section_id, legislation_id, section_number, heading, text, legislation_title}]}`
+
+**`fts_leg()` query construction (no term cap — fixes H1):**
+1. Extract literal-quoted phrase segments from query via regex
+2. Tokenize residual; apply stop-word filter; min length 3 chars
+3. Generate bigram shingles from tokens
+4. OR-join: quoted phrases + shingles + singletons → FTS5 MATCH expression
+5. Fire all three routes; collect and tag results with `_fts_source` and `_fts_rank`
+
+**RRF fusion:**
+- `canonical_id(chunk)` = `chunk._id or chunk._qdrant_id or chunk.citation` — cross-leg dedup key
+- `rrf_score(rank) = 1.0 / (60 + rank)` — eliminates score-scale incompatibility (semantic ~0.45–0.65 vs FTS fixed 0.50)
+- Final fused scores: ~0.013–0.017 range; chunks appearing in both legs score ~0.026–0.030
+- `_in_semantic` / `_in_fts` payload flags indicate which legs contributed per chunk
+
+**Section-ref BM25 path UNCHANGED** — `BM25_SCORE_EXACT_SECTION` (~0.0159) and `BM25_SCORE_CASE_REF` (~0.0147) still run post-RRF on section-ref queries; `bm25_fired` column records this path; `fts_keyword_fired` records the FTS leg — both can be 1 simultaneously
+
+**Retired constants (no longer in server.py):** `BM25_SCORE_KEYWORD`, `BM25_INTERLEAVE_SCORE`, `fetch_case_chunks_fts()`
+
+**Rollback:** `USE_FTS_LEG=0` in `~/ai-stack/.env.config` + `docker compose up -d --force-recreate agent-general` — no Worker redeploy needed
+
+### Query expansion — LIVE (session 77)
+
+`generate_query_variants()` function in `server.py` calls GPT-4o-mini with `response_format={"type":"json_object"}` and a 3.0s hard timeout. Returns `{"variants": [str, str, str]}` — one statutory, one practitioner-shorthand, one doctrinal variant. Returns `[]` on any failure (timeout, parse error, API error). **Blocking synchronous call — runs entirely before Pass 1 fan-out begins; constitutes a sequential latency floor (~0–3s) on every query.**
+
+`QUERY_EXPANSION_ENABLED = os.getenv("QUERY_EXPANSION_ENABLED", "true").lower() == "true"` — per-call env flag. Rollback: add `QUERY_EXPANSION_ENABLED=false` to `~/ai-stack/.env.config` + force-recreate. No code revert needed.
+
+Pass 1 fan-out: original query + up to 3 variants → `ThreadPoolExecutor(max_workers=4)` → concurrent `_run_pass1()` calls → merged by `_qdrant_id` (max score per chunk). Pass 2, Pass 3, BM25 interleave run on original query only.
+
+Telemetry: `[+] Pass 1 fan-out: N queries, N unique chunks, top score N.NNN` in agent-general logs.
+
+Degradation: if variants empty, `all_queries = [query_text]` → one thread → behaviour identical to pre-expansion. Per-future try/except in gather loop — one failed variant leg is logged and dropped, rest proceed.
+
+`_qdrant_id` field is set at `hit_to_chunk()` line 325 as `str(hit.id)` — this is the merge key.
+
+### qvenv — VPS host Python venv for Qdrant scripts
+
+- Path: `/tmp/qvenv` — venv on VPS host with `qdrant-client` installed, created session 73 for `quarantine_stubs.py`
+- qdrant-client not on system Python, and quarantine script hardcodes `localhost:6334` so couldn't run inside agent-general container
+- Activate: `source /tmp/qvenv/bin/activate`
+- Reusable for any future VPS-host Python work touching Qdrant directly; `/tmp` may be cleared on reboot — recreate if missing
+
+### Vocabulary anchor over-generalisation — partially resolved (updated session 76)
+
+Session 65's `build_secondary_embedding_text()` and `build_case_chunk_embedding_text()` prepend a `Key terms: ...` line derived from CONCEPTS/legislation_refs/key_authorities before embedding. The heuristic treats these as flat bag-of-words. Chunks whose CONCEPTS contain antonym terms (e.g. `warrantless search` in an MDA s 29 chunk) become semantically close to queries about the opposite concept (e.g. `search warrant execution`), because query tokens "search", "warrant", "Tasmania" match the anchor regardless of "warrantless" flipping the meaning.
+
+**Session 76 experimental finding — the anchor is asymmetric in effect:** subtractive anchor edits (removing antonym terms) are high-leverage; additive anchor edits (injecting alias terms) are low-leverage. The anchor is 5-10 terms against body texts of 500–4,700 chars — when body semantics are already pulling the vector in a direction, a few added anchor tokens don't reshape the vector enough to matter. But when a small set of anchor tokens collides perfectly with query tokens (`warrant` + `search` + `Tasmania`), they can lift a chunk's score past where its body semantics alone would sit.
+
+**Mitigations deployed session 76:**
+- Subtractive patch confirmed effective: `Misuse of Drugs Act s 29 - Search Powers` CONCEPTS rewritten from `search powers, warrantless search, Tasmanian law, police authority, drug possession` to `Misuse of Drugs Act s 29, drug search power, drug possession, reasonable suspicion`. Post-rewrite chunk dropped from Q23 top-3 (was #1 @ 0.6067). MDA s 29 now correctly absent from Q23 retrieval.
+- Positive-phrasing prompt rule added to `enrichment_poller.py` lines 181–186 (Pass 2 CONCEPTS generation): instructs the enricher to phrase all CONCEPTS terms positively, never as negations or antonyms, unless the chunk's subject is literally that absence as a defined concept. Retroactive-inert — only affects future ingests. Commit `fc8c345`.
+
+**Remaining risk (monitoring, not action):** existing corpus chunks with antonym-polluted CONCEPTS lines are not audited. One-time audit SQL would be `SELECT id, raw_text FROM secondary_sources WHERE raw_text LIKE '%warrantless%' OR raw_text LIKE '%without warrant%' OR raw_text LIKE '%non-consensual%' OR raw_text LIKE '%not admissible%' OR raw_text LIKE '%uncorroborated%'` — each hit needs case-by-case judgement whether the CONCEPTS line needs rewriting. Defer unless a new antonym-pollution symptom surfaces on baseline.
+
+**Monitor signature:** a query that should hit a domain-specific chunk but gets outcompeted by an adjacent-but-wrong chunk with a broad CONCEPTS list containing an antonym token matching a query word. The MDA s 29 / "search warrant execution" collision was the canonical example pre-fix.
+
+### Body-text vocabulary injection — conditional lever (session 76)
+
+Mechanism: prepend a sentence to the chunk body (after any `Concepts:` header line, before existing prose) that uses both the corpus-side statutory term and the practitioner-side alias term in natural-language context. This shifts the embedding vector more than anchor-CONCEPTS edits because body text carries more token weight.
+
+Established experimentally session 76:
+- Probe C "cross-examining an unfavourable witness hostile witness common law" → `Evidence Act 2001 (Tas) s 38 - Tendering Prior Inconsistent Statement` lifted to #1 @ 0.6455 (was absent from top 6).
+- Probe B "knock and announce warrant" → `secondary-chunk-12` lifted #5 @ 0.4997 → #1 @ 0.5251.
+- But benchmark Q12 "hostile witness procedure cross examination" and Q23 "search warrant execution requirements Tasmania" — unchanged despite 6 chunks carrying injected alias prose.
+
+**Rule:** body-text vocabulary injection works when query phrasing overlaps the injected prose. It does not help when user phrasing diverges lexically from the injected sentence, even when the concepts are identical. Asymmetric lever — useful for closing specific high-value query pairs where user phrasing is predictable, not useful for open-ended recall.
+
+Query-side expansion (Priority #1) is the architectural fix for the broader aliasing class — it normalises at the point of query entry, one implementation covers all pairs, no per-chunk maintenance. Do not attempt further corpus-side aliasing injection passes before query expansion is deployed — the ceiling is permanent.

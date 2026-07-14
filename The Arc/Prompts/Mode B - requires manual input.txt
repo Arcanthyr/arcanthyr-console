@@ -1,0 +1,233 @@
+A. Analysis run
+MODE A — ANALYSIS ONLY.
+Do not draft EIC, CX, submissions, or witness questions.
+Tasks:
+
+Identify the charged offence and verify / state the elements.
+
+
+State whether the elements are VERIFIED or PROVISIONAL / UNVERIFIED.
+If provisional, say why briefly.
+
+
+Map the pleaded particulars.
+For each pleaded particular, state:
+
+
+complaint identifier exactly as written
+pleaded fact
+pleaded date or date range
+exact words / mechanism / location if pleaded
+primary witness likely to prove it
+primary exhibit likely to prove it
+occurrence strength
+as-pleaded strength
+status:
+
+LIVE
+PARKED
+FAIL-AS-PLEADED
+
+
+precise mismatch, if any
+immediate reason
+
+Apply the classification rules in Master Rule 9 (Triage / Status Discipline). The definitions of LIVE, PARKED, FAIL-AS-PLEADED, material mismatch, digital-evidence dependency, and credibility-contest disclosure all apply here.
+
+Build an element proof matrix with strength ratings:
+
+
+STRONG
+MODERATE
+WEAK
+MISSING
+
+For each element or sub-element, state:
+
+element
+LIVE particular(s) relied on
+source(s)
+what proves it
+main weakness
+strength rating
+
+Present the element proof matrix in tabular form where possible. For each count, use one row per element or sub-element.
+Rules:
+
+Use only LIVE particulars as substantive proof in the matrix.
+PARKED or FAIL-AS-PLEADED particulars may be referred to only if clearly marked:
+
+BACKGROUND ONLY — NOT PART OF LIVE CASE
+AMENDMENT RISK ONLY — NOT PART OF LIVE CASE
+
+
+Do not use a best-case future view. Use the most conservative sustainable view on the present material.
+
+
+Build a witness map:
+
+
+what each witness can prove
+what each witness cannot safely prove
+whether they are:
+
+primary
+limited
+duplicative
+unnecessary
+
+
+identify any police duplication risk
+identify any witness needed mainly for foundation rather than substantive proof
+
+
+Build an exhibit map:
+
+
+identify each exhibit or possible exhibit
+classify as IDENTIFIED / HIGH-CONFIDENCE INFERRED / PRECARIOUS / UNKNOWN
+state required foundation witness
+state the main authentication issue(s)
+state whether it is safe for substantive use:
+
+YES
+NO
+LIMITED
+
+
+
+Rules:
+
+Do not treat digital material as self-authenticating.
+Only fully break down distinct digital items where they bear materially on a LIVE particular.
+If a digital item is presently unsafe, identify what would be needed to make it usable if that can be stated from the material.
+
+
+Build a chronology only from evidence.
+
+
+Keep separate:
+
+established events
+asserted-only events
+events requiring digital foundation
+internal-only assertions
+
+
+Do not use Tier 3 material as proof of events.
+Use the chronology of the LIVE case only.
+If a PARKED or FAIL-AS-PLEADED matter is mentioned for context, label it expressly as:
+
+BACKGROUND ONLY — NOT PART OF LIVE CASE
+AMENDMENT RISK ONLY — NOT PART OF LIVE CASE
+
+
+
+
+Identify:
+
+
+contradictions
+corroboration
+unsupported assertions in internal police material
+proof gaps
+admissibility risks (flag level only — full admissibility analysis is Mode D's function)
+duplication risks in police witnesses
+CHARGE / PARTICULARS MISALIGNMENT ALERT
+
+For CHARGE / PARTICULARS MISALIGNMENT ALERT:
+State one of:
+
+NO MATERIAL MISALIGNMENT IDENTIFIED
+or
+MATERIAL MISALIGNMENT IDENTIFIED
+
+If MATERIAL MISALIGNMENT IDENTIFIED, for each item state:
+
+what the evidence may prove
+what the charge or particular presently alleges
+the precise mismatch
+why the mismatch is material
+practical consequence:
+
+amendment risk
+narrowing risk
+proof failure as pleaded
+fairness / notice concern
+
+
+
+Do not treat a mismatch as immaterial merely because the evidence suggests some wrongdoing.
+If the mismatch changes the proof pathway, the date-range case, the mechanism, the words, the location, the attribution, or would realistically require amendment or narrowing, treat it as material.
+
+End with:
+
+
+KEY RISKS
+FURTHER INVESTIGATION REQUIRED
+
+For KEY RISKS:
+
+give a short ranked list of the most serious risks
+capture more than generic weakness labels
+for each risk, state:
+
+risk
+affected charge / element / particular
+why it matters
+present consequence for the live case
+
+
+risks must be specific, legally or evidentially grounded, and no stronger than the earlier proof audit supports
+key risks must be based on the narrowed LIVE case only
+do not re-inflate the case by relying on PARKED or FAIL-AS-PLEADED particulars, except where the risk itself is amendment-risk or misalignment-risk
+
+For FURTHER INVESTIGATION REQUIRED:
+For each item, state:
+
+missing thing
+linked charge / element / particular
+why it matters
+likely source / step to fix it
+urgency:
+
+HIGH
+MEDIUM
+LOW
+
+
+purpose:
+
+live-proof defect
+exhibit foundation
+chronology clarification
+misalignment assessment
+amendment-risk assessment
+
+
+affects:
+
+charge viability
+witness examination
+admissibility
+exhibit use
+(select all that apply)
+
+
+
+Rules for FURTHER INVESTIGATION REQUIRED:
+
+be specific, not generic
+identify the actual missing evidentiary item, witness clarification, native-source record, or procedural step where possible
+explain the causal importance of the missing item, not just that it would be useful
+if an item would not materially improve the live case but would clarify amendment risk or misalignment, say so
+do not include low-value investigative suggestions that are not tied to an identified proof problem
+
+General Mode A rules:
+
+Be strict.
+Use source-based reasoning throughout.
+Use source-native references where available and do not invent pagination.
+Do not silently repair the prosecution case.
+Do not let narrative coherence override proof of the charge as pleaded.
+Where the evidence may prove occurrence but not the pleaded version, say so expressly.

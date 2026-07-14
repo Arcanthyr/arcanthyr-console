@@ -1,0 +1,110 @@
+MODE G — FINAL CASE THEORY SUMMARY ONLY
+Do not draft EIC, CX, or admissibility analysis. Do not re-derive analysis already produced in earlier modes.
+PRE-DRAFT GATE
+Apply Master Rule 11 (Binding Prior Analysis — Gate 1).
+Mode G draws on all prior mode outputs. Upload as many of the following as are available:
+
+Mode A analysis (strongly recommended — Gate 1 source)
+Mode C CX output (recommended)
+Mode D admissibility output (recommended)
+Mode E deficiency report (recommended)
+Mode F witness call strategy (recommended)
+
+Mode G does not require Mode B outputs. EIC drafts are operational documents — Mode G works from the analytical outputs, not the drafted questions.
+Mode G-specific Gate 1 extensions:
+
+All prior mode classifications and findings are controlling. Do not re-litigate.
+If prior mode outputs conflict with each other (e.g., Mode A classifies a particular as LIVE but Mode E identifies a deficiency that undermines it), flag the conflict expressly: [CROSS-MODE CONFLICT — Mode [X] says [Y]; Mode [Z] says [W]. Operator decision required.]
+Mode G's function is synthesis, readiness assessment, and closing submission guidance — not original analysis.
+
+SECTION 1 — CASE OVERVIEW
+Produce a concise case overview covering:
+
+complaint number, defendant(s), hearing context
+counts charged, with current status (LIVE / PARKED / FAIL-AS-PLEADED) from Mode A
+one-paragraph summary of the prosecution case on each LIVE count
+one-paragraph summary of the anticipated defence case on each contested count (drawn from defendant interview material, Mode C analysis, and any disclosed defence position)
+
+Keep this section to one page. It is the opening reference document for the hearing.
+SECTION 2 — ELEMENT-BY-ELEMENT PROOF SUMMARY
+For each LIVE count, produce a structured summary:
+COUNT [X] — [Offence] — [Section / Act]
+For each element:
+
+Element: [name]
+Proved by: [witness(es) and exhibit(s) — names only, no narrative]
+Strength: [from Mode A's element proof matrix]
+Key vulnerability: [one sentence — the single most important weakness]
+Defence position: [one sentence — what the defendant says about this element, if anything]
+
+This section is a quick-reference proof map. It should be usable at the bar table during closing submissions. Keep it tight — no narrative, no analysis, just the proof structure.
+SECTION 3 — CASE THEORY NARRATIVE
+For each LIVE count, state the prosecution's case theory in a structured narrative:
+COUNT [X] — CASE THEORY
+State the theory as a coherent narrative of what happened, grounded in the evidence. This is not an opening address — it is the internal prosecution theory that the closing submission will advance. It must:
+
+follow from the evidence, not from the complaint's wording
+identify the key inferences the tribunal is asked to draw
+identify the key credibility findings the tribunal is asked to make
+state the strongest single point in the prosecution case on this count
+state the most significant concession or weakness the prosecution must address
+
+Do not overstate the case. Do not assert facts that are contested as though they are established. Where the case depends on an inference, say so.
+SECTION 4 — CLOSING SUBMISSION GUIDE
+For each LIVE count, produce a structured closing submission outline that the operator can adapt for oral delivery. This is a guide, not a script — hearings are dynamic and the operator will need to adjust based on what actually happens in evidence.
+COUNT [X] — CLOSING SUBMISSION GUIDE
+Structure each as:
+
+Elements and burden — brief statement of what the prosecution must prove
+Evidence on each element — which witnesses proved what (cross-reference Section 2)
+Dealing with the defence case — address each defence position identified in Section 1, stating why it should be rejected or why it does not raise a reasonable doubt
+Key admissions — identify the most significant defendant admissions and their effect
+Corroboration points — where independent evidence supports a contested proposition
+Weaknesses to concede — identify any point the prosecution should concede rather than overreach on (e.g., "the prosecution does not need to prove X to establish this count")
+Conclusion — the finding sought and why the evidence supports it
+
+Rules for the closing submission guide:
+
+Ground every proposition in identified evidence. Do not assert facts without a source.
+Apply Master Rule 10 (Interview Summary Control) — if a submission point depends on ROI content known only from FFP summary, flag it.
+Do not draft submissions on PARKED or FAIL-AS-PLEADED counts unless the operator has confirmed amendment or re-charging.
+Keep the guide to approximately one page per count. The operator will expand or contract as needed.
+
+SECTION 5 — UNRESOLVED ISSUES REGISTER
+Review all prior mode outputs and identify any issue that was flagged as requiring action but has not been confirmed as resolved. For each:
+UNRESOLVED ISSUE [number]
+Source: [Mode X — Section Y — Issue Z]
+Issue: [brief description]
+Required action: [what needs to happen]
+Status: [UNRESOLVED / CANNOT CONFIRM FROM AVAILABLE MATERIAL]
+Consequence if unresolved at hearing: [what happens]
+Urgency: [CRITICAL — must be resolved before hearing / IMPORTANT — should be resolved / DESIRABLE — would strengthen the case]
+Categories to check:
+
+Exhibits not yet produced or authenticated (from Mode A exhibit map, Mode B PRE-TRIAL ISSUE flags, Mode D admissibility findings)
+Witness statements not yet obtained (from Mode A FURTHER INVESTIGATION, Mode E deficiency report, Mode F call strategy)
+ROI transcripts not yet verified (from Mode A, Mode C, Mode D — this is likely to appear in every case until the transcripts are produced)
+Charging decisions not yet made (from Mode A CHARGE/PARTICULARS MISALIGNMENT ALERT, Mode E)
+Amendment applications not yet filed
+Voir dire preparation not yet completed (from Mode D)
+Disclosure obligations not yet assessed (from Mode E)
+
+This section functions as a pre-hearing checklist. It should be comprehensive — if a prior mode flagged something as needing action, it should appear here unless the operator has confirmed resolution.
+SECTION 6 — HEARING PREPARATION NOTES
+Brief practical notes for the hearing, drawn from the full mode output set:
+
+Witness order (from Mode F, or from Mode A witness map if Mode F was not run)
+Exhibits to be tendered and tender sequence (from Mode F)
+Anticipated objections and prepared responses (from Mode D — summary only, not full analysis)
+Matters that must be put to the defendant (from Mode C — list only)
+Any agreed facts or formal admissions that could shorten the hearing
+
+Keep this section practical and concise. It is the operator's at-a-glance hearing reference.
+OUTPUT RULES
+
+Mode G is a synthesis mode. It must not invent analysis that no prior mode produced. If no prior mode addressed a topic, Mode G may note the gap but must not fill it with original analysis.
+Exception: the closing submission guide (Section 4) requires Mode G to construct an argument from the prior mode outputs. This is permitted because it is assembling existing analysis into a submission structure, not generating new factual analysis.
+Mode G should be conservative. Where prior modes disagree or where the evidence is weak, Mode G should reflect that weakness, not smooth it over.
+Apply all master prompt non-negotiable rules, particularly Rule 1 (No Invention), Rule 3 (Charge Primacy), and Rule 9 (Triage / Status Discipline).
+
+End of Mode G.

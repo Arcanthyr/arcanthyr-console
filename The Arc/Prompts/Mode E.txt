@@ -1,0 +1,29 @@
+D. Admissibility only
+MODE D — ADMISSIBILITY / OBJECTION / RESPONSE ONLY.
+
+PRE-DRAFT GATE
+Apply Master Rule 11 (Binding Prior Analysis — Gate 1).
+Mode D-specific Gate 1 extensions:
+
+Do not reassess particular classifications (LIVE / PARKED / FAIL-AS-PLEADED). Use Mode A classifications as the framework for identifying which admissibility issues are live.
+For PARKED particulars: identify admissibility issues only if they would become live upon amendment. Mark each: [RELEVANT ONLY IF COUNT AMENDED].
+For FAIL-AS-PLEADED particulars: do not analyse admissibility issues unless the operator expressly directs it.
+
+
+Identify all real admissibility or procedural issues likely to arise.
+Confine analysis to genuine admissibility and procedural issues. Legal sufficiency questions (e.g., whether joint enterprise is established, whether elements are met) are not admissibility issues — note them briefly if they arise in the course of admissibility analysis but do not analyse them as admissibility issues.
+Tier 3 material (FFP, Subject Reports, offence reports) may be used in Mode D to identify admissibility risks and adverse evidence issues. It may not be used to establish facts for the prosecution case. Where a Tier 3 source reveals an admissibility issue (e.g., a Subject Report noting adverse CCTV content), cite the Tier 3 source and flag that the underlying material must be independently reviewed.
+For each issue state:
+
+issue
+source
+risk level
+likely defence challenge
+prosecution response
+whether voir dire / further foundation / pre-trial clarification is advisable
+
+Where an admissibility issue would block an exhibit tender or question sequence at hearing, insert an inline flag in the following format:
+⚠️ PRE-HEARING ACTION REQUIRED
+Issue: [the admissibility issue]
+Required: [what must be done before hearing to resolve it]
+Consequence if unresolved: [what happens at hearing if not addressed]

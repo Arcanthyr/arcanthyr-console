@@ -1,0 +1,47 @@
+E. Deficiency report only
+MODE E — INVESTIGATION / DEFICIENCY REPORT ONLY.
+PRE-DRAFT GATE
+Apply Master Rule 11 (Binding Prior Analysis — Gate 1).
+Mode E-specific Gate 1 extensions:
+
+If Mode A output is present, do not re-derive charge overview, particulars triage, or key risks. These are already in Mode A.
+Start from Mode A's FURTHER INVESTIGATION REQUIRED list. For each item in that list, confirm whether it remains open or has been resolved.
+Then identify additional deficiencies at investigator-operational granularity — items that Mode A may not have flagged because they require finer-grained analysis of exhibit provenance, witness statement integrity, chain of custody, disclosure obligations, or procedural steps.
+Do not produce a KEY RISKS section if Mode A output is present — Mode A's KEY RISKS is controlling. If Mode E analysis reveals a risk not captured in Mode A, flag it as: [NEW RISK — not in Mode A analysis: (description)].
+
+If no Mode A output is present:
+
+Conduct a compressed triage per Master Rule 11 before proceeding to deficiency analysis.
+In that case, include a KEY RISKS section and a FURTHER INVESTIGATION REQUIRED section, as Mode A's versions do not exist.
+
+Apply Master Rule 10 (Interview Summary Control) to all deficiency items that rely on FFP or Subject Report summaries of interview content.
+Identify all deficiencies, uncertainties, unsupported allegations, exhibit provenance issues, missing witnesses, duplication issues, and proof gaps.
+For each deficiency, produce one block using this template:
+DEFICIENCY [number]
+Deficiency: [precise description of what is missing, incomplete, or problematic]
+Why it matters: [causal importance to the prosecution case — not just that it would be useful, but what fails or weakens without it]
+What may fix it: [specific source, step, or action — not generic suggestions]
+Affects:
+
+charge viability
+witness examination
+admissibility
+exhibit use
+(select all that apply)
+Urgency: HIGH / MEDIUM / LOW
+Linked charge / element / particular: [identify specifically]
+
+Rules for deficiency identification:
+
+Be specific, not generic. Identify the actual missing item, document, witness clarification, or procedural step.
+Distinguish between deficiencies that affect the live case and deficiencies that affect amendment-risk assessment only. Mark amendment-risk-only items: [AMENDMENT RISK ONLY — not a deficiency in the live case as pleaded].
+Do not include low-value suggestions not tied to an identified proof problem.
+Where a deficiency is also identified in Mode A's FURTHER INVESTIGATION list (if present), note: [ALSO IN MODE A — FI #[number]]. Do not restate Mode A's analysis — add only what Mode E's finer-grained review reveals.
+
+End with:
+CHARGE / PARTICULARS MISALIGNMENT ALERT
+(Apply the same format as Mode A. If Mode A output is present and already contains this alert, state: "Mode A misalignment alert is controlling — no additional misalignments identified" or identify any new misalignments only.)
+If no Mode A output is present, also end with:
+KEY RISKS
+FURTHER INVESTIGATION REQUIRED
+(Apply the master prompt templates for these sections.)

@@ -1,0 +1,36 @@
+MODE C — CX ONLY
+DEFENDANT: [Angel GLOVER]
+Draft cross-examination for the named defendant only.
+PRE-DRAFT GATE
+Apply Master Rule 11 (Binding Prior Analysis — Gate 1).
+Mode C-specific Gate 1 extensions:
+
+Confine grounded CX lines to LIVE particulars only.
+For PARKED particulars: CX lines may be included only where they arise from grounded evidence relevant to a LIVE count's contested conduct. Mark each such line: [PARKED PARTICULAR — included for [reason]].
+For FAIL-AS-PLEADED particulars: do not draft CX lines unless the particular has been amended or the operator expressly directs it.
+
+CONTESTATION SCOPE
+If uploaded material identifies which counts are contested by this defendant, confine CX to contested counts unless expressly instructed otherwise. State the scope and basis at the top of the output.
+Structure:
+
+Defendant cross-examination
+Anticipated defence witness cross-examination — if the evidence discloses likely defence witnesses (e.g., adverse civilian witnesses identified in disclosure material), draft grounded CX lines for those witnesses.
+
+For each section divide into:
+
+GROUNDED CONTRADICTIONS
+CONDITIONAL LINES ONLY IF FOUNDATION EMERGES
+
+Do not speculate.
+Do not include unsupported propositions.
+Where a proposition relies on an interview summary from the Facts for
+Prosecutor or Subject Report rather than a verified ROI transcript,
+apply the flag required by Master Rule 10 at every point of reliance.
+End with:
+
+CX RISK AREAS
+MATTERS THAT MUST BE PUT
+
+If CX analysis reveals a vulnerability in a prosecution witness's evidence that should be addressed in that witness's EIC, note it in a final section:
+CX-DRIVEN EIC NOTES
+For each note: identify the prosecution witness, the vulnerability identified through CX analysis, and the EIC adjustment recommended. Keep brief — this is a cross-reference for Mode B, not a redraft.

@@ -1,0 +1,104 @@
+MODE F — WITNESS CALL STRATEGY ONLY
+Do not draft EIC, CX, submissions, or admissibility analysis.
+PRE-DRAFT GATE
+Apply Master Rule 11 (Binding Prior Analysis — Gate 1).
+Mode F requires Mode A output. If no Mode A output is present, state:
+"Mode F requires a completed Mode A analysis. Run Mode A first."
+Do not proceed without Mode A.
+Mode F-specific Gate 1 extensions:
+
+Mode A's witness map, exhibit map, and particular classifications are controlling inputs.
+Do not re-derive these. Build the call strategy from Mode A's existing analysis.
+If Mode A's witness map contains a gap or ambiguity that affects call strategy, flag it: [MODE A GAP — witness map does not address [issue]; assumption made for call strategy purposes: [assumption]].
+
+TASK
+Produce a witness call strategy for the prosecution case. This is a strategic planning document — it determines who is called, in what order, what each witness covers, and what each witness does not cover.
+SECTION 1 — WITNESS CALL ORDER
+Produce a recommended call order for the prosecution case. For each witness, state:
+
+witness name and type (civilian / police)
+position in call order (number)
+counts covered
+primary function (e.g., "complainant — identification and taking", "exhibit foundation only", "arrest and custody chain", "interview — admissions")
+estimated importance: ESSENTIAL / IMPORTANT / MARGINAL / RECOMMEND NOT CALLING
+
+Rules for call order:
+
+Civilians before police, unless a specific evidentiary reason requires otherwise (state the reason).
+Within civilians, lead with the strongest identification witness for the primary contested count.
+Within police, lead with the officer covering the most ground; confine secondary officers to non-duplicative evidence only.
+Group witnesses by count where possible, but do not break chronological logic to do so.
+
+For witnesses classified RECOMMEND NOT CALLING:
+
+State why they are not needed.
+State what evidence would be lost by not calling them.
+State whether their absence creates any disclosure, Browne v Dunn, or completeness risk.
+This is a recommendation only — the operator makes the final decision.
+
+SECTION 2 — DUPLICATION ANALYSIS
+For each pair of witnesses whose evidence overlaps, produce one block:
+OVERLAP: [Witness A] / [Witness B]
+Overlapping topics: [list the topics both can cover]
+Recommended delineation:
+
+[Witness A] covers: [topics]
+[Witness B] covers: [topics]
+Rationale: [why this split]
+Risk if both cover the same ground: [e.g., inconsistency exposure, wasted hearing time, credibility dilution]
+
+Focus particularly on police witness duplication. Where two or more police officers attended the same events, interviewed the same people, or handled the same exhibits, the delineation must be explicit.
+SECTION 3 — WITNESS ALLOCATION TABLE
+For each witness in the call order, produce an allocation block in the following format:
+WITNESS: [Full Name]
+TYPE: [CIVILIAN / POLICE OFFICER]
+CALL ORDER POSITION: [number]
+PRIMARY SCOPE:
+
+[Topic 1 — linked to Count X / Element Y]
+[Topic 2 — linked to Count X / Element Y]
+[etc.]
+DO NOT COVER:
+[Topic — reason: assigned to [other witness] / duplicative / outside scope]
+EXHIBITS THIS WITNESS TENDERS:
+[Exhibit — foundation basis]
+EXHIBITS THIS WITNESS DOES NOT TENDER:
+[Exhibit — assigned to [other witness] for tender]
+SAFETY VALVE: If this witness's statement contains evidence not assigned to any other witness in this allocation table, that evidence should still be elicited. Flag it in Mode B output as: [NOT IN MODE F ALLOCATION — included because no other witness covers this point].
+
+The allocation table is designed to be pasted into Mode B runs as a scoping constraint. Keep each block concise — no more than 10–15 lines per witness.
+SECTION 4 — EXHIBIT TENDER PATHWAY
+For each exhibit or class of exhibits (e.g., "all CCTV footage", "trespass notices"), state:
+
+exhibit
+tendering witness (who lays the foundation)
+backup tendering witness (if the primary is unavailable or the foundation is weak)
+current exhibit status from Mode A (IDENTIFIED / HIGH-CONFIDENCE INFERRED / PRECARIOUS / UNKNOWN)
+pre-hearing action required (if any)
+
+Do not duplicate Mode A's exhibit map. Reference it. Add only the tender-pathway assignment and any pre-hearing actions not already in Mode A's FURTHER INVESTIGATION list.
+SECTION 5 — WITNESSES NOT IN EVIDENCE — CALL / DO NOT CALL ASSESSMENT
+Mode A's witness map identifies witnesses who are referenced in the evidence but have not provided statements. For each, state:
+
+witness name
+what they could prove
+whether their evidence is needed for the live case, or only for amendment-risk / corroboration
+recommendation: OBTAIN STATEMENT AND CALL / OBTAIN STATEMENT BUT HOLD IN RESERVE / DO NOT PURSUE
+urgency: HIGH / MEDIUM / LOW
+
+SECTION 6 — CALL STRATEGY RISKS
+Identify risks specific to the witness call strategy (not general case risks — those are in Mode A). Examples:
+
+A witness whose evidence is essential but whose credibility is weak
+A call order that exposes a gap before the gap-filling witness testifies
+A delineation that leaves one officer with very little to say (credibility risk of calling a witness for minimal evidence)
+A witness whose absence would trigger a Browne v Dunn issue
+
+For each risk:
+
+risk
+affected witness / count
+consequence
+mitigation
+
+End of Mode F.

@@ -1,0 +1,403 @@
+================================================================================
+server.py — Legislation whitelist/penalty patch (Step 2 pre-stage)
+================================================================================
+
+Author:         Cowork session, 18 April 2026
+Status:         PRE-STAGE ONLY — DO NOT DEPLOY
+Deploy gate:    After post-re-embed baseline completes and is compared against
+                session 64 baseline (13P/9Pa/9M). Same sequencing pattern as
+                the stub quarantine patch — build now, deploy after baseline.
+Target file:    ~/ai-stack/agent-general/src/server.py  (VPS canonical)
+Local mirror:   C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server.py
+
+--------------------------------------------------------------------------------
+IMPORTANT — VERIFY LIVE VPS BEFORE APPLYING
+--------------------------------------------------------------------------------
+
+The LOCAL mirror of server.py at "Arc v 4/server.py" (inspected this session,
+mtime 17 Apr 2026 20:34, size 63,585 bytes) ALREADY CONTAINS this entire
+patch. All five blocks below are present in the local file.
+
+CLAUDE.md SYSTEM STATE ALSO shows:
+    "Subject matter filter | LIVE · SM_PENALTY=0.65 ·
+     LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE"
+
+However, this pre-stage task exists because the VPS canonical copy has not
+been independently verified against the local mirror. Three possibilities:
+
+  (a) VPS is fully in sync with local — patch is a no-op verification.
+  (b) VPS has the constants but apply_sm_penalty branch or Pass 1/2 wiring
+      is partial.
+  (c) VPS is wholly missing the whitelist logic (local was edited but never
+      SCP'd up).
+
+STEP 0 before any apply:
+    scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py \
+        "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server_vps_snapshot.py"
+    diff server.py server_vps_snapshot.py
+
+    If diff is empty → VPS already has this patch; mark step 2 complete
+    without redeploy.
+
+    If diff is non-empty → proceed block-by-block below. Each block is
+    self-contained and order-independent except BLOCK 3 (apply_sm_penalty)
+    which references the constants defined in BLOCK 1.
+
+Note on penalty value: CLAUDE_arch.md FUTURE ROADMAP line still reads
+"penalised at 0.65 (or 0.75)" — this is stale. The locked design value is
+LEG_PENALTY_ADJACENT = 0.85 (mild penalty). Update CLAUDE_arch.md roadmap
+line at session close.
+
+================================================================================
+BLOCK 1 — Legislation whitelist constants
+================================================================================
+
+LOCATION:    Module-level, immediately after SM_PENALTY and SM_ALLOW defs.
+             In local file this is lines 42–66 (between SM_ALLOW and the
+             _sm_cache dict declaration).
+
+FIND (anchor — this should already exist):
+--------------------------------------------------------------------------------
+SM_PENALTY       = 0.65
+SM_ALLOW         = {'criminal', 'mixed'}  # subject_matter values that bypass penalty
+--------------------------------------------------------------------------------
+
+ENSURE PRESENT IMMEDIATELY AFTER (if missing, insert verbatim):
+--------------------------------------------------------------------------------
+# ── Legislation relevance whitelist ──────────────────────────────────────
+# Core criminal Acts are NEVER penalised (multiplier 1.0).
+# Adjacent criminal Acts receive a mild penalty (0.85) unless the query
+# contains a keyword bridge, in which case they are also exempt.
+# All other legislation receives the standard SM_PENALTY (0.65).
+# Session 65: prevents irrelevant legislation (e.g. Misuse of Drugs Act s1)
+# from displacing criminal doctrine chunks in Pass 1.
+LEG_WHITELIST_CORE = {
+    'evidence act',
+    'criminal code',
+    'sentencing act',
+    'bail act',
+    'justices act',
+    'criminal justice (mental impairment) act',
+    'cj(mi)a',
+    'criminal law (detention and interrogation) act',
+}
+LEG_WHITELIST_ADJACENT = {
+    'misuse of drugs act':                 {'drug', 'drugs', 'trafficking', 'possession', 'substance', 'precursor'},
+    'police offences act':                 {'police', 'offence', 'public order', 'disorderly', 'trespass'},
+    'road safety (alcohol and drugs) act': {'drink driving', 'dui', 'alcohol', 'drug driving', 'breath test', 'blood alcohol'},
+    'firearms act':                        {'firearm', 'firearms', 'weapon', 'gun', 'ammunition', 'prohibited weapon'},
+    'family violence act':                 {'family violence', 'dvo', 'fvo', 'restraining order', 'protection order', 'domestic violence'},
+}
+LEG_PENALTY_ADJACENT = 0.85   # mild penalty for adjacent Acts without keyword bridge
+--------------------------------------------------------------------------------
+
+WHY:
+  - Seven Core Acts match the locked design spec (Evidence, Criminal Code,
+    Sentencing, Bail, Justices, CJ(MI)A, Criminal Law (D&I) Act). "cj(mi)a"
+    duplicates the long-form so shorthand references in leg_title payloads
+    still trip the whitelist.
+  - Five Adjacent Acts each carry their own keyword set. The keyword bridge
+    fires if the query string contains ANY of those terms (case-insensitive,
+    substring match). This preserves legitimate recall for drug / traffic /
+    firearm queries without letting those Acts bleed into generic criminal
+    queries that never mention them.
+  - LEG_PENALTY_ADJACENT = 0.85 is the agreed value. Roadmap comment
+    "0.65 (or 0.75)" is stale; do not revive.
+  - Title match is a substring `in` check — order-independent. Exact-match
+    is fragile because leg_title payloads include section refs ("Evidence
+    Act s 138") and we want a hit on any such variation.
+
+--------------------------------------------------------------------------------
+SPOT-CHECK AGAINST VPS:
+    grep -n "LEG_WHITELIST_CORE\|LEG_WHITELIST_ADJACENT\|LEG_PENALTY_ADJACENT" \
+        /home/tom/ai-stack/agent-general/src/server.py
+    Expected: 8 hits (3 definition lines + 5 references in apply_sm_penalty
+    + diagnostic print block). If missing → insert this block.
+--------------------------------------------------------------------------------
+
+================================================================================
+BLOCK 2 — apply_sm_penalty() legislation branch
+================================================================================
+
+LOCATION:    Inside search_text(), the apply_sm_penalty nested closure.
+             In local file this is lines 325–353.
+
+FIND (the current closure signature + case_chunk branch — should exist):
+--------------------------------------------------------------------------------
+    def apply_sm_penalty(chunk, query_text_lower=''):
+        """Apply subject-matter penalty to non-criminal case chunks and
+        non-core legislation chunks in-place."""
+        ctype = chunk.get("type", "")
+        if ctype == "case_chunk":
+            sm = sm_cache.get(chunk.get("citation", ""), "unknown")
+            if sm not in SM_ALLOW:
+                chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
+--------------------------------------------------------------------------------
+
+REPLACE WITH (note: signature changes — second arg `query_text_lower`
+must be threaded through every call site; see Block 3):
+--------------------------------------------------------------------------------
+    def apply_sm_penalty(chunk, query_text_lower=''):
+        """Apply subject-matter penalty to non-criminal case chunks and
+        non-core legislation chunks in-place."""
+        ctype = chunk.get("type", "")
+        if ctype == "case_chunk":
+            sm = sm_cache.get(chunk.get("citation", ""), "unknown")
+            if sm not in SM_ALLOW:
+                chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
+        elif ctype == "legislation":
+            title = (chunk.get("leg_title") or chunk.get("citation") or "").lower()
+            # Core criminal Acts — always exempt
+            if any(core in title for core in LEG_WHITELIST_CORE):
+                pass  # multiplier 1.0
+            else:
+                # Check adjacent Acts
+                matched_adjacent = False
+                for adj_name, keywords in LEG_WHITELIST_ADJACENT.items():
+                    if adj_name in title:
+                        matched_adjacent = True
+                        # Keyword bridge: if query mentions this Act's domain, exempt it
+                        if any(kw in query_text_lower for kw in keywords):
+                            pass  # multiplier 1.0
+                        else:
+                            chunk["score"] = round(chunk["score"] * LEG_PENALTY_ADJACENT, 4)
+                        break
+                if not matched_adjacent:
+                    # Non-criminal legislation — full penalty
+                    chunk["score"] = round(chunk["score"] * SM_PENALTY, 4)
+        return chunk
+--------------------------------------------------------------------------------
+
+WHY:
+  - The legislation branch is the whole point of this patch. Without it,
+    Pass 1 hits for "Misuse of Drugs Act s 1" or "Police Offences Act s 13A"
+    sit at full cosine score and can displace Criminal Code / Evidence Act
+    doctrine chunks inside the 0.05 cosine band.
+  - Uses `title` substring match against both `leg_title` and `citation`
+    payload keys — Qdrant legislation payloads historically have both.
+  - Function now RETURNS chunk so it can be used inline in .append() calls
+    (Pass 2 append loop relies on this; see Block 3).
+  - `query_text_lower` default of '' preserves backward compatibility for
+    any call site that has not been updated yet — those calls will simply
+    not trigger the keyword-bridge exemption, which is a safe failure mode
+    (the adjacent Act just keeps its 0.85 penalty).
+
+--------------------------------------------------------------------------------
+SPOT-CHECK AGAINST VPS:
+    grep -n "elif ctype == \"legislation\"" \
+        /home/tom/ai-stack/agent-general/src/server.py
+    Expected: exactly 1 hit inside apply_sm_penalty. If 0 → insert branch.
+--------------------------------------------------------------------------------
+
+================================================================================
+BLOCK 3 — Pass 1 wiring: query_text_lower thread + diagnostic log
+================================================================================
+
+LOCATION:    Inside search_text(), Pass 1 block, immediately after
+             `chunks = [hit_to_chunk(h) for h in p1.points]` and the short
+             legislation filter. In local file this is lines 363–386.
+
+FIND:
+--------------------------------------------------------------------------------
+    chunks = [hit_to_chunk(h) for h in p1.points]
+
+    # Filter short legislation schedule entries
+    chunks = [c for c in chunks if not (c.get("type") == "legislation" and len(c.get("text", "")) < 200)]
+--------------------------------------------------------------------------------
+
+ENSURE FOLLOWED BY (verbatim — this is the SM+LEG penalty pass, court
+hierarchy re-rank runs AFTER this so that top_score is computed on
+penalised scores):
+--------------------------------------------------------------------------------
+    # Apply subject-matter penalty before court hierarchy re-rank so that
+    # non-criminal case chunks do not receive hierarchy boost within the band.
+    # Also penalises non-core legislation (session 65 whitelist).
+    query_text_lower = query_text.lower()
+    for c in chunks:
+        apply_sm_penalty(c, query_text_lower)
+
+    sm_penalised = sum(1 for c in chunks if c.get("type") == "case_chunk"
+                       and sm_cache.get(c.get("citation", ""), "unknown") not in SM_ALLOW)
+    leg_penalised = sum(1 for c in chunks if c.get("type") == "legislation"
+                        and not any(core in (c.get("leg_title") or c.get("citation") or "").lower()
+                                    for core in LEG_WHITELIST_CORE))
+    if sm_penalised:
+        print(f"[*] SM penalty applied to {sm_penalised} non-criminal case chunks in Pass 1")
+    if leg_penalised:
+        print(f"[*] Legislation penalty applied to {leg_penalised} non-core legislation chunks in Pass 1")
+
+    # Re-sort by penalised scores so that top_score is correct for band calculation.
+    chunks.sort(key=lambda c: -c["score"])
+--------------------------------------------------------------------------------
+
+WHY:
+  - `query_text_lower` must be computed ONCE at the top of Pass 1 and
+    passed to every apply_sm_penalty call. Computing it inside the loop is
+    correct but wasteful; keeping it outside makes the keyword-bridge
+    behaviour easy to reason about.
+  - The diagnostic print counts `leg_penalised` as anything without a core
+    whitelist match (so adjacent Acts at 0.85 AND other legislation at 0.65
+    both contribute to the count). This is a lossy metric — fine for an
+    "is the filter doing anything" canary but do NOT rely on it for per-Act
+    breakdown during baseline validation; grep for the per-chunk scores
+    instead.
+  - Re-sort by penalised scores BEFORE the court hierarchy band runs. This
+    is the subtle correctness bug the session 51 comment alludes to: if we
+    court-sort on pre-penalty scores, a non-criminal Supreme Court case
+    chunk can still anchor the band because its cosine is high, and then
+    the penalty only kicks in AFTER the band has been established.
+
+--------------------------------------------------------------------------------
+SPOT-CHECK AGAINST VPS:
+    grep -n "Legislation penalty applied\|leg_penalised" \
+        /home/tom/ai-stack/agent-general/src/server.py
+    Expected: 3 hits (2 in the sum/log, 1 in the if print). If 0 → wire up.
+--------------------------------------------------------------------------------
+
+================================================================================
+BLOCK 4 — Pass 2 append: thread query_text_lower through apply_sm_penalty
+================================================================================
+
+LOCATION:    Inside search_text(), Pass 2 loop. In local file this is
+             around line 418.
+
+FIND:
+--------------------------------------------------------------------------------
+    for h in p2.points:
+        if str(h.id) not in seen_ids:
+            seen_ids.add(str(h.id))
+            chunks.append(apply_sm_penalty(hit_to_chunk(h), query_text_lower))
+--------------------------------------------------------------------------------
+
+ENSURE PRESENT (this is the required form — `query_text_lower` must be the
+second arg). If VPS has the old form `chunks.append(apply_sm_penalty(hit_to_chunk(h)))`
+with only one arg, the call still works (default is '') but the adjacent-
+Act keyword bridge will never fire inside Pass 2 and case_chunk hits will
+behave correctly regardless, since the keyword bridge only affects
+`type=="legislation"` chunks and Pass 2 is filtered to `type=="case_chunk"`.
+So Pass 2 arg form is COSMETIC — do not raise a red flag if VPS has the
+single-arg form. Document the divergence and move on.
+
+--------------------------------------------------------------------------------
+SPOT-CHECK AGAINST VPS:
+    grep -n "apply_sm_penalty(hit_to_chunk" \
+        /home/tom/ai-stack/agent-general/src/server.py
+    Expected: 1 hit (inside Pass 2 loop). Exact arg form is not critical.
+--------------------------------------------------------------------------------
+
+================================================================================
+BLOCK 5 — BM25 case_chunks_fts append: uses raw SM_PENALTY only
+================================================================================
+
+LOCATION:    Inside search_text(), BM25 case_chunks_fts block. In local
+             file this is around lines 530–537.
+
+FIND:
+--------------------------------------------------------------------------------
+        # Apply SM penalty before adding
+        sm_val = sm_cache.get(citation, 'unknown') if sm_cache else 'unknown'
+        raw_score = BM25_SCORE_KEYWORD
+        if sm_val not in SM_ALLOW:
+            raw_score = round(raw_score * SM_PENALTY, 4)
+--------------------------------------------------------------------------------
+
+LEAVE AS-IS.
+
+WHY:
+  - This path handles `type==case_chunk` rows sourced from the case_chunks
+    FTS5 index — NOT legislation chunks. The legislation whitelist is
+    irrelevant here: all FTS5 hits are case_chunk entries by definition
+    (the Worker route `case-chunks-fts-search` queries the case_chunks_fts
+    virtual table only).
+  - The hard-coded SM_PENALTY (not apply_sm_penalty) is intentional: this
+    is a synthetic-score injection layer with very small scores (~0.0139),
+    and factoring those through the full apply_sm_penalty helper buys
+    nothing.
+  - No changes needed. This block exists in the patch only so reviewers
+    don't mistake it for a missed integration point.
+
+--------------------------------------------------------------------------------
+SPOT-CHECK AGAINST VPS:
+    Not required — this block stays as-is on both sides.
+--------------------------------------------------------------------------------
+
+================================================================================
+BLOCK 6 — BM25 section-ref append: DELIBERATELY NOT PENALISED
+================================================================================
+
+LOCATION:    Inside search_text(), BM25 section-ref append block
+             (fetch_sections_by_reference path). In local file this is
+             around lines 444–477.
+
+LEAVE AS-IS.
+
+WHY:
+  - Section references in the USER QUERY (e.g. "s 1 Misuse of Drugs Act")
+    bypass the whitelist by design. If the user explicitly names a
+    section, they want that section back, even if the parent Act is an
+    adjacent / other legislation. Applying LEG_PENALTY_ADJACENT here would
+    silently penalise an exact section-reference match — a pass→fail
+    regression waiting to happen.
+  - The BM25 synthetic scores (~0.0159 / ~0.0147) are already far below
+    any real Qdrant cosine hit, so an un-penalised BM25 legislation ref
+    cannot displace a Pass 1 case_chunk anyway. It can only act as a
+    tie-breaker or a supplementary citation in the assembled context.
+  - No changes needed.
+
+================================================================================
+DEPLOYMENT STEPS (when gate opens)
+================================================================================
+
+DO NOT RUN THESE YET. Gate = re-embed complete (embedded=0 count hits 0 on
+both case_chunks and secondary_sources) AND 31-query baseline has been
+re-run and compared against session 64 (13P/9Pa/9M).
+
+1.  SCP canonical back down and diff against local:
+        scp tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py \
+            "C:\Users\Hogan\OneDrive\Arcanthyr\arcanthyr-console\Arc v 4\server_vps_pre_step2.py"
+        diff "Arc v 4\server.py" "Arc v 4\server_vps_pre_step2.py"
+    — If diff empty, step 2 is already live; skip deployment entirely and
+      mark FUTURE ROADMAP Step 2 complete. Baseline Q1 and Q11 against
+      existing state to confirm whether vocab anchor (session 65) alone
+      already delivered the expected improvement.
+
+2.  If diff shows missing blocks, patch live:
+        (edit VPS copy directly via hex-ssh OR SCP local up)
+        scp "Arc v 4\server.py" \
+            tom@31.220.86.192:/home/tom/ai-stack/agent-general/src/server.py
+
+3.  Force-recreate agent-general (server.py is volume-mounted, so this is
+    the full deploy step):
+        AGENT_GENERAL_PORT=18789 docker compose up -d --force-recreate agent-general
+        docker compose logs --tail=30 agent-general
+        curl -s http://localhost:18789/health
+
+4.  Gate-keeping baseline re-run:
+        bash ~/retrieval_baseline.sh
+        diff ~/retrieval_baseline_results.txt ~/retrieval_baseline_results_apr16.txt
+
+5.  PASS CRITERIA (hard gate — do not proceed otherwise):
+      - Pass count ≥ session 64 baseline (10/13/8 pre-re-embed, or post-re-
+        embed equivalent — whichever is the current reference).
+      - Q1 (common assault) and Q11 (s 138 voir dire): retrieval quality
+        must IMPROVE or hold. These are the two regressions Step 2 was
+        designed to address; a flat result here means SM_PENALTY is
+        already doing the work and the whitelist adds no signal.
+      - ZERO pass→fail regressions. Any query that was Pass in the
+        pre-deploy baseline must still be Pass.
+      - If any pass→fail regression: roll back (restore pre-deploy
+        server.py, force-recreate, verify).
+
+6.  On success, update CLAUDE.md:
+      - Remove Step 2 from OUTSTANDING PRIORITIES if still listed.
+      - Confirm SYSTEM STATE "Subject matter filter" line already reads
+        "LEG_WHITELIST_CORE + LEG_WHITELIST_ADJACENT + keyword bridge LIVE"
+        (should already; no edit needed).
+      - Add session changelog entry: blocks applied, baseline delta, Q1/Q11
+        before/after scores.
+      - Update CLAUDE_arch.md FUTURE ROADMAP: remove "(or 0.75)" stale
+        comment on Step 2; mark Step 2 complete.
+
+================================================================================
+END OF PATCH
+================================================================================
